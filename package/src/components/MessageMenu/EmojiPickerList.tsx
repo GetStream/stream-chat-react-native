@@ -5,9 +5,9 @@ import { Pressable } from 'react-native-gesture-handler';
 import { emojis } from './emojis';
 
 import { useHasOwnReaction } from './hooks/useHasOwnReaction';
-import { toUnicodeScalarString } from './MessageReactionPicker';
+import { toUnicodeScalarString } from './utils/toUnicodeScalarString';
 
-import { useTheme } from '../../contexts';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
@@ -98,7 +98,7 @@ const useStyles = () => {
           width: '100%',
           height: 54,
         },
-        bottomSheetContentContainer: { paddingVertical: 16 },
+        bottomSheetContentContainer: { paddingBottom: 16 },
         emojiContainer: {
           alignItems: 'center',
           justifyContent: 'center',
@@ -109,9 +109,9 @@ const useStyles = () => {
           textAlign: 'center',
         },
         selectedEmoji: {
-          backgroundColor: semantics.backgroundCoreSelected,
+          backgroundColor: semantics.backgroundUtilitySelected,
         },
       }),
-    [semantics.backgroundCoreSelected],
+    [semantics.backgroundUtilitySelected],
   );
 };

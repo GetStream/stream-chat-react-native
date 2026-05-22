@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   bottomContainer: {
@@ -61,11 +62,8 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
   onChangeText,
   value,
 }) => {
-  const {
-    theme: {
-      colors: { accent_blue, accent_red, black, grey, white_smoke },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue, accent_red, black, grey, white_smoke } = useLegacyColors();
   const [borderColor, setBorderColor] = useState(white_smoke);
 
   const onFocus = () => {
@@ -137,11 +135,8 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 
 export const AdvancedUserSelectorScreen: React.FC = () => {
   const { bottom } = useSafeAreaInsets();
-  const {
-    theme: {
-      colors: { button_background, button_text, grey_gainsboro, white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { button_background, button_text, grey_gainsboro, white_snow } = useLegacyColors();
 
   const { loginUser } = useAppContext();
   const [apiKey, setApiKey] = useState('');

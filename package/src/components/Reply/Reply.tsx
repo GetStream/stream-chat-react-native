@@ -1,5 +1,15 @@
 import React, { useMemo } from 'react';
-import { Image, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  I18nManager,
+  Image,
+  ImageProps,
+  Platform,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import {
   isFileAttachment,
@@ -10,7 +20,8 @@ import {
 
 import { ReplyMessageView } from './ReplyMessageView';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -18,6 +29,7 @@ import {
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks';
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
@@ -51,7 +63,7 @@ const RightContent = React.memo(
     ) {
       return (
         <View style={[styles.contentWrapper, styles.contentBorder]}>
-          <ImageComponent source={{ uri }} style={StyleSheet.absoluteFillObject} />
+          <ImageComponent source={{ uri }} style={StyleSheet.absoluteFill} />
         </View>
       );
     }
@@ -59,11 +71,15 @@ const RightContent = React.memo(
       return (
         <View style={[styles.contentWrapper, styles.contentBorder]}>
           <View style={styles.attachmentContainer}>
-            <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFillObject} />
+            <Image source={{ uri: attachment.thumb_url }} style={StyleSheet.absoluteFill} />
             <VideoPlayIndicator size='sm' />
           </View>
         </View>
       );
+    }
+
+    if (attachment?.type === FileTypes.VoiceRecording) {
+      return null;
     }
 
     if (attachment && isFileAttachment(attachment)) {
@@ -74,8 +90,10 @@ const RightContent = React.memo(
   },
 );
 
-export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
-  Pick<MessageContextValue, 'message'> &
+export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageProps> } & Pick<
+  MessageContextValue,
+  'message'
+> &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
     onDismiss?: () => void;
@@ -92,6 +110,7 @@ export type ReplyPropsWithContext = Pick<ChatContextValue, 'ImageComponent'> &
   };
 
 export const ReplyWithContext = (props: ReplyPropsWithContext) => {
+  const { t } = useTranslationContext();
   const {
     isMyMessage,
     ImageComponent,
@@ -118,13 +137,13 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   const title = useMemo(
     () =>
       mode === 'edit'
-        ? 'Edit Message'
+        ? t('Edit Message')
         : isMyMessage
-          ? 'You'
+          ? t('You')
           : quotedMessage?.user?.name
-            ? `Reply to ${quotedMessage?.user?.name}`
-            : 'Reply',
-    [mode, isMyMessage, quotedMessage?.user?.name],
+            ? t('Reply to {{name}}', { name: quotedMessage?.user?.name })
+            : t('Reply'),
+    [mode, isMyMessage, quotedMessage?.user?.name, t],
   );
 
   if (!quotedMessage) {
@@ -132,7 +151,11 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   }
 
   return (
-    <View style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}>
+    <View
+      accessibilityLabel={title}
+      accessibilityRole='text'
+      style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}
+    >
       <View style={[styles.container, container, stylesProp?.container]}>
         <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>
           <Text numberOfLines={1} style={[styles.title, titleStyle, stylesProp?.title]}>
@@ -147,7 +170,10 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       </View>
       {onDismiss ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
-          <AttachmentRemoveControl onPress={onDismiss} />
+          <AttachmentRemoveControl
+            accessibilityLabelKey={mode === 'edit' ? 'a11y/Remove edit' : 'a11y/Remove reply'}
+            onPress={onDismiss}
+          />
         </View>
       ) : null}
     </View>
@@ -156,17 +182,23 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
 
 const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithContext) => {
   const {
+    styles: prevStyles,
     isMyMessage: prevIsMyMessage,
     mode: prevMode,
     quotedMessage: prevQuotedMessage,
     onDismiss: prevOnDismiss,
   } = prevProps;
   const {
+    styles: nextStyles,
     isMyMessage: nextIsMyMessage,
     mode: nextMode,
     quotedMessage: nextQuotedMessage,
     onDismiss: nextOnDismiss,
   } = nextProps;
+
+  if (prevStyles !== nextStyles) {
+    return false;
+  }
 
   const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
 
@@ -204,7 +236,8 @@ export type ReplyProps = Partial<ReplyPropsWithContext> &
 
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
-  const { client, ImageComponent } = useChatContext();
+  const { client } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   const messageComposer = useMessageComposer();
   const { quotedMessage: quotedMessageFromComposer } = useStateStore(
@@ -241,6 +274,7 @@ const useStyles = () => {
   const { client } = useChatContext();
 
   const isMyMessage = client.user?.id === quotedMessageFromComposer?.user?.id;
+  const isRTL = I18nManager.isRTL;
 
   return useMemo(
     () =>
@@ -252,7 +286,7 @@ const useStyles = () => {
         },
         container: {
           borderRadius: primitives.radiusLg,
-          flexDirection: 'row',
+          flexDirection: isRTL ? 'row-reverse' : 'row',
           padding: primitives.spacingXs,
           backgroundColor: isMyMessage ? semantics.chatBgOutgoing : semantics.chatBgIncoming,
         },
@@ -264,7 +298,7 @@ const useStyles = () => {
           width: 40,
         },
         contentBorder: {
-          borderColor: semantics.borderCoreOpacity10,
+          borderColor: semantics.borderCoreOpacitySubtle,
         },
         dismissWrapper: {
           position: 'absolute',
@@ -272,14 +306,31 @@ const useStyles = () => {
           top: 0,
         },
         leftContainer: {
-          borderLeftWidth: 2,
           flex: 1,
           justifyContent: 'center',
           paddingHorizontal: primitives.spacingXs,
-          borderLeftColor: isMyMessage
-            ? semantics.chatReplyIndicatorOutgoing
-            : semantics.chatReplyIndicatorIncoming,
           gap: primitives.spacingXxxs,
+          alignItems: 'flex-start',
+          ...(Platform.OS === 'android'
+            ? {
+                borderLeftColor: isMyMessage
+                  ? semantics.chatReplyIndicatorOutgoing
+                  : semantics.chatReplyIndicatorIncoming,
+                borderLeftWidth: 2,
+              }
+            : isRTL
+              ? {
+                  borderRightColor: isMyMessage
+                    ? semantics.chatReplyIndicatorOutgoing
+                    : semantics.chatReplyIndicatorIncoming,
+                  borderRightWidth: 2,
+                }
+              : {
+                  borderLeftColor: isMyMessage
+                    ? semantics.chatReplyIndicatorOutgoing
+                    : semantics.chatReplyIndicatorIncoming,
+                  borderLeftWidth: 2,
+                }),
         },
         rightContainer: {},
         title: {
@@ -288,11 +339,12 @@ const useStyles = () => {
           fontWeight: primitives.typographyFontWeightSemiBold,
           includeFontPadding: false,
           lineHeight: primitives.typographyLineHeightTight,
+          textAlign: isRTL ? 'right' : 'left',
         },
         wrapper: {
           padding: primitives.spacingXxs,
         },
       }),
-    [isMyMessage, semantics],
+    [isMyMessage, isRTL, semantics],
   );
 };

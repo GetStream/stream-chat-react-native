@@ -1,7 +1,11 @@
 import { Platform } from 'react-native';
+
 import mime from 'mime';
 
 import type { File } from 'stream-chat-react-native-core';
+
+import { generateThumbnails } from './generateThumbnail';
+import { getLocalAssetUri } from './getLocalAssetUri';
 
 let MediaLibrary;
 
@@ -16,8 +20,6 @@ if (!MediaLibrary) {
     'expo-media-library is not installed. Please install it or you can choose to install expo-image-picker for native image picker.',
   );
 }
-
-import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
   assets: File[];
@@ -51,22 +53,44 @@ export const getPhotos = MediaLibrary
           mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
           sortBy: [MediaLibrary.SortBy.modificationTime],
         });
-        const assets = await Promise.all(
+        const assetEntries = await Promise.all(
           results.assets.map(async (asset) => {
             const localUri = await getLocalAssetUri(asset.id);
-            const mimeType = mime.getType(asset.filename);
+            const mimeType =
+              mime.getType(asset.filename || asset.uri) ||
+              (asset.mediaType === MediaLibrary.MediaType.video ? 'video/*' : 'image/*');
+            const originalUri = asset.uri;
+            const uri = localUri || originalUri;
+
             return {
-              duration: asset.duration * 1000,
-              height: asset.height,
-              name: asset.filename,
-              size: 0,
-              thumb_url: asset.mediaType === 'photo' ? undefined : asset.uri,
-              type: mimeType,
-              uri: localUri || asset.uri,
-              width: asset.width,
+              asset,
+              isVideo: asset.mediaType === MediaLibrary.MediaType.video,
+              mimeType,
+              originalUri,
+              uri,
             };
           }),
         );
+        const videoUris = assetEntries
+          .filter(({ isVideo, originalUri }) => isVideo && !!originalUri)
+          .map(({ originalUri }) => originalUri);
+        const videoThumbnailResults = await generateThumbnails(videoUris);
+
+        const assets = assetEntries.map(({ asset, isVideo, mimeType, originalUri, uri }) => {
+          const thumbnailResult =
+            isVideo && originalUri ? videoThumbnailResults[originalUri] : undefined;
+
+          return {
+            duration: asset.duration * 1000,
+            height: asset.height,
+            name: asset.filename,
+            size: 0,
+            thumb_url: thumbnailResult?.uri || undefined,
+            type: mimeType,
+            uri,
+            width: asset.width,
+          };
+        });
 
         const hasNextPage = results.hasNextPage;
         const endCursor = results.endCursor;

@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
@@ -22,11 +23,8 @@ export type DraftItemProps = {
 };
 
 export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { grey } = useLegacyColors();
   const navigation = useNavigation();
   const { client } = useChatContext();
   const messagePreviewText = useMessagePreviewText({ message });

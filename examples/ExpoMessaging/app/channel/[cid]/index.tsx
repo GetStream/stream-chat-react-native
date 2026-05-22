@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
-  MessageInput,
+  MessageComposer,
   useChatContext,
   ThreadContextValue,
   MessageList,
@@ -11,9 +11,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 import { useHeaderHeight } from '@react-navigation/elements';
-import InputButtons from '../../../components/InputButtons';
-import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function ChannelScreen() {
   const { client } = useChatContext();
@@ -74,8 +72,8 @@ export default function ChannelScreen() {
         audioRecordingEnabled={true}
         channel={channel}
         onPressMessage={onPressMessage}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : undefined}
-        MessageLocation={MessageLocation}
+        keyboardVerticalOffset={headerHeight}
+        topInset={headerHeight}
         thread={thread}
       >
         <MessageList
@@ -84,7 +82,7 @@ export default function ChannelScreen() {
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
           }}
         />
-        <MessageInput InputButtons={InputButtons} />
+        <MessageComposer />
       </Channel>
     </View>
   );

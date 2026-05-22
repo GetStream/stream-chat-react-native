@@ -4,7 +4,7 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { SendRight } from '../../../../icons/SendRight';
+import { SendRight } from '../../../../icons/send';
 import { Button } from '../../../ui';
 
 export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
@@ -26,6 +26,7 @@ export const SendButton = (props: SendButtonProps) => {
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Send message'
       variant='primary'
       type='solid'
       disabled={disabled}
@@ -38,4 +39,4 @@ export const SendButton = (props: SendButtonProps) => {
   );
 };
 
-SendButton.displayName = 'SendButton{messageInput}';
+SendButton.displayName = 'SendButton{messageComposer}';

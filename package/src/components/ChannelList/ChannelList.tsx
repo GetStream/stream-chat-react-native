@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
 import {
@@ -11,52 +12,32 @@ import {
   QueryChannelsRequestType,
 } from 'stream-chat';
 
-import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
-import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
-import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
-import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
-import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
+import { ChannelListView } from './ChannelListView';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
-import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import {
   ChannelsContextValue,
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
+import { useLazyRef } from '../../hooks/useLazyRef';
 import type { ChannelListEventListenerOptions } from '../../types/types';
-import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
-import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
-import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
+import { generateRandomId } from '../../utils/utils';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type ChannelListProps = Partial<
   Pick<
     ChannelsContextValue,
     | 'additionalFlatListProps'
-    | 'EmptyStateIndicator'
-    | 'FooterLoadingIndicator'
-    | 'HeaderErrorIndicator'
-    | 'HeaderNetworkDownIndicator'
-    | 'LoadingErrorIndicator'
-    | 'LoadingIndicator'
-    | 'Preview'
     | 'setFlatListRef'
-    | 'ListHeaderComponent'
     | 'onSelect'
-    | 'PreviewAvatar'
-    | 'PreviewMessage'
-    | 'PreviewMutedStatus'
-    | 'PreviewStatus'
-    | 'PreviewTitle'
-    | 'PreviewUnreadCount'
-    | 'ChannelDetailsBottomSheet'
     | 'getChannelActionItems'
     | 'swipeActionsEnabled'
     | 'loadMoreThreshold'
-    | 'Skeleton'
     | 'maxUnreadCount'
     | 'numberOfSkeletons'
     | 'mutedStatusPosition'
@@ -72,12 +53,6 @@ export type ChannelListProps = Partial<
    * @overrideType object
    * */
   filters?: ChannelFilters;
-  /**
-   * Custom UI component to display the list of channels
-   *
-   * Default: [ChannelListMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-list-messenger/)
-   */
-  List?: React.ComponentType<ChannelListMessengerProps>;
   /**
    * If set to true, channels won't dynamically sort by most recent message, defaults to false
    */
@@ -236,6 +211,7 @@ export type ChannelListProps = Partial<
    * - The return type has to be Channel[] (which is the return type of StreamChat.queryChannels)
    */
   queryChannelsOverride?: QueryChannelsRequestType;
+  notificationHostId?: string;
 };
 
 const DEFAULT_FILTERS = {};
@@ -244,8 +220,7 @@ const DEFAULT_SORT = {};
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
- * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is determined by the `List` component which is
- * provided to the ChannelList component as a prop. By default, the ChannelListMessenger component is used as the list UI.
+ * The ChannelList renders a ChannelListView which provides the UI for the underlying React Native FlatList.
  *
  * @example ./ChannelList.md
  */
@@ -253,15 +228,7 @@ export const ChannelList = (props: ChannelListProps) => {
   const {
     additionalFlatListProps = {},
     channelRenderFilterFn,
-    EmptyStateIndicator = EmptyStateIndicatorDefault,
     filters = DEFAULT_FILTERS,
-    FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
-    HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
-    HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
-    List = ChannelListMessenger,
-    ListHeaderComponent,
-    LoadingErrorIndicator = LoadingErrorIndicatorDefault,
-    LoadingIndicator = ChannelListLoadingIndicator,
     // https://stackoverflow.com/a/60666252/10826415
     loadMoreThreshold = 0.1,
     lockChannelOrder = false,
@@ -279,25 +246,20 @@ export const ChannelList = (props: ChannelListProps) => {
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
-    Preview = ChannelPreviewMessenger,
     getChannelActionItems,
-    PreviewAvatar,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
-    ChannelDetailsBottomSheet,
     setFlatListRef,
-    Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
     queryChannelsOverride,
+    notificationHostId: notificationHostIdProp,
     mutedStatusPosition = 'inlineTitle',
     swipeActionsEnabled = true,
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
+  const fallbackNotificationHostIdRef = useLazyRef(() => `channel-list:${generateRandomId()}`);
+  const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
   const { client, enableOfflineSupport } = useChatContext();
+  const { NotificationList } = useComponentsContext();
   const channelManager = useMemo(() => client.createChannelManager({}), [client]);
 
   /**
@@ -392,32 +354,17 @@ export const ChannelList = (props: ChannelListProps) => {
     additionalFlatListProps,
     channelListInitialized,
     channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : channels,
-    EmptyStateIndicator,
     error,
-    FooterLoadingIndicator,
     forceUpdate,
     hasNextPage,
-    HeaderErrorIndicator,
-    HeaderNetworkDownIndicator,
-    ListHeaderComponent,
     loadingChannels,
-    LoadingErrorIndicator,
-    LoadingIndicator,
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
     maxUnreadCount,
     numberOfSkeletons,
     onSelect,
-    Preview,
     getChannelActionItems,
-    PreviewAvatar,
-    PreviewMessage,
-    PreviewMutedStatus,
-    PreviewStatus,
-    PreviewTitle,
-    PreviewUnreadCount,
-    ChannelDetailsBottomSheet,
     swipeActionsEnabled,
     refreshing,
     refreshList,
@@ -427,15 +374,26 @@ export const ChannelList = (props: ChannelListProps) => {
         setFlatListRef(ref);
       }
     },
-    Skeleton,
     mutedStatusPosition,
   });
 
   return (
-    <ChannelsProvider value={channelsContext}>
-      <SwipeRegistryProvider>
-        <List />
-      </SwipeRegistryProvider>
-    </ChannelsProvider>
+    <NotificationTargetProvider hostId={notificationHostId} panel='channel-list'>
+      <ChannelsProvider value={channelsContext}>
+        <SwipeRegistryProvider>
+          <View style={styles.container}>
+            <ChannelListView />
+            <NotificationList />
+          </View>
+        </SwipeRegistryProvider>
+      </ChannelsProvider>
+    </NotificationTargetProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'transparent',
+    flex: 1,
+  },
+});

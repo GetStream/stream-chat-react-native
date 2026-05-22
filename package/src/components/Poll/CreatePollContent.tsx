@@ -4,7 +4,7 @@ import { StyleSheet, Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
-import { PollComposerState, VotingVisibility } from 'stream-chat';
+import { PollComposerState, StateStore, VotingVisibility } from 'stream-chat';
 
 import { CreatePollOptions, CurrentOptionPositionsCache } from './components';
 
@@ -13,16 +13,18 @@ import { MultipleAnswersField } from './components/MultipleAnswersField';
 import { NameField } from './components/NameField';
 
 import {
+  CreatePollModalState,
   CreatePollContentContextValue,
   CreatePollContentProvider,
-  InputMessageInputContextValue,
   useCreatePollContentContext,
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { useRtlMirrorSwitchStyle } from '../../utils/rtlMirrorSwitchStyle';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   options: state.data.options,
@@ -107,9 +109,8 @@ export const CreatePollContent = () => {
   }, [currentOptionPositions, normalizedCreatePollOptionGap, optionIdsKey]);
 
   const onBackPressHandler = useCallback(() => {
-    pollComposer.initState();
     closePollCreationDialog?.();
-  }, [pollComposer, closePollCreationDialog]);
+  }, [closePollCreationDialog]);
 
   const onCreatePollPressHandler = useCallback(async () => {
     await createAndSendPoll();
@@ -165,7 +166,9 @@ export const CreatePollContent = () => {
             <View style={[styles.optionCard, anonymousPoll.wrapper]}>
               <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
                 <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
-                <Text style={[styles.description, anonymousPoll.description]}>Hide who voted</Text>
+                <Text style={[styles.description, anonymousPoll.description]}>
+                  {t('Hide who voted')}
+                </Text>
               </View>
 
               <Switch
@@ -178,7 +181,7 @@ export const CreatePollContent = () => {
               <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
                 <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
                 <Text style={[styles.description, suggestOption.description]}>
-                  Let others add options
+                  {t('Let others add options')}
                 </Text>
               </View>
 
@@ -192,7 +195,7 @@ export const CreatePollContent = () => {
               <View style={[styles.optionCardContent, addComment.optionCardContent]}>
                 <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
                 <Text style={[styles.description, addComment.description]}>
-                  Add a comment to the poll
+                  {t('Add a comment to the poll')}
                 </Text>
               </View>
 
@@ -211,36 +214,59 @@ export const CreatePollContent = () => {
 
 export const CreatePoll = ({
   closePollCreationDialog,
-  CreatePollContent: CreatePollContentOverride,
   createPollOptionGap = 8,
   sendMessage,
 }: Pick<
   CreatePollContentContextValue,
   'createPollOptionGap' | 'closePollCreationDialog' | 'sendMessage'
-> &
-  Pick<InputMessageInputContextValue, 'CreatePollContent'>) => {
+>) => {
+  const { CreatePollContent: CreatePollContentOverride } = useComponentsContext();
   const messageComposer = useMessageComposer();
+  const [modalStateStore] = useState(
+    () => new StateStore<CreatePollModalState>({ isClosing: false }),
+  );
+  const closeFrameRef = useRef<number | null>(null);
+
+  const closeCreatePollDialog = useCallback(() => {
+    if (closeFrameRef.current !== null || modalStateStore.getLatestValue().isClosing) {
+      return;
+    }
+
+    // Let the modal render once with exit animations disabled before we dismiss it.
+    modalStateStore.partialNext({ isClosing: true });
+    closeFrameRef.current = requestAnimationFrame(() => {
+      closeFrameRef.current = null;
+      closePollCreationDialog?.();
+    });
+  }, [closePollCreationDialog, modalStateStore]);
+
+  useEffect(() => {
+    return () => {
+      if (closeFrameRef.current !== null) {
+        cancelAnimationFrame(closeFrameRef.current);
+      }
+      // Reset after teardown so poll field exit animations do not delay modal dismissal.
+      messageComposer.pollComposer.initState();
+    };
+  }, [messageComposer]);
 
   const createAndSendPoll = useCallback(async () => {
     try {
       await messageComposer.createPoll();
       await sendMessage();
-      closePollCreationDialog?.();
-      // it's important that the reset of the pollComposer state happens
-      // after we've already closed the modal; as otherwise we'd get weird
-      // UI behaviour.
-      messageComposer.pollComposer.initState();
+      closeCreatePollDialog();
     } catch (error) {
       console.log('Error creating a poll and sending a message:', error);
     }
-  }, [messageComposer, sendMessage, closePollCreationDialog]);
+  }, [closeCreatePollDialog, messageComposer, sendMessage]);
 
   return (
     <CreatePollContentProvider
       value={{
-        closePollCreationDialog,
+        closePollCreationDialog: closeCreatePollDialog,
         createAndSendPoll,
         createPollOptionGap,
+        modalStateStore,
         sendMessage,
       }}
     >
@@ -253,28 +279,37 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   return useMemo(() => {
     return StyleSheet.create({
       scrollView: {
         flex: 1,
-        padding: primitives.spacingMd,
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
       },
-      contentContainerStyle: { paddingBottom: 70 },
+      contentContainerStyle: {
+        alignItems: 'stretch',
+        padding: primitives.spacingMd,
+        paddingBottom: 70,
+        width: '100%',
+      },
       title: {
         color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       description: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       optionCardContent: {
         gap: primitives.spacingXxs,
+        flex: 1,
+        alignItems: 'flex-start',
       },
       optionCard: {
         flex: 1,
@@ -288,7 +323,7 @@ const useStyles = () => {
       optionCardWrapper: {
         gap: primitives.spacingMd,
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

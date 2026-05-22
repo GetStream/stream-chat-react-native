@@ -1,32 +1,41 @@
 import React, { useMemo } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LocalAttachmentUploadMetadata } from 'stream-chat';
 
+import { AttachmentFileUploadProgressIndicator } from '../../../../components/Attachment/AttachmentFileUploadProgressIndicator';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { ExclamationCircle } from '../../../../icons/ExclamationCircle';
-import { Warning } from '../../../../icons/Warning';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { ExclamationCircle } from '../../../../icons/exclamation-circle-fill';
+import { Warning } from '../../../../icons/exclamation-triangle-fill';
 import { primitives } from '../../../../theme';
 import { RetryBadge } from '../../../ui/Badge/RetryBadge';
 
-export const FileUploadInProgressIndicator = () => {
+export type UploadInProgressIndicatorProps = {
+  localId?: string;
+  sourceUrl?: string;
+  totalBytes?: number | string | null;
+};
+
+export const FileUploadInProgressIndicator = ({
+  localId,
+  sourceUrl,
+  totalBytes,
+}: UploadInProgressIndicatorProps = {}) => {
   const {
     theme: {
-      semantics,
-      messageInput: { fileUploadInProgressIndicator },
+      messageComposer: { fileUploadInProgressIndicator },
     },
   } = useTheme();
 
   return (
-    <View
-      style={[styles.activityIndicatorContainer, fileUploadInProgressIndicator.container]}
-      testID='upload-progress-indicator'
-    >
-      <ActivityIndicator
-        color={semantics.accentPrimary}
-        style={[styles.activityIndicator, fileUploadInProgressIndicator.indicator]}
-      />
-    </View>
+    <AttachmentFileUploadProgressIndicator
+      containerStyle={[styles.activityIndicatorContainer, fileUploadInProgressIndicator.container]}
+      localId={localId}
+      sourceUrl={sourceUrl}
+      totalBytes={totalBytes}
+    />
   );
 };
 
@@ -38,9 +47,10 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
   const {
     theme: {
       semantics,
-      messageInput: { fileUploadRetryIndicator },
+      messageComposer: { fileUploadRetryIndicator },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
   const styles = useFileUploadRetryStyles();
 
   return (
@@ -56,7 +66,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
           width={16}
         />
         <Text style={[styles.networkErrorText, fileUploadRetryIndicator.networkErrorText]}>
-          Network error
+          {t('Network error')}
         </Text>
       </View>
       <Pressable
@@ -66,7 +76,9 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
           fileUploadRetryIndicator.retryButton,
         ]}
       >
-        <Text style={[styles.retryText, fileUploadRetryIndicator.retryText]}>Retry Upload</Text>
+        <Text style={[styles.retryText, fileUploadRetryIndicator.retryText]}>
+          {t('Retry Upload')}
+        </Text>
       </Pressable>
     </View>
   );
@@ -83,12 +95,13 @@ export const FileUploadNotSupportedIndicator = ({
   const {
     theme: {
       semantics,
-      messageInput: { fileUploadNotSupportedIndicator },
+      messageComposer: { fileUploadNotSupportedIndicator },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   const reason = localMetadata.uploadPermissionCheck?.reason === 'size_limit';
-  const message = reason ? 'File too large' : 'Not supported';
+  const message = reason ? t('File too large') : t('Not supported');
 
   return (
     <View
@@ -103,24 +116,13 @@ export const FileUploadNotSupportedIndicator = ({
   );
 };
 
-export const ImageUploadInProgressIndicator = () => {
-  const {
-    theme: {
-      semantics,
-      messageInput: { imageUploadInProgressIndicator },
-    },
-  } = useTheme();
-  const styles = useImageUploadInProgressIndicatorStyles();
-  return (
-    <View style={[styles.container, imageUploadInProgressIndicator.container]}>
-      <ActivityIndicator
-        size='small'
-        color={semantics.accentPrimary}
-        style={imageUploadInProgressIndicator.indicator}
-        testID='upload-progress-indicator'
-      />
-    </View>
-  );
+export const ImageUploadInProgressIndicator = ({
+  localId,
+  sourceUrl,
+}: UploadInProgressIndicatorProps = {}) => {
+  const { AttachmentUploadIndicator } = useComponentsContext();
+
+  return <AttachmentUploadIndicator localId={localId} sourceUrl={sourceUrl} variant='overlay' />;
 };
 
 export type ImageUploadRetryIndicatorProps = {
@@ -140,7 +142,7 @@ export const ImageUploadNotSupportedIndicator = () => {
   const {
     theme: {
       semantics,
-      messageInput: { imageUploadNotSupportedIndicator },
+      messageComposer: { imageUploadNotSupportedIndicator },
     },
   } = useTheme();
   return (
@@ -153,23 +155,13 @@ export const ImageUploadNotSupportedIndicator = () => {
   );
 };
 
-const useImageUploadInProgressIndicatorStyles = () => {
-  return StyleSheet.create({
-    container: {
-      position: 'absolute',
-      left: primitives.spacingXxs,
-      bottom: primitives.spacingXxs,
-    },
-  });
-};
-
 const useImageUploadNotSupportedIndicatorStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
   return StyleSheet.create({
     container: {
-      backgroundColor: semantics.backgroundElevationElevation0,
+      backgroundColor: semantics.backgroundCoreElevation0,
       borderRadius: primitives.radiusMax,
       position: 'absolute',
       left: primitives.spacingXxs,
@@ -230,9 +222,8 @@ const useFileUploadNotSupportedStyles = () => {
 };
 
 const styles = StyleSheet.create({
-  activityIndicatorContainer: {},
-  activityIndicator: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+  activityIndicatorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

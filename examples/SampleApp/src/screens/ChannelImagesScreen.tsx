@@ -23,6 +23,7 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { RouteProp } from '@react-navigation/native';
 
@@ -74,11 +75,8 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   const { assets } = useStateStore(imageGalleryStateStore.state, selector);
   const { setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
-  const {
-    theme: {
-      colors: { white },
-    },
-  } = useTheme();
+  useTheme();
+  const { white } = useLegacyColors();
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState(
     Dayjs(messages?.[0]?.created_at).format('MMM YYYY'),
@@ -175,11 +173,8 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
 };
 
 const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro } = useLegacyColors();
   return (
     <View style={styles.emptyContainer}>
       <Picture fill={grey_gainsboro} scale={6} />

@@ -13,9 +13,15 @@ import Animated, {
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
+import type {
+  ImageGalleryFooterProps,
+  ImageGalleryGridProps,
+  ImageGalleryHeaderProps,
+} from './components/types';
 
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryProviderProps,
   useImageGalleryContext,
@@ -30,7 +36,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { IconProps } from '../../icons/utils/base';
 import { ImageGalleryState } from '../../state-store/image-gallery-state-store';
 import { FileTypes } from '../../types/types';
-import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { BottomSheetModal } from '../UIComponents';
 
 export type ImageGalleryActionHandler = () => Promise<void> | void;
@@ -63,13 +69,13 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 
 type ImageGalleryWithContextProps = Pick<
   ImageGalleryProviderProps,
-  | 'numberOfImageGalleryGridColumns'
-  | 'ImageGalleryHeader'
-  | 'ImageGalleryFooter'
-  | 'ImageGalleryVideoControls'
-  | 'ImageGalleryGrid'
+  'numberOfImageGalleryGridColumns'
 > &
-  Pick<OverlayContextValue, 'overlayOpacity'>;
+  Pick<OverlayContextValue, 'overlayOpacity'> & {
+    ImageGalleryHeader?: React.ComponentType<ImageGalleryHeaderProps>;
+    ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
+    ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
+  };
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
@@ -77,14 +83,13 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     overlayOpacity,
     ImageGalleryHeader,
     ImageGalleryFooter,
-    ImageGalleryVideoControls,
     ImageGalleryGrid,
   } = props;
   const [isGridViewVisible, setIsGridViewVisible] = useState(false);
   const {
     theme: {
-      colors: { white_snow },
       imageGallery: { backgroundColor, pager, slide },
+      semantics,
     },
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
@@ -240,7 +245,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: backgroundColor || white_snow,
+      backgroundColor: backgroundColor || semantics.backgroundCoreApp,
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],
@@ -279,12 +284,15 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     <Animated.View
       accessibilityLabel='Image Gallery'
       pointerEvents={'auto'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
+      style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
-      <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
+      <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
-          <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
+        <Animated.View style={StyleSheet.absoluteFill}>
+          <Animated.View
+            testID='image-gallery-pager'
+            style={[styles.animatedContainer, pagerStyle, pager]}
+          >
             {assets.map((photo, i) =>
               photo.type === FileTypes.Video ? (
                 <AnimatedGalleryVideo
@@ -342,7 +350,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
           opacity={headerFooterOpacity}
           openGridView={openGridView}
           visible={headerFooterVisible}
-          ImageGalleryVideoControls={ImageGalleryVideoControls}
         />
       ) : null}
 
@@ -367,13 +374,8 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 export type ImageGalleryProps = Partial<ImageGalleryWithContextProps>;
 
 export const ImageGallery = (props: ImageGalleryProps) => {
-  const {
-    numberOfImageGalleryGridColumns,
-    ImageGalleryHeader,
-    ImageGalleryFooter,
-    ImageGalleryVideoControls,
-    ImageGalleryGrid,
-  } = useImageGalleryContext();
+  const { numberOfImageGalleryGridColumns } = useImageGalleryContext();
+  const { ImageGalleryHeader, ImageGalleryFooter, ImageGalleryGrid } = useComponentsContext();
   const { overlayOpacity } = useOverlayContext();
   return (
     <ImageGalleryWithContext
@@ -381,7 +383,6 @@ export const ImageGallery = (props: ImageGalleryProps) => {
       overlayOpacity={overlayOpacity}
       ImageGalleryHeader={ImageGalleryHeader}
       ImageGalleryFooter={ImageGalleryFooter}
-      ImageGalleryVideoControls={ImageGalleryVideoControls}
       ImageGalleryGrid={ImageGalleryGrid}
       {...props}
     />
@@ -399,6 +400,7 @@ export const clamp = (value: number, lowerBound: number, upperBound: number) => 
 const styles = StyleSheet.create({
   animatedContainer: {
     alignItems: 'center',
+    direction: 'ltr',
     flexDirection: 'row',
   },
 });

@@ -107,6 +107,7 @@ export type Theme = {
     bottomSheetContentContainer: ViewStyle;
     durationText: TextStyle;
     content: {
+      actionContainer: ViewStyle;
       container: ViewStyle;
       infoContainer: ViewStyle;
       text: TextStyle;
@@ -144,6 +145,9 @@ export type Theme = {
     presenceIndicator: CircleProps;
     presenceIndicatorContainer: ViewStyle;
   };
+  avatarStack: {
+    userAvatarWrapper: ViewStyle;
+  };
   bottomSheetModal: {
     container: ViewStyle;
     contentContainer: ViewStyle;
@@ -164,7 +168,7 @@ export type Theme = {
   channelListLoadingIndicator: {
     container: ViewStyle;
   };
-  channelListMessenger: {
+  channelListView: {
     flatList: ViewStyle;
     flatListContent: ViewStyle;
   };
@@ -206,7 +210,6 @@ export type Theme = {
     textContainer: ViewStyle;
     timestamp: ViewStyle;
   };
-  colors: typeof Colors;
   channelPreview: {
     container: ViewStyle;
     contentContainer: ViewStyle;
@@ -239,6 +242,7 @@ export type Theme = {
     };
     messagePreview: {
       container: ViewStyle;
+      draftText: TextStyle;
       subtitle: TextStyle;
     };
   };
@@ -280,7 +284,7 @@ export type Theme = {
       contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
-      gridImage: ViewStyle;
+      gridImage: ImageStyle;
       handle: ViewStyle;
       handleText: TextStyle;
       overlay: ViewStyle;
@@ -321,11 +325,12 @@ export type Theme = {
     loadingText: TextStyle;
   };
 
-  messageInput: {
+  messageComposer: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
     attachmentSelectionBar: ViewStyle;
     attachmentUploadPreviewList: {
+      audioAttachmentsContainer: ViewStyle;
       flatList: ViewStyle;
       itemSeparator: ViewStyle;
     };
@@ -495,6 +500,7 @@ export type Theme = {
     };
   };
   messageList: {
+    systemMessageContainer: ViewStyle;
     container: ViewStyle;
     contentContainer: ViewStyle;
     errorNotification: ViewStyle;
@@ -528,6 +534,19 @@ export type Theme = {
       leftButtonContainer: ViewStyle;
       rightButtonContainer: ViewStyle;
     };
+  };
+  notification: {
+    actionButton: ViewStyle;
+    actionButtonText: TextStyle;
+    actionsContainer: ViewStyle;
+    closeButton: ViewStyle;
+    container: ViewStyle;
+    contentContainer: ViewStyle;
+    iconContainer: ViewStyle;
+    message: TextStyle;
+  };
+  notificationList: {
+    container: ViewStyle;
   };
   messageMenu: {
     actionList: {
@@ -580,7 +599,12 @@ export type Theme = {
   messagePreview: {
     message: TextStyle;
   };
-  messageSimple: {
+  messageItemView: {
+    blockedMessageContainer: ViewStyle;
+    bubbleContentContainer: ViewStyle;
+    bubbleErrorContainer: ViewStyle;
+    bubbleReactionListTopContainer: ViewStyle;
+    bubbleWrapper: ViewStyle;
     actions: {
       button: ViewStyle & {
         defaultBackgroundColor?: ViewStyle['backgroundColor'];
@@ -594,7 +618,7 @@ export type Theme = {
       };
       container: ViewStyle;
     };
-    avatarWrapper: {
+    authorWrapper: {
       container: ViewStyle;
       spacer: ViewStyle;
     };
@@ -633,7 +657,6 @@ export type Theme = {
       textContainer: ViewStyle & {
         onlyEmojiMarkdown: MarkdownStyle;
       };
-      wrapper: ViewStyle;
       timestampText?: TextStyle;
     };
     deleted: {
@@ -669,6 +692,11 @@ export type Theme = {
     fileAttachmentGroup: {
       attachmentContainer: ViewStyle;
       container: ViewStyle;
+    };
+    attachmentUploadIndicator: {
+      indicator: ViewStyle;
+      overlay: ViewStyle;
+      overlayContent: ViewStyle;
     };
     gallery: {
       galleryContainer: ViewStyle;
@@ -724,15 +752,7 @@ export type Theme = {
     messageGroupedTopContainer: ViewStyle;
     messageBlocked: {
       container: ViewStyle;
-      line: ViewStyle;
       text: TextStyle;
-      textContainer: ViewStyle;
-    };
-    bubble: {
-      reactionListTopContainer: ViewStyle;
-      contentContainer: ViewStyle;
-      wrapper: ViewStyle;
-      errorContainer: ViewStyle;
     };
     pinnedHeader: {
       container: ViewStyle;
@@ -806,7 +826,6 @@ export type Theme = {
       container: ViewStyle;
       roundedView: ViewStyle;
     };
-    unreadUnderlayColor?: ColorValue;
     wrapper: ViewStyle;
   };
   poll: {
@@ -824,6 +843,7 @@ export type Theme = {
         container: ViewStyle;
         infoContainer: ViewStyle;
         userInfoContainer: ViewStyle;
+        wrapper: ViewStyle;
       };
     };
     button: { container: ViewStyle; text: TextStyle };
@@ -992,6 +1012,7 @@ export type Theme = {
     unreadBubbleWrapper: ViewStyle;
     messagePreview: {
       container: ViewStyle;
+      draftText: TextStyle;
       subtitle: TextStyle;
     };
     messagePreviewDeliveryStatus: {
@@ -1030,6 +1051,7 @@ export const defaultTheme: Theme = {
     bottomSheetContentContainer: {},
     durationText: {},
     content: {
+      actionContainer: {},
       container: {},
       infoContainer: {},
       text: {},
@@ -1076,6 +1098,9 @@ export const defaultTheme: Theme = {
     },
     presenceIndicatorContainer: {},
   },
+  avatarStack: {
+    userAvatarWrapper: {},
+  },
   bottomSheetModal: {
     container: {},
     contentContainer: {},
@@ -1096,7 +1121,7 @@ export const defaultTheme: Theme = {
   channelListLoadingIndicator: {
     container: {},
   },
-  channelListMessenger: {
+  channelListView: {
     flatList: {},
     flatListContent: {},
   },
@@ -1170,10 +1195,10 @@ export const defaultTheme: Theme = {
     wrapper: {},
     messagePreview: {
       container: {},
+      draftText: {},
       subtitle: {},
     },
   },
-  colors: Colors,
   dateHeader: {
     container: {},
     text: {},
@@ -1251,11 +1276,12 @@ export const defaultTheme: Theme = {
     container: {},
     loadingText: {},
   },
-  messageInput: {
+  messageComposer: {
     attachButton: {},
     attachButtonContainer: {},
     attachmentSelectionBar: {},
     attachmentUploadPreviewList: {
+      audioAttachmentsContainer: {},
       flatList: {},
       itemSeparator: {},
     },
@@ -1415,6 +1441,7 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
+    systemMessageContainer: {},
     container: {},
     contentContainer: {},
     errorNotification: {},
@@ -1448,6 +1475,19 @@ export const defaultTheme: Theme = {
       rightButtonContainer: {},
     },
     unreadMessagesNotificationContainer: {},
+  },
+  notification: {
+    actionButton: {},
+    actionButtonText: {},
+    actionsContainer: {},
+    closeButton: {},
+    container: {},
+    contentContainer: {},
+    iconContainer: {},
+    message: {},
+  },
+  notificationList: {
+    container: {},
   },
   messageMenu: {
     actionList: {
@@ -1489,13 +1529,18 @@ export const defaultTheme: Theme = {
   messagePreview: {
     message: {},
   },
-  messageSimple: {
+  messageItemView: {
+    blockedMessageContainer: {},
+    bubbleContentContainer: {},
+    bubbleErrorContainer: {},
+    bubbleReactionListTopContainer: {},
+    bubbleWrapper: {},
     actions: {
       button: {},
       buttonText: {},
       container: {},
     },
-    avatarWrapper: {
+    authorWrapper: {
       container: {},
       spacer: {
         height: BASE_AVATAR_SIZE,
@@ -1559,7 +1604,6 @@ export const defaultTheme: Theme = {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
       timestampText: {},
-      wrapper: {},
     },
     deleted: {
       containerInner: {},
@@ -1594,6 +1638,11 @@ export const defaultTheme: Theme = {
     fileAttachmentGroup: {
       attachmentContainer: {},
       container: {},
+    },
+    attachmentUploadIndicator: {
+      indicator: {},
+      overlay: {},
+      overlayContent: {},
     },
     gallery: {
       galleryContainer: {},
@@ -1632,15 +1681,7 @@ export const defaultTheme: Theme = {
     },
     messageBlocked: {
       container: {},
-      line: {},
       text: {},
-      textContainer: {},
-    },
-    bubble: {
-      reactionListTopContainer: {},
-      contentContainer: {},
-      wrapper: {},
-      errorContainer: {},
     },
     messageGroupedSingleOrBottomContainer: {},
     messageGroupedTopContainer: {},
@@ -1733,6 +1774,7 @@ export const defaultTheme: Theme = {
         container: {},
         infoContainer: {},
         userInfoContainer: {},
+        wrapper: {},
       },
     },
     button: { container: {}, text: {} },
@@ -1898,6 +1940,7 @@ export const defaultTheme: Theme = {
     messageRepliesText: {},
     messagePreview: {
       container: {},
+      draftText: {},
       subtitle: {},
     },
     messagePreviewDeliveryStatus: {

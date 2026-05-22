@@ -1,13 +1,18 @@
-import { useChatContext } from 'stream-chat-react-native';
-import { useAppOverlayContext } from '../context/AppOverlayContext';
-import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
-import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 import { Alert } from 'react-native';
+import { useChatContext } from 'stream-chat-react-native';
 
-export const useUserInfoOverlayActions = () => {
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
+
+import type { ConfirmationData } from '../components/ConfirmationBottomSheet';
+
+type UseUserInfoOverlayActionsParams = {
+  showConfirmation: (data: ConfirmationData) => void;
+};
+
+export const useUserInfoOverlayActions = ({ showConfirmation }: UseUserInfoOverlayActionsParams) => {
   const { client } = useChatContext();
   const { setOverlay } = useAppOverlayContext();
-  const { setData } = useBottomSheetOverlayContext();
   const { data } = useUserInfoOverlayContext();
   const { channel, member, navigation } = data ?? {};
 
@@ -18,7 +23,6 @@ export const useUserInfoOverlayActions = () => {
 
     const members = [client.user.id, member.user?.id || ''];
 
-    // Check if the channel already exists.
     const channels = await client.queryChannels({
       members,
     });
@@ -53,7 +57,6 @@ export const useUserInfoOverlayActions = () => {
 
     const members = [client.user.id, member.user?.id || ''];
 
-    // Check if the channel already exists.
     const channels = await client.queryChannels({
       members,
     });
@@ -78,7 +81,7 @@ export const useUserInfoOverlayActions = () => {
     if (!channel || !member) {
       return;
     }
-    setData({
+    showConfirmation({
       confirmText: 'REMOVE',
       onConfirm: () => {
         if (member.user?.id) {
@@ -89,7 +92,6 @@ export const useUserInfoOverlayActions = () => {
       subtext: `Are you sure you want to remove User from ${channel?.data?.name || 'group'}?`,
       title: 'Remove User',
     });
-    setOverlay('confirmation');
   };
 
   const cancel = () => {

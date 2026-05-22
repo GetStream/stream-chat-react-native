@@ -4,9 +4,9 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { ChevronTop } from '../../../../icons/ChevronTop';
-import { Lock } from '../../../../icons/Lock';
-import { Unlock } from '../../../../icons/Unlock';
+import { ChevronUp } from '../../../../icons/chevron-up';
+import { Lock } from '../../../../icons/lock';
+import { Unlock } from '../../../../icons/unlock';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 
@@ -48,7 +48,7 @@ export const AudioRecordingLockIndicator = ({
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         audioRecordingLockIndicator: { arrowUpIcon, container, lockIcon },
       },
     },
@@ -69,7 +69,7 @@ export const AudioRecordingLockIndicator = ({
         <Unlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
       )}
       {!micLocked && (
-        <ChevronTop stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
+        <ChevronUp stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
       )}
     </Animated.View>
   );
@@ -77,16 +77,13 @@ export const AudioRecordingLockIndicator = ({
 
 const useStyles = () => {
   const {
-    theme: {
-      colors: { white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   return useMemo(
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: white,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderColor: semantics.borderCoreDefault,
           borderWidth: 1,
           borderRadius: primitives.radiusMax,
@@ -105,6 +102,6 @@ const useStyles = () => {
           elevation: 5,
         },
       }),
-    [white, semantics.borderCoreDefault],
+    [semantics.borderCoreDefault, semantics.backgroundCoreElevation1],
   );
 };

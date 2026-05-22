@@ -49,11 +49,17 @@ export const ReactionButton = (props: ReactionButtonProps) => {
     () => <Icon size={reactionIconSize ?? 24} />,
     [Icon, reactionIconSize],
   );
+  const selectedLabelState = selected ? 'selected' : 'unselected';
+  const accessibilityLabelParams = useMemo(
+    () => ({ selected: selectedLabelState, type }),
+    [selectedLabelState, type],
+  );
 
   return (
     <View style={styles.reactionButton}>
       <Button
-        accessibilityLabel={`reaction-button-${type}-${selected ? 'selected' : 'unselected'}`}
+        accessibilityLabelKey='a11y/reaction-button-{{type}}-{{selected}}'
+        accessibilityLabelParams={accessibilityLabelParams}
         variant={'secondary'}
         type={'outline'}
         iconOnly={!count}

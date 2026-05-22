@@ -9,8 +9,9 @@ import { LinkPreviewsManager } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentPreview/AttachmentRemoveControl';
 
-import { useChatContext, useMessageComposer, useTheme } from '../../../contexts';
-import { Link } from '../../../icons/Link';
+import { useMessageComposer, useTheme } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { Link } from '../../../icons/link';
 import { components, primitives } from '../../../theme';
 import { useLinkPreviews } from '../hooks/useLinkPreviews';
 
@@ -38,7 +39,7 @@ type LinkPreviewProps = {
 
 export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
   const styles = useStyles();
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
   const { linkPreviewsManager } = useMessageComposer();
   const { image_url, thumb_url, title, text, og_scrape_url } = linkPreview;
 
@@ -97,7 +98,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: { linkPreviewList },
+      messageComposer: { linkPreviewList },
     },
   } = useTheme();
 

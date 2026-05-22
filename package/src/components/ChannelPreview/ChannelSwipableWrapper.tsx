@@ -1,27 +1,26 @@
 import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { SharedValue } from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 
-import { Channel } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
-import { ChannelDetailsBottomSheet as DefaultChannelDetailsBottomSheet } from './ChannelDetailsBottomSheet';
-import type { ChannelDetailsBottomSheetProps } from './ChannelDetailsBottomSheet';
+import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
-import { useTheme } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { Archive, MenuPointHorizontal, Mute } from '../../icons';
-import { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { MenuPointHorizontal, Mute, Sound } from '../../icons';
+import type { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
-import { useChannelActionItemsById } from '../ChannelList/hooks/useChannelActionItemsById';
-import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
+import { useChannelActions } from '../ChannelList/hooks/useChannelActions';
+import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {
-  BottomSheetModal,
   RightActions,
   SwipableActionItem,
   SwipableWrapper,
   SwipableWrapperProps,
-} from '../UIComponents';
+} from '../UIComponents/SwipableWrapper';
 
 export const OpenChannelDetailsButton = () => {
   const {
@@ -33,18 +32,21 @@ export const OpenChannelDetailsButton = () => {
 export const ChannelSwipableWrapper = ({
   channel,
   getChannelActionItems,
-  ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent = DefaultChannelDetailsBottomSheet,
   swipableProps: _swipableProps,
   children,
 }: PropsWithChildren<{
   channel: Channel;
-  ChannelDetailsBottomSheet?: React.ComponentType<ChannelDetailsBottomSheetProps>;
   getChannelActionItems?: GetChannelActionItems;
   swipableProps?: SwipableWrapperProps['swipableProps'];
 }>) => {
+  const { ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent } = useComponentsContext();
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
-  const channelActionsById = useChannelActionItemsById({ channel, getChannelActionItems });
+  const { muteChannel, unmuteChannel } = useChannelActions(channel);
   const channelActionItems = useChannelActionItems({ channel, getChannelActionItems });
+  const sheetItems = useMemo(
+    () => channelActionItems.filter((item) => item.placement !== 'swipe'),
+    [channelActionItems],
+  );
   const swipableRegistry = useSwipeRegistryContext();
 
   const {
@@ -52,16 +54,17 @@ export const ChannelSwipableWrapper = ({
   } = useTheme();
   const styles = useStyles();
 
-  const isDirectChannel = useIsDirectChat(channel);
+  const channelMuteState = useIsChannelMuted(channel);
+  const channelMuteActive = channelMuteState.muted;
 
   const Icon = useCallback(
     () =>
-      isDirectChannel ? (
-        <Mute width={20} height={20} fill={semantics.textOnAccent} />
+      channelMuteActive ? (
+        <Sound width={20} height={20} stroke={semantics.textOnAccent} />
       ) : (
-        <Archive width={20} height={20} stroke={semantics.textOnAccent} />
+        <Mute width={20} height={20} fill={semantics.textOnAccent} />
       ),
-    [isDirectChannel, semantics.textOnAccent],
+    [channelMuteActive, semantics.textOnAccent],
   );
 
   const swipableActions = useMemo<SwipableActionItem[]>(() => {
@@ -74,29 +77,25 @@ export const ChannelSwipableWrapper = ({
       },
     ];
 
-    const extraItem = isDirectChannel ? channelActionsById.mute : channelActionsById.archive;
-
-    if (extraItem) {
-      const { id, action } = extraItem;
-      items.push({
-        id,
-        action: () => {
-          action();
-          swipableRegistry?.closeAll();
-        },
-        Content: Icon,
-        contentContainerStyle: [styles.contentContainerStyle, styles.standard],
-      });
-    }
+    items.push({
+      id: 'mute',
+      action: () => {
+        const action = channelMuteActive ? unmuteChannel : muteChannel;
+        action();
+        swipableRegistry?.closeAll();
+      },
+      Content: Icon,
+      contentContainerStyle: [styles.contentContainerStyle, styles.standard],
+    });
 
     return items;
   }, [
     styles.contentContainerStyle,
     styles.elipsis,
     styles.standard,
-    isDirectChannel,
-    channelActionsById.mute,
-    channelActionsById.archive,
+    channelMuteActive,
+    muteChannel,
+    unmuteChannel,
     Icon,
     swipableRegistry,
   ]);
@@ -119,11 +118,12 @@ export const ChannelSwipableWrapper = ({
         {children}
       </SwipableWrapper>
       <BottomSheetModal
+        enableDynamicSizing={true}
         onClose={() => setChannelDetailSheetOpen(false)}
         visible={channelDetailSheetOpen}
-        height={356}
+        height={424}
       >
-        <ChannelDetailsBottomSheetComponent channel={channel} items={channelActionItems} />
+        <ChannelDetailsBottomSheetComponent channel={channel} items={sheetItems} />
       </BottomSheetModal>
     </>
   );
@@ -142,12 +142,12 @@ const useStyles = () => {
           justifyContent: 'center',
         },
         elipsis: {
-          backgroundColor: semantics.backgroundCoreSurface,
+          backgroundColor: semantics.backgroundCoreSurfaceDefault,
         },
         standard: {
           backgroundColor: semantics.accentPrimary,
         },
       }),
-    [semantics.accentPrimary, semantics.backgroundCoreSurface],
+    [semantics.accentPrimary, semantics.backgroundCoreSurfaceDefault],
   );
 };

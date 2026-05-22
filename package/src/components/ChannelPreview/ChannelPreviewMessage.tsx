@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ChannelMessagePreview } from './ChannelMessagePreview';
-import { ChannelMessagePreviewDeliveryStatus } from './ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewProps } from './ChannelPreview';
 
-import { ChannelTypingIndicatorPreview } from './ChannelTypingIndicatorPreview';
 import { LastMessageType } from './hooks/useChannelPreviewData';
 
 import { useChannelPreviewDraftMessage } from './hooks/useChannelPreviewDraftMessage';
@@ -14,10 +11,11 @@ import { useChannelPreviewPollLabel } from './hooks/useChannelPreviewPollLabel';
 import { useChannelTypingState } from './hooks/useChannelTypingState';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { PollIcon } from '../../icons/PollIcon';
+import { PollIcon } from '../../icons/poll';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
@@ -28,6 +26,11 @@ export type ChannelPreviewMessageProps = Pick<ChannelPreviewProps, 'channel'> & 
 
 export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const { channel, lastMessage } = props;
+  const {
+    ChannelPreviewTypingIndicator,
+    ChannelPreviewMessageDeliveryStatus,
+    ChannelPreviewLastMessage,
+  } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -50,16 +53,17 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
 
   const isFailedMessage =
     lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
+  const showMessageDeliveryStatus = !isMessageDeleted;
 
   if (usersTyping.length > 0) {
-    return <ChannelTypingIndicatorPreview channel={channel} usersTyping={usersTyping} />;
+    return <ChannelPreviewTypingIndicator channel={channel} usersTyping={usersTyping} />;
   }
 
   if (draftMessage) {
     return (
       <View style={styles.container}>
         <Text style={styles.draftText}>{t('Draft')}:</Text>
-        <ChannelMessagePreview message={draftMessage} />
+        <ChannelPreviewLastMessage message={draftMessage} />
       </View>
     );
   }
@@ -77,7 +81,9 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <PollIcon height={16} width={16} stroke={semantics.textSecondary} />
-        <Text style={styles.subtitle}>{pollLabel}</Text>
+        <Text ellipsizeMode='tail' numberOfLines={1} style={styles.subtitle}>
+          {pollLabel}
+        </Text>
       </View>
     );
   }
@@ -94,15 +100,19 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (channel.data?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
-        <ChannelMessagePreviewDeliveryStatus channel={channel} message={lastMessage} />
-        <ChannelMessagePreview message={lastMessage} />
+        {showMessageDeliveryStatus ? (
+          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
+        ) : null}
+        <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
-        <ChannelMessagePreviewDeliveryStatus channel={channel} message={lastMessage} />
-        <ChannelMessagePreview message={lastMessage} />
+        {showMessageDeliveryStatus ? (
+          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
+        ) : null}
+        <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
   }

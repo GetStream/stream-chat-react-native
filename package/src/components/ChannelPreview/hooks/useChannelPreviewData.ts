@@ -23,7 +23,7 @@ export const useChannelPreviewData = (
 ) => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [lastMessage, setLastMessageInner] = useState<LastMessageType>(
-    () => channel.state.messages[channel.state.messages.length - 1],
+    () => channel.state.latestMessages[channel.state.latestMessages.length - 1],
   );
   const throttledSetLastMessage = useMemo(
     () =>
@@ -42,7 +42,7 @@ export const useChannelPreviewData = (
   const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
 
-  const channelLastMessage = channel.lastMessage();
+  const channelLastMessage = channel.state.latestMessages[channel.state.latestMessages.length - 1];
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   const refreshUnreadCount = useMemo(

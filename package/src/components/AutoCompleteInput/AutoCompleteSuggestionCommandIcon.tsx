@@ -5,8 +5,8 @@ import { CommandVariants } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Mute, Sound, UserAdd, UserDelete } from '../../icons';
-import { Imgur } from '../../icons/Imgur';
-import { Lightning } from '../../icons/Lightning';
+import { Lightning } from '../../icons/bolt';
+import { Imgur } from '../../icons/imgur';
 
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
@@ -35,7 +35,7 @@ export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
 export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: {
           command: { iconContainer },
         },

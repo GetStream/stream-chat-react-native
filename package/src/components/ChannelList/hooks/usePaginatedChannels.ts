@@ -24,7 +24,7 @@ type Parameters = {
 
 const RETRY_INTERVAL_IN_MS = 5000;
 
-type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
+type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels' | 'backgroundRefresh';
 
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
@@ -53,6 +53,7 @@ export const usePaginatedChannels = ({
   const hasNextPage = pagination?.hasNext;
 
   const filtersRef = useRef<typeof filters | null>(null);
+  const optionsRef = useRef<typeof options | null>(null);
   const sortRef = useRef<typeof sort | null>(null);
   const activeRequestId = useRef<number>(0);
   const isQueryingRef = useRef(false);
@@ -68,10 +69,10 @@ export const usePaginatedChannels = ({
     const hasUpdatedData =
       queryType === 'loadChannels' ||
       queryType === 'refresh' ||
-      [
-        JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
-        JSON.stringify(sortRef.current) !== JSON.stringify(sort),
-      ].some(Boolean);
+      queryType === 'backgroundRefresh' ||
+      JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
+      JSON.stringify(optionsRef.current) !== JSON.stringify(options) ||
+      JSON.stringify(sortRef.current) !== JSON.stringify(sort);
 
     const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
 
@@ -86,6 +87,7 @@ export const usePaginatedChannels = ({
     }
 
     filtersRef.current = filters;
+    optionsRef.current = options;
     sortRef.current = sort;
     isQueryingRef.current = true;
     activeRequestId.current++;
@@ -129,7 +131,7 @@ export const usePaginatedChannels = ({
     setActiveQueryType(null);
   };
 
-  const refreshList = async () => {
+  const refreshList = async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
     const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
     if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
@@ -137,7 +139,7 @@ export const usePaginatedChannels = ({
     }
 
     lastRefresh.current = Date.now();
-    await queryChannels('refresh');
+    await queryChannels(isBackground ? 'backgroundRefresh' : 'refresh');
   };
 
   const reloadList = async () => {
@@ -145,7 +147,7 @@ export const usePaginatedChannels = ({
   };
 
   /**
-   * Equality check using stringified filters/sort ensure that we don't make un-necessary queryChannels api calls
+   * Equality check using stringified filters/options/sort ensure that we don't make un-necessary queryChannels api calls
    * for the scenario:
    *
    * <ChannelList
@@ -160,6 +162,7 @@ export const usePaginatedChannels = ({
    * in return will trigger useEffect. To avoid this, we can add a value check.
    */
   const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
+  const optionsStr = useMemo(() => JSON.stringify(options), [options]);
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
@@ -167,7 +170,9 @@ export const usePaginatedChannels = ({
       'connection.changed',
       async (event) => {
         if (event.online) {
-          await refreshList();
+          // Reconnection refreshes should stay silent, but still share the same debounce
+          // path as pull-to-refresh.
+          await refreshList({ isBackground: true });
         }
       },
     );
@@ -175,7 +180,7 @@ export const usePaginatedChannels = ({
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStr, sortStr, channelManager]);
+  }, [filterStr, optionsStr, sortStr, channelManager]);
 
   return {
     channelListInitialized,
@@ -195,7 +200,7 @@ export const usePaginatedChannels = ({
     loadingNextPage: pagination?.isLoadingNext,
     loadNextPage: channelManager.loadNext,
     refreshing: activeQueryType === 'refresh',
-    refreshList,
+    refreshList: () => refreshList(),
     reloadList,
     staticChannelsActive,
   };

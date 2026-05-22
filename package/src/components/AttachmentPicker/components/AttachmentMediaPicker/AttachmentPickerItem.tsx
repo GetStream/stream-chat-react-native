@@ -1,19 +1,21 @@
 import React from 'react';
 
-import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
 
-import { isIosLimited, PhotoContentItemType } from './AttachmentMediaPicker';
+import { isIosLimited, type PhotoContentItemType } from './shared';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useAttachmentPickerContext } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../../hooks/useViewport';
-import { Plus } from '../../../../icons/Plus';
+import { Plus } from '../../../../icons/plus';
 import { NativeHandlers } from '../../../../native';
 import { primitives } from '../../../../theme';
 import type { File } from '../../../../types/types';
@@ -26,8 +28,8 @@ type AttachmentPickerItemType = {
 
 const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { asset } = props;
-  const { numberOfAttachmentPickerImageColumns, ImageOverlaySelectedComponent } =
-    useAttachmentPickerContext();
+  const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { ImageOverlaySelectedComponent } = useComponentsContext();
   const { vw } = useViewport();
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
@@ -51,9 +53,11 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { duration: videoDuration, thumb_url } = asset;
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const selected = selectedIndex !== -1;
+  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect video' : 'a11y/Select video');
 
   const onPressVideo = async () => {
-    if (selectedIndex !== -1) {
+    if (selected) {
       const attachment = attachments[selectedIndex];
       if (attachment) {
         attachmentManager.removeAttachments([attachment.localMetadata.id]);
@@ -68,31 +72,34 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   };
 
   return (
-    <BottomSheetTouchableOpacity onPress={onPressVideo}>
-      <ImageBackground
-        source={{ uri: thumb_url }}
-        style={[
-          {
-            height: size,
-            margin: 1,
-            width: size,
-          },
-          image,
-        ]}
-      >
-        <View style={[styles.overlay, imageOverlay]}>
-          <ImageOverlaySelectedComponent index={selectedIndex} />
-        </View>
-        <VideoAttachmentMetadataPill duration={videoDuration} format='timer' />
-      </ImageBackground>
+    <BottomSheetTouchableOpacity
+      accessible={accessibilityLabel ? true : undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityLabel ? 'button' : undefined}
+      accessibilityState={accessibilityLabel ? { selected } : undefined}
+      onPress={onPressVideo}
+      style={[
+        {
+          height: size,
+          margin: 1,
+          width: size,
+        },
+        image,
+      ]}
+    >
+      <Image source={{ uri: thumb_url }} style={StyleSheet.absoluteFill} />
+      <View style={[styles.overlay, imageOverlay]}>
+        <ImageOverlaySelectedComponent index={selectedIndex} />
+      </View>
+      <VideoAttachmentMetadataPill duration={videoDuration} format='timer' />
     </BottomSheetTouchableOpacity>
   );
 };
 
 const AttachmentImage = (props: AttachmentPickerItemType) => {
   const { asset } = props;
-  const { numberOfAttachmentPickerImageColumns, ImageOverlaySelectedComponent } =
-    useAttachmentPickerContext();
+  const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { ImageOverlaySelectedComponent } = useComponentsContext();
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },
@@ -100,6 +107,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   } = useTheme();
   const styles = useStyles();
   const { vw } = useViewport();
+  const { t } = useTranslationContext();
   const { uploadNewFile } = useMessageInputContext();
   const messageComposer = useMessageComposer();
   const { attachmentManager } = messageComposer;
@@ -109,18 +117,20 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   );
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const selected = selectedIndex !== -1;
+  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect image' : 'a11y/Select image');
 
   const { uri } = asset;
 
   const onPressImage = async () => {
-    if (selectedIndex !== -1) {
+    if (selected) {
       const attachment = attachments[selectedIndex];
       if (attachment) {
         await attachmentManager.removeAttachments([attachment.localMetadata.id]);
       }
     } else {
       if (!availableUploadSlots) {
-        Alert.alert('Maximum number of files reached');
+        Alert.alert(t('Maximum number of files reached'));
         return;
       }
       await uploadNewFile(asset);
@@ -128,22 +138,25 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   };
 
   return (
-    <BottomSheetTouchableOpacity onPress={onPressImage}>
-      <ImageBackground
-        source={{ uri }}
-        style={[
-          {
-            height: size,
-            margin: 1,
-            width: size,
-          },
-          image,
-        ]}
-      >
-        <View style={[styles.overlay, imageOverlay]}>
-          <ImageOverlaySelectedComponent index={selectedIndex} />
-        </View>
-      </ImageBackground>
+    <BottomSheetTouchableOpacity
+      accessible={accessibilityLabel ? true : undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityLabel ? 'button' : undefined}
+      accessibilityState={accessibilityLabel ? { selected } : undefined}
+      onPress={onPressImage}
+      style={[
+        {
+          height: size,
+          margin: 1,
+          width: size,
+        },
+        image,
+      ]}
+    >
+      <Image source={{ uri }} style={StyleSheet.absoluteFill} />
+      <View style={[styles.overlay, imageOverlay]}>
+        <ImageOverlaySelectedComponent index={selectedIndex} />
+      </View>
     </BottomSheetTouchableOpacity>
   );
 };
@@ -151,6 +164,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
 const AttachmentIosLimited = () => {
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { vw } = useViewport();
+  const { t } = useTranslationContext();
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const styles = useStyles();
   return (
@@ -165,7 +179,7 @@ const AttachmentIosLimited = () => {
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
     >
       <Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
-      <Text style={styles.iosLimitedText}>Add more</Text>
+      <Text style={styles.iosLimitedText}>{t('Add more')}</Text>
     </BottomSheetTouchableOpacity>
   );
 };
@@ -180,7 +194,7 @@ export const renderAttachmentPickerItem = ({ item }: { item: PhotoContentItemTyp
    * Native iOS - Gives `image` or `video`
    * Expo Android/iOS - Gives `photo` or `video`
    **/
-  const isVideoType = item.type.includes('video');
+  const isVideoType = item.type?.includes('video');
 
   if (isVideoType) {
     return <AttachmentVideo asset={item} />;

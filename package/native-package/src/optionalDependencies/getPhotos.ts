@@ -1,7 +1,11 @@
 import { PermissionsAndroid, Platform } from 'react-native';
+
 import mime from 'mime';
 
 import type { File } from 'stream-chat-react-native-core';
+
+import { generateThumbnails } from './generateThumbnail';
+import { getLocalAssetUri } from './getLocalAssetUri';
 
 let CameraRollDependency;
 
@@ -13,8 +17,6 @@ try {
     '@react-native-camera-roll/camera-roll is not installed. Please install it or you can choose to install react-native-image-picker for native image picker.',
   );
 }
-
-import { getLocalAssetUri } from './getLocalAssetUri';
 
 type ReturnType = {
   assets: File[];
@@ -88,29 +90,46 @@ export const getPhotos = CameraRollDependency
           first,
           include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
         });
-        const assets = await Promise.all(
+        const assetEntries = await Promise.all(
           results.edges.map(async (edge) => {
             const originalUri = edge.node?.image?.uri;
             const type =
-              Platform.OS === 'ios'
-                ? mime.getType(edge.node.image.filename as string)
-                : edge.node.type;
+              (Platform.OS === 'ios'
+                ? mime.getType(edge.node.image.filename as string) || edge.node.type
+                : edge.node.type) ||
+              mime.getType(edge.node.image.filename as string) ||
+              mime.getType(originalUri) ||
+              (edge.node.image.playableDuration ? 'video/*' : 'image/*');
             const isImage = type.includes('image');
 
-            const uri =
-              isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri;
-
             return {
-              ...edge.node.image,
-              name: edge.node.image.filename as string,
-              duration: edge.node.image.playableDuration * 1000,
-              thumb_url: isImage ? undefined : originalUri,
-              size: edge.node.image.fileSize as number,
+              edge,
+              isImage,
+              originalUri,
               type,
-              uri,
+              uri: isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri,
             };
           }),
         );
+        const videoUris = assetEntries
+          .filter(({ isImage, originalUri }) => !isImage && !!originalUri)
+          .map(({ originalUri }) => originalUri);
+        const videoThumbnailResults = await generateThumbnails(videoUris);
+
+        const assets = assetEntries.map(({ edge, isImage, originalUri, type, uri }) => {
+          const thumbnailResult =
+            !isImage && originalUri ? videoThumbnailResults[originalUri] : undefined;
+
+          return {
+            ...edge.node.image,
+            name: edge.node.image.filename as string,
+            duration: edge.node.image.playableDuration * 1000,
+            thumb_url: thumbnailResult?.uri || undefined,
+            size: edge.node.image.fileSize as number,
+            type,
+            uri,
+          };
+        });
         const hasNextPage = results.page_info.has_next_page;
         const endCursor = results.page_info.end_cursor;
         return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };

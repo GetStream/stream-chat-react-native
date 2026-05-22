@@ -27,7 +27,7 @@ beforeEach(async () => {
 
 const messages = new Array(10)
   .fill(undefined)
-  .map((_: undefined, id: number) => generateMessage({ id }));
+  .map((_: undefined, id: number) => generateMessage({ id: String(id) }));
 
 const Providers: FC<{ children: React.ReactNode }> = ({ children }) => {
   const messageListContext = useCreatePaginatedMessageListContext({
@@ -57,7 +57,7 @@ describe('useMessageList', () => {
         useMessageList({
           noGroupByUser: true,
           threadList: false,
-        }),
+        } as unknown as Parameters<typeof useMessageList>[0]),
       { wrapper: Providers },
     );
     const reversedMessages = messages.reverse();

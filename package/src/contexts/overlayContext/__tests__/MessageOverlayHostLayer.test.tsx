@@ -13,7 +13,8 @@ import {
   setOverlayMessageH,
   setOverlayTopH,
 } from '../../../state-store';
-import { MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
+import { WithComponents } from '../../componentsContext/ComponentsContext';
+import { MessageActionsProps, MessageOverlayHostLayer } from '../MessageOverlayHostLayer';
 
 jest.mock('react-native', () => {
   const actual = jest.requireActual('react-native');
@@ -35,9 +36,9 @@ jest.mock('react-native-reanimated', () => {
   const { View } = require('react-native');
 
   const useStableSharedValue = (init: unknown) => {
-    const ref = React.useRef<{
+    const ref = React.useRef(null) as React.MutableRefObject<{
       value: unknown;
-    }>();
+    } | null>;
 
     if (!ref.current) {
       const value = { value: init };
@@ -75,6 +76,12 @@ jest.mock('react-native-reanimated', () => {
     },
     clamp: (value: number, min: number, max: number) => Math.min(Math.max(value, min), max),
     runOnJS: (fn: (...args: unknown[]) => unknown) => fn,
+    useAnimatedReaction: (
+      prepare: () => unknown,
+      react: (current: unknown, previous: unknown) => void,
+    ) => {
+      react(prepare(), undefined);
+    },
     useAnimatedStyle: (updater: () => unknown) => updater(),
     useDerivedValue: (updater: () => unknown) => ({ value: updater() }),
     useSharedValue: useStableSharedValue,
@@ -86,6 +93,18 @@ const TOP_RECT = { h: 20, w: 90, x: 5, y: 0 };
 const MESSAGE_RECT = { h: 50, w: 180, x: 10, y: 0 };
 const BOTTOM_RECT = { h: 30, w: 140, x: 20, y: 100 };
 const NoopBackground = () => null;
+const CustomMessageActions = ({
+  bottomItemStyle,
+  hostStyle,
+  topItemStyle,
+}: MessageActionsProps) => (
+  <>
+    <Text testID='custom-message-actions'>Custom</Text>
+    <Text style={topItemStyle} testID='custom-message-actions-top' />
+    <Text style={hostStyle} testID='custom-message-actions-message' />
+    <Text style={bottomItemStyle} testID='custom-message-actions-bottom' />
+  </>
+);
 
 const flushAnimationFrameQueue = () => {
   act(() => {
@@ -111,6 +130,7 @@ describe('MessageOverlayHostLayer', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
   });
@@ -124,6 +144,7 @@ describe('MessageOverlayHostLayer', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
 
@@ -134,7 +155,11 @@ describe('MessageOverlayHostLayer', () => {
 
   it('renders the custom background only while active and pressing the backdrop starts closing', () => {
     const CustomBackground = () => <Text testID='custom-background'>Background</Text>;
-    render(<MessageOverlayHostLayer BackgroundComponent={CustomBackground} />);
+    render(
+      <WithComponents overrides={{ MessageOverlayBackground: CustomBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>,
+    );
 
     expect(screen.queryByTestId('custom-background')).toBeNull();
     expect(screen.queryByTestId('message-overlay-backdrop')).toBeNull();
@@ -153,7 +178,12 @@ describe('MessageOverlayHostLayer', () => {
   });
 
   it('positions and translates the top, message, and bottom hosts using the registered rects', () => {
-    const { rerender } = render(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    const renderTree = () => (
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
 
     act(() => {});
 
@@ -164,7 +194,7 @@ describe('MessageOverlayHostLayer', () => {
       openOverlay('message-1');
     });
 
-    rerender(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    rerender(renderTree());
 
     const topSlot = screen.getByTestId('message-overlay-top');
     const messageSlot = screen.getByTestId('message-overlay-message');
@@ -197,7 +227,12 @@ describe('MessageOverlayHostLayer', () => {
   });
 
   it('resets host geometry after finalizeCloseOverlay clears the registered rects', () => {
-    const { rerender } = render(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    const renderTree = () => (
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
 
     act(() => {});
 
@@ -208,7 +243,7 @@ describe('MessageOverlayHostLayer', () => {
       openOverlay('message-1');
     });
 
-    rerender(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    rerender(renderTree());
 
     expect(
       StyleSheet.flatten(screen.getByTestId('message-overlay-message').props.style),
@@ -221,7 +256,7 @@ describe('MessageOverlayHostLayer', () => {
       finalizeCloseOverlay();
     });
 
-    rerender(<MessageOverlayHostLayer BackgroundComponent={NoopBackground} />);
+    rerender(renderTree());
 
     expect(StyleSheet.flatten(screen.getByTestId('message-overlay-top').props.style)).toMatchObject(
       {
@@ -235,6 +270,52 @@ describe('MessageOverlayHostLayer', () => {
       StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
     ).toMatchObject({
       height: 0,
+    });
+  });
+
+  it('renders MessageActions override instead of the default host wrappers when provided', () => {
+    const renderTree = () => (
+      <WithComponents
+        overrides={{
+          MessageActions: CustomMessageActions,
+          MessageOverlayBackground: NoopBackground,
+        }}
+      >
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
+
+    act(() => {
+      setOverlayTopH(TOP_RECT);
+      setOverlayMessageH(MESSAGE_RECT);
+      setOverlayBottomH(BOTTOM_RECT);
+      openOverlay('message-1');
+    });
+
+    rerender(renderTree());
+
+    expect(screen.getByTestId('custom-message-actions')).toBeTruthy();
+    expect(screen.queryByTestId('message-overlay-top')).toBeNull();
+    expect(screen.queryByTestId('message-overlay-message')).toBeNull();
+    expect(screen.queryByTestId('message-overlay-bottom')).toBeNull();
+    expect(
+      StyleSheet.flatten(screen.getByTestId('custom-message-actions-top').props.style),
+    ).toMatchObject({
+      height: TOP_RECT.h,
+      width: TOP_RECT.w,
+    });
+    expect(
+      StyleSheet.flatten(screen.getByTestId('custom-message-actions-message').props.style),
+    ).toMatchObject({
+      height: MESSAGE_RECT.h,
+      width: MESSAGE_RECT.w,
+    });
+    expect(
+      StyleSheet.flatten(screen.getByTestId('custom-message-actions-bottom').props.style),
+    ).toMatchObject({
+      height: BOTTOM_RECT.h,
+      width: BOTTOM_RECT.w,
     });
   });
 });

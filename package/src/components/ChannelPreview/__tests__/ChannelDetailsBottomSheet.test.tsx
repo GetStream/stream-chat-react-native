@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import { Text } from 'react-native';
 
 import { render } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ThemeProvider, defaultTheme } from '../../../contexts';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import type { ChannelActionItem } from '../../ChannelList/hooks/useChannelActionItems';
+import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 import type { ChannelDetailsHeaderProps } from '../ChannelDetailsBottomSheet';
 import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';
 
-const mockStreamBottomSheetModalFlatList = jest.fn(() => null);
+type StreamBottomSheetModalFlatListProps = ComponentProps<typeof StreamBottomSheetModalFlatList>;
 
-jest.mock('../../UIComponents', () => ({
-  StreamBottomSheetModalFlatList: (...args: unknown[]) =>
+const mockStreamBottomSheetModalFlatList = jest.fn(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_props: StreamBottomSheetModalFlatListProps) => null,
+);
+
+jest.mock('../../UIComponents/StreamBottomSheetModalFlatList', () => ({
+  StreamBottomSheetModalFlatList: (...args: [StreamBottomSheetModalFlatListProps]) =>
     mockStreamBottomSheetModalFlatList(...args),
 }));
 
 describe('ChannelDetailsBottomSheet', () => {
-  const channel = { cid: 'messaging:test-channel', id: 'test-channel' } as Channel;
+  const channel = {
+    cid: 'messaging:test-channel',
+    id: 'test-channel',
+    state: { members: {} },
+  } as unknown as Channel;
 
   const items: ChannelActionItem[] = [
     {
@@ -41,11 +52,9 @@ describe('ChannelDetailsBottomSheet', () => {
 
     const { getByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <ChannelDetailsBottomSheet
-          channel={channel}
-          items={items}
-          ChannelDetailsHeader={CustomChannelDetailsHeader}
-        />
+        <WithComponents overrides={{ ChannelDetailsHeader: CustomChannelDetailsHeader }}>
+          <ChannelDetailsBottomSheet channel={channel} items={items} />
+        </WithComponents>
       </ThemeProvider>,
     );
 
@@ -59,17 +68,22 @@ describe('ChannelDetailsBottomSheet', () => {
 
     render(
       <ThemeProvider theme={defaultTheme}>
-        <ChannelDetailsBottomSheet
-          channel={channel}
-          items={items}
-          ChannelDetailsHeader={() => null}
-          additionalFlatListProps={{ onEndReached, testID: 'channel-details-list' }}
-        />
+        <WithComponents overrides={{ ChannelDetailsHeader: () => null }}>
+          <ChannelDetailsBottomSheet
+            channel={channel}
+            items={items}
+            additionalFlatListProps={{ onEndReached, testID: 'channel-details-list' }}
+          />
+        </WithComponents>
       </ThemeProvider>,
     );
 
     expect(mockStreamBottomSheetModalFlatList).toHaveBeenCalled();
-    const flatListProps = mockStreamBottomSheetModalFlatList.mock.calls[0]?.[0];
+    const flatListProps = (
+      mockStreamBottomSheetModalFlatList.mock.calls[0] as unknown as [
+        StreamBottomSheetModalFlatListProps,
+      ]
+    )?.[0];
     expect(flatListProps).toEqual(
       expect.objectContaining({
         onEndReached,

@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
+import type { AccessibilityConfig } from '../accessibilityContext/AccessibilityContext';
 import { ImageGalleryProviderProps } from '../imageGalleryContext/ImageGalleryContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -24,12 +25,14 @@ export const OverlayContext = React.createContext(
 );
 
 export type OverlayProviderProps = ImageGalleryProviderProps & {
+  /**
+   * Opt-in accessibility configuration. A11y is OFF by default — pass
+   * `accessibility={{ enabled: true }}` to enable screen-reader announcements,
+   * gesture alternatives, and semantic a11y attributes across the SDK.
+   */
+  accessibility?: AccessibilityConfig;
   /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
   i18nInstance?: Streami18n;
-  /**
-   * Custom backdrop component rendered behind overlay content in `MessageOverlayHostLayer`.
-   */
-  MessageOverlayBackground?: React.ComponentType;
   value?: Partial<OverlayContextValue>;
 };
 

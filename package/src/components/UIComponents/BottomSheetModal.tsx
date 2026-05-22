@@ -1,8 +1,16 @@
-import React, { PropsWithChildren, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   EventSubscription,
   Keyboard,
   KeyboardEvent,
+  LayoutChangeEvent,
   Modal,
   Platform,
   Pressable,
@@ -11,22 +19,29 @@ import {
   View,
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import type { KeyboardEventData } from 'react-native-keyboard-controller';
 import Animated, {
-  cancelAnimation,
   Easing,
   FadeIn,
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import {
+  getBottomSheetBaseHeight,
+  getBottomSheetSnapPointTranslateY,
+  getBottomSheetTopSnapIndex,
+} from './BottomSheetModal.utils';
+
+import { useResolvedModalAccessibilityProps } from '../../a11y/hooks/useResolvedModalAccessibilityProps';
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { primitives } from '../../theme';
 
 export type BottomSheetModalProps = {
   /**
@@ -43,6 +58,10 @@ export type BottomSheetModalProps = {
    */
   height?: number;
   /**
+   * Whether the sheet should wrap its content up to the provided `height`.
+   */
+  enableDynamicSizing?: boolean;
+  /**
    * Whether the sheet content should be lazy loaded or not. Particularly
    * useful when the content is something heavy and we don't want to disrupt
    * the animations while this is happening.
@@ -50,10 +69,17 @@ export type BottomSheetModalProps = {
   lazy?: boolean;
 };
 
-export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
+const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) => {
   const { height: windowHeight } = useWindowDimensions();
   const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
-  const { children, height = windowHeight / 2, onClose, visible, lazy = false } = props;
+  const {
+    children,
+    enableDynamicSizing = false,
+    height = windowHeight / 2,
+    onClose,
+    visible,
+    lazy = false,
+  } = props;
 
   const {
     theme: {
@@ -66,18 +92,38 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     0,
     windowHeight - topInset - (Platform.OS === 'android' ? bottomInset + 16 : 0),
   );
+  const fixedBaseHeight = Math.min(height, maxHeight);
 
-  const baseHeight = Math.min(height, maxHeight);
-  const snapPoints = useMemo(() => [baseHeight, maxHeight], [baseHeight, maxHeight]);
+  const contentHeight = useSharedValue<number | undefined>(undefined);
+  const baseHeight = useDerivedValue(
+    () =>
+      getBottomSheetBaseHeight({
+        contentHeight: contentHeight.value,
+        enableDynamicSizing,
+        height,
+        maxHeight,
+      }),
+    [contentHeight, enableDynamicSizing, height, maxHeight],
+  );
+  const topSnapIndex = useDerivedValue<number>(
+    () =>
+      getBottomSheetTopSnapIndex({
+        baseHeight: baseHeight.value,
+        maxHeight,
+      }),
+    [baseHeight, maxHeight],
+  );
 
-  const translateY = useSharedValue(maxHeight);
+  const sheetTranslateY = useSharedValue(maxHeight);
   const keyboardOffset = useSharedValue(0);
   const currentSnapIndex = useSharedValue(0);
 
   const isOpen = useSharedValue(false);
   const isOpening = useSharedValue(false);
 
-  const panStartY = useSharedValue(0);
+  const panStartTranslateY = useSharedValue(0);
+  const hasCommittedVisibilityRef = useRef(false);
+  const wasVisibleRef = useRef(false);
 
   const [renderContent, setRenderContent] = useState(!lazy);
 
@@ -87,35 +133,77 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     }
   });
 
-  const hideContent = useStableCallback(() => {
-    if (lazy) {
-      setRenderContent(false);
+  const handleDynamicContentLayout = useStableCallback((event: LayoutChangeEvent) => {
+    if (!enableDynamicSizing) {
+      return;
+    }
+
+    const nextContentHeight = Math.ceil(event.nativeEvent.layout.height);
+
+    if (contentHeight.value === nextContentHeight) {
+      return;
+    }
+
+    contentHeight.value = nextContentHeight;
+  });
+
+  const open = useStableCallback((shouldShowContentAfterOpen = true) => {
+    sheetTranslateY.value = withTiming(
+      maxHeight - fixedBaseHeight,
+      { duration: 250, easing: Easing.out(Easing.cubic) },
+      (finished) => {
+        if (!finished) return;
+
+        isOpening.value = false;
+
+        if (shouldShowContentAfterOpen) {
+          runOnJS(showContent)();
+        }
+      },
+    );
+  });
+
+  const finishClose = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
+    onClose();
+    if (closeAnimationFinishedCallback) {
+      Platform.OS === 'ios'
+        ? closeAnimationFinishedCallback()
+        : setTimeout(() => closeAnimationFinishedCallback(), 100);
     }
   });
 
+  const closeFromGesture = useStableCallback(() => {
+    requestAnimationFrame(() => {
+      isOpen.value = false;
+      isOpening.value = false;
+
+      sheetTranslateY.value = withTiming(
+        maxHeight,
+        { duration: 250, easing: Easing.out(Easing.cubic) },
+        (finished) => {
+          if (finished) {
+            runOnJS(onClose)();
+          }
+        },
+      );
+    });
+  });
+
   const close = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
-    // hide content immediately
-    hideContent();
+    if (!visible || !isOpen.value) {
+      return;
+    }
 
     isOpen.value = false;
     isOpening.value = false;
 
-    cancelAnimation(translateY);
-
-    const closeCallback = () => {
-      onClose();
-      if (closeAnimationFinishedCallback) {
-        Platform.OS === 'ios'
-          ? closeAnimationFinishedCallback()
-          : setTimeout(() => closeAnimationFinishedCallback(), 100);
-      }
-    };
-
-    translateY.value = withTiming(
+    sheetTranslateY.value = withTiming(
       maxHeight,
       { duration: 250, easing: Easing.out(Easing.cubic) },
       (finished) => {
-        if (finished) runOnJS(closeCallback)();
+        if (finished) {
+          runOnJS(finishClose)(closeAnimationFinishedCallback);
+        }
       },
     );
   });
@@ -123,58 +211,78 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
   // modal opening layout effect - we make sure to only show the content
   // after the animation has finished if `lazy` has been set to true
   useLayoutEffect(() => {
-    if (!visible) return;
+    const wasVisible = hasCommittedVisibilityRef.current ? wasVisibleRef.current : false;
+    hasCommittedVisibilityRef.current = true;
+    wasVisibleRef.current = visible;
+
+    if (!visible || wasVisible) {
+      return;
+    }
 
     isOpen.value = true;
     isOpening.value = true;
     currentSnapIndex.value = 0;
+    sheetTranslateY.value = maxHeight;
 
-    cancelAnimation(translateY);
+    if (enableDynamicSizing) {
+      setRenderContent(true);
+      return;
+    }
 
-    // start from closed
-    translateY.value = maxHeight;
-
-    // Snapshot current keyboard offset as the open target.
-    // If keyboard changes during opening, we’ll adjust after.
-    const initialTarget = keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
-
-    translateY.value = withTiming(
-      initialTarget,
-      { duration: 250, easing: Easing.out(Easing.cubic) },
-      (finished) => {
-        if (!finished) return;
-
-        // opening the modal has now truly finished
-        isOpening.value = false;
-
-        // reveal the content if we want to load it lazily
-        runOnJS(showContent)();
-
-        // if keyboard offset changed while we were opening, we do a
-        // follow-up adjustment (we do not gate the content however)
-        const latestTarget =
-          keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
-        if (latestTarget !== initialTarget && isOpen.value) {
-          cancelAnimation(translateY);
-          translateY.value = withTiming(latestTarget, {
-            duration: 250,
-            easing: Easing.inOut(Easing.ease),
-          });
-        }
-      },
-    );
+    open();
   }, [
+    enableDynamicSizing,
     visible,
-    hideContent,
     isOpen,
     isOpening,
-    keyboardOffset,
     maxHeight,
-    snapPoints,
-    showContent,
-    translateY,
+    open,
+    sheetTranslateY,
     currentSnapIndex,
   ]);
+
+  useAnimatedReaction(
+    () => {
+      if (
+        !visible ||
+        !enableDynamicSizing ||
+        !isOpening.value ||
+        contentHeight.value === undefined
+      ) {
+        return undefined;
+      }
+
+      return getBottomSheetSnapPointTranslateY({
+        baseHeight: baseHeight.value,
+        maxHeight,
+        snapIndex: 0,
+      });
+    },
+    (nextTranslateY, prevTranslateY) => {
+      if (nextTranslateY === undefined || nextTranslateY === prevTranslateY) {
+        return;
+      }
+
+      sheetTranslateY.value = withTiming(
+        nextTranslateY,
+        { duration: 250, easing: Easing.out(Easing.cubic) },
+        (finished) => {
+          if (finished) {
+            isOpening.value = false;
+          }
+        },
+      );
+    },
+    [
+      baseHeight,
+      contentHeight,
+      enableDynamicSizing,
+      isOpening,
+      maxHeight,
+      sheetTranslateY,
+      visible,
+    ],
+  );
 
   // if `visible` gets hard changed, we force a cleanup
   useEffect(() => {
@@ -184,37 +292,82 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
     isOpening.value = false;
     keyboardOffset.value = 0;
     currentSnapIndex.value = 0;
+    sheetTranslateY.value = maxHeight;
+    contentHeight.value = undefined;
+    setRenderContent(!lazy);
+  }, [
+    contentHeight,
+    visible,
+    lazy,
+    isOpen,
+    isOpening,
+    keyboardOffset,
+    maxHeight,
+    sheetTranslateY,
+    currentSnapIndex,
+  ]);
 
-    cancelAnimation(translateY);
-    translateY.value = maxHeight;
-  }, [visible, maxHeight, isOpen, isOpening, keyboardOffset, translateY, currentSnapIndex]);
+  // Keep the sheet aligned with the active snap if dimensions change while visible.
+  useAnimatedReaction(
+    () => {
+      if (!visible || !isOpen.value || isOpening.value) {
+        return undefined;
+      }
 
-  const keyboardDidShowRN = useStableCallback((event: KeyboardEvent) => {
-    const offset = -event.endCoordinates.height;
-    keyboardOffset.value = offset;
+      const clampedSnapIndex = Math.min(currentSnapIndex.value, topSnapIndex.value);
 
-    // We just record the offset, but we avoid cancelling the animation
-    // if it's in the process of opening. The same logic applies to all
-    // other keyboard related callbacks in this specific conditional.
-    if (!isOpen.value || isOpening.value) return;
+      return {
+        snapIndex: clampedSnapIndex,
+        translateY: getBottomSheetSnapPointTranslateY({
+          baseHeight: baseHeight.value,
+          maxHeight,
+          snapIndex: clampedSnapIndex,
+        }),
+      };
+    },
+    (nextTarget) => {
+      if (!nextTarget) {
+        return;
+      }
 
-    cancelAnimation(translateY);
-    translateY.value = withTiming(offset + (maxHeight - snapPoints[currentSnapIndex.value]), {
+      if (currentSnapIndex.value !== nextTarget.snapIndex) {
+        currentSnapIndex.value = nextTarget.snapIndex;
+      }
+
+      if (Math.abs(sheetTranslateY.value - nextTarget.translateY) < 1) {
+        return;
+      }
+
+      sheetTranslateY.value = withTiming(nextTarget.translateY, {
+        duration: 250,
+        easing: Easing.inOut(Easing.ease),
+      });
+    },
+    [
+      baseHeight,
+      currentSnapIndex,
+      isOpen,
+      isOpening,
+      maxHeight,
+      sheetTranslateY,
+      topSnapIndex,
+      visible,
+    ],
+  );
+
+  const animateKeyboardOffset = useStableCallback((offset: number) => {
+    keyboardOffset.value = withTiming(offset, {
       duration: 250,
       easing: Easing.inOut(Easing.ease),
     });
   });
 
+  const keyboardDidShowRN = useStableCallback((event: KeyboardEvent) => {
+    animateKeyboardOffset(event.endCoordinates.height);
+  });
+
   const keyboardDidHide = useStableCallback(() => {
-    keyboardOffset.value = 0;
-
-    if (!isOpen.value || isOpening.value) return;
-
-    cancelAnimation(translateY);
-    translateY.value = withTiming(maxHeight - snapPoints[currentSnapIndex.value], {
-      duration: 250,
-      easing: Easing.inOut(Easing.ease),
-    });
+    animateKeyboardOffset(0);
   });
 
   useEffect(() => {
@@ -222,190 +375,189 @@ export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>
 
     const listeners: EventSubscription[] = [];
 
-    if (KeyboardControllerPackage?.KeyboardEvents) {
-      const keyboardDidShowKC = (event: KeyboardEventData) => {
-        const offset = -event.height;
-        keyboardOffset.value = offset;
-
-        if (!isOpen.value || isOpening.value) return;
-
-        cancelAnimation(translateY);
-        translateY.value = withTiming(offset + (maxHeight - snapPoints[currentSnapIndex.value]), {
-          duration: 250,
-          easing: Easing.inOut(Easing.ease),
-        });
-      };
-
+    if (Platform.OS === 'ios') {
       listeners.push(
-        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidShow', keyboardDidShowKC),
-        KeyboardControllerPackage.KeyboardEvents.addListener('keyboardDidHide', keyboardDidHide),
+        Keyboard.addListener('keyboardWillShow', keyboardDidShowRN),
+        Keyboard.addListener('keyboardWillHide', keyboardDidHide),
       );
-    } else {
-      listeners.push(Keyboard.addListener('keyboardDidShow', keyboardDidShowRN));
-      listeners.push(Keyboard.addListener('keyboardDidHide', keyboardDidHide));
     }
 
     return () => listeners.forEach((l) => l.remove());
-  }, [
-    visible,
-    keyboardDidHide,
-    keyboardDidShowRN,
-    keyboardOffset,
-    isOpen,
-    isOpening,
-    translateY,
-    maxHeight,
-    snapPoints,
-    currentSnapIndex,
-  ]);
+  }, [visible, animateKeyboardOffset, keyboardDidHide, keyboardDidShowRN]);
 
-  const sheetAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-    paddingBottom: translateY.value,
+  const sheetViewportAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: sheetTranslateY.value - keyboardOffset.value }],
   }));
 
-  const backdropThreshold = baseHeight;
-
   const overlayAnimatedStyle = useAnimatedStyle(() => {
-    const visibleHeight = Math.max(0, maxHeight - (translateY.value - keyboardOffset.value));
-    const threshold = Math.max(1, Math.min(backdropThreshold, maxHeight));
+    const visibleHeight = Math.max(0, maxHeight - sheetTranslateY.value);
+    const threshold = Math.max(1, Math.min(baseHeight.value, maxHeight));
     const progress = Math.min(1, visibleHeight / threshold);
     return { opacity: progress };
-  });
-
-  const snapPointsTranslateY = useMemo(
-    () => snapPoints.map((point) => maxHeight - point),
-    [maxHeight, snapPoints],
-  );
+  }, [baseHeight, maxHeight]);
 
   const panGesture = useMemo(
     () =>
       Gesture.Pan()
-        // disable pan until content is rendered (prevents canceling the opening timing).
         .enabled(renderContent)
         .onBegin(() => {
-          cancelAnimation(translateY);
-          panStartY.value = translateY.value;
+          panStartTranslateY.value = sheetTranslateY.value;
         })
         .onUpdate((event) => {
-          const minY = keyboardOffset.value + (maxHeight - snapPoints[snapPoints.length - 1]);
-          const next = panStartY.value + event.translationY;
-          translateY.value = Math.max(next, minY);
+          const nextTranslateY = panStartTranslateY.value + event.translationY;
+          sheetTranslateY.value = Math.min(Math.max(nextTranslateY, 0), maxHeight);
         })
         .onEnd((event) => {
-          const openY = keyboardOffset.value + (maxHeight - snapPoints[currentSnapIndex.value]);
-          const draggedDown = Math.max(translateY.value - openY, 0);
-          const topSnapIndex = snapPoints.length - 1;
-          const isAtTopSnap = currentSnapIndex.value === topSnapIndex;
-          const snap0Y = keyboardOffset.value + (maxHeight - snapPoints[0]);
-          const projectedY = translateY.value + event.velocityY * 0.2;
+          const openTranslateY = getBottomSheetSnapPointTranslateY({
+            baseHeight: baseHeight.value,
+            maxHeight,
+            snapIndex: currentSnapIndex.value,
+          });
+          const draggedDown = Math.max(sheetTranslateY.value - openTranslateY, 0);
+          const hasMultipleSnapPoints = topSnapIndex.value > 0;
+          const isAtTopSnap = currentSnapIndex.value === topSnapIndex.value;
+          const snap0TranslateY = getBottomSheetSnapPointTranslateY({
+            baseHeight: baseHeight.value,
+            maxHeight,
+            snapIndex: 0,
+          });
+          const topSnapTranslateY = getBottomSheetSnapPointTranslateY({
+            baseHeight: baseHeight.value,
+            maxHeight,
+            snapIndex: topSnapIndex.value,
+          });
+          const projectedTranslateY = sheetTranslateY.value + event.velocityY * 0.2;
 
-          // From lower snaps, keep the previous close behavior.
           const shouldCloseFromLowerSnap = event.velocityY > 500 || draggedDown > maxHeight / 2;
-          // From top snap, close only for clearly hard downward intent.
           const shouldCloseFromTopSnap =
-            event.velocityY > 2200 || projectedY > snap0Y + (maxHeight - snap0Y) * 0.96;
+            event.velocityY > 2200 ||
+            projectedTranslateY > snap0TranslateY + (maxHeight - snap0TranslateY) * 0.96;
 
-          const shouldClose = isAtTopSnap ? shouldCloseFromTopSnap : shouldCloseFromLowerSnap;
-
-          cancelAnimation(translateY);
+          const shouldClose = !hasMultipleSnapPoints
+            ? shouldCloseFromLowerSnap
+            : isAtTopSnap
+              ? shouldCloseFromTopSnap
+              : shouldCloseFromLowerSnap;
 
           if (shouldClose) {
-            isOpen.value = false;
-            isOpening.value = false;
-
-            translateY.value = withTiming(
-              maxHeight,
-              { duration: 250, easing: Easing.out(Easing.cubic) },
-              (finished) => {
-                if (finished) runOnJS(onClose)();
-              },
-            );
+            runOnJS(closeFromGesture)();
           } else {
             isOpen.value = true;
-            // snap to the nearest point
             let nearestIndex = 0;
-            let minDistance = Number.POSITIVE_INFINITY;
-            const baseOffset = keyboardOffset.value;
-            for (let i = 0; i < snapPointsTranslateY.length; i += 1) {
-              const candidate = baseOffset + snapPointsTranslateY[i];
-              const distance = Math.abs(translateY.value - candidate);
-              if (distance < minDistance) {
-                minDistance = distance;
-                nearestIndex = i;
+            let minDistance = Math.abs(sheetTranslateY.value - snap0TranslateY);
+
+            if (hasMultipleSnapPoints) {
+              const topDistance = Math.abs(sheetTranslateY.value - topSnapTranslateY);
+              if (topDistance < minDistance) {
+                minDistance = topDistance;
+                nearestIndex = topSnapIndex.value;
               }
             }
+
             // velocity-based snapping, fast upward swipe goes to top snap point
-            if (event.velocityY < -800) {
-              nearestIndex = snapPointsTranslateY.length - 1;
+            if (hasMultipleSnapPoints && event.velocityY < -800) {
+              nearestIndex = topSnapIndex.value;
             }
             // From top snap, a gentle downward flick should settle to snap 0
             // without requiring a large drag distance.
-            if (isAtTopSnap && event.velocityY > 120) {
+            if (hasMultipleSnapPoints && isAtTopSnap && event.velocityY > 120) {
               nearestIndex = 0;
             }
+
             currentSnapIndex.value = nearestIndex;
-            translateY.value = withTiming(baseOffset + snapPointsTranslateY[nearestIndex], {
-              duration: 250,
-              easing: Easing.inOut(Easing.ease),
-            });
+            sheetTranslateY.value = withTiming(
+              getBottomSheetSnapPointTranslateY({
+                baseHeight: baseHeight.value,
+                maxHeight,
+                snapIndex: nearestIndex,
+              }),
+              {
+                duration: 250,
+                easing: Easing.inOut(Easing.ease),
+              },
+            );
           }
         }),
     [
+      baseHeight,
       currentSnapIndex,
       isOpen,
-      isOpening,
-      keyboardOffset,
       maxHeight,
-      onClose,
-      panStartY,
+      closeFromGesture,
+      panStartTranslateY,
       renderContent,
-      snapPoints,
-      snapPointsTranslateY,
-      translateY,
+      sheetTranslateY,
+      topSnapIndex,
     ],
   );
 
   const onBackdropPress = useStableCallback(() => close());
 
+  const modalA11yProps = useResolvedModalAccessibilityProps();
+
   const bottomSheetModalContextValue = useMemo(
     () => ({
       close,
       currentSnapIndex,
+      topSnapIndex,
     }),
-    [close, currentSnapIndex],
+    [close, currentSnapIndex, topSnapIndex],
   );
 
   return (
     <Modal onRequestClose={onClose} transparent visible={visible}>
       <GestureHandlerRootView style={styles.sheetContentContainer}>
-        <GestureDetector gesture={panGesture}>
-          <View style={[styles.overlay, overlayTheme]}>
-            <Animated.View pointerEvents='none' style={[styles.backdrop, overlayAnimatedStyle]} />
-            <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFillObject} />
+        <View style={[styles.overlay, overlayTheme]}>
+          <Animated.View
+            pointerEvents='none'
+            style={[StyleSheet.absoluteFill, styles.backdrop, overlayAnimatedStyle]}
+          />
+          <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFill} />
 
-            <Animated.View
-              style={[styles.container, { height: maxHeight }, sheetAnimatedStyle, container]}
-            >
-              <View style={[styles.handle, handle]} />
-              <View style={[styles.contentContainer, contentContainer]}>
-                {renderContent ? (
-                  <BottomSheetProvider value={bottomSheetModalContextValue}>
-                    <Animated.View
-                      entering={FadeIn.duration(250)}
-                      style={styles.sheetContentContainer}
-                    >
-                      {children}
-                    </Animated.View>
-                  </BottomSheetProvider>
-                ) : null}
-              </View>
-            </Animated.View>
-          </View>
-        </GestureDetector>
+          <Animated.View
+            pointerEvents='box-none'
+            style={[{ height: maxHeight }, sheetViewportAnimatedStyle]}
+            {...modalA11yProps}
+          >
+            <GestureDetector gesture={panGesture}>
+              <Animated.View style={[styles.container, { height: maxHeight }, container]}>
+                <View style={[styles.handle, handle]} />
+                <View style={[styles.contentContainer, contentContainer]}>
+                  {renderContent ? (
+                    <BottomSheetProvider value={bottomSheetModalContextValue}>
+                      <Animated.View
+                        entering={FadeIn.duration(250)}
+                        style={styles.sheetContentContainer}
+                      >
+                        {enableDynamicSizing ? (
+                          <View
+                            onLayout={handleDynamicContentLayout}
+                            style={{ paddingBottom: bottomInset }}
+                          >
+                            {children}
+                          </View>
+                        ) : (
+                          children
+                        )}
+                      </Animated.View>
+                    </BottomSheetProvider>
+                  ) : null}
+                </View>
+              </Animated.View>
+            </GestureDetector>
+          </Animated.View>
+        </View>
       </GestureHandlerRootView>
     </Modal>
   );
+};
+
+export const BottomSheetModal = (props: PropsWithChildren<BottomSheetModalProps>) => {
+  if (!props.visible) {
+    return null;
+  }
+
+  return <BottomSheetModalInner {...props} />;
 };
 
 const useStyles = () => {
@@ -416,13 +568,12 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          borderTopLeftRadius: primitives.radius4xl,
+          borderTopRightRadius: primitives.radius4xl,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         contentContainer: {
           flex: 1,
-          marginTop: 8,
         },
         handle: {
           alignSelf: 'center',
@@ -437,13 +588,12 @@ const useStyles = () => {
           justifyContent: 'flex-end',
         },
         backdrop: {
-          ...StyleSheet.absoluteFillObject,
           backgroundColor: semantics.backgroundCoreScrim,
         },
         sheetContentContainer: {
           flex: 1,
         },
       }),
-    [semantics.backgroundCoreScrim, semantics.backgroundElevationElevation1],
+    [semantics.backgroundCoreScrim, semantics.backgroundCoreElevation1],
   );
 };

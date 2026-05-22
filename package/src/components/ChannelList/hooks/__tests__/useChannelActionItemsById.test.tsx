@@ -21,7 +21,7 @@ describe('useChannelActionItemsById', () => {
     const channelActionItems: useChannelActionItemsModule.ChannelActionItem[] = [
       {
         action: jest.fn(),
-        Icon: <></>,
+        Icon: () => <></>,
         id: 'pin',
         label: '',
         placement: 'both',
@@ -29,7 +29,7 @@ describe('useChannelActionItemsById', () => {
       },
       {
         action: jest.fn(),
-        Icon: <></>,
+        Icon: () => <></>,
         id: 'deleteChannel',
         label: '',
         placement: 'both',

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import { Spinner, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 import type { MessageResponse } from 'stream-chat';
 
@@ -72,10 +73,10 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
     } = props;
     const {
       theme: {
-        colors: { black, grey, white_snow },
         semantics,
       },
     } = useTheme();
+    const { black, grey, white_snow } = useLegacyColors();
     const { vw } = useViewport();
     const navigation =
       useNavigation<NavigationProp<StackNavigatorParamList, 'ChannelListScreen'>>();

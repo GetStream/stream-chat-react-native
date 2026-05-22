@@ -13,10 +13,29 @@ import {
 } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Checkmark } from '../../../icons/Checkmark';
-import { InfoTooltip } from '../../../icons/InfoTooltip';
+import { Checkmark } from '../../../icons/checkmark-1';
+import { InfoTooltip } from '../../../icons/info';
 import { primitives } from '../../../theme';
 import { IconRenderer } from '../Button';
+
+const inputAccessibilityStates = {
+  disabled: { disabled: true, selected: false },
+  disabledSelected: { disabled: true, selected: true },
+  enabled: { disabled: false, selected: false },
+  selected: { disabled: false, selected: true },
+} as const;
+
+const getInputAccessibilityState = ({
+  disabled,
+  selected,
+}: {
+  disabled: boolean;
+  selected: boolean;
+}) => {
+  if (disabled)
+    return selected ? inputAccessibilityStates.disabledSelected : inputAccessibilityStates.disabled;
+  return selected ? inputAccessibilityStates.selected : inputAccessibilityStates.enabled;
+};
 
 export type InputProps = TextInputProps & {
   title?: string;
@@ -59,6 +78,10 @@ export const Input = ({
 
   const LeftIcon = isRTL ? TrailingIcon : LeadingIcon;
   const RightIcon = isRTL ? LeadingIcon : TrailingIcon;
+  const accessibilityState = getInputAccessibilityState({
+    disabled: !editable,
+    selected: isFocused,
+  });
 
   const handleFocus = useCallback(
     (e: TextInputFocusEvent) => {
@@ -87,9 +110,10 @@ export const Input = ({
             borderWidth: variant === 'outline' ? 1 : 0,
             borderColor: !editable
               ? semantics.borderUtilityDisabled
-              : isFocused
-                ? semantics.inputBorderFocus
-                : semantics.inputBorderDefault,
+              : // TODO: V9: This should go away as it's the same style. In a separate PR though.
+                isFocused
+                ? semantics.borderCoreDefault
+                : semantics.borderCoreDefault,
           },
           containerStyle,
         ]}
@@ -103,6 +127,9 @@ export const Input = ({
           />
         ) : null}
         <TextInput
+          accessibilityHint={description}
+          accessibilityLabel={props.accessibilityLabel ?? title}
+          accessibilityState={accessibilityState}
           editable={editable}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -110,6 +137,15 @@ export const Input = ({
           placeholderTextColor={semantics.inputTextPlaceholder}
           {...props}
         />
+        {state === 'error' && errorMessage ? (
+          <View
+            accessibilityLiveRegion='assertive'
+            accessibilityRole='alert'
+            style={{ width: 0, height: 0 }}
+          >
+            <Text>{errorMessage}</Text>
+          </View>
+        ) : null}
         {RightIcon ? (
           <RightIcon
             height={20}
@@ -165,12 +201,14 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       description: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       inputContainer: {
         alignItems: 'center',
@@ -179,7 +217,7 @@ const useStyles = () => {
         paddingHorizontal: primitives.spacingMd,
         paddingVertical: primitives.spacingSm,
         borderRadius: primitives.radiusLg,
-        borderColor: semantics.inputBorderDefault,
+        borderColor: semantics.borderCoreDefault,
         minHeight: 48,
       },
       textInput: {
@@ -189,6 +227,7 @@ const useStyles = () => {
         fontWeight: primitives.typographyFontWeightRegular,
         color: semantics.inputTextDefault,
         paddingVertical: 0, // android is adding extra padding so we remove it
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
       },
       helperContainer: {
         alignItems: 'center',
@@ -200,6 +239,7 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
     });
   }, [semantics]);

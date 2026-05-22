@@ -30,7 +30,7 @@
     "stream-chat-react-native-core": "8.1.0"
   },
   "peerDependencies": {
-    "expo": ">=51.0.0",
+    "expo": ">=52.0.0",
     "react-native": ">=0.76.0",
     "expo-av": "*",
     "expo-clipboard": "*",
@@ -69,6 +69,9 @@
     "expo-image-picker": {
       "optional": true
     },
+    "expo-image-manipulator": {
+      "optional": true
+    },
     "expo-sharing": {
       "optional": true
     },
@@ -82,7 +85,6 @@
     "expo-audio": "~0.4.6"
   },
   "scripts": {
-    "postinstall": "if [ -f ../scripts/sync-shared-native.sh ] && [ -d ../shared-native/ios ]; then bash ../scripts/sync-shared-native.sh expo-package; fi",
     "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",
     "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh expo-package"
   },
@@ -90,7 +92,14 @@
     "name": "StreamChatExpoSpec",
     "type": "all",
     "jsSrcsDir": "src/native",
+    "android": {
+      "javaPackageName": "com.streamchatexpo"
+    },
     "ios": {
+      "modulesProvider": {
+        "StreamMultipartUploader": "StreamMultipartUploader",
+        "StreamVideoThumbnail": "StreamVideoThumbnail"
+      },
       "componentProvider": {
         "StreamShimmerView": "StreamShimmerViewComponentView"
       }

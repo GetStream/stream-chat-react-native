@@ -11,6 +11,7 @@ import {
 import { useChatContext, useTheme, useQueryReminders } from 'stream-chat-react-native';
 import { ReminderResponse } from 'stream-chat';
 import { ReminderItem } from './ReminderItem';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const tabs = [
   { key: 'all', title: 'All' },
@@ -29,11 +30,8 @@ const renderItem = ({ item }: { item: ReminderResponse }) => <ReminderItem {...i
 
 export const RemindersList = () => {
   const [selectedTab, setSelectedTab] = useState<TabItemType>(tabs[0]);
-  const {
-    theme: {
-      colors: { accent_blue, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue, grey_gainsboro } = useLegacyColors();
   const { client } = useChatContext();
 
   const { data, isLoading, loadNext } = useQueryReminders();

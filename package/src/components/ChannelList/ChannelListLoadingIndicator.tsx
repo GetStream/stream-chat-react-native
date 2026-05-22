@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useChannelsContext } from '../../contexts/channelsContext/ChannelsContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({
@@ -16,7 +17,8 @@ export const ChannelListLoadingIndicator = () => {
       channelListLoadingIndicator: { container },
     },
   } = useTheme();
-  const { numberOfSkeletons, Skeleton } = useChannelsContext();
+  const { numberOfSkeletons } = useChannelsContext();
+  const { Skeleton } = useComponentsContext();
 
   return (
     <View style={[styles.container, container]} testID='channel-list-loading-indicator'>

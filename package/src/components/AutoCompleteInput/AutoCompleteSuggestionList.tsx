@@ -1,24 +1,21 @@
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { FlatList } from 'react-native-gesture-handler';
 
 import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 import { SearchSourceState, TextComposerState, TextComposerSuggestion } from 'stream-chat';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 
 export const DEFAULT_LIST_HEIGHT = 208;
 
-export type AutoCompleteSuggestionListProps = Partial<
-  Pick<MessageInputContextValue, 'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'>
->;
+export type AutoCompleteSuggestionListProps = Record<string, never>;
 
 const textComposerStateSelector = (state: TextComposerState) => ({
   suggestions: state.suggestions,
@@ -29,19 +26,8 @@ const searchSourceStateSelector = (nextValue: SearchSourceState) => ({
   items: nextValue.items,
 });
 
-export const AutoCompleteSuggestionList = ({
-  AutoCompleteSuggestionHeader: propsAutoCompleteSuggestionHeader,
-  AutoCompleteSuggestionItem: propsAutoCompleteSuggestionItem,
-}: AutoCompleteSuggestionListProps) => {
-  const {
-    AutoCompleteSuggestionHeader: contextAutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem: contextAutoCompleteSuggestionItem,
-  } = useMessageInputContext();
-
-  const AutoCompleteSuggestionHeader =
-    propsAutoCompleteSuggestionHeader ?? contextAutoCompleteSuggestionHeader;
-  const AutoCompleteSuggestionItem =
-    propsAutoCompleteSuggestionItem ?? contextAutoCompleteSuggestionItem;
+export const AutoCompleteSuggestionList = () => {
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useComponentsContext();
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
@@ -62,7 +48,7 @@ export const AutoCompleteSuggestionList = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         container: { maxHeight },
       },
     },
@@ -116,7 +102,7 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         suggestionsListContainer: { flatlist },
       },
     },
@@ -126,13 +112,13 @@ const useStyles = () => {
       StyleSheet.create({
         container: {
           maxHeight: DEFAULT_LIST_HEIGHT,
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderTopWidth: 1,
           borderColor: semantics.borderCoreDefault,
         },
         flatlist: {
-          backgroundColor: semantics.composerBg,
-          shadowColor: semantics.accentBlack,
+          backgroundColor: semantics.backgroundCoreElevation1,
+          shadowColor: semantics.textOnAccent,
           borderRadius: 8,
           elevation: 3,
           marginHorizontal: 8,
@@ -150,4 +136,4 @@ const useStyles = () => {
 };
 
 AutoCompleteSuggestionList.displayName =
-  'AutoCompleteSuggestionList{messageInput{suggestions{List}}}';
+  'AutoCompleteSuggestionList{messageComposer{suggestions{List}}}';

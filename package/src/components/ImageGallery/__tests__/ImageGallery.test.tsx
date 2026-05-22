@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { I18nManager, StyleSheet } from 'react-native';
 
 import type { SharedValue } from 'react-native-reanimated';
 
@@ -8,10 +9,6 @@ import duration from 'dayjs/plugin/duration';
 
 import { LocalMessage } from 'stream-chat';
 
-import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../../components/ImageGallery/components/ImageGalleryFooter';
-import { ImageGalleryHeader as ImageGalleryHeaderDefault } from '../../../components/ImageGallery/components/ImageGalleryHeader';
-import { ImageGalleryVideoControl as ImageGalleryVideoControlDefault } from '../../../components/ImageGallery/components/ImageGalleryVideoControl';
-import { ImageGalleryGrid as ImageGalleryGridDefault } from '../../../components/ImageGallery/components/ImageGrid';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -65,10 +62,6 @@ const ImageGalleryComponent = (props: ImageGalleryProps & { message: LocalMessag
         value={
           {
             imageGalleryStateStore,
-            ImageGalleryHeader: ImageGalleryHeaderDefault,
-            ImageGalleryFooter: ImageGalleryFooterDefault,
-            ImageGalleryVideoControls: ImageGalleryVideoControlDefault,
-            ImageGalleryGrid: ImageGalleryGridDefault,
           } as unknown as ImageGalleryContextValue
         }
       >
@@ -79,24 +72,52 @@ const ImageGalleryComponent = (props: ImageGalleryProps & { message: LocalMessag
 };
 
 describe('ImageGallery', () => {
+  const originalIsRTL = I18nManager.isRTL;
+
+  const setRTL = (value: boolean) => {
+    Object.defineProperty(I18nManager, 'isRTL', {
+      configurable: true,
+      value,
+    });
+  };
+
+  afterEach(() => {
+    setRTL(originalIsRTL);
+  });
+
   it('render image gallery component', async () => {
     render(
       <ImageGalleryComponent
-        message={
-          generateMessage({
-            attachments: [
-              generateImageAttachment(),
-              generateGiphyAttachment(),
-              generateVideoAttachment({ type: 'video' }),
-            ],
-          }) as unknown as LocalMessage
-        }
+        message={generateMessage({
+          attachments: [
+            generateImageAttachment(),
+            generateGiphyAttachment(),
+            generateVideoAttachment({ type: 'video' }),
+          ],
+        })}
       />,
     );
 
     await waitFor(() => {
       expect(screen.queryAllByLabelText('Image Item')).toHaveLength(2);
       expect(screen.queryAllByLabelText('Image Gallery Video')).toHaveLength(1);
+    });
+  });
+
+  it('keeps the pager in ltr coordinates when rtl is enabled', async () => {
+    setRTL(true);
+
+    render(
+      <ImageGalleryComponent
+        message={generateMessage({
+          attachments: [generateImageAttachment()],
+        })}
+      />,
+    );
+
+    await waitFor(() => {
+      const pagerStyle = StyleSheet.flatten(screen.getByTestId('image-gallery-pager').props.style);
+      expect(pagerStyle.direction).toBe('ltr');
     });
   });
 });

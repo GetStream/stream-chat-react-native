@@ -1,0 +1,233 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+// RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
+// See https://github.com/software-mansion/react-native-gesture-handler/issues/598
+import { FlatList, StyleSheet, View } from 'react-native';
+
+import type { Channel } from 'stream-chat';
+
+import {
+  ChannelsContextValue,
+  useChannelsContext,
+} from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { useDebugContext } from '../../contexts/debugContext/DebugContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
+import { useStableCallback } from '../../hooks';
+import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
+
+export type ChannelListViewPropsWithContext = Omit<
+  ChannelsContextValue,
+  'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect'
+>;
+
+const StatusIndicator = () => {
+  const { isOnline } = useChatContext();
+  const styles = useStyles();
+  const { error, loadingChannels, refreshList } = useChannelsContext();
+  const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =
+    useComponentsContext();
+
+  if (loadingChannels) {
+    return null;
+  }
+
+  if (!isOnline) {
+    return (
+      <View style={styles.statusIndicator}>
+        <ChannelListHeaderNetworkDownIndicator />
+      </View>
+    );
+  } else if (error) {
+    return (
+      <View style={styles.statusIndicator}>
+        <ChannelListHeaderErrorIndicator onPress={refreshList} />
+      </View>
+    );
+  }
+  return null;
+};
+
+const renderItem = ({ item }: { item: Channel }) => <ChannelPreview channel={item} />;
+
+const keyExtractor = (item: Channel) => item.cid;
+
+const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
+  const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
+  const {
+    additionalFlatListProps,
+    channelListInitialized,
+    channels,
+    error,
+    forceUpdate,
+    hasNextPage,
+    loadingChannels,
+    loadingNextPage,
+    loadMoreThreshold,
+    loadNextPage,
+    refreshing,
+    refreshList,
+    reloadList,
+    setFlatListRef,
+  } = props;
+  const {
+    EmptyStateIndicator,
+    ChannelListFooterLoadingIndicator,
+    ListHeaderComponent,
+    LoadingErrorIndicator,
+    ChannelListLoadingIndicator: LoadingIndicator,
+  } = useComponentsContext();
+
+  /**
+   * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
+   * we set the loading state one cycle behind to ensure the channels are set before the
+   * change to loadingChannels is registered.
+   */
+  const [loading, setLoading] = useState(true);
+  const debugRef = useDebugContext();
+  const styles = useStyles();
+
+  useEffect(() => {
+    if (!!loadingChannels !== loading) {
+      setLoading(!!loadingChannels);
+    }
+  }, [loading, loadingChannels]);
+
+  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
+
+  if (isDebugModeEnabled) {
+    if (debugRef.current.setEventType) {
+      debugRef.current.setEventType('send');
+    }
+    if (debugRef.current.setSendEventParams) {
+      debugRef.current.setSendEventParams({
+        action: 'Channels',
+        data: channels?.map((channel) => ({
+          data: channel.data,
+          members: channel.state.members,
+        })),
+      });
+    }
+  }
+
+  const onEndReached = useStableCallback(() => {
+    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
+      loadNextPage();
+      onEndReachedCalledDuringCurrentScrollRef.current = true;
+    }
+  });
+
+  if (error && !refreshing && !loadingChannels && (channels === null || !channelListInitialized)) {
+    return (
+      <LoadingErrorIndicator
+        error={error}
+        listType='channel'
+        loadNextPage={loadNextPage}
+        retry={reloadList}
+      />
+    );
+  }
+
+  return (
+    <>
+      <FlatList
+        contentContainerStyle={styles.flatListContentContainer}
+        data={channels}
+        extraData={forceUpdate}
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={
+          loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
+        }
+        ListFooterComponent={loadingNextPage ? <ChannelListFooterLoadingIndicator /> : undefined}
+        ListHeaderComponent={ListHeaderComponent}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={loadMoreThreshold}
+        onMomentumScrollBegin={() => (onEndReachedCalledDuringCurrentScrollRef.current = false)}
+        onRefresh={refreshList}
+        ref={setFlatListRef}
+        refreshing={refreshing}
+        renderItem={renderItem}
+        style={styles.flatList}
+        testID='channel-list-view'
+        {...additionalFlatListProps}
+      />
+      <StatusIndicator />
+    </>
+  );
+};
+
+export type ChannelListViewProps = Partial<ChannelListViewPropsWithContext>;
+
+/**
+ * This UI component displays the preview list of channels and handles Channel navigation. It
+ * receives all props from the ChannelList component.
+ *
+ * @example ./ChannelListView.md
+ */
+export const ChannelListView = (props: ChannelListViewProps) => {
+  const {
+    additionalFlatListProps,
+    channelListInitialized,
+    channels,
+    error,
+    forceUpdate,
+    hasNextPage,
+    loadingChannels,
+    loadingNextPage,
+    loadMoreThreshold,
+    loadNextPage,
+    refreshing,
+    refreshList,
+    reloadList,
+    setFlatListRef,
+  } = useChannelsContext();
+
+  return (
+    <ChannelListViewWithContext
+      {...{
+        additionalFlatListProps,
+        channelListInitialized,
+        channels,
+        error,
+        forceUpdate,
+        hasNextPage,
+        loadingChannels,
+        loadingNextPage,
+        loadMoreThreshold,
+        loadNextPage,
+        refreshing,
+        refreshList,
+        reloadList,
+        setFlatListRef,
+      }}
+      {...props}
+    />
+  );
+};
+
+ChannelListView.displayName = 'ChannelListView{channelListView}';
+
+const useStyles = () => {
+  const {
+    theme: {
+      semantics,
+      channelListView: { flatList, flatListContent },
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      flatList: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreApp,
+        ...flatList,
+      },
+      flatListContentContainer: {
+        flexGrow: 1,
+        backgroundColor: semantics.backgroundCoreApp,
+        ...flatListContent,
+      },
+      statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
+    });
+  }, [flatList, flatListContent, semantics]);
+};

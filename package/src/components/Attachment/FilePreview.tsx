@@ -3,16 +3,13 @@ import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-n
 
 import type { Attachment } from 'stream-chat';
 
-import { FileIcon as FileIconDefault, FileIconProps } from '../../components/Attachment/FileIcon';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
+import type { FileIconProps } from '../../components/Attachment/FileIcon';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 import { getDurationLabelFromDuration, getFileSizeDisplayText } from '../../utils/utils';
 
-export type FilePreviewProps = Partial<Pick<MessagesContextValue, 'FileAttachmentIcon'>> & {
+export type FilePreviewProps = {
   /** The attachment to render */
   attachment: Attachment;
   attachmentIconSize?: FileIconProps['size'];
@@ -30,20 +27,18 @@ export type FilePreviewProps = Partial<Pick<MessagesContextValue, 'FileAttachmen
 export const FilePreview = (props: FilePreviewProps) => {
   const {
     attachment,
-    FileAttachmentIcon: PropFileAttachmentIcon,
     attachmentIconSize,
     styles: stylesProp = {},
     titleNumberOfLines = 2,
     indicator,
   } = props;
-  const { FileAttachmentIcon: ContextFileAttachmentIcon } = useMessagesContext();
-  const FileAttachmentIcon = PropFileAttachmentIcon || ContextFileAttachmentIcon || FileIconDefault;
+  const { FileAttachmentIcon } = useComponentsContext();
 
   const styles = useStyles();
 
   const {
     theme: {
-      messageSimple: {
+      messageItemView: {
         file: { container, details, fileSize, title },
       },
     },
@@ -70,7 +65,7 @@ export const FilePreview = (props: FilePreviewProps) => {
   );
 };
 
-FilePreview.displayName = 'FilePreview{messageSimple{file}}';
+FilePreview.displayName = 'FilePreview{messageItemView{file}}';
 
 const useStyles = () => {
   const {

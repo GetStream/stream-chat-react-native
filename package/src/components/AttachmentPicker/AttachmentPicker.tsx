@@ -1,21 +1,25 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BackHandler,
-  EmitterSubscription,
   Keyboard,
   Platform,
   View,
   LayoutChangeEvent,
+  useWindowDimensions,
 } from 'react-native';
 
+import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+
 import { useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
+import type { BottomSheetBackgroundProps } from '@gorhom/bottom-sheet';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
-import { KeyboardControllerPackage } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
 
 dayjs.extend(duration);
 
@@ -32,13 +36,17 @@ export const AttachmentPicker = () => {
   const {
     closePicker,
     attachmentPickerStore,
-    AttachmentPickerSelectionBar,
-    AttachmentPickerContent,
     attachmentPickerBottomSheetHeight,
     bottomSheetRef: ref,
+    bottomInset,
+    topInset,
     disableAttachmentPicker,
   } = useAttachmentPickerContext();
-
+  const { AttachmentPickerContent, AttachmentPickerSelectionBar } = useComponentsContext();
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const { height: windowHeight } = useWindowDimensions();
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
   const currentIndexRef = useRef<number>(currentIndex);
   const setCurrentIndex = useStableCallback((_: number, toIndex: number) => {
@@ -69,18 +77,10 @@ export const AttachmentPicker = () => {
       }
       closePicker();
     };
-    let keyboardSubscription: EmitterSubscription | null = null;
-    if (KeyboardControllerPackage?.KeyboardEvents) {
-      keyboardSubscription = KeyboardControllerPackage.KeyboardEvents.addListener(
-        'keyboardWillShow',
-        onKeyboardOpenHandler,
-      );
-    } else {
-      const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-      keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
-    }
+    const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const keyboardSubscription = Keyboard.addListener(keyboardShowEvent, onKeyboardOpenHandler);
     return () => {
-      keyboardSubscription?.remove();
+      keyboardSubscription.remove();
     };
   }, [attachmentPickerStore, closePicker]);
 
@@ -93,6 +93,10 @@ export const AttachmentPicker = () => {
   const selectionBarRef = useRef<number | null>(null);
 
   const initialSnapPoint = attachmentPickerBottomSheetHeight;
+  const pickerTopInset = Math.max(
+    0,
+    windowHeight - topInset - attachmentPickerBottomSheetHeight - bottomInset,
+  );
 
   /**
    * Snap points changing cause a rerender of the position,
@@ -105,18 +109,63 @@ export const AttachmentPicker = () => {
   });
 
   const animationConfigs = useBottomSheetSpringConfigs(SPRING_CONFIG);
+  const backgroundStyle = useMemo(
+    () => ({
+      backgroundColor: semantics.backgroundCoreElevation1,
+      borderTopWidth: 0,
+      elevation: Platform.OS === 'android' ? 0 : undefined,
+      shadowOpacity: Platform.OS === 'android' ? 0 : undefined,
+    }),
+    [semantics.backgroundCoreElevation1],
+  );
+
+  const animatedIndex = useSharedValue(currentIndex);
+
+  // This is required to prevent the attachment picker from getting out of sync
+  // with the rest of the state. While there are more prudent fixes, this is about
+  // as much as we can do now without refactoring the entire state layer for the
+  // picker. When we do that, this can be removed completely.
+  const reactToIndex = useStableCallback((index: number) => {
+    if (index === -1) {
+      attachmentPickerStore.setSelectedPicker(undefined);
+    }
+
+    if (index === 0) {
+      // TODO: Extend the store to at least accept a default value.
+      //       This in particular is not nice.
+      attachmentPickerStore.setSelectedPicker('images');
+    }
+  });
+
+  useAnimatedReaction(
+    () => animatedIndex.value,
+    (index, previousIndex) => {
+      if ((index === 0 || index === -1) && index !== previousIndex) {
+        runOnJS(reactToIndex)(index);
+      }
+    },
+  );
 
   return (
     <BottomSheet
+      accessible={false}
+      accessibilityLabel={null}
+      accessibilityRole={null}
+      android_keyboardInputMode='adjustResize'
+      backgroundComponent={AttachmentPickerBackground}
+      backgroundStyle={backgroundStyle}
+      bottomInset={bottomInset}
       enablePanDownToClose={false}
       enableContentPanningGesture={false}
       enableDynamicSizing={false}
       handleComponent={RenderNull}
       index={currentIndex}
       onAnimate={setCurrentIndex}
+      animatedIndex={animatedIndex}
       // @ts-ignore
       ref={ref}
       snapPoints={snapPoints}
+      topInset={pickerTopInset}
       animationConfigs={animationConfigs}
     >
       <View onLayout={onAttachmentPickerSelectionBarLayout}>
@@ -132,5 +181,14 @@ export const AttachmentPicker = () => {
 };
 
 const RenderNull = () => null;
+
+const AttachmentPickerBackground = ({ pointerEvents, style }: BottomSheetBackgroundProps) => (
+  <View
+    accessible={false}
+    importantForAccessibility='no'
+    pointerEvents={pointerEvents}
+    style={style}
+  />
+);
 
 AttachmentPicker.displayName = 'AttachmentPicker';

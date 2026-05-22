@@ -14,28 +14,37 @@ import {
   useOwnCapabilitiesContext,
   usePollContext,
   useTheme,
+  useTranslationContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
 import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
+import { useNotificationApi } from '../../Notifications';
 import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
+const pollVoteAccessibilityStates = {
+  checked: { checked: true, selected: true },
+  unchecked: { checked: false, selected: false },
+} as const;
+
 export type PollOptionProps = {
   option: PollOptionClass;
   showProgressBar?: boolean;
+  forceIncoming?: boolean;
 };
 
 export type PollAllOptionsContentProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
-  PollAllOptionsContent?: React.ComponentType;
 };
 
 export const PollAllOptionsContent = ({
   additionalScrollViewProps,
 }: Pick<PollAllOptionsContentProps, 'additionalScrollViewProps'>) => {
+  const { t } = useTranslationContext();
   const { name, options } = usePollState();
 
   const {
@@ -48,14 +57,19 @@ export const PollAllOptionsContent = ({
   const styles = useAllOptionStyles();
 
   return (
-    <ScrollView style={[styles.allOptionsWrapper, wrapper]} {...additionalScrollViewProps}>
+    <ScrollView
+      contentContainerStyle={styles.allOptionsContentContainer}
+      style={[styles.allOptionsWrapper, wrapper]}
+      {...additionalScrollViewProps}
+    >
       <View style={[styles.allOptionsTitleContainer, titleContainer]}>
+        <Text style={styles.allOptionsTitleMeta}>{t('Question')}</Text>
         <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
       </View>
       <View style={[styles.allOptionsListContainer, listContainer]}>
         {options?.map((option: PollOptionClass) => (
           <View key={`full_poll_options_${option.id}`} style={styles.optionWrapper}>
-            <PollOption key={option.id} option={option} showProgressBar={false} />
+            <PollOption key={option.id} option={option} forceIncoming />
           </View>
         ))}
       </View>
@@ -67,30 +81,24 @@ export const PollAllOptions = ({
   additionalScrollViewProps,
   message,
   poll,
-  PollAllOptionsContent: PollAllOptionsContentOverride,
-}: PollAllOptionsContentProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollAllOptionsContentOverride ? (
-      <PollAllOptionsContentOverride />
-    ) : (
-      <PollAllOptionsContent additionalScrollViewProps={additionalScrollViewProps} />
-    )}
-  </PollContextProvider>
-);
+}: PollAllOptionsContentProps) => {
+  const { PollAllOptionsContent: PollAllOptionsContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollAllOptionsContentComponent additionalScrollViewProps={additionalScrollViewProps} />
+    </PollContextProvider>
+  );
+};
 
-export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) => {
-  const { latestVotesByOption, maxVotedOptionIds, voteCountsByOption } = usePollState();
+export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
+  const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
   const styles = useStyles();
 
   const relevantVotes = useMemo(
     () => latestVotesByOption?.[option.id] || [],
     [latestVotesByOption, option.id],
   );
-  const maxVotes = useMemo(
-    () =>
-      maxVotedOptionIds?.[0] && voteCountsByOption ? voteCountsByOption[maxVotedOptionIds[0]] : 0,
-    [maxVotedOptionIds, voteCountsByOption],
-  );
+
   const votes = voteCountsByOption[option.id] || 0;
 
   const {
@@ -105,27 +113,33 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
   } = useTheme();
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
 
-  const unFilledColor = isPollCreatedByClient
-    ? semantics.chatPollProgressTrackOutgoing
-    : semantics.chatPollProgressTrackIncoming;
+  const unFilledColor =
+    isPollCreatedByClient && !forceIncoming
+      ? semantics.chatPollProgressTrackOutgoing
+      : semantics.chatPollProgressTrackIncoming;
 
-  const filledColor = isPollCreatedByClient
-    ? semantics.chatPollProgressFillOutgoing
-    : semantics.chatPollProgressFillIncoming;
+  const filledColor =
+    isPollCreatedByClient && !forceIncoming
+      ? semantics.chatPollProgressFillOutgoing
+      : semantics.chatPollProgressFillIncoming;
 
   return (
     <View style={[styles.container, container]}>
       <VoteButton option={option} />
       <View style={[styles.info, info]}>
         <View style={[styles.header, header]}>
-          <Text style={[styles.text, text]}>{option.text}</Text>
+          <Text ellipsizeMode='tail' numberOfLines={2} style={[styles.text, text]}>
+            {option.text}
+          </Text>
           <View style={[styles.votesContainer, votesContainer]}>
-            <UserAvatarStack
-              users={relevantVotes.map((vote: PollVote) => vote.user as UserResponse)}
-              overlap={0.2}
-              maxVisible={3}
-              avatarSize='xs'
-            />
+            {relevantVotes.length > 0 ? (
+              <UserAvatarStack
+                users={relevantVotes.map((vote: PollVote) => vote.user as UserResponse)}
+                overlap={0.2}
+                maxVisible={3}
+                avatarSize='xs'
+              />
+            ) : null}
 
             <Text style={[styles.votesText, votesText]}>{voteCountsByOption[option.id] || 0}</Text>
           </View>
@@ -133,7 +147,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
         {showProgressBar ? (
           <View style={styles.progressBarContainer}>
             <ProgressBar
-              progress={votes / maxVotes}
+              progress={votes / voteCount}
               filledColor={filledColor}
               emptyColor={unFilledColor}
             />
@@ -147,6 +161,7 @@ export const PollOption = ({ option, showProgressBar = true }: PollOptionProps) 
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
+  const { runWithNotificationTarget } = useNotificationApi();
   const ownCapabilities = useOwnCapabilitiesContext();
   const {
     theme: { semantics },
@@ -165,12 +180,14 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   } = useTheme();
 
   const toggleVote = useCallback(async () => {
-    if (ownVotesByOptionId[option.id]) {
-      await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
-    } else {
-      await poll.castVote(option.id, message.id);
-    }
-  }, [message.id, option.id, ownVotesByOptionId, poll]);
+    await runWithNotificationTarget(async () => {
+      if (ownVotesByOptionId[option.id]) {
+        await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
+      } else {
+        await poll.castVote(option.id, message.id);
+      }
+    });
+  }, [message.id, option.id, ownVotesByOptionId, poll, runWithNotificationTarget]);
 
   const onPressHandler = useCallback(() => {
     if (onPress) {
@@ -182,16 +199,22 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   }, [message, onPress, poll, toggleVote]);
 
   const hasVote = !!ownVotesByOptionId[option.id];
+  const accessibilityState = hasVote
+    ? pollVoteAccessibilityStates.checked
+    : pollVoteAccessibilityStates.unchecked;
 
   return ownCapabilities.castPollVote && !isClosed ? (
     <Pressable
+      accessibilityLabel={option.text}
+      accessibilityRole={poll.data?.enforce_unique_vote ? 'radio' : 'checkbox'}
+      accessibilityState={accessibilityState}
       onPress={onPressHandler}
       style={({ pressed }) => [
         { opacity: pressed ? 0.5 : 1 },
         styles.voteContainer,
         {
           borderWidth: hasVote ? 0 : 1,
-          backgroundColor: hasVote ? semantics.controlRadiocheckBgSelected : 'transparent',
+          backgroundColor: hasVote ? semantics.accentPrimary : 'transparent',
           borderColor: isPollCreatedByClient
             ? semantics.chatBorderOnChatOutgoing
             : semantics.chatBorderOnChatIncoming,
@@ -199,9 +222,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         voteButtonContainer,
       ]}
     >
-      {hasVote ? (
-        <Check height={20} stroke={semantics.controlRadiocheckIconSelected} width={20} />
-      ) : null}
+      {hasVote ? <Check height={20} stroke={semantics.textOnAccent} width={20} /> : null}
     </Pressable>
   ) : null;
 };
@@ -219,24 +240,38 @@ const useStyles = () => {
       },
       header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        gap: primitives.spacingXs,
+        minWidth: 0,
       },
       text: {
         color: semantics.chatTextIncoming,
+        flexGrow: 1,
+        flexShrink: 1,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
       },
       info: {
         flexGrow: 1,
+        flexShrink: 1,
         gap: primitives.spacingXs,
+        minWidth: 0,
       },
-      votesContainer: { flexDirection: 'row', gap: primitives.spacingXs, alignItems: 'center' },
+      votesContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexShrink: 0,
+        gap: primitives.spacingXs,
+        minHeight: 20,
+      },
       votesText: {
         color: semantics.chatTextIncoming,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
+        textAlign: 'left',
       },
       progressBarContainer: {
         flex: 1,
@@ -256,35 +291,44 @@ const useAllOptionStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        allOptionsListContainer: {
-          borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-          marginTop: primitives.spacing2xl,
-        },
-        allOptionsTitleContainer: {
-          borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-        },
-        allOptionsTitleText: {
-          fontSize: primitives.typographyFontSizeLg,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-        },
-        allOptionsWrapper: {
-          flex: 1,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundElevationElevation1,
-        },
-        optionWrapper: {
-          paddingVertical: primitives.spacingMd,
-        },
-      }),
-    [semantics],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      allOptionsContentContainer: {
+        padding: primitives.spacingMd,
+      },
+      allOptionsListContainer: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        marginTop: primitives.spacing2xl,
+      },
+      allOptionsTitleContainer: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+      },
+      allOptionsTitleText: {
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      allOptionsTitleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+      allOptionsWrapper: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      optionWrapper: {
+        paddingVertical: primitives.spacingMd,
+      },
+    });
+  }, [semantics]);
 };

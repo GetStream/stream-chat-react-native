@@ -1,21 +1,16 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import {
-  ImageGalleryProviderProps,
-  useImageGalleryContext,
-} from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import type { ImageGalleryFooterProps, ImageGalleryVideoControlProps } from './types';
+
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { Share as ShareIconDefault } from '../../../icons';
-import { ImageGrid } from '../../../icons/ImageGrid';
+import { ImageGrid } from '../../../icons/gallery';
 import { isFileSystemAvailable, isShareImageAvailable, NativeHandlers } from '../../../native';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
@@ -38,23 +33,9 @@ export type ImageGalleryFooterCustomComponent = ({
   shareMenuOpen: boolean;
 }) => React.ReactElement | null;
 
-export type ImageGalleryVideoControlProps = {
-  attachmentId: string;
-};
-
 export type ImageGalleryVideoControlComponent = ({
   attachmentId,
 }: ImageGalleryVideoControlProps) => React.ReactElement | null;
-
-export type ImageGalleryFooterProps = Pick<
-  ImageGalleryProviderProps,
-  'ImageGalleryVideoControls'
-> & {
-  accessibilityLabel: string;
-  opacity: SharedValue<number>;
-  openGridView: () => void;
-  visible: SharedValue<number>;
-};
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   asset: state.assets[state.currentIndex],
@@ -62,7 +43,8 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 });
 
 export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) => {
-  const { accessibilityLabel, opacity, openGridView, visible, ImageGalleryVideoControls } = props;
+  const { accessibilityLabel, opacity, openGridView, visible } = props;
+  const { ImageGalleryVideoControls } = useComponentsContext();
 
   const [height, setHeight] = useState(200);
   const [savingInProgress, setSavingInProgress] = useState(false);
@@ -152,7 +134,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
             </Text>
           </View>
           <Button
-            accessibilityLabel='Grid Icon'
+            accessibilityLabelKey='a11y/Grid Icon'
             variant='secondary'
             type='ghost'
             size='md'
@@ -184,7 +166,7 @@ const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
     </View>
   ) : (
     <Button
-      accessibilityLabel='Share Button'
+      accessibilityLabelKey='a11y/Share Button'
       variant='secondary'
       type='ghost'
       size='md'
@@ -216,9 +198,9 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderTopWidth: 1,
-          borderTopColor: semantics.borderCoreDefault,
+          borderTopColor: semantics.borderCoreSubtle,
           ...footer.container,
         },
         centerContainer: {

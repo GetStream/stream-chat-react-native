@@ -4,11 +4,11 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/core';
 
 import {
-  MessageInputContextValue,
   Search,
   SendRight,
   useChannelContext,
-  useMessageInputContext,
+  useMessageComposer,
+  useStateStore,
   useTheme,
 } from 'stream-chat-react-native';
 
@@ -17,22 +17,28 @@ import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMess
 import { useUserSearchContext } from '../context/UserSearchContext';
 import { useAppContext } from '../context/AppContext';
 import { SendUp } from '../icons/SendUp';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
-type NewDirectMessagingSendButtonPropsWithContext = Pick<
-  MessageInputContextValue,
-  'giphyActive' | 'sendMessage'
-> & {
+import type { TextComposerState } from 'stream-chat';
+
+const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
+});
+
+type NewDirectMessagingSendButtonPropsWithContext = {
   /** Disables the button */ disabled: boolean;
+  giphyActive: boolean;
+  sendMessage: () => Promise<void>;
 };
 
 const SendButtonWithContext = (props: NewDirectMessagingSendButtonPropsWithContext) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {
-      colors: { accent_blue, grey_gainsboro },
-      messageInput: { sendButton },
+      messageComposer: { sendButton },
     },
   } = useTheme();
+  const { accent_blue, grey_gainsboro } = useLegacyColors();
 
   return (
     <TouchableOpacity
@@ -89,15 +95,16 @@ const MemoizedNewDirectMessagingSendButton = React.memo(
 export type SendButtonProps = Partial<NewDirectMessagingSendButtonPropsWithContext>;
 
 /**
- * UI Component for send button in MessageInput component.
+ * UI Component for send button in MessageComposer component.
  */
 export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
   const { channel } = useChannelContext();
   const { selectedUserIds, reset } = useUserSearchContext();
-
-  const { giphyActive, text } = useMessageInputContext();
+  const messageComposer = useMessageComposer();
+  const { command } = useStateStore(messageComposer.textComposer.state, textComposerStateSelector);
+  const giphyActive = command?.name === 'giphy';
 
   const sendMessage = async () => {
     if (!channel) {
@@ -106,6 +113,12 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
     if (!chatClient || !chatClient.user) {
       return;
     }
+
+    const composition = await messageComposer.compose();
+    if (!composition?.message) {
+      return;
+    }
+
     const members = [chatClient.user.id, ...selectedUserIds];
     channel.initialized = false;
     const newChannel = chatClient.channel('messaging', {
@@ -113,7 +126,8 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
     });
     try {
       await newChannel.watch();
-      await newChannel.sendMessage({ text });
+      await newChannel.sendMessage(composition.message, composition.sendOptions);
+      messageComposer.clear();
       navigation.replace('ChannelScreen', {
         channelId: newChannel.id,
       });

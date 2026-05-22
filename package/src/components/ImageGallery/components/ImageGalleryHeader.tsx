@@ -2,19 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import type { ImageGalleryHeaderProps } from './types';
+
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { ChevronLeft } from '../../../icons/ChevronLeft';
+import { ChevronLeft } from '../../../icons/chevron-left';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';
@@ -25,11 +22,6 @@ import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
   : SafeAreaView;
-
-export type ImageGalleryHeaderProps = {
-  opacity: SharedValue<number>;
-  visible: SharedValue<number>;
-};
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   asset: state.assets[state.currentIndex],
@@ -82,7 +74,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
       <ReanimatedSafeAreaView edges={['top']} style={[styles.container, headerStyle]}>
         <View style={styles.innerContainer}>
           <Button
-            accessibilityLabel='Hide Overlay'
+            accessibilityLabelKey='a11y/Hide Overlay'
             variant='secondary'
             type='ghost'
             size='md'
@@ -116,7 +108,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           gap: primitives.spacingXs,
           ...header.container,
         },
@@ -139,7 +131,7 @@ const useStyles = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           borderBottomWidth: 1,
-          borderBottomColor: semantics.borderCoreDefault,
+          borderBottomColor: semantics.borderCoreSubtle,
           ...header.innerContainer,
         },
         rightContainer: {

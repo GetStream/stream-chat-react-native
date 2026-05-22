@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Check, IconProps } from '../../../icons';
-import { Cross } from '../../../icons/Cross';
+import { ArrowLeft } from '../../../icons/arrow-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
@@ -51,10 +51,12 @@ export const CreatePollHeader = ({
   return (
     <View style={[styles.headerContainer, headerContainer]}>
       <Button
+        accessibilityLabelKey='a11y/Close poll creation'
         variant='secondary'
         onPress={onBackPressHandler}
-        type='solid'
-        LeadingIcon={Cross}
+        type='ghost'
+        size='md'
+        LeadingIcon={ArrowLeft}
         iconOnly
       />
 
@@ -63,6 +65,7 @@ export const CreatePollHeader = ({
       </Text>
 
       <Button
+        accessibilityLabelKey='a11y/Create poll'
         variant='primary'
         onPress={onCreatePollPressHandler}
         type='solid'
@@ -86,7 +89,7 @@ const useStyles = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: primitives.spacingMd,
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
       },
       title: {
         color: semantics.textPrimary,

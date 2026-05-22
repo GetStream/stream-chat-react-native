@@ -17,7 +17,8 @@ import {
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { ImageGalleryStateStore } from '../../../state-store/image-gallery-state-store';
-import { ImageGalleryGrid, ImageGalleryGridProps } from '../components/ImageGrid';
+import { ImageGalleryGrid } from '../components/ImageGrid';
+import type { ImageGalleryGridProps } from '../components/types';
 
 const ImageGalleryGridComponent = (
   props: Partial<ImageGalleryGridProps> & { message: LocalMessage },
@@ -54,7 +55,7 @@ describe('ImageGalleryGrid', () => {
   it('should render ImageGalleryGrid', async () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateImageAttachment()],
-    }) as unknown as LocalMessage;
+    });
 
     render(<ImageGalleryGridComponent message={message} />);
 
@@ -66,7 +67,7 @@ describe('ImageGalleryGrid', () => {
   it('should render ImageGalleryGrid individual images', async () => {
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-    }) as unknown as LocalMessage;
+    });
 
     render(<ImageGalleryGridComponent message={message} />);
 
@@ -81,7 +82,7 @@ describe('ImageGalleryGrid', () => {
 
     const message = generateMessage({
       attachments: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-    }) as unknown as LocalMessage;
+    });
 
     render(<ImageGalleryGridComponent closeGridView={closeGridViewMock} message={message} />);
 

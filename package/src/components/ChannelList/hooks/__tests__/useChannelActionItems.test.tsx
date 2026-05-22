@@ -90,31 +90,19 @@ describe('useChannelActionItems', () => {
   it('returns default channel action items', () => {
     const { result } = renderHook(() => useChannelActionItems({ channel }));
 
-    expect(result.current).toHaveLength(4);
+    expect(result.current).toHaveLength(3);
     expect(result.current.map((item) => item.action)).toEqual([
       channelActions.muteChannel,
-      channelActions.archive,
       channelActions.leave,
       expect.any(Function),
     ]);
-    expect(result.current.map((item) => item.id)).toEqual([
-      'mute',
-      'archive',
-      'leave',
-      'deleteChannel',
-    ]);
+    expect(result.current.map((item) => item.id)).toEqual(['mute', 'leave', 'deleteChannel']);
     expect(result.current.map((item) => item.type)).toEqual([
       'standard',
-      'standard',
       'destructive',
       'destructive',
     ]);
-    expect(result.current.map((item) => item.placement)).toEqual([
-      'both',
-      'both',
-      'sheet',
-      'sheet',
-    ]);
+    expect(result.current.map((item) => item.placement)).toEqual(['swipe', 'sheet', 'sheet']);
   });
 
   it('uses custom getChannelActionItems with context and defaultItems when provided', () => {
@@ -161,7 +149,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: false,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
     const actionItems = getChannelActionItems({
       context: {
@@ -171,32 +159,25 @@ describe('getChannelActionItems', () => {
         isDirectChat: false,
         isPinned: false,
         muteActive: false,
-        t: (value) => value,
+        t: ((value: string) => value) as TranslationContextValue['t'],
       },
       defaultItems,
     });
 
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.muteChannel,
-      channelActions.archive,
       channelActions.leave,
       expect.any(Function),
     ]);
-    expect(actionItems.map((item) => item.id)).toEqual([
-      'mute',
-      'archive',
-      'leave',
-      'deleteChannel',
-    ]);
+    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'leave', 'deleteChannel']);
     expect(actionItems.map((item) => item.type)).toEqual([
-      'standard',
       'standard',
       'destructive',
       'destructive',
     ]);
   });
 
-  it('returns direct-chat variants for mute, block and archive states', () => {
+  it('returns direct-chat variants for mute and block states', () => {
     const channelActions = createChannelActions();
     const actionItems = buildDefaultChannelActionItems({
       actions: channelActions,
@@ -205,37 +186,23 @@ describe('getChannelActionItems', () => {
       isDirectChat: true,
       isPinned: false,
       muteActive: true,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
-    expect(actionItems.map((item) => item.id)).toEqual([
-      'mute',
-      'block',
-      'archive',
-      'leave',
-      'deleteChannel',
-    ]);
+    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'block', 'leave', 'deleteChannel']);
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.unmuteUser,
       channelActions.unblockUser,
-      channelActions.unarchive,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.label)).toEqual([
       'Unmute User',
       'Unblock User',
-      'Unarchive Chat',
       'Leave Chat',
       'Delete Chat',
     ]);
-    expect(actionItems.map((item) => item.placement)).toEqual([
-      'sheet',
-      'sheet',
-      'sheet',
-      'sheet',
-      'sheet',
-    ]);
+    expect(actionItems.map((item) => item.placement)).toEqual(['sheet', 'sheet', 'sheet', 'sheet']);
   });
 
   it('omits delete action when current user is not the channel creator', () => {
@@ -246,13 +213,13 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: false,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
-    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'archive', 'leave']);
+    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'leave']);
   });
 
-  it('uses group variants for mute and archive labels and placements', () => {
+  it('uses group mute variants for labels and placements', () => {
     const channelActions = createChannelActions();
     const actionItems = buildDefaultChannelActionItems({
       actions: channelActions,
@@ -261,16 +228,16 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: true,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
     expect(actionItems[0].action).toBe(channelActions.unmuteChannel);
     expect(actionItems[0].label).toBe('Unmute Group');
-    expect(actionItems[0].placement).toBe('both');
+    expect(actionItems[0].placement).toBe('swipe');
 
-    expect(actionItems[1].action).toBe(channelActions.unarchive);
-    expect(actionItems[1].label).toBe('Unarchive Group');
-    expect(actionItems[1].placement).toBe('both');
+    expect(actionItems[1].action).toBe(channelActions.leave);
+    expect(actionItems[1].label).toBe('Leave Group');
+    expect(actionItems[1].placement).toBe('sheet');
   });
 
   it('shows delete confirmation and calls deleteChannel on destructive confirm', async () => {
@@ -284,7 +251,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       muteActive: false,
-      t: (value) => value,
+      t: ((value: string) => value) as TranslationContextValue['t'],
     });
 
     const deleteItem = actionItems.find((item) => item.id === 'deleteChannel');

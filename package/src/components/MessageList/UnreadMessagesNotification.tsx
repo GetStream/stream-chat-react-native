@@ -8,8 +8,8 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { ArrowUp } from '../../icons/ArrowUp';
-import { NewClose } from '../../icons/NewClose';
+import { ArrowUp } from '../../icons/arrow-up';
+import { NewClose } from '../../icons/xmark';
 import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { primitives } from '../../theme';
 import { Button } from '../ui';
@@ -84,6 +84,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
       </View>
       <View style={styles.rightButtonContainer}>
         <Button
+          accessibilityLabelKey='a11y/Dismiss unread messages'
           variant='secondary'
           type='ghost'
           iconOnly

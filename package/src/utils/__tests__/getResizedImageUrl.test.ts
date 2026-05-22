@@ -61,14 +61,16 @@ describe('getResizedImageUrl (sad flow)', () => {
   it('handles an error correctly and log warns it', () => {
     let someError;
     jest.spyOn(console, 'warn');
-    jest.spyOn(global, 'URL').mockImplementationOnce(() => ({
-      // @ts-ignore
-      searchParams: {
-        get: () => {
-          throw (someError = new Error('some error'));
-        },
-      },
-    }));
+    jest.spyOn(global, 'URL').mockImplementationOnce(
+      () =>
+        ({
+          searchParams: {
+            get: () => {
+              throw (someError = new Error('some error'));
+            },
+          },
+        }) as unknown as URL,
+    );
     const resizedUrl = getResizedImageUrl({
       url: TEST_URL_1,
     });

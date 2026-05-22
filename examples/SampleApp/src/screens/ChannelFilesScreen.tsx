@@ -12,6 +12,7 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { RouteProp } from '@react-navigation/native';
 import type { Attachment } from 'stream-chat';
@@ -83,10 +84,10 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   const insets = useSafeAreaInsets();
   const {
     theme: {
-      colors: { black, grey, white_snow },
       semantics,
     },
   } = useTheme();
+  const { black, grey, white_snow } = useLegacyColors();
 
   const [sections, setSections] = useState<
     Array<{
@@ -204,11 +205,8 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 };
 
 const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro } = useLegacyColors();
   return (
     <View style={styles.emptyContainer}>
       <File fill={grey_gainsboro} scale={6} />

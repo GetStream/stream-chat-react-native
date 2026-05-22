@@ -65,6 +65,7 @@ describe('message overlay store portal hooks', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
   });
@@ -81,6 +82,7 @@ describe('message overlay store portal hooks', () => {
         closing: false,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
 
@@ -147,6 +149,7 @@ describe('message overlay store portal hooks', () => {
         closing: true,
         closingPortalHostBlacklist: [],
         id: undefined,
+        messageId: undefined,
       });
     });
 

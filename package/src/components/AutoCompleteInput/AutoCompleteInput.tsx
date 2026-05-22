@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   I18nManager,
+  Platform,
   TextInput as RNTextInput,
   StyleSheet,
   TextInputProps,
@@ -16,16 +17,15 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
+import type { MessageInputContextValue } from '../../contexts/messageInputContext/MessageInputContext';
+import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { useCooldownRemaining } from '../MessageInput/hooks/useCooldownRemaining';
 
@@ -44,12 +44,25 @@ const TextInputRenderer = React.forwardRef<RNTextInput, AnimatedTextInputRendere
 
 const AnimatedTextInputRenderer = Animated.createAnimatedComponent(TextInputRenderer);
 
+const setRef = <T,>(ref: React.Ref<T> | undefined, value: T | null) => {
+  if (!ref) {
+    return;
+  }
+
+  if (typeof ref === 'function') {
+    ref(value);
+    return;
+  }
+
+  (ref as React.RefObject<T | null>).current = value;
+};
+
 type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<ChannelContextValue, 'channel'> &
   Pick<MessageInputContextValue, 'setInputBoxRef'> &
   Pick<TranslationContextValue, 't'> & {
     /**
-     * This is currently passed in from MessageInput to avoid rerenders
+     * This is currently passed in from MessageComposer to avoid rerenders
      * that would happen if we put this in the MessageInputContext
      */
     cooldownRemainingSeconds?: number;
@@ -69,7 +82,7 @@ const configStateSelector = (state: MessageComposerConfig) => ({
 
 const MAX_NUMBER_OF_LINES = 5;
 const LINE_HEIGHT = 20;
-const PADDING_VERTICAL = 12;
+const INPUT_VERTICAL_PADDING = Platform.OS === 'ios' ? 7 : 12;
 
 const commandPlaceHolders: Record<string, string> = {
   giphy: 'Search GIFs',
@@ -108,6 +121,30 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     setLocalText(text);
   }, [text]);
 
+  const clearState = useCallback(() => {
+    setLocalText('');
+  }, []);
+
+  const restoreState = useStableCallback((restoredText: string) => {
+    setLocalText(restoredText);
+  });
+
+  const setExtendedInputRef = useCallback(
+    (ref: RNTextInput | null) => {
+      if (!ref) {
+        setRef(setInputBoxRef, null);
+        return;
+      }
+
+      const inputBoxRef = Object.assign(ref, {
+        clearState,
+        restoreState,
+      });
+      setRef(setInputBoxRef, inputBoxRef);
+    },
+    [clearState, restoreState, setInputBoxRef],
+  );
+
   const handleSelectionChange = useCallback(
     (e: TextInputSelectionChangeEvent) => {
       const { selection } = e.nativeEvent;
@@ -133,7 +170,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   const {
     theme: {
-      messageInput: { inputBox },
+      messageComposer: { inputBox },
       semantics,
     },
   } = useTheme();
@@ -160,11 +197,11 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
       onSelectionChange={handleSelectionChange}
       placeholder={placeholderText}
       placeholderTextColor={semantics.inputTextPlaceholder}
-      ref={setInputBoxRef}
+      ref={setExtendedInputRef}
       style={[
         styles.inputBox,
         {
-          maxHeight: LINE_HEIGHT * numberOfLines + PADDING_VERTICAL * 2,
+          maxHeight: LINE_HEIGHT * numberOfLines + INPUT_VERTICAL_PADDING * 2,
           paddingLeft: command ? 0 : 16,
           paddingRight: command ? 4 : 8,
           textAlign: I18nManager.isRTL ? 'right' : 'left',
@@ -251,9 +288,10 @@ const useStyles = () => {
         paddingLeft: 16,
         paddingVertical: 12,
         textAlignVertical: 'center', // for android vertical text centering
+        alignSelf: 'center',
       },
     });
   }, [semantics]);
 };
 
-AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';
+AutoCompleteInput.displayName = 'AutoCompleteInput{messageComposer{inputBox}}';

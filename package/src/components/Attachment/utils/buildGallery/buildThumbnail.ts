@@ -5,6 +5,7 @@ import type { Attachment } from 'stream-chat';
 import type { Thumbnail } from './types';
 
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
+import type { DefaultAttachmentData } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
@@ -33,9 +34,11 @@ export function buildThumbnail({
       ? originalImageHeight + originalImageWidth > height + width
       : true;
   const imageUrl = getUrlOfImageAttachment(image) as string;
+  const localId = (image as Attachment & DefaultAttachmentData).localId;
 
   return {
     flex,
+    localId,
     resizeMode: resizeMode
       ? resizeMode
       : ((image.original_height && image.original_width ? 'contain' : 'cover') as ImageResizeMode),

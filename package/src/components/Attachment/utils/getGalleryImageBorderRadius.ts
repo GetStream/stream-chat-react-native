@@ -18,7 +18,7 @@ type Params = {
   height?: number;
   invertedDirections?: boolean;
   width?: number;
-  messageHasOnlyOneImage?: boolean;
+  messageHasOnlyOneMedia?: boolean;
 };
 
 export function getGalleryImageBorderRadius({
@@ -30,7 +30,7 @@ export function getGalleryImageBorderRadius({
   rowIndex,
   sizeConfig,
   width,
-  messageHasOnlyOneImage = false,
+  messageHasOnlyOneMedia = false,
 }: Params) {
   const isSingleImage = numOfColumns === 1 && numOfRows === 1;
   const isImageSmallerThanMinContainerSize =
@@ -51,12 +51,12 @@ export function getGalleryImageBorderRadius({
   return {
     borderTopLeftRadius: !isImageSmallerThanMinContainerSize && topLeftEdgeExposed ? 12 : 8,
     borderTopRightRadius: !isImageSmallerThanMinContainerSize && topRightEdgeExposed ? 12 : 8,
-    borderBottomLeftRadius: messageHasOnlyOneImage
+    borderBottomLeftRadius: messageHasOnlyOneMedia
       ? primitives.radiusNone
       : !isImageSmallerThanMinContainerSize && bottomLeftEdgeExposed
         ? primitives.radiusLg
         : primitives.radiusMd,
-    borderBottomRightRadius: messageHasOnlyOneImage
+    borderBottomRightRadius: messageHasOnlyOneMedia
       ? primitives.radiusNone
       : !isImageSmallerThanMinContainerSize && bottomRightEdgeExposed
         ? primitives.radiusLg

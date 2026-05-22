@@ -54,7 +54,7 @@ const useStyles = () => {
   const { theme: { semantics }} = useTheme();
   return useMemo(() => StyleSheet.create({
     selectionBar: {
-      backgroundColor: semantics.composerBg,
+      backgroundColor: semantics.backgroundCoreElevation1,
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: 16,

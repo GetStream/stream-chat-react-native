@@ -1,6 +1,7 @@
 import React from 'react';
 import Svg, { Path, PathProps, SvgProps } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
+
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export type IconProps = Partial<SvgProps> &
   Omit<RootPathProps, 'd'> & {
@@ -25,11 +26,7 @@ export type RootPathProps = {
   pathOpacity?: PathProps['opacity'];
 };
 export const RootPath: React.FC<RootPathProps> = (props) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
+  const { black } = useLegacyColors();
 
   const { d, pathFill = black, pathOpacity } = props;
   return <Path clipRule='evenodd' d={d} fill={pathFill} fillRule='evenodd' opacity={pathOpacity} />;

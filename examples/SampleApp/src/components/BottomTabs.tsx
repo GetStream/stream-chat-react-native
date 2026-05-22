@@ -13,6 +13,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import type { Route } from '@react-navigation/native';
 import { DraftsTab } from '../icons/DraftsTab';
 import { RemindersTab } from '../icons/ReminderTab';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   notification: {
@@ -26,7 +27,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   tabListContainer: {
-    borderTopColor: 'rgba(0, 0, 0, 0.0677)',
     borderTopWidth: 1,
     flexDirection: 'row',
   },
@@ -84,11 +84,8 @@ type TabProps = Pick<BottomTabBarProps, 'navigation' | 'state'> & {
 
 const Tab = (props: TabProps) => {
   const { navigation, state, route, index } = props;
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey } = useLegacyColors();
   const tab = getTab(route.name);
 
   const isFocused = state.index === index;
@@ -131,9 +128,7 @@ const Tab = (props: TabProps) => {
 export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const { navigation, state } = props;
   const {
-    theme: {
-      colors: { white },
-    },
+    theme: { semantics },
   } = useTheme();
   const { bottom } = useSafeAreaInsets();
 
@@ -142,7 +137,8 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
       style={[
         styles.tabListContainer,
         {
-          backgroundColor: white,
+          backgroundColor: semantics.backgroundCoreElevation1,
+          borderTopColor: semantics.borderCoreSubtle,
           paddingBottom: bottom,
         },
       ]}

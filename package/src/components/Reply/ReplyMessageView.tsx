@@ -50,6 +50,7 @@ const useStyles = ({ isMyMessage = false }: { isMyMessage?: boolean }) => {
         alignItems: 'center',
         gap: primitives.spacingXxs,
         flexShrink: 1,
+        alignSelf: 'flex-start',
         ...messagePreview.container,
       },
       subtitle: {

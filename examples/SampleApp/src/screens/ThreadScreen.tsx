@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   AlsoSentToChannelHeaderPressPayload,
@@ -25,9 +25,9 @@ import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.ts
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { useAppContext } from '../context/AppContext.ts';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -80,9 +80,9 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   const {
     theme: {
       semantics,
-      colors: { white },
     },
   } = useTheme();
+  const { white } = useLegacyColors();
   const { client: chatClient } = useChatContext();
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
@@ -148,14 +148,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   return (
     <View style={[styles.container, { backgroundColor: white }]}>
       <Channel
-        audioRecordingEnabled={false}
-        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
+        audioRecordingEnabled={true}
         channel={channel}
-        enforceUniqueReaction
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
-        MessageLocation={MessageLocation}
         onPressMessage={onPressMessage}
         thread={thread}
         threadList

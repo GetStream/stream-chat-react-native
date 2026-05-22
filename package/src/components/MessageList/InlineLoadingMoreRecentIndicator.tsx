@@ -3,10 +3,11 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../theme';
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
-    padding: 10,
+    padding: primitives.spacingSm,
     width: '100%',
   },
 });
@@ -20,9 +21,7 @@ export const InlineLoadingMoreRecentIndicatorWithContext = ({
 }: InlineLoadingMoreRecentIndicatorPropsWithContext) => {
   const { theme } = useTheme();
 
-  const {
-    colors: { accent_blue },
-  } = theme;
+  const { semantics } = theme;
 
   if (!loadingMoreRecent) {
     return null;
@@ -30,7 +29,7 @@ export const InlineLoadingMoreRecentIndicatorWithContext = ({
 
   return (
     <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={accent_blue} size='small' />
+      <ActivityIndicator color={semantics.accentPrimary} size='small' />
     </View>
   );
 };

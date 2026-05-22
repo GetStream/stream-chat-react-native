@@ -1,4 +1,4 @@
-import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
+import type { Attachment, UserResponse } from 'stream-chat';
 
 import {
   generateImageAttachment,
@@ -31,11 +31,11 @@ const { isVideoPlayerAvailable } = jest.requireMock('../../native') as {
 const createGiphyAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
   giphy: {
     fixed_height: {
-      height: 200,
+      height: '200',
       url: 'https://giphy.com/test.gif',
-      width: 200,
+      width: '200',
     },
-  },
+  } as unknown as Attachment['giphy'],
   thumb_url: 'https://giphy.com/thumb.gif',
   type: 'giphy',
   ...overrides,
@@ -103,7 +103,7 @@ describe('ImageGalleryStateStore', () => {
   describe('messages getter and setter', () => {
     it('should get messages from state', () => {
       const store = new ImageGalleryStateStore();
-      const messages = [generateMessage({ id: 1 }), generateMessage({ id: 2 })];
+      const messages = [generateMessage({ id: '1' }), generateMessage({ id: '2' })];
 
       store.messages = messages;
 
@@ -112,7 +112,7 @@ describe('ImageGalleryStateStore', () => {
 
     it('should update state when setting messages', () => {
       const store = new ImageGalleryStateStore();
-      const messages = [generateMessage({ id: 1 })];
+      const messages = [generateMessage({ id: '1' })];
 
       store.messages = messages;
 
@@ -192,7 +192,7 @@ describe('ImageGalleryStateStore', () => {
       const imageAttachment = generateImageAttachment({
         image_url: 'https://example.com/image.jpg',
       });
-      const message = generateMessage({ attachments: [imageAttachment], id: 1 });
+      const message = generateMessage({ attachments: [imageAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -205,7 +205,7 @@ describe('ImageGalleryStateStore', () => {
       const videoAttachment = generateVideoAttachment({
         asset_url: 'https://example.com/video.mp4',
       });
-      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+      const message = generateMessage({ attachments: [videoAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -216,7 +216,7 @@ describe('ImageGalleryStateStore', () => {
     it('should filter messages with giphy attachments', () => {
       const store = new ImageGalleryStateStore();
       const giphyAttachment = createGiphyAttachment();
-      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+      const message = generateMessage({ attachments: [giphyAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -230,7 +230,7 @@ describe('ImageGalleryStateStore', () => {
       const videoAttachment = generateVideoAttachment({
         asset_url: 'https://example.com/video.mp4',
       });
-      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+      const message = generateMessage({ attachments: [videoAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -243,7 +243,7 @@ describe('ImageGalleryStateStore', () => {
         image_url: 'https://example.com/image.jpg',
         title_link: 'https://example.com',
       });
-      const message = generateMessage({ attachments: [linkPreviewAttachment], id: 1 });
+      const message = generateMessage({ attachments: [linkPreviewAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -256,7 +256,7 @@ describe('ImageGalleryStateStore', () => {
         image_url: 'https://example.com/image.jpg',
         og_scrape_url: 'https://example.com',
       });
-      const message = generateMessage({ attachments: [linkAttachment], id: 1 });
+      const message = generateMessage({ attachments: [linkAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -270,7 +270,7 @@ describe('ImageGalleryStateStore', () => {
         image_url: 'https://example.com/preview.jpg',
         title_link: 'https://example.com',
       });
-      const message = generateMessage({ attachments: [viewableImage, linkPreview], id: 1 });
+      const message = generateMessage({ attachments: [viewableImage, linkPreview], id: '1' });
 
       store.messages = [message];
 
@@ -283,7 +283,7 @@ describe('ImageGalleryStateStore', () => {
         asset_url: 'https://example.com/file.pdf',
         type: 'file',
       };
-      const message = generateMessage({ attachments: [fileAttachment], id: 1 });
+      const message = generateMessage({ attachments: [fileAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -292,7 +292,7 @@ describe('ImageGalleryStateStore', () => {
 
     it('should handle null attachments gracefully', () => {
       const store = new ImageGalleryStateStore();
-      const message = generateMessage({ attachments: [null as unknown as Attachment], id: 1 });
+      const message = generateMessage({ attachments: [null as unknown as Attachment], id: '1' });
 
       store.messages = [message];
 
@@ -301,7 +301,7 @@ describe('ImageGalleryStateStore', () => {
 
     it('should handle messages without attachments array', () => {
       const store = new ImageGalleryStateStore();
-      const message = generateMessage({ attachments: undefined, id: 1 });
+      const message = generateMessage({ attachments: undefined, id: '1' });
 
       store.messages = [message];
 
@@ -340,7 +340,7 @@ describe('ImageGalleryStateStore', () => {
         original_width: 800,
         thumb_url: 'https://example.com/thumb.jpg',
       });
-      const user: Partial<UserResponse> = { id: 'user-1', name: 'Test User' };
+      const user: UserResponse = { id: 'user-1', name: 'Test User' } as UserResponse;
       const message = generateMessage({
         attachments: [imageAttachment],
         cid: 'channel-msg-1',
@@ -372,7 +372,7 @@ describe('ImageGalleryStateStore', () => {
         asset_url: 'https://example.com/video.mp4',
         thumb_url: 'https://example.com/video-thumb.jpg',
       });
-      const message = generateMessage({ attachments: [videoAttachment], id: 1 });
+      const message = generateMessage({ attachments: [videoAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -388,7 +388,7 @@ describe('ImageGalleryStateStore', () => {
     it('should transform giphy attachments with correct mime type', () => {
       const store = new ImageGalleryStateStore();
       const giphyAttachment = createGiphyAttachment();
-      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+      const message = generateMessage({ attachments: [giphyAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -405,7 +405,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const attachment1 = generateImageAttachment({ image_url: 'https://example.com/image1.jpg' });
       const attachment2 = generateImageAttachment({ image_url: 'https://example.com/image2.jpg' });
-      const message = generateMessage({ attachments: [attachment1, attachment2], id: 1 });
+      const message = generateMessage({ attachments: [attachment1, attachment2], id: '1' });
 
       store.messages = [message];
 
@@ -418,12 +418,12 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore({ giphyVersion: 'original' });
       const giphyAttachment: Attachment = {
         giphy: {
-          fixed_height: { height: 200, url: 'https://giphy.com/fixed.gif', width: 200 },
-          original: { height: 400, url: 'https://giphy.com/original.gif', width: 400 },
-        },
+          fixed_height: { height: '200', url: 'https://giphy.com/fixed.gif', width: '200' },
+          original: { height: '400', url: 'https://giphy.com/original.gif', width: '400' },
+        } as unknown as Attachment['giphy'],
         type: 'giphy',
       };
-      const message = generateMessage({ attachments: [giphyAttachment], id: 1 });
+      const message = generateMessage({ attachments: [giphyAttachment], id: '1' });
 
       store.messages = [message];
 
@@ -439,11 +439,11 @@ describe('ImageGalleryStateStore', () => {
           generateImageAttachment({ image_url: 'https://example.com/image1.jpg' }),
           generateImageAttachment({ image_url: 'https://example.com/image2.jpg' }),
         ],
-        id: 1,
+        id: '1',
       });
       const message2 = generateMessage({
         attachments: [generateVideoAttachment({ asset_url: 'https://example.com/video.mp4' })],
-        id: 2,
+        id: '2',
       });
 
       store.messages = [message1, message2];
@@ -547,7 +547,10 @@ describe('ImageGalleryStateStore', () => {
       ];
       const selectedUrl = 'https://example.com/1.jpg';
 
-      store.openImageGallery({ messages, selectedAttachmentUrl: selectedUrl });
+      store.openImageGallery({
+        messages,
+        selectedAttachmentUrl: selectedUrl,
+      });
 
       expect(store.messages).toEqual(messages);
       expect(store.selectedAttachmentUrl).toBe(selectedUrl);
@@ -795,7 +798,7 @@ describe('ImageGalleryStateStore', () => {
           id: 'msg-1',
         }),
         user: undefined,
-      } as LocalMessage;
+      };
 
       store.messages = [message];
 

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent, render, cleanup, waitFor } from '@testing-library/react-native';
+import type { StreamChat } from 'stream-chat';
 
 import {
   MessageContextValue,
@@ -39,8 +40,11 @@ const defaultProps = {
 };
 
 describe('MessageReactionPicker', () => {
-  let client;
-  let renderComponent;
+  let client: StreamChat;
+  let renderComponent: (
+    props?: Partial<React.ComponentProps<typeof MessageReactionPicker>>,
+    ownCapabilities?: Partial<OwnCapabilitiesContextValue>,
+  ) => ReturnType<typeof render>;
 
   beforeEach(async () => {
     client = await getTestClientWithUser({ id: 'reaction-test-user' });
@@ -76,12 +80,10 @@ describe('MessageReactionPicker', () => {
   });
 
   it('renders correctly with supported reactions', async () => {
-    const { getAllByLabelText, getByLabelText } = renderComponent();
+    const { getAllByRole, getByLabelText } = renderComponent();
     await waitFor(() => {
       expect(getByLabelText('Reaction Selector on long pressing message')).toBeTruthy();
-      expect(getAllByLabelText(/\breaction-button[^\s]+/)).toHaveLength(
-        mockSupportedReactions.length,
-      );
+      expect(getAllByRole('button')).toHaveLength(mockSupportedReactions.length + 1);
     });
   });
 
@@ -91,20 +93,20 @@ describe('MessageReactionPicker', () => {
   });
 
   it('marks own reactions as selected', async () => {
-    const { getAllByLabelText } = renderComponent();
+    const { getAllByRole } = renderComponent();
 
     await waitFor(() => {
-      const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-      expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-selected');
-      expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
+      const reactionButtons = getAllByRole('button');
+      expect(reactionButtons[0].props.accessibilityState.selected).toBe(true);
+      expect(reactionButtons[1].props.accessibilityState.selected).toBe(false);
     });
   });
 
   it('calls handleReaction and dismissOverlay when a reaction is pressed', async () => {
-    const { getAllByLabelText } = renderComponent();
+    const { getAllByRole } = renderComponent();
 
     await waitFor(() => {
-      const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+      const reactionButtons = getAllByRole('button');
       fireEvent.press(reactionButtons[1]);
       expect(defaultProps.handleReaction).toHaveBeenCalledWith('love');
       expect(defaultProps.dismissOverlay).toHaveBeenCalled();
@@ -113,9 +115,9 @@ describe('MessageReactionPicker', () => {
   });
 
   it("doesn't call handleReaction when it's not provided", async () => {
-    const { getAllByLabelText } = renderComponent({ handleReaction: undefined });
+    const { getAllByRole } = renderComponent({ handleReaction: undefined });
     await waitFor(() => {
-      const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+      const reactionButtons = getAllByRole('button');
 
       fireEvent.press(reactionButtons[1]);
 
@@ -128,11 +130,11 @@ describe('MessageReactionPicker', () => {
       { Icon: () => null, isMain: true, type: 'wow' },
       { Icon: () => null, isMain: true, type: 'haha' },
     ];
-    const { getAllByLabelText } = renderComponent({ supportedReactions: customSupportedReactions });
+    const { getAllByRole } = renderComponent({ supportedReactions: customSupportedReactions });
 
     await waitFor(() => {
-      const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-      expect(reactionButtons).toHaveLength(customSupportedReactions.length);
+      const reactionButtons = getAllByRole('button');
+      expect(reactionButtons).toHaveLength(customSupportedReactions.length + 1);
     });
   });
 });

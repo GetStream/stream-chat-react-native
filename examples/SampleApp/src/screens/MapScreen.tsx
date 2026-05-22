@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { MapMarker, Marker } from 'react-native-maps';
 import { SharedLocationResponse, StreamChat } from 'stream-chat';
 import { useStreamChatContext } from '../context/StreamChatContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export type MapScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -45,11 +46,8 @@ const MapScreenFooter = ({
 }) => {
   const { channel } = useStreamChatContext();
   const { end_at, user_id } = shared_location;
-  const {
-    theme: {
-      colors: { accent_blue, accent_red, grey },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue, accent_red, grey } = useLegacyColors();
   const liveLocationActive = isLiveLocationStopped
     ? false
     : end_at && new Date(end_at) > new Date();
@@ -117,11 +115,8 @@ export const MapScreen = ({ route }: MapScreenProps) => {
   const { channel } = useStreamChatContext();
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);
-  const {
-    theme: {
-      colors: { accent_blue },
-    },
-  } = useTheme();
+  useTheme();
+  const { accent_blue } = useLegacyColors();
 
   const { width, height } = useWindowDimensions();
   const aspect_ratio = width / height;

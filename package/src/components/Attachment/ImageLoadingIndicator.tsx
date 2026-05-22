@@ -1,10 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useTheme } from '../../contexts';
 import { NativeShimmerView } from '../UIComponents/NativeShimmerView';
 
-export const ImageLoadingIndicator = () => {
+export const ImageLoadingIndicator = React.memo(() => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -14,19 +14,7 @@ export const ImageLoadingIndicator = () => {
       accessible
       enabled
       gradientColor={semantics.skeletonLoadingHighlight}
-      style={StyleSheet.absoluteFillObject}
-    >
-      <View pointerEvents='none' style={styles.centered}>
-        <ActivityIndicator />
-      </View>
-    </NativeShimmerView>
+      style={StyleSheet.absoluteFill}
+    />
   );
-};
-
-const styles = StyleSheet.create({
-  centered: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
 });

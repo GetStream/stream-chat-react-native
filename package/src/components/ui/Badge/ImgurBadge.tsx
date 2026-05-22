@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Imgur } from '../../../icons/Imgur';
+import { Imgur } from '../../../icons/imgur';
 import { primitives } from '../../../theme';
 
 export const ImgurBadge = () => {
@@ -32,7 +32,7 @@ const useStyles = () => {
         alignItems: 'center',
       },
       text: {
-        color: semantics.badgeTextInverse,
+        color: semantics.badgeTextOnInverse,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,

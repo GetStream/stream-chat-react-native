@@ -4,7 +4,7 @@ import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/nati
 import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
-  MessageInput,
+  MessageComposer,
   MessageList,
   MessageFlashList,
   ThreadContextValue,
@@ -18,7 +18,7 @@ import {
   ChannelAvatar,
   PortalWhileClosingView,
 } from 'stream-chat-react-native';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAppContext } from '../context/AppContext';
@@ -29,11 +29,9 @@ import type { StackNavigatorParamList } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
-import { MessageLocation } from '../components/LocationSharing/MessageLocation.tsx';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
-import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
-import { CustomAttachmentPickerContent } from '../components/AttachmentPickerContent.tsx';
 import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
@@ -103,7 +101,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             opacity: pressed ? 0.5 : 1,
           })}
         >
-          <ChannelAvatar channel={channel} size='lg' />
+          <ChannelAvatar channel={channel} size='xl' />
         </Pressable>
       )}
       showUnreadCountBadge
@@ -115,10 +113,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 };
 
 // Either provide channel or channelId.
-export const ChannelScreen: React.FC<ChannelScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route }) => {
   const { channel: channelFromProp, channelId, messageId } = route.params;
   const {
     chatClient,
@@ -216,7 +211,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         if (stackRoute.name !== 'ThreadScreen') {
           return false;
         }
-        const routeParams = stackRoute.params as StackNavigatorParamList['ThreadScreen'] | undefined;
+        const routeParams = stackRoute.params as
+          | StackNavigatorParamList['ThreadScreen']
+          | undefined;
         const routeThreadId =
           (routeParams?.thread as LocalMessage)?.id ??
           (routeParams?.thread as ThreadType)?.thread?.id;
@@ -268,25 +265,18 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
       <Channel
         audioRecordingEnabled={true}
-        AttachmentPickerSelectionBar={CustomAttachmentPickerSelectionBar}
-        AttachmentPickerContent={CustomAttachmentPickerContent}
         channel={channel}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        keyboardVerticalOffset={0}
         messageActions={messageActions}
-        MessageLocation={MessageLocation}
         messageId={messageId}
-        NetworkDownIndicator={() => null}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
         maximumMessageLimit={messageListPruning}
       >
-        <PortalWhileClosingView
-          portalHostName='overlay-header'
-          portalName='channel-header'
-        >
+        <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />
         </PortalWhileClosingView>
         {messageListImplementation === 'flashlist' ? (
@@ -301,7 +291,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           />
         )}
         <AITypingIndicatorView channel={channel} />
-        <MessageInput />
+        <MessageComposer />
         {modalVisible && (
           <MessageInfoBottomSheet
             visible={modalVisible}

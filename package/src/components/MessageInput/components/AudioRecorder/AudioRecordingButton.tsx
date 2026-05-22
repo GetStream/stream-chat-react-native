@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Alert, Linking, StyleSheet } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 
 import { Gesture, GestureDetector, State } from 'react-native-gesture-handler';
 import Animated, {
@@ -10,6 +10,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useActiveAudioPlayer } from '../../../../contexts/audioPlayerContext/AudioPlayerContext';
 import {
   MessageInputContextValue,
@@ -19,10 +20,11 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Mic } from '../../../../icons/Mic';
+import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications';
 import { ButtonStylesConfig, useButtonStyles } from '../../../ui/Button/hooks/useButtonStyles';
 import { useMicPositionContext } from '../../contexts/MicPositionContext';
 
@@ -31,7 +33,7 @@ export type AudioRecordingButtonPropsWithContext = Pick<
   | 'asyncMessagesMinimumPressDuration'
   | 'asyncMessagesSlideToCancelDistance'
   | 'asyncMessagesLockDistance'
-  | 'asyncMessagesMultiSendEnabled'
+  | 'audioRecordingSendOnComplete'
   | 'audioRecorderManager'
   | 'startVoiceRecording'
   | 'deleteVoiceRecording'
@@ -67,7 +69,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     startVoiceRecording,
     deleteVoiceRecording,
     uploadVoiceRecording,
@@ -83,13 +85,15 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const pressed = useSharedValue(false);
 
   const { t } = useTranslationContext();
+  const startVoiceRecordingAccessibilityLabel = useA11yLabel('a11y/Start voice recording');
   const {
     theme: {
-      messageInput: { micButtonContainer },
+      messageComposer: { micButtonContainer },
       semantics,
     },
   } = useTheme();
   const buttonStyles = useButtonStyles(buttonStylesConfig);
+  const { addNotification } = useNotificationApi();
 
   const onPressHandler = useStableCallback(() => {
     if (handlePress) {
@@ -97,7 +101,14 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     }
     if (!recording) {
       NativeHandlers.triggerHaptic('notificationError');
-      Alert.alert(t('Hold to start recording.'));
+      addNotification({
+        message: 'Hold to record. Release to save.',
+        options: {
+          severity: 'info',
+          type: 'validation:audio:recording:hold-required',
+        },
+        origin: { emitter: 'AudioRecordingButton' },
+      });
     }
   });
 
@@ -113,18 +124,23 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       }
       const permissionsGranted = await startVoiceRecording();
       if (!permissionsGranted) {
-        Alert.alert(t('Please allow Audio permissions in settings.'), '', [
-          {
-            onPress: () => {
-              Linking.openSettings();
-            },
-            text: t('Open Settings'),
+        addNotification({
+          message: 'Please allow Audio permissions in settings.',
+          options: {
+            actions: [
+              {
+                handler: () => {
+                  Linking.openSettings();
+                },
+                label: t('Open Settings'),
+              },
+            ],
+            duration: 0,
+            severity: 'warning',
+            type: 'permission:audio:recording:blocked',
           },
-          {
-            text: t('Cancel'),
-            style: 'cancel',
-          },
-        ]);
+          origin: { emitter: 'AudioRecordingButton' },
+        });
         return;
       }
       NativeHandlers.triggerHaptic('impactHeavy');
@@ -156,7 +172,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       return;
     }
     if (status === 'recording') {
-      uploadVoiceRecording(asyncMessagesMultiSendEnabled);
+      uploadVoiceRecording(audioRecordingSendOnComplete);
     } else {
       resetAudioRecording();
     }
@@ -232,13 +248,18 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      backgroundColor: pressed.value ? semantics.backgroundCorePressed : 'transparent',
+      backgroundColor: pressed.value ? semantics.backgroundUtilityPressed : 'transparent',
     };
   });
 
   return (
     <GestureDetector gesture={Gesture.Simultaneous(panGesture, tapGesture)}>
-      <Animated.View style={[styles.container, animatedStyle, micButtonContainer]}>
+      <Animated.View
+        accessibilityLabel={startVoiceRecordingAccessibilityLabel}
+        accessibilityRole='button'
+        accessible
+        style={[styles.container, animatedStyle, micButtonContainer]}
+      >
         <Mic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
       </Animated.View>
     </GestureDetector>
@@ -263,7 +284,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     startVoiceRecording,
     deleteVoiceRecording,
     uploadVoiceRecording,
@@ -281,7 +302,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
         asyncMessagesMinimumPressDuration,
         asyncMessagesSlideToCancelDistance,
         asyncMessagesLockDistance,
-        asyncMessagesMultiSendEnabled,
+        audioRecordingSendOnComplete,
         startVoiceRecording,
         deleteVoiceRecording,
         uploadVoiceRecording,
@@ -294,7 +315,7 @@ export const AudioRecordingButton = (props: AudioRecordingButtonProps) => {
   );
 };
 
-AudioRecordingButton.displayName = 'AudioRecordingButton{messageInput}';
+AudioRecordingButton.displayName = 'AudioRecordingButton{messageComposer}';
 
 const styles = StyleSheet.create({
   container: {

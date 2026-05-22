@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 
-import { lookup } from 'mime-types';
 import {
   Channel as ChannelClass,
   ChannelState,
@@ -50,10 +49,12 @@ import {
   AudioPlayerContextProps,
   AudioPlayerProvider,
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
+
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
@@ -99,7 +100,8 @@ import {
   ChannelUnreadStateStoreType,
 } from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
-import { FileTypes } from '../../types/types';
+import { primitives } from '../../theme';
+import { DefaultAttachmentData, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
@@ -110,116 +112,14 @@ import {
   MessageStatusTypes,
   ReactionData,
 } from '../../utils/utils';
-import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
-import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/Audio';
-import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
-import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
-import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
-import { FilePreview as FilePreviewDefault } from '../Attachment/FilePreview';
-import { Gallery as GalleryDefault } from '../Attachment/Gallery';
-import { Giphy as GiphyDefault } from '../Attachment/Giphy';
-import { ImageLoadingFailedIndicator as ImageLoadingFailedIndicatorDefault } from '../Attachment/ImageLoadingFailedIndicator';
-import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
-import { UnsupportedAttachment as UnsupportedAttachmentDefault } from '../Attachment/UnsupportedAttachment';
-import { URLPreview as URLPreviewDefault } from '../Attachment/UrlPreview';
-import { URLPreviewCompact as URLPreviewCompactDefault } from '../Attachment/UrlPreview/URLPreviewCompact';
-import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
+import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import { AttachmentPickerContent as DefaultAttachmentPickerContent } from '../AttachmentPicker/components/AttachmentPickerContent';
-import { AttachmentPickerSelectionBar as DefaultAttachmentPickerSelectionBar } from '../AttachmentPicker/components/AttachmentPickerSelectionBar';
-import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../AttachmentPicker/components/ImageOverlaySelectedComponent';
-import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
-import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
-import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
-import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
-import {
-  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
-  LoadingErrorProps,
-} from '../Indicators/LoadingErrorIndicator';
-import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
-import {
-  KeyboardCompatibleView as KeyboardCompatibleViewDefault,
-  KeyboardCompatibleViewProps,
-} from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
-import { Message as MessageDefault } from '../Message/Message';
-import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/Headers/MessagePinnedHeader';
-import { MessageReminderHeader as MessageReminderHeaderDefault } from '../Message/MessageSimple/Headers/MessageReminderHeader';
-import { MessageSavedForLaterHeader as MessageSavedForLaterHeaderDefault } from '../Message/MessageSimple/Headers/MessageSavedForLaterHeader';
-import { SentToChannelHeader as SentToChannelHeaderDefault } from '../Message/MessageSimple/Headers/SentToChannelHeader';
-import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
-import { MessageBlocked as MessageBlockedDefault } from '../Message/MessageSimple/MessageBlocked';
-import { MessageBounce as MessageBounceDefault } from '../Message/MessageSimple/MessageBounce';
-import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
-import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
-import { MessageError as MessageErrorDefault } from '../Message/MessageSimple/MessageError';
-import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
-import { MessageHeader as MessageHeaderDefault } from '../Message/MessageSimple/MessageHeader';
-import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
-import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
-import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
-import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
-import { MessageSwipeContent as MessageSwipeContentDefault } from '../Message/MessageSimple/MessageSwipeContent';
-import { MessageTimestamp as MessageTimestampDefault } from '../Message/MessageSimple/MessageTimestamp';
-import { ReactionListBottom as ReactionListBottomDefault } from '../Message/MessageSimple/ReactionList/ReactionListBottom';
-import { ReactionListClustered as ReactionListClusteredDefault } from '../Message/MessageSimple/ReactionList/ReactionListClustered';
-import { ReactionListCountItem as ReactionListCountItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
-import { ReactionListItem as ReactionListItemDefault } from '../Message/MessageSimple/ReactionList/ReactionListItem';
-import { ReactionListItemWrapper as ReactionListItemWrapperDefault } from '../Message/MessageSimple/ReactionList/ReactionListItemWrapper';
-import { ReactionListTop as ReactionListTopDefault } from '../Message/MessageSimple/ReactionList/ReactionListTop';
-import { StreamingMessageView as DefaultStreamingMessageView } from '../Message/MessageSimple/StreamingMessageView';
-import { AttachmentUploadPreviewList as AttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadPreviewList';
-import { FileUploadInProgressIndicator as FileUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { FileUploadRetryIndicator as FileUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { FileUploadNotSupportedIndicator as FileUploadNotSupportedIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { ImageUploadInProgressIndicator as ImageUploadInProgressIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { ImageUploadRetryIndicator as ImageUploadRetryIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { ImageUploadNotSupportedIndicator as ImageUploadNotSupportedIndicatorDefault } from '../MessageInput/components/AttachmentPreview/AttachmentUploadProgressIndicator';
-import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/AudioAttachmentUploadPreview';
-import { FileAttachmentUploadPreview as FileAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/FileAttachmentUploadPreview';
-import { ImageAttachmentUploadPreview as ImageAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/ImageAttachmentUploadPreview';
-import { VideoAttachmentUploadPreview as VideoAttachmentUploadPreviewDefault } from '../MessageInput/components/AttachmentPreview/VideoAttachmentUploadPreview';
-import { AudioRecorder as AudioRecorderDefault } from '../MessageInput/components/AudioRecorder/AudioRecorder';
-import { AudioRecordingButton as AudioRecordingButtonDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingButton';
-import { AudioRecordingInProgress as AudioRecordingInProgressDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingInProgress';
-import { AudioRecordingLockIndicator as AudioRecordingLockIndicatorDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingLockIndicator';
-import { AudioRecordingPreview as AudioRecordingPreviewDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingPreview';
-import { AudioRecordingWaveform as AudioRecordingWaveformDefault } from '../MessageInput/components/AudioRecorder/AudioRecordingWaveform';
-import { InputButtons as InputButtonsDefault } from '../MessageInput/components/InputButtons';
-import { AttachButton as AttachButtonDefault } from '../MessageInput/components/InputButtons/AttachButton';
-import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/components/OutputButtons/CooldownTimer';
-import { SendButton as SendButtonDefault } from '../MessageInput/components/OutputButtons/SendButton';
-import { MessageComposerLeadingView as MessageComposerLeadingViewDefault } from '../MessageInput/MessageComposerLeadingView';
-import { MessageComposerTrailingView as MessageComposerTrailingViewDefault } from '../MessageInput/MessageComposerTrailingView';
-import { MessageInputHeaderView as MessageInputHeaderViewDefault } from '../MessageInput/MessageInputHeaderView';
-import { MessageInputLeadingView as MessageInputLeadingViewDefault } from '../MessageInput/MessageInputLeadingView';
-import { MessageInputTrailingView as MessageInputTrailingViewDefault } from '../MessageInput/MessageInputTrailingView';
-import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
-import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
-import { StopMessageStreamingButton as DefaultStopMessageStreamingButton } from '../MessageInput/StopMessageStreamingButton';
-import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
-import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
-import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
-import { MessageList as MessageListDefault } from '../MessageList/MessageList';
-import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
-import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
-import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
-import { StickyHeader as StickyHeaderDefault } from '../MessageList/StickyHeader';
-import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
-import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
-import { UnreadMessagesNotification as UnreadMessagesNotificationDefault } from '../MessageList/UnreadMessagesNotification';
+import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
-import { MessageActionList as MessageActionListDefault } from '../MessageMenu/MessageActionList';
-import { MessageActionListItem as MessageActionListItemDefault } from '../MessageMenu/MessageActionListItem';
-import { MessageMenu as MessageMenuDefault } from '../MessageMenu/MessageMenu';
-import {
-  MessageReactionPicker as MessageReactionPickerDefault,
-  toUnicodeScalarString,
-} from '../MessageMenu/MessageReactionPicker';
-import { MessageUserReactions as MessageUserReactionsDefault } from '../MessageMenu/MessageUserReactions';
-import { MessageUserReactionsAvatar as MessageUserReactionsAvatarDefault } from '../MessageMenu/MessageUserReactionsAvatar';
-import { MessageUserReactionsItem as MessageUserReactionsItemDefault } from '../MessageMenu/MessageUserReactionsItem';
-import { Reply as ReplyDefault } from '../Reply/Reply';
+import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
+import { getChannelNotificationHostId } from '../Notifications/notificationTarget';
+import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type MarkReadFunctionOptions = {
   /**
@@ -229,10 +129,6 @@ export type MarkReadFunctionOptions = {
    */
   updateChannelUnreadState?: boolean;
 };
-
-const styles = StyleSheet.create({
-  selectChannel: { fontWeight: 'bold', padding: 16 },
-});
 
 export const reactionData: ReactionData[] = [
   {
@@ -291,30 +187,47 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'bottomInset'
       | 'topInset'
       | 'disableAttachmentPicker'
-      | 'ImageOverlaySelectedComponent'
       | 'numberOfAttachmentPickerImageColumns'
-      | 'AttachmentPickerIOSSelectMorePhotos'
       | 'numberOfAttachmentImagesToLoadPerCall'
-      | 'AttachmentPickerContent'
     >
   > &
   Partial<
     Pick<
       ChannelContextValue,
-      | 'EmptyStateIndicator'
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
-      | 'LoadingIndicator'
       | 'maxTimeBetweenGroupedMessages'
-      | 'NetworkDownIndicator'
-      | 'StickyHeader'
       | 'maximumMessageLimit'
     >
   > &
   Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
-  Partial<Omit<InputMessageInputContextValue, 'editing' | 'clearEditingState' | 'sendMessage'>> &
+  Partial<
+    Pick<
+      InputMessageInputContextValue,
+      | 'additionalTextInputProps'
+      | 'allowSendBeforeAttachmentsUpload'
+      | 'asyncMessagesLockDistance'
+      | 'asyncMessagesMinimumPressDuration'
+      | 'audioRecordingSendOnComplete'
+      | 'asyncMessagesSlideToCancelDistance'
+      | 'attachmentPickerBottomSheetHeight'
+      | 'attachmentSelectionBarHeight'
+      | 'audioRecordingEnabled'
+      | 'compressImageQuality'
+      | 'createPollOptionGap'
+      | 'doFileUploadRequest'
+      | 'handleAttachButtonPress'
+      | 'hasCameraPicker'
+      | 'hasCommands'
+      | 'hasFilePicker'
+      | 'hasImagePicker'
+      | 'messageInputFloating'
+      | 'openPollCreationDialog'
+      | 'setInputRef'
+    >
+  > &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<PaginatedMessageListContextValue, 'messages' | 'loadingMore' | 'loadingMoreRecent'>
@@ -324,25 +237,14 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     Pick<
       MessagesContextValue,
       | 'additionalPressableProps'
-      | 'Attachment'
-      | 'AudioAttachment'
       | 'customMessageSwipeAction'
-      | 'DateHeader'
-      | 'deletedMessagesVisibilityType'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
       | 'enableSwipeToReply'
       | 'urlPreviewType'
-      | 'UnsupportedAttachment'
-      | 'FileAttachment'
-      | 'FileAttachmentIcon'
-      | 'FileAttachmentGroup'
-      | 'FilePreview'
       | 'FlatList'
       | 'forceAlignMessages'
-      | 'Gallery'
       | 'getMessageGroupStyle'
-      | 'Giphy'
       | 'giphyVersion'
       | 'handleBan'
       | 'handleCopy'
@@ -358,72 +260,23 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'handleRetry'
       | 'handleThreadReply'
       | 'handleBlockUser'
-      | 'InlineDateSeparator'
-      | 'InlineUnreadIndicator'
       | 'isAttachmentEqual'
-      | 'ImageLoadingFailedIndicator'
-      | 'ImageLoadingIndicator'
       | 'markdownRules'
-      | 'Message'
-      | 'MessageActionList'
-      | 'MessageActionListItem'
       | 'messageActions'
-      | 'MessageAvatar'
-      | 'MessageBounce'
-      | 'MessageBlocked'
-      | 'MessageContent'
       | 'messageContentOrder'
-      | 'MessageDeleted'
-      | 'MessageError'
-      | 'MessageFooter'
-      | 'MessageHeader'
-      | 'MessageList'
-      | 'MessageLocation'
-      | 'MessageMenu'
-      | 'MessagePinnedHeader'
-      | 'MessageReminderHeader'
-      | 'MessageSavedForLaterHeader'
-      | 'SentToChannelHeader'
-      | 'MessageReplies'
-      | 'MessageRepliesAvatars'
-      | 'MessageSimple'
-      | 'MessageStatus'
-      | 'MessageSystem'
-      | 'MessageText'
+      | 'messageOverlayTargetId'
       | 'messageTextNumberOfLines'
-      | 'MessageTimestamp'
-      | 'MessageUserReactions'
-      | 'MessageSwipeContent'
       | 'messageSwipeToReplyHitSlop'
       | 'myMessageTheme'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
-      | 'MessageReactionPicker'
-      | 'MessageUserReactionsAvatar'
-      | 'MessageUserReactionsItem'
-      | 'ReactionListBottom'
       | 'reactionListPosition'
       | 'reactionListType'
-      | 'ReactionListTop'
-      | 'ReactionListClustered'
-      | 'ReactionListItem'
-      | 'ReactionListItemWrapper'
-      | 'ReactionListCountItem'
-      | 'Reply'
       | 'shouldShowUnreadUnderlay'
-      | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
-      | 'TypingIndicator'
-      | 'TypingIndicatorContainer'
-      | 'UrlPreview'
-      | 'URLPreviewCompact'
-      | 'VideoThumbnail'
-      | 'PollContent'
       | 'hasCreatePoll'
-      | 'UnreadMessagesNotification'
-      | 'StreamingMessageView'
     >
   > &
   Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>> &
@@ -492,31 +345,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     initialScrollToFirstUnreadMessage?: boolean;
     keyboardBehavior?: KeyboardCompatibleViewProps['behavior'];
-    /**
-     * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
-     *
-     * **Example:**
-     *
-     * ```
-     * <Channel
-     *  channel={channel}
-     *  KeyboardCompatibleView={(props) => {
-     *    return (
-     *      <KeyboardCompatibleView>
-     *        {props.children}
-     *      </KeyboardCompatibleView>
-     *    )
-     *  }}
-     * />
-     * ```
-     */
-    KeyboardCompatibleView?: React.ComponentType<KeyboardCompatibleViewProps>;
     keyboardVerticalOffset?: number;
-    /**
-     * Custom loading error indicator to override the Stream default
-     */
-    LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
     /**
      * Boolean flag to enable/disable marking the channel as read on mount
      */
@@ -525,6 +354,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * Load the channel at a specified message instead of the most recent message.
      */
     messageId?: string;
+    notificationHostId?: string;
     /**
      * @deprecated
      * The time interval for throttling while updating the message state
@@ -552,15 +382,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * is sent).
      */
     initializeOnMount?: boolean;
-  } & Partial<
-    Pick<
-      InputMessageInputContextValue,
-      | 'openPollCreationDialog'
-      | 'CreatePollContent'
-      | 'StopMessageStreamingButton'
-      | 'allowSendBeforeAttachmentsUpload'
-    >
-  >;
+  };
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
@@ -572,26 +394,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     allowThreadMessagesInChannel = true,
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
-    asyncMessagesMultiSendEnabled = true,
     asyncMessagesSlideToCancelDistance = 75,
-    AttachButton = AttachButtonDefault,
-    Attachment = AttachmentDefault,
+    audioRecordingSendOnComplete = false,
     attachmentPickerBottomSheetHeight = disableAttachmentPicker ? 72 : 333,
-    AttachmentPickerSelectionBar = DefaultAttachmentPickerSelectionBar,
     attachmentSelectionBarHeight = 72,
-    AudioAttachment = AudioAttachmentDefault,
-    AudioAttachmentUploadPreview = AudioAttachmentUploadPreviewDefault,
-    AudioRecorder = AudioRecorderDefault,
     audioRecordingEnabled = false,
-    AudioRecordingInProgress = AudioRecordingInProgressDefault,
-    AudioRecordingLockIndicator = AudioRecordingLockIndicatorDefault,
-    AudioRecordingPreview = AudioRecordingPreviewDefault,
-    AudioRecordingWaveform = AudioRecordingWaveformDefault,
-    AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
-    AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
-    AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
-    AttachmentUploadPreviewList = AttachmentUploadPreviewDefault,
-    ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     numberOfAttachmentImagesToLoadPerCall = 25,
     numberOfAttachmentPickerImageColumns = 3,
     giphyVersion = 'fixed_height',
@@ -600,12 +407,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     children,
     client,
     compressImageQuality,
-    CooldownTimer = CooldownTimerDefault,
-    CreatePollContent,
     createPollOptionGap,
     customMessageSwipeAction,
-    DateHeader = DateHeaderDefault,
-    deletedMessagesVisibilityType = 'always',
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
@@ -614,28 +417,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doSendMessageRequest,
     preSendMessageRequest,
     doUpdateMessageRequest,
-    EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
     allowSendBeforeAttachmentsUpload = enableOfflineSupport,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
-    FileAttachment = FileAttachmentDefault,
-    FileAttachmentUploadPreview = FileAttachmentUploadPreviewDefault,
-    FileAttachmentGroup = FileAttachmentGroupDefault,
-    FileAttachmentIcon = FileIconDefault,
-    FilePreview = FilePreviewDefault,
-    FileUploadInProgressIndicator = FileUploadInProgressIndicatorDefault,
-    FileUploadRetryIndicator = FileUploadRetryIndicatorDefault,
-    FileUploadNotSupportedIndicator = FileUploadNotSupportedIndicatorDefault,
-    ImageUploadInProgressIndicator = ImageUploadInProgressIndicatorDefault,
-    ImageUploadRetryIndicator = ImageUploadRetryIndicatorDefault,
-    ImageUploadNotSupportedIndicator = ImageUploadNotSupportedIndicatorDefault,
     FlatList = NativeHandlers.FlatList,
     forceAlignMessages,
-    Gallery = GalleryDefault,
     getMessageGroupStyle,
-    Giphy = GiphyDefault,
     handleAttachButtonPress,
     handleBan,
     handleCopy,
@@ -659,36 +448,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
     hideDateSeparators = false,
     hideStickyDateHeader = false,
-    ImageAttachmentUploadPreview = ImageAttachmentUploadPreviewDefault,
-    ImageLoadingFailedIndicator = ImageLoadingFailedIndicatorDefault,
-    ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     initialScrollToFirstUnreadMessage = false,
-    InlineDateSeparator = InlineDateSeparatorDefault,
-    InlineUnreadIndicator = InlineUnreadIndicatorDefault,
-    Input,
-    InputButtons = InputButtonsDefault,
-    MessageComposerLeadingView = MessageComposerLeadingViewDefault,
-    MessageComposerTrailingView = MessageComposerTrailingViewDefault,
     isAttachmentEqual,
     isMessageAIGenerated = () => false,
     keyboardBehavior,
-    KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
-    LoadingErrorIndicator = LoadingErrorIndicatorDefault,
-    LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     markReadOnMount = true,
     maxTimeBetweenGroupedMessages,
-    Message = MessageDefault,
-    MessageActionList = MessageActionListDefault,
-    MessageActionListItem = MessageActionListItemDefault,
     messageActions,
-    MessageAvatar = MessageAvatarDefault,
-    MessageBlocked = MessageBlockedDefault,
-    MessageBounce = MessageBounceDefault,
-    MessageContent = MessageContentDefault,
     messageContentOrder = [
       'quoted_reply',
       'gallery',
@@ -699,38 +469,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'text',
       'location',
     ],
-    MessageDeleted = MessageDeletedDefault,
-    MessageError = MessageErrorDefault,
+    messageOverlayTargetId,
     messageInputFloating = false,
-    MessageInputHeaderView = MessageInputHeaderViewDefault,
-    MessageInputLeadingView = MessageInputLeadingViewDefault,
-    MessageInputTrailingView = MessageInputTrailingViewDefault,
-    MessageFooter = MessageFooterDefault,
-    MessageHeader = MessageHeaderDefault,
     messageId,
-    MessageList = MessageListDefault,
-    MessageLocation,
-    MessageMenu = MessageMenuDefault,
-    MessagePinnedHeader = MessagePinnedHeaderDefault,
-    MessageReminderHeader = MessageReminderHeaderDefault,
-    MessageSavedForLaterHeader = MessageSavedForLaterHeaderDefault,
-    SentToChannelHeader = SentToChannelHeaderDefault,
-    MessageReactionPicker = MessageReactionPickerDefault,
-    MessageReplies = MessageRepliesDefault,
-    MessageRepliesAvatars = MessageRepliesAvatarsDefault,
-    MessageSimple = MessageSimpleDefault,
-    MessageStatus = MessageStatusDefault,
-    MessageSwipeContent = MessageSwipeContentDefault,
     messageSwipeToReplyHitSlop,
-    MessageSystem = MessageSystemDefault,
-    MessageText,
     messageTextNumberOfLines,
-    MessageTimestamp = MessageTimestampDefault,
-    MessageUserReactions = MessageUserReactionsDefault,
-    MessageUserReactionsAvatar = MessageUserReactionsAvatarDefault,
-    MessageUserReactionsItem = MessageUserReactionsItemDefault,
     myMessageTheme,
-    NetworkDownIndicator = NetworkDownIndicatorDefault,
     // TODO: Think about this one
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     onLongPressMessage,
@@ -739,63 +483,32 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     onAlsoSentToChannelHeaderPress,
     openPollCreationDialog,
     overrideOwnCapabilities,
-    PollContent,
-    ReactionListBottom = ReactionListBottomDefault,
     reactionListPosition = 'top',
     reactionListType = 'clustered',
-    ReactionListTop = ReactionListTopDefault,
-    ReactionListClustered = ReactionListClusteredDefault,
-    ReactionListItem = ReactionListItemDefault,
-    ReactionListItemWrapper = ReactionListItemWrapperDefault,
-    ReactionListCountItem = ReactionListCountItemDefault,
-    Reply = ReplyDefault,
-    ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
-    SendButton = SendButtonDefault,
-    SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     setInputRef,
     setThreadMessages,
     shouldShowUnreadUnderlay = true,
     shouldSyncChannel,
-    ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
-    StartAudioRecordingButton = AudioRecordingButtonDefault,
     stateUpdateThrottleInterval = defaultThrottleInterval,
-    StickyHeader = StickyHeaderDefault,
-    StopMessageStreamingButton: StopMessageStreamingButtonOverride,
-    StreamingMessageView = DefaultStreamingMessageView,
     supportedReactions = reactionData,
     t,
     thread: threadFromProps,
     threadList,
     threadMessages,
-    topInset,
-    TypingIndicator = TypingIndicatorDefault,
-    TypingIndicatorContainer = TypingIndicatorContainerDefault,
-    UnreadMessagesNotification = UnreadMessagesNotificationDefault,
-    UrlPreview = URLPreviewDefault,
-    URLPreviewCompact = URLPreviewCompactDefault,
-    VideoAttachmentUploadPreview = VideoAttachmentUploadPreviewDefault,
-    VideoThumbnail = VideoThumbnailDefault,
+    topInset = 0,
     isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
-    AttachmentPickerContent = DefaultAttachmentPickerContent,
     urlPreviewType = 'full',
-    UnsupportedAttachment = UnsupportedAttachmentDefault,
   } = props;
 
-  const { thread: threadProps, threadInstance } = threadFromProps;
-  const StopMessageStreamingButton =
-    StopMessageStreamingButtonOverride === undefined
-      ? DefaultStopMessageStreamingButton
-      : StopMessageStreamingButtonOverride;
+  const components = useComponentsContext();
+  const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
 
-  const {
-    theme: {
-      channel: { selectChannel },
-      colors: { black },
-    },
-  } = useTheme();
+  const { thread: threadProps, threadInstance } = threadFromProps;
+
+  const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const [lastRead, setLastRead] = useState<Date | undefined>();
@@ -852,6 +565,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     state: channelMessagesState,
   } = useMessageListPagination({
     channel,
+  });
+
+  const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
+    if (messageId || !initialScrollToFirstUnreadMessage || !client.user) {
+      return false;
+    }
+
+    return (unreadCount ?? channel.countUnread()) > scrollToFirstUnreadThreshold;
+  });
+
+  const hasPendingInitialTargetLoad = useStableCallback(() => {
+    return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
   const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
@@ -980,6 +705,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const initChannel = async () => {
       setLastRead(new Date());
       const unreadCount = channel.countUnread();
+      const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
       if (!channel || !shouldSyncChannel) {
         return;
       }
@@ -1009,13 +735,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       if (messageId) {
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
-      } else if (
-        initialScrollToFirstUnreadMessage &&
-        client.user &&
-        unreadCount > scrollToFirstUnreadThreshold
-      ) {
+      } else if (shouldLoadAtFirstUnread) {
+        const clientUserId = client.user?.id;
+        if (!clientUserId) {
+          return;
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[client.user.id];
+        const { user, ...ownReadState } = channel.state.read[clientUserId];
 
         await loadChannelAtFirstUnreadMessage({
           channelUnreadState: ownReadState,
@@ -1122,7 +849,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       const parentID = thread.id;
 
       const limit = 50;
-      channel.state.threads[parentID] = [];
+      // channel.state.threads[parentID] = [];
       const queryResponse = await channel.getReplies(parentID, {
         limit,
       });
@@ -1163,6 +890,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         updated_at: message.updated_at?.toString(),
       }) as unknown as MessageResponse;
 
+    const getRecoverableFailedMessages = (messages: LocalMessage[] = []) =>
+      messages
+        .filter(
+          (message) =>
+            message.status === MessageStatusTypes.FAILED &&
+            !channel.state.findMessage(message.id, message.parent_id),
+        )
+        .map(parseMessage);
+
     try {
       if (channelMessagesState?.messages) {
         await channel?.watch({
@@ -1177,9 +913,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!thread) {
         copyChannelState();
 
-        const failedMessages = channelMessagesState.messages
-          ?.filter((message) => message.status === MessageStatusTypes.FAILED)
-          .map(parseMessage);
+        const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
         }
@@ -1188,11 +922,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       } else {
         await reloadThread();
 
-        const failedThreadMessages = thread
-          ? threadMessages
-              .filter((message) => message.status === MessageStatusTypes.FAILED)
-              .map(parseMessage)
-          : [];
+        const failedThreadMessages = thread ? getRecoverableFailedMessages(threadMessages) : [];
         if (failedThreadMessages.length) {
           channel.state.addMessagesSorted(failedThreadMessages);
           setThreadMessages([...channel.state.threads[thread.id]]);
@@ -1341,73 +1071,78 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     const updatedMessage = { ...message };
-    if (updatedMessage.attachments?.length) {
-      for (let i = 0; i < updatedMessage.attachments?.length; i++) {
-        const attachment = updatedMessage.attachments[i];
+    if (!updatedMessage.attachments?.length || !channel?.cid) {
+      return updatedMessage;
+    }
 
-        // If the attachment is already uploaded, skip it.
-        if (
-          (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
-          (attachment.asset_url && !isLocalUrl(attachment.asset_url))
-        ) {
-          continue;
+    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
+      if (
+        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
+        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
+      ) {
+        return;
+      }
+
+      const originalFile = attachment.originalFile;
+      if (!originalFile?.uri) {
+        return;
+      }
+
+      const localId = (attachment as DefaultAttachmentData).localId;
+      if (!localId) {
+        console.warn('uploadPendingAttachments: local attachment missing localId, skipping upload');
+        return;
+      }
+
+      let fileForUpload = originalFile;
+      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
+        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
+        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
+        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
+      }
+
+      const response = await (
+        client as typeof client & {
+          uploadManager: {
+            upload(args: {
+              channelCid: string;
+              file: {
+                name?: string;
+                type?: string;
+                uri: string;
+              };
+              id: string;
+            }): Promise<{ file: string; thumb_url?: string }>;
+          };
         }
+      ).uploadManager.upload({
+        channelCid: channel.cid,
+        file: fileForUpload,
+        id: localId,
+      });
 
-        const image = attachment.originalFile;
-        const file = attachment.originalFile;
-        if (attachment.type === FileTypes.Image && image?.uri) {
-          const filename = image.name ?? getFileNameFromPath(image.uri);
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(filename);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(filename);
-          }
-          const compressedUri = await compressedImageURI(image, compressImageQuality);
-          const contentType = lookup(filename) || 'multipart/form-data';
-
-          const uploadResponse = doFileUploadRequest
-            ? await doFileUploadRequest(image)
-            : await channel.sendImage(compressedUri, filename, contentType);
-
-          attachment.image_url = uploadResponse.file;
-          delete attachment.originalFile;
-
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...updatedMessage, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
-        }
-
-        if (attachment.type !== FileTypes.Image && file?.uri) {
-          // if any upload is in progress, cancel it
-          const controller = uploadAbortControllerRef.current.get(file.name);
-          if (controller) {
-            controller.abort();
-            uploadAbortControllerRef.current.delete(file.name);
-          }
-          const response = doFileUploadRequest
-            ? await doFileUploadRequest(file)
-            : await channel.sendFile(file.uri, file.name, file.type);
-          attachment.asset_url = response.file;
-          if (response.thumb_url) {
-            attachment.thumb_url = response.thumb_url;
-          }
-
-          delete attachment.originalFile;
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...updatedMessage, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
+      if (attachment.type === FileTypes.Image) {
+        attachment.image_url = response.file;
+      } else {
+        attachment.asset_url = response.file;
+        if (response.thumb_url) {
+          attachment.thumb_url = response.thumb_url;
         }
       }
-    }
+
+      delete attachment.originalFile;
+      delete (attachment as DefaultAttachmentData).localId;
+
+      client.offlineDb?.executeQuerySafely(
+        (db) =>
+          db.updateMessage({
+            message: { ...updatedMessage, cid: channel.cid },
+          }),
+        { method: 'updateMessage' },
+      );
+    };
+
+    await Promise.all(updatedMessage.attachments.map((att) => uploadOne(att)));
 
     return updatedMessage;
   });
@@ -1556,10 +1291,56 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
-    ({ localMessage, options }) =>
-      doUpdateMessageRequest
-        ? doUpdateMessageRequest(channel?.cid || '', localMessage, options)
-        : client.updateMessage(localMessage, undefined, options),
+    async ({ localMessage, options }) => {
+      if (!channel) {
+        throw new Error('Channel has not been initialized');
+      }
+
+      const cid = channel.cid;
+      const currentMessage = channel.state.findMessage(localMessage.id, localMessage.parent_id);
+      const isFailedMessage =
+        currentMessage?.status === MessageStatusTypes.FAILED ||
+        localMessage.status === MessageStatusTypes.FAILED;
+      const optimisticEditedAt = new Date();
+      const optimisticEditedAtString = optimisticEditedAt.toISOString();
+      const optimisticMessage = {
+        ...currentMessage,
+        ...localMessage,
+        cid,
+        message_text_updated_at: isFailedMessage ? undefined : optimisticEditedAtString,
+        updated_at: optimisticEditedAt,
+      } as unknown as LocalMessage;
+
+      updateMessage(optimisticMessage);
+      threadInstance?.updateParentMessageOrReplyLocally(
+        optimisticMessage as unknown as MessageResponse,
+      );
+      client.offlineDb?.executeQuerySafely(
+        (db) =>
+          db.updateMessage({
+            message: { ...optimisticMessage, cid },
+          }),
+        { method: 'updateMessage' },
+      );
+
+      const response = doUpdateMessageRequest
+        ? await doUpdateMessageRequest(cid, localMessage, options)
+        : await client.updateMessage(localMessage, undefined, options);
+
+      if (response?.message) {
+        updateMessage(response.message);
+        threadInstance?.updateParentMessageOrReplyLocally(response.message);
+        client.offlineDb?.executeQuerySafely(
+          (db) =>
+            db.updateMessage({
+              message: { ...response.message, cid },
+            }),
+          { method: 'updateMessage' },
+        );
+      }
+
+      return response;
+    },
   );
 
   /**
@@ -1762,13 +1543,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       disableAttachmentPicker,
       openPicker: handleOpenPicker,
       topInset,
-      ImageOverlaySelectedComponent,
-      AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
-      AttachmentPickerContent,
     }),
     [
       bottomInset,
@@ -1777,13 +1555,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       disableAttachmentPicker,
       handleOpenPicker,
       topInset,
-      ImageOverlaySelectedComponent,
-      AttachmentPickerSelectionBar,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
       attachmentSelectionBarHeight,
       numberOfAttachmentImagesToLoadPerCall,
-      AttachmentPickerContent,
     ],
   );
 
@@ -1796,7 +1571,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
-    EmptyStateIndicator,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
@@ -1808,19 +1582,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
-    LoadingIndicator,
     markRead,
     maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
     members: channelState.members ?? {},
-    NetworkDownIndicator,
     read: channelState.read ?? {},
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setLastRead,
     setTargetedMessage,
-    StickyHeader,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     threadList,
     uploadAbortControllerRef,
@@ -1846,61 +1618,26 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     allowSendBeforeAttachmentsUpload,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     asyncMessagesSlideToCancelDistance,
-    AttachButton,
     attachmentPickerBottomSheetHeight,
-    AttachmentPickerSelectionBar,
     attachmentSelectionBarHeight,
-    AttachmentUploadPreviewList,
-    AudioAttachmentUploadPreview,
-    AudioRecorder,
     audioRecordingEnabled,
-    AudioRecordingInProgress,
-    AudioRecordingLockIndicator,
-    AudioRecordingPreview,
-    AudioRecordingWaveform,
-    AutoCompleteSuggestionHeader,
-    AutoCompleteSuggestionItem,
-    AutoCompleteSuggestionList,
     channelId,
     compressImageQuality,
-    CooldownTimer,
-    CreatePollContent,
     createPollOptionGap,
     doFileUploadRequest,
     editMessage,
-    FileAttachmentUploadPreview,
-    FileUploadInProgressIndicator,
-    FileUploadRetryIndicator,
-    FileUploadNotSupportedIndicator,
-    ImageUploadInProgressIndicator,
-    ImageUploadRetryIndicator,
-    ImageUploadNotSupportedIndicator,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
     hasFilePicker,
     hasImagePicker,
-    ImageAttachmentUploadPreview,
-    Input,
-    InputButtons,
-    MessageComposerLeadingView,
-    MessageComposerTrailingView,
     messageInputFloating,
     messageInputHeightStore,
-    MessageInputHeaderView,
-    MessageInputLeadingView,
-    MessageInputTrailingView,
     openPollCreationDialog,
-    SendButton,
     sendMessage,
-    SendMessageDisallowedIndicator,
     setInputRef,
-    ShowThreadMessageInChannelButton,
-    StartAudioRecordingButton,
-    StopMessageStreamingButton,
-    VideoAttachmentUploadPreview,
   });
 
   const messageListContext = useCreatePaginatedMessageListContext({
@@ -1920,27 +1657,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const messagesContext = useCreateMessagesContext({
     additionalPressableProps,
-    Attachment,
-    AudioAttachment,
     channelId,
     customMessageSwipeAction,
-    DateHeader,
-    deletedMessagesVisibilityType,
     deleteMessage,
     deleteReaction,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     enableMessageGroupingByUser,
     enableSwipeToReply,
-    FileAttachment,
-    FileAttachmentGroup,
-    FileAttachmentIcon,
-    FilePreview,
     FlatList,
     forceAlignMessages,
-    Gallery,
     getMessageGroupStyle,
-    Giphy,
     giphyVersion,
     handleBan,
     handleCopy,
@@ -1958,80 +1685,30 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBlockUser,
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
-    ImageLoadingFailedIndicator,
-    ImageLoadingIndicator,
     initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
-    InlineDateSeparator,
-    InlineUnreadIndicator,
     isAttachmentEqual,
     isMessageAIGenerated,
     markdownRules,
-    Message,
-    MessageActionList,
-    MessageActionListItem,
     messageActions,
-    MessageAvatar,
-    MessageBlocked,
-    MessageBounce,
-    MessageContent,
     messageContentOrder,
-    MessageDeleted,
-    MessageError,
-    MessageFooter,
-    MessageHeader,
-    MessageList,
-    MessageLocation,
-    MessageMenu,
-    MessagePinnedHeader,
-    MessageReminderHeader,
-    MessageSavedForLaterHeader,
-    SentToChannelHeader,
-    MessageReactionPicker,
-    MessageReplies,
-    MessageRepliesAvatars,
-    MessageSimple,
-    MessageStatus,
-    MessageSwipeContent,
+    messageOverlayTargetId,
     messageSwipeToReplyHitSlop,
-    MessageSystem,
-    MessageText,
     messageTextNumberOfLines,
-    MessageTimestamp,
-    MessageUserReactions,
-    MessageUserReactionsAvatar,
-    MessageUserReactionsItem,
     myMessageTheme,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    PollContent,
-    ReactionListBottom,
     reactionListPosition,
     reactionListType,
-    ReactionListTop,
-    ReactionListClustered,
-    ReactionListItem,
-    ReactionListItemWrapper,
-    ReactionListCountItem,
     removeMessage,
-    Reply,
     retrySendMessage,
-    ScrollToBottomButton,
     selectReaction,
     sendReaction,
     shouldShowUnreadUnderlay,
-    StreamingMessageView,
     supportedReactions,
     targetedMessage,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
     updateMessage,
-    UrlPreview,
-    URLPreviewCompact,
-    VideoThumbnail,
     urlPreviewType,
-    UnsupportedAttachment,
   });
 
   const threadContext = useCreateThreadContext({
@@ -2074,7 +1751,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   if (!channel?.cid || !channel.watch) {
     return (
-      <Text style={[styles.selectChannel, { color: black }, selectChannel]} testID='no-channel'>
+      <Text style={styles.selectChannel} testID='no-channel'>
         {t('Please select a channel first')}
       </Text>
     );
@@ -2097,6 +1774,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                     <MessageComposerProvider value={messageComposerContext}>
                       <MessageInputProvider value={inputMessageInputContext}>
                         <AudioPlayerProvider value={audioPlayerContext}>
+                          <NotificationAnnouncer />
                           <View style={{ height: '100%' }}>{children}</View>
                           <AttachmentPicker />
                         </AudioPlayerProvider>
@@ -2121,7 +1799,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 /**
  *
  * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
- * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
+ * to receive the StreamChat client instance. MessageList, Thread, and MessageComposer must be
  * children of the Channel component to receive the ChannelContext.
  *
  * @example ./Channel.md
@@ -2129,6 +1807,9 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
   const { t } = useTranslationContext();
+  const notificationHostId =
+    props.notificationHostId ??
+    (props.channel?.cid ? getChannelNotificationHostId(props.channel.cid) : undefined);
 
   const threadFromProps = props?.thread;
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
@@ -2148,7 +1829,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
     props.threadList ? threadMessage?.id : undefined,
   );
 
-  return (
+  const channelWithContext = (
     <ChannelWithContext
       {...{
         client,
@@ -2166,4 +1847,33 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       }}
     />
   );
+
+  return notificationHostId ? (
+    <NotificationTargetProvider hostId={notificationHostId} panel='channel'>
+      {channelWithContext}
+    </NotificationTargetProvider>
+  ) : (
+    channelWithContext
+  );
+};
+
+const useStyles = () => {
+  const {
+    theme: {
+      channel: { selectChannel },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      selectChannel: {
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        padding: primitives.spacingMd,
+        color: semantics.textPrimary,
+        ...selectChannel,
+      },
+    });
+  }, [selectChannel, semantics]);
 };

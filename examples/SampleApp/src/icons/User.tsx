@@ -1,23 +1,21 @@
 import React from 'react';
-import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
+import { Path, Svg } from 'react-native-svg';
 
 import { IconProps } from '../utils/base';
 
-export const User: React.FC<IconProps> = ({ height, width }) => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
+export const User = ({ fill, height, pathFill, scale, stroke, width, ...rest }: IconProps) => {
+  const color = pathFill ?? fill ?? stroke ?? 'black';
+  const size = scale ? 20 * scale : 20;
 
   return (
-    <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
+    <Svg fill='none' height={height ?? size} viewBox='0 0 20 20' width={width ?? size} {...rest}>
       <Path
-        clipRule='evenodd'
-        d='M12 11a4 4 0 100-8 4 4 0 000 8zm0-2a2 2 0 100-4 2 2 0 000 4zm0 5c-5.531 0-8 3.632-8 6a1 1 0 11-2 0c0-3.632 3.531-8 10-8 6.469 0 10 4.368 10 8a1 1 0 11-2 0c0-2.368-2.469-6-8-6z'
-        fill={grey}
-        fillRule='evenodd'
+        d='M10 12.5C12.7614 12.5 15 10.2614 15 7.5C15 4.73858 12.7614 2.5 10 2.5C7.23858 2.5 5 4.73858 5 7.5C5 10.2614 7.23858 12.5 10 12.5ZM10 12.5C6.76172 12.5 4.01328 14.2602 2.5 16.875M10 12.5C13.2383 12.5 15.9867 14.2602 17.5 16.875'
+        fill='none'
+        stroke={color}
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth={1.5}
       />
     </Svg>
   );

@@ -1,20 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { I18nManager, Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import Animated, { LinearTransition, StretchInY, StretchOutY } from 'react-native-reanimated';
 
 import { PollComposerState } from 'stream-chat';
 
-import { useTheme, useTranslationContext } from '../../../contexts';
+import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { Minus, Plus } from '../../../icons';
 import { primitives } from '../../../theme';
+import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 import { Button } from '../../ui';
 
 const pollComposerStateSelector = (state: PollComposerState) => ({
   max_votes_allowed: state.data.max_votes_allowed,
+});
+
+const modalStateSelector = (state: { isClosing: boolean }) => ({
+  isClosing: state.isClosing,
 });
 
 const MaxVotesTextInput = () => {
@@ -91,6 +96,8 @@ const MaxVotesTextInput = () => {
 export const MultipleVotesSettings = () => {
   const [allowMaxVotesPerPerson, setAllowMaxVotesPerPerson] = useState<boolean>(false);
   const { t } = useTranslationContext();
+  const { modalStateStore } = useCreatePollContentContext();
+  const { isClosing = false } = useStateStore(modalStateStore, modalStateSelector) ?? {};
   const messageComposer = useMessageComposer();
   const { pollComposer } = messageComposer;
   const { updateFields } = pollComposer;
@@ -133,7 +140,7 @@ export const MultipleVotesSettings = () => {
     <Animated.View
       layout={LinearTransition.duration(200)}
       entering={StretchInY.duration(200)}
-      exiting={StretchOutY.duration(200)}
+      exiting={isClosing ? undefined : StretchOutY.duration(200)}
       style={[styles.settingsWrapper, multipleAnswers.settingsWrapper]}
     >
       <View style={[styles.optionCard, multipleAnswers.optionCard]}>
@@ -152,10 +159,11 @@ export const MultipleVotesSettings = () => {
       {allowMaxVotesPerPerson ? (
         <Animated.View
           entering={StretchInY.duration(200)}
-          exiting={StretchOutY.duration(200)}
+          exiting={isClosing ? undefined : StretchOutY.duration(200)}
           style={[styles.row, multipleAnswers.row]}
         >
           <Button
+            accessibilityLabelKey='a11y/Decrease maximum votes'
             variant='secondary'
             type='outline'
             size='md'
@@ -163,10 +171,12 @@ export const MultipleVotesSettings = () => {
             LeadingIcon={Minus}
             onPress={decrementMaxVotes}
             disabled={decrementDisabled}
+            style={decrementDisabled ? styles.buttonDisabled : styles.buttonEnabled}
             testID='max-votes-decrement'
           />
           <MaxVotesTextInput />
           <Button
+            accessibilityLabelKey='a11y/Increase maximum votes'
             variant='secondary'
             type='outline'
             size='md'
@@ -174,6 +184,7 @@ export const MultipleVotesSettings = () => {
             LeadingIcon={Plus}
             onPress={incrementMaxVotes}
             disabled={incrementDisabled}
+            style={incrementDisabled ? styles.buttonDisabled : styles.buttonEnabled}
             testID='max-votes-increment'
           />
         </Animated.View>
@@ -186,6 +197,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
 
   return useMemo(() => {
     return StyleSheet.create({
@@ -194,22 +206,26 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       description: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       optionCardContent: {
         gap: primitives.spacingXxs,
+        flex: 1,
+        alignItems: 'flex-start',
       },
       optionCard: {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
       settingsWrapper: {
         gap: primitives.spacingMd,
       },
@@ -223,7 +239,14 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         paddingHorizontal: primitives.spacingSm,
         paddingVertical: primitives.spacingMd,
+        textAlign: I18nManager.isRTL ? 'right' : 'left',
+      },
+      buttonEnabled: {
+        borderColor: semantics.borderCoreOnSurface,
+      },
+      buttonDisabled: {
+        borderColor: semantics.borderUtilityDisabledOnSurface,
       },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

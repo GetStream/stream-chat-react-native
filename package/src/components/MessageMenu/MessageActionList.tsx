@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { MessageActionType } from './MessageActionListItem';
 
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
-export type MessageActionListProps = Pick<MessagesContextValue, 'MessageActionListItem'> & {
+export type MessageActionListProps = {
   /**
    * Function to close the message actions bottom sheet
    * @returns void
@@ -22,10 +23,11 @@ export type MessageActionListProps = Pick<MessagesContextValue, 'MessageActionLi
 };
 
 export const MessageActionList = (props: MessageActionListProps) => {
-  const { MessageActionListItem, messageActions } = props;
+  const { messageActions } = props;
+  const { MessageActionListItem } = useComponentsContext();
+  const a11yLabel = useA11yLabel('a11y/Message actions');
   const {
     theme: {
-      colors: { white },
       messageMenu: {
         actionList: { container, contentContainer },
       },
@@ -43,13 +45,10 @@ export const MessageActionList = (props: MessageActionListProps) => {
 
   return (
     <ScrollView
-      accessibilityLabel='Message action list'
-      contentContainerStyle={[
-        styles.contentContainer,
-        { backgroundColor: white },
-        contentContainer,
-      ]}
-      style={[styles.container, { backgroundColor: white }, container]}
+      accessibilityLabel={a11yLabel ?? 'Message action list'}
+      accessibilityRole='menu'
+      contentContainerStyle={[styles.contentContainer, contentContainer]}
+      style={[styles.container, container]}
     >
       {standardActions?.map((messageAction, index) => (
         <MessageActionListItem
@@ -74,27 +73,32 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return StyleSheet.create({
-    container: {
-      borderRadius: primitives.radiusLg,
-      marginTop: 6,
-      backgroundColor: semantics.backgroundElevationElevation2,
-      borderWidth: 1,
-      borderColor: semantics.borderCoreDefault,
-    },
-    contentContainer: {
-      borderRadius: 16,
-      flexGrow: 1,
-      minWidth: 250,
-      padding: primitives.spacingXxs,
-    },
-    separatorContainer: {
-      paddingVertical: primitives.spacingXxs,
-    },
-    separator: {
-      height: 1,
-      width: '100%',
-      backgroundColor: semantics.borderCoreDefault,
-    },
-  });
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          borderRadius: primitives.radiusLg,
+          marginTop: 6,
+          backgroundColor: semantics.backgroundCoreElevation2,
+          borderWidth: 1,
+          borderColor: semantics.borderCoreDefault,
+        },
+        contentContainer: {
+          borderRadius: 16,
+          flexGrow: 1,
+          minWidth: 250,
+          padding: primitives.spacingXxs,
+          backgroundColor: semantics.backgroundCoreElevation2,
+        },
+        separatorContainer: {
+          paddingVertical: primitives.spacingXxs,
+        },
+        separator: {
+          height: 1,
+          width: '100%',
+          backgroundColor: semantics.borderCoreDefault,
+        },
+      }),
+    [semantics],
+  );
 };

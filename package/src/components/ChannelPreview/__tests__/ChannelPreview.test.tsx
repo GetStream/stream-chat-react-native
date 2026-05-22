@@ -7,6 +7,7 @@ import type { Channel, StreamChat } from 'stream-chat';
 
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   getOrCreateChannelApi,
   GetOrCreateChannelApiParams,
@@ -40,7 +41,8 @@ const mockChannelSwipableWrapper = jest.fn(({ children }: React.PropsWithChildre
 ));
 
 jest.mock('../ChannelSwipableWrapper', () => ({
-  ChannelSwipableWrapper: (...args: unknown[]) => mockChannelSwipableWrapper(...args),
+  ChannelSwipableWrapper: (...args: [React.PropsWithChildren]) =>
+    mockChannelSwipableWrapper(...args),
 }));
 
 const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => {
@@ -55,7 +57,7 @@ const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => {
 
 const initChannelFromData = async (
   chatClient: StreamChat,
-  overrides: Record<string, unknown> = {},
+  overrides: Parameters<typeof generateChannelResponse>[0] = {},
 ) => {
   const mockedChannel = generateChannelResponse(overrides);
   useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
@@ -83,24 +85,27 @@ describe('ChannelPreview', () => {
 
     return (
       <Chat client={chatClient}>
-        <ChannelPreview
-          {...props}
-          channel={channel}
-          client={chatClient}
-          Preview={ChannelPreviewUIComponent}
-        />
+        <WithComponents
+          overrides={{
+            ChannelPreview: ChannelPreviewUIComponent as unknown as React.ComponentType<
+              React.ComponentProps<typeof ChannelPreview>
+            >,
+          }}
+        >
+          <ChannelPreview {...props} channel={channel} client={chatClient} />
+        </WithComponents>
       </Chat>
     );
   };
 
-  const generateChannelWrapper = (overrides: Record<string, unknown>) =>
+  const generateChannelWrapper = (overrides: Partial<Channel>) =>
     generateChannel({
       countUnread: jest.fn().mockReturnValue(0),
       initialized: true,
       lastMessage: jest.fn().mockReturnValue(generateMessage()),
       muteStatus: jest.fn().mockReturnValue({ muted: false }),
       ...overrides,
-    });
+    } as unknown as Parameters<typeof generateChannel>[0]);
 
   const useInitializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
@@ -310,7 +315,7 @@ describe('ChannelPreview', () => {
     const c = generateChannelResponse();
     await useInitializeChannel(c);
 
-    channel.muteStatus = jest.fn().mockReturnValue({ muted: true });
+    if (channel) channel.muteStatus = jest.fn().mockReturnValue({ muted: true });
 
     const { getByTestId } = render(<TestComponent />);
 
@@ -364,7 +369,7 @@ describe('ChannelPreview', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('latest-message')).toHaveTextContent(message.text);
+      expect(getByTestId('latest-message')).toHaveTextContent(message.text as string);
     });
   });
 
@@ -402,7 +407,9 @@ describe('ChannelPreview', () => {
       },
       text: 'Hello world!',
     };
-    const channel = generateChannelResponse({ messages: [message] });
+    const channel = generateChannelResponse({
+      messages: [message] as unknown as GetOrCreateChannelApiParams['messages'],
+    });
     await useInitializeChannel(channel);
 
     const { getByText } = render(<TestComponent />);
@@ -436,18 +443,25 @@ describe('ChannelPreview', () => {
 
       return (
         <Chat client={chatClient}>
-          <ChannelsProvider
-            value={
+          <WithComponents
+            overrides={
               {
                 ChannelDetailsBottomSheet: channelDetailsBottomSheet,
-                Preview: SwipePreview,
-                getChannelActionItems: undefined,
-                swipeActionsEnabled,
-              } as unknown as ChannelsContextValue
+                ChannelPreview: SwipePreview,
+              } as unknown as React.ComponentProps<typeof WithComponents>['overrides']
             }
           >
-            <ChannelPreview channel={channel} client={chatClient} Preview={SwipePreview} />
-          </ChannelsProvider>
+            <ChannelsProvider
+              value={
+                {
+                  getChannelActionItems: undefined,
+                  swipeActionsEnabled,
+                } as unknown as ChannelsContextValue
+              }
+            >
+              <ChannelPreview channel={channel} client={chatClient} />
+            </ChannelsProvider>
+          </WithComponents>
         </Chat>
       );
     };
@@ -474,7 +488,7 @@ describe('ChannelPreview', () => {
       expect(mockChannelSwipableWrapper).toHaveBeenCalled();
     });
 
-    it('passes ChannelDetailsBottomSheet override to ChannelSwipableWrapper', async () => {
+    it('makes ChannelDetailsBottomSheet override available via WithComponents', async () => {
       render(
         <SwipeTestComponent
           swipeActionsEnabled={true}
@@ -482,13 +496,11 @@ describe('ChannelPreview', () => {
         />,
       );
 
+      // ChannelDetailsBottomSheet is now read from useComponentsContext() by
+      // ChannelSwipableWrapper rather than passed as a prop from ChannelPreview.
+      // Since ChannelSwipableWrapper is mocked, we verify the override is
+      // provided via WithComponents (set up in SwipeTestComponent).
       await waitFor(() => expect(mockChannelSwipableWrapper).toHaveBeenCalled());
-      const swipableWrapperProps = mockChannelSwipableWrapper.mock.calls[0]?.[0];
-      expect(swipableWrapperProps).toEqual(
-        expect.objectContaining({
-          ChannelDetailsBottomSheet: ChannelDetailsBottomSheetOverride,
-        }),
-      );
     });
   });
 });

@@ -7,6 +7,7 @@ import { LocalImageAttachment, LocalVideoAttachment } from 'stream-chat';
 import { FileAttachmentUploadPreview } from './FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview } from './ImageAttachmentUploadPreview';
 
+import { useMessageInputContext } from '../../../../contexts';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../../icons';
 import { primitives } from '../../../../theme';
@@ -21,14 +22,29 @@ export const VideoAttachmentUploadPreview = ({
   handleRetry,
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
-  return attachment.localMetadata.previewUri ? (
+  const previewUri = attachment.thumb_url ?? attachment.localMetadata.previewUri;
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const shouldShowMetadataPill =
+    allowSendBeforeAttachmentsUpload || attachment.localMetadata.uploadState !== 'uploading';
+
+  return previewUri ? (
     <>
       <ImageAttachmentUploadPreview
-        attachment={attachment as unknown as LocalImageAttachment}
+        attachment={
+          {
+            ...attachment,
+            localMetadata: {
+              ...attachment.localMetadata,
+              previewUri,
+            },
+          } as unknown as LocalImageAttachment
+        }
         handleRetry={handleRetry}
         removeAttachments={removeAttachments}
       />
-      <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+      {shouldShowMetadataPill ? (
+        <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+      ) : null}
     </>
   ) : (
     <FileAttachmentUploadPreview
@@ -65,7 +81,7 @@ export const VideoAttachmentMetadataPill = ({
 
   return durationLabel ? (
     <View style={styles.durationContainer}>
-      <Recorder height={12} width={12} pathFill={semantics.textInverse} />
+      <Recorder height={12} width={12} pathFill={semantics.textOnInverse} />
       <Text style={styles.durationText}>{durationLabel}</Text>
     </View>
   ) : null;
@@ -75,13 +91,13 @@ const useStyles = () => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         videoAttachmentUploadPreview: { durationContainer, durationText },
       },
     },
   } = useTheme();
 
-  const { badgeBgInverse, textInverse } = semantics;
+  const { badgeBgInverse, textOnInverse } = semantics;
 
   return useMemo(
     () =>
@@ -101,11 +117,11 @@ const useStyles = () => {
         durationText: {
           fontSize: primitives.typographyFontSizeXxs,
           fontWeight: primitives.typographyFontWeightBold,
-          color: textInverse,
+          color: textOnInverse,
           marginLeft: primitives.spacingXxs,
           ...durationText,
         },
       }),
-    [badgeBgInverse, textInverse, durationContainer, durationText],
+    [badgeBgInverse, textOnInverse, durationContainer, durationText],
   );
 };

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { LinkPreviewList } from './components/LinkPreviewList';
 import { useHasLinkPreviews } from './hooks/useLinkPreviews';
@@ -9,19 +9,20 @@ import { useHasLinkPreviews } from './hooks/useLinkPreviews';
 import { idleRecordingStateSelector } from './utils/audioRecorderSelectors';
 import { messageComposerStateStoreSelector } from './utils/messageComposerSelectors';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposerAPIContext } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { useHasAttachments } from '../../contexts/messageInputContext/hooks/useHasAttachments';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
-import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/animations/transitions';
 
 export const MessageInputHeaderView = () => {
   const {
     theme: {
-      messageInput: { contentContainer },
+      messageComposer: { contentContainer },
     },
   } = useTheme();
   const messageComposer = useMessageComposer();
@@ -29,8 +30,8 @@ export const MessageInputHeaderView = () => {
   const { clearEditingState } = useMessageComposerAPIContext();
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
   const hasLinkPreviews = useHasLinkPreviews();
-  const { audioRecorderManager, AttachmentUploadPreviewList } = useMessageInputContext();
-  const { Reply } = useMessagesContext();
+  const { audioRecorderManager } = useMessageInputContext();
+  const { AttachmentUploadPreviewList, Reply } = useComponentsContext();
   const { isRecordingStateIdle } = useStateStore(
     audioRecorderManager.state,
     idleRecordingStateSelector,
@@ -42,7 +43,7 @@ export const MessageInputHeaderView = () => {
 
   return isRecordingStateIdle ? (
     <Animated.View
-      layout={LinearTransition.duration(200)}
+      layout={transitions.layout200}
       style={[
         styles.contentContainer,
         {
@@ -55,7 +56,7 @@ export const MessageInputHeaderView = () => {
       ]}
     >
       {editing ? (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
+        <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
           <Reply
             mode='edit'
             onDismiss={clearEditingState}
@@ -63,8 +64,8 @@ export const MessageInputHeaderView = () => {
           />
         </Animated.View>
       ) : null}
-      {quotedMessage ? (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)}>
+      {quotedMessage && !editing ? (
+        <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
           <Reply onDismiss={editing ? undefined : onDismissReply} mode='reply' />
         </Animated.View>
       ) : null}

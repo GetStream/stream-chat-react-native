@@ -4,27 +4,32 @@ import type { FlatListProps } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
-import { Channel } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
+import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
+import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
-import { useBottomSheetContext, useTheme, useTranslationContext } from '../../contexts';
+import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { useStableCallback } from '../../hooks';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { primitives } from '../../theme';
-import { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
+import type { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
+import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';
 import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
-import { ChannelAvatar } from '../ui';
-import { StreamBottomSheetModalFlatList } from '../UIComponents';
+import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
+import { StreamBottomSheetModalFlatList } from '../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ChannelDetailsHeaderProps = { channel: Channel };
 
 export type ChannelDetailsBottomSheetProps = {
   additionalFlatListProps?: Partial<FlatListProps<ChannelActionItem>>;
   channel: Channel;
-  ChannelDetailsHeader?: React.ComponentType<ChannelDetailsHeaderProps>;
   items: ChannelActionItem[];
 };
 
@@ -35,6 +40,9 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
+  const { muted: channelMuted } = useIsChannelMuted(channel);
+  const directChatUserMuted = useChannelMuteActive(channel);
+  const muted = isDirectChat ? directChatUserMuted : channelMuted;
   const displayedMemberCount = memberCount > 9 ? '9+' : `${memberCount}`;
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(
@@ -49,9 +57,12 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
 
   return (
     <View style={styles.headerContainer}>
-      <ChannelAvatar channel={channel} size={'lg'} />
+      <ChannelAvatar channel={channel} size={'xl'} />
       <View style={styles.metaContainer}>
-        <ChannelPreviewTitle channel={channel} />
+        <View style={styles.titleContainer}>
+          <ChannelPreviewTitle channel={channel} />
+          {muted ? <ChannelPreviewMutedStatus /> : null}
+        </View>
         <Text style={styles.headerMeta}>
           {isDirectChat ? (onlineCount === 1 ? t('Online') : t('Offline')) : membersAndOnlineLabel}
         </Text>
@@ -93,10 +104,10 @@ const keyExtractor = (item: ChannelActionItem) => item.id;
 
 export const ChannelDetailsBottomSheet = ({
   additionalFlatListProps,
-  ChannelDetailsHeader: ChannelDetailsHeaderComponent = ChannelDetailsHeader,
   items,
   channel,
 }: ChannelDetailsBottomSheetProps) => {
+  const { ChannelDetailsHeader: ChannelDetailsHeaderComponent } = useComponentsContext();
   const styles = useStyles();
   return (
     <>
@@ -125,14 +136,14 @@ const useStyles = () => {
       StyleSheet.create({
         contentContainer: {
           flexGrow: 1,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
           ...contentContainer,
         },
         headerContainer: {
           flexDirection: 'row',
           padding: primitives.spacingSm,
           gap: primitives.spacingSm,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: 'transparent',
           ...header.container,
         },
         headerMeta: {
@@ -144,6 +155,11 @@ const useStyles = () => {
         metaContainer: {
           gap: primitives.spacingXxs,
           ...header.metaContainer,
+        },
+        titleContainer: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingXxs,
         },
         itemContainer: {
           flexDirection: 'row',
@@ -174,7 +190,7 @@ const useStyles = () => {
       item.destructiveText,
       item.standardText,
       semantics.accentError,
-      semantics.backgroundElevationElevation1,
+      semantics.backgroundCoreElevation1,
       semantics.textPrimary,
       semantics.textTertiary,
     ],

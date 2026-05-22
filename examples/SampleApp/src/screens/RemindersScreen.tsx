@@ -6,17 +6,15 @@ import { StyleSheet, View } from 'react-native';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { useTheme } from 'stream-chat-react-native';
 import { RemindersList } from '../components/Reminders/RemindersList';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export type RemindersScreenProps = {
   navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'RemindersScreen'>;
 };
 
 export const RemindersScreen: React.FC<RemindersScreenProps> = () => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { white_snow } = useLegacyColors();
 
   return (
     <View

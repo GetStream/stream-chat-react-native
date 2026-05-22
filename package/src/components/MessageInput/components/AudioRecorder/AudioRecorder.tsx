@@ -14,20 +14,21 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { ChevronLeft } from '../../../../icons/ChevronLeft';
-import { Mic } from '../../../../icons/Mic';
-import { Stop } from '../../../../icons/Stop';
-import { Tick } from '../../../../icons/Tick';
-import { Trash } from '../../../../icons/Trash';
+import { Tick } from '../../../../icons/checkmark';
+import { ChevronLeft } from '../../../../icons/chevron-left';
+import { Delete } from '../../../../icons/delete';
+import { Stop } from '../../../../icons/stop-fill';
 import { IconProps } from '../../../../icons/utils/base';
+import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications';
 
 type AudioRecorderPropsWithContext = Pick<
   MessageInputContextValue,
   | 'audioRecorderManager'
-  | 'asyncMessagesMultiSendEnabled'
+  | 'audioRecordingSendOnComplete'
   | 'stopVoiceRecording'
   | 'deleteVoiceRecording'
   | 'uploadVoiceRecording'
@@ -59,6 +60,7 @@ const StopRecording = ({
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Stop voice recording'
       variant='destructive'
       type='outline'
       size='sm'
@@ -70,19 +72,20 @@ const StopRecording = ({
 };
 
 const UploadRecording = ({
-  asyncMessagesMultiSendEnabled,
+  audioRecordingSendOnComplete,
   uploadVoiceRecordingHandler,
 }: {
-  asyncMessagesMultiSendEnabled: boolean;
-  uploadVoiceRecordingHandler: (multiSendEnabled: boolean) => Promise<void>;
+  audioRecordingSendOnComplete: boolean;
+  uploadVoiceRecordingHandler: (sendOnComplete: boolean) => Promise<void>;
 }) => {
   const onUploadVoiceRecording = () => {
     NativeHandlers.triggerHaptic('impactMedium');
-    uploadVoiceRecordingHandler(asyncMessagesMultiSendEnabled);
+    uploadVoiceRecordingHandler(audioRecordingSendOnComplete);
   };
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Send voice recording'
       variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
@@ -98,25 +101,33 @@ const DeleteRecording = ({
 }: {
   deleteVoiceRecordingHandler: () => Promise<void>;
 }) => {
-  const onDeleteVoiceRecording = () => {
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
+  const onDeleteVoiceRecording = async () => {
     NativeHandlers.triggerHaptic('impactMedium');
-    deleteVoiceRecordingHandler();
+    await deleteVoiceRecordingHandler();
+    addNotification({
+      message: t('Voice message deleted'),
+      options: { severity: 'info', type: 'audioRecording:cancel:success' },
+      origin: { emitter: 'AudioRecorder' },
+    });
   };
   return (
     <Button
+      accessibilityLabelKey='a11y/Delete voice recording'
       variant='secondary'
       type='outline'
       size='sm'
       iconOnly
       onPress={onDeleteVoiceRecording}
-      LeadingIcon={Trash}
+      LeadingIcon={Delete}
     />
   );
 };
 
 const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const {
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     slideToCancelStyle,
     deleteVoiceRecording,
     stopVoiceRecording,
@@ -131,7 +142,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         audioRecorder: { arrowLeftIcon, micContainer, micIcon, slideToCancelContainer },
       },
     },
@@ -144,7 +155,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
         <View style={styles.container}>
           <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} />
           <UploadRecording
-            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            audioRecordingSendOnComplete={audioRecordingSendOnComplete}
             uploadVoiceRecordingHandler={uploadVoiceRecording}
           />
         </View>
@@ -155,7 +166,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
           <DeleteRecording deleteVoiceRecordingHandler={deleteVoiceRecording} />
           <StopRecording stopVoiceRecordingHandler={stopVoiceRecording} />
           <UploadRecording
-            asyncMessagesMultiSendEnabled={asyncMessagesMultiSendEnabled}
+            audioRecordingSendOnComplete={audioRecordingSendOnComplete}
             uploadVoiceRecordingHandler={uploadVoiceRecording}
           />
         </View>
@@ -201,7 +212,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
 export const AudioRecorder = (props: AudioRecorderProps) => {
   const {
     audioRecorderManager,
-    asyncMessagesMultiSendEnabled,
+    audioRecordingSendOnComplete,
     stopVoiceRecording,
     deleteVoiceRecording,
     uploadVoiceRecording,
@@ -216,7 +227,7 @@ export const AudioRecorder = (props: AudioRecorderProps) => {
     <MemoizedAudioRecorder
       {...{
         audioRecorderManager,
-        asyncMessagesMultiSendEnabled,
+        audioRecordingSendOnComplete,
         stopVoiceRecording,
         deleteVoiceRecording,
         uploadVoiceRecording,
@@ -275,4 +286,4 @@ const useStyles = () => {
   );
 };
 
-AudioRecorder.displayName = 'AudioRecorder{messageInput}';
+AudioRecorder.displayName = 'AudioRecorder{messageComposer}';

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 
 import { renderAttachmentPickerItem } from './AttachmentPickerItem';
+import { IOS_LIMITED_DEEPLINK, type PhotoContentItemType } from './shared';
 
 import { useAttachmentPickerContext, useTheme, useTranslationContext } from '../../../../contexts';
 
@@ -9,21 +10,11 @@ import { useStableCallback } from '../../../../hooks';
 import { Picture } from '../../../../icons';
 
 import { NativeHandlers } from '../../../../native';
-import type { File } from '../../../../types/types';
 import { BottomSheetFlatList } from '../../../BottomSheetCompatibility/BottomSheetFlatList';
 import {
-  AttachmentPickerContentProps,
   AttachmentPickerGenericContent,
-} from '../AttachmentPickerContent';
-
-export const IOS_LIMITED_DEEPLINK = '@getstream/ios-limited-button' as const;
-
-export type IosLimitedItemType = { uri: typeof IOS_LIMITED_DEEPLINK };
-
-export type PhotoContentItemType = File | IosLimitedItemType;
-
-export const isIosLimited = (item: PhotoContentItemType): item is IosLimitedItemType =>
-  'uri' in item && item.uri === '@getstream/ios-limited-button';
+  type AttachmentPickerContentProps,
+} from '../AttachmentPickerGenericContent';
 
 const keyExtractor = (item: PhotoContentItemType) => item.uri;
 
@@ -31,12 +22,16 @@ const useMediaPickerStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      backgroundColor: semantics.composerBg,
-    },
-  });
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flexGrow: 1,
+          backgroundColor: semantics.backgroundCoreElevation1,
+        },
+      }),
+    [semantics.backgroundCoreElevation1],
+  );
 };
 
 export const AttachmentMediaPickerIcon = () => {
@@ -177,6 +172,7 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       numColumns={numberOfColumns}
       onEndReached={photoError ? undefined : getMorePhotos}
       renderItem={renderAttachmentPickerItem}
+      showsVerticalScrollIndicator={false}
       testID={'attachment-picker-list'}
       updateCellsBatchingPeriod={16}
     />

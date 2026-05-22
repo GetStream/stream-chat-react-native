@@ -5,6 +5,34 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+react_native_path = File.dirname(
+  Pod::Executable.execute_command('node', ['-p',
+    'require.resolve(
+      "react-native/package.json",
+      {paths: [process.argv[1]]},
+    )', __dir__]).strip,
+)
+
+fmt_podspec_path = File.join(react_native_path, 'third-party-podspecs', 'fmt.podspec')
+rct_folly_podspec_path = File.join(react_native_path, 'third-party-podspecs', 'RCT-Folly.podspec')
+
+fmt_podspec = File.read(fmt_podspec_path)
+fmt_podspec = fmt_podspec.gsub('spec.version = "11.0.2"', 'spec.version = "12.1.0"')
+fmt_podspec = fmt_podspec.gsub(':tag => "11.0.2"', ':tag => "12.1.0"')
+fmt_podspec = fmt_podspec.gsub(
+  '"GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don\'t control this library',
+  "\"GCC_WARN_INHIBIT_ALL_WARNINGS\" => \"YES\", \"OTHER_CPLUSPLUSFLAGS\" => \"$(inherited) -DFMT_USE_CONSTEVAL=0\" # Disable warnings because we don't control this library",
+)
+File.write(fmt_podspec_path, fmt_podspec)
+
+rct_folly_podspec = File.read(rct_folly_podspec_path)
+rct_folly_podspec = rct_folly_podspec.gsub('spec.dependency "fmt", "11.0.2"', 'spec.dependency "fmt", "12.1.0"')
+rct_folly_podspec = rct_folly_podspec.gsub(
+  '"GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don\'t control this library',
+  "\"GCC_WARN_INHIBIT_ALL_WARNINGS\" => \"YES\", \"OTHER_CPLUSPLUSFLAGS\" => \"$(inherited) -DFMT_USE_CONSTEVAL=0\" # Disable warnings because we don't control this library",
+)
+File.write(rct_folly_podspec_path, rct_folly_podspec)
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -55,5 +83,18 @@ target 'SampleApp' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    installer.pods_project.targets.each do |target|
+      next unless ['fmt', 'RCT-Folly'].include?(target.name)
+
+      target.build_configurations.each do |config|
+        flags = Array(config.build_settings['OTHER_CPLUSPLUSFLAGS'] || '$(inherited)')
+        unless flags.include?('-DFMT_USE_CONSTEVAL=0')
+          flags << '-DFMT_USE_CONSTEVAL=0'
+        end
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = flags
+      end
+    end
+
   end
 end

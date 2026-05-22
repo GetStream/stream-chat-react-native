@@ -57,7 +57,9 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       {ownCapabilities.queryPollVotes &&
       voteCountsByOption &&
       voteCountsByOption?.[option.id] > 5 ? (
-        <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
+        <View style={styles.inlineButton}>
+          <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
+        </View>
       ) : null}
       {showAllVotes ? (
         <Modal
@@ -103,18 +105,24 @@ export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.titleMeta, titleMeta]}>
-        {t('Option {{count}}', { count: index + 1 })}
-      </Text>
-      <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.title, title]}>{option.text}</Text>
-        <Text style={[styles.voteCount, voteCount]}>
-          {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+      <View style={styles.metaContainer}>
+        <Text style={[styles.titleMeta, titleMeta]}>
+          {t('Option {{count}}', { count: index + 1 })}
         </Text>
+        <View style={[styles.headerContainer, headerContainer]}>
+          <Text style={[styles.title, title]}>{option.text}</Text>
+          <Text style={[styles.voteCount, voteCount]}>
+            {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+          </Text>
+        </View>
       </View>
-      {latestVotesByOption?.[option.id]?.length > 0
-        ? (latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)
-        : null}
+      {latestVotesByOption?.[option.id]?.length > 0 ? (
+        <View style={styles.votesContainer}>
+          {(latestVotesByOption?.[option.id] ?? []).slice(0, 5).map(PollResultsVoteItem)}
+        </View>
+      ) : (
+        <View style={styles.spacer} />
+      )}
       <ShowAllVotesButton option={option} />
     </View>
   );
@@ -124,50 +132,67 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-          borderRadius: primitives.radiusLg,
-          marginBottom: primitives.spacingMd,
-          padding: primitives.spacingMd,
-        },
-        headerContainer: {
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingBottom: primitives.spacingXs,
-        },
-        modalRoot: {
-          flex: 1,
-        },
-        title: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeLg,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          paddingTop: primitives.spacingXs,
-        },
-        titleMeta: {
-          fontSize: primitives.typographyFontSizeSm,
-          color: semantics.textTertiary,
-          lineHeight: primitives.typographyLineHeightNormal,
-          fontWeight: primitives.typographyFontWeightMedium,
-        },
-        voteCount: {
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          marginLeft: primitives.spacingMd,
-        },
-        safeArea: {
-          backgroundColor: semantics.backgroundElevationElevation1,
-          flex: 1,
-        },
-      }),
-    [semantics],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      spacer: {
+        paddingBottom: primitives.spacingXs,
+      },
+      container: {
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        borderRadius: primitives.radiusLg,
+        marginBottom: primitives.spacingMd,
+      },
+      metaContainer: {
+        paddingTop: primitives.spacingMd,
+        paddingHorizontal: primitives.spacingMd,
+      },
+      votesContainer: {
+        paddingHorizontal: primitives.spacingMd,
+        paddingVertical: primitives.spacingXs,
+      },
+      headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: primitives.spacingXs,
+      },
+      modalRoot: {
+        flex: 1,
+      },
+      title: {
+        flex: 1,
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      titleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+      voteCount: {
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        marginStart: primitives.spacingMd,
+        textAlign: 'left',
+      },
+      safeArea: {
+        backgroundColor: semantics.backgroundCoreElevation1,
+        flex: 1,
+      },
+      inlineButton: {
+        borderColor: semantics.borderCoreDefault,
+        borderTopWidth: 1,
+        paddingHorizontal: primitives.spacingMd,
+        paddingVertical: primitives.spacingXs,
+      },
+    });
+  }, [semantics]);
 };

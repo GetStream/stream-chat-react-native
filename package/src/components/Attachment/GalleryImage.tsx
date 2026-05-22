@@ -1,15 +1,33 @@
 import React from 'react';
-import { Image, ImageProps, StyleSheet } from 'react-native';
+import {
+  Image,
+  ImageErrorEvent,
+  ImageProps,
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { useLoadingImage } from '../../hooks/useLoadingImage';
+import { useStableCallback } from '../../hooks/useStableCallback';
 
 import { getUrlWithoutParams, isLocalUrl, makeImageCompatibleUrl } from '../../utils/utils';
 
-export type GalleryImageWithContextProps = GalleryImageProps &
-  Pick<ChatContextValue, 'ImageComponent'>;
+export type GalleryImageWithContextProps = GalleryImageProps & {
+  ImageComponent?: React.ComponentType<ImageProps>;
+};
 
 export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => {
-  const { ImageComponent = Image, uri, style, ...rest } = props;
+  const {
+    accessibilityLabel = 'Gallery Image',
+    ImageComponent = Image,
+    uri,
+    style,
+    ...rest
+  } = props;
 
   // Caching image components such as FastImage will not work with local images.
   // This for the case of local uris, we use the default Image component.
@@ -17,7 +35,7 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
     return (
       <ImageComponent
         {...rest}
-        accessibilityLabel='Gallery Image'
+        accessibilityLabel={accessibilityLabel}
         style={[styles.image, style]}
         source={{
           uri: makeImageCompatibleUrl(uri),
@@ -29,7 +47,7 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
   return (
     <Image
       {...rest}
-      accessibilityLabel='Gallery Image'
+      accessibilityLabel={accessibilityLabel}
       style={[styles.image, style]}
       source={{
         uri: makeImageCompatibleUrl(uri),
@@ -48,9 +66,78 @@ export type GalleryImageProps = Omit<ImageProps, 'height' | 'source'> & {
 };
 
 export const GalleryImage = (props: GalleryImageProps) => {
-  const { ImageComponent } = useChatContext();
+  const { ImageComponent } = useComponentsContext();
 
   return <MemoizedGalleryImage ImageComponent={ImageComponent} {...props} />;
+};
+
+export type LoadableGalleryImageProps = Pick<
+  GalleryImageProps,
+  'accessibilityLabel' | 'resizeMode' | 'uri'
+> & {
+  children?: React.ReactNode;
+  containerStyle?: StyleProp<ViewStyle>;
+  imageStyle?: StyleProp<ImageStyle>;
+  localId?: string;
+};
+
+export const LoadableGalleryImage = ({
+  accessibilityLabel = 'Gallery Image',
+  children,
+  containerStyle,
+  imageStyle,
+  localId,
+  resizeMode,
+  uri,
+}: LoadableGalleryImageProps) => {
+  const { AttachmentUploadIndicator, ImageLoadingFailedIndicator, ImageLoadingIndicator } =
+    useComponentsContext();
+  const {
+    isLoadingImage,
+    isLoadingImageError,
+    onReloadImage,
+    setLoadingImage,
+    setLoadingImageError,
+  } = useLoadingImage();
+
+  const onLoadStart = useStableCallback(() => {
+    setLoadingImageError(false);
+    setLoadingImage(true);
+  });
+  const onLoad = useStableCallback(() => {
+    setTimeout(() => {
+      setLoadingImage(false);
+      setLoadingImageError(false);
+    }, 0);
+  });
+  const onError = useStableCallback(({ nativeEvent: { error } }: ImageErrorEvent) => {
+    console.warn(error);
+    setLoadingImage(false);
+    setLoadingImageError(true);
+  });
+
+  return (
+    <View style={[styles.image, containerStyle]}>
+      {isLoadingImageError ? (
+        <ImageLoadingFailedIndicator onReloadImage={onReloadImage} />
+      ) : (
+        <>
+          <GalleryImage
+            accessibilityLabel={accessibilityLabel}
+            onError={onError}
+            onLoad={onLoad}
+            onLoadStart={onLoadStart}
+            resizeMode={resizeMode}
+            style={imageStyle}
+            uri={uri}
+          />
+          {children}
+          {isLoadingImage ? <ImageLoadingIndicator /> : null}
+          <AttachmentUploadIndicator localId={localId} sourceUrl={uri} variant='overlay' />
+        </>
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

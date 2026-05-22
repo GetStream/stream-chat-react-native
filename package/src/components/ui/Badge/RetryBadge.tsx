@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { RotateCircle } from '../../../icons/RotateCircle';
+import { Reload } from '../../../icons/refresh';
 import { primitives } from '../../../theme';
 
 const sizes = {
@@ -50,7 +50,7 @@ export const RetryBadge = (props: RetryBadgeProps) => {
   const styles = useStyles();
   return (
     <View style={[styles.container, sizes[size], style]} {...rest}>
-      <RotateCircle
+      <Reload
         height={iconSizes[size].height}
         width={iconSizes[size].width}
         stroke={semantics.textOnAccent}

@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import Animated from 'react-native-reanimated';
 
 import { OutputButtons } from './components/OutputButtons';
 
@@ -9,11 +11,12 @@ import { useMessageInputContext } from '../../contexts/messageInputContext/Messa
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { transitions } from '../../utils/animations/transitions';
 
 export const MessageInputTrailingView = () => {
   const {
     theme: {
-      messageInput: { outputButtonsContainer },
+      messageComposer: { outputButtonsContainer },
     },
   } = useTheme();
   const { audioRecorderManager } = useMessageInputContext();
@@ -22,9 +25,12 @@ export const MessageInputTrailingView = () => {
     audioRecorderSelector,
   );
   return (recordingStatus === 'idle' || recordingStatus === 'recording') && !micLocked ? (
-    <View style={[styles.outputButtonsContainer, outputButtonsContainer]}>
+    <Animated.View
+      layout={transitions.layout200}
+      style={[styles.outputButtonsContainer, outputButtonsContainer]}
+    >
       <OutputButtons />
-    </View>
+    </Animated.View>
   ) : null;
 };
 

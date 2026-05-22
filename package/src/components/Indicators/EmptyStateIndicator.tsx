@@ -46,7 +46,9 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
       );
     default:
       return (
-        <Text style={[{ color: semantics.textSecondary }, messageContainer]}>No items exist</Text>
+        <Text style={[{ color: semantics.textSecondary }, messageContainer]}>
+          {t('No items exist')}
+        </Text>
       );
   }
 };

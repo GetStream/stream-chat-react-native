@@ -7,6 +7,8 @@ export interface Response {
   width: number;
 }
 
+export interface VideoThumbnailResponse extends Response {}
+
 export type ResizeFormat = 'PNG' | 'JPEG' | 'WEBP';
 export type ResizeMode = 'contain' | 'cover' | 'stretch';
 

@@ -15,7 +15,7 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { Plus } from '../../icons/Plus';
+import { Plus } from '../../icons/plus';
 import { NativeHandlers } from '../../native';
 import { scheduleActionOnClose } from '../../state-store';
 
@@ -115,6 +115,7 @@ export const EmojiViewerButton = ({
     <>
       <View style={[styles.emojiViewerButton, emojiViewerButton]}>
         <Button
+          accessibilityLabelKey='a11y/Open more reactions'
           variant='secondary'
           type='outline'
           size='sm'
@@ -131,14 +132,6 @@ export const EmojiViewerButton = ({
       ) : null}
     </>
   );
-};
-
-// TODO: V9: Move this to utils and also clean it up a bit.
-//  This was done quickly and in a bit of a hurry.
-export const toUnicodeScalarString = (emoji: string): string => {
-  const out: number[] = [];
-  for (const ch of emoji) out.push(ch.codePointAt(0)!);
-  return out.map((cp) => `U+${cp.toString(16).toUpperCase().padStart(4, '0')}`).join('-');
 };
 
 /**
@@ -171,6 +164,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   return (
     <View
       accessibilityLabel='Reaction Selector on long pressing message'
+      accessibilityRole='menu'
       style={[styles.container, container]}
     >
       <MessageReactionPickerList onSelectReaction={onSelectReaction} />
@@ -196,7 +190,7 @@ const useStyles = () => {
           marginVertical: 8,
           overflow: 'visible',
           ...(isDark ? primitives.darkElevation3 : primitives.lightElevation3),
-          backgroundColor: semantics.backgroundElevationElevation2,
+          backgroundColor: semantics.backgroundCoreElevation2,
         },
         reactionListContent: {
           flexGrow: 1,
@@ -212,6 +206,6 @@ const useStyles = () => {
           paddingLeft: primitives.spacingXs,
         },
       }),
-    [isDark, semantics.backgroundElevationElevation2],
+    [isDark, semantics.backgroundCoreElevation2],
   );
 };

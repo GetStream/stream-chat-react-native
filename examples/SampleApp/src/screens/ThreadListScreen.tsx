@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,11 +29,8 @@ export type ThreadsScreenProps = {
 };
 
 export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { white_snow } = useLegacyColors();
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 

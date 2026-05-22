@@ -9,11 +9,14 @@ import { render } from '@testing-library/react-native';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { MessageActionList } from '../MessageActionList';
+import type { MessageActionListProps } from '../MessageActionList';
 import { MessageActionListItemProps } from '../MessageActionListItem';
 
 const MockMessageActionListItem = (props: MessageActionListItemProps) => <Text>{props.title}</Text>;
 
-const defaultProps = {
+const defaultProps: MessageActionListProps & {
+  MessageActionListItem: typeof MockMessageActionListItem;
+} = {
   MessageActionListItem: MockMessageActionListItem,
   messageActions: [
     { action: jest.fn(), actionType: 'copyMessage', type: 'standard', title: 'Copy Message' },

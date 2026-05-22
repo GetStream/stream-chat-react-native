@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MessageTextContainer should render message text container 1`] = `
+<View
+  style={
+    [
+      {
+        "maxWidth": 256,
+        "paddingHorizontal": 12,
+      },
+      {},
+      undefined,
+    ]
+  }
+  testID="message-text-container"
+>
+  <View
+    style={
+      [
+        {
+          "alignSelf": "stretch",
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        {
+          "alignItems": "flex-start",
+          "flexDirection": "row",
+          "flexWrap": "wrap",
+          "fontSize": 17,
+          "justifyContent": "flex-start",
+          "lineHeight": 20,
+          "marginBottom": 8,
+          "marginTop": 8,
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#1a1b25",
+            "fontSize": 17,
+            "lineHeight": 20,
+            "writingDirection": "ltr",
+          }
+        }
+      >
+        Hello World
+      </Text>
+    </Text>
+  </View>
+</View>
+`;

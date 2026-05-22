@@ -4,9 +4,9 @@ import type { SharedValue } from 'react-native-reanimated';
 
 import { render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import { Attachment, LocalMessage } from 'stream-chat';
+import { Attachment } from 'stream-chat';
 
-import { ImageGalleryFooter as ImageGalleryFooterDefault } from '../../../components/ImageGallery/components/ImageGalleryFooter';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -53,23 +53,28 @@ const ImageGalleryComponentVideo = (props: ImageGalleryProps) => {
     messages: [
       generateMessage({
         attachments: [attachment],
-      }) as unknown as LocalMessage,
+      }),
     ],
     selectedAttachmentUrl: attachment.asset_url,
   });
 
   return (
-    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
-      <ImageGalleryContext.Provider
-        value={
-          {
-            imageGalleryStateStore,
-            ImageGalleryFooter: ImageGalleryFooterDefault,
-          } as unknown as ImageGalleryContextValue
-        }
-      >
-        <ImageGallery {...props} />
-      </ImageGalleryContext.Provider>
+    <OverlayProvider
+      accessibility={{ enabled: true }}
+      value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}
+    >
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              imageGalleryStateStore,
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <ImageGallery {...props} />
+        </ImageGalleryContext.Provider>
+      </WithComponents>
     </OverlayProvider>
   );
 };
@@ -93,23 +98,28 @@ const ImageGalleryComponentImage = (
     messages: [
       generateMessage({
         attachments: [props.attachment],
-      }) as unknown as LocalMessage,
+      }),
     ],
     selectedAttachmentUrl: props.attachment.image_url as string,
   });
 
   return (
-    <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
-      <ImageGalleryContext.Provider
-        value={
-          {
-            imageGalleryStateStore,
-            ImageGalleryFooter: ImageGalleryFooterDefault,
-          } as unknown as ImageGalleryContextValue
-        }
-      >
-        <ImageGallery {...props} />
-      </ImageGalleryContext.Provider>
+    <OverlayProvider
+      accessibility={{ enabled: true }}
+      value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}
+    >
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <WithComponents overrides={{ ImageGalleryHeader: undefined as any }}>
+        <ImageGalleryContext.Provider
+          value={
+            {
+              imageGalleryStateStore,
+            } as unknown as ImageGalleryContextValue
+          }
+        >
+          <ImageGallery {...props} />
+        </ImageGalleryContext.Provider>
+      </WithComponents>
     </OverlayProvider>
   );
 };
@@ -125,7 +135,7 @@ describe('ImageGalleryFooter', () => {
     });
   });
 
-  it('render image gallery footer component with Share Button and Grid Icon', async () => {
+  it('render image gallery footer component with share and grid buttons', async () => {
     render(<ImageGalleryComponentVideo />);
 
     await waitFor(() => {

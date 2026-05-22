@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-#      - develop
+      - develop
 
 permissions:
   id-token: write # for OIDC / npm provenance if you use it
@@ -13,13 +13,13 @@ permissions:
 
 jobs:
   publish:
-    runs-on: public
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [24.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
         with:
           fetch-depth: '0'
 
@@ -27,10 +27,12 @@ jobs:
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
+      - name: Install Linux build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
 
       - name: Prepare git
         run: |

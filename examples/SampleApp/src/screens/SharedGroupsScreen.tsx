@@ -3,9 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 import {
   ChannelList,
-  ChannelListMessenger,
-  ChannelListMessengerProps,
-  ChannelPreviewMessengerProps,
+  ChannelPreviewViewProps,
   getChannelPreviewDisplayAvatar,
   GroupAvatar,
   useChannelPreviewDisplayName,
@@ -18,6 +16,7 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -55,17 +54,14 @@ const styles = StyleSheet.create({
   },
 });
 
-type CustomPreviewProps = ChannelPreviewMessengerProps;
+type CustomPreviewProps = ChannelPreviewViewProps;
 
-const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
+export const SharedGroupsPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList, 'SharedGroupsScreen'>>();
-  const {
-    theme: {
-      colors: { black, grey, grey_whisper, white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_whisper, white_snow } = useLegacyColors();
 
   const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
@@ -133,11 +129,8 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
 };
 
 const EmptyListComponent = () => {
-  const {
-    theme: {
-      colors: { black, grey, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, grey, grey_gainsboro } = useLegacyColors();
 
   return (
     <View style={styles.emptyListContainer}>
@@ -150,18 +143,19 @@ const EmptyListComponent = () => {
   );
 };
 
-type ListComponentProps = ChannelListMessengerProps;
-
-// If the length of channels is 1, which means we only got 1:1-distinct channel,
-// And we don't want to show 1:1-distinct channel in this list.
-const ListComponent: React.FC<ListComponentProps> = (props) => {
+// Custom empty state that also shows when there's only the 1:1 direct channel
+export const SharedGroupsEmptyState = () => {
   const { channels, loadingChannels, refreshing } = useChannelsContext();
 
-  if (channels && channels.length <= 1 && !loadingChannels && !refreshing) {
+  if (loadingChannels || refreshing) {
+    return null;
+  }
+
+  if (!channels || channels.length <= 1) {
     return <EmptyListComponent />;
   }
 
-  return <ChannelListMessenger {...props} />;
+  return null;
 };
 
 type SharedGroupsScreenRouteProp = RouteProp<StackNavigatorParamList, 'SharedGroupsScreen'>;
@@ -188,11 +182,9 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
         filters={{
           $and: [{ members: { $in: [chatClient?.user?.id] } }, { members: { $in: [user.id] } }],
         }}
-        List={ListComponent}
         options={{
           watch: false,
         }}
-        Preview={CustomPreview}
         sort={{
           last_updated: -1,
         }}

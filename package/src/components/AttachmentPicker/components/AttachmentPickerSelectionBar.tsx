@@ -20,14 +20,14 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         container: {
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
           paddingBottom: primitives.spacingSm,
           paddingHorizontal: primitives.spacingMd,
           alignItems: 'center',
           flexDirection: 'row',
         },
       }),
-    [semantics.composerBg],
+    [semantics.backgroundCoreElevation1],
   );
 };
 

@@ -13,6 +13,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigatorParamList } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { AtMentions } from '../icons/AtMentions';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,11 +31,8 @@ const styles = StyleSheet.create({
 });
 
 const EmptyMentionsSearchIndicator = () => {
-  const {
-    theme: {
-      colors: { grey, grey_gainsboro },
-    },
-  } = useTheme();
+  useTheme();
+  const { grey, grey_gainsboro } = useLegacyColors();
 
   return (
     <View style={styles.emptyIndicatorContainer}>
@@ -49,11 +47,8 @@ export type MentionsScreenProps = {
 };
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
-  const {
-    theme: {
-      colors: { white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { white_snow } = useLegacyColors();
   const { chatClient } = useAppContext();
   const messageFilters = useMemo(
     () => ({

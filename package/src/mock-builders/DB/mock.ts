@@ -3,10 +3,11 @@ import Sqlite3 from 'better-sqlite3';
 import type { PreparedQueries } from '../../store/types';
 
 let db: Sqlite3.Database;
+const testDbName = `foobar-${process.env.JEST_WORKER_ID ?? '0'}.db`;
 
 export const sqliteMock = {
   open: () => {
-    db = new Sqlite3('foobar.db');
+    db = new Sqlite3(testDbName);
     return {
       close: () => {
         db.close();
@@ -36,7 +37,7 @@ export const sqliteMock = {
           if (pragmaQueryTokens[2] === '=') {
             db.pragma(`${pragmaQueryTokens[1]} = ${pragmaQueryTokens[3]}`);
           } else {
-            result = db.pragma(`${pragmaQueryTokens[1]}`);
+            result = db.pragma(`${pragmaQueryTokens[1]}`) as unknown[];
           }
 
           return {

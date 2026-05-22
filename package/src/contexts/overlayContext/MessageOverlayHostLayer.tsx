@@ -1,5 +1,14 @@
 import React, { useEffect, useMemo } from 'react';
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  I18nManager,
+  Platform,
+  Pressable,
+  StyleSheet,
+  StyleProp,
+  useWindowDimensions,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   clamp,
@@ -21,21 +30,22 @@ import {
   Rect,
   useOverlayController,
 } from '../../state-store';
+import { useComponentsContext } from '../componentsContext/ComponentsContext';
 import { useTheme } from '../themeContext/ThemeContext';
 
 const DURATION = 300;
 
-const DefaultMessageOverlayBackground = () => {
+export const DefaultMessageOverlayBackground = () => {
   const {
     theme: { semantics },
   } = useTheme();
 
   return (
-    <View pointerEvents='none' style={StyleSheet.absoluteFillObject}>
+    <View pointerEvents='none' style={StyleSheet.absoluteFill}>
       <View
         pointerEvents='none'
         style={[
-          StyleSheet.absoluteFillObject,
+          StyleSheet.absoluteFill,
           {
             backgroundColor: semantics.badgeBgOverlay,
           },
@@ -45,11 +55,15 @@ const DefaultMessageOverlayBackground = () => {
   );
 };
 
-type MessageOverlayHostLayerProps = {
-  BackgroundComponent?: React.ComponentType;
+export type MessageActionsProps = {
+  bottomItemStyle: StyleProp<ViewStyle>;
+  hostStyle: StyleProp<ViewStyle>;
+  portalHostStyle: StyleProp<ViewStyle>;
+  topItemStyle: StyleProp<ViewStyle>;
 };
 
-export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayHostLayerProps) => {
+export const MessageOverlayHostLayer = () => {
+  const { MessageActions, MessageOverlayBackground } = useComponentsContext();
   const { id, closing } = useOverlayController();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -116,7 +130,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     opacity: backdrop.value,
   }));
 
-  const OverlayBackground = BackgroundComponent ?? DefaultMessageOverlayBackground;
+  const OverlayBackground = MessageOverlayBackground;
 
   const messageShiftY = useDerivedValue(() => {
     if (!messageH.value || !topH.value || !bottomH.value) return 0;
@@ -150,69 +164,55 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
   });
 
   const topItemStyle = useAnimatedStyle(() => {
-    if (!topH.value) return { height: 0 };
+    if (!topH.value) return { opacity: 0, height: 0, width: 0 };
+    const translateY = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
+    const horizontalPosition = I18nManager.isRTL ? { right: topH.value.x } : { left: topH.value.x };
     return {
       height: topH.value.h,
-      left: topH.value.x,
+      opacity: 1,
       position: 'absolute',
       top: topH.value.y,
-      width: topH.value.w,
-    };
-  });
-
-  const topItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
-    return {
       transform: [
         { scale: backdrop.value },
-        { translateY: withSpring(target, { duration: DURATION }) },
+        { translateY: withSpring(translateY, { duration: DURATION }) },
       ],
+      width: topH.value.w,
+      ...horizontalPosition,
     };
-  }, [isActive, closing]);
+  });
 
   const bottomItemStyle = useAnimatedStyle(() => {
-    if (!bottomH.value) return { height: 0 };
+    if (!bottomH.value) return { opacity: 0, height: 0, width: 0 };
+    const translateY = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
+    const horizontalPosition = I18nManager.isRTL
+      ? { right: bottomH.value.x }
+      : { left: bottomH.value.x };
     return {
       height: bottomH.value.h,
-      left: bottomH.value.x,
+      opacity: 1,
       position: 'absolute',
       top: bottomH.value.y,
-      width: bottomH.value.w,
-    };
-  });
-
-  const bottomItemTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : bottomShiftY.value) : 0;
-    return {
       transform: [
         { scale: backdrop.value },
-        { translateY: withSpring(target, { duration: DURATION }) },
+        { translateY: withSpring(translateY, { duration: DURATION }) },
       ],
+      width: bottomH.value.w,
+      ...horizontalPosition,
     };
-  }, [isActive, closing]);
+  });
 
   const hostStyle = useAnimatedStyle(() => {
     if (!messageH.value) return { height: 0 };
+    const translateY = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     return {
       height: messageH.value.h,
       left: messageH.value.x,
       position: 'absolute',
       top: messageH.value.y,
+      transform: [{ translateY: withSpring(translateY, { duration: DURATION }) }],
       width: messageH.value.w,
     };
   });
-
-  const hostTranslateStyle = useAnimatedStyle(() => {
-    const target = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
-
-    return {
-      transform: [
-        {
-          translateY: withSpring(target, { duration: DURATION }),
-        },
-      ],
-    };
-  }, [isActive, closing]);
 
   const tap = useMemo(
     () =>
@@ -254,10 +254,7 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     <GestureDetector gesture={tap}>
       <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
         {isActive ? (
-          <Animated.View
-            pointerEvents='none'
-            style={[StyleSheet.absoluteFillObject, backdropStyle]}
-          >
+          <Animated.View pointerEvents='none' style={[StyleSheet.absoluteFill, backdropStyle]}>
             <OverlayBackground />
           </Animated.View>
         ) : null}
@@ -266,29 +263,37 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
           {isActive ? (
             <Pressable
               onPress={closeOverlay}
-              style={StyleSheet.absoluteFillObject}
+              style={StyleSheet.absoluteFill}
               testID='message-overlay-backdrop'
             />
           ) : null}
 
-          <Animated.View style={[topItemStyle, topItemTranslateStyle]} testID='message-overlay-top'>
-            <PortalHost name='top-item' style={StyleSheet.absoluteFillObject} />
-          </Animated.View>
+          {MessageActions ? (
+            <MessageActions
+              bottomItemStyle={bottomItemStyle}
+              hostStyle={hostStyle}
+              portalHostStyle={styles.absoluteFill}
+              topItemStyle={topItemStyle}
+            />
+          ) : (
+            <>
+              <Animated.View style={topItemStyle} testID='message-overlay-top'>
+                <PortalHost name='top-item' style={styles.absoluteFill} />
+              </Animated.View>
 
-          <Animated.View
-            pointerEvents='box-none'
-            style={[hostStyle, hostTranslateStyle]}
-            testID='message-overlay-message'
-          >
-            <PortalHost name='message-overlay' style={StyleSheet.absoluteFillObject} />
-          </Animated.View>
+              <Animated.View
+                pointerEvents='box-none'
+                style={hostStyle}
+                testID='message-overlay-message'
+              >
+                <PortalHost name='message-overlay' style={styles.absoluteFill} />
+              </Animated.View>
 
-          <Animated.View
-            style={[bottomItemStyle, bottomItemTranslateStyle]}
-            testID='message-overlay-bottom'
-          >
-            <PortalHost name='bottom-item' style={StyleSheet.absoluteFillObject} />
-          </Animated.View>
+              <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
+                <PortalHost name='bottom-item' style={styles.absoluteFill} />
+              </Animated.View>
+            </>
+          )}
         </View>
 
         <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />
@@ -296,3 +301,13 @@ export const MessageOverlayHostLayer = ({ BackgroundComponent }: MessageOverlayH
     </GestureDetector>
   );
 };
+
+const styles = StyleSheet.create({
+  absoluteFill: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+});

@@ -10,7 +10,7 @@ import { iconSizes } from './constants';
 import { UserAvatar, UserAvatarProps } from './UserAvatar';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { PeopleIcon } from '../../../icons/PeopleIcon';
+import { PeopleIcon } from '../../../icons/users';
 import { primitives } from '../../../theme';
 import { BadgeCount, BadgeCountProps, OnlineIndicator, OnlineIndicatorProps } from '../Badge';
 
@@ -216,7 +216,7 @@ const useUserAvatarGroupStyles = () => {
       StyleSheet.create({
         userAvatarWrapper: {
           borderWidth: 2,
-          borderColor: semantics.borderCoreOnDark,
+          borderColor: semantics.borderCoreInverse,
           borderRadius: primitives.radiusMax,
         },
         onlineIndicatorWrapper: {

@@ -1,110 +1,127 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Delete, useTheme } from 'stream-chat-react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BottomSheetModal, Delete, useStableCallback, useTheme } from 'stream-chat-react-native';
 
-import { useAppOverlayContext } from '../context/AppOverlayContext';
-import {
-  isAddMemberBottomSheetData,
-  useBottomSheetOverlayContext,
-} from '../context/BottomSheetOverlayContext';
 import { UserMinus } from '../icons/UserMinus';
 
-const styles = StyleSheet.create({
-  actionButtonLeft: {
-    padding: 20,
-  },
-  actionButtonRight: {
-    padding: 20,
-  },
-  actionButtonsContainer: {
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  container: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    height: 224,
-  },
-  description: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  subtext: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginTop: 8,
-    paddingHorizontal: 16,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginTop: 18,
-    paddingHorizontal: 16,
-  },
-});
+const SHEET_HEIGHT = 224;
 
-export const ConfirmationBottomSheet: React.FC = () => {
-  const { setOverlay } = useAppOverlayContext();
-  const { data: contextData, reset } = useBottomSheetOverlayContext();
-  const data = contextData && !isAddMemberBottomSheetData(contextData) ? contextData : undefined;
+export type ConfirmationData = {
+  onConfirm: () => void;
+  title: string;
+  cancelText?: string;
+  confirmText?: string;
+  subtext?: string;
+};
 
-  const {
-    theme: {
-      colors: { accent_red, black, grey, white },
-      semantics,
-    },
-  } = useTheme();
-  const inset = useSafeAreaInsets();
+type ConfirmationBottomSheetProps = {
+  onClose: () => void;
+  visible: boolean;
+  cancelText?: string;
+  confirmText?: string;
+  onConfirm?: () => void;
+  subtext?: string;
+  title?: string;
+};
 
-  if (!data) {
-    return null;
-  }
+export const ConfirmationBottomSheet = React.memo(
+  ({
+    cancelText = 'CANCEL',
+    confirmText = 'CONFIRM',
+    onClose,
+    onConfirm,
+    subtext,
+    title,
+    visible,
+  }: ConfirmationBottomSheetProps) => {
+    const {
+      theme: { semantics },
+    } = useTheme();
+    const styles = useStyles();
+    const stableOnClose = useStableCallback(onClose);
 
-  const { cancelText = 'CANCEL', confirmText = 'CONFIRM', onConfirm, subtext, title } = data;
+    const handleCancel = useCallback(() => {
+      stableOnClose();
+    }, [stableOnClose]);
 
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: white,
-          marginBottom: inset.bottom,
+    const handleConfirm = useCallback(() => {
+      onConfirm?.();
+      stableOnClose();
+    }, [onConfirm, stableOnClose]);
+
+    const isLeave = confirmText === 'LEAVE';
+
+    return (
+      <BottomSheetModal visible={visible} onClose={stableOnClose} height={SHEET_HEIGHT}>
+        <SafeAreaView edges={['bottom']} style={styles.safeArea}>
+          <View style={styles.description}>
+            {isLeave ? (
+              <UserMinus pathFill={semantics.textSecondary} />
+            ) : (
+              <Delete height={20} width={20} stroke={semantics.accentError} />
+            )}
+            <Text style={[styles.title, { color: semantics.textPrimary }]}>{title}</Text>
+            {subtext ? (
+              <Text style={[styles.subtext, { color: semantics.textPrimary }]}>{subtext}</Text>
+            ) : null}
+          </View>
+          <View style={[styles.actions, { borderTopColor: semantics.borderCoreDefault }]}>
+            <Pressable onPress={handleCancel} style={styles.actionButton}>
+              <Text style={[styles.actionText, { color: semantics.textSecondary }]}>
+                {cancelText}
+              </Text>
+            </Pressable>
+            <Pressable onPress={handleConfirm} style={styles.actionButton}>
+              <Text style={[styles.actionText, { color: semantics.accentError }]}>
+                {confirmText}
+              </Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      </BottomSheetModal>
+    );
+  },
+);
+
+const useStyles = () => {
+  return useMemo(
+    () =>
+      StyleSheet.create({
+        actionButton: {
+          padding: 20,
         },
-      ]}
-    >
-      <View style={styles.description}>
-        {confirmText === 'LEAVE' ? (
-          <UserMinus pathFill={grey} />
-        ) : (
-          <Delete size={32} fill={accent_red} />
-        )}
-        <Text style={[styles.title, { color: black }]}>{title}</Text>
-        <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
-      </View>
-      <View
-        style={[
-          styles.actionButtonsContainer,
-          {
-            borderTopColor: semantics.borderCoreDefault,
-          },
-        ]}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            setOverlay('none');
-            reset();
-          }}
-          style={styles.actionButtonLeft}
-        >
-          <Text style={{ color: grey }}>{cancelText}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onConfirm} style={styles.actionButtonRight}>
-          <Text style={{ color: accent_red }}>{confirmText}</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        actionText: {
+          fontSize: 14,
+          fontWeight: '600',
+        },
+        actions: {
+          borderTopWidth: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        },
+        description: {
+          alignItems: 'center',
+          flex: 1,
+          justifyContent: 'center',
+        },
+        safeArea: {
+          flex: 1,
+        },
+        subtext: {
+          fontSize: 14,
+          fontWeight: '500',
+          marginTop: 8,
+          paddingHorizontal: 16,
+          textAlign: 'center',
+        },
+        title: {
+          fontSize: 16,
+          fontWeight: '700',
+          marginTop: 18,
+          paddingHorizontal: 16,
+        },
+      }),
+    [],
   );
 };

@@ -1,15 +1,11 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export const ThreadsTab: React.FC<IconProps> = ({ active, height = 24, width = 24 }) => {
-  const {
-    theme: {
-      colors: { black, grey },
-    },
-  } = useTheme();
+  const { black, grey } = useLegacyColors();
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <Path

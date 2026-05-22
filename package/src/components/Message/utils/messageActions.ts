@@ -90,7 +90,7 @@ export const messageActions = ({
     actions.push(copyMessage);
   }
 
-  if (ownCapabilities.readEvents && !error && !isThreadMessage) {
+  if (ownCapabilities.readEvents && !error && !isThreadMessage && !isMyMessage) {
     actions.push(markUnread);
   }
 

@@ -9,19 +9,15 @@ import {
   isVideoAttachment,
   isVoiceRecordingAttachment,
   type Attachment as AttachmentType,
+  type LocalMessage,
 } from 'stream-chat';
 
-import { AudioAttachment as AudioAttachmentDefault } from './Audio';
+import type { AudioAttachmentProps } from './Audio/AudioAttachment';
 
-import { UnsupportedAttachment as UnsupportedAttachmentDefault } from './UnsupportedAttachment';
-import { URLPreview as URLPreviewDefault } from './UrlPreview';
-import { URLPreviewCompact as URLPreviewCompactDefault } from './UrlPreview/URLPreviewCompact';
-
-import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
-import { Gallery as GalleryDefault } from '../../components/Attachment/Gallery';
-import { Giphy as GiphyDefault } from '../../components/Attachment/Giphy';
+import { AttachmentFileUploadProgressIndicator } from '../../components/Attachment/AttachmentFileUploadProgressIndicator';
 
 import { useTheme } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -30,25 +26,19 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUpload';
 import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
+import type { DefaultAttachmentData } from '../../types/types';
 import { FileTypes } from '../../types/types';
+import { isLocalUrl } from '../../utils/utils';
 
 export type ActionHandler = (name: string, value: string) => void;
 
 export type AttachmentPropsWithContext = Pick<
   MessagesContextValue,
-  | 'AudioAttachment'
-  | 'FileAttachment'
-  | 'Gallery'
-  | 'Giphy'
-  | 'isAttachmentEqual'
-  | 'UrlPreview'
-  | 'URLPreviewCompact'
-  | 'myMessageTheme'
-  | 'urlPreviewType'
-  | 'UnsupportedAttachment'
+  'isAttachmentEqual' | 'myMessageTheme' | 'urlPreviewType'
 > &
   Pick<MessageContextValue, 'message'> & {
     /**
@@ -62,19 +52,16 @@ export type AttachmentPropsWithContext = Pick<
   };
 
 const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
+  const { attachment, index, message, urlPreviewType } = props;
   const {
-    attachment,
     AudioAttachment,
     FileAttachment,
     Gallery,
     Giphy,
     UrlPreview,
     URLPreviewCompact,
-    index,
-    message,
-    urlPreviewType,
     UnsupportedAttachment,
-  } = props;
+  } = useComponentsContext();
   const audioAttachmentStyles = useAudioAttachmentStyles();
 
   if (attachment.type === FileTypes.Giphy || attachment.type === FileTypes.Imgur) {
@@ -104,12 +91,12 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
   if (isAudioAttachment(attachment) || isVoiceRecordingAttachment(attachment)) {
     if (isSoundPackageAvailable()) {
       return (
-        <AudioAttachment
-          item={{ ...attachment, id: index?.toString() ?? '', type: attachment.type }}
+        <MessageAudioAttachment
+          AudioAttachment={AudioAttachment}
+          attachment={attachment}
+          audioAttachmentStyles={audioAttachmentStyles}
+          index={index}
           message={message}
-          showSpeedSettings={true}
-          showTitle={false}
-          styles={audioAttachmentStyles}
         />
       );
     }
@@ -164,31 +151,9 @@ export type AttachmentProps = Partial<AttachmentPropsWithContext>;
  * Attachment - The message attachment
  */
 export const Attachment = (props: AttachmentProps) => {
-  const {
-    attachment,
-    AudioAttachment: PropAudioAttachment,
-    FileAttachment: PropFileAttachment,
-    Gallery: PropGallery,
-    Giphy: PropGiphy,
-    myMessageTheme: PropMyMessageTheme,
-    UrlPreview: PropUrlPreview,
-    URLPreviewCompact: PropURLPreviewCompact,
-    urlPreviewType: PropUrlPreviewType,
-    UnsupportedAttachment: PropUnsupportedAttachment,
-  } = props;
+  const { attachment } = props;
 
-  const {
-    AudioAttachment: ContextAudioAttachment,
-    FileAttachment: ContextFileAttachment,
-    Gallery: ContextGallery,
-    Giphy: ContextGiphy,
-    isAttachmentEqual,
-    myMessageTheme: ContextMyMessageTheme,
-    UrlPreview: ContextUrlPreview,
-    URLPreviewCompact: ContextURLPreviewCompact,
-    urlPreviewType: ContextUrlPreviewType,
-    UnsupportedAttachment: ContextUnsupportedAttachment,
-  } = useMessagesContext();
+  const { isAttachmentEqual, myMessageTheme, urlPreviewType } = useMessagesContext();
 
   const { message } = useMessageContext();
 
@@ -196,34 +161,56 @@ export const Attachment = (props: AttachmentProps) => {
     return null;
   }
 
-  const AudioAttachment = PropAudioAttachment || ContextAudioAttachment || AudioAttachmentDefault;
-  const FileAttachment = PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
-  const Gallery = PropGallery || ContextGallery || GalleryDefault;
-  const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
-  const UrlPreview = PropUrlPreview || ContextUrlPreview || URLPreviewDefault;
-  const myMessageTheme = PropMyMessageTheme || ContextMyMessageTheme;
-  const URLPreviewCompact =
-    PropURLPreviewCompact || ContextURLPreviewCompact || URLPreviewCompactDefault;
-  const urlPreviewType = PropUrlPreviewType || ContextUrlPreviewType;
-  const UnsupportedAttachment =
-    PropUnsupportedAttachment || ContextUnsupportedAttachment || UnsupportedAttachmentDefault;
-
   return (
     <MemoizedAttachment
       {...{
         attachment,
-        message,
-        AudioAttachment,
-        FileAttachment,
-        Gallery,
-        Giphy,
         isAttachmentEqual,
+        message,
         myMessageTheme,
-        UrlPreview,
-        URLPreviewCompact,
         urlPreviewType,
-        UnsupportedAttachment,
       }}
+    />
+  );
+};
+
+type MessageAudioAttachmentProps = {
+  AudioAttachment: React.ComponentType<AudioAttachmentProps>;
+  attachment: AttachmentType;
+  audioAttachmentStyles: AudioAttachmentProps['styles'];
+  index?: number;
+  message: LocalMessage | undefined;
+};
+
+const MessageAudioAttachment = ({
+  AudioAttachment: AudioAttachmentComponent,
+  attachment,
+  audioAttachmentStyles,
+  index,
+  message,
+}: MessageAudioAttachmentProps) => {
+  const localId = (attachment as DefaultAttachmentData).localId;
+  const sourceUrl = attachment.asset_url ?? attachment.originalFile?.uri;
+  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
+  const indicator = pendingUpload.isUploading ? (
+    <AttachmentFileUploadProgressIndicator
+      localId={localId}
+      sourceUrl={sourceUrl}
+      totalBytes={attachment.file_size}
+    />
+  ) : undefined;
+
+  const audioItemType = isVoiceRecordingAttachment(attachment) ? 'voiceRecording' : 'audio';
+
+  return (
+    <AudioAttachmentComponent
+      indicator={indicator}
+      item={{ ...attachment, id: index?.toString() ?? '', type: audioItemType }}
+      message={message}
+      showSpeedSettings={true}
+      showTitle={false}
+      styles={audioAttachmentStyles}
     />
   );
 };
@@ -232,9 +219,14 @@ const useAudioAttachmentStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { isMyMessage, messageHasOnlySingleAttachment } = useMessageContext();
+  const { isMyMessage, message, messageHasOnlySingleAttachment } = useMessageContext();
 
-  const showBackgroundTransparent = messageHasOnlySingleAttachment;
+  const messageHasSingleAttachment = message.attachments?.length === 1;
+  const messageHasCaption = !!message.text?.trim();
+  const messageIsQuotedReply = !!(message.quoted_message || message.quoted_message_id);
+  const showBackgroundTransparent =
+    messageHasOnlySingleAttachment ||
+    (messageIsQuotedReply && messageHasSingleAttachment && !messageHasCaption);
 
   return useMemo(() => {
     return StyleSheet.create({

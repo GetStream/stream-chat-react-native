@@ -7,6 +7,7 @@ import { useTheme } from 'stream-chat-react-native';
 import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
 import { GoBack } from '../icons/GoBack';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -63,6 +64,8 @@ export const BackButton: React.FC<{
 
   return (
     <TouchableOpacity
+      accessibilityLabel='Back'
+      accessibilityRole='button'
       onPress={() => {
         if (onBack) {
           onBack();
@@ -119,11 +122,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
   } = props;
 
   const {
-    theme: {
-      colors: { black, grey, white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const { black, grey } = useLegacyColors();
   const insets = useSafeAreaInsets();
 
   return (
@@ -131,7 +132,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
       style={[
         styles.safeAreaContainer,
         {
-          backgroundColor: white,
+          backgroundColor: semantics.backgroundCoreElevation1,
           borderBottomColor: semantics.borderCoreSubtle,
           height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
         },

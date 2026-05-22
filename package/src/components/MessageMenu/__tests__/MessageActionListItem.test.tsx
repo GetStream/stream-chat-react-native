@@ -18,6 +18,7 @@ describe('MessageActionListItem', () => {
     actionType: 'copyMessage',
     icon: <Text>Icon</Text>,
     title: 'Copy Message',
+    type: 'standard' as const,
   };
 
   it('should render correctly with given props', () => {

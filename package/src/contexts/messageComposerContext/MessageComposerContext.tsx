@@ -8,7 +8,7 @@ import {
 } from './MessageComposerAPIContext';
 
 import { ChannelProps } from '../../components';
-import { useStableCallback } from '../../hooks';
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { useCreateMessageComposer } from '../messageInputContext/hooks/useCreateMessageComposer';
 import { ThreadContextValue } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';

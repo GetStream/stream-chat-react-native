@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -14,15 +14,9 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  MessageIcon,
-  useChatContext,
-  User,
-  useTheme,
-  useViewport,
-  UserAvatar,
-} from 'stream-chat-react-native';
+import { useChatContext, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
+import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 
@@ -32,6 +26,11 @@ import { useUserInfoOverlayActions } from '../hooks/useUserInfoOverlayActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserMinus } from '../icons/UserMinus';
 import { CircleClose } from '../icons/CircleClose';
+import { Message } from '../icons/Message';
+import { User } from '../icons/User';
+import { useLegacyColors } from '../theme/useLegacyColors';
+
+import type { ConfirmationData } from './ConfirmationBottomSheet';
 
 dayjs.extend(relativeTime);
 
@@ -104,11 +103,9 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { channel, member } = data || {};
 
   const {
-    theme: {
-      colors: { accent_red, black, grey, white },
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
+  const { accent_red, black, grey, white } = useLegacyColors();
 
   const offsetY = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -221,7 +218,19 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
       )
     : undefined;
 
-  const { viewInfo, messageUser, removeFromGroup, cancel } = useUserInfoOverlayActions();
+  const [confirmationData, setConfirmationData] = useState<ConfirmationData | null>(null);
+
+  const showConfirmation = useCallback((_data: ConfirmationData) => {
+    setConfirmationData(_data);
+  }, []);
+
+  const closeConfirmation = useCallback(() => {
+    setConfirmationData(null);
+  }, []);
+
+  const { viewInfo, messageUser, removeFromGroup, cancel } = useUserInfoOverlayActions({
+    showConfirmation,
+  });
 
   if (!self || !member) {
     return null;
@@ -237,7 +246,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
       <GestureDetector gesture={pan}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
+        <Animated.View style={StyleSheet.absoluteFill}>
           <GestureDetector gesture={tap}>
             <Animated.View
               onLayout={({
@@ -298,7 +307,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           ]}
                         >
                           <View style={styles.rowInner}>
-                            <MessageIcon pathFill={grey} />
+                            <Message pathFill={grey} />
                           </View>
                           <Text style={[styles.rowText, { color: black }]}>Message</Text>
                         </View>
@@ -346,6 +355,15 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
           </GestureDetector>
         </Animated.View>
       </GestureDetector>
+      <ConfirmationBottomSheet
+        cancelText={confirmationData?.cancelText}
+        confirmText={confirmationData?.confirmText}
+        onClose={closeConfirmation}
+        onConfirm={confirmationData?.onConfirm}
+        subtext={confirmationData?.subtext}
+        title={confirmationData?.title}
+        visible={!!confirmationData}
+      />
     </Animated.View>
   );
 };

@@ -16,7 +16,9 @@ export * from './types/types';
 export * from './utils/patchMessageTextCommand';
 export * from './utils/i18n/Streami18n';
 export * from './utils/setupCommandUIMiddlewares';
+export * from './utils/createGenerateVideoThumbnails';
 export * from './utils/utils';
+export * from './nativeMultipartUpload';
 
 export { default as enTranslations } from './i18n/en.json';
 export { default as esTranslations } from './i18n/es.json';

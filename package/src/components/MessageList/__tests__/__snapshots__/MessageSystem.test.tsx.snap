@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MessageSystem should match the snapshot for message system 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "$chrome50",
+        "borderColor": "$chrome100",
+        "borderRadius": 16,
+        "borderWidth": 1,
+        "flexDirection": "row",
+        "gap": 8,
+        "justifyContent": "center",
+        "marginVertical": 8,
+        "paddingHorizontal": 12,
+        "paddingVertical": 8,
+      },
+      undefined,
+    ]
+  }
+  testID="message-system"
+>
+  <Text
+    style={
+      {
+        "color": "$textSecondary",
+        "fontSize": 13,
+        "fontWeight": 400,
+        "lineHeight": 16,
+        "textAlign": "center",
+      }
+    }
+  >
+    Hello World
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "$textSecondary",
+          "fontSize": 13,
+          "fontWeight": 400,
+          "lineHeight": 16,
+          "textAlign": "center",
+        },
+        {},
+      ]
+    }
+  >
+    04/27/2020
+  </Text>
+</View>
+`;

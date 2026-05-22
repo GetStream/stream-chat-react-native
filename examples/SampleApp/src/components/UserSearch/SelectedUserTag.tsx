@@ -1,9 +1,9 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
 
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   tagContainer: {
@@ -38,11 +38,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
   onPress,
   tag,
 }) => {
-  const {
-    theme: {
-      colors: { black, grey_gainsboro },
-    },
-  } = useTheme();
+  const { black, grey_gainsboro } = useLegacyColors();
 
   return (
     <TouchableOpacity

@@ -11,6 +11,7 @@ import { useFetchReactions } from './hooks/useFetchReactions';
 import { ReactionButton } from './ReactionButton';
 
 import { useBottomSheetContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -23,7 +24,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
 import { IconProps } from '../../icons';
-import { MoreEmojis } from '../../icons/MoreEmojis';
+import { MoreEmojis } from '../../icons/emoji-add-1';
 import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
@@ -39,12 +40,7 @@ const getItemLayout = (_, index: number) => ({
   index,
 });
 
-export type MessageUserReactionsProps = Partial<
-  Pick<
-    MessagesContextValue,
-    'MessageUserReactionsAvatar' | 'MessageUserReactionsItem' | 'supportedReactions'
-  >
-> &
+export type MessageUserReactionsProps = Partial<Pick<MessagesContextValue, 'supportedReactions'>> &
   Partial<Pick<MessageContextValue, 'message'>> & {
     /**
      * An array of reactions
@@ -93,47 +89,34 @@ const renderSelectorItem = ({ index, item }: { index: number; item: ReactionSele
   />
 );
 
-const reactionsKeyExtractor = (item: Reaction) => item.id;
+const reactionsKeyExtractor = (item: Reaction) => `${item.id}-${item.type}`;
 const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.type;
 
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const styles = useStyles();
   const [showMoreReactions, setShowMoreReactions] = useState(false);
-  const {
-    message,
-    MessageUserReactionsAvatar: propMessageUserReactionsAvatar,
-    MessageUserReactionsItem: propMessageUserReactionsItem,
-    reactions: propReactions,
-    selectedReaction: propSelectedReaction,
-    supportedReactions: propSupportedReactions,
-  } = props;
+  const { message, reactions: propReactions, supportedReactions: propSupportedReactions } = props;
   const selectorListRef = useRef<FlatList>(null);
   const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
     () => Object.keys(message?.reaction_groups ?? {}),
     [message?.reaction_groups],
   );
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(
-    propSelectedReaction ?? reactionTypes[0],
-  );
-  const {
-    MessageUserReactionsAvatar: contextMessageUserReactionsAvatar,
-    MessageUserReactionsItem: contextMessageUserReactionsItem,
-    supportedReactions: contextSupportedReactions,
-  } = useMessagesContext();
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
+  const { supportedReactions: contextSupportedReactions } = useMessagesContext();
+  const { MessageUserReactionsItem } = useComponentsContext();
   const { handleReaction } = useMessageContext();
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
-  const MessageUserReactionsAvatar =
-    propMessageUserReactionsAvatar ?? contextMessageUserReactionsAvatar;
-  const MessageUserReactionsItem = propMessageUserReactionsItem ?? contextMessageUserReactionsItem;
 
   const onSelectReaction = useStableCallback((reactionType: string) => {
-    setSelectedReaction(reactionType);
+    setSelectedReaction((currentReaction) =>
+      currentReaction === reactionType ? undefined : reactionType,
+    );
   });
 
   useEffect(() => {
     if (selectedReaction && reactionTypes.length > 0 && !reactionTypes.includes(selectedReaction)) {
-      setSelectedReaction(reactionTypes[0]);
+      setSelectedReaction(undefined);
     }
   }, [reactionTypes, selectedReaction]);
 
@@ -163,16 +146,16 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   );
 
   const selectedIndex = useMemo(() => {
-    if (!propSelectedReaction) {
+    if (!selectedReaction) {
       return -1;
     }
-    return selectorReactions.findIndex((reaction) => reaction.type === propSelectedReaction);
-  }, [propSelectedReaction, selectorReactions]);
+    return selectorReactions.findIndex((reaction) => reaction.type === selectedReaction);
+  }, [selectedReaction, selectorReactions]);
 
   useEffect(() => {
     if (selectedIndex !== -1 && selectorListRef.current) {
       selectorListRef.current?.scrollToIndex({
-        index: selectedIndex + 1, // +1 to account for the show more reactions button
+        index: selectedIndex,
         animated: true,
       });
     }
@@ -226,13 +209,9 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const renderItem = useCallback(
     ({ item }: { item: Reaction }) => (
-      <MessageUserReactionsItem
-        MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-        reaction={item}
-        supportedReactions={supportedReactions ?? []}
-      />
+      <MessageUserReactionsItem reaction={item} supportedReactions={supportedReactions ?? []} />
     ),
-    [MessageUserReactionsAvatar, MessageUserReactionsItem, supportedReactions],
+    [MessageUserReactionsItem, supportedReactions],
   );
 
   const handleSelectReaction = useStableCallback((emoji: string) => {
@@ -281,16 +260,13 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
           <EmojiPickerList onSelectReaction={handleSelectReaction} renderFullInitially={false} />
         </Animated.View>
       ) : (
-        <Animated.View
-          key={'reaction-details'}
-          entering={FadeIn.duration(200)}
-          exiting={FadeOut.duration(200)}
-        >
+        <Animated.View key={'reaction-details'} exiting={FadeOut.duration(200)}>
           <Text style={[styles.reactionsText, reactionsText]}>
             {t('{{count}} Reactions', { count: totalReactionCount })}
           </Text>
           <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
             <FlatList
+              showsHorizontalScrollIndicator={false}
               contentContainerStyle={[styles.contentContainer, contentContainer]}
               data={selectorReactions}
               getItemLayout={getItemLayout}
@@ -344,7 +320,7 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           color: semantics.textPrimary,
-          paddingBottom: primitives.spacingXxs,
+          paddingVertical: primitives.spacingSm,
           textAlign: 'center',
         },
         showMoreReactionsButton: { paddingHorizontal: primitives.spacingXs },

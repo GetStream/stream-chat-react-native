@@ -8,12 +8,13 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
-import { FlashListProps, FlashListRef, useFlashListContext } from '@shopify/flash-list';
+import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
@@ -29,6 +30,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -53,14 +55,21 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
+import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
+import { transitions } from '../../utils/animations/transitions';
+import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
+
+type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
 
 let FlashList;
+let useFlashListContext: () => FlashListContextApi = () => undefined;
 
 try {
-  FlashList = require('@shopify/flash-list').FlashList;
+  const flashListModule = require('@shopify/flash-list');
+  FlashList = flashListModule.FlashList;
+  useFlashListContext = flashListModule.useFlashListContext;
 } catch {
   FlashList = undefined;
 }
@@ -114,19 +123,16 @@ type MessageFlashListPropsWithContext = Pick<
     | 'channel'
     | 'channelUnreadStateStore'
     | 'disabled'
-    | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
     | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'LoadingIndicator'
     | 'markRead'
-    | 'NetworkDownIndicator'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
-    | 'StickyHeader'
+    | 'hasPendingInitialTargetLoad'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -136,19 +142,7 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
-    | 'DateHeader'
-    | 'disableTypingIndicator'
-    | 'FlatList'
-    | 'InlineDateSeparator'
-    | 'InlineUnreadIndicator'
-    | 'Message'
-    | 'ScrollToBottomButton'
-    | 'MessageSystem'
-    | 'myMessageTheme'
-    | 'shouldShowUnreadUnderlay'
-    | 'TypingIndicator'
-    | 'TypingIndicatorContainer'
-    | 'UnreadMessagesNotification'
+    'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
   Pick<
     ThreadContextValue,
@@ -270,10 +264,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     channelUnreadStateStore,
     client,
     closePicker,
-    DateHeader,
     disabled,
     disableTypingIndicator,
-    EmptyStateIndicator,
     // FlatList,
     FooterComponent,
     HeaderComponent = InlineLoadingMoreIndicator,
@@ -281,7 +273,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     loadMore,
     loadMoreRecent,
     loadMoreRecentThread,
@@ -292,24 +283,30 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputHeightStore,
     myMessageTheme,
     readEvents,
-    NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
     reloadChannel,
-    ScrollToBottomButton,
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
-    StickyHeader,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     thread,
     threadInstance,
     threadList = false,
+  } = props;
+  const {
+    EmptyStateIndicator,
+    MessageListLoadingIndicator: LoadingIndicator,
+    NetworkDownIndicator,
+    NotificationList,
+    ScrollToBottomButton,
+    StickyHeader,
     TypingIndicator,
     TypingIndicatorContainer,
     UnreadMessagesNotification,
-  } = props;
+  } = useComponentsContext();
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
 
   const { height: messageInputHeight } = useStateStore(
@@ -393,11 +390,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   useEffect(() => {
     if (autoscrollToRecent && flashListRef.current) {
+      if (hasPendingInitialTargetLoad?.()) {
+        return;
+      }
+
       flashListRef.current.scrollToEnd({
         animated: true,
       });
     }
-  }, [autoscrollToRecent]);
+  }, [autoscrollToRecent, hasPendingInitialTargetLoad]);
 
   const maintainVisibleContentPosition = useMemo(() => {
     return {
@@ -412,18 +413,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(false);
     }
   }, [disabled]);
-
-  const indexToScrollToRef = useRef<number | undefined>(undefined);
-
-  const initialIndexToScrollTo = useMemo(() => {
-    return targetedMessage
-      ? processedMessageList.findIndex((message) => message?.id === targetedMessage)
-      : -1;
-  }, [processedMessageList, targetedMessage]);
-
-  useEffect(() => {
-    indexToScrollToRef.current = initialIndexToScrollTo;
-  }, [initialIndexToScrollTo]);
 
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
@@ -445,13 +434,29 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       scrollToDebounceTimeoutRef.current = setTimeout(() => {
         clearTimeout(scrollToDebounceTimeoutRef.current);
 
-        // now scroll to it
-        flashListRef.current?.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5,
+        const scrollToIndex = async () => {
+          const list = flashListRef.current;
+
+          if (!list) {
+            return false;
+          }
+
+          await list.scrollToIndex({
+            index: indexOfParentInMessageList,
+            animated: true,
+            viewPosition: 0.5,
+          });
+
+          return true;
+        };
+
+        requestAnimationFrame(async () => {
+          await scrollToIndex();
+          requestAnimationFrame(async () => {
+            await scrollToIndex();
+            setTargetedMessage(undefined);
+          });
         });
-        setTargetedMessage(undefined);
       }, WAIT_FOR_SCROLL_TIMEOUT);
     }
   }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
@@ -460,8 +465,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const indexOfParentInMessageList = processedMessageList.findIndex(
       (message) => message?.id === messageId,
     );
-
-    indexToScrollToRef.current = indexOfParentInMessageList;
 
     try {
       if (indexOfParentInMessageList === -1) {
@@ -534,7 +537,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       setScrollToBottomButtonVisible(true);
       return;
     } else {
-      indexToScrollToRef.current = undefined;
       setAutoscrollToRecent(true);
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
@@ -927,6 +929,19 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     });
   });
 
+  const scrollToBottomUnreadCount =
+    scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
+  const {
+    accessibilityActions: messageListAccessibilityActions,
+    onAccessibilityAction: messageListOnAccessibilityAction,
+  } = useScrollToBottomAccessibilityAction({
+    accessibilityActions: additionalFlashListProps?.accessibilityActions,
+    onAccessibilityAction: additionalFlashListProps?.onAccessibilityAction,
+    onScrollToBottom: goToNewMessages,
+    unreadCount: scrollToBottomUnreadCount,
+    visible: scrollToBottomButtonVisible,
+  });
+
   const dismissImagePicker = useStableCallback(() => {
     if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
       attachmentPickerStore.setSelectedPicker(undefined);
@@ -996,6 +1011,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       return;
     }
 
+    const closeCorrectionDeltaY = height - currentListHeightRef.current;
+    bumpOverlayLayoutRevision(closeCorrectionDeltaY);
+
     const changedBy = currentListHeightRef.current - height;
     flashListRef.current?.getNativeScrollRef()?.setNativeProps({
       contentOffset: { x: 0, y: flashListRef.current?.getAbsoluteLastScrollOffset() + changedBy },
@@ -1053,9 +1071,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             data={processedMessageList}
             drawDistance={800}
             getItemType={getItemTypeInternal}
-            initialScrollIndex={
-              indexToScrollToRef.current === -1 ? undefined : indexToScrollToRef.current
-            }
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={ListFooterComponent}
@@ -1076,16 +1091,23 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             testID='message-flash-list'
             viewabilityConfig={flatListViewabilityConfig}
             {...additionalFlashListPropsExcludingStyle}
+            accessibilityActions={messageListAccessibilityActions}
+            onAccessibilityAction={messageListOnAccessibilityAction}
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeaderContainer}>
+      <View
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility='no-hide-descendants'
+        style={styles.stickyHeaderContainer}
+      >
         {messageListLengthAfterUpdate && StickyHeader ? (
-          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+          <StickyHeader date={stickyHeaderDate} />
         ) : null}
       </View>
       <Animated.View
-        layout={LinearTransition.duration(200)}
+        layout={transitions.layout200}
         style={[
           styles.scrollToBottomButtonContainer,
           {
@@ -1098,7 +1120,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         <ScrollToBottomButton
           onPress={goToNewMessages}
           showNotification={scrollToBottomButtonVisible}
-          unreadCount={threadList ? 0 : channel?.countUnread()}
+          unreadCount={scrollToBottomUnreadCount}
         />
       </Animated.View>
       <NetworkDownIndicator />
@@ -1110,6 +1132,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </View>
       ) : null}
+      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
 };
@@ -1132,7 +1155,7 @@ const FlashListFooterTypingAdapter = ({
   const typingUsersLengthRef = useRef<number>(typingUsers.length);
 
   useEffect(() => {
-    const listApi = api?.getRef();
+    const listApi = api?.getRef?.();
 
     if (!enabled || !listApi) {
       return;
@@ -1171,7 +1194,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     channel,
     channelUnreadStateStore,
     disabled,
-    EmptyStateIndicator,
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
@@ -1179,34 +1201,19 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     isChannelActive,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     markRead,
     maximumMessageLimit,
-    NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
-    StickyHeader,
+    hasPendingInitialTargetLoad,
     targetedMessage,
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
-  const {
-    DateHeader,
-    disableTypingIndicator,
-    FlatList,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
-    Message,
-    MessageSystem,
-    myMessageTheme,
-    ScrollToBottomButton,
-    shouldShowUnreadUnderlay,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
-  } = useMessagesContext();
+  const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
+    useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
@@ -1220,48 +1227,36 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         channelUnreadStateStore,
         client,
         closePicker,
-        DateHeader,
         disabled,
         disableTypingIndicator,
-        EmptyStateIndicator,
         enableMessageGroupingByUser,
         error,
         FlatList,
         hideStickyDateHeader,
         highlightedMessageId,
-        InlineDateSeparator,
-        InlineUnreadIndicator,
         isListActive: isChannelActive,
         loadChannelAroundMessage,
         loading,
-        LoadingIndicator,
         loadMore,
         loadMoreRecent,
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
         maximumMessageLimit,
-        Message,
         messageInputFloating,
         messageInputHeightStore,
-        MessageSystem,
         myMessageTheme,
-        NetworkDownIndicator,
         readEvents,
         reloadChannel,
-        ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
+        hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,
-        StickyHeader,
         targetedMessage,
         thread,
         threadInstance,
         threadList,
-        TypingIndicator,
-        TypingIndicatorContainer,
-        UnreadMessagesNotification,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}

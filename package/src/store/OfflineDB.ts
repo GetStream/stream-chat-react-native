@@ -51,8 +51,8 @@ export class OfflineDB extends AbstractOfflineDB {
     api.getChannels({ channelIds: cids, currentUserId: userId });
 
   // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getChannelsForQuery = ({ userId, filters, sort }: DBGetChannelsForQueryType) =>
-    api.getChannelsForFilterSort({ currentUserId: userId, filters, sort });
+  getChannelsForQuery = ({ userId, filters, options, sort }: DBGetChannelsForQueryType) =>
+    api.getChannelsForFilterSort({ currentUserId: userId, filters, options, sort });
 
   getAllChannelCids = api.getAllChannelIds;
 
@@ -66,6 +66,8 @@ export class OfflineDB extends AbstractOfflineDB {
   getReactions = api.getReactionsForFilterSort;
 
   addPendingTask = api.addPendingTask;
+
+  updatePendingTask = api.updatePendingTask;
 
   deletePendingTask = api.deletePendingTask;
 

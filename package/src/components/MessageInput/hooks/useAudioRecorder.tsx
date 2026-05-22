@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { LocalVoiceRecordingAttachment } from 'stream-chat';
 
@@ -12,14 +12,11 @@ import { resampleWaveformData } from '../utils/audioSampling';
 
 /**
  * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
- *
- * FIXME: Change the name to `useAudioRecorder` in the next major version as the hook will only be used for audio recording.
  */
 export const useAudioRecorder = ({
   audioRecorderManager,
   sendMessage,
 }: Pick<MessageInputContextValue, 'audioRecorderManager' | 'sendMessage'>) => {
-  const [isScheduledForSubmit, setIsScheduleForSubmit] = useState(false);
   const { attachmentManager } = useMessageComposer();
 
   /**
@@ -43,13 +40,6 @@ export const useAudioRecorder = ({
     [stopVoiceRecording],
   );
 
-  useEffect(() => {
-    if (isScheduledForSubmit) {
-      sendMessage();
-      setIsScheduleForSubmit(false);
-    }
-  }, [isScheduledForSubmit, sendMessage]);
-
   /**
    * Function to start voice recording. Will return whether access is granted
    * with regards to the microphone permission as that's how the underlying
@@ -68,10 +58,10 @@ export const useAudioRecorder = ({
 
   /**
    * Function to upload or send voice recording.
-   * @param multiSendEnabled boolean
+   * @param sendOnComplete boolean
    */
   const uploadVoiceRecording = useCallback(
-    async (multiSendEnabled: boolean) => {
+    async (sendOnComplete: boolean) => {
       try {
         const { recording, duration, waveformData } = audioRecorderManager.state.getLatestValue();
         await stopVoiceRecording();
@@ -112,18 +102,17 @@ export const useAudioRecorder = ({
 
         audioRecorderManager.reset();
 
-        if (multiSendEnabled) {
-          await attachmentManager.uploadAttachment(audioFile);
+        if (sendOnComplete) {
+          attachmentManager.upsertAttachments([audioFile]);
+          sendMessage();
         } else {
-          // FIXME: cannot call handleSubmit() directly as the function has stale reference to file uploads
           await attachmentManager.uploadAttachment(audioFile);
-          setIsScheduleForSubmit(true);
         }
       } catch (error) {
         console.log('Error uploading voice recording: ', error);
       }
     },
-    [audioRecorderManager, attachmentManager, stopVoiceRecording],
+    [audioRecorderManager, attachmentManager, sendMessage, stopVoiceRecording],
   );
 
   return {

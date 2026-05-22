@@ -16,7 +16,7 @@ import { hashStringToNumber } from '../../../utils/utils';
 export type ChannelAvatarProps = {
   channel: Channel;
   showOnlineIndicator?: boolean;
-  size: 'lg' | 'xl' | '2xl';
+  size?: 'lg' | 'xl' | '2xl';
   showBorder?: boolean;
 };
 
@@ -24,7 +24,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const { client } = useChatContext();
   const { channel } = props;
   const online = useChannelPreviewDisplayPresence(channel);
-  const { showOnlineIndicator = online, size, showBorder = true } = props;
+  const { showOnlineIndicator = online, size = 'xl', showBorder = true } = props;
 
   const {
     theme: { semantics },
@@ -45,11 +45,14 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
     [usersForGroup, client.user?.id],
   );
 
+  const channelName = (channel.data?.name as string | undefined) ?? channel.cid;
+
   if (channelImage) {
     return (
       <Avatar
         backgroundColor={avatarBackgroundColor}
         imageUrl={channelImage}
+        name={channelName}
         showBorder={showBorder}
         size={size}
       />
@@ -58,7 +61,11 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   if (usersWithoutSelf.length > 1) {
     return (
-      <UserAvatarGroup size='xl' users={usersForGroup} showOnlineIndicator={showOnlineIndicator} />
+      <UserAvatarGroup
+        size={size}
+        users={usersForGroup}
+        showOnlineIndicator={showOnlineIndicator}
+      />
     );
   } else {
     return (

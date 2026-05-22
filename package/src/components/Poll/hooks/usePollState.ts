@@ -14,7 +14,8 @@ import {
 
 import { usePollStateStore } from './usePollStateStore';
 
-import { usePollContext } from '../../../contexts';
+import { usePollContext, useTranslationContext } from '../../../contexts';
+import { useNotificationApi } from '../../Notifications';
 
 export type UsePollStateSelectorReturnType = {
   allowAnswers: boolean | undefined;
@@ -32,6 +33,7 @@ export type UsePollStateSelectorReturnType = {
   ownVotesByOptionId: Record<string, PollVote>;
   voteCountsByOption: Record<string, number>;
   votingVisibility: VotingVisibility | undefined;
+  voteCount: number;
 };
 
 export type UsePollStateReturnType = UsePollStateSelectorReturnType & {
@@ -56,10 +58,13 @@ const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
   ownVotesByOptionId: nextValue.ownVotesByOptionId,
   voteCountsByOption: nextValue.vote_counts_by_option,
   votingVisibility: nextValue.voting_visibility,
+  voteCount: nextValue.vote_count,
 });
 
 export const usePollState = (): UsePollStateReturnType => {
   const { message, poll } = usePollContext();
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
   const {
     allowAnswers,
     allowUserSuggestedOptions,
@@ -76,6 +81,7 @@ export const usePollState = (): UsePollStateReturnType => {
     ownVotesByOptionId,
     voteCountsByOption,
     votingVisibility,
+    voteCount,
   } = usePollStateStore(selector);
 
   const addOption = useCallback(
@@ -88,7 +94,28 @@ export const usePollState = (): UsePollStateReturnType => {
     (answerText: string) => poll.addAnswer(answerText, message.id),
     [message.id, poll],
   );
-  const endVote = useCallback(() => poll.close(), [poll]);
+  const endVote = useCallback(async () => {
+    try {
+      const response = await poll.close();
+      addNotification({
+        message: t('Poll ended'),
+        options: { severity: 'success', type: 'api:poll:end:success' },
+        origin: { emitter: 'PollActions' },
+      });
+      return response;
+    } catch (error) {
+      addNotification({
+        message: t('Failed to end the poll'),
+        options: {
+          ...(error instanceof Error ? { originalError: error } : {}),
+          severity: 'error',
+          type: 'api:poll:end:failed',
+        },
+        origin: { emitter: 'PollActions' },
+      });
+      throw error;
+    }
+  }, [addNotification, poll, t]);
 
   return {
     addComment,
@@ -109,5 +136,6 @@ export const usePollState = (): UsePollStateReturnType => {
     ownVotesByOptionId,
     voteCountsByOption,
     votingVisibility,
+    voteCount,
   };
 };

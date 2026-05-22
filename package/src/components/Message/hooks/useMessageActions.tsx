@@ -25,8 +25,9 @@ import {
   Mute,
   Pin,
   Resend,
+  Sound,
   ThreadReply,
-  // Unpin,
+  Unpin,
   UnreadIndicator,
   UserDelete,
 } from '../../../icons';
@@ -330,8 +331,7 @@ export const useMessageActions = ({
     const unpinMessage: MessageActionType = {
       action: onTogglePinMessage,
       actionType: 'unpinMessage',
-      // TODO: V9: This icon does not exist yet, replace the old when when we get a new one
-      icon: <Pin width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <Unpin width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Unpin from Conversation'),
       type: 'standard',
     };
@@ -339,7 +339,11 @@ export const useMessageActions = ({
     const muteUser: MessageActionType = {
       action: onMuteUser,
       actionType: 'muteUser',
-      icon: <Mute fill={semantics.textSecondary} height={20} width={20} />,
+      icon: isMuted ? (
+        <Sound height={20} stroke={semantics.textSecondary} width={20} />
+      ) : (
+        <Mute fill={semantics.textSecondary} height={20} width={20} />
+      ),
       title: isMuted ? t('Unmute User') : t('Mute User'),
       type: 'standard',
     };

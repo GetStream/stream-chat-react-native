@@ -11,13 +11,14 @@ import {
   ViewToken,
 } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import debounce from 'lodash/debounce';
 
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
@@ -37,7 +38,9 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 
 import {
@@ -68,7 +71,9 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { MessageWrapper } from '../Message/MessageSimple/MessageWrapper';
+import { transitions } from '../../utils/animations/transitions';
+import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
+import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 
 // This is just to make sure that the scrolling happens in a different task queue.
 // TODO: Think if we really need this and strive to remove it if we can.
@@ -195,18 +200,14 @@ type MessageListPropsWithContext = Pick<
     | 'channel'
     | 'channelUnreadStateStore'
     | 'disabled'
-    | 'EmptyStateIndicator'
     | 'hideStickyDateHeader'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'LoadingIndicator'
     | 'markRead'
-    | 'NetworkDownIndicator'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'setChannelUnreadState'
     | 'setTargetedMessage'
-    | 'StickyHeader'
     | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
@@ -215,17 +216,7 @@ type MessageListPropsWithContext = Pick<
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent' | 'hasMore'> &
   Pick<
     MessagesContextValue,
-    | 'DateHeader'
-    | 'disableTypingIndicator'
-    | 'FlatList'
-    | 'InlineDateSeparator'
-    | 'InlineUnreadIndicator'
-    | 'Message'
-    | 'ScrollToBottomButton'
-    | 'myMessageTheme'
-    | 'TypingIndicator'
-    | 'TypingIndicatorContainer'
-    | 'UnreadMessagesNotification'
+    'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<
@@ -325,10 +316,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     channelUnreadStateStore,
     client,
     closePicker,
-    DateHeader,
     disabled,
     disableTypingIndicator,
-    EmptyStateIndicator,
     FlatList,
     FooterComponent = InlineLoadingMoreIndicator,
     HeaderComponent,
@@ -337,7 +326,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     loadMore,
     loadMoreRecent,
     loadMoreRecentThread,
@@ -347,27 +335,32 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputFloating,
     messageInputHeightStore,
     myMessageTheme,
-    NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
     readEvents,
     reloadChannel,
-    ScrollToBottomButton,
     setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
-    StickyHeader,
     targetedMessage,
     thread,
     threadInstance,
     threadList = false,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
     hasMore,
     threadHasMore,
   } = props;
+  const {
+    EmptyStateIndicator,
+    MessageListLoadingIndicator: LoadingIndicator,
+    NetworkDownIndicator,
+    NotificationList,
+    ScrollToBottomButton,
+    StickyHeader,
+    TypingIndicator,
+    TypingIndicatorContainer,
+    UnreadMessagesNotification,
+  } = useComponentsContext();
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
   const styles = useStyles();
@@ -375,6 +368,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
+
+  useIncomingMessageAnnouncements({
+    activeThreadId: thread?.id,
+    channel,
+    ownUserId: client.user?.id,
+    threadList,
+  });
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
@@ -1048,6 +1048,19 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     });
   });
 
+  const scrollToBottomUnreadCount =
+    scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
+  const {
+    accessibilityActions: messageListAccessibilityActions,
+    onAccessibilityAction: messageListOnAccessibilityAction,
+  } = useScrollToBottomAccessibilityAction({
+    accessibilityActions: additionalFlatListProps?.accessibilityActions,
+    onAccessibilityAction: additionalFlatListProps?.onAccessibilityAction,
+    onScrollToBottom: goToNewMessages,
+    unreadCount: scrollToBottomUnreadCount,
+    visible: scrollToBottomButtonVisible,
+  });
+
   const scrollToIndexFailedRetryCountRef = useRef<number>(0);
   const failScrollTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
   const onScrollToIndexFailedRef = useRef<
@@ -1263,7 +1276,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         <MessageListItemProvider value={messageListItemContextValue}>
           <ListComponent
             // TODO: Consider hiding this behind a feature flag.
-            layout={LayoutTransition}
+            layout={transitions.layout200}
             contentContainerStyle={flatListContentContainerStyle}
             /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageListWithNeighbors}
@@ -1300,21 +1313,28 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             testID='message-flat-list'
             viewabilityConfig={flatListViewabilityConfig}
             {...additionalFlatListPropsExcludingStyle}
+            accessibilityActions={messageListAccessibilityActions}
+            onAccessibilityAction={messageListOnAccessibilityAction}
           />
         </MessageListItemProvider>
       )}
-      <View style={styles.stickyHeaderContainer}>
+      <View
+        accessibilityElementsHidden
+        accessible={false}
+        importantForAccessibility='no-hide-descendants'
+        style={styles.stickyHeaderContainer}
+      >
         {messageListLengthAfterUpdate && StickyHeader ? (
-          <StickyHeader date={stickyHeaderDate} DateHeader={DateHeader} />
+          <StickyHeader date={stickyHeaderDate} />
         ) : null}
       </View>
       {scrollToBottomButtonVisible ? (
         <Animated.View
-          layout={LinearTransition.duration(200)}
+          layout={transitions.layout200}
           style={[
             {
               bottom: messageInputFloating
-                ? messageInputHeight + primitives.spacingMd
+                ? messageInputHeight + primitives.spacingMd + 16
                 : primitives.spacingMd,
             },
             styles.scrollToBottomButtonContainer,
@@ -1323,7 +1343,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <ScrollToBottomButton
             onPress={goToNewMessages}
             showNotification={scrollToBottomButtonVisible}
-            unreadCount={threadList ? 0 : channel?.countUnread()}
+            unreadCount={scrollToBottomUnreadCount}
           />
         </Animated.View>
       ) : null}
@@ -1337,6 +1357,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
+      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
 };
@@ -1349,42 +1370,25 @@ export const MessageList = (props: MessageListProps) => {
     channel,
     channelUnreadStateStore,
     disabled,
-    EmptyStateIndicator,
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
     highlightedMessageId,
     loadChannelAroundMessage,
     loading,
-    LoadingIndicator,
     maximumMessageLimit,
     markRead,
-    NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
     setTargetedMessage,
-    StickyHeader,
     targetedMessage,
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const {
-    DateHeader,
-    disableTypingIndicator,
-    FlatList,
-    InlineDateSeparator,
-    InlineUnreadIndicator,
-    Message,
-    MessageSystem,
-    myMessageTheme,
-    ScrollToBottomButton,
-    shouldShowUnreadUnderlay,
-    TypingIndicator,
-    TypingIndicatorContainer,
-    UnreadMessagesNotification,
-  } = useMessagesContext();
+  const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
+    useMessagesContext();
   const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
   const { loadMore, loadMoreRecent, hasMore } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
@@ -1398,47 +1402,34 @@ export const MessageList = (props: MessageListProps) => {
         channelUnreadStateStore,
         client,
         closePicker,
-        DateHeader,
         disabled,
         disableTypingIndicator,
-        EmptyStateIndicator,
         enableMessageGroupingByUser,
         error,
         FlatList,
         hideStickyDateHeader,
         highlightedMessageId,
-        InlineDateSeparator,
-        InlineUnreadIndicator,
         loadChannelAroundMessage,
         loading,
-        LoadingIndicator,
         loadMore,
         loadMoreRecent,
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
         maximumMessageLimit,
-        Message,
         messageInputFloating,
         messageInputHeightStore,
-        MessageSystem,
         myMessageTheme,
-        NetworkDownIndicator,
         readEvents,
         reloadChannel,
-        ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         setChannelUnreadState,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
-        StickyHeader,
         targetedMessage,
         thread,
         threadInstance,
         threadList,
-        TypingIndicator,
-        TypingIndicatorContainer,
-        UnreadMessagesNotification,
         hasMore,
         threadHasMore,
       }}
@@ -1462,5 +1453,3 @@ export const MessageList = (props: MessageListProps) => {
 const AnimatedList = React.memo(
   Animated.createAnimatedComponent(FlatList<MessageListItemWithNeighbours>),
 );
-
-const LayoutTransition = LinearTransition.duration(200);

@@ -26,7 +26,7 @@ export const useMicPositionContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useMicPositionContext hook was called outside of the MicPositionProvider. Make sure MessageInput wraps the subtree where mic positions are used.',
+      'The useMicPositionContext hook was called outside of the MicPositionProvider. Make sure MessageComposer wraps the subtree where mic positions are used.',
     );
   }
 

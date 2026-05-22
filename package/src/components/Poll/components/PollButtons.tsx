@@ -176,6 +176,7 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
         <PollInputDialog
           closeDialog={onRequestClose}
           onSubmit={addOption}
+          placeholder={t('Enter a new option')}
           title={t('Suggest an option')}
           visible={showAddOptionDialog}
         />
@@ -214,6 +215,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
           closeDialog={onRequestClose}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
+          placeholder={t('Your comment')}
           title={t('Add a comment')}
           visible={showAddCommentDialog}
         />
@@ -273,7 +275,7 @@ const useStyles = () => {
           : semantics.chatBorderOnChatIncoming,
       },
       safeArea: {
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
         flex: 1,
       },
     });

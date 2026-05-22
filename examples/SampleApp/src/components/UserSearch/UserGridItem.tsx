@@ -1,9 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { Close, useTheme, UserAvatar } from 'stream-chat-react-native';
+import { useTheme, UserAvatar } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
+
+import { Close } from '../../icons/Close';
+import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
   presenceIndicatorContainer: {
@@ -45,11 +48,8 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
   removeButton = true,
   user,
 }) => {
-  const {
-    theme: {
-      colors: { black, white_snow },
-    },
-  } = useTheme();
+  useTheme();
+  const { black, white_snow } = useLegacyColors();
   return (
     <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
       <UserAvatar user={user} size='lg' showOnlineIndicator={user.online} showBorder />

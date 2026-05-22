@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
+import type { ImageGalleryGridProps } from './types';
+
 import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
-import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { useViewport } from '../../../hooks/useViewport';
@@ -10,17 +12,9 @@ import type {
   ImageGalleryAsset,
   ImageGalleryState,
 } from '../../../state-store/image-gallery-state-store';
+import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
-import { StreamBottomSheetModalFlatList } from '../../UIComponents';
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flexGrow: 1,
-  },
-  image: {
-    margin: 1,
-  },
-});
+import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ImageGalleryGridImageComponent = ({
   item,
@@ -37,13 +31,7 @@ export type GridImageItem = ImageGalleryAsset & {
 };
 
 const GridImage = ({ item }: { item: GridImageItem }) => {
-  const {
-    theme: {
-      imageGallery: {
-        grid: { gridImage },
-      },
-    },
-  } = useTheme();
+  const styles = useStyles();
   const { vw } = useViewport();
   const { ...restItem } = item;
 
@@ -54,7 +42,7 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
   return (
     <Pressable accessibilityLabel='Grid Image' onPress={selectAndClose}>
       {type === FileTypes.Video ? (
-        <View style={[styles.image, { height: size, width: size }, gridImage]}>
+        <View style={[styles.image, { height: size, width: size }]}>
           <VideoThumbnail thumb_url={thumb_url} />
         </View>
       ) : (
@@ -65,11 +53,6 @@ const GridImage = ({ item }: { item: GridImageItem }) => {
 };
 
 const renderItem = ({ item }: { item: GridImageItem }) => <GridImage item={item} />;
-
-export type ImageGalleryGridProps = {
-  closeGridView: () => void;
-  numberOfImageGalleryGridColumns?: number;
-};
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   assets: state.assets,
@@ -82,12 +65,12 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
 
   const {
     theme: {
-      colors: { white },
       imageGallery: {
-        grid: { container, contentContainer },
+        grid: { container },
       },
     },
   } = useTheme();
+  const styles = useStyles();
 
   const imageGridItems = assets.map((photo, index) => ({
     ...photo,
@@ -101,11 +84,7 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
   return (
     <StreamBottomSheetModalFlatList<GridImageItem>
       accessibilityLabel='Image Grid'
-      contentContainerStyle={[
-        styles.contentContainer,
-        { backgroundColor: white },
-        contentContainer,
-      ]}
+      contentContainerStyle={styles.contentContainer}
       data={imageGridItems as GridImageItem[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
@@ -116,3 +95,25 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
 };
 
 ImageGalleryGrid.displayName = 'ImageGalleryGrid{imageGallery{grid}}';
+
+const useStyles = () => {
+  const {
+    theme: {
+      imageGallery: {
+        grid: { contentContainer, gridImage },
+      },
+      semantics,
+    },
+  } = useTheme();
+  return useMemo(() => {
+    return StyleSheet.create({
+      contentContainer: {
+        flexGrow: 1,
+        backgroundColor: semantics.backgroundCoreApp,
+        marginTop: primitives.spacingSm,
+        ...contentContainer,
+      },
+      image: { margin: 1, ...gridImage },
+    });
+  }, [contentContainer, gridImage, semantics]);
+};

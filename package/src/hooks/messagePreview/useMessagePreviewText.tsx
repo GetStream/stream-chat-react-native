@@ -10,7 +10,8 @@ import {
 import { useGroupedAttachments } from './useGroupedAttachments';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { useStateStore } from '../../hooks';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../hooks/useStateStore';
 
 const selector = (nextValue: PollState) => ({
   name: nextValue.name,
@@ -21,6 +22,7 @@ export const useMessagePreviewText = ({
 }: {
   message?: LocalMessage | MessageResponse | DraftMessage | null;
 }) => {
+  const { t } = useTranslationContext();
   const { client } = useChatContext();
   const poll = client.polls.fromState(message?.poll_id ?? '');
   const { name: pollName } = useStateStore(poll?.state, selector) ?? {};
@@ -35,9 +37,8 @@ export const useMessagePreviewText = ({
   const onlyAudio = audios?.length === attachmentsLength;
   const onlyVoiceRecordings =
     voiceRecordings?.length && voiceRecordings?.length === attachmentsLength;
-
   if (message?.type === 'deleted') {
-    return 'Message deleted';
+    return t('Message deleted');
   }
 
   if (pollName) {
@@ -50,54 +51,56 @@ export const useMessagePreviewText = ({
       (message?.shared_location as LiveLocationPayload)?.end_at &&
       new Date((message?.shared_location as LiveLocationPayload)?.end_at) > new Date()
     ) {
-      return 'Live Location';
+      return t('Live Location');
     }
-    return 'Location';
+    return t('Location');
+  }
+
+  if (giphys?.length) {
+    return t('Giphy');
   }
 
   if (message?.text) {
-    return message?.text;
+    return message.text;
   }
 
   if (onlyImages) {
     if (images?.length === 1) {
-      return 'Photo';
+      return t('Photo');
     } else {
-      return `${images?.length} Photos`;
+      return t('{{count}} Photos', { count: images?.length });
     }
   }
 
   if (onlyVideos) {
     if (videos?.length === 1) {
-      return 'Video';
+      return t('Video');
     } else {
-      return `${videos?.length} Videos`;
+      return t(`{{count}} Videos`, { count: videos?.length });
     }
   }
 
   if (onlyAudio) {
     if (audios?.length === 1) {
-      return 'Audio';
+      return t('Audio');
     } else {
-      return `${audios?.length} Audios`;
+      return t('{{count}} Audios', { count: audios?.length });
     }
   }
 
   if (onlyVoiceRecordings) {
     if (voiceRecordings?.length === 1) {
-      return `Voice message (${dayjs.duration(voiceRecordings?.[0]?.duration ?? 0, 'seconds').format('m:ss')})`;
+      return t(`Voice message ({{duration}})`, {
+        duration: dayjs.duration(voiceRecordings?.[0]?.duration ?? 0, 'seconds').format('m:ss'),
+      });
     } else {
-      return `${voiceRecordings?.length} Voice messages`;
+      return t('{{count}} Voice messages', { count: voiceRecordings?.length });
     }
-  }
-
-  if (giphys?.length) {
-    return 'Giphy';
   }
 
   if (onlyFiles && files?.length === 1) {
     return files?.[0]?.title;
   }
 
-  return `${attachmentsLength} Files`;
+  return t('{{count}} Files', { count: attachmentsLength });
 };

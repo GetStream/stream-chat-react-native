@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Cross } from '../../../icons/Cross';
+import { ArrowLeft } from '../../../icons/arrow-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 
@@ -25,11 +25,12 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
     <View style={[styles.container, container]}>
       <View style={styles.sideContainer}>
         <Button
+          accessibilityLabelKey='a11y/Close poll'
           variant='secondary'
-          type='solid'
+          type='ghost'
           size='md'
           iconOnly
-          LeadingIcon={Cross}
+          LeadingIcon={ArrowLeft}
           onPress={onPress}
           testID='poll-results-close-button'
         />
@@ -57,7 +58,7 @@ const useStyles = () => {
           justifyContent: 'space-between',
           paddingHorizontal: primitives.spacingMd,
           paddingVertical: 10,
-          backgroundColor: semantics.backgroundElevationElevation1,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         centerContainer: {
           alignItems: 'center',

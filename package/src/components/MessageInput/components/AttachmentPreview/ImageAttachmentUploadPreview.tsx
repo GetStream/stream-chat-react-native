@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { LocalImageAttachment } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
@@ -24,19 +24,24 @@ export const ImageAttachmentUploadPreview = ({
   removeAttachments,
 }: ImageAttachmentUploadPreviewProps) => {
   const [loading, setLoading] = useState(true);
-  const { enableOfflineSupport } = useChatContext();
+  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const {
+    ImageLoadingIndicator,
     ImageUploadInProgressIndicator,
     ImageUploadRetryIndicator,
     ImageUploadNotSupportedIndicator,
-  } = useMessageInputContext();
-  const indicatorType = loading
-    ? ProgressIndicatorTypes.IN_PROGRESS
-    : getIndicatorTypeForFileState(attachment.localMetadata.uploadState, enableOfflineSupport);
+  } = useComponentsContext();
+  const indicatorType = getIndicatorTypeForFileState(
+    attachment.localMetadata.uploadState,
+    !!allowSendBeforeAttachmentsUpload,
+  );
+  const previewUri = attachment.localMetadata.previewUri ?? attachment.image_url;
+  const shouldShowImageLoadingIndicator =
+    loading && indicatorType !== ProgressIndicatorTypes.IN_PROGRESS;
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         imageAttachmentUploadPreview: { upload, wrapper },
       },
     },
@@ -61,21 +66,28 @@ export const ImageAttachmentUploadPreview = ({
 
   return (
     <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
-      <ImageBackground
-        onError={onErrorHandler}
-        onLoadEnd={onLoadEndHandler}
-        source={{ uri: attachment.localMetadata.previewUri ?? attachment.image_url }}
-        style={[styles.image, upload]}
-        testID={'image-attachment-upload-preview-image'}
-      >
-        {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && <ImageUploadInProgressIndicator />}
-        {indicatorType === ProgressIndicatorTypes.RETRY && (
+      <View style={[styles.image, upload]}>
+        <Image
+          onError={onErrorHandler}
+          onLoadEnd={onLoadEndHandler}
+          source={{ uri: previewUri }}
+          style={StyleSheet.absoluteFill}
+          testID={'image-attachment-upload-preview-image'}
+        />
+        {shouldShowImageLoadingIndicator ? <ImageLoadingIndicator /> : null}
+        {indicatorType === ProgressIndicatorTypes.IN_PROGRESS && (
+          <ImageUploadInProgressIndicator
+            localId={attachment.localMetadata.id}
+            sourceUrl={previewUri}
+          />
+        )}
+        {!loading && indicatorType === ProgressIndicatorTypes.RETRY && (
           <ImageUploadRetryIndicator onRetryHandler={onRetryHandler} />
         )}
-        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
+        {!loading && indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED && (
           <ImageUploadNotSupportedIndicator />
         )}
-      </ImageBackground>
+      </View>
 
       <View style={styles.dismissWrapper}>
         <AttachmentRemoveControl onPress={onDismissHandler} />
@@ -89,7 +101,7 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { borderCoreOpacity10 } = semantics;
+  const { borderCoreOpacitySubtle } = semantics;
 
   return useMemo(
     () =>
@@ -101,7 +113,7 @@ const useStyles = () => {
           justifyContent: 'center',
           alignItems: 'center',
           borderRadius: primitives.radiusLg,
-          borderColor: borderCoreOpacity10,
+          borderColor: borderCoreOpacitySubtle,
           borderWidth: 1,
           overflow: 'hidden',
         },
@@ -109,6 +121,6 @@ const useStyles = () => {
           padding: primitives.spacingXxs,
         },
       }),
-    [borderCoreOpacity10],
+    [borderCoreOpacitySubtle],
   );
 };

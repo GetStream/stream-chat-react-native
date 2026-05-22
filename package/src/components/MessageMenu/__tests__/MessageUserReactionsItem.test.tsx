@@ -38,7 +38,8 @@ const renderComponent = async (props = {}, clientUserID = 'user2') =>
     >
       <ThemeProvider theme={defaultTheme}>
         <MessageUserReactionsItem
-          MessageUserReactionsAvatar={MockOverlayReactionsAvatar}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          {...({ MessageUserReactionsAvatar: MockOverlayReactionsAvatar } as any)}
           reaction={mockReaction}
           supportedReactions={mockSupportedReactions}
           {...props}

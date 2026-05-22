@@ -4,7 +4,7 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { Tick } from '../../../../icons/Tick';
+import { Tick } from '../../../../icons/checkmark';
 import { Button } from '../../../ui';
 
 export type EditButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
@@ -26,6 +26,7 @@ export const EditButton = (props: EditButtonProps) => {
 
   return (
     <Button
+      accessibilityLabelKey='a11y/Save edited message'
       variant='primary'
       type='solid'
       LeadingIcon={Tick}
@@ -38,4 +39,4 @@ export const EditButton = (props: EditButtonProps) => {
   );
 };
 
-EditButton.displayName = 'EditButton{messageInput}';
+EditButton.displayName = 'EditButton{messageComposer}';

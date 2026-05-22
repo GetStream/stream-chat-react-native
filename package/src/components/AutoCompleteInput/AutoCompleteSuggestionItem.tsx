@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
+import type { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
 
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
 
+import { useIsCommandDisabled } from '../../contexts/messageInputContext/hooks/useIsCommandDisabled';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
@@ -21,8 +22,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
   const { id, name, online } = item;
   const {
     theme: {
-      colors: { black },
-      messageInput: {
+      messageComposer: {
         suggestions: {
           mention: { column, container: mentionContainer, name: nameStyle },
         },
@@ -35,7 +35,7 @@ export const MentionSuggestionItem = (item: UserSuggestion) => {
     <View style={[styles.container, mentionContainer]}>
       <UserAvatar user={item} size='md' showOnlineIndicator={online} />
       <View style={[styles.column, column]}>
-        <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
+        <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
           {name || id}
         </Text>
       </View>
@@ -47,8 +47,7 @@ export const EmojiSuggestionItem = (item: Emoji) => {
   const { native, name } = item;
   const {
     theme: {
-      colors: { black },
-      messageInput: {
+      messageComposer: {
         suggestions: {
           emoji: { container: emojiContainer, text },
         },
@@ -59,10 +58,10 @@ export const EmojiSuggestionItem = (item: Emoji) => {
 
   return (
     <View style={[styles.container, emojiContainer]}>
-      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
+      <Text style={[styles.text, text]} testID='emojis-item-unicode'>
         {native}
       </Text>
-      <Text style={[styles.text, { color: black }, text]} testID='emojis-item-name'>
+      <Text style={[styles.text, text]} testID='emojis-item-name'>
         {` ${name}`}
       </Text>
     </View>
@@ -74,7 +73,7 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   const {
     theme: {
       semantics,
-      messageInput: {
+      messageComposer: {
         suggestions: {
           command: { args: argsStyle, container: commandContainer, title },
         },
@@ -83,11 +82,17 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
   } = useTheme();
   const styles = useStyles();
 
+  const isDisabled = useIsCommandDisabled(item);
+
   return (
     <View style={[styles.commandContainer, commandContainer]}>
       {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}
       <Text
-        style={[styles.title, { color: semantics.textPrimary }, title]}
+        style={[
+          styles.title,
+          { color: isDisabled ? semantics.textTertiary : semantics.textPrimary },
+          title,
+        ]}
         testID='commands-item-title'
       >
         {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
@@ -130,7 +135,7 @@ const UnMemoizedAutoCompleteSuggestionItem = ({
 
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         suggestions: { item: itemStyle },
       },
     },
@@ -217,7 +222,10 @@ const useStyles = () => {
           fontWeight: '600',
         },
         text: {
-          fontSize: 14,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightRegular,
+          color: semantics.textPrimary,
+          lineHeight: primitives.typographyLineHeightNormal,
         },
         title: {
           fontSize: primitives.typographyFontSizeMd,

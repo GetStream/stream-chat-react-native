@@ -1,11 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Text } from 'react-native';
 
 import { FlatList } from 'react-native-gesture-handler';
 
-import { CommandSearchSource, CommandSuggestion } from 'stream-chat';
+import { CommandSearchSource, CommandSuggestion, notifyCommandDisabled } from 'stream-chat';
 
 import { AttachmentMediaPicker } from './AttachmentMediaPicker/AttachmentMediaPicker';
+
+import {
+  AttachmentPickerGenericContent,
+  type AttachmentPickerContentProps,
+} from './AttachmentPickerGenericContent';
 
 import {
   useAttachmentPickerContext,
@@ -16,90 +21,9 @@ import {
 } from '../../../contexts';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
-import { Camera, FilePickerIcon, IconProps, PollThumbnail, Recorder } from '../../../icons';
+import { Camera, FilePickerIcon, PollThumbnail, VideoIcon } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
-import { Button } from '../../ui';
-
-const useStyles = () => {
-  const {
-    theme: { semantics },
-  } = useTheme();
-
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: semantics.backgroundElevationElevation1,
-          paddingHorizontal: primitives.spacing2xl,
-          paddingBottom: primitives.spacing3xl,
-        },
-        infoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-        text: {
-          fontSize: primitives.typographyFontSizeMd,
-          color: semantics.textSecondary,
-          marginTop: 8,
-          marginHorizontal: 24,
-          textAlign: 'center',
-          maxWidth: 200,
-        },
-      }),
-    [semantics.backgroundElevationElevation1, semantics.textSecondary],
-  );
-};
-
-export type AttachmentPickerGenericContentProps = {
-  Icon: React.ComponentType<IconProps>;
-  onPress: () => void;
-  height?: number;
-  buttonText?: string;
-  description?: string;
-};
-
-export const AttachmentPickerGenericContent = (props: AttachmentPickerGenericContentProps) => {
-  const { height, buttonText, Icon, description, onPress } = props;
-  const styles = useStyles();
-
-  const {
-    theme: {
-      semantics,
-      attachmentPicker: {
-        content: { container, text, infoContainer },
-      },
-    },
-  } = useTheme();
-
-  const ThemedIcon = useCallback(
-    () => <Icon width={22} height={22} stroke={semantics.textTertiary} />,
-    [Icon, semantics.textTertiary],
-  );
-
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          height,
-        },
-        container,
-      ]}
-    >
-      <View style={[styles.infoContainer, infoContainer]}>
-        <ThemedIcon />
-        <Text style={[styles.text, text]}>{description}</Text>
-      </View>
-      <Button
-        variant={'secondary'}
-        type={'outline'}
-        size={'lg'}
-        label={buttonText}
-        onPress={onPress}
-      />
-    </View>
-  );
-};
 
 const keyExtractor = (item: { id: string }) => item.id;
 
@@ -117,7 +41,7 @@ const AttachmentCommandPickerItemUI = ({
   return (
     <Pressable
       style={({ pressed }) => ({
-        backgroundColor: pressed ? semantics.backgroundCorePressed : undefined,
+        backgroundColor: pressed ? semantics.backgroundUtilityPressed : undefined,
         borderRadius: primitives.radiusSm,
       })}
       onPress={onPress}
@@ -134,9 +58,13 @@ export const AttachmentCommandNativePickerItem = ({ item }: { item: CommandSugge
   const { close } = useBottomSheetContext();
 
   const handlePress = useCallback(() => {
+    if (notifyCommandDisabled(messageComposer, item)) {
+      return;
+    }
+
     textComposer.setCommand(item);
     close(() => inputBoxRef.current?.focus());
-  }, [textComposer, item, close, inputBoxRef]);
+  }, [messageComposer, item, textComposer, close, inputBoxRef]);
 
   return <AttachmentCommandPickerItemUI item={item} onPress={handlePress} />;
 };
@@ -149,9 +77,13 @@ export const AttachmentCommandPickerItem = ({ item }: { item: CommandSuggestion 
   const { inputBoxRef } = useMessageInputContext();
 
   const handlePress = useCallback(() => {
+    if (notifyCommandDisabled(messageComposer, item)) {
+      return;
+    }
+
     textComposer.setCommand(item);
     inputBoxRef.current?.focus();
-  }, [textComposer, item, inputBoxRef]);
+  }, [messageComposer, item, textComposer, inputBoxRef]);
 
   if (disableAttachmentPicker) {
     return <AttachmentCommandNativePickerItem item={item} />;
@@ -175,10 +107,10 @@ const useCommandPickerStyle = () => {
           flexGrow: 1,
           paddingHorizontal: primitives.spacingXxs,
           paddingBottom: primitives.spacing2xl,
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
         },
         title: {
-          backgroundColor: semantics.composerBg,
+          backgroundColor: semantics.backgroundCoreElevation1,
           fontWeight: primitives.typographyFontWeightSemiBold,
           fontSize: primitives.typographyFontSizeMd,
           color: semantics.textPrimary,
@@ -186,7 +118,7 @@ const useCommandPickerStyle = () => {
           paddingBottom: primitives.spacingMd,
         },
       }),
-    [semantics.composerBg, semantics.textPrimary],
+    [semantics.backgroundCoreElevation1, semantics.textPrimary],
   );
 };
 
@@ -209,6 +141,7 @@ export const AttachmentCommandPicker = () => {
         renderItem={renderItem}
         data={commands}
         keyExtractor={keyExtractor}
+        showsVerticalScrollIndicator={false}
       />
     </>
   );
@@ -273,11 +206,11 @@ export const AttachmentCameraPicker = (
     />
   ) : (
     <AttachmentPickerGenericContent
-      Icon={videoOnly ? Recorder : Camera}
+      Icon={videoOnly ? VideoIcon : Camera}
       onPress={openCameraPicker}
       height={height}
       buttonText={t('Open Camera')}
-      description={t('Take a video and share')}
+      description={t(videoOnly ? 'Take a video and share' : 'Take a photo and share')}
     />
   );
 };
@@ -292,13 +225,14 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
       Icon={FilePickerIcon}
       onPress={pickFile}
       height={height}
-      buttonText={t('Pick document')}
-      description={t('Pick a document to share it with everyone')}
+      buttonText={t('Open Files')}
+      description={t('Select files to share')}
     />
   );
 };
 
-export type AttachmentPickerContentProps = Pick<AttachmentPickerGenericContentProps, 'height'>;
+export type { AttachmentPickerContentProps } from './AttachmentPickerGenericContent';
+export { AttachmentPickerGenericContent } from './AttachmentPickerGenericContent';
 
 export const AttachmentPickerContent = (props: AttachmentPickerContentProps) => {
   const { height } = props;

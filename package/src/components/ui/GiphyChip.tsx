@@ -6,8 +6,8 @@ import { TextComposerState } from 'stream-chat';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { Cross } from '../../icons/Cross';
-import { Lightning } from '../../icons/Lightning';
+import { Lightning } from '../../icons/bolt';
+import { Cross } from '../../icons/xmark-1';
 import { primitives } from '../../theme';
 
 const textComposerStateSelector = (state: TextComposerState) => ({
@@ -27,15 +27,15 @@ export const GiphyChip = () => {
 
   const onPressHandler = () => {
     textComposer.clearCommand();
-    messageComposer?.restore();
+    // messageComposer?.restore();
   };
 
   return (
     <View style={styles.container}>
-      <Lightning fill={semantics.textInverse} height={16} width={16} />
+      <Lightning fill={semantics.textOnInverse} height={16} width={16} />
       <Text style={styles.text}>{commandName}</Text>
       <Pressable onPress={onPressHandler}>
-        <Cross stroke={semantics.textInverse} height={16} width={16} />
+        <Cross stroke={semantics.textOnInverse} height={16} width={16} />
       </Pressable>
     </View>
   );
@@ -54,11 +54,12 @@ const useStyles = () => {
           borderRadius: primitives.radiusMax,
           flexDirection: 'row',
           paddingHorizontal: primitives.spacingXs,
-          paddingVertical: primitives.spacingXxs,
+          paddingVertical: primitives.spacingXxxs,
           gap: primitives.spacingXxs,
+          height: 24,
         },
         text: {
-          color: semantics.textInverse,
+          color: semantics.textOnInverse,
           fontSize: primitives.typographyFontSizeSm,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,

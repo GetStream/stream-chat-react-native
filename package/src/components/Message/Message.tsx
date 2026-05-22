@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GestureResponderEvent,
+  I18nManager,
   StyleProp,
   StyleSheet,
-  useWindowDimensions,
   View,
   ViewStyle,
 } from 'react-native';
@@ -19,6 +19,8 @@ import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
+import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
+import { MessageOverlayWrapper } from './MessageOverlayWrapper';
 import { measureInWindow } from './utils/measureInWindow';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
@@ -27,6 +29,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   KeyboardContextValue,
   useKeyboardContext,
@@ -35,7 +38,11 @@ import {
   MessageComposerAPIContextValue,
   useMessageComposerAPIContext,
 } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
-import { MessageContextValue, MessageProvider } from '../../contexts/messageContext/MessageContext';
+import {
+  MessageContextValue,
+  MessageOverlayRuntimeProvider,
+  MessageProvider,
+} from '../../contexts/messageContext/MessageContext';
 import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
@@ -54,6 +61,7 @@ import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import {
   closeOverlay,
   openOverlay,
+  Rect,
   setOverlayBottomH,
   setOverlayMessageH,
   setOverlayTopH,
@@ -62,16 +70,21 @@ import {
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
+  generateRandomId,
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
-import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { BottomSheetModal } from '../UIComponents';
 
+const createMessageOverlayId = (messageId?: string) =>
+  `message-overlay-${messageId ?? 'unknown'}-${generateRandomId()}`;
+
 export type TouchableEmitter =
+  | 'failed-image'
   | 'fileAttachment'
   | 'gallery'
   | 'giphy'
@@ -199,12 +212,9 @@ export type MessagePropsWithContext = Pick<
     | 'handleThreadReply'
     | 'handleBlockUser'
     | 'isAttachmentEqual'
-    | 'MessageMenu'
     | 'messageActions'
+    | 'messageOverlayTargetId'
     | 'messageContentOrder'
-    | 'MessageBounce'
-    | 'MessageBlocked'
-    | 'MessageSimple'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
@@ -214,14 +224,6 @@ export type MessagePropsWithContext = Pick<
     | 'selectReaction'
     | 'supportedReactions'
     | 'updateMessage'
-    | 'PollContent'
-    // TODO: remove this comment later, using it as a pragma mark
-    | 'MessageUserReactions'
-    | 'MessageUserReactionsAvatar'
-    | 'MessageUserReactionsItem'
-    | 'MessageReactionPicker'
-    | 'MessageActionList'
-    | 'MessageActionListItem'
   > &
   Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -249,7 +251,6 @@ export type MessagePropsWithContext = Pick<
  * each individual Message component.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
-  const [isErrorInMessage, setIsErrorInMessage] = useState(false);
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
@@ -284,11 +285,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
-    MessageBlocked,
-    MessageBounce,
+    messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
-    MessageSimple,
     onLongPressMessage: onLongPressMessageProp,
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
@@ -302,7 +301,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     setEditingState,
     showAvatar,
     showMessageStatus,
-    showUnreadUnderlay,
     style,
     supportedReactions,
     t,
@@ -310,13 +308,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     updateMessage,
     readBy,
     setQuotedMessage,
-    MessageUserReactions,
-    MessageUserReactionsAvatar,
-    MessageUserReactionsItem,
-    MessageReactionPicker,
-    MessageActionList,
-    MessageActionListItem,
   } = props;
+  const {
+    MessageActionList,
+    MessageBlocked,
+    MessageBounce,
+    MessageItemView,
+    MessageReactionPicker,
+    MessageUserReactions,
+  } = useComponentsContext();
   // TODO: V9: Reconsider using safe area insets in every message.
   const insets = useSafeAreaInsets();
   const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
@@ -324,21 +324,41 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
   );
+  const messageOverlayId = useMemo(() => createMessageOverlayId(message.id), [message.id]);
   const isMessageTypeDeleted = message.type === 'deleted';
   const { client } = chatContext;
 
-  const [rect, setRect] = useState<{ w: number; h: number; x: number; y: number } | undefined>(
-    undefined,
+  const rectRef = useRef<Rect>(undefined);
+  const bubbleRect = useRef<Rect>(undefined);
+  const contextMenuAnchorRef = useRef<View>(null);
+  const messageOverlayTargetsRef = useRef<Record<string, View | null>>({});
+  const registerMessageOverlayTarget = useStableCallback(
+    ({ id, view }: { id: string; view: View | null }) => {
+      messageOverlayTargetsRef.current[id] = view;
+    },
   );
-  const { width: screenW } = useWindowDimensions();
+  const unregisterMessageOverlayTarget = useStableCallback((id: string) => {
+    delete messageOverlayTargetsRef.current[id];
+  });
 
   const showMessageOverlay = useStableCallback(async () => {
     dismissKeyboard();
     try {
-      const layout = await measureInWindow(messageWrapperRef, insets);
-      setRect(layout);
+      const activeTargetView = messageOverlayTargetsRef.current[messageOverlayTargetId];
+
+      if (!activeTargetView) {
+        throw new Error(
+          `No message overlay target is registered for target id "${messageOverlayTargetId}".`,
+        );
+      }
+
+      const layout = await measureInWindow({ current: activeTargetView }, insets);
+      const bubbleLayout = await measureInWindow(contextMenuAnchorRef, insets).catch(() => layout);
+
+      rectRef.current = layout;
+      bubbleRect.current = bubbleLayout;
       setOverlayMessageH(layout);
-      openOverlay(message.id);
+      openOverlay({ id: messageOverlayId, messageId: message.id });
     } catch (e) {
       console.error(e);
     }
@@ -374,23 +394,13 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   };
 
-  const onPressQuotedMessage = (quotedMessage: LocalMessage) => {
-    if (!goToMessage) {
-      return;
-    }
-
-    goToMessage(quotedMessage.id);
-  };
-
   const errorOrFailed = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       dismissKeyboard();
     }
-    const quotedMessage = message.quoted_message;
     if (error) {
-      setIsErrorInMessage(true);
       /**
        * If its a Blocked message, we don't do anything as per specs.
        */
@@ -405,8 +415,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
         return;
       }
       showMessageOverlay();
-    } else if (quotedMessage) {
-      onPressQuotedMessage(quotedMessage);
     }
   };
 
@@ -416,6 +424,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       : isMyMessage
         ? 'right'
         : 'left';
+  const overlayItemAlignment = I18nManager.isRTL
+    ? alignment === 'right'
+      ? 'left'
+      : 'right'
+    : alignment;
 
   /**
    * attachments contain files/images or other attachments
@@ -437,6 +450,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               isVideoPlayerAvailable()
             ) {
               acc.videos.push({
+                ...cur,
                 image_url: cur.asset_url,
                 thumb_url: cur.thumb_url,
                 type: FileTypes.Video,
@@ -488,7 +502,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
-      return !!message.quoted_message;
+      return !!message.quoted_message && !hasAttachmentActions;
     }
 
     switch (content) {
@@ -632,7 +646,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           deleteMessage,
           dismissOverlay,
           editMessage,
-          error: isErrorInMessage,
+          error: errorOrFailed,
           flagMessage,
           isMyMessage,
           isThreadMessage,
@@ -666,8 +680,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     unpinMessage: handleTogglePinMessage,
   };
 
-  const messageWrapperRef = useRef<View>(null);
-
   const onLongPress = () => {
     setNativeScrollability(false);
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
@@ -683,7 +695,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   };
 
   const frozenMessage = useRef(message);
-  const { active: overlayActive } = useIsOverlayActive(message.id);
+  const { active: overlayActive } = useIsOverlayActive(messageOverlayId);
 
   const messageHasOnlySingleAttachment =
     !message.text && !message.quoted_message && message.attachments?.length === 1;
@@ -692,12 +704,14 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     actionsEnabled,
     alignment,
     channel,
+    contextMenuAnchorRef,
     deliveredToCount,
     dismissOverlay,
     files: attachments.files,
     goToMessage,
     groupStyles,
     handleAction,
+    hasAttachmentActions,
     handleReaction,
     handleToggleReaction,
     hasReactions,
@@ -707,6 +721,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     members,
     message: overlayActive ? frozenMessage.current : message,
+    messageOverlayId,
     messageContentOrder,
     messageHasOnlySingleAttachment,
     myMessageTheme: messagesContext.myMessageTheme,
@@ -779,6 +794,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onThreadSelect,
     otherAttachments: attachments.other,
     preventPress: overlayActive ? true : preventPress,
+    registerMessageOverlayTarget,
+    unregisterMessageOverlayTarget,
     reactions,
     readBy,
     setQuotedMessage,
@@ -789,6 +806,14 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     threadList,
     videos: attachments.videos,
   });
+  const messageOverlayRuntimeContext = useMemo(
+    () => ({
+      overlayTargetRectRef: rectRef,
+      messageOverlayTargetId,
+      overlayActive,
+    }),
+    [messageOverlayTargetId, overlayActive],
+  );
 
   const prevActive = useRef<boolean>(overlayActive);
 
@@ -806,97 +831,93 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   }, [overlayActive, message]);
 
   const styles = useStyles({
-    showUnreadUnderlay,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
   });
+  const rect = rectRef.current;
+  const overlayItemsAnchorRect = bubbleRect.current ?? rect;
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) {
     return null;
   }
 
   if (isBlockedMessage(message)) {
-    return <MessageBlocked message={message} />;
+    return (
+      <View style={styles.blockedMessageContainer}>
+        <MessageBlocked message={message} />
+      </View>
+    );
   }
 
   return (
     <MessageProvider value={messageContext}>
-      <View style={[style, styles.wrapper]} testID='message-wrapper'>
-        {overlayActive && rect ? (
-          <View
-            style={{
-              height: rect.h,
-              width: rect.w,
-            }}
-          />
-        ) : null}
-        {/*TODO: V9: Find a way to separate these in a dedicated file*/}
-        <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
-          {overlayActive && rect ? (
-            <View
-              onLayout={(e) => {
-                const { width: w, height: h } = e.nativeEvent.layout;
+      <MessageOverlayRuntimeProvider value={messageOverlayRuntimeContext}>
+        <View style={[style, styles.wrapper]} testID='message-wrapper'>
+          {/*TODO: V9: Find a way to separate these in a dedicated file*/}
+          <Portal hostName={overlayActive && rect ? 'top-item' : undefined}>
+            {overlayActive && rect && overlayItemsAnchorRect ? (
+              <View
+                onLayout={(e) => {
+                  const { width: w, height: h } = e.nativeEvent.layout;
 
-                setOverlayTopH({
-                  h,
-                  w,
-                  x: isMyMessage ? screenW - rect.x - w : rect.x,
-                  y: rect.y - h,
-                });
-              }}
+                  setOverlayTopH({
+                    h,
+                    w,
+                    x:
+                      overlayItemAlignment === 'right'
+                        ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                        : overlayItemsAnchorRect.x,
+                    y: rect.y - h,
+                  });
+                }}
+              >
+                <MessageReactionPicker
+                  dismissOverlay={dismissOverlay}
+                  handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
+                />
+              </View>
+            ) : null}
+          </Portal>
+          <MessageOverlayWrapper targetId={DEFAULT_MESSAGE_OVERLAY_TARGET_ID}>
+            <MessageItemView />
+          </MessageOverlayWrapper>
+          {showMessageReactions ? (
+            <BottomSheetModal
+              lazy={true}
+              onClose={() => setShowMessageReactions(false)}
+              visible={showMessageReactions}
+              height={424}
             >
-              <MessageReactionPicker
-                dismissOverlay={dismissOverlay}
-                handleReaction={ownCapabilities.sendReaction ? handleReaction : undefined}
-              />
-            </View>
+              <MessageUserReactions message={message} selectedReaction={selectedReaction} />
+            </BottomSheetModal>
           ) : null}
-        </Portal>
-        <Portal
-          hostName={overlayActive ? 'message-overlay' : undefined}
-          style={overlayActive && rect ? { width: rect.w } : undefined}
-        >
-          <MessageSimple ref={messageWrapperRef} />
-        </Portal>
-        {showMessageReactions ? (
-          <BottomSheetModal
-            lazy={true}
-            onClose={() => setShowMessageReactions(false)}
-            visible={showMessageReactions}
-            height={424}
-          >
-            <MessageUserReactions
-              message={message}
-              MessageUserReactionsAvatar={MessageUserReactionsAvatar}
-              MessageUserReactionsItem={MessageUserReactionsItem}
-              selectedReaction={selectedReaction}
-            />
-          </BottomSheetModal>
-        ) : null}
-        <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
-          {overlayActive && rect ? (
-            <View
-              onLayout={(e) => {
-                const { width: w, height: h } = e.nativeEvent.layout;
-                setOverlayBottomH({
-                  h,
-                  w,
-                  x: isMyMessage ? screenW - rect.x - w : rect.x,
-                  y: rect.y + rect.h,
-                });
-              }}
-            >
-              <MessageActionList
-                dismissOverlay={dismissOverlay}
-                MessageActionListItem={MessageActionListItem}
-                messageActions={messageActions}
-              />
-            </View>
+          <Portal hostName={overlayActive && rect ? 'bottom-item' : undefined}>
+            {overlayActive && rect && overlayItemsAnchorRect ? (
+              <View
+                onLayout={(e) => {
+                  const { width: w, height: h } = e.nativeEvent.layout;
+                  setOverlayBottomH({
+                    h,
+                    w,
+                    x:
+                      overlayItemAlignment === 'right'
+                        ? overlayItemsAnchorRect.x + overlayItemsAnchorRect.w - w
+                        : overlayItemsAnchorRect.x,
+                    y: rect.y + rect.h,
+                  });
+                }}
+              >
+                <MessageActionList
+                  dismissOverlay={dismissOverlay}
+                  messageActions={messageActions}
+                />
+              </View>
+            ) : null}
+          </Portal>
+          {isBounceDialogOpen ? (
+            <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
           ) : null}
-        </Portal>
-        {isBounceDialogOpen ? (
-          <MessageBounce setIsBounceDialogOpen={setIsBounceDialogOpen} />
-        ) : null}
-      </View>
+        </View>
+      </MessageOverlayRuntimeProvider>
     </MessageProvider>
   );
 };
@@ -909,6 +930,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
+    messageOverlayTargetId: prevMessageOverlayTargetId,
     members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
@@ -922,6 +944,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
+    messageOverlayTargetId: nextMessageOverlayTargetId,
     members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
@@ -959,6 +982,11 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
+    return false;
+  }
+
+  const messageOverlayTargetIdEqual = prevMessageOverlayTargetId === nextMessageOverlayTargetId;
+  if (!messageOverlayTargetIdEqual) {
     return false;
   }
 
@@ -1119,17 +1147,10 @@ export const Message = (props: MessageProps) => {
   );
 };
 
-const useStyles = ({
-  showUnreadUnderlay,
-  highlightedMessage,
-}: {
-  showUnreadUnderlay?: boolean;
-  highlightedMessage?: boolean;
-}) => {
+const useStyles = ({ highlightedMessage }: { highlightedMessage?: boolean }) => {
   const {
     theme: {
-      colors: { bg_gradient_start },
-      messageSimple: { wrapper, unreadUnderlayColor = bg_gradient_start, targetedMessageContainer },
+      messageItemView: { wrapper, targetedMessageContainer, blockedMessageContainer },
       screenPadding,
       semantics,
     },
@@ -1138,20 +1159,22 @@ const useStyles = ({
     return StyleSheet.create({
       wrapper: {
         paddingHorizontal: screenPadding,
-        backgroundColor: showUnreadUnderlay ? unreadUnderlayColor : undefined,
         ...(highlightedMessage
           ? { backgroundColor: semantics.backgroundCoreHighlight, ...targetedMessageContainer }
           : {}),
         ...wrapper,
       },
+      blockedMessageContainer: {
+        alignItems: 'center',
+        ...blockedMessageContainer,
+      },
     });
   }, [
     wrapper,
     screenPadding,
-    showUnreadUnderlay,
-    unreadUnderlayColor,
     highlightedMessage,
     semantics,
     targetedMessageContainer,
+    blockedMessageContainer,
   ]);
 };

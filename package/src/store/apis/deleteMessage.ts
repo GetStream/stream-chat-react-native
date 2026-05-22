@@ -1,8 +1,9 @@
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
+import type { PreparedQueries } from '../types';
 
 export const deleteMessage = async ({ execute = true, id }: { id: string; execute?: boolean }) => {
-  const queries = [];
+  const queries: PreparedQueries[] = [];
 
   queries.push(
     createDeleteQuery('messages', {

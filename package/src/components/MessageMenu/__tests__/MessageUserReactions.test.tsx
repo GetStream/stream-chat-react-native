@@ -2,10 +2,13 @@ import React from 'react';
 
 import { Text } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { LocalMessage, ReactionResponse } from 'stream-chat';
+import { ReactionResponse } from 'stream-chat';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessagesContextValue,
   MessagesProvider,
@@ -34,26 +37,29 @@ const defaultProps = {
   message: {
     ...generateMessage(),
     reaction_groups: { like: { count: 1, sum_scores: 1 }, love: { count: 1, sum_scores: 1 } },
-  } as unknown as LocalMessage,
+  },
   supportedReactions: mockSupportedReactions,
 };
+
+const filterReactionButtons = (buttons: ReactTestInstance[]) =>
+  buttons.filter((button) => button.props.accessibilityLabel !== 'more-reactions-button');
 
 const renderComponent = (props = {}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider value={mockTranslations as unknown as TranslationContextValue}>
-        <MessagesProvider
-          value={
-            {
-              MessageUserReactionsAvatar: () => null,
-              MessageUserReactionsItem: (props: MessageUserReactionsItemProps) => (
-                <Text>{props.reaction.id + ' ' + props.reaction.type}</Text>
-              ),
-            } as unknown as MessagesContextValue
-          }
+        <WithComponents
+          overrides={{
+            MessageUserReactionsAvatar: () => null,
+            MessageUserReactionsItem: (itemProps: MessageUserReactionsItemProps) => (
+              <Text>{itemProps.reaction.id + ' ' + itemProps.reaction.type}</Text>
+            ),
+          }}
         >
-          <MessageUserReactions {...defaultProps} {...props} />
-        </MessagesProvider>
+          <MessagesProvider value={{} as MessagesContextValue}>
+            <MessageUserReactions {...defaultProps} {...props} />
+          </MessagesProvider>
+        </WithComponents>
       </TranslationProvider>
     </ThemeProvider>,
   );
@@ -86,34 +92,39 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
   });
 
   it('renders reaction buttons', () => {
-    const { getByLabelText } = renderComponent();
-    const likeReactionButton = getByLabelText('reaction-button-like-selected');
-    expect(likeReactionButton).toBeDefined();
-    const loveReactionButton = getByLabelText('reaction-button-love-unselected');
-    expect(loveReactionButton).toBeDefined();
+    const { getAllByRole } = renderComponent();
+    expect(filterReactionButtons(getAllByRole('button'))).toHaveLength(2);
   });
 
-  it('selects the first reaction by default', () => {
-    const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-selected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-unselected');
+  it('starts with no reaction filter selected by default', () => {
+    const { getAllByRole } = renderComponent();
+    const reactionButtons = filterReactionButtons(getAllByRole('button'));
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(false);
   });
 
-  it('changes selected reaction when a reaction button is pressed', () => {
-    const { getAllByLabelText } = renderComponent();
-    const reactionButtons = getAllByLabelText(/\breaction-button[^\s]+/);
+  it('toggles the selected reaction when a reaction button is pressed twice', () => {
+    const { getAllByRole } = renderComponent();
+    let reactionButtons = filterReactionButtons(getAllByRole('button'));
 
     fireEvent.press(reactionButtons[1]);
 
-    expect(reactionButtons[0].props.accessibilityLabel).toBe('reaction-button-like-unselected');
-    expect(reactionButtons[1].props.accessibilityLabel).toBe('reaction-button-love-selected');
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(true);
+
+    fireEvent.press(reactionButtons[1]);
+
+    reactionButtons = filterReactionButtons(getAllByRole('button'));
+
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(false);
   });
 
   it('renders reactions list', () => {
     const { getByText } = renderComponent();
     const reactionItems = getByText('1 like');
     expect(reactionItems).toBeDefined();
+    expect(getByText('2 love')).toBeDefined();
   });
 
   it('uses provided reactions when passed as a prop', () => {
@@ -124,10 +135,10 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
   });
 
   it("don't render reaction buttons that is of unsupported type", () => {
-    const { queryAllByLabelText } = renderComponent({
+    const { queryAllByRole } = renderComponent({
       message: { ...generateMessage(), reaction_groups: { money: 1 } },
     });
-    const reactionButtons = queryAllByLabelText(/\breaction-button[^\s]+/);
+    const reactionButtons = filterReactionButtons(queryAllByRole('button'));
 
     expect(reactionButtons.length).toBe(0);
   });

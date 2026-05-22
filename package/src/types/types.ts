@@ -43,6 +43,8 @@ export type UploadAttachmentPreviewProps<A extends LocalUploadAttachment> = {
 
 export interface DefaultAttachmentData {
   originalFile?: File;
+  /** Matches `LocalAttachment.localMetadata.id` / `uploadManager` record id for pending uploads */
+  localId?: string;
 }
 
 export interface DefaultUserData {

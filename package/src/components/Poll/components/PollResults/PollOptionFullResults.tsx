@@ -11,6 +11,7 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { primitives } from '../../../../theme';
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
@@ -19,7 +20,6 @@ import { usePollState } from '../../hooks/usePollState';
 export type PollOptionFullResultsProps = PollContextValue & {
   option: PollOption;
   additionalFlatListProps?: Partial<FlatListProps<PollVoteClass>>;
-  PollOptionFullResultsContent?: React.ComponentType<{ option: PollOption }>;
 };
 
 export const renderPollOptionFullResultsItem = ({ item }: { item: PollVoteClass }) => (
@@ -86,56 +86,62 @@ export const PollOptionFullResults = ({
   message,
   option,
   poll,
-  PollOptionFullResultsContent: PollOptionFullResultsContentOverride,
-}: PollOptionFullResultsProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollOptionFullResultsContentOverride ? (
-      <PollOptionFullResultsContentOverride option={option} />
-    ) : (
-      <PollOptionFullResultsContent
+}: PollOptionFullResultsProps) => {
+  const { PollOptionFullResultsContent: PollOptionFullResultsContentComponent } =
+    useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollOptionFullResultsContentComponent
         additionalFlatListProps={additionalFlatListProps}
         option={option}
       />
-    )}
-  </PollContextProvider>
-);
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        container: { flex: 1, padding: primitives.spacingMd },
-        contentContainer: {
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-          borderRadius: primitives.radiusLg,
-          marginBottom: primitives.spacingMd,
-          padding: primitives.spacingMd,
-        },
-        headerContainer: {
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingBottom: primitives.spacingXs,
-        },
-        headerTitle: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeLg,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          paddingTop: primitives.spacingXs,
-        },
-        headerText: {
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          marginLeft: primitives.spacingMd,
-        },
-      }),
-    [semantics.backgroundCoreSurfaceCard, semantics.textPrimary],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      container: { flex: 1, backgroundColor: semantics.backgroundCoreElevation1 },
+      contentContainer: {
+        margin: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+        borderRadius: primitives.radiusLg,
+        paddingHorizontal: primitives.spacingMd,
+        paddingTop: primitives.spacingMd,
+        paddingBottom: primitives.spacingXs,
+      },
+      headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: primitives.spacingXs,
+      },
+      headerTitle: {
+        flex: 1,
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      headerText: {
+        fontSize: primitives.typographyFontSizeMd,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        marginStart: primitives.spacingMd,
+        textAlign: 'left',
+      },
+    });
+  }, [
+    semantics.backgroundCoreElevation1,
+    semantics.backgroundCoreSurfaceCard,
+    semantics.textPrimary,
+  ]);
 };

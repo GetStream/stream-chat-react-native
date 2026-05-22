@@ -1,15 +1,11 @@
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 export const NewDirectMessageIcon: React.FC<IconProps> = ({ active, color, height, width }) => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
+  const { black } = useLegacyColors();
   return (
     <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <G opacity={active ? 1 : 0.5}>

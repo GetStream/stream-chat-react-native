@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../contexts';
-import { Play } from '../../icons/Play';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Play } from '../../icons/play-fill';
 import { primitives } from '../../theme';
 
 const sizes = {
@@ -40,7 +40,7 @@ export const VideoPlayIndicator = (props: VideoPlayIndicatorProps) => {
   return (
     <View style={[styles.container, sizes[size]]}>
       <Play
-        fill={semantics.controlPlayControlIcon}
+        fill={semantics.controlPlayButtonIcon}
         height={iconSizes[size]}
         width={iconSizes[size]}
       />
@@ -53,16 +53,16 @@ const useStyles = () => {
     theme: { semantics },
   } = useTheme();
 
-  const { controlPlayControlBg } = semantics;
+  const { controlPlayButtonBg } = semantics;
 
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
-        backgroundColor: controlPlayControlBg,
+        backgroundColor: controlPlayButtonBg,
         borderRadius: primitives.radiusMax,
         justifyContent: 'center',
       },
     });
-  }, [controlPlayControlBg]);
+  }, [controlPlayButtonBg]);
 };

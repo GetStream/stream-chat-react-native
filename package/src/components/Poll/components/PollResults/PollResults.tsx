@@ -11,12 +11,12 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../../theme';
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollResultsProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
-  PollResultsContent?: React.ComponentType;
 };
 
 export const PollResultsContent = ({
@@ -44,7 +44,11 @@ export const PollResultsContent = ({
   const styles = useStyles();
 
   return (
-    <ScrollView style={[styles.scrollView, scrollView]} {...additionalScrollViewProps}>
+    <ScrollView
+      contentContainerStyle={styles.contentContainer}
+      style={[styles.scrollView, scrollView]}
+      {...additionalScrollViewProps}
+    >
       <View style={[styles.container, container]}>
         <Text style={[styles.titleMeta, titleMeta]}>{t('Question')}</Text>
         <Text style={[styles.title, title]}>{name}</Text>
@@ -58,55 +62,51 @@ export const PollResultsContent = ({
   );
 };
 
-export const PollResults = ({
-  additionalScrollViewProps,
-  message,
-  poll,
-  PollResultsContent: PollResultsContentOverride,
-}: PollResultsProps) => (
-  <PollContextProvider value={{ message, poll }}>
-    {PollResultsContentOverride ? (
-      <PollResultsContentOverride />
-    ) : (
-      <PollResultsContent additionalScrollViewProps={additionalScrollViewProps} />
-    )}
-  </PollContextProvider>
-);
+export const PollResults = ({ additionalScrollViewProps, message, poll }: PollResultsProps) => {
+  const { PollResultsContent: PollResultsContentComponent } = useComponentsContext();
+  return (
+    <PollContextProvider value={{ message, poll }}>
+      <PollResultsContentComponent additionalScrollViewProps={additionalScrollViewProps} />
+    </PollContextProvider>
+  );
+};
 
 const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          borderRadius: primitives.radiusLg,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundCoreSurfaceCard,
-        },
-        scrollView: {
-          flex: 1,
-          padding: primitives.spacingMd,
-          backgroundColor: semantics.backgroundElevationElevation1,
-        },
-        resultsContainer: {
-          paddingVertical: primitives.spacing2xl,
-        },
-        title: {
-          fontSize: primitives.typographyFontSizeLg,
-          lineHeight: primitives.typographyLineHeightRelaxed,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          color: semantics.textPrimary,
-          paddingTop: primitives.spacingXs,
-        },
-        titleMeta: {
-          fontSize: primitives.typographyFontSizeSm,
-          color: semantics.textTertiary,
-          lineHeight: primitives.typographyLineHeightNormal,
-          fontWeight: primitives.typographyFontWeightMedium,
-        },
-      }),
-    [semantics],
-  );
+  return useMemo(() => {
+    return StyleSheet.create({
+      contentContainer: {
+        padding: primitives.spacingMd,
+      },
+      container: {
+        borderRadius: primitives.radiusLg,
+        padding: primitives.spacingMd,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
+      },
+      scrollView: {
+        flex: 1,
+        backgroundColor: semantics.backgroundCoreElevation1,
+      },
+      resultsContainer: {
+        paddingVertical: primitives.spacing2xl,
+      },
+      title: {
+        fontSize: primitives.typographyFontSizeLg,
+        lineHeight: primitives.typographyLineHeightRelaxed,
+        fontWeight: primitives.typographyFontWeightSemiBold,
+        color: semantics.textPrimary,
+        paddingTop: primitives.spacingXs,
+        textAlign: 'left',
+      },
+      titleMeta: {
+        fontSize: primitives.typographyFontSizeSm,
+        color: semantics.textTertiary,
+        lineHeight: primitives.typographyLineHeightNormal,
+        fontWeight: primitives.typographyFontWeightMedium,
+        textAlign: 'left',
+      },
+    });
+  }, [semantics]);
 };

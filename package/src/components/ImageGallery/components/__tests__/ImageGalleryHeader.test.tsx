@@ -3,8 +3,6 @@ import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 import { render, renderHook, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import {
   ImageGalleryContext,
   ImageGalleryContextValue,
@@ -19,11 +17,14 @@ const ImageGalleryComponentWrapper = ({ children }: PropsWithChildren) => {
   const initialImageGalleryStateStore = new ImageGalleryStateStore();
   const attachment = generateImageAttachment();
   initialImageGalleryStateStore.openImageGallery({
-    message: generateMessage({
-      attachments: [attachment],
-      user: {},
-    }) as unknown as LocalMessage,
-    selectedAttachmentUrl: attachment.url,
+    messages: [
+      generateMessage({
+        attachments: [attachment],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user: {} as any,
+      }),
+    ],
+    selectedAttachmentUrl: (attachment as unknown as { url?: string }).url,
   });
 
   const [imageGalleryStateStore] = useState(initialImageGalleryStateStore);
@@ -49,12 +50,7 @@ it('doesnt fail if fromNow is not available on first render', async () => {
     });
     const { getAllByText } = render(
       <ImageGalleryComponentWrapper>
-        <ImageGalleryHeader
-          // @ts-ignore
-          opacity={sharedValueOpacity}
-          // @ts-ignore
-          visible={sharedValueVisible}
-        />
+        <ImageGalleryHeader opacity={sharedValueOpacity!} visible={sharedValueVisible!} />
       </ImageGalleryComponentWrapper>,
     );
     await waitFor(() => {

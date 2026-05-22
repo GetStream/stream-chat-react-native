@@ -9,7 +9,7 @@ export const appendWhereClause = <T extends keyof Schema>(
     return [selectQuery, []];
   }
 
-  const whereClause = [];
+  const whereClause: string[] = [];
   const whereParams: TableColumnValue[] = [];
 
   for (const key in whereCondition) {

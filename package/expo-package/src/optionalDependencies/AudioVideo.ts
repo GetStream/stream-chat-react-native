@@ -1,20 +1,18 @@
 let AudioComponent;
-let VideoComponent;
 let RecordingObject;
 
 try {
   const audioVideoPackage = require('expo-av');
   AudioComponent = audioVideoPackage.Audio;
-  VideoComponent = audioVideoPackage.Video;
   RecordingObject = audioVideoPackage.RecordingObject;
 } catch (e) {
   // do nothing
 }
 
-if (!AudioComponent || !VideoComponent) {
+if (!AudioComponent) {
   console.log(
-    'Audio Video library is currently not installed. To allow in-app audio playback, install the "expo-av" package.',
+    'The audio library is currently not installed. To allow in-app audio playback, install the "expo-av" package.',
   );
 }
 
-export { AudioComponent, RecordingObject, VideoComponent };
+export { AudioComponent, RecordingObject };

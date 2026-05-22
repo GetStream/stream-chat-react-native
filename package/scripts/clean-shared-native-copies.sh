@@ -5,6 +5,7 @@ set -euo pipefail
 TARGET="${1:-all}"
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+STATE_DIR="$ROOT_DIR/shared-native/.sync-state"
 
 clean_package() {
   local package_name="$1"
@@ -12,6 +13,9 @@ clean_package() {
   local ios_dir="$ROOT_DIR/$package_name/ios/shared"
 
   rm -rf "$android_dir" "$ios_dir"
+  rm -f \
+    "$STATE_DIR/${package_name}_android.manifest" \
+    "$STATE_DIR/${package_name}_ios.manifest"
 }
 
 case "$TARGET" in

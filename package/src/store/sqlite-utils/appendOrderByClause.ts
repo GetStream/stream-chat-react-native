@@ -9,7 +9,7 @@ export const appendOrderByClause = <T extends keyof Schema>(
     return [selectQuery, []];
   }
 
-  const orderByClause = [];
+  const orderByClause: string[] = [];
 
   for (const key in orderBy) {
     const order = orderBy[key];

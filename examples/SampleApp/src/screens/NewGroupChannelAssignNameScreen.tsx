@@ -8,6 +8,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -86,10 +87,10 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
 
   const {
     theme: {
-      colors: { bg_gradient_end, bg_gradient_start, black, grey, white_snow },
       semantics,
     },
   } = useTheme();
+  const { bg_gradient_end, bg_gradient_start, black, grey, white_snow } = useLegacyColors();
   const { vw } = useViewport();
 
   const [groupName, setGroupName] = useState('');

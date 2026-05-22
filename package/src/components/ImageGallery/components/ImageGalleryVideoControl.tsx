@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ImageGalleryVideoControlProps } from './ImageGalleryFooter';
+import type { ImageGalleryVideoControlProps } from './types';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { useStateStore } from '../../../hooks/useStateStore';
-import { Pause } from '../../../icons/Pause';
-import { Play } from '../../../icons/Play';
+import { Pause } from '../../../icons/pause-fill';
+import { Play } from '../../../icons/play-fill';
 import { IconProps } from '../../../icons/utils/base';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { primitives } from '../../../theme';
@@ -74,7 +74,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
     <View style={[styles.container, container]}>
       <View style={styles.leftContainer}>
         <Button
-          accessibilityLabel='Play Pause Button'
+          accessibilityLabelKey='a11y/Play Pause Button'
           variant='secondary'
           type='ghost'
           size='md'
@@ -120,7 +120,7 @@ const useStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        backgroundColor: semantics.backgroundElevationElevation1,
+        backgroundColor: semantics.backgroundCoreElevation1,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-evenly',

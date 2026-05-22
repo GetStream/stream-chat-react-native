@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { TextComposerState } from 'stream-chat';
 
@@ -14,6 +14,7 @@ import {
   useMessageComposerHasSendableData,
   useTheme,
 } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useHasAttachments } from '../../../../contexts/messageInputContext/hooks/useHasAttachments';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import {
@@ -21,6 +22,7 @@ import {
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
+import { transitions } from '../../../../utils/animations/transitions';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
@@ -33,12 +35,8 @@ export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
     | 'asyncMessagesMinimumPressDuration'
     | 'asyncMessagesSlideToCancelDistance'
     | 'asyncMessagesLockDistance'
-    | 'asyncMessagesMultiSendEnabled'
+    | 'audioRecordingSendOnComplete'
     | 'audioRecordingEnabled'
-    | 'CooldownTimer'
-    | 'SendButton'
-    | 'StopMessageStreamingButton'
-    | 'StartAudioRecordingButton'
   > & {
     cooldownIsActive: boolean;
     hasAttachments: boolean;
@@ -50,20 +48,12 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 });
 
 export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) => {
-  const {
-    audioRecordingEnabled,
-    channel,
-    CooldownTimer,
-    cooldownIsActive,
-    isOnline,
-    SendButton,
-    StopMessageStreamingButton,
-    StartAudioRecordingButton,
-    hasAttachments,
-  } = props;
+  const { audioRecordingEnabled, channel, cooldownIsActive, isOnline, hasAttachments } = props;
+  const { CooldownTimer, SendButton, StartAudioRecordingButton, StopMessageStreamingButton } =
+    useComponentsContext();
   const {
     theme: {
-      messageInput: {
+      messageComposer: {
         audioRecordingButtonContainer,
         cooldownButtonContainer,
         editButtonContainer,
@@ -88,9 +78,9 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else if (editing || command) {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
-        key='cooldown-timer'
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
+        key='edit-button'
         style={editButtonContainer}
       >
         <EditButton disabled={messageComposer.compositionIsEmpty} />
@@ -99,8 +89,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else if (cooldownIsActive) {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='cooldown-timer'
         style={cooldownButtonContainer}
       >
@@ -110,8 +100,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else if (audioRecordingEnabled && textIsEmpty && !hasAttachments) {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='audio-recording-button'
         style={audioRecordingButtonContainer}
       >
@@ -121,8 +111,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } else {
     return (
       <Animated.View
-        entering={ZoomIn.duration(200)}
-        exiting={ZoomOut.duration(200)}
+        entering={transitions.zoomIn200}
+        exiting={transitions.zoomOut200}
         key='send-button'
         style={sendButtonContainer}
       >
@@ -178,11 +168,7 @@ export const OutputButtons = (props: OutputButtonsProps) => {
     asyncMessagesMinimumPressDuration,
     asyncMessagesSlideToCancelDistance,
     asyncMessagesLockDistance,
-    asyncMessagesMultiSendEnabled,
-    CooldownTimer,
-    SendButton,
-    StopMessageStreamingButton,
-    StartAudioRecordingButton,
+    audioRecordingSendOnComplete,
   } = useMessageInputContext();
   const cooldownIsActive = useIsCooldownActive();
   const hasAttachments = useHasAttachments();
@@ -192,16 +178,12 @@ export const OutputButtons = (props: OutputButtonsProps) => {
       {...{
         asyncMessagesLockDistance,
         asyncMessagesMinimumPressDuration,
-        asyncMessagesMultiSendEnabled,
+        audioRecordingSendOnComplete,
         asyncMessagesSlideToCancelDistance,
         audioRecordingEnabled,
         channel,
         cooldownIsActive,
-        CooldownTimer,
         isOnline,
-        SendButton,
-        StartAudioRecordingButton,
-        StopMessageStreamingButton,
         hasAttachments,
       }}
       {...props}

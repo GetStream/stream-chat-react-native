@@ -8,7 +8,7 @@ import { MultipleVotesSettings } from './MultipleVotesSettings';
 import { useTheme, useTranslationContext } from '../../../contexts';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { primitives } from '../../../theme';
-
+import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 export const MultipleAnswersField = () => {
   const [allowMultipleVotes, setAllowMultipleVotes] = useState<boolean>(false);
   const { t } = useTranslationContext();
@@ -61,10 +61,11 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   return useMemo(() => {
     return StyleSheet.create({
       multipleAnswersWrapper: {
-        backgroundColor: semantics.inputOptionCardBg,
+        backgroundColor: semantics.backgroundCoreSurfaceCard,
         padding: primitives.spacingMd,
         borderRadius: primitives.radiusLg,
         gap: primitives.spacingMd,
@@ -74,22 +75,26 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       description: {
         color: semantics.textTertiary,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightNormal,
+        textAlign: 'left',
       },
       optionCardContent: {
         gap: primitives.spacingXxs,
+        flex: 1,
+        alignItems: 'flex-start',
       },
       optionCard: {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexDirection: 'row',
       },
-      optionCardSwitch: { width: 64 },
+      optionCardSwitch: { width: 64, ...rtlMirrorSwitchStyle },
     });
-  }, [semantics]);
+  }, [rtlMirrorSwitchStyle, semantics]);
 };

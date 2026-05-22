@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useMessageContext } from '../../contexts';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
@@ -14,10 +14,7 @@ import { primitives } from '../../theme';
 import type { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
-export type MessageUserReactionsItemProps = Pick<
-  MessagesContextValue,
-  'MessageUserReactionsAvatar'
-> & {
+export type MessageUserReactionsItemProps = {
   /**
    * The reaction object
    */
@@ -29,10 +26,10 @@ export type MessageUserReactionsItemProps = Pick<
 };
 
 export const MessageUserReactionsItem = ({
-  MessageUserReactionsAvatar,
   reaction,
   supportedReactions,
 }: MessageUserReactionsItemProps) => {
+  const { MessageUserReactionsAvatar } = useComponentsContext();
   const { id, name, type } = reaction;
   const {
     theme: {
@@ -64,10 +61,10 @@ export const MessageUserReactionsItem = ({
       style={[styles.avatarContainer, avatarContainer]}
       onPress={onPress}
     >
-      <MessageUserReactionsAvatar reaction={reaction} size={'lg'} />
+      <MessageUserReactionsAvatar reaction={reaction} size={'md'} />
       <View style={[styles.avatarNameContainer, avatarNameContainer]}>
         <Text numberOfLines={1} style={[styles.avatarName, avatarName]}>
-          {name}
+          {isOwnReaction ? t('You') : name}
         </Text>
         {isOwnReaction ? (
           <Text numberOfLines={1} style={[styles.avatarSubtitle, null]}>
@@ -105,7 +102,7 @@ const useStyles = () => {
           textAlign: 'left',
         },
         avatarSubtitle: {
-          fontSize: primitives.typographyFontSizeSm,
+          fontSize: primitives.typographyFontSizeXs,
           color: semantics.textTertiary,
         },
         avatarNameContainer: {

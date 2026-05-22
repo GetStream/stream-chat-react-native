@@ -1,6 +1,74 @@
 import QuartzCore
 import UIKit
 
+private protocol StreamShimmerAppLifecycleObserving: AnyObject {
+  func shimmerAppLifecycleDidChange(isActive: Bool)
+}
+
+private final class StreamShimmerAppLifecycleCoordinator: NSObject {
+  static let shared = StreamShimmerAppLifecycleCoordinator()
+
+  private let observers = NSHashTable<AnyObject>.weakObjects()
+
+  private(set) var isAppActive: Bool
+
+  private init(notificationCenter: NotificationCenter = .default) {
+    isAppActive = Self.currentAppActiveState()
+    super.init()
+
+    notificationCenter.addObserver(
+      self,
+      selector: #selector(handleWillEnterForeground),
+      name: UIApplication.willEnterForegroundNotification,
+      object: nil
+    )
+    notificationCenter.addObserver(
+      self,
+      selector: #selector(handleDidEnterBackground),
+      name: UIApplication.didEnterBackgroundNotification,
+      object: nil
+    )
+  }
+
+  func addObserver(_ observer: StreamShimmerAppLifecycleObserving) {
+    observers.add(observer as AnyObject)
+    observer.shimmerAppLifecycleDidChange(isActive: isAppActive)
+  }
+
+  func removeObserver(_ observer: StreamShimmerAppLifecycleObserving) {
+    observers.remove(observer as AnyObject)
+  }
+
+  @objc
+  private func handleWillEnterForeground() {
+    broadcastAppState(isActive: true)
+  }
+
+  @objc
+  private func handleDidEnterBackground() {
+    broadcastAppState(isActive: false)
+  }
+
+  private func broadcastAppState(isActive: Bool) {
+    self.isAppActive = isActive
+
+    for case let observer as StreamShimmerAppLifecycleObserving in observers.allObjects {
+      observer.shimmerAppLifecycleDidChange(isActive: isActive)
+    }
+  }
+
+  private static func currentAppActiveState() -> Bool {
+    switch UIApplication.shared.applicationState {
+    case .active, .inactive:
+      return true
+    case .background:
+      return false
+    @unknown default:
+      return true
+    }
+  }
+}
+
 /// Native shimmer view used by the Fabric component view.
 ///
 /// It renders a base layer and a moving gradient highlight entirely in native code, so shimmer
@@ -8,14 +76,16 @@ import UIKit
 /// stops animation when it is not drawable (backgrounded, detached, hidden, or zero sized).
 @objcMembers
 public final class StreamShimmerView: UIView {
-  private static let edgeHighlightAlpha: CGFloat = 0.1
   private static let softHighlightAlpha: CGFloat = 0.24
-  private static let midHighlightAlpha: CGFloat = 0.48
-  private static let innerHighlightAlpha: CGFloat = 0.72
   private static let defaultHighlightAlpha: CGFloat = 0.35
   private static let defaultShimmerDuration: CFTimeInterval = 1.2
   private static let shimmerStripWidthRatio: CGFloat = 1.25
   private static let shimmerAnimationKey = "stream_shimmer_translate_x"
+  private static let gradientLocations: [NSNumber] = [0.0, 0.35, 0.5, 0.65, 1.0]
+  private static let gradientAlphaFactors: [CGFloat] = [0, softHighlightAlpha, 1, softHighlightAlpha, 0]
+  private static var animationDistanceTolerance: CGFloat {
+    1 / max(UIScreen.main.scale, 1)
+  }
 
   private let baseLayer = CALayer()
   private let shimmerLayer = CAGradientLayer()
@@ -25,23 +95,37 @@ public final class StreamShimmerView: UIView {
   private var enabled = false
   private var shimmerDuration: CFTimeInterval = defaultShimmerDuration
   private var lastAnimatedDuration: CFTimeInterval = 0
-  private var lastAnimatedSize: CGSize = .zero
-  private var isAppActive = true
+  private var lastAnimatedTravelDistance: CGFloat = 0
+  private var isAppActive = StreamShimmerAppLifecycleCoordinator.shared.isAppActive
+  private var needsBaseColorUpdate = true
+  private var needsGradientColorUpdate = true
+
+  public override var isHidden: Bool {
+    didSet {
+      updateLayersForCurrentState()
+    }
+  }
+
+  public override var alpha: CGFloat {
+    didSet {
+      updateLayersForCurrentState()
+    }
+  }
 
   public override init(frame: CGRect) {
     super.init(frame: frame)
     setupLayers()
-    setupLifecycleObservers()
+    StreamShimmerAppLifecycleCoordinator.shared.addObserver(self)
   }
 
   public required init?(coder: NSCoder) {
     super.init(coder: coder)
     setupLayers()
-    setupLifecycleObservers()
+    StreamShimmerAppLifecycleCoordinator.shared.addObserver(self)
   }
 
   deinit {
-    NotificationCenter.default.removeObserver(self)
+    StreamShimmerAppLifecycleCoordinator.shared.removeObserver(self)
   }
 
   public override func layoutSubviews() {
@@ -69,6 +153,7 @@ public final class StreamShimmerView: UIView {
     {
       // In current usage, colors are typically driven by JS props. We still refresh on trait
       // changes so dynamically resolved native colors remain correct if that path is used later.
+      invalidateResolvedColors()
       updateLayersForCurrentState()
     }
   }
@@ -79,17 +164,34 @@ public final class StreamShimmerView: UIView {
     durationMilliseconds: Double,
     enabled: Bool
   ) {
-    self.baseColor = baseColor
-    self.gradientColor = gradientColor
-    shimmerDuration = Self.normalizedDuration(milliseconds: durationMilliseconds)
+    let normalizedDuration = Self.normalizedDuration(milliseconds: durationMilliseconds)
+    let baseColorChanged = !self.baseColor.isEqual(baseColor)
+    let gradientColorChanged = !self.gradientColor.isEqual(gradientColor)
+    let durationChanged = shimmerDuration != normalizedDuration
+    let enabledChanged = self.enabled != enabled
+
+    if baseColorChanged {
+      self.baseColor = baseColor
+      needsBaseColorUpdate = true
+    }
+
+    if gradientColorChanged {
+      self.gradientColor = gradientColor
+      needsGradientColorUpdate = true
+    }
+
+    shimmerDuration = normalizedDuration
     self.enabled = enabled
-    updateLayersForCurrentState()
+
+    if baseColorChanged || gradientColorChanged || durationChanged || enabledChanged {
+      updateLayersForCurrentState()
+    }
   }
 
   public func stopAnimation() {
     shimmerLayer.removeAnimation(forKey: Self.shimmerAnimationKey)
     lastAnimatedDuration = 0
-    lastAnimatedSize = .zero
+    lastAnimatedTravelDistance = 0
   }
 
   private func setupLayers() {
@@ -99,86 +201,73 @@ public final class StreamShimmerView: UIView {
     shimmerLayer.allowsEdgeAntialiasing = true
     shimmerLayer.startPoint = CGPoint(x: 0, y: 0.5)
     shimmerLayer.endPoint = CGPoint(x: 1, y: 0.5)
-    shimmerLayer.locations = [0.0, 0.08, 0.2, 0.32, 0.4, 0.5, 0.6, 0.68, 0.8, 0.92, 1.0]
+    shimmerLayer.locations = Self.gradientLocations
 
     layer.addSublayer(baseLayer)
     layer.addSublayer(shimmerLayer)
   }
 
-  private func setupLifecycleObservers() {
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleWillEnterForeground),
-      name: UIApplication.willEnterForegroundNotification,
-      object: nil
-    )
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(handleDidEnterBackground),
-      name: UIApplication.didEnterBackgroundNotification,
-      object: nil
-    )
-  }
-
-  @objc
-  private func handleWillEnterForeground() {
-    // iOS can drop active layer animations while the app is backgrounded. We explicitly rerun
-    // a state update on foreground so shimmer reliably restarts when returning to the app.
-    isAppActive = true
-    updateLayersForCurrentState()
-  }
-
-  @objc
-  private func handleDidEnterBackground() {
-    isAppActive = false
-    stopAnimation()
-  }
-
   private func updateLayersForCurrentState() {
     let bounds = self.bounds
+    let shouldHideShimmer = !enabled || bounds.isEmpty || isHidden || alpha <= 0.01
+
+    shimmerLayer.isHidden = shouldHideShimmer
+
     guard !bounds.isEmpty else {
       stopAnimation()
       return
     }
 
     baseLayer.frame = bounds
-    baseLayer.backgroundColor = baseColor.cgColor
-
-    updateShimmerLayer(for: bounds)
+    updateBaseLayerColorIfNeeded()
+    updateShimmerGeometry(for: bounds)
+    updateShimmerColorsIfNeeded()
     updateShimmerAnimation(for: bounds)
   }
 
-  private func updateShimmerLayer(for bounds: CGRect) {
-    // Rebuild the shimmer gradient for current width/colors. Keep this tied to real state changes
-    // such as layout/prop updates, not continuous per frame calls.
+  private func updateBaseLayerColorIfNeeded() {
+    guard needsBaseColorUpdate else { return }
+    baseLayer.backgroundColor = baseColor.resolvedColor(with: traitCollection).cgColor
+    needsBaseColorUpdate = false
+  }
+
+  private func updateShimmerGeometry(for bounds: CGRect) {
     let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
-    let transparentHighlight = color(gradientColor, alphaFactor: 0)
     shimmerLayer.frame = CGRect(x: -shimmerWidth, y: 0, width: shimmerWidth, height: bounds.height)
-    shimmerLayer.colors = [
-      transparentHighlight.cgColor,
-      color(gradientColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
-      color(gradientColor, alphaFactor: Self.softHighlightAlpha).cgColor,
-      color(gradientColor, alphaFactor: Self.midHighlightAlpha).cgColor,
-      color(gradientColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
-      gradientColor.cgColor,
-      color(gradientColor, alphaFactor: Self.innerHighlightAlpha).cgColor,
-      color(gradientColor, alphaFactor: Self.midHighlightAlpha).cgColor,
-      color(gradientColor, alphaFactor: Self.softHighlightAlpha).cgColor,
-      color(gradientColor, alphaFactor: Self.edgeHighlightAlpha).cgColor,
-      transparentHighlight.cgColor,
-    ]
-    shimmerLayer.isHidden = !enabled
+  }
+
+  private func updateShimmerColorsIfNeeded() {
+    guard needsGradientColorUpdate else { return }
+
+    let resolvedGradientColor = gradientColor.resolvedColor(with: traitCollection)
+    shimmerLayer.colors = Self.gradientAlphaFactors.map {
+      color(resolvedGradientColor, alphaFactor: $0).cgColor
+    }
+    needsGradientColorUpdate = false
   }
 
   private func updateShimmerAnimation(for bounds: CGRect) {
-    guard enabled, isAppActive, window != nil, bounds.width > 0, bounds.height > 0 else {
+    guard
+      enabled,
+      isAppActive,
+      window != nil,
+      !isHidden,
+      alpha > 0.01,
+      bounds.width > 0,
+      bounds.height > 0
+    else {
       stopAnimation()
       return
     }
 
-    // If an animation already exists for the same size, keep it running instead of restarting.
+    let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
+    let animationTravelDistance = bounds.width + shimmerWidth
+
+    // If an animation already exists for the same travel distance, keep it running instead of
+    // restarting. Fabric can relayout the view for height-only or subpixel changes that do not
+    // require a new horizontal sweep.
     if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil,
-      lastAnimatedSize == bounds.size,
+      abs(lastAnimatedTravelDistance - animationTravelDistance) <= Self.animationDistanceTolerance,
       lastAnimatedDuration == shimmerDuration
     {
       return
@@ -187,17 +276,16 @@ public final class StreamShimmerView: UIView {
     stopAnimation()
 
     // Start just outside the left edge and sweep fully past the right edge for a clean pass.
-    let shimmerWidth = max(bounds.width * Self.shimmerStripWidthRatio, 1)
     let animation = CABasicAnimation(keyPath: "transform.translation.x")
     animation.fromValue = 0
-    animation.toValue = bounds.width + shimmerWidth
+    animation.toValue = animationTravelDistance
     animation.duration = shimmerDuration
     animation.repeatCount = .infinity
     animation.timingFunction = CAMediaTimingFunction(name: .linear)
     animation.isRemovedOnCompletion = true
     shimmerLayer.add(animation, forKey: Self.shimmerAnimationKey)
     lastAnimatedDuration = shimmerDuration
-    lastAnimatedSize = bounds.size
+    lastAnimatedTravelDistance = animationTravelDistance
   }
 
   private static func normalizedDuration(milliseconds: Double) -> CFTimeInterval {
@@ -205,28 +293,30 @@ public final class StreamShimmerView: UIView {
     return milliseconds / 1000
   }
 
-  private func color(_ color: UIColor, alphaFactor: CGFloat) -> UIColor {
-    // Preserve the resolved color channels and shape only alpha for smooth highlight falloff.
-    let resolvedColor = color.resolvedColor(with: traitCollection)
+  private func invalidateResolvedColors() {
+    needsBaseColorUpdate = true
+    needsGradientColorUpdate = true
+  }
 
+  private func color(_ color: UIColor, alphaFactor: CGFloat) -> UIColor {
     var red: CGFloat = 0
     var green: CGFloat = 0
     var blue: CGFloat = 0
     var alpha: CGFloat = 0
 
-    if resolvedColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+    if color.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
       return UIColor(red: red, green: green, blue: blue, alpha: alpha * alphaFactor)
     }
 
     guard
-      let converted = resolvedColor.cgColor.converted(
+      let converted = color.cgColor.converted(
         to: CGColorSpace(name: CGColorSpace.extendedSRGB)!,
         intent: .defaultIntent,
         options: nil
       ),
       let components = converted.components
     else {
-      return resolvedColor.withAlphaComponent(resolvedColor.cgColor.alpha * alphaFactor)
+      return color.withAlphaComponent(color.cgColor.alpha * alphaFactor)
     }
 
     switch components.count {
@@ -243,7 +333,20 @@ public final class StreamShimmerView: UIView {
         alpha: components[3] * alphaFactor
       )
     default:
-      return resolvedColor.withAlphaComponent(resolvedColor.cgColor.alpha * alphaFactor)
+      return color.withAlphaComponent(color.cgColor.alpha * alphaFactor)
+    }
+  }
+}
+
+extension StreamShimmerView: StreamShimmerAppLifecycleObserving {
+  func shimmerAppLifecycleDidChange(isActive: Bool) {
+    // iOS can drop active layer animations while the app is backgrounded. We explicitly rerun
+    // a state update on foreground so shimmer reliably restarts when returning to the app.
+    self.isAppActive = isActive
+    if isActive {
+      updateLayersForCurrentState()
+    } else {
+      stopAnimation()
     }
   }
 }
