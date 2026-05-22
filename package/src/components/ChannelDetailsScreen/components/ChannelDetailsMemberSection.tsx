@@ -1,11 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { UserResponse } from 'stream-chat';
-
-import { ChannelDetailsModal } from './modal/Modal';
-
-import { ModalHeader } from './modal/ModalHeader';
+import { ChannelAddMembersModal } from './ChannelAddMembersModal';
+import { ChannelAllMembersModal } from './ChannelAllMembersModal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -13,137 +10,10 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
-import { Checkmark } from '../../../icons/checkmark-1';
-import { UserAdd } from '../../../icons/user-add';
 import { primitives } from '../../../theme';
-import { NotificationList } from '../../Notifications/NotificationList';
-import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
-
-type ChannelAllMembersModalProps = {
-  onAddMembersPress: () => void;
-  onClose: () => void;
-  visible: boolean;
-};
-
-const ChannelAllMembersModal = ({
-  onAddMembersPress,
-  onClose,
-  visible,
-}: ChannelAllMembersModalProps) => {
-  const { channel } = useChannelDetailsContext();
-  const { ChannelDetailsMemberList } = useComponentsContext();
-  const { t } = useTranslationContext();
-  const { updateChannelMembers } = useOwnCapabilitiesContext();
-  const { total } = useChannelDetailsMembersPreview(channel);
-
-  return (
-    <ChannelDetailsModal onClose={onClose} visible={visible}>
-      <ModalHeader
-        onClose={onClose}
-        rightAction={
-          updateChannelMembers ? (
-            <Button
-              accessibilityLabelKey='a11y/Add members'
-              iconOnly
-              LeadingIcon={UserAdd}
-              onPress={onAddMembersPress}
-              size='md'
-              testID='channel-details-member-list-add-button'
-              type='outline'
-              variant='secondary'
-            />
-          ) : null
-        }
-        title={t('{{count}} members', { count: total })}
-      />
-      <ChannelDetailsMemberList />
-    </ChannelDetailsModal>
-  );
-};
-
-type ChannelAddMembersModalProps = {
-  onClose: () => void;
-  visible: boolean;
-};
-
-const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProps) => {
-  const { channel } = useChannelDetailsContext();
-  const { addMembers } = useChannelActions(channel);
-  const { ChannelAddMembers } = useComponentsContext();
-  const { t } = useTranslationContext();
-  const {
-    theme: {
-      channelDetailsScreen: {
-        memberSection: { confirmButton: confirmButtonOverride },
-      },
-    },
-  } = useTheme();
-  const [addMembersSelection, setAddMembersSelection] = useState<UserResponse[]>([]);
-  const [addingMembers, setAddingMembers] = useState(false);
-  const confirmEnabled = addMembersSelection.length > 0 && !addingMembers;
-  const notificationHostId = channel?.cid ? `channel-add-members:${channel.cid}` : undefined;
-
-  const handleClose = useStableCallback(() => {
-    setAddMembersSelection([]);
-    onClose();
-  });
-
-  const handleSelectionChange = useStableCallback((users: UserResponse[]) => {
-    setAddMembersSelection(users);
-  });
-
-  const handleConfirm = useStableCallback(async () => {
-    if (!addMembersSelection.length || addingMembers) return;
-    setAddingMembers(true);
-    try {
-      await addMembers(
-        addMembersSelection.map((u) => u.id),
-        {
-          onSuccess: () => {
-            setAddMembersSelection([]);
-            onClose();
-          },
-        },
-      );
-    } finally {
-      setAddingMembers(false);
-    }
-  });
-
-  return (
-    <ChannelDetailsModal onClose={onClose} visible={visible}>
-      {notificationHostId ? (
-        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-          <ModalHeader
-            onClose={handleClose}
-            rightAction={
-              <Button
-                accessibilityLabel={t('a11y/Confirm add members')}
-                accessibilityRole='button'
-                accessibilityState={{ disabled: !confirmEnabled }}
-                disabled={!confirmEnabled}
-                variant='primary'
-                onPress={handleConfirm}
-                type='solid'
-                LeadingIcon={Checkmark}
-                iconOnly
-                testID='channel-details-add-members-confirm-button'
-                style={confirmButtonOverride}
-              />
-            }
-            title={t('Add Members')}
-          />
-          <ChannelAddMembers onSelectionChange={handleSelectionChange} />
-          <NotificationList />
-        </NotificationTargetProvider>
-      ) : null}
-    </ChannelDetailsModal>
-  );
-};
 
 export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onViewAllMembersPress } = useChannelDetailsContext();
