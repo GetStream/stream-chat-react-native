@@ -12,9 +12,16 @@ export const useChannelMuteActive = (channel: Channel) => {
   const mutedChannels = useMutedChannels(channel);
   const mutedUsers = useMutedUsers(channel);
 
-  return isDirectChat
-    ? !!mutedUsers.find(
-        (mutedUser) => getOtherUserInDirectChannel(channel)?.user?.id === mutedUser.target.id,
-      )
-    : !!mutedChannels.find((mutedChannel) => channel.cid === mutedChannel.channel?.cid);
+  const channelMuted = !!mutedChannels.find(
+    (mutedChannel) => channel.cid === mutedChannel.channel?.cid,
+  );
+
+  if (!isDirectChat) {
+    return channelMuted;
+  }
+
+  const otherUserId = getOtherUserInDirectChannel(channel)?.user?.id;
+  const otherUserMuted = !!mutedUsers.find((mutedUser) => otherUserId === mutedUser.target.id);
+
+  return channelMuted || otherUserMuted;
 };

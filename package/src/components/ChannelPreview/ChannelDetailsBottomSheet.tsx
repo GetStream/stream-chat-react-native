@@ -8,7 +8,6 @@ import type { Channel } from 'stream-chat';
 
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
-import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -40,9 +39,7 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
-  const { muted: channelMuted } = useIsChannelMuted(channel);
-  const directChatUserMuted = useChannelMuteActive(channel);
-  const muted = isDirectChat ? directChatUserMuted : channelMuted;
+  const muted = useChannelMuteActive(channel);
   const displayedMemberCount = memberCount > 9 ? '9+' : `${memberCount}`;
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(
