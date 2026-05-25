@@ -48,6 +48,7 @@
     "@react-native/metro-config": "0.80.2",
     "@react-native/typescript-config": "0.80.2",
     "@rnx-kit/metro-config": "^2.1.0",
-    "@types/react": "^19.1.0"
+    "@types/react": "^19.1.0",
+    "typescript": "5.9.3"
   }
 }

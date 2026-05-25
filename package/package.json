@@ -147,6 +147,7 @@
     "react-native-teleport": "^0.5.4",
     "react-test-renderer": "19.1.0",
     "rimraf": "^6.0.1",
+    "typescript": "5.9.3",
     "uuid": "^11.1.0"
   },
   "resolutions": {

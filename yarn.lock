@@ -20618,7 +20618,7 @@ __metadata:
     husky: "npm:^9.1.7"
     prettier: "npm:^3.8.3"
     semantic-release: "npm:^25.0.3"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.3"
     typescript-eslint: "npm:^8.59.2"
     uglify-js: "npm:^3.19.2"
   dependenciesMeta:
@@ -20770,6 +20770,7 @@ __metadata:
     react-native-worklets: "npm:^0.8.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -21524,6 +21525,7 @@ __metadata:
     react-test-renderer: "npm:19.1.0"
     rimraf: "npm:^6.0.1"
     stream-chat: "npm:^9.44.2"
+    typescript: "npm:5.9.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
   peerDependencies:
@@ -22426,17 +22428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.8.3":
-  version: 5.8.3
-  resolution: "typescript@npm:5.8.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/5f8bb01196e542e64d44db3d16ee0e4063ce4f3e3966df6005f2588e86d91c03e1fb131c2581baf0fb65ee79669eea6e161cd448178986587e9f6844446dbb48
-  languageName: node
-  linkType: hard
-
-"typescript@npm:~5.9.2":
+"typescript@npm:5.9.3, typescript@npm:~5.9.2":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
   bin:
@@ -22446,17 +22438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>":
-  version: 5.8.3
-  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
   bin:
@@ -22502,6 +22484,7 @@ __metadata:
     react-native-worklets: "npm:^0.4.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
