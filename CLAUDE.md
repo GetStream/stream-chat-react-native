@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Stream Chat React Native SDK monorepo. The main SDK code lives in `package/` (published as `stream-chat-react-native-core`). Built on top of the `stream-chat` JS client library.
 
-This is a **Yarn 4 (Berry)** workspace monorepo. The Yarn binary lives in `.yarn/releases/yarn-4.14.1.cjs` and is invoked via `yarnPath` in `.yarnrc.yml`; any globally-installed Yarn launcher (e.g. the Homebrew Yarn 1.x) auto-delegates to it. No Corepack required.
+This is a **Yarn 4 (Berry)** workspace monorepo. The Yarn binary lives in `.yarn/releases/yarn-4.15.0.cjs` and is invoked via `yarnPath` in `.yarnrc.yml`; any globally-installed Yarn launcher (e.g. the Homebrew Yarn 1.x) auto-delegates to it. No Corepack required.
 
 Workspaces: `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/ExpoMessaging`, `examples/TypeScriptMessaging`. There is a single root `yarn.lock`.
 
