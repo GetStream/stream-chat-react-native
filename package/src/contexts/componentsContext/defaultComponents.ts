@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ImageProps, TextInputProps } from 'react-native';
+import { TextInputProps } from 'react-native';
 
 import type { LocalMessage, UserResponse } from 'stream-chat';
 
@@ -50,7 +50,7 @@ import { ImageGalleryGrid } from '../../components/ImageGallery/components/Image
 import { EmptyStateIndicator } from '../../components/Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator } from '../../components/Indicators/LoadingErrorIndicator';
 import { LoadingIndicator } from '../../components/Indicators/LoadingIndicator';
-import { KeyboardCompatibleView } from '../../components/KeyboardCompatibleView/KeyboardControllerAvoidingView';
+import { KeyboardCompatibleView } from '../../components/KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message } from '../../components/Message/Message';
 import { MessagePinnedHeader } from '../../components/Message/MessageItemView/Headers/MessagePinnedHeader';
 import { MessageReminderHeader } from '../../components/Message/MessageItemView/Headers/MessageReminderHeader';
@@ -149,6 +149,7 @@ import { ThreadListItemMessagePreview } from '../../components/ThreadList/Thread
 import { ThreadListUnreadBanner } from '../../components/ThreadList/ThreadListUnreadBanner';
 import { ThreadMessagePreviewDeliveryStatus } from '../../components/ThreadList/ThreadMessagePreviewDeliveryStatus';
 import { ChannelAvatar } from '../../components/ui/Avatar/ChannelAvatar';
+import { SvgAwareImage } from '../../components/UIComponents/SvgAwareImage';
 import { DefaultMessageOverlayBackground } from '../../contexts/overlayContext/MessageOverlayHostLayer';
 import type { MessageActionsProps } from '../../contexts/overlayContext/MessageOverlayHostLayer';
 
@@ -317,7 +318,7 @@ const components = {
   MessageOverlayBackground: DefaultMessageOverlayBackground,
 
   // Image
-  ImageComponent: Image as React.ComponentType<ImageProps>,
+  ImageComponent: SvgAwareImage,
 };
 
 /**

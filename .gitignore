@@ -30,3 +30,5 @@ index.android.bundle
 *.DSYM.zip
 **/metrics/
 package/shared-native/.sync-state/
+
+.claude/worktrees

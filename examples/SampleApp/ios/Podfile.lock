@@ -3367,7 +3367,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Teleport (1.1.2):
+  - Teleport (1.1.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3394,9 +3394,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - SocketRocket
-    - Teleport/common (= 1.1.2)
+    - Teleport/common (= 1.1.5)
     - Yoga
-  - Teleport/common (1.1.2):
+  - Teleport/common (1.1.5):
     - boost
     - DoubleConversion
     - fast_float
@@ -3884,7 +3884,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   stream-chat-react-native: d15df89b47c1a08bc7db90c316d34b8ac4e13900
-  Teleport: ed828b19e62ca8b9ec101d991bf0594b1c1c8812
+  Teleport: 11e953f37a889cb6a1b24c16182f84b95f77e002
   Yoga: ff16d80456ce825ffc9400eeccc645a0dfcccdf5
 
 PODFILE CHECKSUM: 84efea5f3e8c9c79671ee6e525f700f244c17388

@@ -4,12 +4,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useNavigation } from '@react-navigation/core';
 
+import type { TextComposerState } from 'stream-chat';
 import {
-  MessageInputContextValue,
   Search,
   SendRight,
   useChannelContext,
-  useMessageInputContext,
+  useMessageComposer,
+  useStateStore,
   useTheme,
 } from 'stream-chat-react-native';
 
@@ -19,11 +20,14 @@ import { SendUp } from '../icons/SendUp';
 import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
-type NewDirectMessagingSendButtonPropsWithContext = Pick<
-  MessageInputContextValue,
-  'giphyActive' | 'sendMessage'
-> & {
+const textComposerStateSelector = (state: TextComposerState) => ({
+  command: state.command,
+});
+
+type NewDirectMessagingSendButtonPropsWithContext = {
   /** Disables the button */ disabled: boolean;
+  giphyActive: boolean;
+  sendMessage: () => Promise<void>;
 };
 
 const SendButtonWithContext = (props: NewDirectMessagingSendButtonPropsWithContext) => {
@@ -97,8 +101,9 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
   const { channel } = useChannelContext();
   const { selectedUserIds, reset } = useUserSearchContext();
-
-  const { giphyActive, text } = useMessageInputContext();
+  const messageComposer = useMessageComposer();
+  const { command } = useStateStore(messageComposer.textComposer.state, textComposerStateSelector);
+  const giphyActive = command?.name === 'giphy';
 
   const sendMessage = async () => {
     if (!channel) {
@@ -107,6 +112,12 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
     if (!chatClient || !chatClient.user) {
       return;
     }
+
+    const composition = await messageComposer.compose();
+    if (!composition?.message) {
+      return;
+    }
+
     const members = [chatClient.user.id, ...selectedUserIds];
     channel.initialized = false;
     const newChannel = chatClient.channel('messaging', {
@@ -114,7 +125,8 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
     });
     try {
       await newChannel.watch();
-      await newChannel.sendMessage({ text });
+      await newChannel.sendMessage(composition.message, composition.sendOptions);
+      messageComposer.clear();
       navigation.replace('ChannelScreen', {
         channelId: newChannel.id,
       });

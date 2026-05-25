@@ -200,7 +200,7 @@ const useStyles = () => {
         container: {
           backgroundColor: semantics.backgroundCoreElevation1,
           borderTopWidth: 1,
-          borderTopColor: semantics.borderCoreDefault,
+          borderTopColor: semantics.borderCoreSubtle,
           ...footer.container,
         },
         centerContainer: {

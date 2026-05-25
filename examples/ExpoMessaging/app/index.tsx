@@ -4,7 +4,6 @@ import { useCallback, useContext, useMemo } from 'react';
 import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Stack, useRouter } from 'expo-router';
-import { ChannelSort } from 'stream-chat';
 import { ChannelList, SqliteClient } from 'stream-chat-expo';
 
 import { AppContext } from '../context/AppContext';
@@ -12,8 +11,8 @@ import { AppContext } from '../context/AppContext';
 import { useUserContext } from '@/context/UserContext';
 import { getInitialsOfName } from '@/utils/getInitialsOfName';
 
-const sort: ChannelSort = { last_updated: -1 };
-const options = {
+const baseOptions = {
+  predefined_filter: 'basic_channel_list_filter',
   state: true,
   watch: true,
 };
@@ -52,12 +51,15 @@ const renderLogoutButton = () => <LogoutButton />;
 
 export default function ChannelListScreen() {
   const { user } = useUserContext();
-  const filters = useMemo(
+  const userId = user?.id || '';
+  const options = useMemo(
     () => ({
-      members: { $in: [user?.id as string] },
-      type: 'messaging',
+      ...baseOptions,
+      filter_values: {
+        user_id: userId,
+      },
     }),
-    [user?.id],
+    [userId],
   );
   const router = useRouter();
   const { setChannel } = useContext(AppContext);
@@ -67,13 +69,11 @@ export default function ChannelListScreen() {
       <Stack.Screen options={{ title: 'Channel List Screen', headerLeft: renderLogoutButton }} />
 
       <ChannelList
-        filters={filters}
         onSelect={(channel) => {
           setChannel(channel);
           router.push(`/channel/${channel.cid}`);
         }}
         options={options}
-        sort={sort}
       />
     </View>
   );

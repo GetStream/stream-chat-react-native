@@ -12,6 +12,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject",
+    "postinstall": "patch-package",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -26,7 +27,7 @@
     "@react-navigation/native-stack": "^7.14.5",
     "@shopify/flash-list": "^2.3.1",
     "expo": "^55.0.6",
-    "expo-audio": "~55.0.8",
+    "expo-audio": "~55.0.14",
     "expo-build-properties": "~55.0.9",
     "expo-clipboard": "~55.0.8",
     "expo-constants": "~55.0.7",
@@ -47,6 +48,7 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.2",
     "react-native-gesture-handler": "~2.30.0",
+    "react-native-keyboard-controller": "1.20.7",
     "react-native-maps": "1.26.20",
     "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "~5.6.2",
@@ -62,6 +64,7 @@
     "@rnx-kit/metro-config": "^2.1.2",
     "@rnx-kit/metro-resolver-symlinks": "^0.2.6",
     "@types/react": "~19.2.10",
+    "patch-package": "^8.0.1",
     "typescript": "~5.9.2"
   },
   "private": true

@@ -198,7 +198,7 @@ const useStyles = () => {
         flexDirection: 'row',
         justifyContent: 'center',
         paddingVertical: primitives.spacingXxs,
-        gap: primitives.spacingXs,
+        gap: primitives.spacingXxs,
       },
       name: {
         flexShrink: 1,

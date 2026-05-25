@@ -184,6 +184,74 @@ describe('ChannelList', () => {
     });
   });
 
+  it('should re-query channels when predefined filter options change', async () => {
+    const queryChannelsSpy = jest.spyOn(chatClient, 'queryChannels');
+    useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+    render(
+      <Chat client={chatClient}>
+        <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+          <ChannelList
+            {...props}
+            options={{
+              filter_values: { user_id: 'dan' },
+              predefined_filter: 'user_messaging',
+            }}
+          />
+        </WithComponents>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy();
+    });
+
+    expect(queryChannelsSpy).toHaveBeenNthCalledWith(
+      1,
+      {},
+      expect.anything(),
+      expect.objectContaining({
+        filter_values: { user_id: 'dan' },
+        offset: 0,
+        predefined_filter: 'user_messaging',
+      }),
+      expect.anything(),
+    );
+
+    useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+
+    screen.rerender(
+      <Chat client={chatClient}>
+        <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+          <ChannelList
+            {...props}
+            options={{
+              filter_values: { user_id: 'sara' },
+              predefined_filter: 'user_messaging',
+            }}
+          />
+        </WithComponents>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(queryChannelsSpy).toHaveBeenCalledTimes(2);
+      expect(screen.getByTestId(testChannel2.channel.id)).toBeTruthy();
+    });
+
+    expect(queryChannelsSpy).toHaveBeenNthCalledWith(
+      2,
+      {},
+      expect.anything(),
+      expect.objectContaining({
+        filter_values: { user_id: 'sara' },
+        offset: 0,
+        predefined_filter: 'user_messaging',
+      }),
+      expect.anything(),
+    );
+  });
+
   it('should update if filters are updated while awaiting api call', async () => {
     const deferredCallForStaleFilter = new DeferredPromise();
     const deferredCallForFreshFilter = new DeferredPromise();

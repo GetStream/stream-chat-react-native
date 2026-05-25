@@ -12,7 +12,6 @@ import {
 
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { Channel } from 'stream-chat';
-import type { ChannelSort } from 'stream-chat';
 import {
   ChannelList,
   useTheme,
@@ -67,18 +66,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const baseFilters = {
-  archived: false,
-  type: 'messaging',
-};
-
-const sort: ChannelSort = [{ pinned_at: -1 }, { last_message_at: -1 }, { updated_at: -1 }];
-
-const options = {
+const baseOptions = {
   presence: true,
   state: true,
   watch: true,
   message_limit: 25,
+  predefined_filter: 'basic_channel_list_filter',
 };
 
 export const ChannelListScreen: React.FC = () => {
@@ -98,11 +91,11 @@ export const ChannelListScreen: React.FC = () => {
     usePaginatedSearchedMessages(searchQuery);
 
   const chatClientUserId = chatClient?.user?.id || '';
-  const filters = useMemo(
+  const options = useMemo(
     () => ({
-      ...baseFilters,
-      members: {
-        $in: [chatClientUserId],
+      ...baseOptions,
+      filter_values: {
+        user_id: chatClientUserId,
       },
     }),
     [chatClientUserId],
@@ -255,13 +248,11 @@ export const ChannelListScreen: React.FC = () => {
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList
               additionalFlatListProps={additionalFlatListProps}
-              filters={filters}
               maxUnreadCount={99}
               onSelect={onSelect}
               options={options}
               setFlatListRef={setScrollRef}
               getChannelActionItems={getChannelActionItems}
-              sort={sort}
             />
           </View>
         </View>

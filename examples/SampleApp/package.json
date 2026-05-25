@@ -16,6 +16,7 @@
     "start": "react-native start",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/extract-changelog.js",
     "bootstrap": "yarn install",
+    "postinstall": "patch-package",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
     "release-next": "echo \"Skipping next release for SampleApp\"",
     "typecheck": "tsc --noEmit",
@@ -61,7 +62,7 @@
     "react-native-screens": "^4.24.0",
     "react-native-share": "^12.0.11",
     "react-native-svg": "^15.15.4",
-    "react-native-teleport": "^1.1.2",
+    "react-native-teleport": "^1.1.5",
     "react-native-video": "^6.16.1",
     "react-native-worklets": "^0.8.1",
     "stream-chat-react-native": "workspace:^",
@@ -86,7 +87,9 @@
     "@rnx-kit/metro-config": "^2.1.0",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/react": "^19.1.4",
-    "babel-plugin-react-compiler": "^1.0.0"
+    "babel-plugin-react-compiler": "^1.0.0",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0"
   },
   "engines": {
     "node": ">=20.19.4"

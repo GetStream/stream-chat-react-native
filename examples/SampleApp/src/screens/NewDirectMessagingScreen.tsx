@@ -6,8 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
-import { Channel, MessageComposer, MessageList, UserAdd, useTheme } from 'stream-chat-react-native';
+import {
+  Channel,
+  MessageComposer,
+  MessageList,
+  UserAdd,
+  WithComponents,
+  useTheme,
+} from 'stream-chat-react-native';
 
+import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
@@ -354,7 +362,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
           <MessageList />
         )}
-        <MessageComposer />
+        <WithComponents overrides={{ SendButton: NewDirectMessagingSendButton }}>
+          <MessageComposer />
+        </WithComponents>
       </Channel>
     </SafeAreaView>
   );

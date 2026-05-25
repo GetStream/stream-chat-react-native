@@ -20,6 +20,7 @@ export default function ThreadScreen() {
       audioRecordingEnabled={true}
       channel={channel}
       keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : undefined}
+      topInset={headerHeight}
       thread={thread}
       threadList
     >

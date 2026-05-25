@@ -7,6 +7,7 @@ export * from './useStateStore';
 export * from './usePendingAttachmentUpload';
 export * from './useStableCallback';
 export * from './useLoadingImage';
+export * from './useIsSvg';
 export * from './useMessageReminder';
 export * from './useQueryReminders';
 export * from './useAfterKeyboardOpenCallback';
