@@ -55,7 +55,7 @@
     "react-native-haptic-feedback": "^2.3.3",
     "react-native-image-picker": "^8.2.1",
     "react-native-maps": "1.20.1",
-    "react-native-nitro-modules": "^0.31.3",
+    "react-native-nitro-modules": "^0.35.4",
     "react-native-nitro-sound": "^0.2.9",
     "react-native-reanimated": "^4.3.0",
     "react-native-safe-area-context": "^5.5.2",

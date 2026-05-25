@@ -19540,13 +19540,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.31.3":
-  version: 0.31.10
-  resolution: "react-native-nitro-modules@npm:0.31.10"
+"react-native-nitro-modules@npm:^0.35.4":
+  version: 0.35.7
+  resolution: "react-native-nitro-modules@npm:0.35.7"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/0acc6ca5f12e24a6601e682070f257a771b95214c11fba911b342af705071234544c93076900f43400c8ae2f1a6738011b120e4425813968102997860ffd7626
+  checksum: 10c0/f0c9167655032952bfdadd6802eade60796df2021e29a451ec205843dd6e95c6cb274d77c77534703a5d5d55e45c6f7ca1900a94813de3e0bdb0f3aa654cf3fc
   languageName: node
   linkType: hard
 
@@ -20758,7 +20758,7 @@ __metadata:
     react-native-haptic-feedback: "npm:^2.3.3"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:1.20.1"
-    react-native-nitro-modules: "npm:^0.31.3"
+    react-native-nitro-modules: "npm:^0.35.4"
     react-native-nitro-sound: "npm:^0.2.9"
     react-native-reanimated: "npm:^4.3.0"
     react-native-safe-area-context: "npm:^5.5.2"
