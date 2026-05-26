@@ -9,7 +9,7 @@ import { useChannelDetailsContext } from '../../../contexts/channelDetailsContex
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/useChannelActions';
+import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
 import { NotificationList } from '../../Notifications/NotificationList';

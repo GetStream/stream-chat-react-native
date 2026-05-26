@@ -9,7 +9,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   ChannelMemberActionItem,
   useChannelMemberActionItems,
-} from '../../../hooks/useChannelMemberActionItems';
+} from '../../../hooks/actions/useChannelMemberActionItems';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { primitives } from '../../../theme';
 import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';

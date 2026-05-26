@@ -3,30 +3,28 @@ import { Alert } from 'react-native';
 
 import type { BlockedUsersState, Channel } from 'stream-chat';
 
+import type { ActionItem } from './type';
 import {
   ChannelActionHandler,
   ChannelActions,
   getOtherUserInDirectChannel,
   useChannelActions,
 } from './useChannelActions';
-import { useChannelMembershipState } from './useChannelMembershipState';
-import { useIsDirectChat } from './useIsDirectChat';
-import { useStateStore } from './useStateStore';
 
-import { useMutedUsers } from '../components/ChannelList/hooks/useMutedUsers';
-import { useIsChannelMuted } from '../components/ChannelPreview/hooks/useIsChannelMuted';
-import { useTheme, useTranslationContext } from '../contexts';
-import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
-import { IconProps, Mute, BlockUser, Delete, Sound } from '../icons';
-import { ArrowBoxLeft } from '../icons/leave';
+import { useMutedUsers } from '../../components/ChannelList/hooks/useMutedUsers';
+import { useIsChannelMuted } from '../../components/ChannelPreview/hooks/useIsChannelMuted';
+import { useTheme, useTranslationContext } from '../../contexts';
+import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
+import { IconProps, Mute, BlockUser, Delete, Sound } from '../../icons';
+import { ArrowBoxLeft } from '../../icons/leave';
+import { useChannelMembershipState } from '../useChannelMembershipState';
+import { useIsDirectChat } from '../useIsDirectChat';
+import { useStateStore } from '../useStateStore';
 
-export type ChannelActionItem = {
-  action: ChannelActionHandler;
-  Icon: React.ComponentType<IconProps>;
-  id: 'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | string;
-  label: string;
+export type ChannelActionItem = ActionItem<
+  'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | string
+> & {
   placement: 'both' | 'sheet' | 'swipe';
-  type: 'destructive' | 'standard';
 };
 
 export type ChannelActionItemsParams = {

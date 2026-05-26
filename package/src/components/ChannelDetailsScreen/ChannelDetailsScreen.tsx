@@ -11,8 +11,8 @@ import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/c
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import type { GetChannelActionItems } from '../../hooks/useChannelActionItems';
-import type { GetChannelMemberActionItems } from '../../hooks/useChannelMemberActionItems';
+import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
+import type { GetChannelMemberActionItems } from '../../hooks/actions/useChannelMemberActionItems';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
 import { NotificationList } from '../Notifications/NotificationList';

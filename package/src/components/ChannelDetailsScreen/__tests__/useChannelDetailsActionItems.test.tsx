@@ -5,8 +5,8 @@ import * as channelDetailsContextModule from '../../../contexts/channelDetailsCo
 import type {
   ChannelActionItem,
   GetChannelActionItems,
-} from '../../../hooks/useChannelActionItems';
-import * as useChannelActionItemsModule from '../../../hooks/useChannelActionItems';
+} from '../../../hooks/actions/useChannelActionItems';
+import * as useChannelActionItemsModule from '../../../hooks/actions/useChannelActionItems';
 import { useChannelDetailsActionItems } from '../hooks/useChannelDetailsActionItems';
 
 const NoopIcon = () => null;

@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { act, renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { ChatProvider } from '../../contexts/chatContext/ChatContext';
+import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { useChannelActions } from '../useChannelActions';
 
 const createWrapper =

@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChannelActionItem, useChannelActionItems } from '../../../hooks/useChannelActionItems';
+import {
+  ChannelActionItem,
+  useChannelActionItems,
+} from '../../../hooks/actions/useChannelActionItems';
 
 export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
   const { channel, getChannelActionItems, onChannelDismiss } = useChannelDetailsContext();

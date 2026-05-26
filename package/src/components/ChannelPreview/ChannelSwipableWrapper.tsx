@@ -8,8 +8,11 @@ import type { Channel } from 'stream-chat';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { ChannelActionItem, GetChannelActionItems } from '../../hooks/useChannelActionItems';
-import { useChannelActionItems } from '../../hooks/useChannelActionItems';
+import type {
+  ChannelActionItem,
+  GetChannelActionItems,
+} from '../../hooks/actions/useChannelActionItems';
+import { useChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import { MenuPointHorizontal } from '../../icons';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {

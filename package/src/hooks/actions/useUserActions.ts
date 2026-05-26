@@ -2,17 +2,16 @@ import { useMemo } from 'react';
 
 import { UserResponse } from 'stream-chat';
 
+import type { ActionHandler, ActionOptions } from './type';
 import { getNotificationErrorOptions } from './useChannelActions';
-import { useStableCallback } from './useStableCallback';
 
-import { useNotificationApi } from '../components/Notifications/hooks';
-import { useChatContext, useTranslationContext } from '../contexts';
+import { useNotificationApi } from '../../components/Notifications/hooks';
+import { useChatContext, useTranslationContext } from '../../contexts';
+import { useStableCallback } from '../useStableCallback';
 
-export type UserActionOptions = {
-  onSuccess?: () => unknown;
-};
+export type UserActionOptions = ActionOptions;
 
-export type UserActionHandler = (options?: UserActionOptions) => Promise<void>;
+export type UserActionHandler = ActionHandler;
 
 export type UserActions = {
   blockUser: UserActionHandler;

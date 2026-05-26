@@ -6,7 +6,7 @@ import type { FlatList } from 'react-native-gesture-handler';
 import type { Channel } from 'stream-chat';
 
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
-import type { GetChannelActionItems } from '../../hooks/useChannelActionItems';
+import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';

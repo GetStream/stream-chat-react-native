@@ -4,7 +4,7 @@ import debounce from 'lodash/debounce';
 import type { Channel, UserFilters, UserResponse } from 'stream-chat';
 
 import { useChatContext, useTranslationContext } from '../../../contexts';
-import { getNotificationErrorOptions } from '../../../hooks/useChannelActions';
+import { getNotificationErrorOptions } from '../../../hooks/actions/useChannelActions';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useNotificationApi } from '../../Notifications/hooks/useNotificationApi';
 

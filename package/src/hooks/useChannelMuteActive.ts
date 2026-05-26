@@ -1,6 +1,6 @@
 import { Channel } from 'stream-chat';
 
-import { getOtherUserInDirectChannel } from './useChannelActions';
+import { getOtherUserInDirectChannel } from './actions/useChannelActions';
 
 import { useIsDirectChat } from './useIsDirectChat';
 

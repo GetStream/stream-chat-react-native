@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse, Mute } from 'stream-chat';
 
-import * as useMutedUsersModule from '../../components/ChannelList/hooks/useMutedUsers';
-import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import * as TranslationContext from '../../contexts/translationContext/TranslationContext';
+import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
 import {
   buildDefaultChannelMemberActionItems,
   getChannelMemberActionItems,
@@ -67,7 +67,6 @@ describe('useChannelMemberActionItems', () => {
       userActions.blockUser,
     ]);
     expect(result.current.map((item) => item.type)).toEqual(['standard', 'standard']);
-    expect(result.current.map((item) => item.placement)).toEqual(['sheet', 'sheet']);
     expect(result.current.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
   });
 
@@ -152,7 +151,6 @@ describe('buildDefaultChannelMemberActionItems', () => {
     expect(items.map((item) => item.id)).toEqual(['muteUser', 'block']);
     expect(items.map((item) => item.action)).toEqual([actions.muteUser, actions.blockUser]);
     expect(items.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
-    expect(items.map((item) => item.placement)).toEqual(['sheet', 'sheet']);
     expect(items.map((item) => item.type)).toEqual(['standard', 'standard']);
   });
 

@@ -3,10 +3,12 @@ import { Alert, AlertButton } from 'react-native';
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, Mute } from 'stream-chat';
 
-import * as useMutedUsersModule from '../../components/ChannelList/hooks/useMutedUsers';
-import * as useIsChannelMutedModule from '../../components/ChannelPreview/hooks/useIsChannelMuted';
-import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import * as TranslationContext from '../../contexts/translationContext/TranslationContext';
+import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
+import * as useIsChannelMutedModule from '../../../components/ChannelPreview/hooks/useIsChannelMuted';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
+import * as useChannelMembershipStateModule from '../../useChannelMembershipState';
+import * as useIsDirectChatModule from '../../useIsDirectChat';
 import {
   GetChannelActionItems,
   buildDefaultChannelActionItems,
@@ -14,8 +16,6 @@ import {
   useChannelActionItems,
 } from '../useChannelActionItems';
 import * as useChannelActionsModule from '../useChannelActions';
-import * as useChannelMembershipStateModule from '../useChannelMembershipState';
-import * as useIsDirectChatModule from '../useIsDirectChat';
 
 const createChannelActions = (): useChannelActionsModule.ChannelActions => ({
   addMembers: jest.fn(),

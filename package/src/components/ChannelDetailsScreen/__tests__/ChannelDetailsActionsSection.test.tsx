@@ -10,8 +10,8 @@ import { WithComponents } from '../../../contexts/componentsContext/ComponentsCo
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import type { ChannelActionItem } from '../../../hooks/useChannelActionItems';
-import * as useChannelActionsModule from '../../../hooks/useChannelActions';
+import type { ChannelActionItem } from '../../../hooks/actions/useChannelActionItems';
+import * as useChannelActionsModule from '../../../hooks/actions/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import * as useMutedUsersModule from '../../ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../ChannelPreview/hooks/useIsChannelMuted';

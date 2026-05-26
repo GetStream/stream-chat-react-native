@@ -14,7 +14,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import type { ChannelActionItem } from '../../hooks/useChannelActionItems';
+import type { ChannelActionItem } from '../../hooks/actions/useChannelActionItems';
 import { useChannelMuteActive } from '../../hooks/useChannelMuteActive';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { useStableCallback } from '../../hooks/useStableCallback';

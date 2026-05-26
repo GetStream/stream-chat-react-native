@@ -2,16 +2,15 @@ import { useMemo } from 'react';
 
 import { Channel } from 'stream-chat';
 
-import { useStableCallback } from './useStableCallback';
+import type { ActionHandler, ActionOptions } from './type';
 
-import { useNotificationApi } from '../components/Notifications/hooks';
-import { useChatContext, useTranslationContext } from '../contexts';
+import { useNotificationApi } from '../../components/Notifications/hooks';
+import { useChatContext, useTranslationContext } from '../../contexts';
+import { useStableCallback } from '../useStableCallback';
 
-export type ChannelActionOptions = {
-  onSuccess?: () => unknown;
-};
+export type ChannelActionOptions = ActionOptions;
 
-export type ChannelActionHandler = (options?: ChannelActionOptions) => Promise<void>;
+export type ChannelActionHandler = ActionHandler;
 
 export type ChannelActions = {
   addMembers: (memberIds: string[], options?: ChannelActionOptions) => Promise<void>;

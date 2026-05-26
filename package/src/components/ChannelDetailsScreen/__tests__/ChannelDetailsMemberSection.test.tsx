@@ -17,13 +17,13 @@ import {
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/useChannelActions';
+import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { ChannelDetailsMemberSection } from '../components/ChannelDetailsMemberSection';
 import * as useChannelDetailsMembersPreviewModule from '../hooks/useChannelDetailsMembersPreview';
 
-jest.mock('../../../hooks/useChannelActions');
+jest.mock('../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
 
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;

@@ -2,22 +2,16 @@ import React, { useMemo } from 'react';
 
 import type { BlockedUsersState, Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { useStateStore } from './useStateStore';
-import { useUserActions, UserActionHandler, UserActions } from './useUserActions';
+import type { ActionItem } from './type';
+import { useUserActions, UserActions } from './useUserActions';
 
-import { useMutedUsers } from '../components/ChannelList/hooks/useMutedUsers';
-import { useTheme, useTranslationContext } from '../contexts';
-import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
-import { BlockUser, IconProps, Mute, Sound } from '../icons';
+import { useMutedUsers } from '../../components/ChannelList/hooks/useMutedUsers';
+import { useTheme, useTranslationContext } from '../../contexts';
+import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
+import { BlockUser, IconProps, Mute, Sound } from '../../icons';
+import { useStateStore } from '../useStateStore';
 
-export type ChannelMemberActionItem = {
-  action: UserActionHandler;
-  Icon: React.ComponentType<IconProps>;
-  id: 'muteUser' | 'block' | string;
-  label: string;
-  placement: 'both' | 'sheet' | 'swipe';
-  type: 'destructive' | 'standard';
-};
+export type ChannelMemberActionItem = ActionItem<'muteUser' | 'block' | string>;
 
 export type ChannelMemberActionItemsParams = {
   actions: UserActions;
@@ -69,7 +63,6 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
         ),
       id: 'muteUser',
       label: userMuteActive ? t('Unmute User') : t('Mute User'),
-      placement: 'sheet',
       type: 'standard',
     },
     {
@@ -77,7 +70,6 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
       Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
       id: 'block',
       label: isBlocked ? t('Unblock User') : t('Block User'),
-      placement: 'sheet',
       type: 'standard',
     },
   ];

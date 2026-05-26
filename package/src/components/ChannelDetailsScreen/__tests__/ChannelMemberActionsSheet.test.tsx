@@ -9,8 +9,8 @@ import { WithComponents } from '../../../contexts/componentsContext/ComponentsCo
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import type { ChannelMemberActionItem } from '../../../hooks/useChannelMemberActionItems';
-import * as useChannelMemberActionItemsModule from '../../../hooks/useChannelMemberActionItems';
+import type { ChannelMemberActionItem } from '../../../hooks/actions/useChannelMemberActionItems';
+import * as useChannelMemberActionItemsModule from '../../../hooks/actions/useChannelMemberActionItems';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
@@ -31,7 +31,6 @@ const buildItem = (overrides: Partial<ChannelMemberActionItem> = {}): ChannelMem
   Icon: NoopIcon,
   id: 'muteUser',
   label: 'Mute User',
-  placement: 'sheet',
   type: 'standard',
   ...overrides,
 });
