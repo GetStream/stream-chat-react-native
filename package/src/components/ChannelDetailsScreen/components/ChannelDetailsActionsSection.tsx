@@ -21,7 +21,7 @@ export const ChannelDetailsActionsSection = () => {
       semantics,
     },
   } = useTheme();
-  const { ChannelDetailsListItem } = useComponentsContext();
+  const { ChannelDetailsActionItem } = useComponentsContext();
   const isDirect = useIsDirectChat(channel);
   const leaveHint = useA11yLabel(
     isDirect ? 'a11y/Removes you from this chat' : 'a11y/Removes you from this group',
@@ -66,7 +66,7 @@ export const ChannelDetailsActionsSection = () => {
         ) : undefined;
 
         return (
-          <ChannelDetailsListItem
+          <ChannelDetailsActionItem
             accessibilityHint={accessibilityHint}
             destructive={item.type === 'destructive'}
             Icon={item.Icon}

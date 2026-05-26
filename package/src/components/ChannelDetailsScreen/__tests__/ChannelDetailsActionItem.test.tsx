@@ -6,18 +6,18 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { ThemeProvider } from '../../../contexts';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import type { IconProps } from '../../../icons/utils/base';
-import { ChannelDetailsListItem } from '../components/ChannelDetailsListItem';
+import { ChannelDetailsActionItem } from '../components/ChannelDetailsActionItem';
 
 const TestIcon = jest.fn<null, [IconProps]>(() => null);
 
-const renderItem = (props: Partial<React.ComponentProps<typeof ChannelDetailsListItem>> = {}) =>
+const renderItem = (props: Partial<React.ComponentProps<typeof ChannelDetailsActionItem>> = {}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
-      <ChannelDetailsListItem Icon={TestIcon} label='Pinned Messages' {...props} />
+      <ChannelDetailsActionItem Icon={TestIcon} label='Pinned Messages' {...props} />
     </ThemeProvider>,
   );
 
-describe('ChannelDetailsListItem', () => {
+describe('ChannelDetailsActionItem', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -106,7 +106,7 @@ describe('ChannelDetailsListItem', () => {
       TestIcon.mockClear();
       rerender(
         <ThemeProvider theme={defaultTheme}>
-          <ChannelDetailsListItem Icon={TestIcon} destructive label='Pinned Messages' />
+          <ChannelDetailsActionItem Icon={TestIcon} destructive label='Pinned Messages' />
         </ThemeProvider>,
       );
       const destructiveIcon = lastIconProps().fill;

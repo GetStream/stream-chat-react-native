@@ -199,7 +199,7 @@ export type Theme = {
       title: TextStyle;
     };
     sectionCard: ViewStyle;
-    listItem: {
+    actionItem: {
       container: ViewStyle;
       destructiveLabel: TextStyle;
       iconWrapper: ViewStyle;
@@ -1215,7 +1215,7 @@ export const defaultTheme: Theme = {
       title: {},
     },
     sectionCard: {},
-    listItem: {
+    actionItem: {
       container: {},
       destructiveLabel: {},
       iconWrapper: {},

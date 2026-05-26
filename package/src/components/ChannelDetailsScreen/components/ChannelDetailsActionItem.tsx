@@ -5,7 +5,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import type { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
 
-export type ChannelDetailsListItemProps = {
+export type ChannelDetailsActionItemProps = {
   Icon: React.ComponentType<IconProps>;
   label: string;
   accessibilityHint?: string;
@@ -15,7 +15,7 @@ export type ChannelDetailsListItemProps = {
   trailing?: React.ReactNode;
 };
 
-export const ChannelDetailsListItem = ({
+export const ChannelDetailsActionItem = ({
   accessibilityHint,
   Icon,
   destructive = false,
@@ -23,11 +23,11 @@ export const ChannelDetailsListItem = ({
   onPress,
   testID,
   trailing,
-}: ChannelDetailsListItemProps) => {
+}: ChannelDetailsActionItemProps) => {
   const {
     theme: {
       channelDetailsScreen: {
-        listItem: {
+        actionItem: {
           container: containerOverride,
           destructiveLabel: destructiveLabelOverride,
           iconWrapper: iconWrapperOverride,

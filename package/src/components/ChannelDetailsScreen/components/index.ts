@@ -3,7 +3,7 @@ export * from './ChannelAddMembers';
 export * from './ChannelAddMembersModal';
 export * from './ChannelAllMembersModal';
 export * from './ChannelDetailsActionsSection';
-export * from './ChannelDetailsListItem';
+export * from './ChannelDetailsActionItem';
 export * from './ChannelDetailsMemberList';
 export * from './ChannelDetailsMemberListItem';
 export * from './ChannelDetailsMemberSection';

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { ChannelDetailsListItem } from './ChannelDetailsListItem';
+import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -34,19 +34,19 @@ export const ChannelDetailsNavigationSection = () => {
         sectionCardOverride,
       ]}
     >
-      <ChannelDetailsListItem
+      <ChannelDetailsActionItem
         Icon={Pin}
         label={t('Pinned Messages')}
         testID='channel-details-pinned-messages'
         trailing={chevron}
       />
-      <ChannelDetailsListItem
+      <ChannelDetailsActionItem
         Icon={ImageGrid}
         label={t('Photos & Videos')}
         testID='channel-details-photos-and-videos'
         trailing={chevron}
       />
-      <ChannelDetailsListItem
+      <ChannelDetailsActionItem
         Icon={File}
         label={t('Files')}
         testID='channel-details-files'

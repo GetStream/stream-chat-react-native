@@ -15,8 +15,8 @@ import * as useChannelActionsModule from '../../../hooks/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import * as useMutedUsersModule from '../../ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../ChannelPreview/hooks/useIsChannelMuted';
+import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
 import { ChannelDetailsActionsSection } from '../components/ChannelDetailsActionsSection';
-import type { ChannelDetailsListItemProps } from '../components/ChannelDetailsListItem';
 import * as useChannelDetailsActionItemsModule from '../hooks/useChannelDetailsActionItems';
 
 const NoopIcon = () => null;
@@ -36,10 +36,10 @@ const channel = {
   on: () => ({ unsubscribe: () => undefined }),
 } as unknown as Channel;
 
-type Probe = ChannelDetailsListItemProps & { testID?: string };
+type Probe = ChannelDetailsActionItemProps & { testID?: string };
 
 const probeCalls: Probe[] = [];
-const ListItemProbe = (props: Probe) => {
+const ActionItemProbe = (props: Probe) => {
   probeCalls.push(props);
   return (
     <>
@@ -67,7 +67,7 @@ const renderSection = ({ a11yEnabled = false }: { a11yEnabled?: boolean } = {}) 
           }}
         >
           <ChannelDetailsContextProvider value={{ channel }}>
-            <WithComponents overrides={{ ChannelDetailsListItem: ListItemProbe }}>
+            <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
               <ChannelDetailsActionsSection />
             </WithComponents>
           </ChannelDetailsContextProvider>
@@ -139,7 +139,7 @@ describe('ChannelDetailsActionsSection', () => {
       expect(screen.getByTestId('channel-details-action-deleteChannel')).toBeTruthy();
     });
 
-    it('forwards the icon, label, and onPress to ChannelDetailsListItem', () => {
+    it('forwards the icon, label, and onPress to ChannelDetailsActionItem', () => {
       useActionItemsSpy.mockReturnValue([muteItem]);
       renderSection();
       const [item] = probeCalls;
@@ -207,7 +207,7 @@ describe('ChannelDetailsActionsSection', () => {
     });
   });
 
-  describe('ChannelDetailsListItem override', () => {
+  describe('ChannelDetailsActionItem override', () => {
     it('uses the override passed via WithComponents instead of the default', () => {
       useActionItemsSpy.mockReturnValue([buildItem({ id: 'mute', label: 'Mute Group' })]);
       renderSection();
