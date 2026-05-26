@@ -167,43 +167,27 @@ describe('ChannelDetailsActionsSection', () => {
   });
 
   describe('accessibility hints', () => {
-    const leaveItem = buildItem({ id: 'leave', label: 'Leave Group', type: 'destructive' });
-    const deleteItem = buildItem({
-      id: 'deleteChannel',
-      label: 'Delete Group',
-      type: 'destructive',
-    });
-    const muteItem = buildItem({ id: 'mute', label: 'Mute Group' });
-
-    it('omits hints when AccessibilityContext is disabled (default)', () => {
-      useActionItemsSpy.mockReturnValue([muteItem, leaveItem, deleteItem]);
-      renderSection({ a11yEnabled: false });
-      for (const item of probeCalls) {
-        expect(item.accessibilityHint).toBeUndefined();
-      }
-    });
-
-    it('applies the group-specific leave/delete hints when accessibility is enabled and chat is a group', () => {
-      useIsDirectChatSpy.mockReturnValue(false);
-      useActionItemsSpy.mockReturnValue([muteItem, leaveItem, deleteItem]);
-      renderSection({ a11yEnabled: true });
+    it('forwards item.accessibilityHint to ChannelDetailsActionItem', () => {
+      useActionItemsSpy.mockReturnValue([
+        buildItem({ id: 'mute', label: 'Mute Group' }),
+        buildItem({
+          accessibilityHint: 'Removes you from this group',
+          id: 'leave',
+          label: 'Leave Group',
+          type: 'destructive',
+        }),
+        buildItem({
+          accessibilityHint: 'Deletes this group permanently',
+          id: 'deleteChannel',
+          label: 'Delete Group',
+          type: 'destructive',
+        }),
+      ]);
+      renderSection();
       const byId = Object.fromEntries(probeCalls.map((p) => [p.testID, p.accessibilityHint]));
       expect(byId['channel-details-action-mute']).toBeUndefined();
-      expect(byId['channel-details-action-leave']).toBe('a11y/Removes you from this group');
-      expect(byId['channel-details-action-deleteChannel']).toBe(
-        'a11y/Deletes this group permanently',
-      );
-    });
-
-    it('applies the direct-chat-specific hints when accessibility is enabled and chat is direct', () => {
-      useIsDirectChatSpy.mockReturnValue(true);
-      useActionItemsSpy.mockReturnValue([leaveItem, deleteItem]);
-      renderSection({ a11yEnabled: true });
-      const byId = Object.fromEntries(probeCalls.map((p) => [p.testID, p.accessibilityHint]));
-      expect(byId['channel-details-action-leave']).toBe('a11y/Removes you from this chat');
-      expect(byId['channel-details-action-deleteChannel']).toBe(
-        'a11y/Deletes this chat permanently',
-      );
+      expect(byId['channel-details-action-leave']).toBe('Removes you from this group');
+      expect(byId['channel-details-action-deleteChannel']).toBe('Deletes this group permanently');
     });
   });
 

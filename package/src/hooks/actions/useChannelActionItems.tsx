@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 
 import type { BlockedUsersState, Channel } from 'stream-chat';
 
-import type { ActionItem } from './type';
+import type { ActionItem } from './types';
 import {
   ChannelActionHandler,
   ChannelActions,
@@ -14,6 +14,7 @@ import {
 import { useMutedUsers } from '../../components/ChannelList/hooks/useMutedUsers';
 import { useIsChannelMuted } from '../../components/ChannelPreview/hooks/useIsChannelMuted';
 import { useTheme, useTranslationContext } from '../../contexts';
+import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../../icons';
 import { ArrowBoxLeft } from '../../icons/leave';
@@ -28,6 +29,7 @@ export type ChannelActionItem = ActionItem<
 };
 
 export type ChannelActionItemsParams = {
+  a11yLabel: (key: string) => string | undefined;
   actions: ChannelActions;
   channel: Channel;
   channelMuteActive: boolean;
@@ -58,6 +60,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   channelActionItemsParams,
 ) => {
   const {
+    a11yLabel,
     actions: {
       deleteChannel,
       leave,
@@ -136,6 +139,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   }
 
   actionItems.push({
+    accessibilityHint: a11yLabel(
+      isDirectChat ? 'a11y/Removes you from this chat' : 'a11y/Removes you from this group',
+    ),
     action: leave,
     Icon: (props) => <ChannelActionsIcon Icon={ArrowBoxLeft} {...props} />,
     id: 'leave',
@@ -146,6 +152,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
   if (channel.data?.created_by?.id === ownUserId) {
     actionItems.push({
+      accessibilityHint: a11yLabel(
+        isDirectChat ? 'a11y/Deletes this chat permanently' : 'a11y/Deletes this group permanently',
+      ),
       action: (...args: Parameters<ChannelActionHandler>) => {
         const title = isDirectChat ? t('Delete chat') : t('Delete group');
         const message = isDirectChat
@@ -213,6 +222,12 @@ export const useChannelActionItems = ({
       )
     : false;
 
+  const { enabled: a11yEnabled } = useAccessibilityContext();
+  const a11yLabel = useCallback(
+    (key: string): string | undefined => (a11yEnabled ? t(key) : undefined),
+    [a11yEnabled, t],
+  );
+
   const { userIds: blockedUserIds } = useStateStore(
     channel.getClient().blockedUsers,
     blockedUsersStateSelector,
@@ -224,6 +239,7 @@ export const useChannelActionItems = ({
 
   const channelActionItemsParams = useMemo(
     () => ({
+      a11yLabel,
       actions: channelActions,
       channel,
       channelMuteActive,
@@ -235,6 +251,7 @@ export const useChannelActionItems = ({
       userMuteActive,
     }),
     [
+      a11yLabel,
       channel,
       channelActions,
       channelMuteActive,

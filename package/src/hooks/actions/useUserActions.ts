@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { UserResponse } from 'stream-chat';
 
-import type { ActionHandler, ActionOptions } from './type';
+import type { ActionHandler, ActionOptions } from './types';
 import { getNotificationErrorOptions } from './useChannelActions';
 
 import { useNotificationApi } from '../../components/Notifications/hooks';

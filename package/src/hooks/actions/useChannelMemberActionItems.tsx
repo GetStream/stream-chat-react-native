@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import type { BlockedUsersState, Channel, ChannelMemberResponse } from 'stream-chat';
 
-import type { ActionItem } from './type';
+import type { ActionItem } from './types';
 import { useUserActions, UserActions } from './useUserActions';
 
 import { useMutedUsers } from '../../components/ChannelList/hooks/useMutedUsers';

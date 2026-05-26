@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 
-import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -23,12 +22,6 @@ export const ChannelDetailsActionsSection = () => {
   } = useTheme();
   const { ChannelDetailsActionItem } = useComponentsContext();
   const isDirect = useIsDirectChat(channel);
-  const leaveHint = useA11yLabel(
-    isDirect ? 'a11y/Removes you from this chat' : 'a11y/Removes you from this group',
-  );
-  const deleteHint = useA11yLabel(
-    isDirect ? 'a11y/Deletes this chat permanently' : 'a11y/Deletes this group permanently',
-  );
   const styles = useStyles();
   const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
 
@@ -53,8 +46,6 @@ export const ChannelDetailsActionsSection = () => {
     >
       {items.map((item) => {
         const testID = `channel-details-action-${item.id}`;
-        const accessibilityHint =
-          item.id === 'leave' ? leaveHint : item.id === 'deleteChannel' ? deleteHint : undefined;
         const isMuteToggle = item.id === 'mute' || item.id === 'muteUser';
         const trailing = isMuteToggle ? (
           <Switch
@@ -67,7 +58,7 @@ export const ChannelDetailsActionsSection = () => {
 
         return (
           <ChannelDetailsActionItem
-            accessibilityHint={accessibilityHint}
+            accessibilityHint={item.accessibilityHint}
             destructive={item.type === 'destructive'}
             Icon={item.Icon}
             key={item.id}
