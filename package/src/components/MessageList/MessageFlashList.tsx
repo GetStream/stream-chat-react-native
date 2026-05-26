@@ -55,7 +55,7 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
-import { bumpOverlayLayoutRevision } from '../../state-store';
+import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
@@ -400,13 +400,18 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [autoscrollToRecent, hasPendingInitialTargetLoad]);
 
+  // While the message overlay is open we suppress autoscroll-to-recent so that
+  // incoming messages do not shift visible content and invalidate the overlay's
+  // anchored geometry. Content anchoring (startRenderingFromBottom) stays on.
+  const isOverlayOpen = useHasActiveId();
+
   const maintainVisibleContentPosition = useMemo(() => {
     return {
       animateAutoscrollToBottom: true,
-      autoscrollToBottomThreshold: autoscrollToRecent ? 1 : undefined,
+      autoscrollToBottomThreshold: autoscrollToRecent && !isOverlayOpen ? 1 : undefined,
       startRenderingFromBottom: true,
     };
-  }, [autoscrollToRecent]);
+  }, [isOverlayOpen, autoscrollToRecent]);
 
   useEffect(() => {
     if (disabled) {
