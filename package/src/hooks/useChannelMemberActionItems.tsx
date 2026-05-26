@@ -1,0 +1,148 @@
+import React, { useMemo } from 'react';
+
+import type { BlockedUsersState, Channel, ChannelMemberResponse } from 'stream-chat';
+
+import { useStateStore } from './useStateStore';
+import { useUserActions, UserActionHandler, UserActions } from './useUserActions';
+
+import { useMutedUsers } from '../components/ChannelList/hooks/useMutedUsers';
+import { useTheme, useTranslationContext } from '../contexts';
+import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
+import { BlockUser, IconProps, Mute, Sound } from '../icons';
+
+export type ChannelMemberActionItem = {
+  action: UserActionHandler;
+  Icon: React.ComponentType<IconProps>;
+  id: 'muteUser' | 'block' | string;
+  label: string;
+  placement: 'both' | 'sheet' | 'swipe';
+  type: 'destructive' | 'standard';
+};
+
+export type ChannelMemberActionItemsParams = {
+  actions: UserActions;
+  channel: Channel;
+  isBlocked: boolean;
+  member: ChannelMemberResponse;
+  t: TranslationContextValue['t'];
+  userMuteActive: boolean;
+};
+
+export type BuildDefaultChannelMemberActionItems = (
+  channelMemberActionItemsParams: ChannelMemberActionItemsParams,
+) => ChannelMemberActionItem[];
+
+const ChannelMemberActionsIcon = ({
+  Icon,
+  ...rest
+}: { Icon: React.ComponentType<IconProps> } & IconProps) => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
+  return <Icon stroke={semantics.textSecondary} width={20} height={20} {...rest} />;
+};
+
+export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActionItems = (
+  channelMemberActionItemsParams,
+) => {
+  const {
+    actions: { blockUser, muteUser, unblockUser, unmuteUser },
+    isBlocked,
+    t,
+    userMuteActive,
+  } = channelMemberActionItemsParams;
+
+  const actionItems: ChannelMemberActionItem[] = [
+    {
+      action: userMuteActive ? unmuteUser : muteUser,
+      Icon: (props) =>
+        userMuteActive ? (
+          <ChannelMemberActionsIcon Icon={Sound} {...props} />
+        ) : (
+          <ChannelMemberActionsIcon
+            Icon={Mute}
+            {...props}
+            fill={props.fill ?? props.stroke}
+            stroke={undefined}
+          />
+        ),
+      id: 'muteUser',
+      label: userMuteActive ? t('Unmute User') : t('Mute User'),
+      placement: 'sheet',
+      type: 'standard',
+    },
+    {
+      action: isBlocked ? unblockUser : blockUser,
+      Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
+      id: 'block',
+      label: isBlocked ? t('Unblock User') : t('Block User'),
+      placement: 'sheet',
+      type: 'standard',
+    },
+  ];
+
+  return actionItems;
+};
+
+export type GetChannelMemberActionItems = (params: {
+  context: ChannelMemberActionItemsParams;
+  defaultItems: ChannelMemberActionItem[];
+}) => ChannelMemberActionItem[];
+
+export const getChannelMemberActionItems: GetChannelMemberActionItems = ({ defaultItems }) =>
+  defaultItems;
+
+type UseChannelMemberActionItemsParams = {
+  channel: Channel;
+  member: ChannelMemberResponse;
+  getChannelMemberActionItems?: GetChannelMemberActionItems;
+};
+
+const blockedUsersStateSelector = (state: BlockedUsersState) =>
+  ({ userIds: state.userIds }) as const;
+
+export const useChannelMemberActionItems = ({
+  channel,
+  member,
+  getChannelMemberActionItems: getChannelMemberActionItemsProp = getChannelMemberActionItems,
+}: UseChannelMemberActionItemsParams) => {
+  const { t } = useTranslationContext();
+  const userActions = useUserActions(member.user);
+
+  const mutedUsers = useMutedUsers(channel);
+  const userMuteActive = mutedUsers.some((mutedUser) => mutedUser.target.id === member.user?.id);
+
+  const { userIds: blockedUserIds } = useStateStore(
+    channel.getClient().blockedUsers,
+    blockedUsersStateSelector,
+  );
+
+  const isBlocked = blockedUserIds.includes(member.user?.id ?? '');
+
+  const channelMemberActionItemsParams = useMemo<ChannelMemberActionItemsParams>(
+    () => ({
+      actions: userActions,
+      channel,
+      isBlocked,
+      member,
+      t,
+      userMuteActive,
+    }),
+    [channel, isBlocked, member, t, userActions, userMuteActive],
+  );
+
+  const defaultItems = useMemo(
+    () => buildDefaultChannelMemberActionItems(channelMemberActionItemsParams),
+    [channelMemberActionItemsParams],
+  );
+
+  return useMemo(
+    () =>
+      getChannelMemberActionItemsProp({
+        context: channelMemberActionItemsParams,
+        defaultItems,
+      }),
+    [channelMemberActionItemsParams, defaultItems, getChannelMemberActionItemsProp],
+  );
+};
