@@ -1,10 +1,10 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import type { UserResponse } from 'stream-chat';
 
+import * as useNotificationApiModule from '../../components/Notifications/hooks/useNotificationApi';
 import * as ChatContext from '../../contexts/chatContext/ChatContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../contexts/translationContext/TranslationContext';
-import * as useNotificationApiModule from '../../components/Notifications/hooks/useNotificationApi';
 import { useUserActions } from '../useUserActions';
 
 const createUser = (overrides?: Partial<UserResponse>): UserResponse =>
