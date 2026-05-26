@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Switch, Text } from 'react-native';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
@@ -11,7 +11,10 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import type { ChannelActionItem } from '../../../hooks/useChannelActionItems';
+import * as useChannelActionsModule from '../../../hooks/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
+import * as useMutedUsersModule from '../../ChannelList/hooks/useMutedUsers';
+import * as useIsChannelMutedModule from '../../ChannelPreview/hooks/useIsChannelMuted';
 import { ChannelDetailsActionsSection } from '../components/ChannelDetailsActionsSection';
 import type { ChannelDetailsListItemProps } from '../components/ChannelDetailsListItem';
 import * as useChannelDetailsActionItemsModule from '../hooks/useChannelDetailsActionItems';
@@ -39,9 +42,16 @@ const probeCalls: Probe[] = [];
 const ListItemProbe = (props: Probe) => {
   probeCalls.push(props);
   return (
-    <Text accessibilityHint={props.accessibilityHint} testID={props.testID} onPress={props.onPress}>
-      {props.label}
-    </Text>
+    <>
+      <Text
+        accessibilityHint={props.accessibilityHint}
+        testID={props.testID}
+        onPress={props.onPress}
+      >
+        {props.label}
+      </Text>
+      {props.trailing}
+    </>
   );
 };
 
@@ -69,6 +79,9 @@ const renderSection = ({ a11yEnabled = false }: { a11yEnabled?: boolean } = {}) 
 describe('ChannelDetailsActionsSection', () => {
   let useIsDirectChatSpy: jest.SpyInstance;
   let useActionItemsSpy: jest.SpyInstance;
+  let useIsChannelMutedSpy: jest.SpyInstance;
+  let useMutedUsersSpy: jest.SpyInstance;
+  let getOtherUserSpy: jest.SpyInstance;
 
   beforeEach(() => {
     probeCalls.length = 0;
@@ -78,6 +91,13 @@ describe('ChannelDetailsActionsSection', () => {
     useActionItemsSpy = jest
       .spyOn(useChannelDetailsActionItemsModule, 'useChannelDetailsActionItems')
       .mockReturnValue([]);
+    useIsChannelMutedSpy = jest
+      .spyOn(useIsChannelMutedModule, 'useIsChannelMuted')
+      .mockReturnValue({ createdAt: null, expiresAt: null, muted: false });
+    useMutedUsersSpy = jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([]);
+    getOtherUserSpy = jest
+      .spyOn(useChannelActionsModule, 'getOtherUserInDirectChannel')
+      .mockReturnValue(undefined);
   });
 
   afterEach(() => {
@@ -193,6 +213,64 @@ describe('ChannelDetailsActionsSection', () => {
       renderSection();
       // Probe is our injected override — its presence proves the override path is used.
       expect(probeCalls).toHaveLength(1);
+    });
+  });
+
+  describe('mute / muteUser trailing Switch', () => {
+    const leaveItem = buildItem({ id: 'leave', label: 'Leave Group', type: 'destructive' });
+
+    it('passes a Switch as trailing only for mute and muteUser items', () => {
+      useActionItemsSpy.mockReturnValue([
+        buildItem({ id: 'mute', label: 'Mute Group' }),
+        leaveItem,
+      ]);
+      renderSection();
+      const byId = Object.fromEntries(probeCalls.map((p) => [p.testID, p.trailing]));
+      expect(byId['channel-details-action-mute']).toBeTruthy();
+      expect(byId['channel-details-action-leave']).toBeUndefined();
+    });
+
+    it('reflects channelMuted state on the mute item Switch', () => {
+      useIsChannelMutedSpy.mockReturnValue({ createdAt: null, expiresAt: null, muted: true });
+      useActionItemsSpy.mockReturnValue([buildItem({ id: 'mute', label: 'Unmute Group' })]);
+      renderSection();
+      const muteSwitch = screen.getByTestId('channel-details-action-mute-switch');
+      expect(muteSwitch.props.value).toBe(true);
+    });
+
+    it('invokes the item action when the mute Switch is toggled', () => {
+      const action = jest.fn();
+      useActionItemsSpy.mockReturnValue([buildItem({ action, id: 'mute', label: 'Mute Group' })]);
+      renderSection();
+      const muteSwitch = screen.getByTestId('channel-details-action-mute-switch');
+      fireEvent(muteSwitch, 'valueChange', true);
+      expect(action).toHaveBeenCalledTimes(1);
+    });
+
+    it('reflects userMuted state on the muteUser item Switch in direct chats', () => {
+      useIsDirectChatSpy.mockReturnValue(true);
+      getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
+      useMutedUsersSpy.mockReturnValue([{ target: { id: 'other-user' } }]);
+      useActionItemsSpy.mockReturnValue([buildItem({ id: 'muteUser', label: 'Unmute User' })]);
+      renderSection();
+      const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
+      expect(userMuteSwitch.props.value).toBe(true);
+    });
+
+    it('userMuted is false when the other user is not in mutedUsers', () => {
+      useIsDirectChatSpy.mockReturnValue(true);
+      getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
+      useMutedUsersSpy.mockReturnValue([{ target: { id: 'someone-else' } }]);
+      useActionItemsSpy.mockReturnValue([buildItem({ id: 'muteUser', label: 'Mute User' })]);
+      renderSection();
+      const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
+      expect(userMuteSwitch.props.value).toBe(false);
+    });
+
+    it('renders Switch components in the tree for mute toggles', () => {
+      useActionItemsSpy.mockReturnValue([buildItem({ id: 'mute', label: 'Mute Group' })]);
+      const { UNSAFE_getAllByType } = renderSection();
+      expect(UNSAFE_getAllByType(Switch)).toHaveLength(1);
     });
   });
 });

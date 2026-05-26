@@ -1,12 +1,16 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { getOtherUserInDirectChannel } from '../../../hooks/useChannelActions';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { primitives } from '../../../theme';
+import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
+import { useMutedUsers } from '../../ChannelList/hooks/useMutedUsers';
+import { useIsChannelMuted } from '../../ChannelPreview/hooks/useIsChannelMuted';
 import { useChannelDetailsActionItems } from '../hooks';
 
 export const ChannelDetailsActionsSection = () => {
@@ -26,8 +30,16 @@ export const ChannelDetailsActionsSection = () => {
     isDirect ? 'a11y/Deletes this chat permanently' : 'a11y/Deletes this group permanently',
   );
   const styles = useStyles();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
 
   const items = useChannelDetailsActionItems();
+  const { muted: channelMuted } = useIsChannelMuted(channel);
+  const mutedUsers = useMutedUsers(channel);
+  const otherUserId = isDirect ? getOtherUserInDirectChannel(channel)?.user?.id : undefined;
+  const userMuted =
+    isDirect && !!otherUserId
+      ? mutedUsers.some((mutedUser) => mutedUser.target.id === otherUserId)
+      : false;
 
   if (items.length === 0) return null;
 
@@ -43,6 +55,15 @@ export const ChannelDetailsActionsSection = () => {
         const testID = `channel-details-action-${item.id}`;
         const accessibilityHint =
           item.id === 'leave' ? leaveHint : item.id === 'deleteChannel' ? deleteHint : undefined;
+        const isMuteToggle = item.id === 'mute' || item.id === 'muteUser';
+        const trailing = isMuteToggle ? (
+          <Switch
+            onValueChange={() => item.action()}
+            style={rtlMirrorSwitchStyle}
+            testID={`${testID}-switch`}
+            value={item.id === 'mute' ? channelMuted : userMuted}
+          />
+        ) : undefined;
 
         return (
           <ChannelDetailsListItem
@@ -53,6 +74,7 @@ export const ChannelDetailsActionsSection = () => {
             label={item.label}
             onPress={() => item.action()}
             testID={testID}
+            trailing={trailing}
           />
         );
       })}
