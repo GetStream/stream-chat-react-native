@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
@@ -12,7 +12,7 @@ import { TranslationProvider } from '../../../contexts/translationContext/Transl
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import type { GetMemberRoleLabel } from '../ChannelDetailsScreen';
-import { ChannelDetailsMemberListItem } from '../components/ChannelDetailsMemberListItem';
+import { ChannelMemberItem } from '../components/ChannelMemberItem';
 
 Dayjs.extend(relativeTime);
 
@@ -36,7 +36,7 @@ const renderRow = ({
   channel = defaultChannel,
   getMemberRoleLabel,
   ...props
-}: React.ComponentProps<typeof ChannelDetailsMemberListItem> & {
+}: React.ComponentProps<typeof ChannelMemberItem> & {
   channel?: Channel;
   getMemberRoleLabel?: GetMemberRoleLabel;
 }) =>
@@ -55,13 +55,13 @@ const renderRow = ({
         }}
       >
         <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
-          <ChannelDetailsMemberListItem {...props} />
+          <ChannelMemberItem {...props} />
         </ChannelDetailsContextProvider>
       </TranslationProvider>
     </ThemeProvider>,
   );
 
-describe('ChannelDetailsMemberListItem accessibility', () => {
+describe('ChannelMemberItem accessibility', () => {
   it('composes name and offline status into the accessible label', () => {
     renderRow({ member: memberFor() });
     expect(screen.getByLabelText('Alice, Offline')).toBeTruthy();
@@ -86,7 +86,7 @@ describe('ChannelDetailsMemberListItem accessibility', () => {
   });
 });
 
-describe('ChannelDetailsMemberListItem activity status', () => {
+describe('ChannelMemberItem activity status', () => {
   it('shows "Online" for an online member', () => {
     renderRow({ member: memberFor({ online: true }) });
     expect(screen.getByText('Online')).toBeTruthy();
@@ -108,7 +108,7 @@ describe('ChannelDetailsMemberListItem activity status', () => {
   });
 });
 
-describe('ChannelDetailsMemberListItem role label rendering', () => {
+describe('ChannelMemberItem role label rendering', () => {
   it('renders the role label string returned by useChannelDetailsMemberRoleLabel', () => {
     renderRow({
       getMemberRoleLabel: () => 'Admin',
@@ -125,5 +125,23 @@ describe('ChannelDetailsMemberListItem role label rendering', () => {
     expect(screen.queryByText('Admin')).toBeNull();
     expect(screen.queryByText('Moderator')).toBeNull();
     expect(screen.queryByText('Owner')).toBeNull();
+  });
+});
+
+describe('ChannelMemberItem press behavior', () => {
+  it('calls onPress when the row is pressed', () => {
+    const onPress = jest.fn();
+    renderRow({ member: memberFor(), onPress, testID: 'member-row' });
+
+    fireEvent.press(screen.getByTestId('member-row'));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders a non-interactive row when no onPress is provided', () => {
+    renderRow({ member: memberFor(), testID: 'member-row' });
+
+    const row = screen.getByTestId('member-row');
+    expect(row.props.accessibilityRole).toBeUndefined();
   });
 });

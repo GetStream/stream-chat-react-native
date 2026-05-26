@@ -23,7 +23,7 @@ export const ChannelAllMembersModal = ({
   visible,
 }: ChannelAllMembersModalProps) => {
   const { channel } = useChannelDetailsContext();
-  const { ChannelDetailsMemberList } = useComponentsContext();
+  const { ChannelMemberList } = useComponentsContext();
   const { t } = useTranslationContext();
   const { updateChannelMembers } = useOwnCapabilitiesContext();
   const { total } = useChannelDetailsMembersPreview(channel);
@@ -48,7 +48,7 @@ export const ChannelAllMembersModal = ({
         }
         title={t('{{count}} members', { count: total })}
       />
-      <ChannelDetailsMemberList />
+      <ChannelMemberList />
     </ChannelDetailsModal>
   );
 };

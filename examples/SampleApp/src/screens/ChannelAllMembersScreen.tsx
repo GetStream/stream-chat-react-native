@@ -4,7 +4,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
-import { ChannelDetailsContext, ChannelDetailsMemberList } from 'stream-chat-react-native-core';
+import { ChannelDetailsContext, ChannelMemberList } from 'stream-chat-react-native-core';
 
 type ChannelAllMembersScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -30,7 +30,7 @@ export const ChannelAllMembersScreen: React.FC<Props> = ({
 
   return (
     <ChannelDetailsContext.Provider value={channelDetailsContextValue}>
-      <ChannelDetailsMemberList />
+      <ChannelMemberList />
     </ChannelDetailsContext.Provider>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { I18nManager, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
@@ -11,15 +11,29 @@ import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { useChannelDetailsMemberRoleLabel } from '../hooks/useChannelDetailsMemberRoleLabel';
 import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
 
-export type ChannelDetailsMemberListItemProps = {
+export type ChannelMemberItemSize = 'sm' | 'lg';
+
+export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
   isCurrentUser?: boolean;
+  onPress?: () => void;
+  /**
+   * Visual size of the row.
+   * - `'sm'` (default) renders the compact list row with a small avatar, regular-weight name, and a trailing role label.
+   * - `'lg'` renders a profile-style header with a larger avatar, semibold name, larger status, and no role label.
+   *   Useful for sheet / modal headers (e.g. the per-member actions bottom sheet).
+   */
+  size?: ChannelMemberItemSize;
+  testID?: string;
 };
 
-const ChannelDetailsMemberListItemInner = ({
+const ChannelMemberItemInner = ({
   isCurrentUser,
   member,
-}: ChannelDetailsMemberListItemProps) => {
+  onPress,
+  size = 'sm',
+  testID,
+}: ChannelMemberItemProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -41,33 +55,42 @@ const ChannelDetailsMemberListItemInner = ({
   const user = member.user;
   if (!user) return null;
 
+  const isLarge = size === 'lg';
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
-  const accessibilityLabel = composeAccessibilityLabel(displayName, roleLabel, statusLine);
+  const accessibilityLabel = composeAccessibilityLabel(
+    displayName,
+    isLarge ? undefined : roleLabel,
+    statusLine,
+  );
 
-  return (
-    <View
-      accessibilityLabel={accessibilityLabel}
-      accessible
-      style={[styles.container, containerOverride]}
-    >
-      <UserAvatar showOnlineIndicator={user.online} size='sm' user={user} />
+  const content = (
+    <>
+      <UserAvatar showOnlineIndicator={user.online} size={isLarge ? 'lg' : 'sm'} user={user} />
       <View style={styles.body}>
         <Text
           numberOfLines={1}
-          style={[styles.name, { color: semantics.textPrimary }, nameOverride]}
+          style={[
+            isLarge ? styles.nameLarge : styles.name,
+            { color: semantics.textPrimary },
+            nameOverride,
+          ]}
         >
           {displayName}
         </Text>
         {statusLine ? (
           <Text
             numberOfLines={1}
-            style={[styles.status, { color: semantics.textTertiary }, statusOverride]}
+            style={[
+              isLarge ? styles.statusLarge : styles.status,
+              { color: semantics.textTertiary },
+              statusOverride,
+            ]}
           >
             {statusLine}
           </Text>
         ) : null}
       </View>
-      {roleLabel ? (
+      {!isLarge && roleLabel ? (
         <Text
           numberOfLines={1}
           style={[styles.role, { color: semantics.textTertiary }, roleOverride]}
@@ -75,15 +98,45 @@ const ChannelDetailsMemberListItemInner = ({
           {roleLabel}
         </Text>
       ) : null}
+    </>
+  );
+
+  if (onPress) {
+    return (
+      <Pressable
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole='button'
+        onPress={onPress}
+        style={({ pressed }) => [
+          isLarge ? styles.containerLarge : styles.container,
+          pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
+          containerOverride,
+        ]}
+        testID={testID}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={isLarge ? 'header' : undefined}
+      accessible
+      style={[isLarge ? styles.containerLarge : styles.container, containerOverride]}
+      testID={testID}
+    >
+      {content}
     </View>
   );
 };
 
-const areEqual = (
-  prev: ChannelDetailsMemberListItemProps,
-  next: ChannelDetailsMemberListItemProps,
-) => {
+const areEqual = (prev: ChannelMemberItemProps, next: ChannelMemberItemProps) => {
   if (prev.isCurrentUser !== next.isCurrentUser) return false;
+  if (prev.onPress !== next.onPress) return false;
+  if (prev.size !== next.size) return false;
+  if (prev.testID !== next.testID) return false;
   if (prev.member === next.member) return true;
   if (prev.member.channel_role !== next.member.channel_role) return false;
   const prevUser = prev.member.user;
@@ -100,7 +153,7 @@ const areEqual = (
   );
 };
 
-export const ChannelDetailsMemberListItem = React.memo(ChannelDetailsMemberListItemInner, areEqual);
+export const ChannelMemberItem = React.memo(ChannelMemberItemInner, areEqual);
 
 const useStyles = () => {
   return useMemo(
@@ -119,9 +172,22 @@ const useStyles = () => {
           paddingHorizontal: primitives.spacingSm,
           paddingVertical: primitives.spacingXs,
         },
+        containerLarge: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingSm,
+          paddingVertical: primitives.spacingSm,
+        },
         name: {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+        },
+        nameLarge: {
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
@@ -136,6 +202,12 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightTight,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+        },
+        statusLarge: {
+          fontSize: primitives.typographyFontSizeSm,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
       }),

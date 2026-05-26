@@ -219,6 +219,11 @@ export type Theme = {
       role: TextStyle;
       status: TextStyle;
     };
+    memberActionsSheet: {
+      actionsList: ViewStyle;
+      container: ViewStyle;
+      header: ViewStyle;
+    };
     modal: {
       body: ViewStyle;
       header: ViewStyle;
@@ -1234,6 +1239,11 @@ export const defaultTheme: Theme = {
       name: {},
       role: {},
       status: {},
+    },
+    memberActionsSheet: {
+      actionsList: {},
+      container: {},
+      header: {},
     },
     modal: {
       body: {},

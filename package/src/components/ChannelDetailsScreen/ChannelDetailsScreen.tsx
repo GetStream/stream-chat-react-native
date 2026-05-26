@@ -12,6 +12,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import type { GetChannelActionItems } from '../../hooks/useChannelActionItems';
+import type { GetChannelMemberActionItems } from '../../hooks/useChannelMemberActionItems';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
 import { NotificationList } from '../Notifications/NotificationList';
@@ -41,6 +42,15 @@ export type ChannelDetailsScreenProps = {
    * the screen on success regardless of how the items are customized.
    */
   getChannelActionItems?: GetChannelActionItems;
+  /**
+   * Customize the list of action items rendered in the per-member actions bottom sheet
+   * (the sheet that opens when a member row is tapped).
+   *
+   * Receives the default items the SDK produces for the tapped member (e.g. `muteUser`,
+   * `block`) and returns the final list to render. Use this to filter, reorder, replace,
+   * or add items — for example, to inject a "Send Direct Message" action in your app.
+   */
+  getChannelMemberActionItems?: GetChannelMemberActionItems;
   /**
    * Override the role label shown next to each member in the channel details screen.
    *
@@ -105,6 +115,7 @@ export const ChannelDetailsScreenContent = () => {
 export const ChannelDetailsScreen = ({
   channel,
   getChannelActionItems,
+  getChannelMemberActionItems,
   getMemberRoleLabel,
   onAddMembersPress,
   onBack,
@@ -117,6 +128,7 @@ export const ChannelDetailsScreen = ({
     () => ({
       channel,
       getChannelActionItems,
+      getChannelMemberActionItems,
       getMemberRoleLabel,
       onAddMembersPress,
       onBack,
@@ -126,6 +138,7 @@ export const ChannelDetailsScreen = ({
     [
       channel,
       getChannelActionItems,
+      getChannelMemberActionItems,
       getMemberRoleLabel,
       onAddMembersPress,
       onBack,

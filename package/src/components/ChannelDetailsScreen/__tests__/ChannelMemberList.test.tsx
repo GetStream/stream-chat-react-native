@@ -13,8 +13,8 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
-import { ChannelDetailsMemberList } from '../components/ChannelDetailsMemberList';
-import type { ChannelDetailsMemberListItemProps } from '../components/ChannelDetailsMemberListItem';
+import type { ChannelMemberItemProps } from '../components/ChannelMemberItem';
+import { ChannelMemberList } from '../components/ChannelMemberList';
 
 type FlatListProps = RNFlatListProps<ChannelMemberResponse>;
 
@@ -68,7 +68,7 @@ const buildMembers = (count: number, prefix = 'u') =>
     generateMember({ user: generateUser({ id: `${prefix}-${i}`, name: `User ${i}` }) }),
   );
 
-type Probe = ChannelDetailsMemberListItemProps;
+type Probe = ChannelMemberItemProps;
 
 const probeCalls: Probe[] = [];
 const MemberListItemProbe = (props: Probe) => {
@@ -105,10 +105,10 @@ const renderList = ({ channel, currentUserId }: { channel: Channel; currentUserI
             <ChannelDetailsContextProvider value={{ channel }}>
               <WithComponents
                 overrides={{
-                  ChannelDetailsMemberListItem: MemberListItemProbe,
+                  ChannelMemberItem: MemberListItemProbe,
                 }}
               >
-                <ChannelDetailsMemberList />
+                <ChannelMemberList />
               </WithComponents>
             </ChannelDetailsContextProvider>
           </BottomSheetProvider>
@@ -122,7 +122,7 @@ const latestListProps = () => {
   return calls[calls.length - 1]?.[0];
 };
 
-describe('ChannelDetailsMemberList', () => {
+describe('ChannelMemberList', () => {
   beforeEach(() => {
     mockFlatList.mockClear();
     probeCalls.length = 0;

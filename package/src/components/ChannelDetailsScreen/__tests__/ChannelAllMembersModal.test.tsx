@@ -85,7 +85,7 @@ const renderModal = ({
             <ChannelDetailsContextProvider
               value={{ channel: applyCapabilities(channel, capabilities) }}
             >
-              <WithComponents overrides={{ ChannelDetailsMemberList: MemberListProbe }}>
+              <WithComponents overrides={{ ChannelMemberList: MemberListProbe }}>
                 <ChannelAllMembersModal
                   onAddMembersPress={onAddMembersPress}
                   onClose={onClose}

@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import type { ChannelMemberResponse } from 'stream-chat';
+
 import { ChannelAddMembersModal } from './ChannelAddMembersModal';
 import { ChannelAllMembersModal } from './ChannelAllMembersModal';
 
@@ -34,11 +36,12 @@ export const ChannelDetailsMemberSection = () => {
       semantics,
     },
   } = useTheme();
-  const { ChannelDetailsMemberListItem } = useComponentsContext();
+  const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
   const handleViewAllPress = useStableCallback(() => {
     if (onViewAllMembersPress) {
@@ -60,6 +63,8 @@ export const ChannelDetailsMemberSection = () => {
     setMemberListVisible(false);
     setAddMembersVisible(true);
   });
+
+  const handleMemberActionsClose = useStableCallback(() => setSelectedMember(null));
 
   return (
     <View
@@ -95,10 +100,11 @@ export const ChannelDetailsMemberSection = () => {
         {visible.map((member) => {
           if (!member.user?.id) return null;
           return (
-            <ChannelDetailsMemberListItem
+            <ChannelMemberItem
               isCurrentUser={member.user.id === client.userID}
               key={member.user.id}
               member={member}
+              onPress={() => setSelectedMember(member)}
             />
           );
         })}
@@ -125,6 +131,13 @@ export const ChannelDetailsMemberSection = () => {
         visible={isMemberListVisible}
       />
       <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+      {selectedMember ? (
+        <ChannelMemberActionsSheet
+          member={selectedMember}
+          onClose={handleMemberActionsClose}
+          visible
+        />
+      ) : null}
     </View>
   );
 };

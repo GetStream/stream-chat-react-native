@@ -32,12 +32,13 @@ import {
   ChannelAddMembers,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
-  ChannelDetailsMemberList,
-  ChannelDetailsMemberListItem,
   ChannelDetailsMemberSection,
   ChannelDetailsNavigationSection,
   ChannelDetailsProfile,
   ChannelDetailsScreenHeader,
+  ChannelMemberActionsSheet,
+  ChannelMemberItem,
+  ChannelMemberList,
 } from '../../components/ChannelDetailsScreen/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -305,13 +306,14 @@ const components = {
   ChannelAddMembers,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
-  ChannelDetailsMemberList,
-  ChannelDetailsMemberListItem,
   ChannelDetailsMemberSection,
   ChannelDetailsNavigationSection,
   ChannelDetailsProfile,
   ChannelDetailsScreenContent,
   ChannelDetailsScreenHeader,
+  ChannelMemberActionsSheet,
+  ChannelMemberItem,
+  ChannelMemberList,
 
   // Thread
   ThreadMessageComposer: MessageComposer,
