@@ -2,13 +2,12 @@ import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import * as channelDetailsContextModule from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import type { ChannelActionItem } from '../../../hooks/useChannelActionItems';
+import type {
+  ChannelActionItem,
+  GetChannelActionItems,
+} from '../../../hooks/useChannelActionItems';
 import * as useChannelActionItemsModule from '../../../hooks/useChannelActionItems';
 import { useChannelDetailsActionItems } from '../hooks/useChannelDetailsActionItems';
-
-type Customizer = NonNullable<
-  Parameters<typeof useChannelActionItemsModule.useChannelActionItems>[0]['getChannelActionItems']
->;
 
 const NoopIcon = () => null;
 
@@ -36,63 +35,50 @@ const mockContext = (
   return value;
 };
 
+const mockUseChannelActionItems = (items: ChannelActionItem[]) =>
+  jest.spyOn(useChannelActionItemsModule, 'useChannelActionItems').mockReturnValue(items);
+
 describe('useChannelDetailsActionItems', () => {
-  let capturedCustomizer: Customizer | undefined;
-  let useChannelActionItemsSpy: jest.SpyInstance;
-  const returnedItems: ChannelActionItem[] = [buildItem({ id: 'mute' })];
-
-  beforeEach(() => {
-    capturedCustomizer = undefined;
-    useChannelActionItemsSpy = jest
-      .spyOn(useChannelActionItemsModule, 'useChannelActionItems')
-      .mockImplementation((params) => {
-        capturedCustomizer = params.getChannelActionItems;
-        return returnedItems;
-      });
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
 
-  it('calls useChannelActionItems with the channel from context and a customizer', () => {
+  it('passes the channel and undefined getChannelActionItems through when the prop is not set', () => {
     mockContext();
+    const spy = mockUseChannelActionItems([]);
+
     renderHook(() => useChannelDetailsActionItems());
 
-    expect(useChannelActionItemsSpy).toHaveBeenCalledTimes(1);
-    expect(useChannelActionItemsSpy).toHaveBeenCalledWith({
-      channel,
-      getChannelActionItems: expect.any(Function),
-    });
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith({ channel, getChannelActionItems: undefined });
   });
 
-  it('returns whatever useChannelActionItems returns', () => {
+  it('forwards the getChannelActionItems prop from context unchanged', () => {
+    const getChannelActionItems: GetChannelActionItems = ({ defaultItems }) => defaultItems;
+    mockContext({ getChannelActionItems });
+    const spy = mockUseChannelActionItems([]);
+
+    renderHook(() => useChannelDetailsActionItems());
+
+    expect(spy).toHaveBeenCalledWith({ channel, getChannelActionItems });
+  });
+
+  it('returns non-leave/non-delete items referentially unchanged', () => {
     mockContext();
+    const muteItem = buildItem({ id: 'mute' });
+    const customItem = buildItem({ id: 'archive' });
+    mockUseChannelActionItems([muteItem, customItem]);
+
     const { result } = renderHook(() => useChannelDetailsActionItems());
 
-    expect(result.current).toBe(returnedItems);
-  });
-
-  it('passes unrelated items through unchanged', () => {
-    mockContext();
-    renderHook(() => useChannelDetailsActionItems());
-
-    const muteItem = buildItem({ id: 'mute' });
-    const archiveItem = buildItem({ id: 'archive' });
-    const result = capturedCustomizer!({
-      context: { channel } as never,
-      defaultItems: [muteItem, archiveItem],
-    });
-
-    expect(result).toHaveLength(2);
-    expect(result[0]).toBe(muteItem);
-    expect(result[1]).toBe(archiveItem);
+    expect(result.current).toHaveLength(2);
+    expect(result.current[0]).toBe(muteItem);
+    expect(result.current[1]).toBe(customItem);
   });
 
   it('wraps leave action to call onChannelDismiss after the original action resolves', async () => {
     const { onChannelDismiss } = mockContext();
-    renderHook(() => useChannelDetailsActionItems());
 
     const callOrder: string[] = [];
     let resolveLeave: (() => void) | undefined;
@@ -118,11 +104,10 @@ describe('useChannelDetailsActionItems', () => {
       placement: 'sheet',
       type: 'destructive',
     });
+    mockUseChannelActionItems([leaveItem]);
 
-    const [wrapped] = capturedCustomizer!({
-      context: { channel } as never,
-      defaultItems: [leaveItem],
-    });
+    const { result } = renderHook(() => useChannelDetailsActionItems());
+    const [wrapped] = result.current;
 
     expect(wrapped).not.toBe(leaveItem);
     expect(wrapped.id).toBe('leave');
@@ -143,7 +128,6 @@ describe('useChannelDetailsActionItems', () => {
 
   it('wraps deleteChannel action to call onChannelDismiss after the original action resolves', async () => {
     const { onChannelDismiss } = mockContext();
-    renderHook(() => useChannelDetailsActionItems());
 
     const callOrder: string[] = [];
     let resolveDelete: (() => void) | undefined;
@@ -169,11 +153,10 @@ describe('useChannelDetailsActionItems', () => {
       placement: 'sheet',
       type: 'destructive',
     });
+    mockUseChannelActionItems([deleteItem]);
 
-    const [wrapped] = capturedCustomizer!({
-      context: { channel } as never,
-      defaultItems: [deleteItem],
-    });
+    const { result } = renderHook(() => useChannelDetailsActionItems());
+    const [wrapped] = result.current;
 
     expect(wrapped).not.toBe(deleteItem);
     expect(wrapped.id).toBe('deleteChannel');
@@ -192,31 +175,41 @@ describe('useChannelDetailsActionItems', () => {
     expect(callOrder).toEqual(['delete-start', 'delete-resolved', 'onChannelDismiss']);
   });
 
+  it('preserves caller-supplied options when wrapping the leave action', () => {
+    const { onChannelDismiss } = mockContext();
+    const originalLeave = jest.fn();
+    mockUseChannelActionItems([buildItem({ action: originalLeave, id: 'leave' })]);
+
+    const { result } = renderHook(() => useChannelDetailsActionItems());
+    const callerOnSuccess = jest.fn();
+    // @ts-expect-error - extra caller-supplied option to ensure the wrapper merges options
+    result.current[0].action({ extra: 'value', onSuccess: callerOnSuccess });
+
+    expect(originalLeave).toHaveBeenCalledTimes(1);
+    expect(originalLeave).toHaveBeenCalledWith({ extra: 'value', onSuccess: onChannelDismiss });
+  });
+
   it('does not throw when onChannelDismiss is undefined on the leave path', async () => {
     mockContext({ onChannelDismiss: undefined });
-    renderHook(() => useChannelDetailsActionItems());
-
     const originalLeave = jest.fn().mockResolvedValue(undefined);
-    const [wrapped] = capturedCustomizer!({
-      context: { channel } as never,
-      defaultItems: [buildItem({ action: originalLeave, id: 'leave' })],
-    });
+    mockUseChannelActionItems([buildItem({ action: originalLeave, id: 'leave' })]);
 
-    await expect(wrapped.action()).resolves.toBeUndefined();
+    const { result } = renderHook(() => useChannelDetailsActionItems());
+
+    await expect(result.current[0].action()).resolves.toBeUndefined();
     expect(originalLeave).toHaveBeenCalledTimes(1);
+    expect(originalLeave).toHaveBeenCalledWith({ onSuccess: undefined });
   });
 
   it('does not throw when onChannelDismiss is undefined on the deleteChannel path', async () => {
     mockContext({ onChannelDismiss: undefined });
-    renderHook(() => useChannelDetailsActionItems());
-
     const originalDelete = jest.fn().mockResolvedValue(undefined);
-    const [wrapped] = capturedCustomizer!({
-      context: { channel } as never,
-      defaultItems: [buildItem({ action: originalDelete, id: 'deleteChannel' })],
-    });
+    mockUseChannelActionItems([buildItem({ action: originalDelete, id: 'deleteChannel' })]);
 
-    await expect(wrapped.action()).resolves.toBeUndefined();
+    const { result } = renderHook(() => useChannelDetailsActionItems());
+
+    await expect(result.current[0].action()).resolves.toBeUndefined();
     expect(originalDelete).toHaveBeenCalledTimes(1);
+    expect(originalDelete).toHaveBeenCalledWith({ onSuccess: undefined });
   });
 });

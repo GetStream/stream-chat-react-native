@@ -1,18 +1,16 @@
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import {
-  ChannelActionItem,
-  GetChannelActionItems,
-  useChannelActionItems,
-} from '../../../hooks/useChannelActionItems';
+import { ChannelActionItem, useChannelActionItems } from '../../../hooks/useChannelActionItems';
 
 export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
-  const { channel, onChannelDismiss } = useChannelDetailsContext();
+  const { channel, getChannelActionItems, onChannelDismiss } = useChannelDetailsContext();
 
-  const getActionItemsForDetailsScreen = useCallback<GetChannelActionItems>(
-    ({ defaultItems }) =>
-      defaultItems.map((item) => {
+  const items = useChannelActionItems({ channel, getChannelActionItems });
+
+  return useMemo(
+    () =>
+      items.map((item) => {
         if (item.id === 'leave' || item.id === 'deleteChannel') {
           return {
             ...item,
@@ -21,11 +19,6 @@ export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
         }
         return item;
       }),
-    [onChannelDismiss],
+    [items, onChannelDismiss],
   );
-
-  return useChannelActionItems({
-    channel,
-    getChannelActionItems: getActionItemsForDetailsScreen,
-  });
 };

@@ -11,6 +11,7 @@ import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/c
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
+import type { GetChannelActionItems } from '../../hooks/useChannelActionItems';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
 import { NotificationList } from '../Notifications/NotificationList';
@@ -29,6 +30,17 @@ export type GetMemberRoleLabel = (params: {
 
 export type ChannelDetailsScreenProps = {
   channel: Channel;
+  /**
+   * Customize the list of action items rendered in the channel details actions section.
+   *
+   * Receives the default items the SDK produces for the current channel and returns the
+   * final list to render. Use this to filter, reorder, replace, or add items.
+   *
+   * The SDK still wires `onChannelDismiss` into the resulting `leave` and `deleteChannel`
+   * items (matched by `id`) after this callback runs, so those actions continue to dismiss
+   * the screen on success regardless of how the items are customized.
+   */
+  getChannelActionItems?: GetChannelActionItems;
   /**
    * Override the role label shown next to each member in the channel details screen.
    *
@@ -92,6 +104,7 @@ export const ChannelDetailsScreenContent = () => {
 
 export const ChannelDetailsScreen = ({
   channel,
+  getChannelActionItems,
   getMemberRoleLabel,
   onAddMembersPress,
   onBack,
@@ -103,6 +116,7 @@ export const ChannelDetailsScreen = ({
   const value = useMemo<ChannelDetailsContextValue>(
     () => ({
       channel,
+      getChannelActionItems,
       getMemberRoleLabel,
       onAddMembersPress,
       onBack,
@@ -111,6 +125,7 @@ export const ChannelDetailsScreen = ({
     }),
     [
       channel,
+      getChannelActionItems,
       getMemberRoleLabel,
       onAddMembersPress,
       onBack,
