@@ -68,7 +68,7 @@ import { ThreadContextValue, useThreadContext } from '../../contexts/threadConte
 
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
-import { bumpOverlayLayoutRevision } from '../../state-store';
+import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
@@ -440,7 +440,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const minIndexForVisible = Math.min(1, processedMessageList.length);
 
-  const autoscrollToTopThreshold = autoscrollToRecent ? (isLiveStreaming ? 300 : 10) : undefined;
+  // While the message overlay is open we suppress autoscroll-to-recent so that
+  // incoming messages do not shift visible content and invalidate the overlay's
+  // anchored geometry. Content anchoring (minIndexForVisible) stays on.
+  const isOverlayOpen = useHasActiveId();
+
+  const autoscrollToTopThreshold =
+    autoscrollToRecent && !isOverlayOpen ? (isLiveStreaming ? 300 : 10) : undefined;
 
   const maintainVisibleContentPosition = useMemo(
     () => ({
