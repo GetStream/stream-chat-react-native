@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { LocalImageAttachment } from 'stream-chat';
 
@@ -26,6 +26,7 @@ export const ImageAttachmentUploadPreview = ({
   const [loading, setLoading] = useState(true);
   const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const {
+    ImageComponent,
     ImageLoadingIndicator,
     ImageUploadInProgressIndicator,
     ImageUploadRetryIndicator,
@@ -67,7 +68,7 @@ export const ImageAttachmentUploadPreview = ({
   return (
     <View style={[styles.wrapper, wrapper]} testID={'image-attachment-upload-preview'}>
       <View style={[styles.image, upload]}>
-        <Image
+        <ImageComponent
           onError={onErrorHandler}
           onLoadEnd={onLoadEndHandler}
           source={{ uri: previewUri }}

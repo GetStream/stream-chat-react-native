@@ -15,6 +15,7 @@ import { predefinedFormatters } from './predefinedFormatters';
 import { CustomFormatters, PredefinedFormatters } from './types';
 
 import type { TDateTimeParser } from '../../contexts/translationContext/types';
+import arTranslations from '../../i18n/ar.json';
 import enTranslations from '../../i18n/en.json';
 import esTranslations from '../../i18n/es.json';
 import frTranslations from '../../i18n/fr.json';
@@ -28,6 +29,7 @@ import ptBRTranslations from '../../i18n/pt-br.json';
 import ruTranslations from '../../i18n/ru.json';
 import trTranslations from '../../i18n/tr.json';
 
+import 'dayjs/locale/ar';
 import 'dayjs/locale/es';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/he';
@@ -65,6 +67,9 @@ Dayjs.updateLocale('en', {
   },
 });
 
+Dayjs.updateLocale('ar', {
+  calendar: calendarFormats.ar,
+});
 Dayjs.updateLocale('es', {
   calendar: calendarFormats.es,
 });
@@ -393,6 +398,7 @@ export class Streami18n {
       [key: string]: Partial<typeof enTranslations>;
     };
   } = {
+    ar: { [defaultNS]: arTranslations },
     en: { [defaultNS]: enTranslations },
     es: { [defaultNS]: esTranslations },
     fr: { [defaultNS]: frTranslations },
