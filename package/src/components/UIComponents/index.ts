@@ -4,6 +4,7 @@ export * from './EmptySearchResult';
 export * from './ImageBackground';
 export * from './SearchInput';
 export * from './SelectionCircle';
+export * from './SvgAwareImage';
 export * from './Spinner';
 export * from './SwipableWrapper';
 export * from './PortalWhileClosingView';
