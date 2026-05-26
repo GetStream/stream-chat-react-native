@@ -8,6 +8,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../../theme';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
+import { useChannelDetailsMemberRoleLabel } from '../hooks/useChannelDetailsMemberRoleLabel';
 import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
 
 export type ChannelDetailsMemberListItemProps = {
@@ -23,19 +24,25 @@ const ChannelDetailsMemberListItemInner = ({
   const {
     theme: {
       channelDetailsScreen: {
-        memberItem: { container: containerOverride, name: nameOverride, status: statusOverride },
+        memberItem: {
+          container: containerOverride,
+          name: nameOverride,
+          role: roleOverride,
+          status: statusOverride,
+        },
       },
       semantics,
     },
   } = useTheme();
   const styles = useStyles();
   const statusLine = useUserActivityStatus(member.user);
+  const roleLabel = useChannelDetailsMemberRoleLabel(member);
 
   const user = member.user;
   if (!user) return null;
 
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
-  const accessibilityLabel = composeAccessibilityLabel(displayName, statusLine);
+  const accessibilityLabel = composeAccessibilityLabel(displayName, roleLabel, statusLine);
 
   return (
     <View
@@ -60,6 +67,14 @@ const ChannelDetailsMemberListItemInner = ({
           </Text>
         ) : null}
       </View>
+      {roleLabel ? (
+        <Text
+          numberOfLines={1}
+          style={[styles.role, { color: semantics.textTertiary }, roleOverride]}
+        >
+          {roleLabel}
+        </Text>
+      ) : null}
     </View>
   );
 };
@@ -70,9 +85,10 @@ const areEqual = (
 ) => {
   if (prev.isCurrentUser !== next.isCurrentUser) return false;
   if (prev.member === next.member) return true;
+  if (prev.member.channel_role !== next.member.channel_role) return false;
   const prevUser = prev.member.user;
   const nextUser = next.member.user;
-  if (prevUser === nextUser) return prev.member.channel_role === next.member.channel_role;
+  if (prevUser === nextUser) return true;
   if (!prevUser || !nextUser) return false;
   return (
     prevUser.id === nextUser.id &&
@@ -80,7 +96,7 @@ const areEqual = (
     prevUser.online === nextUser.online &&
     prevUser.image === nextUser.image &&
     prevUser.last_active === nextUser.last_active &&
-    prev.member.channel_role === next.member.channel_role
+    prevUser.role === nextUser.role
   );
 };
 
@@ -105,6 +121,13 @@ const useStyles = () => {
         },
         name: {
           fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightRegular,
+          lineHeight: primitives.typographyLineHeightNormal,
+          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+        },
+        role: {
+          flexShrink: 0,
+          fontSize: primitives.typographyFontSizeSm,
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightNormal,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',

@@ -3,26 +3,43 @@ import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import type { ChannelMemberResponse } from 'stream-chat';
+import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../contexts';
+import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { generateMember } from '../../../mock-builders/generator/member';
+import { generateUser } from '../../../mock-builders/generator/user';
+import type { GetMemberRoleLabel } from '../ChannelDetailsScreen';
 import { ChannelDetailsMemberListItem } from '../components/ChannelDetailsMemberListItem';
 
 Dayjs.extend(relativeTime);
 
 const memberFor = (overrides: Partial<NonNullable<ChannelMemberResponse['user']>> = {}) =>
-  ({
-    user: {
+  generateMember({
+    user: generateUser({
       id: 'alice',
       name: 'Alice',
       online: false,
       ...overrides,
-    },
-  }) as unknown as ChannelMemberResponse;
+    }),
+  });
 
-const renderRow = (props: React.ComponentProps<typeof ChannelDetailsMemberListItem>) =>
+const defaultChannel = {
+  cid: 'messaging:test',
+  data: { created_by: { id: 'creator' } },
+  on: () => ({ unsubscribe: () => undefined }),
+} as unknown as Channel;
+
+const renderRow = ({
+  channel = defaultChannel,
+  getMemberRoleLabel,
+  ...props
+}: React.ComponentProps<typeof ChannelDetailsMemberListItem> & {
+  channel?: Channel;
+  getMemberRoleLabel?: GetMemberRoleLabel;
+}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
@@ -37,7 +54,9 @@ const renderRow = (props: React.ComponentProps<typeof ChannelDetailsMemberListIt
           userLanguage: 'en',
         }}
       >
-        <ChannelDetailsMemberListItem {...props} />
+        <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
+          <ChannelDetailsMemberListItem {...props} />
+        </ChannelDetailsContextProvider>
       </TranslationProvider>
     </ThemeProvider>,
   );
@@ -56,6 +75,14 @@ describe('ChannelDetailsMemberListItem accessibility', () => {
   it('uses "You" when the row represents the current user', () => {
     renderRow({ isCurrentUser: true, member: memberFor() });
     expect(screen.getByLabelText('You, Offline')).toBeTruthy();
+  });
+
+  it('includes the role label in the accessible label between name and status', () => {
+    renderRow({
+      getMemberRoleLabel: () => 'Admin',
+      member: memberFor(),
+    });
+    expect(screen.getByLabelText('Alice, Admin, Offline')).toBeTruthy();
   });
 });
 
@@ -78,5 +105,25 @@ describe('ChannelDetailsMemberListItem activity status', () => {
 
     expect(screen.getByText(/^Last seen /)).toBeTruthy();
     jest.useRealTimers();
+  });
+});
+
+describe('ChannelDetailsMemberListItem role label rendering', () => {
+  it('renders the role label string returned by useChannelDetailsMemberRoleLabel', () => {
+    renderRow({
+      getMemberRoleLabel: () => 'Admin',
+      member: memberFor(),
+    });
+    expect(screen.getByText('Admin')).toBeTruthy();
+  });
+
+  it('renders no role label when the hook returns null', () => {
+    renderRow({
+      getMemberRoleLabel: () => null,
+      member: memberFor(),
+    });
+    expect(screen.queryByText('Admin')).toBeNull();
+    expect(screen.queryByText('Moderator')).toBeNull();
+    expect(screen.queryByText('Owner')).toBeNull();
   });
 });

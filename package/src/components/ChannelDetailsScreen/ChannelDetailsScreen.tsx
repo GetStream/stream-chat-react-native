@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import {
   ChannelDetailsContextProvider,
@@ -10,13 +10,33 @@ import {
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
 import { NotificationList } from '../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
+/**
+ * Resolves the trailing role label rendered next to a member row in the channel details screen.
+ *
+ * Return `null` or `undefined` to render no label for the given member.
+ */
+export type GetMemberRoleLabel = (params: {
+  channel: Channel;
+  member: ChannelMemberResponse;
+  t: TranslationContextValue['t'];
+}) => string | null | undefined;
+
 export type ChannelDetailsScreenProps = {
   channel: Channel;
+  /**
+   * Override the role label shown next to each member in the channel details screen.
+   *
+   * The default implementation labels members as `Owner` (channel creator),
+   * `Admin` (`user.role === 'admin'`), or `Moderator` (`channel_role === 'channel_moderator'`),
+   * with priority Owner > Admin > Moderator. Return `null` to render no label.
+   */
+  getMemberRoleLabel?: GetMemberRoleLabel;
   /**
    * Fired when the user taps the "add members" button, by default it opens the add members bottom sheet. Only visible if the current user has the `update-channel-members` capability.
    */
@@ -72,6 +92,7 @@ export const ChannelDetailsScreenContent = () => {
 
 export const ChannelDetailsScreen = ({
   channel,
+  getMemberRoleLabel,
   onAddMembersPress,
   onBack,
   onChannelDismiss,
@@ -80,8 +101,22 @@ export const ChannelDetailsScreen = ({
   const { ChannelDetailsScreenContent: ChannelDetailsScreenContentOverride } =
     useComponentsContext();
   const value = useMemo<ChannelDetailsContextValue>(
-    () => ({ channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress }),
-    [channel, onAddMembersPress, onBack, onChannelDismiss, onViewAllMembersPress],
+    () => ({
+      channel,
+      getMemberRoleLabel,
+      onAddMembersPress,
+      onBack,
+      onChannelDismiss,
+      onViewAllMembersPress,
+    }),
+    [
+      channel,
+      getMemberRoleLabel,
+      onAddMembersPress,
+      onBack,
+      onChannelDismiss,
+      onViewAllMembersPress,
+    ],
   );
   const Content = ChannelDetailsScreenContentOverride ?? ChannelDetailsScreenContent;
   const notificationHostId = channel?.cid ? `channel-details:${channel.cid}` : undefined;

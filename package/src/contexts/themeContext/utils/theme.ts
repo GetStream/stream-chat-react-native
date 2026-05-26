@@ -216,6 +216,7 @@ export type Theme = {
     memberItem: {
       container: ViewStyle;
       name: TextStyle;
+      role: TextStyle;
       status: TextStyle;
     };
     modal: {
@@ -1231,6 +1232,7 @@ export const defaultTheme: Theme = {
     memberItem: {
       container: {},
       name: {},
+      role: {},
       status: {},
     },
     modal: {
