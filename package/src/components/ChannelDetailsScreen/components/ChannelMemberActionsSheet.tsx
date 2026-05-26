@@ -1,21 +1,27 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { ListRenderItem, StyleSheet, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useChannelMemberActionItems } from '../../../hooks/useChannelMemberActionItems';
+import {
+  ChannelMemberActionItem,
+  useChannelMemberActionItems,
+} from '../../../hooks/useChannelMemberActionItems';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { primitives } from '../../../theme';
 import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';
+import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ChannelMemberActionsSheetProps = {
   member: ChannelMemberResponse;
   onClose: () => void;
   visible: boolean;
 };
+
+const keyExtractor = (item: ChannelMemberActionItem) => item.id;
 
 const ChannelMemberActionsSheetInner = ({
   member,
@@ -42,6 +48,22 @@ const ChannelMemberActionsSheetInner = ({
     member,
   });
 
+  const renderItem = useCallback<ListRenderItem<ChannelMemberActionItem>>(
+    ({ item }) => (
+      <ChannelDetailsActionItem
+        destructive={item.type === 'destructive'}
+        Icon={item.Icon}
+        label={item.label}
+        onPress={() => {
+          item.action();
+          onClose();
+        }}
+        testID={`channel-details-member-action-${item.id}`}
+      />
+    ),
+    [ChannelDetailsActionItem, onClose],
+  );
+
   if (!member.user) return null;
 
   return (
@@ -49,24 +71,12 @@ const ChannelMemberActionsSheetInner = ({
       <View style={headerOverride}>
         <ChannelMemberItem member={member} size='lg' />
       </View>
-      <View style={[styles.actionsList, actionsListOverride]}>
-        {actionItems.map((item) => {
-          const testID = `channel-details-member-action-${item.id}`;
-          return (
-            <ChannelDetailsActionItem
-              destructive={item.type === 'destructive'}
-              Icon={item.Icon}
-              key={item.id}
-              label={item.label}
-              onPress={() => {
-                item.action();
-                onClose();
-              }}
-              testID={testID}
-            />
-          );
-        })}
-      </View>
+      <StreamBottomSheetModalFlatList<ChannelMemberActionItem>
+        contentContainerStyle={[styles.actionsList, actionsListOverride]}
+        data={actionItems}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+      />
     </View>
   );
 };
