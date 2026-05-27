@@ -27,6 +27,13 @@ const MessageAuthorWithContext = (props: MessageAuthorPropsWithContext) => {
 
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
+  // TODO (next major): this wrapper View is a perf cost we'd like to remove (row weight
+  // reduction). It can't be dropped without a breaking change: its `style` is the public
+  // `theme.messageItemView.authorWrapper.container` override hook, and it anchors the
+  // `message-author` testID. The not visible branch's spacer also can't be removed - it
+  // reserves the avatar column so grouped (non-last) received messages stay aligned.
+  // Revisit when we can change UserAvatar's API (testID + wrapper-style props) and accept
+  // the theme API break.
   return (
     <View style={container} testID='message-author'>
       {visible && message.user ? (
