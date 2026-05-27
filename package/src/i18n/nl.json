@@ -335,6 +335,7 @@
   "a11y/Back": "Terug",
   "a11y/Notifications": "Meldingen",
   "a11y/Dismiss notification": "Melding sluiten",
+  "a11y/Edit channel": "Kanaal bewerken",
   "Attachment upload blocked due to {{reason}}": "Uploaden van bijlage geblokkeerd vanwege {{reason}}",
   "Attachment upload failed due to {{reason}}": "Uploaden van bijlage mislukt vanwege {{reason}}",
   "Command not available": "Opdracht niet beschikbaar",

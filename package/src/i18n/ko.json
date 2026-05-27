@@ -335,6 +335,7 @@
   "a11y/Back": "뒤로",
   "a11y/Notifications": "알림",
   "a11y/Dismiss notification": "알림 닫기",
+  "a11y/Edit channel": "채널 편집",
   "Attachment upload blocked due to {{reason}}": "{{reason}} 때문에 첨부 파일 업로드가 차단되었습니다",
   "Attachment upload failed due to {{reason}}": "{{reason}} 때문에 첨부 파일 업로드에 실패했습니다",
   "Command not available": "명령을 사용할 수 없습니다",

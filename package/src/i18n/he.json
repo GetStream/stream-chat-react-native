@@ -335,6 +335,7 @@
   "a11y/Back": "חזור",
   "a11y/Notifications": "התראות",
   "a11y/Dismiss notification": "סגור התראה",
+  "a11y/Edit channel": "ערוך ערוץ",
   "Attachment upload blocked due to {{reason}}": "העלאת הקובץ המצורף נחסמה עקב {{reason}}",
   "Attachment upload failed due to {{reason}}": "העלאת הקובץ המצורף נכשלה עקב {{reason}}",
   "Command not available": "הפקודה אינה זמינה",

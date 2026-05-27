@@ -335,6 +335,7 @@
   "a11y/Back": "वापस",
   "a11y/Notifications": "सूचनाएं",
   "a11y/Dismiss notification": "सूचना हटाएं",
+  "a11y/Edit channel": "चैनल संपादित करें",
   "Attachment upload blocked due to {{reason}}": "{{reason}} के कारण अटैचमेंट अपलोड अवरुद्ध है",
   "Attachment upload failed due to {{reason}}": "{{reason}} के कारण अटैचमेंट अपलोड विफल रहा",
   "Command not available": "कमांड उपलब्ध नहीं है",

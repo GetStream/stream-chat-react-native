@@ -335,6 +335,7 @@
   "a11y/Back": "Geri",
   "a11y/Notifications": "Bildirimler",
   "a11y/Dismiss notification": "Bildirimi kapat",
+  "a11y/Edit channel": "Kanalı düzenle",
   "Attachment upload blocked due to {{reason}}": "Ek yükleme {{reason}} nedeniyle engellendi",
   "Attachment upload failed due to {{reason}}": "Ek yükleme {{reason}} nedeniyle başarısız oldu",
   "Command not available": "Komut kullanılamıyor",

@@ -335,6 +335,7 @@
   "a11y/Back": "Back",
   "a11y/Notifications": "Notifications",
   "a11y/Dismiss notification": "Dismiss notification",
+  "a11y/Edit channel": "Edit channel",
   "Attachment upload blocked due to {{reason}}": "Attachment upload blocked due to {{reason}}",
   "Attachment upload failed due to {{reason}}": "Attachment upload failed due to {{reason}}",
   "Command not available": "Command not available",

@@ -335,6 +335,7 @@
   "a11y/Back": "Назад",
   "a11y/Notifications": "Уведомления",
   "a11y/Dismiss notification": "Закрыть уведомление",
+  "a11y/Edit channel": "Редактировать канал",
   "Attachment upload blocked due to {{reason}}": "Загрузка вложения заблокирована из-за {{reason}}",
   "Attachment upload failed due to {{reason}}": "Не удалось загрузить вложение из-за {{reason}}",
   "Command not available": "Команда недоступна",

@@ -70,6 +70,12 @@ export type ChannelDetailsScreenProps = {
   /** Fired after the channel is no longer available to the current user (delete or leave actions). */
   onChannelDismiss?: () => void;
   /**
+   * Fired when the user taps the "Edit" button in the channel details header.
+   * The button is only rendered when the current user has the `update-channel`
+   * capability. If omitted, the press is a no-op.
+   */
+  onEditChannelPress?: () => void;
+  /**
    * Fired when the user taps a member row. Receives the tapped member.
    *
    * Applies both to the member preview on the channel details screen and to the full
@@ -128,6 +134,7 @@ export const ChannelDetailsScreen = ({
   onAddMembersPress,
   onBack,
   onChannelDismiss,
+  onEditChannelPress,
   onMemberPress,
   onViewAllMembersPress,
 }: ChannelDetailsScreenProps) => {
@@ -142,6 +149,7 @@ export const ChannelDetailsScreen = ({
       onAddMembersPress,
       onBack,
       onChannelDismiss,
+      onEditChannelPress,
       onMemberPress,
       onViewAllMembersPress,
     }),
@@ -153,6 +161,7 @@ export const ChannelDetailsScreen = ({
       onAddMembersPress,
       onBack,
       onChannelDismiss,
+      onEditChannelPress,
       onMemberPress,
       onViewAllMembersPress,
     ],

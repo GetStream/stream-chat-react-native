@@ -335,6 +335,7 @@
   "a11y/Back": "Retour",
   "a11y/Notifications": "Notifications",
   "a11y/Dismiss notification": "Fermer la notification",
+  "a11y/Edit channel": "Modifier le canal",
   "Attachment upload blocked due to {{reason}}": "Envoi de la pièce jointe bloqué en raison de {{reason}}",
   "Attachment upload failed due to {{reason}}": "Échec de l'envoi de la pièce jointe en raison de {{reason}}",
   "Command not available": "Commande non disponible",

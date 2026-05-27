@@ -6,10 +6,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
+
+const noop = () => {};
 
 export type ChannelDetailsScreenHeaderProps = {
   /** Override the auto-resolved screen title (1:1 → "Contact Info", group → "Group Info"). */
@@ -17,8 +20,10 @@ export type ChannelDetailsScreenHeaderProps = {
 };
 
 export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeaderProps) => {
-  const { channel, onBack } = useChannelDetailsContext();
+  const { channel, onBack, onEditChannelPress } = useChannelDetailsContext();
   const { t } = useTranslationContext();
+  const ownCapabilities = useChannelOwnCapabilities(channel);
+  const canUpdateChannel = ownCapabilities?.includes('update-channel') ?? false;
   const {
     theme: {
       channelDetailsScreen: {
@@ -63,7 +68,19 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
           {resolvedTitle}
         </Text>
       </View>
-      <View style={[styles.sideContainer, styles.sideContainerRight]} />
+      <View style={[styles.sideContainer, styles.sideContainerRight]}>
+        {canUpdateChannel ? (
+          <Button
+            accessibilityLabelKey='a11y/Edit channel'
+            label={t('Edit')}
+            onPress={onEditChannelPress ?? noop}
+            size='sm'
+            testID='channel-details-edit-button'
+            type='outline'
+            variant='secondary'
+          />
+        ) : null}
+      </View>
     </View>
   );
 };
@@ -85,7 +102,8 @@ const useStyles = () => {
           justifyContent: 'space-between',
           paddingTop: insets.top + primitives.spacingSm,
           paddingBottom: primitives.spacingSm,
-          paddingVertical: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingSm,
+          gap: primitives.spacingXs,
         },
         sideContainer: {
           flex: 1,
