@@ -12,6 +12,12 @@ export type ChannelActionOptions = ActionOptions;
 
 export type ChannelActionHandler = ActionHandler;
 
+export type UpdateChannelImageInput = {
+  uri: string | NodeJS.ReadableStream | File;
+  contentType?: string;
+  name?: string;
+};
+
 export type ChannelActions = {
   addMembers: (memberIds: string[], options?: ChannelActionOptions) => Promise<void>;
   archive: ChannelActionHandler;
@@ -20,6 +26,11 @@ export type ChannelActions = {
   pin: ChannelActionHandler;
   unarchive: ChannelActionHandler;
   unpin: ChannelActionHandler;
+  updateImage: (
+    image: UpdateChannelImageInput | null,
+    options?: ChannelActionOptions,
+  ) => Promise<void>;
+  updateName: (name: string, options?: ChannelActionOptions) => Promise<void>;
   muteUser: ChannelActionHandler;
   unmuteUser: ChannelActionHandler;
   muteChannel: ChannelActionHandler;
@@ -382,6 +393,65 @@ export const useChannelActions = (channel: Channel) => {
     }
   });
 
+  const updateName = useStableCallback(async (name: string, options?: ChannelActionOptions) => {
+    if (!channel) {
+      return;
+    }
+
+    try {
+      await channel.updatePartial({ set: { name } });
+      addNotification({
+        message: t('Channel name updated'),
+        options: { severity: 'success', type: 'api:channel:update-name:success' },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
+      await options?.onSuccess?.();
+    } catch (error) {
+      addNotification({
+        message: t('Failed to update channel name'),
+        options: {
+          ...getNotificationErrorOptions(error),
+          severity: 'error',
+          type: 'api:channel:update-name:failed',
+        },
+        origin: { context: { channel }, emitter: 'ChannelActions' },
+      });
+    }
+  });
+
+  const updateImage = useStableCallback(
+    async (image: UpdateChannelImageInput | null, options?: ChannelActionOptions) => {
+      if (!channel) {
+        return;
+      }
+
+      try {
+        if (image === null) {
+          await channel.updatePartial({ unset: ['image'] });
+        } else {
+          const { file } = await client.uploadImage(image.uri, image.name, image.contentType);
+          await channel.updatePartial({ set: { image: file } });
+        }
+        addNotification({
+          message: t('Channel image updated'),
+          options: { severity: 'success', type: 'api:channel:update-image:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
+        await options?.onSuccess?.();
+      } catch (error) {
+        addNotification({
+          message: t('Failed to update channel image'),
+          options: {
+            ...getNotificationErrorOptions(error),
+            severity: 'error',
+            type: 'api:channel:update-image:failed',
+          },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
+      }
+    },
+  );
+
   const unblockUser = useStableCallback(async (options?: ChannelActionOptions) => {
     if (!channel) {
       return;
@@ -421,6 +491,8 @@ export const useChannelActions = (channel: Channel) => {
       unarchive,
       leave,
       deleteChannel,
+      updateName,
+      updateImage,
       muteUser,
       unmuteUser,
       muteChannel,
@@ -436,6 +508,8 @@ export const useChannelActions = (channel: Channel) => {
       unarchive,
       leave,
       deleteChannel,
+      updateName,
+      updateImage,
       muteUser,
       unmuteUser,
       muteChannel,

@@ -31,6 +31,8 @@ const createChannelActions = (): useChannelActionsModule.ChannelActions => ({
   unmuteChannel: jest.fn(),
   unmuteUser: jest.fn(),
   unpin: jest.fn(),
+  updateImage: jest.fn(),
+  updateName: jest.fn(),
 });
 
 const createChannelMock = (params?: {

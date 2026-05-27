@@ -22,6 +22,7 @@ const createClient = () => ({
   muteUser: jest.fn(),
   unBlockUser: jest.fn(),
   unmuteUser: jest.fn(),
+  uploadImage: jest.fn().mockResolvedValue({ file: 'https://cdn.example.com/uploaded.png' }),
   userID: 'current-user-id',
 });
 
@@ -42,6 +43,7 @@ const createChannel = (client: ReturnType<typeof createClient>) =>
     unarchive: jest.fn(),
     unmute: jest.fn(),
     unpin: jest.fn(),
+    updatePartial: jest.fn().mockResolvedValue({}),
   }) as unknown as Channel;
 
 describe('useChannelActions', () => {
@@ -295,6 +297,270 @@ describe('useChannelActions', () => {
     });
 
     expect(onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('notifies and calls channel.updatePartial when updateName succeeds', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateName('New name');
+    });
+
+    expect(channel.updatePartial).toHaveBeenCalledWith({ set: { name: 'New name' } });
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Channel name updated',
+      options: {
+        severity: 'success',
+        type: 'api:channel:update-name:success',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('notifies with originalError when updateName fails', async () => {
+    const error = new Error('rename failed');
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.updatePartial).mockRejectedValue(error);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateName('New name');
+    });
+
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to update channel name',
+      options: {
+        originalError: error,
+        severity: 'error',
+        type: 'api:channel:update-name:failed',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('calls onSuccess after updateName succeeds and skips it on failure', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateName('New name', { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+
+    jest.mocked(channel.updatePartial).mockRejectedValueOnce(new Error('boom'));
+    await act(async () => {
+      await result.current.updateName('Other name', { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('uploads image then patches channel and notifies on updateImage success', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage({
+        contentType: 'image/png',
+        name: 'avatar.png',
+        uri: 'file:///tmp/avatar.png',
+      });
+    });
+
+    expect(client.uploadImage).toHaveBeenCalledWith(
+      'file:///tmp/avatar.png',
+      'avatar.png',
+      'image/png',
+    );
+    expect(channel.updatePartial).toHaveBeenCalledWith({
+      set: { image: 'https://cdn.example.com/uploaded.png' },
+    });
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Channel image updated',
+      options: {
+        severity: 'success',
+        type: 'api:channel:update-image:success',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('notifies and skips channel.updatePartial when uploadImage rejects', async () => {
+    const error = new Error('upload failed');
+    const client = createClient();
+    client.uploadImage.mockRejectedValueOnce(error);
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' });
+    });
+
+    expect(channel.updatePartial).not.toHaveBeenCalled();
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to update channel image',
+      options: {
+        originalError: error,
+        severity: 'error',
+        type: 'api:channel:update-image:failed',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('notifies when uploadImage succeeds but channel.updatePartial rejects', async () => {
+    const error = new Error('patch failed');
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.updatePartial).mockRejectedValueOnce(error);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' });
+    });
+
+    expect(client.uploadImage).toHaveBeenCalledTimes(1);
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to update channel image',
+      options: {
+        originalError: error,
+        severity: 'error',
+        type: 'api:channel:update-image:failed',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('unsets the image and skips uploadImage when updateImage is called with null', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage(null);
+    });
+
+    expect(client.uploadImage).not.toHaveBeenCalled();
+    expect(channel.updatePartial).toHaveBeenCalledWith({ unset: ['image'] });
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Channel image updated',
+      options: {
+        severity: 'success',
+        type: 'api:channel:update-image:success',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('notifies with originalError when updateImage(null) fails', async () => {
+    const error = new Error('unset failed');
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.updatePartial).mockRejectedValueOnce(error);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage(null);
+    });
+
+    expect(client.uploadImage).not.toHaveBeenCalled();
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to update channel image',
+      options: {
+        originalError: error,
+        severity: 'error',
+        type: 'api:channel:update-image:failed',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('calls onSuccess after updateImage(null) succeeds and skips it on failure', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage(null, { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+
+    jest.mocked(channel.updatePartial).mockRejectedValueOnce(new Error('boom'));
+    await act(async () => {
+      await result.current.updateImage(null, { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onSuccess for updateImage only after both upload and patch succeed', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' }, { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+
+    client.uploadImage.mockRejectedValueOnce(new Error('nope'));
+    await act(async () => {
+      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' }, { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
+
+    jest.mocked(channel.updatePartial).mockRejectedValueOnce(new Error('nope'));
+    await act(async () => {
+      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' }, { onSuccess });
+    });
+    expect(onSuccess).toHaveBeenCalledTimes(1);
   });
 
   it('resolves and notifies when called without options', async () => {
