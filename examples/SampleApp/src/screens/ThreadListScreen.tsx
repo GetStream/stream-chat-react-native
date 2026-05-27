@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme, ThreadList } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import type { BottomTabNavigatorParamList } from '../types';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import type { BottomTabNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {

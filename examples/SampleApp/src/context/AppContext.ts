@@ -2,13 +2,13 @@ import React from 'react';
 
 import type { StreamChat } from 'stream-chat';
 
-import type { LoginConfig } from '../types';
 import {
   MessageInputFloatingConfigItem,
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
 } from '../components/SecretMenu.tsx';
+import type { LoginConfig } from '../types';
 
 type AppContextType = {
   chatClient: StreamChat | null;

@@ -1,6 +1,9 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { type RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
 import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
@@ -17,17 +20,14 @@ import { useStateStore } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
-import { type RouteProp } from '@react-navigation/native';
-
-import type { StackNavigatorParamList } from '../types';
-import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
-import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
-import { channelMessageActions } from '../utils/messageActions.tsx';
-import { useStreamChatContext } from '../context/StreamChatContext.tsx';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 import { useAppContext } from '../context/AppContext.ts';
+import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import type { StackNavigatorParamList } from '../types';
+import { channelMessageActions } from '../utils/messageActions.tsx';
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+
+// import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 
 const selector = (nextValue: ThreadState) => ({ parentMessage: nextValue.parentMessage }) as const;
 
@@ -72,15 +72,10 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   );
 };
 
-export const ThreadScreen: React.FC<ThreadScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route }) => {
   const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
   const {
-    theme: {
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const { white } = useLegacyColors();
   const { client: chatClient } = useChatContext();
@@ -124,16 +119,16 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         channel,
         messageId: targetedMessageId,
       };
-      const hasChannelInStack = navigation
-        .getState()
-        .routes.some((stackRoute) => {
-          if (stackRoute.name !== 'ChannelScreen') {
-            return false;
-          }
-          const routeParams = stackRoute.params as StackNavigatorParamList['ChannelScreen'] | undefined;
-          const routeChannelId = routeParams?.channel?.id ?? routeParams?.channelId;
-          return routeChannelId === channel.id;
-        });
+      const hasChannelInStack = navigation.getState().routes.some((stackRoute) => {
+        if (stackRoute.name !== 'ChannelScreen') {
+          return false;
+        }
+        const routeParams = stackRoute.params as
+          | StackNavigatorParamList['ChannelScreen']
+          | undefined;
+        const routeChannelId = routeParams?.channel?.id ?? routeParams?.channelId;
+        return routeChannelId === channel.id;
+      });
 
       if (hasChannelInStack) {
         navigation.popTo('ChannelScreen', params);
@@ -159,10 +154,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         messageId={targetedMessageIdFromParams}
       >
-        <PortalWhileClosingView
-          portalHostName='overlay-header'
-          portalName='channel-header'
-        >
+        <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ThreadHeader thread={thread} />
         </PortalWhileClosingView>
         <Thread

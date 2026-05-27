@@ -74,11 +74,9 @@ export const PollContent = () => {
     <View style={[styles.container, container]}>
       <PollHeaderComponent />
       <View style={[styles.optionsWrapper, optionsWrapper]}>
-        {options
-          ?.slice(0, defaultPollOptionCount)
-          ?.map((option: PollOptionClass) => (
-            <PollOption key={`message_poll_option_${option.id}`} option={option} />
-          ))}
+        {options?.slice(0, defaultPollOptionCount)?.map((option: PollOptionClass) => (
+          <PollOption key={`message_poll_option_${option.id}`} option={option} />
+        ))}
         <ShowAllOptionsButton />
       </View>
       <PollButtonsComponent />

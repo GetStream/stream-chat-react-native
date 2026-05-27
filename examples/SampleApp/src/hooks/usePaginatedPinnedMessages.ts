@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useAppContext } from '../context/AppContext';
-
 import type { Channel, MessageResponse } from 'stream-chat';
+
+import { useAppContext } from '../context/AppContext';
 
 import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 

@@ -1,4 +1,6 @@
-import NativeStreamVideoThumbnail, { type VideoThumbnailResult } from './NativeStreamVideoThumbnail';
+import NativeStreamVideoThumbnail, {
+  type VideoThumbnailResult,
+} from './NativeStreamVideoThumbnail';
 
 export type { VideoThumbnailResult } from './NativeStreamVideoThumbnail';
 

@@ -14,7 +14,6 @@ import { ChannelDetailsBottomSheet } from '../ChannelDetailsBottomSheet';
 type StreamBottomSheetModalFlatListProps = ComponentProps<typeof StreamBottomSheetModalFlatList>;
 
 const mockStreamBottomSheetModalFlatList = jest.fn(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_props: StreamBottomSheetModalFlatListProps) => null,
 );
 

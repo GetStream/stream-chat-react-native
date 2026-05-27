@@ -1,4 +1,8 @@
 import React, { useMemo } from 'react';
+
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+import { LocalMessage, UserResponse } from 'stream-chat';
 import {
   BottomSheetModal,
   useChatContext,
@@ -7,8 +11,6 @@ import {
   useTheme,
   UserAvatar,
 } from 'stream-chat-react-native';
-import { LocalMessage, UserResponse } from 'stream-chat';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 const renderUserItem = ({ item }: { item: UserResponse }) => (
   <View style={styles.userItem}>

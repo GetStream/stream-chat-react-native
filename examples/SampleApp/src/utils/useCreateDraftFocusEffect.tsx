@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
-import { useMessageComposer } from 'stream-chat-react-native';
+
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useMessageComposer } from 'stream-chat-react-native';
 
 export const useCreateDraftFocusEffect = () => {
   const navigation = useNavigation();

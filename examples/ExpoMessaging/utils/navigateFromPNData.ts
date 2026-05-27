@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+
 import { MessagingDataType } from '../hooks/usePushNotifications';
 
 export const navigateFromPNData = (data: MessagingDataType) => {

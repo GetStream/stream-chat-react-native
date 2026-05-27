@@ -1,5 +1,6 @@
 import React from 'react';
 import { PropsWithChildren, createContext, useState } from 'react';
+
 import { Channel as ChannelType } from 'stream-chat';
 import { ThreadContextValue } from 'stream-chat-react-native';
 

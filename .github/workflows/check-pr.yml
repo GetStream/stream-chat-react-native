@@ -23,13 +23,15 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - name: Install Linux build tools
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
       - name: Lint
-        run: yarn lerna-workspaces run lint
+        run: yarn lint
       - name: Typecheck tests
-        run: cd package && yarn test:typecheck
+        run: yarn workspace stream-chat-react-native-core test:typecheck
       - name: Test
         run: yarn test:coverage

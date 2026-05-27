@@ -1,15 +1,16 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
+import type { MessageResponse } from 'stream-chat';
 import { Spinner, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
-import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
-import type { MessageResponse } from 'stream-chat';
-
 import type { StackNavigatorParamList } from '../../types';
+import { DEFAULT_PAGINATION_LIMIT } from '../../utils/constants';
 
 dayjs.extend(calendar);
 
@@ -72,9 +73,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
       showResultCount = false,
     } = props;
     const {
-      theme: {
-        semantics,
-      },
+      theme: { semantics },
     } = useTheme();
     const { black, grey, white_snow } = useLegacyColors();
     const { vw } = useViewport();
@@ -96,11 +95,13 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
             }}
           >
             <Text style={{ color: grey }}>
-              {`${messages.length >= DEFAULT_PAGINATION_LIMIT
-                ? DEFAULT_PAGINATION_LIMIT
-                : messages.length
-                }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${messages.length === 1 ? '' : 's'
-                }`}
+              {`${
+                messages.length >= DEFAULT_PAGINATION_LIMIT
+                  ? DEFAULT_PAGINATION_LIMIT
+                  : messages.length
+              }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${
+                messages.length === 1 ? '' : 's'
+              }`}
             </Text>
           </View>
         )}

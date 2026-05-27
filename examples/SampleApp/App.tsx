@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { DevSettings, I18nManager, LogBox, Platform, useColorScheme } from 'react-native';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import data from '@emoji-mart/data';
+import notifee, { EventType } from '@notifee/react-native';
+import Geolocation from '@react-native-community/geolocation';
+import { getMessaging } from '@react-native-firebase/messaging';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { init, SearchIndex } from 'emoji-mart';
+import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
 import {
   Chat,
   createTextComposerEmojiMiddleware,
@@ -17,48 +26,8 @@ import {
   WithComponents,
 } from 'stream-chat-react-native';
 
-import { getMessaging } from '@react-native-firebase/messaging';
-import notifee, { EventType } from '@notifee/react-native';
-import { AppContext } from './src/context/AppContext';
-import { AppOverlayProvider } from './src/context/AppOverlayProvider';
-import { UserSearchProvider } from './src/context/UserSearchContext';
-import { useChatClient } from './src/hooks/useChatClient';
-import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
-import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
-import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
-import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
-import { ChannelScreen } from './src/screens/ChannelScreen';
-import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
-import { ChatScreen } from './src/screens/ChatScreen';
-import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
-import { LoadingScreen } from './src/screens/LoadingScreen';
 import { MenuDrawer } from './src/components/MenuDrawer';
-import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
-import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
-import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
-import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetailScreen';
-import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
-import { ThreadScreen } from './src/screens/ThreadScreen';
-import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
-import { init, SearchIndex } from 'emoji-mart';
-import data from '@emoji-mart/data';
-import Geolocation from '@react-native-community/geolocation';
-import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
-import { StreamChatProvider } from './src/context/StreamChatContext';
-import { MapScreen } from './src/screens/MapScreen';
-import { watchLocation } from './src/utils/watchLocation';
 import { useSampleAppComponentOverrides } from './src/components/SampleAppComponentOverrides';
-
-Geolocation.setRNConfiguration({
-  skipPermissionRequests: false,
-  authorizationLevel: 'always',
-  locationProvider: 'playServices',
-});
-
-import type { LocalMessage, StreamChat, TextComposerMiddleware } from 'stream-chat';
-import AsyncStore from './src/utils/AsyncStore.ts';
 import {
   MessageInputFloatingConfigItem,
   MessageOverlayBackdropConfigItem,
@@ -66,6 +35,40 @@ import {
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
 } from './src/components/SecretMenu.tsx';
+import { AppContext } from './src/context/AppContext';
+import { AppOverlayProvider } from './src/context/AppOverlayProvider';
+import { StreamChatProvider } from './src/context/StreamChatContext';
+import { UserSearchProvider } from './src/context/UserSearchContext';
+import { useChatClient } from './src/hooks/useChatClient';
+import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
+import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
+import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
+import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
+import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
+import { ChannelScreen } from './src/screens/ChannelScreen';
+import { ChatScreen } from './src/screens/ChatScreen';
+import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
+import { LoadingScreen } from './src/screens/LoadingScreen';
+import { MapScreen } from './src/screens/MapScreen';
+import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
+import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
+import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
+import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetailScreen';
+import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
+import { ThreadScreen } from './src/screens/ThreadScreen';
+import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
+
+import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
+
+import AsyncStore from './src/utils/AsyncStore.ts';
+import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
+import { watchLocation } from './src/utils/watchLocation';
+
+Geolocation.setRNConfiguration({
+  skipPermissionRequests: false,
+  authorizationLevel: 'always',
+  locationProvider: 'playServices',
+});
 
 init({ data });
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
 
-import { IconProps } from '../utils/base';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { IconProps } from '../utils/base';
 
 export const SignOut: React.FC<IconProps> = ({ height, width }) => {
   const { black } = useLegacyColors();

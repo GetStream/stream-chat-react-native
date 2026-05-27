@@ -13,7 +13,7 @@ git clone https://github.com/GetStream/stream-chat-react-native.git
 ```
 
 ### Install dependencies
-  
+
 1. In the root install the dependencies:
 
 ```bash

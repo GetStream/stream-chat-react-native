@@ -19,7 +19,6 @@ let AudioVideoComponent:
     }>
   | undefined;
 try {
-  // eslint-disable-next-line no-undef
   const videoPackage = require('react-native-video');
   AudioVideoComponent = videoPackage.default;
 } catch (_) {

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { ImageProps } from 'react-native';
+
 import FastImage from '@d11/react-native-fast-image';
 import type { FastImageProps } from '@d11/react-native-fast-image';
 import { useChatContext } from 'stream-chat-react-native';

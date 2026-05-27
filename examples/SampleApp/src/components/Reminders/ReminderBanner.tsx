@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+
 import { ReminderResponse, ReminderState } from 'stream-chat';
 import {
   useMessageReminder,
@@ -6,6 +7,7 @@ import {
   useTranslationContext,
   useStateStore,
 } from 'stream-chat-react-native';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const reminderStateSelector = (state: ReminderState) => ({

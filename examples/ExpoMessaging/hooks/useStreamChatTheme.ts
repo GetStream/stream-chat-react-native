@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
+
 import type { DeepPartial, Theme } from 'stream-chat-expo';
 
 export const useStreamChatTheme = () => {
@@ -72,6 +73,7 @@ export const useStreamChatTheme = () => {
 
   useEffect(() => {
     setChatStyle(getChatStyle());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: theme is colorScheme-driven; getChatStyle treated as stable
   }, [colorScheme]);
 
   return chatStyle;

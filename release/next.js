@@ -1,7 +1,7 @@
-const semanticRelease = require('semantic-release').default;
-const configPromise = require('./release.config.js');
-
 const execa = require('execa');
+const semanticRelease = require('semantic-release').default;
+
+const configPromise = require('./release.config.js');
 
 const dryRun = false;
 
