@@ -15,6 +15,12 @@ import { Checkmark } from '../../../icons/checkmark-1';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
+import { Spinner } from '../../UIComponents/Spinner';
+
+const loadingIconStyle = { margin: 0 };
+const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number }) => (
+  <Spinner height={height} style={loadingIconStyle} width={width} />
+);
 
 export type ChannelAddMembersModalProps = {
   onClose: () => void;
@@ -76,12 +82,12 @@ const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalConten
           <Button
             accessibilityLabel={t('a11y/Confirm add members')}
             accessibilityRole='button'
-            accessibilityState={{ disabled: !confirmEnabled }}
+            accessibilityState={{ busy: addingMembers, disabled: !confirmEnabled }}
             disabled={!confirmEnabled}
             variant='primary'
             onPress={handleConfirm}
             type='solid'
-            LeadingIcon={Checkmark}
+            LeadingIcon={addingMembers ? LoadingButtonIcon : Checkmark}
             iconOnly
             testID='channel-details-add-members-confirm-button'
             style={confirmButtonOverride}

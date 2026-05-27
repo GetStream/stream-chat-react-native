@@ -12,6 +12,12 @@ import { Checkmark } from '../../../icons/checkmark-1';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
+import { Spinner } from '../../UIComponents/Spinner';
+
+const loadingIconStyle = { margin: 0 };
+const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number }) => (
+  <Spinner height={height} style={loadingIconStyle} width={width} />
+);
 
 export type ChannelEditDetailsModalProps = {
   onClose: () => void;
@@ -62,10 +68,10 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
           <Button
             accessibilityLabel={t('a11y/Confirm edit channel')}
             accessibilityRole='button'
-            accessibilityState={{ disabled: !confirmEnabled }}
+            accessibilityState={{ busy: saving, disabled: !confirmEnabled }}
             disabled={!confirmEnabled}
             iconOnly
-            LeadingIcon={Checkmark}
+            LeadingIcon={saving ? LoadingButtonIcon : Checkmark}
             onPress={handleConfirm}
             testID='channel-details-edit-confirm-button'
             type='solid'
