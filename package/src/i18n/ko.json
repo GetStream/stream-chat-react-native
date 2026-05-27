@@ -391,5 +391,10 @@
   "size limit": "크기 제한",
   "unknown error": "알 수 없는 오류",
   "unsupported file type": "지원되지 않는 파일 형식",
-  "Already a member": "이미 멤버"
+  "Already a member": "이미 멤버",
+  "Channel name": "Channel name",
+  "Upload": "Upload",
+  "a11y/Channel name": "Channel name",
+  "a11y/Confirm edit channel": "Confirm edit channel",
+  "a11y/Upload channel image": "Upload channel image"
 }

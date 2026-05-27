@@ -72,7 +72,7 @@ export type ChannelDetailsScreenProps = {
   /**
    * Fired when the user taps the "Edit" button in the channel details header.
    * The button is only rendered when the current user has the `update-channel`
-   * capability. If omitted, the press is a no-op.
+   * capability. By default it opens the channel edit details modal.
    */
   onEditChannelPress?: () => void;
   /**

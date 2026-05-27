@@ -391,5 +391,10 @@
   "size limit": "limite di dimensione",
   "unknown error": "errore sconosciuto",
   "unsupported file type": "tipo di file non supportato",
-  "Already a member": "Già membro"
+  "Already a member": "Già membro",
+  "Channel name": "Channel name",
+  "Upload": "Upload",
+  "a11y/Channel name": "Channel name",
+  "a11y/Confirm edit channel": "Confirm edit channel",
+  "a11y/Upload channel image": "Upload channel image"
 }

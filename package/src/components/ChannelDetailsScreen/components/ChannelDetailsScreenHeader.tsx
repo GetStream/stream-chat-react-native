@@ -1,18 +1,19 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ChannelEditDetailsModal } from './ChannelEditDetailsModal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
+import { useStableCallback } from '../../../hooks/useStableCallback';
 import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
-
-const noop = () => {};
 
 export type ChannelDetailsScreenHeaderProps = {
   /** Override the auto-resolved screen title (1:1 → "Contact Info", group → "Group Info"). */
@@ -34,8 +35,19 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
   } = useTheme();
   const isDirect = useIsDirectChat(channel);
   const styles = useStyles();
+  const [editModalVisible, setEditModalVisible] = useState(false);
 
   const resolvedTitle = title ?? (isDirect ? t('Contact Info') : t('Group Info'));
+
+  const handleEditPress = useStableCallback(() => {
+    if (onEditChannelPress) {
+      onEditChannelPress();
+      return;
+    }
+    setEditModalVisible(true);
+  });
+
+  const handleEditModalClose = useStableCallback(() => setEditModalVisible(false));
 
   return (
     <View
@@ -73,7 +85,7 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
           <Button
             accessibilityLabelKey='a11y/Edit channel'
             label={t('Edit')}
-            onPress={onEditChannelPress ?? noop}
+            onPress={handleEditPress}
             size='sm'
             testID='channel-details-edit-button'
             type='outline'
@@ -81,6 +93,7 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
           />
         ) : null}
       </View>
+      <ChannelEditDetailsModal onClose={handleEditModalClose} visible={editModalVisible} />
     </View>
   );
 };

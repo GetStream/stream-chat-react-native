@@ -391,5 +391,10 @@
   "size limit": "groottelimiet",
   "unknown error": "onbekende fout",
   "unsupported file type": "niet-ondersteund bestandstype",
-  "Already a member": "Al lid"
+  "Already a member": "Al lid",
+  "Channel name": "Channel name",
+  "Upload": "Upload",
+  "a11y/Channel name": "Channel name",
+  "a11y/Confirm edit channel": "Confirm edit channel",
+  "a11y/Upload channel image": "Upload channel image"
 }

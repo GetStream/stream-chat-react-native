@@ -63,9 +63,10 @@ const useStyles = () =>
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          paddingBottom: primitives.spacingXs,
-          paddingHorizontal: primitives.spacingMd,
-          paddingTop: primitives.spacingXs,
+          paddingBottom: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingSm,
+          paddingTop: primitives.spacingSm,
+          gap: primitives.spacingSm,
         },
         side: {
           flex: 1,

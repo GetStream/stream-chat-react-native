@@ -238,6 +238,12 @@ export type Theme = {
         userRow: ViewStyle;
       };
     };
+    editChannel: {
+      avatarSection: ViewStyle;
+      container: ViewStyle;
+      nameInput: ViewStyle;
+      uploadButton: ViewStyle;
+    };
   };
   channelListSkeleton: {
     animationTime: number;
@@ -1258,6 +1264,12 @@ export const defaultTheme: Theme = {
         userName: {},
         userRow: {},
       },
+    },
+    editChannel: {
+      avatarSection: {},
+      container: {},
+      nameInput: {},
+      uploadButton: {},
     },
   },
   channelListSkeleton: {

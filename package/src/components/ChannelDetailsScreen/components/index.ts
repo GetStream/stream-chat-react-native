@@ -11,3 +11,5 @@ export * from './ChannelDetailsMemberSection';
 export * from './ChannelDetailsNavigationSection';
 export * from './ChannelDetailsProfile';
 export * from './ChannelDetailsScreenHeader';
+export * from './ChannelEditDetails';
+export * from './ChannelEditDetailsModal';
