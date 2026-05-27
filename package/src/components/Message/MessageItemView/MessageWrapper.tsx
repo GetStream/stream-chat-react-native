@@ -114,16 +114,14 @@ export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
         <MessageSystem message={message} style={messageContainer} />
       ) : wrapMessageInTheme ? (
         <ThemeProvider mergedStyle={modifiedTheme}>
-          <View testID={`message-list-item-${message.id}`}>
-            {renderDateSeperator}
-            {renderMessage}
-          </View>
-        </ThemeProvider>
-      ) : (
-        <View testID={`message-list-item-${message.id}`}>
           {renderDateSeperator}
           {renderMessage}
-        </View>
+        </ThemeProvider>
+      ) : (
+        <>
+          {renderDateSeperator}
+          {renderMessage}
+        </>
       )}
       {showUnreadUnderlay && (
         <View style={styles.unreadUnderlayContainer}>
