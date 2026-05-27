@@ -70,6 +70,14 @@ export type ChannelDetailsScreenProps = {
   /** Fired after the channel is no longer available to the current user (delete or leave actions). */
   onChannelDismiss?: () => void;
   /**
+   * Fired when the user taps a member row. Receives the tapped member.
+   *
+   * Applies both to the member preview on the channel details screen and to the full
+   * list opened via the "view all members" modal. If omitted, the default behavior is
+   * to open the per-member actions bottom sheet (mute, block, etc.).
+   */
+  onMemberPress?: (member: ChannelMemberResponse) => void;
+  /**
    * Fired when the user taps the "view all members" button, by default it opens the members bottom sheet.
    */
   onViewAllMembersPress?: () => void;
@@ -120,6 +128,7 @@ export const ChannelDetailsScreen = ({
   onAddMembersPress,
   onBack,
   onChannelDismiss,
+  onMemberPress,
   onViewAllMembersPress,
 }: ChannelDetailsScreenProps) => {
   const { ChannelDetailsScreenContent: ChannelDetailsScreenContentOverride } =
@@ -133,6 +142,7 @@ export const ChannelDetailsScreen = ({
       onAddMembersPress,
       onBack,
       onChannelDismiss,
+      onMemberPress,
       onViewAllMembersPress,
     }),
     [
@@ -143,6 +153,7 @@ export const ChannelDetailsScreen = ({
       onAddMembersPress,
       onBack,
       onChannelDismiss,
+      onMemberPress,
       onViewAllMembersPress,
     ],
   );

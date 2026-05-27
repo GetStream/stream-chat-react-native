@@ -15,7 +15,7 @@ const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? membe
  * Lists all channel members.
  */
 export const ChannelMemberList = () => {
-  const { channel } = useChannelDetailsContext();
+  const { channel, onMemberPress } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { hasMore, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
@@ -23,15 +23,23 @@ export const ChannelMemberList = () => {
 
   const handleMemberActionsClose = useStableCallback(() => setSelectedMember(null));
 
+  const handleMemberPress = useStableCallback((member: ChannelMemberResponse) => {
+    if (onMemberPress) {
+      onMemberPress(member);
+      return;
+    }
+    setSelectedMember(member);
+  });
+
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (
       <ChannelMemberItem
         isCurrentUser={item.user?.id === client.userID}
         member={item}
-        onPress={() => setSelectedMember(item)}
+        onPress={() => handleMemberPress(item)}
       />
     ),
-    [ChannelMemberItem, client.userID],
+    [ChannelMemberItem, client.userID, handleMemberPress],
   );
 
   const ListFooterComponent = useMemo(

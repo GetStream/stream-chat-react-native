@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
@@ -21,6 +21,8 @@ import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { ChannelDetailsMemberSection } from '../components/ChannelDetailsMemberSection';
+import type { ChannelMemberActionsSheetProps } from '../components/ChannelMemberActionsSheet';
+import type { ChannelMemberItemProps } from '../components/ChannelMemberItem';
 import * as useChannelDetailsMembersPreviewModule from '../hooks/useChannelDetailsMembersPreview';
 
 jest.mock('../../../hooks/actions/useChannelActions');
@@ -29,6 +31,16 @@ const mockedUseChannelActions = jest.mocked(useChannelActions);
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;
 
 const AddMembersProbe = () => <Text testID='add-members-probe'>add-members</Text>;
+
+const memberItemProbeCalls: ChannelMemberItemProps[] = [];
+const MemberItemProbe = (props: ChannelMemberItemProps) => {
+  memberItemProbeCalls.push(props);
+  return <Text testID={`member-item-${props.member.user?.id}`}>{props.member.user?.name}</Text>;
+};
+
+const MemberActionsSheetProbe = ({ member }: ChannelMemberActionsSheetProps) => (
+  <Text testID='member-actions-sheet-probe'>{member.user?.id ?? ''}</Text>
+);
 
 const buildChannel = (
   members: ChannelMemberResponse[],
@@ -66,11 +78,13 @@ const renderSection = ({
   capabilities,
   channel,
   onAddMembersPress,
+  onMemberPress,
   onViewAllMembersPress,
 }: {
   channel: Channel;
   capabilities?: Partial<OwnCapabilitiesContextValue>;
   onAddMembersPress?: () => void;
+  onMemberPress?: (member: ChannelMemberResponse) => void;
   onViewAllMembersPress?: () => void;
 }) =>
   render(
@@ -90,12 +104,15 @@ const renderSection = ({
               value={{
                 channel: applyCapabilities(channel, capabilities),
                 onAddMembersPress,
+                onMemberPress,
                 onViewAllMembersPress,
               }}
             >
               <WithComponents
                 overrides={{
                   ChannelAddMembers: AddMembersProbe,
+                  ChannelMemberActionsSheet: MemberActionsSheetProbe,
+                  ChannelMemberItem: MemberItemProbe,
                   ChannelMemberList: MemberListProbe,
                 }}
               >
@@ -117,6 +134,7 @@ describe('ChannelDetailsMemberSection', () => {
   let previewSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    memberItemProbeCalls.length = 0;
     previewSpy = jest.spyOn(
       useChannelDetailsMembersPreviewModule,
       'useChannelDetailsMembersPreview',
@@ -210,6 +228,46 @@ describe('ChannelDetailsMemberSection', () => {
     expect(screen.queryByTestId('add-members-probe')).toBeNull();
     fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
     expect(screen.getByTestId('add-members-probe')).toBeTruthy();
+  });
+
+  it('opens the per-member actions sheet when a member row is pressed and no onMemberPress override is provided', () => {
+    const members = makeMembers(3);
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: members });
+    const channel = buildChannel(members, 3);
+
+    renderSection({ channel });
+
+    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
+
+    const lastCallForFirstMember = [...memberItemProbeCalls]
+      .reverse()
+      .find((call) => call.member.user?.id === 'u-0');
+    act(() => {
+      lastCallForFirstMember?.onPress?.();
+    });
+
+    expect(screen.getByTestId('member-actions-sheet-probe')).toBeTruthy();
+    expect(screen.getByTestId('member-actions-sheet-probe').props.children).toBe('u-0');
+  });
+
+  it('calls onMemberPress instead of opening the per-member actions sheet when provided', () => {
+    const members = makeMembers(3);
+    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: members });
+    const channel = buildChannel(members, 3);
+    const onMemberPress = jest.fn();
+
+    renderSection({ channel, onMemberPress });
+
+    const lastCallForSecondMember = [...memberItemProbeCalls]
+      .reverse()
+      .find((call) => call.member.user?.id === 'u-1');
+    act(() => {
+      lastCallForSecondMember?.onPress?.();
+    });
+
+    expect(onMemberPress).toHaveBeenCalledTimes(1);
+    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('u-1');
+    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
   it('swaps the all-members modal for the Add-members sheet when the modal Add button is pressed', () => {

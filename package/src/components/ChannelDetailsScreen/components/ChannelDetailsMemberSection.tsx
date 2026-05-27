@@ -18,7 +18,8 @@ import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 export const ChannelDetailsMemberSection = () => {
-  const { channel, onAddMembersPress, onViewAllMembersPress } = useChannelDetailsContext();
+  const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =
+    useChannelDetailsContext();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const ownCapabilities = useChannelOwnCapabilities(channel);
@@ -67,6 +68,14 @@ export const ChannelDetailsMemberSection = () => {
 
   const handleMemberActionsClose = useStableCallback(() => setSelectedMember(null));
 
+  const handleMemberPress = useStableCallback((member: ChannelMemberResponse) => {
+    if (onMemberPress) {
+      onMemberPress(member);
+      return;
+    }
+    setSelectedMember(member);
+  });
+
   return (
     <View
       style={[
@@ -105,7 +114,7 @@ export const ChannelDetailsMemberSection = () => {
               isCurrentUser={member.user.id === client.userID}
               key={member.user.id}
               member={member}
-              onPress={() => setSelectedMember(member)}
+              onPress={() => handleMemberPress(member)}
             />
           );
         })}

@@ -13,6 +13,7 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
+import type { ChannelMemberActionsSheetProps } from '../components/ChannelMemberActionsSheet';
 import type { ChannelMemberItemProps } from '../components/ChannelMemberItem';
 import { ChannelMemberList } from '../components/ChannelMemberList';
 
@@ -73,7 +74,19 @@ const MemberListItemProbe = (props: Probe) => {
   return <Text testID={`member-${props.member.user?.id}`}>{props.member.user?.name}</Text>;
 };
 
-const renderList = ({ channel, currentUserId }: { channel: Channel; currentUserId?: string }) =>
+const MemberActionsSheetProbe = ({ member }: ChannelMemberActionsSheetProps) => (
+  <Text testID='member-actions-sheet-probe'>{member.user?.id ?? ''}</Text>
+);
+
+const renderList = ({
+  channel,
+  currentUserId,
+  onMemberPress,
+}: {
+  channel: Channel;
+  currentUserId?: string;
+  onMemberPress?: (member: ChannelMemberResponse) => void;
+}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
@@ -99,9 +112,10 @@ const renderList = ({ channel, currentUserId }: { channel: Channel; currentUserI
               } as never
             }
           >
-            <ChannelDetailsContextProvider value={{ channel }}>
+            <ChannelDetailsContextProvider value={{ channel, onMemberPress }}>
               <WithComponents
                 overrides={{
+                  ChannelMemberActionsSheet: MemberActionsSheetProbe,
                   ChannelMemberItem: MemberListItemProbe,
                 }}
               >
@@ -123,6 +137,49 @@ describe('ChannelMemberList', () => {
   beforeEach(() => {
     mockFlatList.mockClear();
     probeCalls.length = 0;
+  });
+
+  it('opens the per-member actions sheet when a member is pressed and no onMemberPress override is provided', () => {
+    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+    const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
+    const channel = buildChannel({ memberCount: 2, members: [alice, bob] });
+
+    const list = renderList({ channel });
+
+    const { renderItem } = latestListProps() ?? {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render((renderItem as any)({ index: 0, item: bob, separators: {} as never }));
+
+    const captured = probeCalls.find((p) => p.member.user?.id === 'bob');
+    expect(captured?.onPress).toBeDefined();
+
+    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
+    act(() => {
+      captured?.onPress?.();
+    });
+    expect(list.getByTestId('member-actions-sheet-probe')).toBeTruthy();
+    expect(list.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
+  });
+
+  it('calls onMemberPress instead of opening the per-member actions sheet when provided', () => {
+    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+    const channel = buildChannel({ memberCount: 1, members: [alice] });
+    const onMemberPress = jest.fn();
+
+    const list = renderList({ channel, onMemberPress });
+
+    const { renderItem } = latestListProps() ?? {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render((renderItem as any)({ index: 0, item: alice, separators: {} as never }));
+
+    const captured = probeCalls.find((p) => p.member.user?.id === 'alice');
+    act(() => {
+      captured?.onPress?.();
+    });
+
+    expect(onMemberPress).toHaveBeenCalledTimes(1);
+    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');
+    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
   it('forwards every channel member into the flat list', () => {
