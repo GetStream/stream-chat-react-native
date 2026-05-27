@@ -42,7 +42,7 @@ yarn lint-fix    # Auto-fix lint and formatting issues
 ```bash
 yarn test:unit                                          # All unit tests (sets TZ=UTC)
 yarn test:coverage                                      # With coverage report
-cd package && yarn test:typecheck                       # Type-check tests against tsconfig.test.json (run after any code change)
+yarn test:typecheck                                     # Type-check tests against tsconfig.test.json (run after any code change)
 yarn workspace stream-chat-react-native-core test:unit  # Same as `yarn test:unit`
 cd package && TZ=UTC npx jest path/to/test.test.tsx     # Single test file
 ```

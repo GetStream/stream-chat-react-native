@@ -42,6 +42,9 @@ import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
+import { ChannelAddMembersScreen } from './src/screens/ChannelAddMembersScreen.tsx';
+import { ChannelAllMembersScreen } from './src/screens/ChannelAllMembersScreen.tsx';
+import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen.tsx';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
@@ -61,9 +64,6 @@ import type { StackNavigatorParamList, UserSelectorParamList } from './src/types
 import AsyncStore from './src/utils/AsyncStore.ts';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 import { watchLocation } from './src/utils/watchLocation';
-import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen.tsx';
-import { ChannelAllMembersScreen } from './src/screens/ChannelAllMembersScreen.tsx';
-import { ChannelAddMembersScreen } from './src/screens/ChannelAddMembersScreen.tsx';
 
 Geolocation.setRNConfiguration({
   skipPermissionRequests: false,

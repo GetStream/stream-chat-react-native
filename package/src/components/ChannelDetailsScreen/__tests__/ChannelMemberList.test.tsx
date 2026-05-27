@@ -18,10 +18,7 @@ import { ChannelMemberList } from '../components/ChannelMemberList';
 
 type FlatListProps = RNFlatListProps<ChannelMemberResponse>;
 
-const mockFlatList = jest.fn(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (_props: FlatListProps) => null,
-);
+const mockFlatList = jest.fn((_props: FlatListProps) => null);
 
 jest.mock('react-native', () => {
   const actual = jest.requireActual('react-native');

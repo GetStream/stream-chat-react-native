@@ -3,8 +3,9 @@ import React, { useMemo } from 'react';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import type { StackNavigatorParamList } from '../types';
 import { ChannelDetailsContext, ChannelMemberList } from 'stream-chat-react-native-core';
+
+import type { StackNavigatorParamList } from '../types';
 
 type ChannelAllMembersScreenRouteProp = RouteProp<
   StackNavigatorParamList,

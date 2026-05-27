@@ -1,9 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
+import { KeyboardAvoidingView, Platform, Pressable, Text } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import type { StackNavigatorParamList } from '../types';
+import type { UserResponse } from 'stream-chat';
 import {
   ChannelAddMembers,
   ChannelDetailsContext,
@@ -11,9 +15,8 @@ import {
   NotificationTargetProvider,
   useChannelActions,
 } from 'stream-chat-react-native-core';
-import type { UserResponse } from 'stream-chat';
-import { KeyboardAvoidingView, Platform, Pressable, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { StackNavigatorParamList } from '../types';
 
 type ChannelAddMembersScreenRouteProp = RouteProp<
   StackNavigatorParamList,
