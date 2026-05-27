@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useAppContext } from '../context/AppContext';
-
 import type { Channel, MessageResponse } from 'stream-chat';
 
-export const usePaginatedAttachments = (
-  channel: Channel,
-  attachmentType: string,
-) => {
+import { useAppContext } from '../context/AppContext';
+
+export const usePaginatedAttachments = (channel: Channel, attachmentType: string) => {
   const { chatClient } = useAppContext();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);

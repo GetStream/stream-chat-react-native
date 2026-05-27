@@ -30,7 +30,7 @@
   "dependencies": {
     "es6-symbol": "^3.1.3",
     "mime": "^4.0.7",
-    "stream-chat-react-native-core": "8.1.0"
+    "stream-chat-react-native-core": "workspace:^"
   },
   "peerDependencies": {
     "@react-native-camera-roll/camera-roll": ">=7.9.0",
@@ -38,14 +38,13 @@
     "@react-native-documents/picker": ">=10.1.1",
     "react-native": ">=0.76.0",
     "react-native-audio-recorder-player": ">=3.6.13",
-    "react-native-nitro-sound": ">=0.2.9",
     "react-native-blob-util": ">=0.22.0",
     "react-native-haptic-feedback": ">=2.3.0",
     "react-native-image-picker": ">=7.1.2",
+    "react-native-nitro-sound": ">=0.2.9",
     "react-native-share": ">=11.0.0",
     "react-native-video": ">=6.18.0"
   },
-
   "peerDependenciesMeta": {
     "@react-native-camera-roll/camera-roll": {
       "optional": true
@@ -53,10 +52,13 @@
     "@react-native-clipboard/clipboard": {
       "optional": true
     },
-    "react-native-share": {
+    "@react-native-documents/picker": {
       "optional": true
     },
-    "@react-native-documents/picker": {
+    "react-native-audio-recorder-player": {
+      "optional": true
+    },
+    "react-native-blob-util": {
       "optional": true
     },
     "react-native-haptic-feedback": {
@@ -65,16 +67,13 @@
     "react-native-image-picker": {
       "optional": true
     },
-    "react-native-audio-recorder-player": {
-      "optional": true
-    },
     "react-native-nitro-sound": {
       "optional": true
     },
-    "react-native-video": {
+    "react-native-share": {
       "optional": true
     },
-    "react-native-blob-util": {
+    "react-native-video": {
       "optional": true
     }
   },
@@ -102,8 +101,5 @@
         "StreamShimmerView": "StreamShimmerViewComponentView"
       }
     }
-  },
-  "resolutions": {
-    "@types/react": "^19.0.0"
   }
 }

@@ -23,11 +23,13 @@ jobs:
         uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/checkout@v6
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '26.2' # Update as needed
@@ -64,11 +66,13 @@ jobs:
       matrix:
         node-version: [24.x]
     steps:
+      - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/checkout@v6
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - name: Install Linux build tools
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - uses: actions/setup-java@v5

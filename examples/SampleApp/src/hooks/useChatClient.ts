@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { StreamChat, PushProvider } from 'stream-chat';
+
+import { PermissionsAndroid, Platform } from 'react-native';
+
+import notifee from '@notifee/react-native';
 import {
   getMessaging,
   AuthorizationStatus,
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
-import notifee from '@notifee/react-native';
+import { StreamChat, PushProvider } from 'stream-chat';
 import { SqliteClient } from 'stream-chat-react-native';
-import { USER_TOKENS, USERS } from '../ChatUsers';
-import AsyncStore from '../utils/AsyncStore';
 
+import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
-import { PermissionsAndroid, Platform } from 'react-native';
+import AsyncStore from '../utils/AsyncStore';
 
 const messaging = getMessaging();
 

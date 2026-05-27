@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Check, generateRandomId, useTheme, useViewport } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
@@ -9,8 +11,6 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -58,9 +58,7 @@ type ConfirmButtonProps = {
 const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
   const { disabled, onPress } = props;
   const {
-    theme: {
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
 
   return (
@@ -86,9 +84,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   const { selectedUserIds, selectedUsers } = useUserSearchContext();
 
   const {
-    theme: {
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const { bg_gradient_end, bg_gradient_start, black, grey, white_snow } = useLegacyColors();
   const { vw } = useViewport();

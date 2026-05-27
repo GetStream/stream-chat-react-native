@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import type { ChannelMemberResponse } from 'stream-chat';
 import { useChatContext, useTheme, UserAvatar } from 'stream-chat-react-native';
 
 import { Mute } from '../icons/Mute';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-
-import type { ChannelMemberResponse } from 'stream-chat';
 
 type MemberListItemProps = {
   member: ChannelMemberResponse;

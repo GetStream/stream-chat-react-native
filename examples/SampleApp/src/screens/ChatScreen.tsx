@@ -1,18 +1,20 @@
 import React from 'react';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import type { RouteProp } from '@react-navigation/native';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import { ChannelListScreen } from './ChannelListScreen';
-import { ThreadListScreen } from './ThreadListScreen';
+import { DraftsScreen } from './DraftScreen';
 import { MentionsScreen } from './MentionsScreen';
+import { RemindersScreen } from './RemindersScreen';
+import { ThreadListScreen } from './ThreadListScreen';
 
 import { BottomTabs } from '../components/BottomTabs';
 
-import type { RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../types';
-import { DraftsScreen } from './DraftScreen';
-import { RemindersScreen } from './RemindersScreen';
 
 const Tab = createBottomTabNavigator<BottomTabNavigatorParamList>();
 

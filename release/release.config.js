@@ -79,11 +79,15 @@ module.exports = Promise.resolve().then(() => {
     ],
   ];
 
-  const lernaPackage = require('../lerna.json');
+  // Workspaces that participate in the semantic-release flow. Mirrors the
+  // pre-Yarn-4 lerna.json `packages` field. SDK core is published to npm
+  // (gated by `npmPublish: isSDK` above); SampleApp gets a tag + changelog
+  // but no publish.
+  const releaseWorkspaces = ['package', 'examples/SampleApp'];
 
   return {
     extends: [`${__dirname}/monorepo-setup.js`],
-    workspaces: lernaPackage.packages,
+    workspaces: releaseWorkspaces,
     filterPath: process.env.FILTER_PATH,
     tagFormat: process.env.TAG_FORMAT,
     parseLinkedPackages: (item) => {

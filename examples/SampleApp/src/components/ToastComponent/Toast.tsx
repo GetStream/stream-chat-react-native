@@ -1,8 +1,10 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
+
 import type { Notification, NotificationState } from 'stream-chat';
+import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const { width } = Dimensions.get('window');

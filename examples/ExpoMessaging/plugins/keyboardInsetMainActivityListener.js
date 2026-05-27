@@ -55,15 +55,19 @@ const withCustomMainActivity = (config) => {
 
     // Inject inside onCreate(), right after super.onCreate(null)
     // Match the full onCreate method
-    const onCreateMethodRegex = /override fun onCreate\(savedInstanceState: Bundle\?\) \{([\s\S]*?)^\s*}/m;
+    const onCreateMethodRegex =
+      /override fun onCreate\(savedInstanceState: Bundle\?\) \{([\s\S]*?)^\s*}/m;
 
     // If the method exists and doesn't already contain a custom ViewCompat.setOnApplyWindowInsetsListener, inject it
-    if (onCreateMethodRegex.test(contents) && !contents.includes('ViewCompat.setOnApplyWindowInsetsListener')) {
+    if (
+      onCreateMethodRegex.test(contents) &&
+      !contents.includes('ViewCompat.setOnApplyWindowInsetsListener')
+    ) {
       contents = contents.replace(onCreateMethodRegex, (match, body) => {
         // Inject after super.onCreate(null)
         const modifiedBody = body.replace(
           /super\.onCreate\(null\);?/,
-          (superLine) => `${superLine}\n${customInsetHandler}`
+          (superLine) => `${superLine}\n${customInsetHandler}`,
         );
 
         return `override fun onCreate(savedInstanceState: Bundle?) {\n${modifiedBody}\n}`;
@@ -78,5 +82,5 @@ const withCustomMainActivity = (config) => {
 module.exports = createRunOncePlugin(
   withCustomMainActivity,
   'keyboard-inset-main-activity-listener-plugin',
-  '0.0.1'
+  '0.0.1',
 );

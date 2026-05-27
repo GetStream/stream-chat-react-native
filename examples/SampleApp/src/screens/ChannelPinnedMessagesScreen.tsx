@@ -1,15 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useTheme } from 'stream-chat-react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePaginatedPinnedMessages } from '../hooks/usePaginatedPinnedMessages';
-import { Message } from '../icons/Message';
-import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
-import { ScreenHeader } from '../components/ScreenHeader';
-import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { RouteProp } from '@react-navigation/native';
+import { useTheme } from 'stream-chat-react-native';
+
+import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { usePaginatedPinnedMessages } from '../hooks/usePaginatedPinnedMessages';
+import { Message } from '../icons/Message';
+import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
 

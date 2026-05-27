@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Dayjs from 'dayjs';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import type { RouteProp } from '@react-navigation/native';
+import Dayjs from 'dayjs';
+import type { Attachment } from 'stream-chat';
 import {
   FileIcon,
   getFileSizeDisplayText,
@@ -13,9 +17,6 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { RouteProp } from '@react-navigation/native';
-import type { Attachment } from 'stream-chat';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -83,9 +84,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'file');
   const insets = useSafeAreaInsets();
   const {
-    theme: {
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const { black, grey, white_snow } = useLegacyColors();
 

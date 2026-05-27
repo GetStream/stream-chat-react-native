@@ -1,16 +1,17 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import type { DrawerNavigationProp } from '@react-navigation/drawer';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from 'stream-chat-react-native';
 
 import { ChannelsUnreadCountBadge } from './UnreadCountBadge';
 
 import { GoBack } from '../icons/GoBack';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 

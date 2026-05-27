@@ -1,0 +1,46 @@
+diff --git a/android/src/main/java/expo/modules/audio/AudioModule.kt b/android/src/main/java/expo/modules/audio/AudioModule.kt
+index 72a6e9e990bdc9bab549536981fc2e08eeb4837e..6e12fa5e4e17e39eeee171e265ba254f83991ef7 100644
+--- a/android/src/main/java/expo/modules/audio/AudioModule.kt
++++ b/android/src/main/java/expo/modules/audio/AudioModule.kt
+@@ -27,6 +27,9 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
+ import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
+ import androidx.media3.exoplayer.source.MediaSource
+ import androidx.media3.exoplayer.source.ProgressiveMediaSource
++import androidx.media3.extractor.DefaultExtractorsFactory
++import androidx.media3.extractor.mp3.Mp3Extractor
++import androidx.media3.extractor.ts.AdtsExtractor
+ import expo.modules.interfaces.permissions.Permissions
+ import expo.modules.kotlin.Promise
+ import expo.modules.kotlin.exception.Exceptions
+@@ -851,7 +854,12 @@ class AudioModule : Module() {
+       CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
+       CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
+       CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
+-      CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(factory)
++      CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(
++        factory,
++        DefaultExtractorsFactory()
++          .setAdtsExtractorFlags(AdtsExtractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING_ALWAYS)
++          .setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING_ALWAYS)
++      )
+       else -> throw IllegalStateException("Unsupported type: $type")
+     }.createMediaSource(mediaItem)
+   }
+diff --git a/expo-module.config.json b/expo-module.config.json
+index 52e634b2b196055a6007d4a37d441670756f155a..9a131dd948d2eb5adf3cf9b759829a0e8fed15a1 100644
+--- a/expo-module.config.json
++++ b/expo-module.config.json
+@@ -4,12 +4,6 @@
+     "modules": ["AudioModule"]
+   },
+   "android": {
+-    "modules": ["expo.modules.audio.AudioModule"],
+-    "publication": {
+-      "groupId": "expo.modules.audio",
+-      "artifactId": "expo.modules.audio",
+-      "version": "55.0.14",
+-      "repository": "local-maven-repo"
+-    }
++    "modules": ["expo.modules.audio.AudioModule"]
+   }
+ }

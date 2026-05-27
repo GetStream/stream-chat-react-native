@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
+
+import { Pressable, StyleSheet, View } from 'react-native';
+
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
 import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
@@ -18,21 +22,20 @@ import {
   ChannelAvatar,
   PortalWhileClosingView,
 } from 'stream-chat-react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useAppContext } from '../context/AppContext';
+import { ThreadType } from 'stream-chat-react-native-core';
+
+import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
+import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { useAppContext } from '../context/AppContext';
+import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type { StackNavigatorParamList } from '../types';
-import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
-import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 import { channelMessageActions } from '../utils/messageActions.tsx';
-import { useStreamChatContext } from '../context/StreamChatContext.tsx';
+import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
-import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
-import { ThreadType } from 'stream-chat-react-native-core';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,
@@ -180,7 +183,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   );
 
   const onAlsoSentToChannelHeaderPress = useCallback(
-    async ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
+    ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
       if (!channel || !parentMessage) {
         return;
       }

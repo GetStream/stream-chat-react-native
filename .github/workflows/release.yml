@@ -31,6 +31,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - name: Install Linux build tools
         run: sudo apt-get update && sudo apt-get install -y build-essential
 
@@ -43,7 +45,7 @@ jobs:
         uses: ./.github/actions/install-and-build-sdk
 
       - name: Lint
-        run: yarn lerna-workspaces run lint
+        run: yarn lint
 
       - name: Test
         if: github.ref == 'refs/heads/develop'

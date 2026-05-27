@@ -1,8 +1,8 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-import { IconProps } from '../utils/base';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { IconProps } from '../utils/base';
 
 export const ThreadsTab: React.FC<IconProps> = ({ active, height = 24, width = 24 }) => {
   const { black, grey } = useLegacyColors();

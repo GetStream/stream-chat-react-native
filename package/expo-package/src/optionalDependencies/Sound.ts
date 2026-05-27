@@ -137,7 +137,6 @@ class ExpoAudioSoundAdapter {
     this.player.play();
   };
 
-  // eslint-disable-next-line require-await
   setPositionAsync: SoundReturnType['setPositionAsync'] = async (millis) => {
     await this.player.seekTo(millis / 1000);
   };

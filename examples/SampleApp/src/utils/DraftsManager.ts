@@ -1,4 +1,5 @@
 import { DraftFilters, DraftResponse, DraftSort, Pager, StateStore, StreamChat } from 'stream-chat';
+
 import { WithSubscriptions } from './WithSubscription';
 
 export type QueryDraftOptions = Pager & {
@@ -132,8 +133,7 @@ export class DraftsManager extends WithSubscriptions {
       if (draftData.parent_id) {
         existingDraftIndex = drafts.findIndex(
           (draft) =>
-            draft.parent_id === draftData.parent_id &&
-            draft.channel_cid === draftData.channel_cid,
+            draft.parent_id === draftData.parent_id && draft.channel_cid === draftData.channel_cid,
         );
       } else {
         existingDraftIndex = drafts.findIndex(

@@ -1,4 +1,5 @@
 import Svg, { Path } from 'react-native-svg';
+
 import { useTheme } from 'stream-chat-expo';
 
 // Icon for "Share Location" button, next to input box.

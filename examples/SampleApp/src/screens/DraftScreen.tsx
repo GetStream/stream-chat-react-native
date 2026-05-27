@@ -1,11 +1,14 @@
 import React from 'react';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BottomTabNavigatorParamList } from '../types';
+
 import { StyleSheet, View } from 'react-native';
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from 'stream-chat-react-native';
+
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { DraftsList } from '../components/DraftsList';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { BottomTabNavigatorParamList } from '../types';
 
 export type DraftsScreenProps = {
   navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'DraftsScreen'>;

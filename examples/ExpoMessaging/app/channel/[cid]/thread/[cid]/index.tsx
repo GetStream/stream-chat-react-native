@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import { Channel, Thread } from 'stream-chat-expo';
-import { Stack } from 'expo-router';
-import { AppContext } from '../../../../../context/AppContext';
+import { Platform } from 'react-native';
+
 import { useHeaderHeight } from '@react-navigation/elements';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router';
+import { Channel, Thread } from 'stream-chat-expo';
+
+import { AppContext } from '../../../../../context/AppContext';
 
 export default function ThreadScreen() {
   const { channel, thread, setThread } = useContext(AppContext);
@@ -25,11 +26,11 @@ export default function ThreadScreen() {
     >
       <Stack.Screen options={{ title: 'Thread Screen' }} />
 
-        <Thread
-          onThreadDismount={() => {
-            setThread(undefined);
-          }}
-        />
+      <Thread
+        onThreadDismount={() => {
+          setThread(undefined);
+        }}
+      />
     </Channel>
   );
 }

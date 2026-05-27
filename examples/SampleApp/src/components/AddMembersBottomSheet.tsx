@@ -9,6 +9,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { Channel, UserResponse } from 'stream-chat';
 import {
   BottomSheetModal,
   Checkmark,
@@ -18,11 +20,10 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 
-import { Close } from '../icons/Close';
-import { CircleClose } from '../icons/CircleClose';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
+import { CircleClose } from '../icons/CircleClose';
+import { Close } from '../icons/Close';
 
-import type { Channel, UserResponse } from 'stream-chat';
 import { UserSearch } from '../icons/UserSearch';
 
 type AddMembersBottomSheetProps = {

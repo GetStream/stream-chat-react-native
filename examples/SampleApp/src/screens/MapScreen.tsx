@@ -1,6 +1,4 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StackNavigatorParamList } from '../types';
-import { RouteProp } from '@react-navigation/native';
+import { useMemo, useCallback, useRef } from 'react';
 import {
   Platform,
   Pressable,
@@ -10,13 +8,18 @@ import {
   Image,
   Text,
 } from 'react-native';
-import { useMemo, useCallback, useRef } from 'react';
-import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import MapView, { MapMarker, Marker } from 'react-native-maps';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-react-native';
+
 import { useStreamChatContext } from '../context/StreamChatContext';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { StackNavigatorParamList } from '../types';
 
 export type MapScreenNavigationProp = NativeStackNavigationProp<
   StackNavigatorParamList,

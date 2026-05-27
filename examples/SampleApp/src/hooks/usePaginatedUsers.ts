@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { useAppContext } from '../context/AppContext';
-
 import type { UserFilters, UserResponse } from 'stream-chat';
 
+import { useAppContext } from '../context/AppContext';
 
 export type PaginatedUsers = {
   clearText: () => void;
@@ -18,9 +17,7 @@ export type PaginatedUsers = {
   searchText: string;
   selectedUserIds: string[];
   selectedUsers: UserResponse[];
-  setInitialResults: React.Dispatch<
-    React.SetStateAction<UserResponse[] | null>
-  >;
+  setInitialResults: React.Dispatch<React.SetStateAction<UserResponse[] | null>>;
   setResults: React.Dispatch<React.SetStateAction<UserResponse[]>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse[]>>;
@@ -30,9 +27,7 @@ export type PaginatedUsers = {
 export const usePaginatedUsers = (): PaginatedUsers => {
   const { chatClient } = useAppContext();
 
-  const [initialResults, setInitialResults] = useState<UserResponse[] | null>(
-    null,
-  );
+  const [initialResults, setInitialResults] = useState<UserResponse[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<UserResponse[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -139,7 +134,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         return;
       }
 
-      const { users } = await chatClient?.queryUsers(
+      const { users } = await chatClient.queryUsers(
         filter,
         { name: 1 },
         {

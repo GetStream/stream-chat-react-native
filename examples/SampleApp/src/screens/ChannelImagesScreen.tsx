@@ -9,8 +9,11 @@ import {
   View,
   ViewToken,
 } from 'react-native';
-import Dayjs from 'dayjs';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { RouteProp } from '@react-navigation/native';
+import Dayjs from 'dayjs';
 import {
   DateHeader,
   useImageGalleryContext,
@@ -24,8 +27,6 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { RouteProp } from '@react-navigation/native';
 
 import type { StackNavigatorParamList } from '../types';
 

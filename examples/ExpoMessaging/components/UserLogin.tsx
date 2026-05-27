@@ -1,13 +1,16 @@
 import React, { useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Pressable } from 'react-native';
-import { USERS } from '../constants/ChatUsers';
+import { View, Text, FlatList, Image, StyleSheet, Pressable } from 'react-native';
+
 import { UserResponse } from 'stream-chat';
+
+import { USERS } from '../constants/ChatUsers';
 import { useUserContext } from '../context/UserContext';
 
 const PredefinedUserItem = ({ item }: { item: UserResponse }) => {
   const { logIn } = useUserContext();
   const handleUserSelect = useCallback(() => {
     logIn(item);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- example app: `item` is a stable prop, identity tied to logIn
   }, [logIn]);
 
   return (

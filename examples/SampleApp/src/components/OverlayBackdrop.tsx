@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
+
 import { useTheme } from 'stream-chat-react-native';
+
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 type OverlayBackdropProps = {

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import type { Channel } from 'stream-chat';
+
 import { useAppContext } from '../context/AppContext';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-
-import type { Channel } from 'stream-chat';
 
 export const useChannelMembersStatus = (channel: Channel) => {
   const watchersCount = channel.state.watcher_count;
