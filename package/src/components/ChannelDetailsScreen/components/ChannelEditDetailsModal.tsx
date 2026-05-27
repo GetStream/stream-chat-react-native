@@ -37,7 +37,7 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
   const trimmedName = name.trim();
-  const confirmEnabled = trimmedName.length > 0 && trimmedName !== initialName && !saving;
+  const confirmEnabled = trimmedName !== initialName && !saving;
 
   const handleNameChange = useStableCallback((newName: string) => setName(newName));
 

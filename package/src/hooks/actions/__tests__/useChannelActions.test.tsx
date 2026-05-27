@@ -371,6 +371,45 @@ describe('useChannelActions', () => {
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });
 
+  it('unsets the name when updateName is called with an empty string', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateName('');
+    });
+
+    expect(channel.updatePartial).toHaveBeenCalledWith({ unset: ['name'] });
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Channel name updated',
+      options: {
+        severity: 'success',
+        type: 'api:channel:update-name:success',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('unsets the name when updateName is called with a whitespace-only string', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateName('   ');
+    });
+
+    expect(channel.updatePartial).toHaveBeenCalledWith({ unset: ['name'] });
+  });
+
   it('uploads image then patches channel and notifies on updateImage success', async () => {
     const client = createClient();
     const channel = createChannel(client);

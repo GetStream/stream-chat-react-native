@@ -399,7 +399,11 @@ export const useChannelActions = (channel: Channel) => {
     }
 
     try {
-      await channel.updatePartial({ set: { name } });
+      if (name.trim() === '') {
+        await channel.updatePartial({ unset: ['name'] });
+      } else {
+        await channel.updatePartial({ set: { name } });
+      }
       addNotification({
         message: t('Channel name updated'),
         options: { severity: 'success', type: 'api:channel:update-name:success' },
