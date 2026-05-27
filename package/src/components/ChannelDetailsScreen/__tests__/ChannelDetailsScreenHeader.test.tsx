@@ -80,6 +80,14 @@ describe('ChannelDetailsScreenHeader', () => {
     expect(screen.getByText('Edit')).toBeTruthy();
   });
 
+  it('does not render the Edit button in a direct (1:1) channel even with the update-channel capability', () => {
+    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
+
+    renderHeader({ channel: buildChannel(['update-channel']) });
+
+    expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
+  });
+
   it('invokes onEditChannelPress when the Edit button is pressed', () => {
     const onEditChannelPress = jest.fn();
     renderHeader({ channel: buildChannel(['update-channel']), onEditChannelPress });

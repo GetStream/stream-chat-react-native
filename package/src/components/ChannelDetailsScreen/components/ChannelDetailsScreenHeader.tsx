@@ -81,7 +81,7 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
         </Text>
       </View>
       <View style={[styles.sideContainer, styles.sideContainerRight]}>
-        {canUpdateChannel ? (
+        {canUpdateChannel && !isDirect ? (
           <Button
             accessibilityLabelKey='a11y/Edit channel'
             label={t('Edit')}
