@@ -59,17 +59,6 @@ describe('ChannelDetailsActionItem', () => {
       expect(row.props.accessibilityLabel).toBe('Pinned Messages');
     });
 
-    it('forwards accessibilityHint when provided', () => {
-      renderItem({
-        accessibilityHint: 'Removes you from this group',
-        onPress: jest.fn(),
-        testID: 'item',
-      });
-      expect(screen.getByTestId('item').props.accessibilityHint).toBe(
-        'Removes you from this group',
-      );
-    });
-
     it('invokes onPress when the row is pressed', () => {
       const onPress = jest.fn();
       renderItem({ onPress, testID: 'item' });

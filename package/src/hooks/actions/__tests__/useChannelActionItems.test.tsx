@@ -5,7 +5,6 @@ import type { Channel, Mute } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../../components/ChannelPreview/hooks/useIsChannelMuted';
-import * as AccessibilityContext from '../../../contexts/accessibilityContext/AccessibilityContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
 import * as useChannelMembershipStateModule from '../../useChannelMembershipState';
@@ -160,62 +159,23 @@ describe('useChannelActionItems', () => {
     expect(channelActions.muteChannel).toHaveBeenCalledWith({ onSuccess });
   });
 
-  describe('accessibility hints', () => {
-    const mockA11yEnabled = (enabled: boolean) => {
-      jest
-        .spyOn(AccessibilityContext, 'useAccessibilityContext')
-        .mockReturnValue({ enabled } as never);
-    };
+  it('marks block as destructive when user is not blocked', () => {
+    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
 
-    it('omits accessibility hints when AccessibilityContext is disabled', () => {
-      mockA11yEnabled(false);
+    const { result } = renderHook(() => useChannelActionItems({ channel }));
 
-      const { result } = renderHook(() => useChannelActionItems({ channel }));
+    const blockItem = result.current.find((item) => item.id === 'block');
+    expect(blockItem?.type).toBe('destructive');
+  });
 
-      const leaveItem = result.current.find((item) => item.id === 'leave');
-      const deleteItem = result.current.find((item) => item.id === 'deleteChannel');
-      expect(leaveItem?.accessibilityHint).toBeUndefined();
-      expect(deleteItem?.accessibilityHint).toBeUndefined();
-    });
+  it('keeps block standard when user is already blocked', () => {
+    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
+    const blockedChannel = createChannelMock({ blockedUserIds: ['other-user-id'] });
 
-    it('sets group-specific hints on leave and deleteChannel when accessibility is enabled and chat is a group', () => {
-      mockA11yEnabled(true);
-      jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
+    const { result } = renderHook(() => useChannelActionItems({ channel: blockedChannel }));
 
-      const { result } = renderHook(() => useChannelActionItems({ channel }));
-
-      const leaveItem = result.current.find((item) => item.id === 'leave');
-      const deleteItem = result.current.find((item) => item.id === 'deleteChannel');
-      expect(leaveItem?.accessibilityHint).toBe('a11y/Removes you from this group');
-      expect(deleteItem?.accessibilityHint).toBe('a11y/Deletes this group permanently');
-    });
-
-    it('sets direct-chat-specific hints on leave and deleteChannel when accessibility is enabled and chat is direct', () => {
-      mockA11yEnabled(true);
-      jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
-
-      const { result } = renderHook(() => useChannelActionItems({ channel }));
-
-      const leaveItem = result.current.find((item) => item.id === 'leave');
-      const deleteItem = result.current.find((item) => item.id === 'deleteChannel');
-      expect(leaveItem?.accessibilityHint).toBe('a11y/Removes you from this chat');
-      expect(deleteItem?.accessibilityHint).toBe('a11y/Deletes this chat permanently');
-    });
-
-    it('does not set hints on non-destructive items', () => {
-      mockA11yEnabled(true);
-      jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
-
-      const { result } = renderHook(() => useChannelActionItems({ channel }));
-
-      const nonDestructiveItems = result.current.filter(
-        (item) => item.id !== 'leave' && item.id !== 'deleteChannel',
-      );
-      expect(nonDestructiveItems.length).toBeGreaterThan(0);
-      for (const item of nonDestructiveItems) {
-        expect(item.accessibilityHint).toBeUndefined();
-      }
-    });
+    const blockItem = result.current.find((item) => item.id === 'block');
+    expect(blockItem?.type).toBe('standard');
   });
 
   it('uses custom getChannelActionItems with context and defaultItems when provided', () => {
@@ -232,7 +192,6 @@ describe('useChannelActionItems', () => {
 
     expect(customGetChannelActionItems).toHaveBeenCalledWith({
       context: {
-        a11yLabel: expect.any(Function),
         actions: channelActions,
         channel,
         channelMuteActive: false,
@@ -266,13 +225,11 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
     const actionItems = getChannelActionItems({
       context: {
-        a11yLabel: (key: string) => key,
         actions: channelActions,
         channel,
         channelMuteActive: false,
@@ -309,7 +266,6 @@ describe('getChannelActionItems', () => {
       isBlocked: true,
       isDirectChat: true,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
@@ -353,7 +309,6 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -370,7 +325,6 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -388,7 +342,6 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -412,7 +365,6 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: true,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
@@ -438,7 +390,6 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
-      a11yLabel: (key: string) => key,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });

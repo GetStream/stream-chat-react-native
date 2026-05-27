@@ -8,7 +8,6 @@ import { primitives } from '../../../theme';
 export type ChannelDetailsActionItemProps = {
   Icon: React.ComponentType<IconProps>;
   label: string;
-  accessibilityHint?: string;
   destructive?: boolean;
   onPress?: () => void;
   testID?: string;
@@ -16,7 +15,6 @@ export type ChannelDetailsActionItemProps = {
 };
 
 export const ChannelDetailsActionItem = ({
-  accessibilityHint,
   Icon,
   destructive = false,
   label,
@@ -83,7 +81,6 @@ export const ChannelDetailsActionItem = ({
 
   return (
     <Pressable
-      accessibilityHint={accessibilityHint}
       accessibilityLabel={label}
       accessibilityRole='button'
       onPress={onPress}

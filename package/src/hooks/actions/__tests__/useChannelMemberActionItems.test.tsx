@@ -66,7 +66,7 @@ describe('useChannelMemberActionItems', () => {
       userActions.muteUser,
       userActions.blockUser,
     ]);
-    expect(result.current.map((item) => item.type)).toEqual(['standard', 'standard']);
+    expect(result.current.map((item) => item.type)).toEqual(['standard', 'destructive']);
     expect(result.current.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
   });
 
@@ -102,6 +102,24 @@ describe('useChannelMemberActionItems', () => {
     await muteItem?.action({ onSuccess });
 
     expect(userActions.muteUser).toHaveBeenCalledWith({ onSuccess });
+  });
+
+  it('marks block as destructive when user is not blocked', () => {
+    const { result } = renderHook(() => useChannelMemberActionItems({ channel, member }));
+
+    const blockItem = result.current.find((item) => item.id === 'block');
+    expect(blockItem?.type).toBe('destructive');
+  });
+
+  it('keeps block standard when user is already blocked', () => {
+    const blockedChannel = createChannelMock({ blockedUserIds: ['target-user-id'] });
+
+    const { result } = renderHook(() =>
+      useChannelMemberActionItems({ channel: blockedChannel, member }),
+    );
+
+    const blockItem = result.current.find((item) => item.id === 'block');
+    expect(blockItem?.type).toBe('standard');
   });
 
   it('uses custom getChannelMemberActionItems with context and defaultItems when provided', () => {
@@ -151,7 +169,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
     expect(items.map((item) => item.id)).toEqual(['muteUser', 'block']);
     expect(items.map((item) => item.action)).toEqual([actions.muteUser, actions.blockUser]);
     expect(items.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
-    expect(items.map((item) => item.type)).toEqual(['standard', 'standard']);
+    expect(items.map((item) => item.type)).toEqual(['standard', 'destructive']);
   });
 
   it('returns unmute/unblock variants when toggles are active', () => {
@@ -167,6 +185,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
 
     expect(items.map((item) => item.action)).toEqual([actions.unmuteUser, actions.unblockUser]);
     expect(items.map((item) => item.label)).toEqual(['Unmute User', 'Unblock User']);
+    expect(items.map((item) => item.type)).toEqual(['standard', 'standard']);
   });
 
   it('mute and block reflect their respective active states independently', () => {

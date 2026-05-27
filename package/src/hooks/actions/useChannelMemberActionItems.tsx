@@ -70,7 +70,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
       Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
       id: 'block',
       label: isBlocked ? t('Unblock User') : t('Block User'),
-      type: 'standard',
+      type: isBlocked ? 'standard' : 'destructive',
     },
   ];
 

@@ -58,7 +58,6 @@ export const ChannelDetailsActionsSection = () => {
 
         return (
           <ChannelDetailsActionItem
-            accessibilityHint={item.accessibilityHint}
             destructive={item.type === 'destructive'}
             Icon={item.Icon}
             key={item.id}

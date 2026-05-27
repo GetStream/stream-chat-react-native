@@ -4,7 +4,6 @@ import { Switch, Text } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -43,11 +42,7 @@ const ActionItemProbe = (props: Probe) => {
   probeCalls.push(props);
   return (
     <>
-      <Text
-        accessibilityHint={props.accessibilityHint}
-        testID={props.testID}
-        onPress={props.onPress}
-      >
+      <Text testID={props.testID} onPress={props.onPress}>
         {props.label}
       </Text>
       {props.trailing}
@@ -55,24 +50,22 @@ const ActionItemProbe = (props: Probe) => {
   );
 };
 
-const renderSection = ({ a11yEnabled = false }: { a11yEnabled?: boolean } = {}) =>
+const renderSection = () =>
   render(
     <ThemeProvider theme={defaultTheme}>
-      <AccessibilityProvider value={{ enabled: a11yEnabled }}>
-        <TranslationProvider
-          value={{
-            t: ((key: string) => key) as never,
-            tDateTimeParser: ((input: unknown) => input) as never,
-            userLanguage: 'en',
-          }}
-        >
-          <ChannelDetailsContextProvider value={{ channel }}>
-            <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
-              <ChannelDetailsActionsSection />
-            </WithComponents>
-          </ChannelDetailsContextProvider>
-        </TranslationProvider>
-      </AccessibilityProvider>
+      <TranslationProvider
+        value={{
+          t: ((key: string) => key) as never,
+          tDateTimeParser: ((input: unknown) => input) as never,
+          userLanguage: 'en',
+        }}
+      >
+        <ChannelDetailsContextProvider value={{ channel }}>
+          <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
+            <ChannelDetailsActionsSection />
+          </WithComponents>
+        </ChannelDetailsContextProvider>
+      </TranslationProvider>
     </ThemeProvider>,
   );
 
@@ -163,31 +156,6 @@ describe('ChannelDetailsActionsSection', () => {
       renderSection();
       fireEvent.press(screen.getByTestId('channel-details-action-mute'));
       expect(action).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('accessibility hints', () => {
-    it('forwards item.accessibilityHint to ChannelDetailsActionItem', () => {
-      useActionItemsSpy.mockReturnValue([
-        buildItem({ id: 'mute', label: 'Mute Group' }),
-        buildItem({
-          accessibilityHint: 'Removes you from this group',
-          id: 'leave',
-          label: 'Leave Group',
-          type: 'destructive',
-        }),
-        buildItem({
-          accessibilityHint: 'Deletes this group permanently',
-          id: 'deleteChannel',
-          label: 'Delete Group',
-          type: 'destructive',
-        }),
-      ]);
-      renderSection();
-      const byId = Object.fromEntries(probeCalls.map((p) => [p.testID, p.accessibilityHint]));
-      expect(byId['channel-details-action-mute']).toBeUndefined();
-      expect(byId['channel-details-action-leave']).toBe('Removes you from this group');
-      expect(byId['channel-details-action-deleteChannel']).toBe('Deletes this group permanently');
     });
   });
 

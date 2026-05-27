@@ -9,7 +9,6 @@ export type ActionOptions = {
 export type ActionHandler = (options?: ActionOptions) => Promise<void>;
 
 export type ActionItem<TId extends string = string> = {
-  accessibilityHint?: string;
   action: ActionHandler;
   Icon: React.ComponentType<IconProps>;
   id: TId;

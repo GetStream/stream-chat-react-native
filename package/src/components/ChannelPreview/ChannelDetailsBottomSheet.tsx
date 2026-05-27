@@ -84,11 +84,7 @@ export const ChannelActionItemView = ({ item }: { item: ChannelActionItem }) => 
   });
 
   return (
-    <Pressable
-      accessibilityHint={item.accessibilityHint}
-      onPress={onPress}
-      style={styles.itemContainer}
-    >
+    <Pressable onPress={onPress} style={styles.itemContainer}>
       <Icon stroke={item.type === 'standard' ? semantics.textSecondary : semantics.accentError} />
       <Text style={item.type === 'standard' ? styles.itemTextStandard : styles.itemTextDestructive}>
         {label}
