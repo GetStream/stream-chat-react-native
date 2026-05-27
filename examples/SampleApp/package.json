@@ -8,15 +8,11 @@
   },
   "scripts": {
     "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh native-package && bash ../../package/scripts/sync-shared-native.sh native-package",
-    "preandroid": "yarn sync-native",
-    "android": "react-native run-android",
-    "preios": "yarn sync-native",
-    "ios": "react-native run-ios",
-    "prestart": "yarn sync-native",
-    "start": "react-native start",
+    "android": "yarn sync-native && react-native run-android",
+    "ios": "yarn sync-native && react-native run-ios",
+    "start": "yarn sync-native && react-native start",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/extract-changelog.js",
     "bootstrap": "yarn install",
-    "postinstall": "patch-package",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
     "release-next": "echo \"Skipping next release for SampleApp\"",
     "typecheck": "tsc --noEmit",
@@ -92,8 +88,6 @@
     "@types/lodash.mergewith": "^4.6.9",
     "@types/react": "^19.1.4",
     "babel-plugin-react-compiler": "^1.0.0",
-    "patch-package": "^8.0.1",
-    "postinstall-postinstall": "^2.1.0",
     "typescript": "5.9.3"
   },
   "engines": {

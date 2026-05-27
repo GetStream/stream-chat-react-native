@@ -1,7 +1,7 @@
-diff --git a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
-index 72a6e9e..6e12fa5 100644
---- a/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
-+++ b/node_modules/expo-audio/android/src/main/java/expo/modules/audio/AudioModule.kt
+diff --git a/android/src/main/java/expo/modules/audio/AudioModule.kt b/android/src/main/java/expo/modules/audio/AudioModule.kt
+index 72a6e9e990bdc9bab549536981fc2e08eeb4837e..6e12fa5e4e17e39eeee171e265ba254f83991ef7 100644
+--- a/android/src/main/java/expo/modules/audio/AudioModule.kt
++++ b/android/src/main/java/expo/modules/audio/AudioModule.kt
 @@ -27,6 +27,9 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
  import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
  import androidx.media3.exoplayer.source.MediaSource
@@ -26,10 +26,10 @@ index 72a6e9e..6e12fa5 100644
        else -> throw IllegalStateException("Unsupported type: $type")
      }.createMediaSource(mediaItem)
    }
-diff --git a/node_modules/expo-audio/expo-module.config.json b/node_modules/expo-audio/expo-module.config.json
-index 52e634b..9a131dd 100644
---- a/node_modules/expo-audio/expo-module.config.json
-+++ b/node_modules/expo-audio/expo-module.config.json
+diff --git a/expo-module.config.json b/expo-module.config.json
+index 52e634b2b196055a6007d4a37d441670756f155a..9a131dd948d2eb5adf3cf9b759829a0e8fed15a1 100644
+--- a/expo-module.config.json
++++ b/expo-module.config.json
 @@ -4,12 +4,6 @@
      "modules": ["AudioModule"]
    },

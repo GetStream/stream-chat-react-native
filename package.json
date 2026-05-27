@@ -10,7 +10,8 @@
     "examples/TypeScriptMessaging"
   ],
   "resolutions": {
-    "@types/react": "^19.1.0"
+    "@types/react": "^19.1.0",
+    "@shopify/flash-list": "patch:@shopify/flash-list@npm%3A2.3.1#~/.yarn/patches/@shopify-flash-list-npm-2.3.1-8b5fd40241.patch"
   },
   "engines": {
     "node": ">=20.19.4"
@@ -61,6 +62,7 @@
     "uglify-js": "^3.19.2"
   },
   "scripts": {
+    "postinstall": "husky",
     "release": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release",
     "release-next": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run extract-changelog",

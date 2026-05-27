@@ -4,12 +4,9 @@
   "private": true,
   "scripts": {
     "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh native-package && bash ../../package/scripts/sync-shared-native.sh native-package",
-    "preandroid": "yarn sync-native",
-    "android": "react-native run-android",
-    "preios": "yarn sync-native",
-    "ios": "react-native run-ios",
-    "prestart": "yarn sync-native",
-    "start": "react-native start",
+    "android": "yarn sync-native && react-native run-android",
+    "ios": "yarn sync-native && react-native run-ios",
+    "start": "yarn sync-native && react-native start",
     "typecheck": "tsc --noEmit",
     "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
