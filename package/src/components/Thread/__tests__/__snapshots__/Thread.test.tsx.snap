@@ -330,325 +330,321 @@ exports[`Thread should match thread snapshot 1`] = `
               testID="message-list-item-38ef6f7c-3090-5759-a37f-ab0053aadb96"
             >
               <View
-                testID="message-list-item-38ef6f7c-3090-5759-a37f-ab0053aadb96"
-              >
-                <View
-                  style={
+                style={
+                  [
                     [
-                      [
-                        {},
-                      ],
-                      {
-                        "paddingHorizontal": 16,
-                      },
-                    ]
-                  }
-                  testID="message-wrapper"
-                >
-                  <View />
-                  <View>
+                      {},
+                    ],
+                    {
+                      "paddingHorizontal": 16,
+                    },
+                  ]
+                }
+                testID="message-wrapper"
+              >
+                <View />
+                <View>
+                  <View
+                    collapsable={false}
+                  >
                     <View
                       collapsable={false}
+                      hitSlop={
+                        {
+                          "left": 750,
+                          "right": 750,
+                        }
+                      }
+                      style={
+                        {
+                          "alignItems": "center",
+                          "flexDirection": "row",
+                          "zIndex": 1,
+                        }
+                      }
                     >
                       <View
-                        collapsable={false}
-                        hitSlop={
-                          {
-                            "left": 750,
-                            "right": 750,
-                          }
-                        }
+                        pointerEvents="box-none"
                         style={
                           {
-                            "alignItems": "center",
+                            "alignItems": "flex-end",
                             "flexDirection": "row",
-                            "zIndex": 1,
+                            "gap": 8,
+                            "paddingVertical": 8,
+                            "width": "100%",
                           }
                         }
+                        testID="message-item-view-wrapper"
                       >
                         <View
-                          pointerEvents="box-none"
-                          style={
-                            {
-                              "alignItems": "flex-end",
-                              "flexDirection": "row",
-                              "gap": 8,
-                              "paddingVertical": 8,
-                              "width": "100%",
-                            }
-                          }
-                          testID="message-item-view-wrapper"
+                          style={{}}
+                          testID="message-author"
                         >
                           <View
-                            style={{}}
-                            testID="message-author"
+                            testID="user-avatar"
                           >
-                            <View
-                              testID="user-avatar"
-                            >
-                              <View
-                                style={
-                                  [
-                                    {
-                                      "alignItems": "center",
-                                      "borderRadius": 9999,
-                                      "justifyContent": "center",
-                                      "overflow": "hidden",
-                                    },
-                                    {
-                                      "height": 32,
-                                      "width": 32,
-                                    },
-                                    {
-                                      "backgroundColor": "#fcd579",
-                                    },
-                                    {
-                                      "borderColor": "rgba(26, 27, 37, 0.1)",
-                                      "borderWidth": 1,
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                testID="avatar-image"
-                              >
-                                <Image
-                                  accessibilityElementsHidden={true}
-                                  importantForAccessibility="no"
-                                  onError={[Function]}
-                                  source={
-                                    {
-                                      "uri": "https://i.imgur.com/LuuGvh0.png",
-                                    }
-                                  }
-                                  style={
-                                    [
-                                      {},
-                                      {
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                    ]
-                                  }
-                                />
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              [
-                                {
-                                  "gap": 4,
-                                },
-                                {
-                                  "alignItems": "flex-start",
-                                },
-                                {},
-                              ]
-                            }
-                            testID="message-components"
-                          >
-                            <View
-                              style={
-                                {
-                                  "zIndex": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  {
-                                    "alignSelf": "flex-end",
-                                  }
-                                }
-                              />
-                              <View
-                                style={
-                                  {
-                                    "alignSelf": "flex-start",
-                                  }
-                                }
-                              >
-                                <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": undefined,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
-                                  }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={{}}
-                                >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "borderTopLeftRadius": 20,
-                                          "borderTopRightRadius": 20,
-                                          "borderWidth": 0,
-                                          "overflow": "hidden",
-                                        },
-                                        {
-                                          "backgroundColor": "#ebeef1",
-                                          "borderBottomLeftRadius": 0,
-                                          "borderBottomRightRadius": 20,
-                                        },
-                                        {},
-                                        {},
-                                        {},
-                                      ]
-                                    }
-                                    testID="message-content-wrapper"
-                                  >
-                                    <View
-                                      style={
-                                        [
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          },
-                                          {},
-                                        ]
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        [
-                                          {
-                                            "maxWidth": 256,
-                                            "paddingHorizontal": 12,
-                                          },
-                                          {},
-                                          undefined,
-                                        ]
-                                      }
-                                      testID="message-text-container"
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "alignSelf": "stretch",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            {
-                                              "alignItems": "flex-start",
-                                              "flexDirection": "row",
-                                              "flexWrap": "wrap",
-                                              "fontSize": 17,
-                                              "justifyContent": "flex-start",
-                                              "lineHeight": 20,
-                                              "marginBottom": 8,
-                                              "marginTop": 8,
-                                            }
-                                          }
-                                        >
-                                          <Text
-                                            style={
-                                              {
-                                                "color": "#1a1b25",
-                                                "fontSize": 17,
-                                                "lineHeight": 20,
-                                                "writingDirection": "ltr",
-                                              }
-                                            }
-                                          >
-                                            Message6
-                                          </Text>
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                            <View
-                              style={
-                                {
-                                  "marginTop": -4,
-                                  "zIndex": 0,
-                                }
-                              }
-                            />
                             <View
                               style={
                                 [
                                   {
                                     "alignItems": "center",
-                                    "flexDirection": "row",
-                                    "gap": 4,
+                                    "borderRadius": 9999,
                                     "justifyContent": "center",
-                                    "maxWidth": "100%",
-                                    "paddingVertical": 4,
+                                    "overflow": "hidden",
                                   },
-                                  {},
+                                  {
+                                    "height": 32,
+                                    "width": 32,
+                                  },
+                                  {
+                                    "backgroundColor": "#fcd579",
+                                  },
+                                  {
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
+                                    "borderWidth": 1,
+                                  },
+                                  undefined,
                                 ]
                               }
-                              testID="message-status-time"
+                              testID="avatar-image"
                             >
-                              <Text
+                              <Image
+                                accessibilityElementsHidden={true}
+                                importantForAccessibility="no"
+                                onError={[Function]}
+                                source={
+                                  {
+                                    "uri": "https://i.imgur.com/LuuGvh0.png",
+                                  }
+                                }
                                 style={
+                                  [
+                                    {},
+                                    {
+                                      "height": 32,
+                                      "width": 32,
+                                    },
+                                  ]
+                                }
+                              />
+                            </View>
+                          </View>
+                        </View>
+                        <View
+                          style={
+                            [
+                              {
+                                "gap": 4,
+                              },
+                              {
+                                "alignItems": "flex-start",
+                              },
+                              {},
+                            ]
+                          }
+                          testID="message-components"
+                        >
+                          <View
+                            style={
+                              {
+                                "zIndex": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                {
+                                  "alignSelf": "flex-end",
+                                }
+                              }
+                            />
+                            <View
+                              style={
+                                {
+                                  "alignSelf": "flex-start",
+                                }
+                              }
+                            >
+                              <View
+                                accessibilityState={
+                                  {
+                                    "busy": undefined,
+                                    "checked": undefined,
+                                    "disabled": undefined,
+                                    "expanded": undefined,
+                                    "selected": undefined,
+                                  }
+                                }
+                                accessibilityValue={
+                                  {
+                                    "max": undefined,
+                                    "min": undefined,
+                                    "now": undefined,
+                                    "text": undefined,
+                                  }
+                                }
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={{}}
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "borderTopLeftRadius": 20,
+                                        "borderTopRightRadius": 20,
+                                        "borderWidth": 0,
+                                        "overflow": "hidden",
+                                      },
+                                      {
+                                        "backgroundColor": "#ebeef1",
+                                        "borderBottomLeftRadius": 0,
+                                        "borderBottomRightRadius": 20,
+                                      },
+                                      {},
+                                      {},
+                                      {},
+                                    ]
+                                  }
+                                  testID="message-content-wrapper"
+                                >
+                                  <View
+                                    style={
+                                      [
+                                        {
+                                          "gap": 8,
+                                          "paddingBottom": 0,
+                                          "paddingHorizontal": 8,
+                                          "paddingTop": 0,
+                                        },
+                                        {},
+                                      ]
+                                    }
+                                  />
+                                  <View
+                                    style={
+                                      [
+                                        {
+                                          "maxWidth": 256,
+                                          "paddingHorizontal": 12,
+                                        },
+                                        {},
+                                        undefined,
+                                      ]
+                                    }
+                                    testID="message-text-container"
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "alignSelf": "stretch",
+                                          },
+                                          undefined,
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          {
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "fontSize": 17,
+                                            "justifyContent": "flex-start",
+                                            "lineHeight": 20,
+                                            "marginBottom": 8,
+                                            "marginTop": 8,
+                                          }
+                                        }
+                                      >
+                                        <Text
+                                          style={
+                                            {
+                                              "color": "#1a1b25",
+                                              "fontSize": 17,
+                                              "lineHeight": 20,
+                                              "writingDirection": "ltr",
+                                            }
+                                          }
+                                        >
+                                          Message6
+                                        </Text>
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              {
+                                "marginTop": -4,
+                                "zIndex": 0,
+                              }
+                            }
+                          />
+                          <View
+                            style={
+                              [
+                                {
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "gap": 4,
+                                  "justifyContent": "center",
+                                  "maxWidth": "100%",
+                                  "paddingVertical": 4,
+                                },
+                                {},
+                              ]
+                            }
+                            testID="message-status-time"
+                          >
+                            <Text
+                              style={
+                                {
+                                  "color": "#687385",
+                                  "fontSize": 13,
+                                  "fontWeight": 400,
+                                  "lineHeight": 16,
+                                }
+                              }
+                            >
+                              2:50 PM
+                            </Text>
+                            <Text
+                              style={
+                                [
                                   {
                                     "color": "#687385",
                                     "fontSize": 13,
                                     "fontWeight": 400,
                                     "lineHeight": 16,
-                                  }
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "color": "#687385",
-                                      "fontSize": 13,
-                                      "fontWeight": 400,
-                                      "lineHeight": 16,
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                Edited
-                              </Text>
-                            </View>
+                                  },
+                                  {},
+                                ]
+                              }
+                            >
+                              Edited
+                            </Text>
                           </View>
                         </View>
                       </View>
                     </View>
                   </View>
-                  <View />
                 </View>
+                <View />
               </View>
             </View>
           </View>
@@ -674,325 +670,321 @@ exports[`Thread should match thread snapshot 1`] = `
               testID="message-list-item-516efa25-5d29-5c9a-ad2d-4cc183e785bd"
             >
               <View
-                testID="message-list-item-516efa25-5d29-5c9a-ad2d-4cc183e785bd"
-              >
-                <View
-                  style={
+                style={
+                  [
                     [
-                      [
-                        {},
-                      ],
-                      {
-                        "paddingHorizontal": 16,
-                      },
-                    ]
-                  }
-                  testID="message-wrapper"
-                >
-                  <View />
-                  <View>
+                      {},
+                    ],
+                    {
+                      "paddingHorizontal": 16,
+                    },
+                  ]
+                }
+                testID="message-wrapper"
+              >
+                <View />
+                <View>
+                  <View
+                    collapsable={false}
+                  >
                     <View
                       collapsable={false}
+                      hitSlop={
+                        {
+                          "left": 750,
+                          "right": 750,
+                        }
+                      }
+                      style={
+                        {
+                          "alignItems": "center",
+                          "flexDirection": "row",
+                          "zIndex": 1,
+                        }
+                      }
                     >
                       <View
-                        collapsable={false}
-                        hitSlop={
-                          {
-                            "left": 750,
-                            "right": 750,
-                          }
-                        }
+                        pointerEvents="box-none"
                         style={
                           {
-                            "alignItems": "center",
+                            "alignItems": "flex-end",
                             "flexDirection": "row",
-                            "zIndex": 1,
+                            "gap": 8,
+                            "paddingVertical": 8,
+                            "width": "100%",
                           }
                         }
+                        testID="message-item-view-wrapper"
                       >
                         <View
-                          pointerEvents="box-none"
-                          style={
-                            {
-                              "alignItems": "flex-end",
-                              "flexDirection": "row",
-                              "gap": 8,
-                              "paddingVertical": 8,
-                              "width": "100%",
-                            }
-                          }
-                          testID="message-item-view-wrapper"
+                          style={{}}
+                          testID="message-author"
                         >
                           <View
-                            style={{}}
-                            testID="message-author"
+                            testID="user-avatar"
                           >
-                            <View
-                              testID="user-avatar"
-                            >
-                              <View
-                                style={
-                                  [
-                                    {
-                                      "alignItems": "center",
-                                      "borderRadius": 9999,
-                                      "justifyContent": "center",
-                                      "overflow": "hidden",
-                                    },
-                                    {
-                                      "height": 32,
-                                      "width": 32,
-                                    },
-                                    {
-                                      "backgroundColor": "#8febbd",
-                                    },
-                                    {
-                                      "borderColor": "rgba(26, 27, 37, 0.1)",
-                                      "borderWidth": 1,
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                testID="avatar-image"
-                              >
-                                <Image
-                                  accessibilityElementsHidden={true}
-                                  importantForAccessibility="no"
-                                  onError={[Function]}
-                                  source={
-                                    {
-                                      "uri": "https://i.imgur.com/spueyAP.png",
-                                    }
-                                  }
-                                  style={
-                                    [
-                                      {},
-                                      {
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                    ]
-                                  }
-                                />
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              [
-                                {
-                                  "gap": 4,
-                                },
-                                {
-                                  "alignItems": "flex-start",
-                                },
-                                {},
-                              ]
-                            }
-                            testID="message-components"
-                          >
-                            <View
-                              style={
-                                {
-                                  "zIndex": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  {
-                                    "alignSelf": "flex-end",
-                                  }
-                                }
-                              />
-                              <View
-                                style={
-                                  {
-                                    "alignSelf": "flex-start",
-                                  }
-                                }
-                              >
-                                <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": undefined,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
-                                  }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={{}}
-                                >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "borderTopLeftRadius": 20,
-                                          "borderTopRightRadius": 20,
-                                          "borderWidth": 0,
-                                          "overflow": "hidden",
-                                        },
-                                        {
-                                          "backgroundColor": "#ebeef1",
-                                          "borderBottomLeftRadius": 0,
-                                          "borderBottomRightRadius": 20,
-                                        },
-                                        {},
-                                        {},
-                                        {},
-                                      ]
-                                    }
-                                    testID="message-content-wrapper"
-                                  >
-                                    <View
-                                      style={
-                                        [
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          },
-                                          {},
-                                        ]
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        [
-                                          {
-                                            "maxWidth": 256,
-                                            "paddingHorizontal": 12,
-                                          },
-                                          {},
-                                          undefined,
-                                        ]
-                                      }
-                                      testID="message-text-container"
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "alignSelf": "stretch",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            {
-                                              "alignItems": "flex-start",
-                                              "flexDirection": "row",
-                                              "flexWrap": "wrap",
-                                              "fontSize": 17,
-                                              "justifyContent": "flex-start",
-                                              "lineHeight": 20,
-                                              "marginBottom": 8,
-                                              "marginTop": 8,
-                                            }
-                                          }
-                                        >
-                                          <Text
-                                            style={
-                                              {
-                                                "color": "#1a1b25",
-                                                "fontSize": 17,
-                                                "lineHeight": 20,
-                                                "writingDirection": "ltr",
-                                              }
-                                            }
-                                          >
-                                            Message5
-                                          </Text>
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                            <View
-                              style={
-                                {
-                                  "marginTop": -4,
-                                  "zIndex": 0,
-                                }
-                              }
-                            />
                             <View
                               style={
                                 [
                                   {
                                     "alignItems": "center",
-                                    "flexDirection": "row",
-                                    "gap": 4,
+                                    "borderRadius": 9999,
                                     "justifyContent": "center",
-                                    "maxWidth": "100%",
-                                    "paddingVertical": 4,
+                                    "overflow": "hidden",
                                   },
-                                  {},
+                                  {
+                                    "height": 32,
+                                    "width": 32,
+                                  },
+                                  {
+                                    "backgroundColor": "#8febbd",
+                                  },
+                                  {
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
+                                    "borderWidth": 1,
+                                  },
+                                  undefined,
                                 ]
                               }
-                              testID="message-status-time"
+                              testID="avatar-image"
                             >
-                              <Text
+                              <Image
+                                accessibilityElementsHidden={true}
+                                importantForAccessibility="no"
+                                onError={[Function]}
+                                source={
+                                  {
+                                    "uri": "https://i.imgur.com/spueyAP.png",
+                                  }
+                                }
                                 style={
+                                  [
+                                    {},
+                                    {
+                                      "height": 32,
+                                      "width": 32,
+                                    },
+                                  ]
+                                }
+                              />
+                            </View>
+                          </View>
+                        </View>
+                        <View
+                          style={
+                            [
+                              {
+                                "gap": 4,
+                              },
+                              {
+                                "alignItems": "flex-start",
+                              },
+                              {},
+                            ]
+                          }
+                          testID="message-components"
+                        >
+                          <View
+                            style={
+                              {
+                                "zIndex": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                {
+                                  "alignSelf": "flex-end",
+                                }
+                              }
+                            />
+                            <View
+                              style={
+                                {
+                                  "alignSelf": "flex-start",
+                                }
+                              }
+                            >
+                              <View
+                                accessibilityState={
+                                  {
+                                    "busy": undefined,
+                                    "checked": undefined,
+                                    "disabled": undefined,
+                                    "expanded": undefined,
+                                    "selected": undefined,
+                                  }
+                                }
+                                accessibilityValue={
+                                  {
+                                    "max": undefined,
+                                    "min": undefined,
+                                    "now": undefined,
+                                    "text": undefined,
+                                  }
+                                }
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={{}}
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "borderTopLeftRadius": 20,
+                                        "borderTopRightRadius": 20,
+                                        "borderWidth": 0,
+                                        "overflow": "hidden",
+                                      },
+                                      {
+                                        "backgroundColor": "#ebeef1",
+                                        "borderBottomLeftRadius": 0,
+                                        "borderBottomRightRadius": 20,
+                                      },
+                                      {},
+                                      {},
+                                      {},
+                                    ]
+                                  }
+                                  testID="message-content-wrapper"
+                                >
+                                  <View
+                                    style={
+                                      [
+                                        {
+                                          "gap": 8,
+                                          "paddingBottom": 0,
+                                          "paddingHorizontal": 8,
+                                          "paddingTop": 0,
+                                        },
+                                        {},
+                                      ]
+                                    }
+                                  />
+                                  <View
+                                    style={
+                                      [
+                                        {
+                                          "maxWidth": 256,
+                                          "paddingHorizontal": 12,
+                                        },
+                                        {},
+                                        undefined,
+                                      ]
+                                    }
+                                    testID="message-text-container"
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "alignSelf": "stretch",
+                                          },
+                                          undefined,
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          {
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "fontSize": 17,
+                                            "justifyContent": "flex-start",
+                                            "lineHeight": 20,
+                                            "marginBottom": 8,
+                                            "marginTop": 8,
+                                          }
+                                        }
+                                      >
+                                        <Text
+                                          style={
+                                            {
+                                              "color": "#1a1b25",
+                                              "fontSize": 17,
+                                              "lineHeight": 20,
+                                              "writingDirection": "ltr",
+                                            }
+                                          }
+                                        >
+                                          Message5
+                                        </Text>
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              {
+                                "marginTop": -4,
+                                "zIndex": 0,
+                              }
+                            }
+                          />
+                          <View
+                            style={
+                              [
+                                {
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "gap": 4,
+                                  "justifyContent": "center",
+                                  "maxWidth": "100%",
+                                  "paddingVertical": 4,
+                                },
+                                {},
+                              ]
+                            }
+                            testID="message-status-time"
+                          >
+                            <Text
+                              style={
+                                {
+                                  "color": "#687385",
+                                  "fontSize": 13,
+                                  "fontWeight": 400,
+                                  "lineHeight": 16,
+                                }
+                              }
+                            >
+                              2:50 PM
+                            </Text>
+                            <Text
+                              style={
+                                [
                                   {
                                     "color": "#687385",
                                     "fontSize": 13,
                                     "fontWeight": 400,
                                     "lineHeight": 16,
-                                  }
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "color": "#687385",
-                                      "fontSize": 13,
-                                      "fontWeight": 400,
-                                      "lineHeight": 16,
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                Edited
-                              </Text>
-                            </View>
+                                  },
+                                  {},
+                                ]
+                              }
+                            >
+                              Edited
+                            </Text>
                           </View>
                         </View>
                       </View>
                     </View>
                   </View>
-                  <View />
                 </View>
+                <View />
               </View>
             </View>
           </View>
@@ -1018,358 +1010,354 @@ exports[`Thread should match thread snapshot 1`] = `
               testID="message-list-item-82a83b16-b611-527c-b3ac-765ef6220490"
             >
               <View
-                testID="message-list-item-82a83b16-b611-527c-b3ac-765ef6220490"
+                style={
+                  {
+                    "paddingVertical": 8,
+                  }
+                }
               >
                 <View
                   style={
                     {
-                      "paddingVertical": 8,
+                      "alignSelf": "center",
+                      "backgroundColor": "#f6f8fa",
+                      "borderRadius": 9999,
+                      "paddingHorizontal": 12,
+                      "paddingVertical": 4,
                     }
                   }
+                  testID="date-separator"
                 >
-                  <View
+                  <Text
                     style={
                       {
-                        "alignSelf": "center",
-                        "backgroundColor": "#f6f8fa",
-                        "borderRadius": 9999,
-                        "paddingHorizontal": 12,
-                        "paddingVertical": 4,
+                        "color": "#414552",
+                        "fontSize": 13,
+                        "fontWeight": 600,
+                        "lineHeight": 16,
                       }
                     }
-                    testID="date-separator"
                   >
-                    <Text
+                    05/05/2020
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={
+                  [
+                    [
+                      {},
+                    ],
+                    {
+                      "paddingHorizontal": 16,
+                    },
+                  ]
+                }
+                testID="message-wrapper"
+              >
+                <View />
+                <View>
+                  <View
+                    collapsable={false}
+                  >
+                    <View
+                      collapsable={false}
+                      hitSlop={
+                        {
+                          "left": 750,
+                          "right": 750,
+                        }
+                      }
                       style={
                         {
-                          "color": "#414552",
-                          "fontSize": 13,
-                          "fontWeight": 600,
-                          "lineHeight": 16,
+                          "alignItems": "center",
+                          "flexDirection": "row",
+                          "zIndex": 1,
                         }
                       }
                     >
-                      05/05/2020
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={
-                    [
-                      [
-                        {},
-                      ],
-                      {
-                        "paddingHorizontal": 16,
-                      },
-                    ]
-                  }
-                  testID="message-wrapper"
-                >
-                  <View />
-                  <View>
-                    <View
-                      collapsable={false}
-                    >
                       <View
-                        collapsable={false}
-                        hitSlop={
-                          {
-                            "left": 750,
-                            "right": 750,
-                          }
-                        }
+                        pointerEvents="box-none"
                         style={
                           {
-                            "alignItems": "center",
+                            "alignItems": "flex-end",
                             "flexDirection": "row",
-                            "zIndex": 1,
+                            "gap": 8,
+                            "paddingVertical": 8,
+                            "width": "100%",
                           }
                         }
+                        testID="message-item-view-wrapper"
                       >
                         <View
-                          pointerEvents="box-none"
-                          style={
-                            {
-                              "alignItems": "flex-end",
-                              "flexDirection": "row",
-                              "gap": 8,
-                              "paddingVertical": 8,
-                              "width": "100%",
-                            }
-                          }
-                          testID="message-item-view-wrapper"
+                          style={{}}
+                          testID="message-author"
                         >
                           <View
-                            style={{}}
-                            testID="message-author"
+                            testID="user-avatar"
                           >
-                            <View
-                              testID="user-avatar"
-                            >
-                              <View
-                                style={
-                                  [
-                                    {
-                                      "alignItems": "center",
-                                      "borderRadius": 9999,
-                                      "justifyContent": "center",
-                                      "overflow": "hidden",
-                                    },
-                                    {
-                                      "height": 32,
-                                      "width": 32,
-                                    },
-                                    {
-                                      "backgroundColor": "#fcd579",
-                                    },
-                                    {
-                                      "borderColor": "rgba(26, 27, 37, 0.1)",
-                                      "borderWidth": 1,
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                testID="avatar-image"
-                              >
-                                <Image
-                                  accessibilityElementsHidden={true}
-                                  importantForAccessibility="no"
-                                  onError={[Function]}
-                                  source={
-                                    {
-                                      "uri": "https://i.imgur.com/LuuGvh0.png",
-                                    }
-                                  }
-                                  style={
-                                    [
-                                      {},
-                                      {
-                                        "height": 32,
-                                        "width": 32,
-                                      },
-                                    ]
-                                  }
-                                />
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              [
-                                {
-                                  "gap": 4,
-                                },
-                                {
-                                  "alignItems": "flex-start",
-                                },
-                                {},
-                              ]
-                            }
-                            testID="message-components"
-                          >
-                            <View
-                              style={
-                                {
-                                  "zIndex": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  {
-                                    "alignSelf": "flex-end",
-                                  }
-                                }
-                              />
-                              <View
-                                style={
-                                  {
-                                    "alignSelf": "flex-start",
-                                  }
-                                }
-                              >
-                                <View
-                                  accessibilityState={
-                                    {
-                                      "busy": undefined,
-                                      "checked": undefined,
-                                      "disabled": undefined,
-                                      "expanded": undefined,
-                                      "selected": undefined,
-                                    }
-                                  }
-                                  accessibilityValue={
-                                    {
-                                      "max": undefined,
-                                      "min": undefined,
-                                      "now": undefined,
-                                      "text": undefined,
-                                    }
-                                  }
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={{}}
-                                >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "borderTopLeftRadius": 20,
-                                          "borderTopRightRadius": 20,
-                                          "borderWidth": 0,
-                                          "overflow": "hidden",
-                                        },
-                                        {
-                                          "backgroundColor": "#ebeef1",
-                                          "borderBottomLeftRadius": 0,
-                                          "borderBottomRightRadius": 20,
-                                        },
-                                        {},
-                                        {},
-                                        {},
-                                      ]
-                                    }
-                                    testID="message-content-wrapper"
-                                  >
-                                    <View
-                                      style={
-                                        [
-                                          {
-                                            "gap": 8,
-                                            "paddingBottom": 0,
-                                            "paddingHorizontal": 8,
-                                            "paddingTop": 0,
-                                          },
-                                          {},
-                                        ]
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        [
-                                          {
-                                            "maxWidth": 256,
-                                            "paddingHorizontal": 12,
-                                          },
-                                          {},
-                                          undefined,
-                                        ]
-                                      }
-                                      testID="message-text-container"
-                                    >
-                                      <View
-                                        style={
-                                          [
-                                            {
-                                              "alignSelf": "stretch",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            {
-                                              "alignItems": "flex-start",
-                                              "flexDirection": "row",
-                                              "flexWrap": "wrap",
-                                              "fontSize": 17,
-                                              "justifyContent": "flex-start",
-                                              "lineHeight": 20,
-                                              "marginBottom": 8,
-                                              "marginTop": 8,
-                                            }
-                                          }
-                                        >
-                                          <Text
-                                            style={
-                                              {
-                                                "color": "#1a1b25",
-                                                "fontSize": 17,
-                                                "lineHeight": 20,
-                                                "writingDirection": "ltr",
-                                              }
-                                            }
-                                          >
-                                            Message4
-                                          </Text>
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                            <View
-                              style={
-                                {
-                                  "marginTop": -4,
-                                  "zIndex": 0,
-                                }
-                              }
-                            />
                             <View
                               style={
                                 [
                                   {
                                     "alignItems": "center",
-                                    "flexDirection": "row",
-                                    "gap": 4,
+                                    "borderRadius": 9999,
                                     "justifyContent": "center",
-                                    "maxWidth": "100%",
-                                    "paddingVertical": 4,
+                                    "overflow": "hidden",
                                   },
-                                  {},
+                                  {
+                                    "height": 32,
+                                    "width": 32,
+                                  },
+                                  {
+                                    "backgroundColor": "#fcd579",
+                                  },
+                                  {
+                                    "borderColor": "rgba(26, 27, 37, 0.1)",
+                                    "borderWidth": 1,
+                                  },
+                                  undefined,
                                 ]
                               }
-                              testID="message-status-time"
+                              testID="avatar-image"
                             >
-                              <Text
+                              <Image
+                                accessibilityElementsHidden={true}
+                                importantForAccessibility="no"
+                                onError={[Function]}
+                                source={
+                                  {
+                                    "uri": "https://i.imgur.com/LuuGvh0.png",
+                                  }
+                                }
                                 style={
+                                  [
+                                    {},
+                                    {
+                                      "height": 32,
+                                      "width": 32,
+                                    },
+                                  ]
+                                }
+                              />
+                            </View>
+                          </View>
+                        </View>
+                        <View
+                          style={
+                            [
+                              {
+                                "gap": 4,
+                              },
+                              {
+                                "alignItems": "flex-start",
+                              },
+                              {},
+                            ]
+                          }
+                          testID="message-components"
+                        >
+                          <View
+                            style={
+                              {
+                                "zIndex": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                {
+                                  "alignSelf": "flex-end",
+                                }
+                              }
+                            />
+                            <View
+                              style={
+                                {
+                                  "alignSelf": "flex-start",
+                                }
+                              }
+                            >
+                              <View
+                                accessibilityState={
+                                  {
+                                    "busy": undefined,
+                                    "checked": undefined,
+                                    "disabled": undefined,
+                                    "expanded": undefined,
+                                    "selected": undefined,
+                                  }
+                                }
+                                accessibilityValue={
+                                  {
+                                    "max": undefined,
+                                    "min": undefined,
+                                    "now": undefined,
+                                    "text": undefined,
+                                  }
+                                }
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                                style={{}}
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "borderTopLeftRadius": 20,
+                                        "borderTopRightRadius": 20,
+                                        "borderWidth": 0,
+                                        "overflow": "hidden",
+                                      },
+                                      {
+                                        "backgroundColor": "#ebeef1",
+                                        "borderBottomLeftRadius": 0,
+                                        "borderBottomRightRadius": 20,
+                                      },
+                                      {},
+                                      {},
+                                      {},
+                                    ]
+                                  }
+                                  testID="message-content-wrapper"
+                                >
+                                  <View
+                                    style={
+                                      [
+                                        {
+                                          "gap": 8,
+                                          "paddingBottom": 0,
+                                          "paddingHorizontal": 8,
+                                          "paddingTop": 0,
+                                        },
+                                        {},
+                                      ]
+                                    }
+                                  />
+                                  <View
+                                    style={
+                                      [
+                                        {
+                                          "maxWidth": 256,
+                                          "paddingHorizontal": 12,
+                                        },
+                                        {},
+                                        undefined,
+                                      ]
+                                    }
+                                    testID="message-text-container"
+                                  >
+                                    <View
+                                      style={
+                                        [
+                                          {
+                                            "alignSelf": "stretch",
+                                          },
+                                          undefined,
+                                        ]
+                                      }
+                                    >
+                                      <Text
+                                        style={
+                                          {
+                                            "alignItems": "flex-start",
+                                            "flexDirection": "row",
+                                            "flexWrap": "wrap",
+                                            "fontSize": 17,
+                                            "justifyContent": "flex-start",
+                                            "lineHeight": 20,
+                                            "marginBottom": 8,
+                                            "marginTop": 8,
+                                          }
+                                        }
+                                      >
+                                        <Text
+                                          style={
+                                            {
+                                              "color": "#1a1b25",
+                                              "fontSize": 17,
+                                              "lineHeight": 20,
+                                              "writingDirection": "ltr",
+                                            }
+                                          }
+                                        >
+                                          Message4
+                                        </Text>
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              {
+                                "marginTop": -4,
+                                "zIndex": 0,
+                              }
+                            }
+                          />
+                          <View
+                            style={
+                              [
+                                {
+                                  "alignItems": "center",
+                                  "flexDirection": "row",
+                                  "gap": 4,
+                                  "justifyContent": "center",
+                                  "maxWidth": "100%",
+                                  "paddingVertical": 4,
+                                },
+                                {},
+                              ]
+                            }
+                            testID="message-status-time"
+                          >
+                            <Text
+                              style={
+                                {
+                                  "color": "#687385",
+                                  "fontSize": 13,
+                                  "fontWeight": 400,
+                                  "lineHeight": 16,
+                                }
+                              }
+                            >
+                              2:50 PM
+                            </Text>
+                            <Text
+                              style={
+                                [
                                   {
                                     "color": "#687385",
                                     "fontSize": 13,
                                     "fontWeight": 400,
                                     "lineHeight": 16,
-                                  }
-                                }
-                              >
-                                2:50 PM
-                              </Text>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "color": "#687385",
-                                      "fontSize": 13,
-                                      "fontWeight": 400,
-                                      "lineHeight": 16,
-                                    },
-                                    {},
-                                  ]
-                                }
-                              >
-                                Edited
-                              </Text>
-                            </View>
+                                  },
+                                  {},
+                                ]
+                              }
+                            >
+                              Edited
+                            </Text>
                           </View>
                         </View>
                       </View>
                     </View>
                   </View>
-                  <View />
                 </View>
+                <View />
               </View>
             </View>
           </View>
