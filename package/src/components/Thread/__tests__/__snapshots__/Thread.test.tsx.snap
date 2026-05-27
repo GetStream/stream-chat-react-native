@@ -589,14 +589,6 @@ exports[`Thread should match thread snapshot 1`] = `
                           </View>
                           <View
                             style={
-                              {
-                                "marginTop": -4,
-                                "zIndex": 0,
-                              }
-                            }
-                          />
-                          <View
-                            style={
                               [
                                 {
                                   "alignItems": "center",
@@ -927,14 +919,6 @@ exports[`Thread should match thread snapshot 1`] = `
                               </View>
                             </View>
                           </View>
-                          <View
-                            style={
-                              {
-                                "marginTop": -4,
-                                "zIndex": 0,
-                              }
-                            }
-                          />
                           <View
                             style={
                               [
@@ -1302,14 +1286,6 @@ exports[`Thread should match thread snapshot 1`] = `
                           </View>
                           <View
                             style={
-                              {
-                                "marginTop": -4,
-                                "zIndex": 0,
-                              }
-                            }
-                          />
-                          <View
-                            style={
                               [
                                 {
                                   "alignItems": "center",
@@ -1634,14 +1610,6 @@ exports[`Thread should match thread snapshot 1`] = `
                               </View>
                             </View>
                           </View>
-                          <View
-                            style={
-                              {
-                                "marginTop": -4,
-                                "zIndex": 0,
-                              }
-                            }
-                          />
                           <View
                             style={
                               [
