@@ -9,9 +9,9 @@ import { ChannelAllMembersModal } from './ChannelAllMembersModal';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
@@ -21,7 +21,8 @@ export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onViewAllMembersPress } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
-  const { updateChannelMembers } = useOwnCapabilitiesContext();
+  const ownCapabilities = useChannelOwnCapabilities(channel);
+  const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
   const {
     theme: {
       channelDetailsScreen: {

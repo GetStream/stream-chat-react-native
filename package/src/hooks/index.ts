@@ -2,6 +2,7 @@ export * from '../a11y';
 export * from './actions';
 export * from './useAppStateListener';
 export * from './useChannelMembershipState';
+export * from './useChannelOwnCapabilities';
 export * from './useChannelMuteActive';
 export * from './useIsDirectChat';
 export * from './useStreami18n';
