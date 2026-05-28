@@ -69,13 +69,13 @@ const ChannelEditImageSheetInner = ({
   } = useTheme();
   const styles = useStyles();
 
-  const { close } = useBottomSheetContext();
+  const { close, dismiss } = useBottomSheetContext();
 
   const onSelect = useCallback(
     (callback: () => void) => {
-      close(callback);
+      dismiss(callback);
     },
-    [close],
+    [dismiss],
   );
 
   const items = useMemo<SheetItem[]>(() => {
@@ -172,13 +172,13 @@ export const ChannelEditImageSheet = ({
   onSelectReset,
   visible,
 }: ChannelEditImageSheetProps) => {
-  const handleClose = useStableCallback(onClose);
+  // const handleClose = useStableCallback(onClose);
   const handleSelectCamera = useStableCallback(onSelectCamera);
   const handleSelectLibrary = useStableCallback(onSelectLibrary);
   const handleSelectReset = useStableCallback(onSelectReset ?? (() => undefined));
 
   return (
-    <BottomSheetModal enableDynamicSizing lazy onClose={handleClose} visible={visible}>
+    <BottomSheetModal enableDynamicSizing lazy onClose={onClose} visible={visible}>
       <ChannelEditImageSheetInner
         onSelectCamera={handleSelectCamera}
         onSelectLibrary={handleSelectLibrary}

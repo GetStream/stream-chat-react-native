@@ -45,7 +45,7 @@ import { primitives } from '../../theme';
 
 export type BottomSheetModalProps = {
   /**
-   * Function to call when the modal is closed.
+   * Function to call when the modal is closed or dismissed.
    * @returns void
    */
   onClose: () => void;
@@ -178,16 +178,29 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     callback?.();
   });
 
-  const finishClose = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
-    pendingCloseCallbackRef.current = closeAnimationFinishedCallback;
-    setIsDismissing(true);
-    if (Platform.OS !== 'ios') {
-      // RN's `Modal.onDismiss` is iOS-only, so synthesize the same signal on
-      // other platforms after a short delay that gives the Dialog time to
-      // detach. Matches the previous Android behavior.
-      setTimeout(handleNativeModalDismiss, 100);
-    }
-  });
+  const finishClose = useStableCallback(
+    ({
+      closeAnimationFinishedCallback,
+      shouldDismiss,
+    }: {
+      closeAnimationFinishedCallback?: () => void;
+      shouldDismiss?: boolean;
+    }) => {
+      pendingCloseCallbackRef.current = closeAnimationFinishedCallback;
+      if (Platform.OS !== 'ios') {
+        // RN's `Modal.onDismiss` is iOS-only, so synthesize the same signal on
+        // other platforms after a short delay that gives the Dialog time to
+        // detach. Matches the previous Android behavior.
+        setTimeout(handleNativeModalDismiss, 100);
+      } else {
+        if (shouldDismiss) {
+          setIsDismissing(true);
+          return;
+        }
+        handleNativeModalDismiss();
+      }
+    },
+  );
 
   const closeFromGesture = useStableCallback(() => {
     requestAnimationFrame(() => {
@@ -206,23 +219,39 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     });
   });
 
+  const closeInternal = useStableCallback(
+    ({
+      closeAnimationFinishedCallback,
+      shouldDismiss,
+    }: {
+      closeAnimationFinishedCallback?: () => void;
+      shouldDismiss?: boolean;
+    }) => {
+      if (!visible || !isOpen.value) {
+        return;
+      }
+
+      isOpen.value = false;
+      isOpening.value = false;
+
+      sheetTranslateY.value = withTiming(
+        maxHeight,
+        { duration: 250, easing: Easing.out(Easing.cubic) },
+        (finished) => {
+          if (finished) {
+            runOnJS(finishClose)({ closeAnimationFinishedCallback, shouldDismiss });
+          }
+        },
+      );
+    },
+  );
+
   const close = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
-    if (!visible || !isOpen.value) {
-      return;
-    }
+    closeInternal({ closeAnimationFinishedCallback });
+  });
 
-    isOpen.value = false;
-    isOpening.value = false;
-
-    sheetTranslateY.value = withTiming(
-      maxHeight,
-      { duration: 250, easing: Easing.out(Easing.cubic) },
-      (finished) => {
-        if (finished) {
-          runOnJS(finishClose)(closeAnimationFinishedCallback);
-        }
-      },
-    );
+  const dismiss = useStableCallback((dismissFinishedCallback?: () => void) => {
+    closeInternal({ closeAnimationFinishedCallback: dismissFinishedCallback, shouldDismiss: true });
   });
 
   // modal opening layout effect - we make sure to only show the content
@@ -514,16 +543,17 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
 
   const bottomSheetModalContextValue = useMemo(
     () => ({
+      dismiss,
       close,
       currentSnapIndex,
       topSnapIndex,
     }),
-    [close, currentSnapIndex, topSnapIndex],
+    [dismiss, close, currentSnapIndex, topSnapIndex],
   );
 
   return (
     <Modal
-      onDismiss={Platform.OS === 'ios' ? handleNativeModalDismiss : undefined}
+      onDismiss={handleNativeModalDismiss}
       onRequestClose={onClose}
       transparent
       visible={visible && !isDismissing}
