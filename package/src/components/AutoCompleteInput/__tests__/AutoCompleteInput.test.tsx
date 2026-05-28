@@ -170,6 +170,53 @@ describe('AutoCompleteInput', () => {
     });
   });
 
+  it('forwards the real caret position to handleChange when typing in the middle of multi-line text', async () => {
+    // Regression: when the user inserts a character somewhere other than the
+    // end of the text (e.g. typing "@" between paragraphs), the previous
+    // implementation always passed selection.end = newText.length, which
+    // caused the LLC mention-trigger regex to miss "@" on multi-line input
+    // because it only tolerates one whitespace between "@" and end-of-string.
+    const { textComposer } = channel.messageComposer;
+    const spyHandleChange = jest.spyOn(textComposer, 'handleChange');
+
+    renderComponent({ channelProps: { channel }, client, props: {} });
+
+    const input = screen.getByTestId('auto-complete-text-input');
+
+    // Seed the input with some multi-line text.
+    const seeded = 'asdf\n\n\n\n dsfa';
+    act(() => {
+      fireEvent.changeText(input, seeded);
+    });
+
+    // Place the caret between the two leading newlines (position 6 — right
+    // after "asdf\n\n", before the trailing "\n\n dsfa").
+    const caret = 6;
+    act(() => {
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: caret, start: caret } },
+      });
+    });
+
+    spyHandleChange.mockClear();
+
+    // User types "@" at the caret position.
+    const inserted = 'asdf\n\n@\n\n dsfa';
+    act(() => {
+      fireEvent.changeText(input, inserted);
+    });
+
+    await waitFor(() => {
+      // The cursor should land right after the inserted "@", not at the end
+      // of the full string — otherwise the LLC's mention trigger regex won't
+      // detect the "@" because of the trailing "\n\n dsfa".
+      expect(spyHandleChange).toHaveBeenCalledWith({
+        selection: { end: caret + 1, start: caret + 1 },
+        text: inserted,
+      });
+    });
+  });
+
   it('should call the textComposer setSelection when the onSelectionChange is triggered', async () => {
     const { textComposer } = channel.messageComposer;
 

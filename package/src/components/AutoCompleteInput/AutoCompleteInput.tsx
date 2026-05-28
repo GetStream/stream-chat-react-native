@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   I18nManager,
   Platform,
@@ -109,6 +109,14 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { enabled } = useStateStore(messageComposer.configState, configStateSelector);
 
+  // Track the pre-keystroke text + selection so we can derive the real caret on
+  // the next onChangeText. RN's onChangeText doesn't carry cursor info, and
+  // onSelectionChange fires after onChangeText for typing — so we compute the
+  // new caret as `prevSelection.end + (newText.length - prevText.length)`,
+  // which is correct for inserts, deletes, and selection replacements.
+  const prevTextRef = useRef('');
+  const selectionRef = useRef<{ end: number; start: number }>({ end: 0, start: 0 });
+
   const maxMessageLength = useMemo(() => {
     return channel.getConfig()?.max_message_length;
   }, [channel]);
@@ -119,6 +127,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   useEffect(() => {
     setLocalText(text);
+    prevTextRef.current = text;
+    selectionRef.current = { end: text.length, start: text.length };
   }, [text]);
 
   const clearState = useCallback(() => {
@@ -148,6 +158,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const handleSelectionChange = useCallback(
     (e: TextInputSelectionChangeEvent) => {
       const { selection } = e.nativeEvent;
+      selectionRef.current = selection;
       textComposer.setSelection(selection);
     },
     [textComposer],
@@ -157,10 +168,17 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     (newText: string) => {
       setLocalText(newText);
 
+      const delta = newText.length - prevTextRef.current.length;
+      const projectedCursor = selectionRef.current.end + delta;
+      const newCursor = Math.max(0, Math.min(newText.length, projectedCursor));
+
+      prevTextRef.current = newText;
+      selectionRef.current = { end: newCursor, start: newCursor };
+
       textComposer.handleChange({
         selection: {
-          end: newText.length,
-          start: newText.length,
+          end: newCursor,
+          start: newCursor,
         },
         text: newText,
       });
