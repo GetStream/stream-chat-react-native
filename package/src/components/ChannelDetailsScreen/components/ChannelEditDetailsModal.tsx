@@ -9,6 +9,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
+import type { File } from '../../../types/types';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
@@ -30,19 +31,26 @@ type ChannelEditDetailsModalContentProps = {
 
 const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalContentProps) => {
   const { channel } = useChannelDetailsContext();
-  const { updateName } = useChannelActions(channel);
+  const { updateImage, updateName } = useChannelActions(channel);
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();
   const initialName = (channel.data?.name as string | undefined) ?? '';
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
+  // Tri-state: `undefined` = untouched, `File` = picked, `null` = reset.
+  const [image, setImage] = useState<File | null | undefined>(undefined);
   const trimmedName = name.trim();
-  const confirmEnabled = trimmedName !== initialName && !saving;
+  const nameDirty = trimmedName !== initialName;
+  const imageDirty = image !== undefined;
+  const confirmEnabled = (nameDirty || imageDirty) && !saving;
 
   const handleNameChange = useStableCallback((newName: string) => setName(newName));
+  const handleImagePicked = useStableCallback((file: File) => setImage(file));
+  const handleImageReset = useStableCallback(() => setImage(null));
 
   const handleClose = useStableCallback(() => {
     setName(initialName);
+    setImage(undefined);
     onClose();
   });
 
@@ -50,11 +58,34 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
     if (!confirmEnabled) return;
     setSaving(true);
     try {
-      await updateName(trimmedName, {
-        onSuccess: () => {
-          onClose();
-        },
-      });
+      let nameOk = true;
+      let imageOk = true;
+      const tasks: Promise<void>[] = [];
+      if (nameDirty) {
+        nameOk = false;
+        tasks.push(
+          updateName(trimmedName, {
+            onSuccess: () => {
+              nameOk = true;
+            },
+          }),
+        );
+      }
+      if (imageDirty) {
+        imageOk = false;
+        tasks.push(
+          updateImage(
+            image === null ? null : { contentType: image.type, name: image.name, uri: image.uri },
+            {
+              onSuccess: () => {
+                imageOk = true;
+              },
+            },
+          ),
+        );
+      }
+      await Promise.all(tasks);
+      if (nameOk && imageOk) onClose();
     } finally {
       setSaving(false);
     }
@@ -80,7 +111,11 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
         }
         title={t('Edit')}
       />
-      <ChannelEditDetails onNameChange={handleNameChange} />
+      <ChannelEditDetails
+        onImagePicked={handleImagePicked}
+        onImageReset={handleImageReset}
+        onNameChange={handleNameChange}
+      />
       <NotificationList />
     </>
   );

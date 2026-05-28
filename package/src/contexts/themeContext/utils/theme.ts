@@ -224,6 +224,12 @@ export type Theme = {
       container: ViewStyle;
       header: ViewStyle;
     };
+    editImageSheet: {
+      actionsList: ViewStyle;
+      container: ViewStyle;
+      header: ViewStyle;
+      headerTitle: TextStyle;
+    };
     modal: {
       body: ViewStyle;
       header: ViewStyle;
@@ -1250,6 +1256,12 @@ export const defaultTheme: Theme = {
       actionsList: {},
       container: {},
       header: {},
+    },
+    editImageSheet: {
+      actionsList: {},
+      container: {},
+      header: {},
+      headerTitle: {},
     },
     modal: {
       body: {},

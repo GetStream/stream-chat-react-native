@@ -32,6 +32,13 @@ export type GetMemberRoleLabel = (params: {
 export type ChannelDetailsScreenProps = {
   channel: Channel;
   /**
+   * Compress image with quality (from 0 to 1, where 1 is best quality).
+   * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
+   * while a value of 0.8 will reduce the file size by about half or less compared to a value of 1.
+   * Image picker defaults to 0.8 for iOS and 1 for Android
+   */
+  compressImageQuality?: number;
+  /**
    * Customize the list of action items rendered in the channel details actions section.
    *
    * Receives the default items the SDK produces for the current channel and returns the
@@ -128,6 +135,7 @@ export const ChannelDetailsScreenContent = () => {
 
 export const ChannelDetailsScreen = ({
   channel,
+  compressImageQuality,
   getChannelActionItems,
   getChannelMemberActionItems,
   getMemberRoleLabel,
@@ -143,6 +151,7 @@ export const ChannelDetailsScreen = ({
   const value = useMemo<ChannelDetailsContextValue>(
     () => ({
       channel,
+      compressImageQuality,
       getChannelActionItems,
       getChannelMemberActionItems,
       getMemberRoleLabel,
@@ -155,6 +164,7 @@ export const ChannelDetailsScreen = ({
     }),
     [
       channel,
+      compressImageQuality,
       getChannelActionItems,
       getChannelMemberActionItems,
       getMemberRoleLabel,

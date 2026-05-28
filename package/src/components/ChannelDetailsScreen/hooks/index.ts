@@ -4,4 +4,5 @@ export * from './useChannelDetailsMemberRoleLabel';
 export * from './useChannelDetailsMemberStatusText';
 export * from './useChannelDetailsMembersPreview';
 export * from './useChannelDetailsActionItems';
+export * from './useEditChannelImage';
 export * from './useUserActivityStatus';

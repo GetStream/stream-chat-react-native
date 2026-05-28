@@ -393,8 +393,13 @@
   "unsupported file type": "סוג קובץ לא נתמך",
   "Already a member": "כבר חבר",
   "Channel name": "Channel name",
+  "Edit Group Picture": "Edit Group Picture",
+  "Choose Image": "Choose Image",
+  "Take Photo": "Take Photo",
   "Upload": "Upload",
   "a11y/Channel name": "Channel name",
   "a11y/Confirm edit channel": "Confirm edit channel",
-  "a11y/Upload channel image": "Upload channel image"
+  "a11y/Upload channel image": "Upload channel image",
+  "Reset Picture": "Reset Picture",
+  "a11y/Close edit picture sheet": "Close edit picture sheet"
 }

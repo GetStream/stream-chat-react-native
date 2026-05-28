@@ -13,3 +13,4 @@ export * from './ChannelDetailsProfile';
 export * from './ChannelDetailsScreenHeader';
 export * from './ChannelEditDetails';
 export * from './ChannelEditDetailsModal';
+export * from './ChannelEditImageSheet';
