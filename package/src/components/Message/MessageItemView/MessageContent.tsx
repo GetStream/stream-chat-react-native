@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { AnimatableNumericValue, ColorValue, Pressable, StyleSheet, View } from 'react-native';
+import { ColorValue, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -169,47 +169,46 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
-  const getBorderRadius = () => {
+  // Merged background-color + border-radius object passed directly into the
+  // bubble's style array (no spread at the call site). Theme-defined radii
+  // override the group-position-computed defaults; theme-undefined radii are
+  // omitted so they don't override the computed defaults.
+  const bubbleColorAndRadius = useMemo<ViewStyle>(() => {
     // enum('top', 'middle', 'bottom', 'single')
     const groupPosition = groupStyles?.[0];
-
     const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
-    let borderBottomLeftRadius = components.messageBubbleRadiusGroupBottom;
-    let borderBottomRightRadius = components.messageBubbleRadiusGroupBottom;
 
+    let computedBottomLeftRadius = components.messageBubbleRadiusGroupBottom;
+    let computedBottomRightRadius = components.messageBubbleRadiusGroupBottom;
     if (isBottomOrSingle) {
-      // add relevant sharp corner
+      // add relevant sharp corner (the "tail")
       if (isMyMessage) {
-        borderBottomRightRadius = components.messageBubbleRadiusTail;
+        computedBottomRightRadius = components.messageBubbleRadiusTail;
       } else {
-        borderBottomLeftRadius = components.messageBubbleRadiusTail;
+        computedBottomLeftRadius = components.messageBubbleRadiusTail;
       }
     }
 
-    return {
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
+    const style: ViewStyle = {
+      backgroundColor,
+      borderBottomLeftRadius: borderBottomLeftRadius ?? computedBottomLeftRadius,
+      borderBottomRightRadius: borderBottomRightRadius ?? computedBottomRightRadius,
     };
-  };
+    if (borderRadius !== undefined) style.borderRadius = borderRadius;
+    if (borderTopLeftRadius !== undefined) style.borderTopLeftRadius = borderTopLeftRadius;
+    if (borderTopRightRadius !== undefined) style.borderTopRightRadius = borderTopRightRadius;
 
-  const getBorderRadiusFromTheme = () => {
-    const bordersFromTheme: Record<string, string | AnimatableNumericValue | undefined> = {
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
-      borderRadius,
-      borderTopLeftRadius,
-      borderTopRightRadius,
-    };
-
-    // filter out undefined values
-    for (const key in bordersFromTheme) {
-      if (bordersFromTheme[key] === undefined) {
-        delete bordersFromTheme[key];
-      }
-    }
-
-    return bordersFromTheme;
-  };
+    return style;
+  }, [
+    backgroundColor,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
+    borderRadius,
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    groupStyles,
+    isMyMessage,
+  ]);
 
   const { setNativeScrollability } = useMessageListItemContext();
   const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
@@ -357,11 +356,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       <View
         style={[
           styles.containerInner,
-          {
-            backgroundColor,
-            ...getBorderRadius(),
-            ...getBorderRadiusFromTheme(),
-          },
+          bubbleColorAndRadius,
           noBorder ? { borderWidth: 0 } : {},
           containerInner,
           messageGroupedSingleOrBottom
