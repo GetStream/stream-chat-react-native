@@ -126,6 +126,14 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
   const wasVisibleRef = useRef(false);
 
   const [renderContent, setRenderContent] = useState(!lazy);
+  // We keep the underlying RN `<Modal>` mounted while it dismisses so we can
+  // listen for its `onDismiss` (iOS) and only then run the consumer's
+  // close-finished callback. Without this, callbacks that present another
+  // native modal (e.g. `UIImagePickerController` for camera capture) can race
+  // the still-dismissing view controller and crash with "Application tried to
+  // present modal view controller on top of itself" on iOS.
+  const [isDismissing, setIsDismissing] = useState(false);
+  const pendingCloseCallbackRef = useRef<(() => void) | undefined>(undefined);
 
   const showContent = useStableCallback(() => {
     if (lazy) {
@@ -163,12 +171,21 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     );
   });
 
-  const finishClose = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
+  const handleNativeModalDismiss = useStableCallback(() => {
+    const callback = pendingCloseCallbackRef.current;
+    pendingCloseCallbackRef.current = undefined;
     onClose();
-    if (closeAnimationFinishedCallback) {
-      Platform.OS === 'ios'
-        ? closeAnimationFinishedCallback()
-        : setTimeout(() => closeAnimationFinishedCallback(), 100);
+    callback?.();
+  });
+
+  const finishClose = useStableCallback((closeAnimationFinishedCallback?: () => void) => {
+    pendingCloseCallbackRef.current = closeAnimationFinishedCallback;
+    setIsDismissing(true);
+    if (Platform.OS !== 'ios') {
+      // RN's `Modal.onDismiss` is iOS-only, so synthesize the same signal on
+      // other platforms after a short delay that gives the Dialog time to
+      // detach. Matches the previous Android behavior.
+      setTimeout(handleNativeModalDismiss, 100);
     }
   });
 
@@ -505,7 +522,12 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
   );
 
   return (
-    <Modal onRequestClose={onClose} transparent visible={visible}>
+    <Modal
+      onDismiss={Platform.OS === 'ios' ? handleNativeModalDismiss : undefined}
+      onRequestClose={onClose}
+      transparent
+      visible={visible && !isDismissing}
+    >
       <GestureHandlerRootView style={styles.sheetContentContainer}>
         <View style={[styles.overlay, overlayTheme]}>
           <Animated.View
