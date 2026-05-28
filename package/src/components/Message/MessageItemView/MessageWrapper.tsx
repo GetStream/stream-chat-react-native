@@ -30,7 +30,7 @@ export type MessageWrapperProps = {
   nextMessage?: LocalMessage;
 };
 
-export const MessageWrapper = React.memo((props: MessageWrapperProps) => {
+export const MessageWrapper = React.memo(function MessageWrapper(props: MessageWrapperProps) {
   const { message, previousMessage, nextMessage } = props;
   const { client } = useChatContext();
   const {

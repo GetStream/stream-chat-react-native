@@ -2,8 +2,6 @@ import { useMemo, useRef } from 'react';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 
-import { stringifyMessage } from '../../../utils/utils';
-
 function useStableRefValue<T>(value: T): T {
   const ref = useRef(value);
 
@@ -60,15 +58,7 @@ export const useCreateMessageContext = ({
   setQuotedMessage,
 }: MessageContextValue) => {
   const stableGroupStyles = useStableRefValue(groupStyles);
-  const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
-  const stringifiedMessage = stringifyMessage({ message });
-
-  const membersValue = JSON.stringify(members);
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
-
-  const stringifiedQuotedMessage = message.quoted_message
-    ? stringifyMessage({ includeReactions: false, message: message.quoted_message })
-    : '';
 
   const messageContext: MessageContextValue = useMemo(
     () => ({
@@ -126,12 +116,39 @@ export const useCreateMessageContext = ({
       hasReactions,
       messageHasOnlySingleAttachment,
       lastGroupMessage,
-      membersValue,
+      // `members` ref is stable in steady-state (high-frequency events like
+      // message.new / message.read / typing.* don't trigger the SDK's
+      // copyStateFromChannel shallow-spread). When it does change, the
+      // outer `Message.areEqual` `Object.keys.length` guard already
+      // filters inner-member updates, so ref-equality here matches the
+      // existing observable semantics.
+      members,
       myMessageThemeString,
       messageOverlayId,
-      reactionsValue,
-      stringifiedMessage,
-      stringifiedQuotedMessage,
+      // Replaces `stringifiedMessage` + `reactionsValue`: stream-chat-js
+      // `_updateMessage` always replaces the Message object (and these
+      // nested fields with it) rather than mutating in place, so
+      // ref-equality on the fields equals content-equality.
+      message.type,
+      message.deleted_at,
+      message.text,
+      message.reply_count,
+      message.status,
+      message.updated_at,
+      message.i18n,
+      message.attachments,
+      message.latest_reactions,
+      message.reaction_groups,
+      // Replaces `stringifiedQuotedMessage` — matches the
+      // `stringifyMessage({ includeReactions: false })` field list.
+      message.quoted_message?.type,
+      message.quoted_message?.deleted_at,
+      message.quoted_message?.text,
+      message.quoted_message?.reply_count,
+      message.quoted_message?.status,
+      message.quoted_message?.updated_at,
+      message.quoted_message?.i18n,
+      message.quoted_message?.attachments,
       readBy,
       deliveredToCount,
       showAvatar,
