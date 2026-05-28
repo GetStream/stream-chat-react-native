@@ -99,8 +99,13 @@ describe('AutoCompleteInput', () => {
 
     const input = queryByTestId('auto-complete-text-input');
 
+    // RN fires both events for every keystroke; we forward to the LLC once
+    // both have settled, so the test mirrors that.
     act(() => {
       fireEvent.changeText(input, 'hello');
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: 5, start: 5 } },
+      });
     });
 
     await waitFor(() => {
@@ -110,6 +115,119 @@ describe('AutoCompleteInput', () => {
         text: 'hello',
       });
       expect(input.props.value).toBe('hello');
+    });
+  });
+
+  it('forwards the real caret position to handleChange when typing in the middle of multi-line text', async () => {
+    // Regression: when the user inserts a character somewhere other than the
+    // end of the text (e.g. typing "@" between paragraphs), the original
+    // implementation passed selection.end = newText.length, which caused the
+    // LLC mention-trigger regex to miss "@" on multi-line input because it
+    // only tolerates one whitespace between "@" and end-of-string.
+    const { textComposer } = channel.messageComposer;
+    const spyHandleChange = jest.spyOn(textComposer, 'handleChange');
+
+    renderComponent({ channelProps: { channel }, client, props: {} });
+
+    const input = screen.getByTestId('auto-complete-text-input');
+
+    // Seed the input with some multi-line text and place the caret between
+    // the two leading newlines (position 6 — right after "asdf\n\n", before
+    // the trailing "\n\n dsfa").
+    const seeded = 'asdf\n\n\n\n dsfa';
+    const caret = 6;
+    act(() => {
+      fireEvent.changeText(input, seeded);
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: caret, start: caret } },
+      });
+    });
+
+    await waitFor(() => {
+      expect(spyHandleChange).toHaveBeenCalledWith({
+        selection: { end: caret, start: caret },
+        text: seeded,
+      });
+    });
+
+    spyHandleChange.mockClear();
+
+    // User types "@" at the caret. Both events fire in a single keystroke.
+    const inserted = 'asdf\n\n@\n\n dsfa';
+    const newCaret = caret + 1;
+    act(() => {
+      fireEvent.changeText(input, inserted);
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: newCaret, start: newCaret } },
+      });
+    });
+
+    await waitFor(() => {
+      // Must land right after the inserted "@", not at end-of-string —
+      // otherwise the LLC mention regex misses "@" because of the trailing
+      // "\n\n dsfa".
+      expect(spyHandleChange).toHaveBeenCalledWith({
+        selection: { end: newCaret, start: newCaret },
+        text: inserted,
+      });
+    });
+  });
+
+  it('forwards the real caret to handleChange when the user deletes "@" and retypes it', async () => {
+    // Regression: deleting "@" and retyping it on the same single line caused
+    // the picker to stay hidden on iOS — and on Android even with newlines.
+    // The bug was that we derived the caret from a text-length delta plus a
+    // stale ref; the coalesced flush now uses whatever native actually
+    // reported via onSelectionChange.
+    const { textComposer } = channel.messageComposer;
+    const spyHandleChange = jest.spyOn(textComposer, 'handleChange');
+
+    renderComponent({ channelProps: { channel }, client, props: {} });
+
+    const input = screen.getByTestId('auto-complete-text-input');
+
+    // 1. Seed "asdf @ dsfa" with the caret right after "@".
+    act(() => {
+      fireEvent.changeText(input, 'asdf @ dsfa');
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: 6, start: 6 } },
+      });
+    });
+
+    await waitFor(() => {
+      expect(spyHandleChange).toHaveBeenCalledWith({
+        selection: { end: 6, start: 6 },
+        text: 'asdf @ dsfa',
+      });
+    });
+
+    // 2. Delete the "@" — text shrinks by one, caret moves to position 5.
+    act(() => {
+      fireEvent.changeText(input, 'asdf  dsfa');
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: 5, start: 5 } },
+      });
+    });
+
+    spyHandleChange.mockClear();
+
+    // 3. Retype "@" at position 5.
+    act(() => {
+      fireEvent.changeText(input, 'asdf @ dsfa');
+      fireEvent(input, 'selectionChange', {
+        nativeEvent: { selection: { end: 6, start: 6 } },
+      });
+    });
+
+    await waitFor(() => {
+      // The cursor must be reported at 6 (right after the new "@"), not
+      // somewhere stale. With a wrong caret, the LLC slice would include
+      // " dsfa" after the "@" and the query would be " dsfa" instead of "",
+      // which returns zero users → picker stays hidden.
+      expect(spyHandleChange).toHaveBeenCalledWith({
+        selection: { end: 6, start: 6 },
+        text: 'asdf @ dsfa',
+      });
     });
   });
 
