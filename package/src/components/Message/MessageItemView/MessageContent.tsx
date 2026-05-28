@@ -357,7 +357,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         style={[
           styles.containerInner,
           bubbleColorAndRadius,
-          noBorder ? { borderWidth: 0 } : {},
+          noBorder ? styles.noBorder : null,
           containerInner,
           messageGroupedSingleOrBottom
             ? isVeryLastMessage && enableMessageGroupingByUser
@@ -679,6 +679,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   galleryContainer: {},
+  noBorder: { borderWidth: 0 },
   rightAlignContent: {
     justifyContent: 'flex-end',
   },
