@@ -109,13 +109,41 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { enabled } = useStateStore(messageComposer.configState, configStateSelector);
 
-  // Track the pre-keystroke text + selection so we can derive the real caret on
-  // the next onChangeText. RN's onChangeText doesn't carry cursor info, and
-  // onSelectionChange fires after onChangeText for typing — so we compute the
-  // new caret as `prevSelection.end + (newText.length - prevText.length)`,
-  // which is correct for inserts, deletes, and selection replacements.
-  const prevTextRef = useRef('');
-  const selectionRef = useRef<{ end: number; start: number }>({ end: 0, start: 0 });
+  // RN's onChangeText doesn't carry cursor info, and iOS / Android fire
+  // onChangeText vs onSelectionChange in different orders. Rather than derive
+  // the caret from a text-length delta (fragile — gets clobbered by re-renders
+  // and varies across platforms), we hold the latest values reported by native
+  // and call into the LLC once both have settled.
+  const latestTextRef = useRef('');
+  const latestSelectionRef = useRef<{ end: number; start: number }>({
+    end: 0,
+    start: 0,
+  });
+  const flushHandleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushChange = useCallback(() => {
+    flushHandleRef.current = null;
+    textComposer.handleChange({
+      selection: latestSelectionRef.current,
+      text: latestTextRef.current,
+    });
+  }, [textComposer]);
+
+  // Defer to the next task so onChangeText and onSelectionChange both land
+  // before we forward to the LLC, regardless of platform ordering.
+  const scheduleChange = useCallback(() => {
+    if (flushHandleRef.current !== null) return;
+    flushHandleRef.current = setTimeout(flushChange, 0);
+  }, [flushChange]);
+
+  useEffect(() => {
+    return () => {
+      if (flushHandleRef.current !== null) {
+        clearTimeout(flushHandleRef.current);
+        flushHandleRef.current = null;
+      }
+    };
+  }, []);
 
   const maxMessageLength = useMemo(() => {
     return channel.getConfig()?.max_message_length;
@@ -127,8 +155,14 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   useEffect(() => {
     setLocalText(text);
-    prevTextRef.current = text;
-    selectionRef.current = { end: text.length, start: text.length };
+    // Only resync the refs when the text change came from outside (clear after
+    // send, draft restore, programmatic setText). For changes we triggered
+    // ourselves, latestTextRef is already up to date and overwriting the
+    // selection would clobber what onSelectionChange just told us.
+    if (text !== latestTextRef.current) {
+      latestTextRef.current = text;
+      latestSelectionRef.current = { end: text.length, start: text.length };
+    }
   }, [text]);
 
   const clearState = useCallback(() => {
@@ -158,32 +192,20 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const handleSelectionChange = useCallback(
     (e: TextInputSelectionChangeEvent) => {
       const { selection } = e.nativeEvent;
-      selectionRef.current = selection;
+      latestSelectionRef.current = selection;
       textComposer.setSelection(selection);
+      scheduleChange();
     },
-    [textComposer],
+    [scheduleChange, textComposer],
   );
 
   const onChangeTextHandler = useCallback(
     (newText: string) => {
       setLocalText(newText);
-
-      const delta = newText.length - prevTextRef.current.length;
-      const projectedCursor = selectionRef.current.end + delta;
-      const newCursor = Math.max(0, Math.min(newText.length, projectedCursor));
-
-      prevTextRef.current = newText;
-      selectionRef.current = { end: newCursor, start: newCursor };
-
-      textComposer.handleChange({
-        selection: {
-          end: newCursor,
-          start: newCursor,
-        },
-        text: newText,
-      });
+      latestTextRef.current = newText;
+      scheduleChange();
     },
-    [textComposer],
+    [scheduleChange],
   );
 
   const {
