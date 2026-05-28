@@ -2,11 +2,11 @@ import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { AddMemberSearchResultItem } from '../components/AddMemberSearchResultItem';
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { AddMemberSearchResultItem } from '../../components/members/AddMemberSearchResultItem';
 
 const renderRow = (props: React.ComponentProps<typeof AddMemberSearchResultItem>) =>
   render(

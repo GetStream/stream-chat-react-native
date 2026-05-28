@@ -1,9 +1,9 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { useChannelAllMembers } from '../hooks/useChannelAllMembers';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
 
 type QueryMembersMock = jest.Mock<
   Promise<{ members: ChannelMemberResponse[] }>,

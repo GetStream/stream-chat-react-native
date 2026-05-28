@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 
 import type { Channel } from 'stream-chat';
 
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
-import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useChannelMembersState } from '../../../ChannelList/hooks/useChannelMembersState';
+import { useChannelOnlineMemberCount } from '../../../ChannelList/hooks/useChannelOnlineMemberCount';
 
 export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
   const { t } = useTranslationContext();

@@ -5,25 +5,25 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-
 import { NotificationManager } from 'stream-chat';
 import type { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
 
-import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChatContext } from '../../../contexts/chatContext/ChatContext';
-import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
+import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   allOwnCapabilities,
   OwnCapabilitiesContextValue,
   OwnCapability,
-} from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/actions/useChannelActions';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import type { ChannelAddMembersProps } from '../components/ChannelAddMembers';
-import { ChannelAddMembersModal } from '../components/ChannelAddMembersModal';
+} from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import type { ChannelAddMembersProps } from '../../components/members/ChannelAddMembers';
+import { ChannelAddMembersModal } from '../../components/members/ChannelAddMembersModal';
 
-jest.mock('../../../hooks/actions/useChannelActions');
+jest.mock('../../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
 
 const AddMembersProbe = ({ onSelectionChange }: ChannelAddMembersProps) => (

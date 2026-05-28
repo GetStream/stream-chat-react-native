@@ -2,20 +2,19 @@ import React, { useState } from 'react';
 
 import type { UserResponse } from 'stream-chat';
 
-import { ChannelDetailsModal } from './modal/Modal';
-import { ModalHeader } from './modal/ModalHeader';
-
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/actions/useChannelActions';
-import { useStableCallback } from '../../../hooks/useStableCallback';
-import { Checkmark } from '../../../icons/checkmark-1';
-import { NotificationList } from '../../Notifications/NotificationList';
-import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
-import { Button } from '../../ui/Button/Button';
-import { Spinner } from '../../UIComponents/Spinner';
+import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
+import { useStableCallback } from '../../../../hooks/useStableCallback';
+import { Checkmark } from '../../../../icons/checkmark-1';
+import { NotificationList } from '../../../Notifications/NotificationList';
+import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
+import { Button } from '../../../ui/Button/Button';
+import { Spinner } from '../../../UIComponents/Spinner';
+import { ChannelDetailsModal } from '../modal/Modal';
+import { ModalHeader } from '../modal/ModalHeader';
 
 const loadingIconStyle = { margin: 0 };
 const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number }) => (

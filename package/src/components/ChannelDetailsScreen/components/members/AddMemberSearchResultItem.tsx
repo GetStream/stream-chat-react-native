@@ -3,11 +3,11 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { primitives } from '../../../theme';
-import { UserAvatar } from '../../ui/Avatar/UserAvatar';
-import { SelectionCircle } from '../../UIComponents/SelectionCircle';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { primitives } from '../../../../theme';
+import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
+import { SelectionCircle } from '../../../UIComponents/SelectionCircle';
 
 export type AddMemberSearchResultItemProps = {
   isAlreadyMember: boolean;

@@ -4,19 +4,19 @@ import { Text } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import type { ChannelMemberActionItem } from '../../../hooks/actions/useChannelMemberActionItems';
-import * as useChannelMemberActionItemsModule from '../../../hooks/actions/useChannelMemberActionItems';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
-import { ChannelMemberActionsSheet } from '../components/ChannelMemberActionsSheet';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import type { ChannelMemberActionItem } from '../../../../hooks/actions/useChannelMemberActionItems';
+import * as useChannelMemberActionItemsModule from '../../../../hooks/actions/useChannelMemberActionItems';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import type { ChannelDetailsActionItemProps } from '../../components/ChannelDetailsActionItem';
+import { ChannelMemberActionsSheet } from '../../components/members/ChannelMemberActionsSheet';
 
-jest.mock('../../UIComponents/BottomSheetModal', () => {
+jest.mock('../../../UIComponents/BottomSheetModal', () => {
   const React = require('react');
   return {
     BottomSheetModal: ({ children, visible }: { children: React.ReactNode; visible: boolean }) =>

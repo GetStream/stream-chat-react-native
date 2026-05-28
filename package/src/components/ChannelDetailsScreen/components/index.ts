@@ -1,12 +1,5 @@
-export * from './AddMemberSearchResultItem';
-export * from './ChannelAddMembers';
-export * from './ChannelAddMembersModal';
-export * from './ChannelAllMembersModal';
 export * from './ChannelDetailsActionsSection';
 export * from './ChannelDetailsActionItem';
-export * from './ChannelMemberActionsSheet';
-export * from './ChannelMemberItem';
-export * from './ChannelMemberList';
 export * from './ChannelDetailsMemberSection';
 export * from './ChannelDetailsNavigationSection';
 export * from './ChannelDetailsProfile';
@@ -14,3 +7,4 @@ export * from './ChannelDetailsScreenHeader';
 export * from './ChannelEditDetails';
 export * from './ChannelEditDetailsModal';
 export * from './ChannelEditImageSheet';
+export * from './members';

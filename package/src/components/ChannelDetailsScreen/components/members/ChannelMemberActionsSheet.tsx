@@ -3,17 +3,17 @@ import { ListRenderItem, StyleSheet, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import {
   ChannelMemberActionItem,
   useChannelMemberActionItems,
-} from '../../../hooks/actions/useChannelMemberActionItems';
-import { useStableCallback } from '../../../hooks/useStableCallback';
-import { primitives } from '../../../theme';
-import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';
-import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomSheetModalFlatList';
+} from '../../../../hooks/actions/useChannelMemberActionItems';
+import { useStableCallback } from '../../../../hooks/useStableCallback';
+import { primitives } from '../../../../theme';
+import { BottomSheetModal } from '../../../UIComponents/BottomSheetModal';
+import { StreamBottomSheetModalFlatList } from '../../../UIComponents/StreamBottomSheetModalFlatList';
 
 export type ChannelMemberActionsSheetProps = {
   member: ChannelMemberResponse;

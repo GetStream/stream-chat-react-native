@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
+import { useChannelMembersState } from '../../../ChannelList/hooks/useChannelMembersState';
 
 export const DEFAULT_VISIBLE_MEMBER_COUNT = 5;
 

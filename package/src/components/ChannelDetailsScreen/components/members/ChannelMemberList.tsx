@@ -3,11 +3,11 @@ import { ActivityIndicator, FlatList } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { useStableCallback } from '../../../hooks/useStableCallback';
-import { useChannelAllMembers } from '../hooks/useChannelAllMembers';
+import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useStableCallback } from '../../../../hooks/useStableCallback';
+import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
 

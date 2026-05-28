@@ -3,8 +3,8 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { ChannelAddMembersModal } from './ChannelAddMembersModal';
-import { ChannelAllMembersModal } from './ChannelAllMembersModal';
+import { ChannelAddMembersModal } from './members/ChannelAddMembersModal';
+import { ChannelAllMembersModal } from './members/ChannelAllMembersModal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -15,7 +15,7 @@ import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilit
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
-import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
+import { useChannelDetailsMembersPreview } from '../hooks/members/useChannelDetailsMembersPreview';
 
 export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =

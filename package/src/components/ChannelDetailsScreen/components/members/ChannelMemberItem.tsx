@@ -3,13 +3,13 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { composeAccessibilityLabel } from '../../../a11y/a11yUtils';
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { primitives } from '../../../theme';
-import { UserAvatar } from '../../ui/Avatar/UserAvatar';
-import { useChannelDetailsMemberRoleLabel } from '../hooks/useChannelDetailsMemberRoleLabel';
-import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
+import { composeAccessibilityLabel } from '../../../../a11y/a11yUtils';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { primitives } from '../../../../theme';
+import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
+import { useChannelDetailsMemberRoleLabel } from '../../hooks/members/useChannelDetailsMemberRoleLabel';
+import { useUserActivityStatus } from '../../hooks/useUserActivityStatus';
 
 export type ChannelMemberItemSize = 'sm' | 'lg';
 

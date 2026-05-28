@@ -1,15 +1,14 @@
 import React from 'react';
 
-import { ChannelDetailsModal } from './modal/Modal';
-import { ModalHeader } from './modal/ModalHeader';
-
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { useOwnCapabilitiesContext } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { UserAdd } from '../../../icons/user-add';
-import { Button } from '../../ui/Button/Button';
-import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
+import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useOwnCapabilitiesContext } from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { UserAdd } from '../../../../icons/user-add';
+import { Button } from '../../../ui/Button/Button';
+import { useChannelDetailsMembersPreview } from '../../hooks/members/useChannelDetailsMembersPreview';
+import { ChannelDetailsModal } from '../modal/Modal';
+import { ModalHeader } from '../modal/ModalHeader';
 
 export type ChannelAllMembersModalProps = {
   onAddMembersPress: () => void;

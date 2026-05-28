@@ -3,15 +3,15 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
 
-import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChatContext } from '../../../contexts/chatContext/ChatContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { ChannelAddMembers } from '../components/ChannelAddMembers';
+import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { ChannelAddMembers } from '../../components/members/ChannelAddMembers';
 
 const buildChannel = (members: ChannelMemberResponse[]): Channel =>
   ({

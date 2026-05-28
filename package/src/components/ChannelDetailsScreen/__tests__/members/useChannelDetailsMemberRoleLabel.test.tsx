@@ -3,12 +3,12 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import type { GetMemberRoleLabel } from '../ChannelDetailsScreen';
-import { useChannelDetailsMemberRoleLabel } from '../hooks/useChannelDetailsMemberRoleLabel';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import type { GetMemberRoleLabel } from '../../ChannelDetailsScreen';
+import { useChannelDetailsMemberRoleLabel } from '../../hooks/members/useChannelDetailsMemberRoleLabel';
 
 const buildChannel = (createdById = 'creator'): Channel =>
   ({

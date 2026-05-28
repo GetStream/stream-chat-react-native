@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Channel, ChannelMemberResponse, MemberFilters, MemberSort } from 'stream-chat';
 
-import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
+import { useChannelMembersState } from '../../../ChannelList/hooks/useChannelMembersState';
 
 const PAGE_SIZE = 25;
 

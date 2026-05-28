@@ -4,18 +4,18 @@ import { type FlatListProps as RNFlatListProps, Text } from 'react-native';
 import { act, render, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { BottomSheetProvider } from '../../../contexts/bottomSheetContext/BottomSheetContext';
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChatContext } from '../../../contexts/chatContext/ChatContext';
-import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import type { ChannelMemberActionsSheetProps } from '../components/ChannelMemberActionsSheet';
-import type { ChannelMemberItemProps } from '../components/ChannelMemberItem';
-import { ChannelMemberList } from '../components/ChannelMemberList';
+import { BottomSheetProvider } from '../../../../contexts/bottomSheetContext/BottomSheetContext';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import type { ChannelMemberActionsSheetProps } from '../../components/members/ChannelMemberActionsSheet';
+import type { ChannelMemberItemProps } from '../../components/members/ChannelMemberItem';
+import { ChannelMemberList } from '../../components/members/ChannelMemberList';
 
 type FlatListProps = RNFlatListProps<ChannelMemberResponse>;
 

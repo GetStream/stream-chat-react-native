@@ -5,14 +5,14 @@ import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { ThemeProvider } from '../../../contexts';
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import type { GetMemberRoleLabel } from '../ChannelDetailsScreen';
-import { ChannelMemberItem } from '../components/ChannelMemberItem';
+import { ThemeProvider } from '../../../../contexts';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import type { GetMemberRoleLabel } from '../../ChannelDetailsScreen';
+import { ChannelMemberItem } from '../../components/members/ChannelMemberItem';
 
 Dayjs.extend(relativeTime);
 

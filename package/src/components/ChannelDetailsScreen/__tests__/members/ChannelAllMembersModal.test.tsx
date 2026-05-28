@@ -5,22 +5,22 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChatContext } from '../../../contexts/chatContext/ChatContext';
-import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
+import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
+import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   allOwnCapabilities,
   OwnCapabilitiesContextValue,
   OwnCapability,
-} from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { generateMember } from '../../../mock-builders/generator/member';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { ChannelAllMembersModal } from '../components/ChannelAllMembersModal';
-import * as useChannelDetailsMembersPreviewModule from '../hooks/useChannelDetailsMembersPreview';
+} from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { ChannelAllMembersModal } from '../../components/members/ChannelAllMembersModal';
+import * as useChannelDetailsMembersPreviewModule from '../../hooks/members/useChannelDetailsMembersPreview';
 
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;
 

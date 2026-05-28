@@ -5,15 +5,18 @@ import type { UserResponse } from 'stream-chat';
 
 import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useStableCallback } from '../../../hooks/useStableCallback';
-import { Search } from '../../../icons/search';
-import { primitives } from '../../../theme';
-import { EmptySearchResult } from '../../UIComponents/EmptySearchResult';
-import { SearchInput } from '../../UIComponents/SearchInput';
-import { type AddMemberSearchResult, useChannelAddMembers } from '../hooks/useChannelAddMembers';
+import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../../../hooks/useStableCallback';
+import { Search } from '../../../../icons/search';
+import { primitives } from '../../../../theme';
+import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
+import { SearchInput } from '../../../UIComponents/SearchInput';
+import {
+  type AddMemberSearchResult,
+  useChannelAddMembers,
+} from '../../hooks/members/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
   /**
