@@ -56,7 +56,6 @@ const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalConten
   }, []);
 
   const handleConfirm = useStableCallback(async () => {
-    if (!addMembersSelection.length || addingMembers) return;
     setAddingMembers(true);
     try {
       await addMembers(
