@@ -6,6 +6,7 @@ import type {
   LocalAudioAttachment,
   LocalUploadAttachment,
   LocalVoiceRecordingAttachment,
+  MinimumUploadRequestResult,
 } from 'stream-chat';
 
 export enum FileTypes {
@@ -540,3 +541,10 @@ export type Emoji = {
 export type EmojiSearchIndex = {
   search: (query: string) => PromiseLike<Array<Emoji>> | Array<Emoji> | null;
 };
+
+/**
+ * Override the file upload request used to upload the channel image.
+ * By default the SDK uploads to Stream's CDN via `client.uploadImage`.
+ * @param file File object to upload
+ */
+export type GlobalFileUploadRequest = (file: File) => Promise<MinimumUploadRequestResult>;

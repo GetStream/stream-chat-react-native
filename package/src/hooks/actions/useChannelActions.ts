@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 import { Channel } from 'stream-chat';
 
-import type { ActionHandler, ActionOptions, DoFileUploadRequest } from './types';
+import type { ActionHandler, ActionOptions } from './types';
 
 import { useNotificationApi } from '../../components/Notifications/hooks';
 import { useChatContext, useTranslationContext } from '../../contexts';
-import { File } from '../../types/types';
+import { File, GlobalFileUploadRequest } from '../../types/types';
 import { useStableCallback } from '../useStableCallback';
 
 export type ChannelActionOptions = ActionOptions;
@@ -24,7 +24,7 @@ export type ChannelActions = {
   updateImage: (
     image: File | null,
     options?: ChannelActionOptions,
-    doFileUploadRequest?: DoFileUploadRequest,
+    doFileUploadRequest?: GlobalFileUploadRequest,
   ) => Promise<void>;
   updateName: (name: string, options?: ChannelActionOptions) => Promise<void>;
   muteUser: ChannelActionHandler;
@@ -423,7 +423,7 @@ export const useChannelActions = (channel: Channel) => {
     async (
       image: File | null,
       options?: ChannelActionOptions,
-      doFileUploadRequest?: DoFileUploadRequest,
+      doFileUploadRequest?: GlobalFileUploadRequest,
     ) => {
       if (!channel) {
         return;

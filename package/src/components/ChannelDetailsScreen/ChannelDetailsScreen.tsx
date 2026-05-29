@@ -11,11 +11,11 @@ import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/c
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import type { DoFileUploadRequest } from '../../hooks/actions/types';
 import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import type { GetChannelMemberActionItems } from '../../hooks/actions/useChannelMemberActionItems';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
+import { GlobalFileUploadRequest } from '../../types/types';
 import { NotificationList } from '../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
@@ -99,7 +99,7 @@ export type ChannelDetailsScreenProps = {
    * Override file upload request (used to upload channel image). By default it will use Stream's CDN.
    * @param file File object to upload
    */
-  doFileUploadRequest?: DoFileUploadRequest;
+  doFileUploadRequest?: GlobalFileUploadRequest;
 };
 
 export const ChannelDetailsScreenContent = () => {
