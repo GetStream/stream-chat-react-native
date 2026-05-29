@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +10,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
-import { useStableCallback } from '../../../hooks/useStableCallback';
 import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
@@ -39,15 +38,15 @@ export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeader
 
   const resolvedTitle = title ?? (isDirect ? t('Contact Info') : t('Group Info'));
 
-  const handleEditPress = useStableCallback(() => {
+  const handleEditPress = useCallback(() => {
     if (onEditChannelPress) {
       onEditChannelPress();
       return;
     }
     setEditModalVisible(true);
-  });
+  }, [onEditChannelPress]);
 
-  const handleEditModalClose = useStableCallback(() => setEditModalVisible(false));
+  const handleEditModalClose = useCallback(() => setEditModalVisible(false), []);
 
   return (
     <View

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
@@ -12,7 +12,6 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
-import { useStableCallback } from '../../../hooks/useStableCallback';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/members/useChannelDetailsMembersPreview';
@@ -45,36 +44,39 @@ export const ChannelDetailsMemberSection = () => {
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
-  const handleViewAllPress = useStableCallback(() => {
+  const handleViewAllPress = useCallback(() => {
     if (onViewAllMembersPress) {
       onViewAllMembersPress();
       return;
     }
     setMemberListVisible(true);
-  });
+  }, [onViewAllMembersPress]);
 
-  const handleMemberListClose = useStableCallback(() => setMemberListVisible(false));
+  const handleMemberListClose = useCallback(() => setMemberListVisible(false), []);
 
-  const handleAddMembersClose = useStableCallback(() => setAddMembersVisible(false));
+  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
 
-  const handleAddMembersPress = useStableCallback(() => {
+  const handleAddMembersPress = useCallback(() => {
     if (onAddMembersPress) {
       onAddMembersPress();
       return;
     }
     setMemberListVisible(false);
     setAddMembersVisible(true);
-  });
+  }, [onAddMembersPress]);
 
-  const handleMemberActionsClose = useStableCallback(() => setSelectedMember(null));
+  const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
-  const handleMemberPress = useStableCallback((member: ChannelMemberResponse) => {
-    if (onMemberPress) {
-      onMemberPress(member);
-      return;
-    }
-    setSelectedMember(member);
-  });
+  const handleMemberPress = useCallback(
+    (member: ChannelMemberResponse) => {
+      if (onMemberPress) {
+        onMemberPress(member);
+        return;
+      }
+      setSelectedMember(member);
+    },
+    [onMemberPress],
+  );
 
   return (
     <View

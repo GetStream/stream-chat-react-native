@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useStableCallback } from '../../../hooks/useStableCallback';
 import { primitives } from '../../../theme';
 import type { File } from '../../../types/types';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
@@ -63,22 +62,19 @@ export const ChannelEditDetails = ({
   const [sheetVisible, setSheetVisible] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
-  const stableOnNameChange = useStableCallback(onNameChange);
-  const stableOnImagePicked = useStableCallback(onImagePicked);
-  const stableOnImageReset = useStableCallback(onImageReset ?? (() => undefined));
   const lastNameRef = useRef(name);
   useEffect(() => {
     if (lastNameRef.current === name) return;
     lastNameRef.current = name;
-    stableOnNameChange(name);
-  }, [name, stableOnNameChange]);
+    onNameChange(name);
+  }, [name, onNameChange]);
 
-  const openSheet = useStableCallback(() => setSheetVisible(true));
-  const closeSheet = useStableCallback(() => setSheetVisible(false));
+  const openSheet = useCallback(() => setSheetVisible(true), []);
+  const closeSheet = useCallback(() => setSheetVisible(false), []);
 
-  const handleSelectCamera = useStableCallback(() => setPendingAction('camera'));
-  const handleSelectLibrary = useStableCallback(() => setPendingAction('library'));
-  const handleSelectReset = useStableCallback(() => setPendingAction('reset'));
+  const handleSelectCamera = useCallback(() => setPendingAction('camera'), []);
+  const handleSelectLibrary = useCallback(() => setPendingAction('library'), []);
+  const handleSelectReset = useCallback(() => setPendingAction('reset'), []);
 
   useEffect(() => {
     if (sheetVisible || !pendingAction) return;
@@ -87,20 +83,20 @@ export const ChannelEditDetails = ({
     (async () => {
       if (action === 'camera') {
         const file = await takePhoto();
-        if (file) stableOnImagePicked(file);
+        if (file) onImagePicked(file);
       } else if (action === 'library') {
         const file = await pickImageFromNativePicker();
-        if (file) stableOnImagePicked(file);
+        if (file) onImagePicked(file);
       } else if (action === 'reset') {
-        stableOnImageReset();
+        onImageReset?.();
       }
     })();
   }, [
+    onImagePicked,
+    onImageReset,
     pendingAction,
     pickImageFromNativePicker,
     sheetVisible,
-    stableOnImagePicked,
-    stableOnImageReset,
     takePhoto,
   ]);
 

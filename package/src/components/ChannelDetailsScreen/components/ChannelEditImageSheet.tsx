@@ -13,7 +13,6 @@ import { useBottomSheetContext } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Camera } from '../../../icons/camera';
 import { Delete } from '../../../icons/delete';
 import { Picture } from '../../../icons/image';
@@ -171,21 +170,15 @@ export const ChannelEditImageSheet = ({
   onSelectLibrary,
   onSelectReset,
   visible,
-}: ChannelEditImageSheetProps) => {
-  const handleSelectCamera = useStableCallback(onSelectCamera);
-  const handleSelectLibrary = useStableCallback(onSelectLibrary);
-  const handleSelectReset = useStableCallback(onSelectReset ?? (() => undefined));
-
-  return (
-    <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
-      <ChannelEditImageSheetInner
-        onSelectCamera={handleSelectCamera}
-        onSelectLibrary={handleSelectLibrary}
-        onSelectReset={onSelectReset ? handleSelectReset : undefined}
-      />
-    </BottomSheetModal>
-  );
-};
+}: ChannelEditImageSheetProps) => (
+  <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
+    <ChannelEditImageSheetInner
+      onSelectCamera={onSelectCamera}
+      onSelectLibrary={onSelectLibrary}
+      onSelectReset={onSelectReset}
+    />
+  </BottomSheetModal>
+);
 
 const useStyles = () =>
   useMemo<{

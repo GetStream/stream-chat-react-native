@@ -1,8 +1,8 @@
+import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useStableCallback } from '../../../hooks/useStableCallback';
 import { NativeHandlers } from '../../../native';
 import type { File } from '../../../types/types';
 import { compressedImageURI } from '../../../utils/compressImage';
@@ -37,7 +37,7 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
   const { compressImageQuality } = useChannelDetailsContext();
   const { t } = useTranslationContext();
 
-  const takePhoto = useStableCallback(async (): Promise<File | undefined> => {
+  const takePhoto = useCallback(async (): Promise<File | undefined> => {
     const file = await NativeHandlers.takePhoto({
       compressImageQuality: compressImageQuality ?? 1,
       mediaType: 'image',
@@ -60,9 +60,9 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
     }
 
     return file;
-  });
+  }, [compressImageQuality, t]);
 
-  const pickImageFromNativePicker = useStableCallback(async (): Promise<File | undefined> => {
+  const pickImageFromNativePicker = useCallback(async (): Promise<File | undefined> => {
     const result = await NativeHandlers.pickImage({ maxNumberOfFiles: 1 });
 
     if (result.askToOpenSettings) {
@@ -84,7 +84,7 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
     const asset = result.assets[0];
     const compressedUri = await compressedImageURI(asset, compressImageQuality);
     return { ...asset, uri: compressedUri };
-  });
+  }, [compressImageQuality, t]);
 
   return { pickImageFromNativePicker, takePhoto };
 };

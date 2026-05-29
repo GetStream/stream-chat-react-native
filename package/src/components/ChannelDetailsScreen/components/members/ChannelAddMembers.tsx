@@ -8,7 +8,6 @@ import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { useStableCallback } from '../../../../hooks/useStableCallback';
 import { Search } from '../../../../icons/search';
 import { primitives } from '../../../../theme';
 import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
@@ -48,14 +47,12 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
     toggleUser,
   } = useChannelAddMembers({ channel });
 
-  const stableOnSelectionChange = useStableCallback(onSelectionChange);
-
   const lastSelectionRef = useRef(selectedUsers);
   useEffect(() => {
     if (lastSelectionRef.current === selectedUsers) return;
     lastSelectionRef.current = selectedUsers;
-    stableOnSelectionChange(selectedUsers);
-  }, [selectedUsers, stableOnSelectionChange]);
+    onSelectionChange(selectedUsers);
+  }, [onSelectionChange, selectedUsers]);
 
   const renderItem = useCallback(
     ({ item }: { item: AddMemberSearchResult }) => (

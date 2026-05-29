@@ -6,7 +6,6 @@ import type { ChannelMemberResponse } from 'stream-chat';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
-import { useStableCallback } from '../../../../hooks/useStableCallback';
 import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
@@ -21,15 +20,18 @@ export const ChannelMemberList = () => {
   const { hasMore, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
-  const handleMemberActionsClose = useStableCallback(() => setSelectedMember(null));
+  const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
-  const handleMemberPress = useStableCallback((member: ChannelMemberResponse) => {
-    if (onMemberPress) {
-      onMemberPress(member);
-      return;
-    }
-    setSelectedMember(member);
-  });
+  const handleMemberPress = useCallback(
+    (member: ChannelMemberResponse) => {
+      if (onMemberPress) {
+        onMemberPress(member);
+        return;
+      }
+      setSelectedMember(member);
+    },
+    [onMemberPress],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (

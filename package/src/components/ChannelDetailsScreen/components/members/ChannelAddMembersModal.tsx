@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -46,14 +46,14 @@ const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalConten
   const [addingMembers, setAddingMembers] = useState(false);
   const confirmEnabled = addMembersSelection.length > 0 && !addingMembers;
 
-  const handleClose = useStableCallback(() => {
+  const handleClose = useCallback(() => {
     setAddMembersSelection([]);
     onClose();
-  });
+  }, [onClose]);
 
-  const handleSelectionChange = useStableCallback((users: UserResponse[]) => {
+  const handleSelectionChange = useCallback((users: UserResponse[]) => {
     setAddMembersSelection(users);
-  });
+  }, []);
 
   const handleConfirm = useStableCallback(async () => {
     if (!addMembersSelection.length || addingMembers) return;

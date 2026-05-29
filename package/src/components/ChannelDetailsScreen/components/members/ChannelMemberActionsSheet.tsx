@@ -10,7 +10,6 @@ import {
   ChannelMemberActionItem,
   useChannelMemberActionItems,
 } from '../../../../hooks/actions/useChannelMemberActionItems';
-import { useStableCallback } from '../../../../hooks/useStableCallback';
 import { primitives } from '../../../../theme';
 import { BottomSheetModal } from '../../../UIComponents/BottomSheetModal';
 import { StreamBottomSheetModalFlatList } from '../../../UIComponents/StreamBottomSheetModalFlatList';
@@ -85,15 +84,11 @@ export const ChannelMemberActionsSheet = ({
   member,
   onClose,
   visible,
-}: ChannelMemberActionsSheetProps) => {
-  const handleClose = useStableCallback(onClose);
-
-  return (
-    <BottomSheetModal enableDynamicSizing onClose={handleClose} visible={visible}>
-      <ChannelMemberActionsSheetInner member={member} onClose={handleClose} />
-    </BottomSheetModal>
-  );
-};
+}: ChannelMemberActionsSheetProps) => (
+  <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
+    <ChannelMemberActionsSheetInner member={member} onClose={onClose} />
+  </BottomSheetModal>
+);
 
 const useStyles = () =>
   useMemo(

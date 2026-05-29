@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
@@ -44,15 +44,15 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
   const imageDirty = image !== undefined;
   const confirmEnabled = (nameDirty || imageDirty) && !saving;
 
-  const handleNameChange = useStableCallback((newName: string) => setName(newName));
-  const handleImagePicked = useStableCallback((file: File) => setImage(file));
-  const handleImageReset = useStableCallback(() => setImage(null));
+  const handleNameChange = useCallback((newName: string) => setName(newName), []);
+  const handleImagePicked = useCallback((file: File) => setImage(file), []);
+  const handleImageReset = useCallback(() => setImage(null), []);
 
-  const handleClose = useStableCallback(() => {
+  const handleClose = useCallback(() => {
     setName(initialName);
     setImage(undefined);
     onClose();
-  });
+  }, [initialName, onClose]);
 
   const handleConfirm = useStableCallback(async () => {
     if (!confirmEnabled) return;
