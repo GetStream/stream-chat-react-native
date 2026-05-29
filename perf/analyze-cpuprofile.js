@@ -192,46 +192,52 @@ function computeTotalTimes(nodesById) {
 }
 
 // ---------- categorization ------------------------------------------------
+//
+// Generic bucketing: follow the URL, don't hand-curate. The point is to see
+// where the JS thread actually goes, not to confirm a hypothesis.
+//
+// Buckets emitted:
+//   Idle                              — (root)/(program)/(idle) pseudo-frames
+//   GC                                — garbage collector frames
+//   builtin:<Ctor>                    — Hermes/V8 builtins with no URL
+//                                      (e.g. builtin:Object covers Object.assign,
+//                                      builtin:JSON covers JSON.stringify/parse)
+//   VM / native                       — other URL-less frames
+//   npm: <pkg>                        — anything resolved under node_modules/<pkg>
+//                                      (scoped packages keep their @scope/name)
+//   SDK source                        — package/src/** or stream-chat-react-native/(src|lib)
+//   App source                        — anything else with a URL (consumer app code)
+
+const NODE_MODULES_PKG_RE = /node_modules\/(@[^/]+\/[^/]+|[^/]+)/;
+const SDK_SOURCE_RE = /(?:stream-chat-react-native\/(?:package\/)?(?:src|lib)|\/package\/src)\//;
+const BUILTIN_RE = /^([A-Z][A-Za-z0-9]*)\.(?:prototype\.)?[A-Za-z0-9_]+$/;
 
 function categorize(node) {
   const cf = node.callFrame || {};
   const fn = cf.functionName || '';
   const url = cf.url || '';
 
-  // Hermes / V8 placeholder frames
-  if (fn === '(root)' || fn === '(program)' || fn === '(idle)') return 'IDLE/ROOT';
+  if (fn === '(root)' || fn === '(program)' || fn === '(idle)') return 'Idle';
   if (fn === '(garbage collector)' || fn === '(gc)' || /^gc\b/i.test(fn)) return 'GC';
 
-  if (/react-native-markdown|markdown-it|SimpleMarkdown/i.test(url)) return 'MARKDOWN';
-  if (/SimpleMarkdown|markdown/i.test(fn)) return 'MARKDOWN';
+  if (!url) {
+    // Hermes/V8 builtins are URL-less; their function names look like
+    // `Object.assign`, `JSON.stringify`, `Array.prototype.map`. Bucket by
+    // the constructor so the cost of a whole intrinsic family aggregates.
+    const m = fn.match(BUILTIN_RE);
+    if (m) return `builtin:${m[1]}`;
+    return 'VM / native';
+  }
 
-  if (
-    fn === 'JSON.stringify' ||
-    fn === 'JSON.parse' ||
-    fn === 'stringifyMessage' ||
-    fn === 'reduceMessagesToString'
-  )
-    return 'STRINGIFY/JSON';
+  // Check SDK source before npm — if the SDK is profiled from a tarball install,
+  // the path will contain both `node_modules/stream-chat-react-native/...` AND
+  // match SDK_SOURCE_RE. We want it bucketed as SDK regardless of resolution.
+  if (SDK_SOURCE_RE.test(url)) return 'SDK source';
 
-  if (/stream-chat\/(src|dist)/.test(url) && !/stream-chat-react-native/.test(url))
-    return 'STREAM_CHAT_JS';
+  const pkg = url.match(NODE_MODULES_PKG_RE);
+  if (pkg) return `npm: ${pkg[1]}`;
 
-  if (/\/(react|react-dom|scheduler)\/(cjs|umd)/.test(url) || /Reconciler/i.test(url))
-    return 'REACT_INTERNALS';
-
-  if (/react-native\/Libraries/.test(url)) return 'RN_INTERNALS';
-
-  if (
-    /stream-chat-react-native\/(src|lib)/.test(url) ||
-    /package\/src\//.test(url) ||
-    /\/src\//.test(url)
-  )
-    return 'APP_CODE (SDK)';
-
-  if (/node_modules\/react-native-/.test(url)) return 'RN_3P_LIBS';
-
-  if (!url) return 'NATIVE/OTHER';
-  return 'OTHER';
+  return 'App source';
 }
 
 // ---------- printers ------------------------------------------------------
@@ -367,7 +373,24 @@ function printInside(nodesById, fnName, totalDurationUs) {
 
 // ---------- single-file mode --------------------------------------------
 
-function analyzeSingle(filePath) {
+function detectUnsymbolicated(nodesById) {
+  // If nearly every URLed frame shares one bundle URL (e.g. `index.bundle?...`),
+  // the profile hasn't been mapped back to source — categorization will collapse
+  // into a single "App source" bucket. Warn so the user knows to desymbolicate.
+  const urlCounts = new Map();
+  let urledFrames = 0;
+  for (const node of nodesById.values()) {
+    const url = node.callFrame && node.callFrame.url;
+    if (!url) continue;
+    urledFrames++;
+    urlCounts.set(url, (urlCounts.get(url) || 0) + 1);
+  }
+  if (urledFrames < 50) return false; // too small to judge
+  const top = [...urlCounts.values()].sort((a, b) => b - a)[0] || 0;
+  return top / urledFrames > 0.9 && urlCounts.size < 5;
+}
+
+function analyzeSingle(filePath, options = {}) {
   const profile = loadProfile(filePath);
   profile.sourceFile = path.basename(filePath);
   const totalDurationUs = printSummary(profile);
@@ -375,17 +398,29 @@ function analyzeSingle(filePath) {
   computeSelfTimes(profile, nodesById);
   computeTotalTimes(nodesById);
 
+  if (detectUnsymbolicated(nodesById)) {
+    console.log(
+      `\n⚠ This profile looks un-desymbolicated — nearly every frame shares a single bundle URL.`,
+    );
+    console.log(
+      `  Per-package attribution won't work; everything will fall into a single "App source" bucket.`,
+    );
+    console.log(
+      `  Desymbolicate first:  node perf/desymbolicate-cpuprofile.js ${path.basename(filePath)} <bundle.map>`,
+    );
+  }
+
   printByCategory(nodesById, totalDurationUs);
   printByFile(nodesById, totalDurationUs);
   printTopBySelf(nodesById, totalDurationUs);
   printTopByTotal(nodesById, totalDurationUs);
 
-  // Focused breakdowns for the surfaces we care about.
-  // These are no-ops if the function isn't in the profile (e.g., minified or never called).
-  printInside(nodesById, 'MessageWithContext', totalDurationUs);
-  printInside(nodesById, 'useCreateMessageContext', totalDurationUs);
-  printInside(nodesById, 'renderText', totalDurationUs);
-  printInside(nodesById, 'stringifyMessage', totalDurationUs);
+  // Optional drilldowns — pass `--inside Foo,Bar` to see what each named function
+  // spent its time on (self time of its descendants). No-op if a name isn't in
+  // the profile (minified, inlined, or never called).
+  for (const name of options.inside || []) {
+    printInside(nodesById, name, totalDurationUs);
+  }
 }
 
 // ---------- diff mode ----------------------------------------------------
@@ -453,7 +488,41 @@ function printFunctionDiff(beforeAgg, afterAgg, limit = 25) {
   }
 }
 
-function analyzeDiff(beforePath, afterPath) {
+function printFunctionDiffFiltered(beforeAgg, afterAgg, pattern) {
+  let re;
+  try {
+    re = new RegExp(pattern, 'i');
+  } catch (e) {
+    console.error(`Invalid --grep pattern: ${pattern} (${e.message})`);
+    return;
+  }
+  const keys = new Set([...beforeAgg.byFn.keys(), ...afterAgg.byFn.keys()]);
+  const rows = [];
+  for (const k of keys) {
+    if (!re.test(k)) continue;
+    const b = beforeAgg.byFn.get(k) || 0;
+    const a = afterAgg.byFn.get(k) || 0;
+    if (b === 0 && a === 0) continue;
+    rows.push({ fn: k, before: b, after: a, delta: a - b });
+  }
+  rows.sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta));
+  console.log(`\n=== Function deltas matching /${pattern}/i (self time, all matches) ===`);
+  if (rows.length === 0) {
+    console.log(`  (no matches)`);
+    return;
+  }
+  console.log(
+    `  ${pad('Before ms', 10)}  ${pad('After ms', 10)}  ${pad('Delta ms', 10)}  Function`,
+  );
+  for (const r of rows) {
+    const arrow = r.delta < 0 ? '↓' : r.delta > 0 ? '↑' : '·';
+    console.log(
+      `  ${pad(microsToMs(r.before), 10)}  ${pad(microsToMs(r.after), 10)}  ${pad((r.delta >= 0 ? '+' : '') + microsToMs(r.delta), 10)}  ${arrow} ${r.fn}`,
+    );
+  }
+}
+
+function analyzeDiff(beforePath, afterPath, options = {}) {
   console.log(
     `Diffing:\n  before: ${path.basename(beforePath)}\n  after:  ${path.basename(afterPath)}`,
   );
@@ -465,34 +534,66 @@ function analyzeDiff(beforePath, afterPath) {
   console.log(
     `Samples   — before: ${beforeAgg.profile.samples.length} / after: ${afterAgg.profile.samples.length}`,
   );
-  console.log(
-    `Note: durations should be similar for a fair comparison. Large differences mean the scenario timing varied; interpret with care.`,
-  );
+
+  // Sanity check: if sample rates diverge significantly, absolute ms deltas drift.
+  // Relative weights remain comparable but warn the reader.
+  const beforeRate = beforeAgg.profile.samples.length / (beforeAgg.totalDurationUs / 1_000_000);
+  const afterRate = afterAgg.profile.samples.length / (afterAgg.totalDurationUs / 1_000_000);
+  const rateSkew = Math.abs(afterRate - beforeRate) / Math.max(beforeRate, afterRate);
+  if (rateSkew > 0.1) {
+    console.log(
+      `\n⚠ Sample rates differ by ${(rateSkew * 100).toFixed(1)}% (${beforeRate.toFixed(0)}/s vs ${afterRate.toFixed(0)}/s).`,
+    );
+    console.log(`  Absolute ms deltas may be misleading; trust percentages over raw ms.`);
+  } else {
+    console.log(
+      `Note: durations should be similar for a fair comparison. Large differences mean the scenario timing varied; interpret with care.`,
+    );
+  }
 
   printCategoryDiff(beforeAgg, afterAgg);
   printFunctionDiff(beforeAgg, afterAgg);
+  if (options.grep) printFunctionDiffFiltered(beforeAgg, afterAgg, options.grep);
 }
 
 // ---------- main ---------------------------------------------------------
 
+function parseArgs(argv) {
+  const out = { positional: [], inside: [], diff: false, grep: null };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--diff') out.diff = true;
+    else if (a === '--inside') out.inside = (argv[++i] || '').split(',').filter(Boolean);
+    else if (a === '--grep') out.grep = argv[++i] || null;
+    else if (a === '-h' || a === '--help') out.help = true;
+    else out.positional.push(a);
+  }
+  return out;
+}
+
 function main() {
-  const args = process.argv.slice(2);
-  if (args.length === 0 || args[0] === '-h' || args[0] === '--help') {
+  const opts = parseArgs(process.argv.slice(2));
+  if (opts.help || opts.positional.length === 0) {
     console.log(`
 Usage:
-  node perf/analyze-cpuprofile.js <profile.cpuprofile>
-  node perf/analyze-cpuprofile.js --diff <before.cpuprofile> <after.cpuprofile>
+  node perf/analyze-cpuprofile.js <profile.cpuprofile> [--inside Foo,Bar]
+  node perf/analyze-cpuprofile.js --diff <before.cpuprofile> <after.cpuprofile> [--grep <pattern>]
+
+Options:
+  --inside <names>   Comma-separated function names to drill into (single-file mode).
+                     Shows where time inside each named function went.
+  --grep <pattern>   In diff mode, also print a filtered function diff matching this regex.
 `);
-    process.exit(args.length === 0 ? 1 : 0);
+    process.exit(opts.help ? 0 : 1);
   }
-  if (args[0] === '--diff') {
-    if (args.length !== 3) {
+  if (opts.diff) {
+    if (opts.positional.length !== 2) {
       console.error('--diff requires exactly two .cpuprofile paths');
       process.exit(1);
     }
-    analyzeDiff(args[1], args[2]);
+    analyzeDiff(opts.positional[0], opts.positional[1], { grep: opts.grep });
   } else {
-    analyzeSingle(args[0]);
+    analyzeSingle(opts.positional[0], { inside: opts.inside });
   }
 }
 
