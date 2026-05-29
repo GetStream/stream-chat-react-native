@@ -401,8 +401,6 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                stroke="#1a1b25"
-                strokeLinejoin="round"
                 strokeWidth={1.5}
                 style={
                   [
@@ -426,18 +424,9 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                   propList={
                     [
                       "fill",
-                      "stroke",
                       "strokeWidth",
-                      "strokeLinejoin",
                     ]
                   }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
-                  strokeLinejoin={1}
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
@@ -452,6 +441,8 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                       [
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -460,6 +451,8 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
@@ -474,6 +467,8 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                       [
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -482,6 +477,8 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                 </RNSVGGroup>
@@ -1275,8 +1272,6 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                stroke="#1a1b25"
-                strokeLinejoin="round"
                 strokeWidth={1.5}
                 style={
                   [
@@ -1300,18 +1295,9 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                   propList={
                     [
                       "fill",
-                      "stroke",
                       "strokeWidth",
-                      "strokeLinejoin",
                     ]
                   }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
-                  strokeLinejoin={1}
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
@@ -1326,6 +1312,8 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                       [
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -1334,6 +1322,8 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
@@ -1348,6 +1338,8 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                       [
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -1356,6 +1348,8 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                 </RNSVGGroup>
@@ -2149,8 +2143,6 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                stroke="#1a1b25"
-                strokeLinejoin="round"
                 strokeWidth={1.5}
                 style={
                   [
@@ -2174,18 +2166,9 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                   propList={
                     [
                       "fill",
-                      "stroke",
                       "strokeWidth",
-                      "strokeLinejoin",
                     ]
                   }
-                  stroke={
-                    {
-                      "payload": 4279900965,
-                      "type": 0,
-                    }
-                  }
-                  strokeLinejoin={1}
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
@@ -2200,6 +2183,8 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                       [
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -2208,6 +2193,8 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
@@ -2222,6 +2209,8 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                       [
                         "stroke",
                         "strokeWidth",
+                        "strokeLinecap",
+                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -2230,6 +2219,8 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
                         "type": 0,
                       }
                     }
+                    strokeLinecap={1}
+                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                 </RNSVGGroup>

@@ -12,9 +12,44 @@ import { ChannelEditImageSheet } from '../components/ChannelEditImageSheet';
 
 jest.mock('../../UIComponents/BottomSheetModal', () => {
   const React = require('react');
+  const {
+    BottomSheetProvider,
+  } = require('../../../contexts/bottomSheetContext/BottomSheetContext');
+  // Emulate the real modal: both `close` and `dismiss` run `onClose` and then the
+  // optional finished-callback, and the modal supplies the BottomSheetContext that
+  // `ChannelEditImageSheet` reads `close`/`dismiss` from.
   return {
-    BottomSheetModal: ({ children, visible }: { children: React.ReactNode; visible: boolean }) =>
-      visible ? <>{children}</> : null,
+    BottomSheetModal: ({
+      children,
+      onClose,
+      visible,
+    }: {
+      children: React.ReactNode;
+      onClose: () => void;
+      visible: boolean;
+    }) => {
+      if (!visible) {
+        return null;
+      }
+      const runClose = (callback?: () => void) => {
+        onClose();
+        callback?.();
+      };
+      return (
+        <BottomSheetProvider
+          value={
+            {
+              close: runClose,
+              currentSnapIndex: { value: 0 },
+              dismiss: runClose,
+              topSnapIndex: { value: 0 },
+            } as never
+          }
+        >
+          {children}
+        </BottomSheetProvider>
+      );
+    },
   };
 });
 
