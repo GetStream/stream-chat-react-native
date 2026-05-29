@@ -89,7 +89,7 @@ export const ChannelMemberActionsSheet = ({
   const handleClose = useStableCallback(onClose);
 
   return (
-    <BottomSheetModal enableDynamicSizing lazy onClose={handleClose} visible={visible}>
+    <BottomSheetModal enableDynamicSizing onClose={handleClose} visible={visible}>
       <ChannelMemberActionsSheetInner member={member} onClose={handleClose} />
     </BottomSheetModal>
   );

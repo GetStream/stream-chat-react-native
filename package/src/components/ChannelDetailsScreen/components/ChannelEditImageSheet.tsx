@@ -172,13 +172,12 @@ export const ChannelEditImageSheet = ({
   onSelectReset,
   visible,
 }: ChannelEditImageSheetProps) => {
-  // const handleClose = useStableCallback(onClose);
   const handleSelectCamera = useStableCallback(onSelectCamera);
   const handleSelectLibrary = useStableCallback(onSelectLibrary);
   const handleSelectReset = useStableCallback(onSelectReset ?? (() => undefined));
 
   return (
-    <BottomSheetModal enableDynamicSizing lazy onClose={onClose} visible={visible}>
+    <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
       <ChannelEditImageSheetInner
         onSelectCamera={handleSelectCamera}
         onSelectLibrary={handleSelectLibrary}
