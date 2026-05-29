@@ -4,7 +4,15 @@ import { act, renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import type { File } from '../../../types/types';
 import { useChannelActions } from '../useChannelActions';
+
+const imageFile: File = {
+  name: 'avatar.png',
+  size: 1024,
+  type: 'image/png',
+  uri: 'file:///tmp/avatar.png',
+};
 
 const createWrapper =
   (client: unknown) =>
@@ -418,11 +426,7 @@ describe('useChannelActions', () => {
     });
 
     await act(async () => {
-      await result.current.updateImage({
-        contentType: 'image/png',
-        name: 'avatar.png',
-        uri: 'file:///tmp/avatar.png',
-      });
+      await result.current.updateImage(imageFile);
     });
 
     expect(client.uploadImage).toHaveBeenCalledWith(
@@ -446,6 +450,27 @@ describe('useChannelActions', () => {
     });
   });
 
+  it('uses doFileUploadRequest instead of client.uploadImage when provided', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const doFileUploadRequest = jest
+      .fn()
+      .mockResolvedValue({ file: 'https://cdn.custom.com/avatar.png' });
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.updateImage(imageFile, undefined, doFileUploadRequest);
+    });
+
+    expect(doFileUploadRequest).toHaveBeenCalledWith(imageFile);
+    expect(client.uploadImage).not.toHaveBeenCalled();
+    expect(channel.updatePartial).toHaveBeenCalledWith({
+      set: { image: 'https://cdn.custom.com/avatar.png' },
+    });
+  });
+
   it('notifies and skips channel.updatePartial when uploadImage rejects', async () => {
     const error = new Error('upload failed');
     const client = createClient();
@@ -456,7 +481,7 @@ describe('useChannelActions', () => {
     });
 
     await act(async () => {
-      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' });
+      await result.current.updateImage(imageFile);
     });
 
     expect(channel.updatePartial).not.toHaveBeenCalled();
@@ -484,7 +509,7 @@ describe('useChannelActions', () => {
     });
 
     await act(async () => {
-      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' });
+      await result.current.updateImage(imageFile);
     });
 
     expect(client.uploadImage).toHaveBeenCalledTimes(1);
@@ -585,19 +610,19 @@ describe('useChannelActions', () => {
     });
 
     await act(async () => {
-      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' }, { onSuccess });
+      await result.current.updateImage(imageFile, { onSuccess });
     });
     expect(onSuccess).toHaveBeenCalledTimes(1);
 
     client.uploadImage.mockRejectedValueOnce(new Error('nope'));
     await act(async () => {
-      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' }, { onSuccess });
+      await result.current.updateImage(imageFile, { onSuccess });
     });
     expect(onSuccess).toHaveBeenCalledTimes(1);
 
     jest.mocked(channel.updatePartial).mockRejectedValueOnce(new Error('nope'));
     await act(async () => {
-      await result.current.updateImage({ uri: 'file:///tmp/avatar.png' }, { onSuccess });
+      await result.current.updateImage(imageFile, { onSuccess });
     });
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });

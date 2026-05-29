@@ -2,21 +2,16 @@ import { useMemo } from 'react';
 
 import { Channel } from 'stream-chat';
 
-import type { ActionHandler, ActionOptions } from './types';
+import type { ActionHandler, ActionOptions, DoFileUploadRequest } from './types';
 
 import { useNotificationApi } from '../../components/Notifications/hooks';
 import { useChatContext, useTranslationContext } from '../../contexts';
+import { File } from '../../types/types';
 import { useStableCallback } from '../useStableCallback';
 
 export type ChannelActionOptions = ActionOptions;
 
 export type ChannelActionHandler = ActionHandler;
-
-export type UpdateChannelImageInput = {
-  uri: string | NodeJS.ReadableStream | File;
-  contentType?: string;
-  name?: string;
-};
 
 export type ChannelActions = {
   addMembers: (memberIds: string[], options?: ChannelActionOptions) => Promise<void>;
@@ -27,8 +22,9 @@ export type ChannelActions = {
   unarchive: ChannelActionHandler;
   unpin: ChannelActionHandler;
   updateImage: (
-    image: UpdateChannelImageInput | null,
+    image: File | null,
     options?: ChannelActionOptions,
+    doFileUploadRequest?: DoFileUploadRequest,
   ) => Promise<void>;
   updateName: (name: string, options?: ChannelActionOptions) => Promise<void>;
   muteUser: ChannelActionHandler;
@@ -424,7 +420,11 @@ export const useChannelActions = (channel: Channel) => {
   });
 
   const updateImage = useStableCallback(
-    async (image: UpdateChannelImageInput | null, options?: ChannelActionOptions) => {
+    async (
+      image: File | null,
+      options?: ChannelActionOptions,
+      doFileUploadRequest?: DoFileUploadRequest,
+    ) => {
       if (!channel) {
         return;
       }
@@ -433,7 +433,9 @@ export const useChannelActions = (channel: Channel) => {
         if (image === null) {
           await channel.updatePartial({ unset: ['image'] });
         } else {
-          const { file } = await client.uploadImage(image.uri, image.name, image.contentType);
+          const { file } = doFileUploadRequest
+            ? await doFileUploadRequest(image)
+            : await client.uploadImage(image.uri, image.name, image.type);
           await channel.updatePartial({ set: { image: file } });
         }
         addNotification({

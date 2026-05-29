@@ -30,7 +30,7 @@ type ChannelEditDetailsModalContentProps = {
 };
 
 const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalContentProps) => {
-  const { channel } = useChannelDetailsContext();
+  const { channel, doFileUploadRequest } = useChannelDetailsContext();
   const { updateImage, updateName } = useChannelActions(channel);
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();
@@ -75,12 +75,13 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
         imageOk = false;
         tasks.push(
           updateImage(
-            image === null ? null : { contentType: image.type, name: image.name, uri: image.uri },
+            image,
             {
               onSuccess: () => {
                 imageOk = true;
               },
             },
+            doFileUploadRequest,
           ),
         );
       }

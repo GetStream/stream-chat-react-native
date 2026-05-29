@@ -11,6 +11,7 @@ import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/c
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
+import type { DoFileUploadRequest } from '../../hooks/actions/types';
 import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import type { GetChannelMemberActionItems } from '../../hooks/actions/useChannelMemberActionItems';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
@@ -94,6 +95,11 @@ export type ChannelDetailsScreenProps = {
    * Fired when the user taps the "view all members" button, by default it opens the members bottom sheet.
    */
   onViewAllMembersPress?: () => void;
+  /**
+   * Override file upload request (used to upload channel image). By default it will use Stream's CDN.
+   * @param file File object to upload
+   */
+  doFileUploadRequest?: DoFileUploadRequest;
 };
 
 export const ChannelDetailsScreenContent = () => {
@@ -136,6 +142,7 @@ export const ChannelDetailsScreenContent = () => {
 export const ChannelDetailsScreen = ({
   channel,
   compressImageQuality,
+  doFileUploadRequest,
   getChannelActionItems,
   getChannelMemberActionItems,
   getMemberRoleLabel,
@@ -152,6 +159,7 @@ export const ChannelDetailsScreen = ({
     () => ({
       channel,
       compressImageQuality,
+      doFileUploadRequest,
       getChannelActionItems,
       getChannelMemberActionItems,
       getMemberRoleLabel,
@@ -165,6 +173,7 @@ export const ChannelDetailsScreen = ({
     [
       channel,
       compressImageQuality,
+      doFileUploadRequest,
       getChannelActionItems,
       getChannelMemberActionItems,
       getMemberRoleLabel,
