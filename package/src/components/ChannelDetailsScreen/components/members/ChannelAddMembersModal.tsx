@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
+import { ActivityIndicator } from 'react-native';
+
 import type { UserResponse } from 'stream-chat';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -12,13 +14,12 @@ import { Checkmark } from '../../../../icons/checkmark-1';
 import { NotificationList } from '../../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { Button } from '../../../ui/Button/Button';
-import { Spinner } from '../../../UIComponents/Spinner';
 import { ChannelDetailsModal } from '../modal/Modal';
 import { ModalHeader } from '../modal/ModalHeader';
 
 const loadingIconStyle = { margin: 0 };
 const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number }) => (
-  <Spinner height={height} style={loadingIconStyle} width={width} />
+  <ActivityIndicator style={{ ...loadingIconStyle, ...{ height, width } }} />
 );
 
 export type ChannelAddMembersModalProps = {

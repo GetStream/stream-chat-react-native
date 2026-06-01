@@ -93,7 +93,7 @@ describe('ChannelAddMembers', () => {
     renderComponent({ channel, queryUsers });
 
     expect(screen.getByTestId('search-input')).toBeTruthy();
-    expect(screen.getByTestId('empty-search-result-loading')).toBeTruthy();
+    expect(screen.getByTestId('user-list-loading-skeleton')).toBeTruthy();
   });
 
   it('fires an initial queryUsers call on mount with the role filter and pagination opts', async () => {

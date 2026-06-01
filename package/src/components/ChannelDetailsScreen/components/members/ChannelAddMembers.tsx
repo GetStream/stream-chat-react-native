@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } fro
 import type { UserResponse } from 'stream-chat';
 
 import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
+import { UserListLoadingSkeleton } from './UserListLoadingSkeleton';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -50,6 +51,7 @@ export const ChannelAddMembers = ({
     clearSearch,
     isSelected,
     loading,
+    loadingMore,
     loadMore,
     onChangeSearchText,
     results,
@@ -76,15 +78,16 @@ export const ChannelAddMembers = ({
     [isSelected, toggleUser],
   );
 
-  const emptyState = (
+  const emptyState = loading ? (
+    <UserListLoadingSkeleton />
+  ) : (
     <EmptySearchResult
       icon={<Search height={24} stroke={semantics.textTertiary} width={24} />}
       label={t('No user found')}
-      loading={loading}
     />
   );
 
-  const loadingMoreIndicator = <>{loading && <ActivityIndicator />}</>;
+  const loadingMoreIndicator = <>{loadingMore && <ActivityIndicator />}</>;
 
   return (
     <View style={styles.container}>

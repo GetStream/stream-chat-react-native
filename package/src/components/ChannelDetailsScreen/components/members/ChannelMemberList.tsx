@@ -3,6 +3,8 @@ import { ActivityIndicator, FlatList, type FlatListProps } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
+import { MemberListLoadingSkeleton } from './MemberListLoadingSkeleton';
+
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -27,7 +29,7 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
   const { channel, onMemberPress } = useChannelDetailsContext();
   const { client } = useChatContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
-  const { hasMore, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
+  const { hasMore, loading, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
@@ -58,6 +60,10 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
     () => (loadingMore ? <ActivityIndicator /> : null),
     [loadingMore],
   );
+
+  if (loading && results.length === 0) {
+    return <MemberListLoadingSkeleton />;
+  }
 
   return (
     <>

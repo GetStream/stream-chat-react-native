@@ -88,24 +88,4 @@ describe('EmptySearchResult', () => {
 
     expect(screen.getByTestId('icon-as-text')).toBeTruthy();
   });
-
-  it('renders the loading testID and hides the icon/label when loading is true', () => {
-    renderComponent({
-      icon: <View testID='hidden-icon' />,
-      label: 'No results',
-      loading: true,
-    });
-
-    expect(screen.getByTestId('empty-search-result-loading')).toBeTruthy();
-    expect(screen.queryByTestId('empty-search-result')).toBeNull();
-    expect(screen.queryByTestId('hidden-icon')).toBeNull();
-    expect(screen.queryByText('No results')).toBeNull();
-  });
-
-  it('renders the icon/label when loading is false', () => {
-    renderComponent({ loading: false });
-
-    expect(screen.getByTestId('empty-search-result')).toBeTruthy();
-    expect(screen.queryByTestId('empty-search-result-loading')).toBeNull();
-  });
 });

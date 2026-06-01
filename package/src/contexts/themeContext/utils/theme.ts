@@ -276,6 +276,24 @@ export type Theme = {
     textContainer: ViewStyle;
     timestamp: ViewStyle;
   };
+  memberListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  userListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
   channelPreview: {
     container: ViewStyle;
     contentContainer: ViewStyle;
@@ -1308,6 +1326,24 @@ export const defaultTheme: Theme = {
     headerLabel: {},
     textContainer: {},
     timestamp: {},
+  },
+  memberListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  userListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
   },
   channelPreview: {
     container: {},

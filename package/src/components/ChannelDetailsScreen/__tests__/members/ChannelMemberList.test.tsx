@@ -262,6 +262,22 @@ describe('ChannelMemberList', () => {
       warnSpy.mockRestore();
     });
 
+    it('renders the loading skeleton while the initial paginated fetch is pending', () => {
+      const queryMembers: QueryMembersMock = jest
+        .fn()
+        .mockReturnValue(new Promise(() => undefined));
+      const channel = buildChannel({
+        memberCount: 200,
+        members: buildMembers(25, 'loaded'),
+        queryMembers,
+      });
+
+      const list = renderList({ channel });
+
+      expect(list.getByTestId('member-list-loading-skeleton')).toBeTruthy();
+      expect(mockFlatList).not.toHaveBeenCalled();
+    });
+
     it('calls queryMembers and feeds the response into the flat list', async () => {
       const firstPage = buildMembers(25, 'page1');
       const queryMembers: QueryMembersMock = jest.fn().mockResolvedValue({ members: firstPage });

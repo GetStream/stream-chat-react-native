@@ -1,42 +1,29 @@
 import React from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
-import { Spinner } from './Spinner';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type EmptySearchResultProps = {
   icon: React.ReactNode;
   label: string;
-  loading?: boolean;
 };
 
-export const EmptySearchResult = React.memo(
-  ({ icon, label, loading = false }: EmptySearchResultProps) => {
-    const {
-      theme: {
-        emptySearchResult: { container, text },
-        semantics,
-      },
-    } = useTheme();
+export const EmptySearchResult = React.memo(({ icon, label }: EmptySearchResultProps) => {
+  const {
+    theme: {
+      emptySearchResult: { container, text },
+      semantics,
+    },
+  } = useTheme();
 
-    if (loading) {
-      return (
-        <View style={[styles.container, container]} testID='empty-search-result-loading'>
-          <Spinner height={24} width={24} />
-        </View>
-      );
-    }
-
-    return (
-      <View style={[styles.container, container]} testID='empty-search-result'>
-        {icon}
-        <Text style={[styles.text, { color: semantics.textSecondary }, text]}>{label}</Text>
-      </View>
-    );
-  },
-);
+  return (
+    <View style={[styles.container, container]} testID='empty-search-result'>
+      {icon}
+      <Text style={[styles.text, { color: semantics.textSecondary }, text]}>{label}</Text>
+    </View>
+  );
+});
 
 EmptySearchResult.displayName = 'EmptySearchResult{emptySearchResult}';
 

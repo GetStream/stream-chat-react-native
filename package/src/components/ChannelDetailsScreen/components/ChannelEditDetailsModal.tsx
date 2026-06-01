@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
+import { ActivityIndicator } from 'react-native';
+
 import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
 
@@ -14,11 +16,10 @@ import type { File } from '../../../types/types';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
-import { Spinner } from '../../UIComponents/Spinner';
 
 const loadingIconStyle = { margin: 0 };
 const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number }) => (
-  <Spinner height={height} style={loadingIconStyle} width={width} />
+  <ActivityIndicator style={{ ...loadingIconStyle, ...{ height, width } }} />
 );
 
 export type ChannelEditDetailsModalProps = {
