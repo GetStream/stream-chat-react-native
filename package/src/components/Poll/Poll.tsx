@@ -4,7 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PollOption as PollOptionClass } from 'stream-chat';
 
 import { PollOption, ShowAllOptionsButton } from './components';
+import { PollUIStateProvider } from './contexts/PollUIStateContext';
 
+import { usePollAccessibilityActions } from './hooks/usePollAccessibilityActions';
+import { usePollAccessibilityLabel } from './hooks/usePollAccessibilityLabel';
 import { usePollState } from './hooks/usePollState';
 
 import {
@@ -13,6 +16,7 @@ import {
   useTheme,
   useTranslationContext,
 } from '../../contexts';
+import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 
 import { primitives } from '../../theme';
@@ -61,6 +65,9 @@ export const PollContent = () => {
   const styles = useStyles();
   const { PollButtons: PollButtonsComponent, PollHeader: PollHeaderComponent } =
     useComponentsContext();
+  const { enabled: a11yEnabled } = useAccessibilityContext();
+  const accessibilityLabel = usePollAccessibilityLabel();
+  const { accessibilityActions, onAccessibilityAction } = usePollAccessibilityActions();
 
   const {
     theme: {
@@ -70,8 +77,23 @@ export const PollContent = () => {
     },
   } = useTheme();
 
+  // NOTE: Android custom accessibilityActions are broken in RN < 0.83.2 —
+  // see facebook/react-native#47268, fixed by PR #52724. On affected versions
+  // the actions menu surfaces only a subset of the list and dispatch
+  // announces "Action not supported". iOS works correctly on all versions.
+  // Once the SDK's minimum RN reaches 0.83.2, wrap the descendants below in
+  // <View importantForAccessibility='no-hide-descendants'> so Android
+  // TalkBack groups them under the composite rather than exposing each
+  // interactive child as a separate focus stop.
   return (
-    <View style={[styles.container, container]}>
+    <View
+      accessibilityActions={accessibilityActions}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={a11yEnabled ? 'button' : undefined}
+      accessible={a11yEnabled || undefined}
+      onAccessibilityAction={onAccessibilityAction}
+      style={[styles.container, container]}
+    >
       <PollHeaderComponent />
       <View style={[styles.optionsWrapper, optionsWrapper]}>
         {options?.slice(0, defaultPollOptionCount)?.map((option: PollOptionClass) => (
@@ -93,7 +115,9 @@ export const Poll = ({ message, poll }: PollProps) => {
         poll,
       }}
     >
-      {PollContentOverride ? <PollContentOverride /> : <PollContent />}
+      <PollUIStateProvider>
+        {PollContentOverride ? <PollContentOverride /> : <PollContent />}
+      </PollUIStateProvider>
     </PollContextProvider>
   );
 };

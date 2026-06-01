@@ -318,6 +318,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   return (
     <Pressable
+      accessible={message.poll_id ? false : undefined}
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {

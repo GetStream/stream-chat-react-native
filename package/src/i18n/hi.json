@@ -351,5 +351,9 @@
   "{{ user }} has been unmuted": "{{ user }} को अनम्यूट किया गया",
   "size limit": "आकार सीमा",
   "unknown error": "अज्ञात त्रुटि",
-  "unsupported file type": "असमर्थित फ़ाइल प्रकार"
+  "unsupported file type": "असमर्थित फ़ाइल प्रकार",
+  "a11y/Activate to view results": "Activate to view results",
+  "a11y/End vote": "End vote",
+  "a11y/Show all options": "Show all options",
+  "a11y/Vote on {{option}}": "Vote on {{option}}"
 }

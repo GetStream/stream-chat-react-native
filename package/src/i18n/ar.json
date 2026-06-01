@@ -351,5 +351,9 @@
   "{{ user }} has been unmuted": "تم إلغاء كتم {{ user }}",
   "size limit": "حد الحجم",
   "unknown error": "خطأ غير معروف",
-  "unsupported file type": "نوع ملف غير مدعوم"
+  "unsupported file type": "نوع ملف غير مدعوم",
+  "a11y/Activate to view results": "Activate to view results",
+  "a11y/End vote": "End vote",
+  "a11y/Show all options": "Show all options",
+  "a11y/Vote on {{option}}": "Vote on {{option}}"
 }

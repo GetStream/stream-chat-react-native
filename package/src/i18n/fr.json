@@ -351,5 +351,9 @@
   "{{ user }} has been unmuted": "{{ user }} n’est plus en sourdine",
   "size limit": "limite de taille",
   "unknown error": "erreur inconnue",
-  "unsupported file type": "type de fichier non pris en charge"
+  "unsupported file type": "type de fichier non pris en charge",
+  "a11y/Activate to view results": "Activate to view results",
+  "a11y/End vote": "End vote",
+  "a11y/Show all options": "Show all options",
+  "a11y/Vote on {{option}}": "Vote on {{option}}"
 }
