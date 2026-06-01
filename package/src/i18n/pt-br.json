@@ -357,5 +357,7 @@
   "a11y/Show all options": "Mostrar todas as opções",
   "a11y/Vote on {{option}}": "Votar em {{option}}",
   "a11y/Double tap and hold to activate contextual menu": "Toque duas vezes e segure para ativar o menu contextual",
-  "a11y/Swipe right to go through different actions": "Deslize para a direita para percorrer as diferentes ações"
+  "a11y/Swipe right to go through different actions": "Deslize para a direita para percorrer as diferentes ações",
+  "a11y/Close": "Close",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

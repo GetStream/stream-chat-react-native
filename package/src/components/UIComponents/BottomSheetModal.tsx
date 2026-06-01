@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  AccessibilityActionEvent,
   EventSubscription,
   Keyboard,
   KeyboardEvent,
@@ -37,11 +38,13 @@ import {
   getBottomSheetTopSnapIndex,
 } from './BottomSheetModal.utils';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useResolvedModalAccessibilityProps } from '../../a11y/hooks/useResolvedModalAccessibilityProps';
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
+import { useAccessibilityAnnouncer } from '../Accessibility/useAccessibilityAnnouncer';
 
 export type BottomSheetModalProps = {
   /**
@@ -495,6 +498,37 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
 
   const modalA11yProps = useResolvedModalAccessibilityProps();
 
+  const announce = useAccessibilityAnnouncer();
+  const openAnnouncement = useA11yLabel(
+    'a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.',
+  );
+  const announcedOpenRef = useRef(false);
+  useEffect(() => {
+    if (!visible) {
+      announcedOpenRef.current = false;
+      return;
+    }
+    if (!openAnnouncement || announcedOpenRef.current) {
+      return;
+    }
+    const id = setTimeout(() => {
+      announce(openAnnouncement, 'polite');
+      announcedOpenRef.current = true;
+    }, 800);
+    return () => clearTimeout(id);
+  }, [visible, openAnnouncement, announce]);
+
+  const closeLabel = useA11yLabel('a11y/Close');
+  const closeAccessibilityActions = useMemo(
+    () => (closeLabel ? [{ label: closeLabel, name: 'activate' }] : undefined),
+    [closeLabel],
+  );
+  const onCloseAccessibilityAction = useStableCallback((event: AccessibilityActionEvent) => {
+    if (event.nativeEvent.actionName === 'activate') {
+      onClose();
+    }
+  });
+
   const bottomSheetModalContextValue = useMemo(
     () => ({
       close,
@@ -515,13 +549,22 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
           <Pressable onPress={onBackdropPress} style={StyleSheet.absoluteFill} />
 
           <Animated.View
+            onAccessibilityEscape={onClose}
             pointerEvents='box-none'
             style={[{ height: maxHeight }, sheetViewportAnimatedStyle]}
             {...modalA11yProps}
           >
             <GestureDetector gesture={panGesture}>
               <Animated.View style={[styles.container, { height: maxHeight }, container]}>
-                <View style={[styles.handle, handle]} />
+                <View
+                  accessibilityActions={closeAccessibilityActions}
+                  accessibilityLabel={closeLabel}
+                  accessibilityRole={closeLabel ? 'button' : undefined}
+                  accessible={closeLabel ? true : undefined}
+                  onAccessibilityAction={onCloseAccessibilityAction}
+                  onAccessibilityTap={closeLabel ? onClose : undefined}
+                  style={[styles.handle, handle]}
+                />
                 <View style={[styles.contentContainer, contentContainer]}>
                   {renderContent ? (
                     <BottomSheetProvider value={bottomSheetModalContextValue}>

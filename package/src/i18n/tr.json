@@ -357,5 +357,7 @@
   "a11y/Show all options": "Tüm seçenekleri göster",
   "a11y/Vote on {{option}}": "{{option}} için oy ver",
   "a11y/Double tap and hold to activate contextual menu": "Bağlam menüsünü etkinleştirmek için çift dokunup basılı tut",
-  "a11y/Swipe right to go through different actions": "Farklı eylemler arasında geçiş yapmak için sağa kaydır"
+  "a11y/Swipe right to go through different actions": "Farklı eylemler arasında geçiş yapmak için sağa kaydır",
+  "a11y/Close": "Close",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }
