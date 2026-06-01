@@ -10,6 +10,7 @@ import { usePollAccessibilityActions } from './hooks/usePollAccessibilityActions
 import { usePollAccessibilityLabel } from './hooks/usePollAccessibilityLabel';
 import { usePollState } from './hooks/usePollState';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import {
   PollContextProvider,
   PollContextValue,
@@ -66,6 +67,7 @@ export const PollContent = () => {
   const { PollButtons: PollButtonsComponent, PollHeader: PollHeaderComponent } =
     useComponentsContext();
   const { enabled: a11yEnabled } = useAccessibilityContext();
+  const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
   const accessibilityLabel = usePollAccessibilityLabel();
   const { accessibilityActions, onAccessibilityAction } = usePollAccessibilityActions();
 
@@ -88,6 +90,7 @@ export const PollContent = () => {
   return (
     <View
       accessibilityActions={accessibilityActions}
+      accessibilityHint={accessibilityHint}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole={a11yEnabled ? 'button' : undefined}
       accessible={a11yEnabled || undefined}
