@@ -430,9 +430,6 @@ export const useChannelActions = (channel: Channel) => {
       }
 
       try {
-        if (Math.random() > 0.5) {
-          throw new Error('test error');
-        }
         if (image === null) {
           await channel.updatePartial({ unset: ['image'] });
         } else {
