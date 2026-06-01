@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { Image, Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
@@ -41,13 +41,22 @@ const SheetProbe = (props: ChannelEditImageSheetProps) => {
   );
 };
 
-const buildChannel = (overrides?: { name?: string }): Channel =>
+const buildChannel = (overrides?: { image?: string; name?: string }): Channel =>
   ({
     cid: 'messaging:test',
-    data: overrides && 'name' in overrides ? { name: overrides.name } : { name: 'Original' },
+    data: {
+      name: overrides && 'name' in overrides ? overrides.name : 'Original',
+      ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+    },
     on: () => ({ unsubscribe: () => undefined }),
     state: { members: {} },
   }) as unknown as Channel;
+
+// The avatar renders its image through the default `SvgAwareImage`, which for a
+// raster URI is a plain RN `Image`. Read back the displayed `uri` (or undefined
+// when the avatar falls back to the member/user placeholder).
+const avatarImageUri = (): string | undefined =>
+  screen.UNSAFE_queryByType(Image)?.props?.source?.uri;
 
 const renderComponent = ({
   channel,
@@ -268,6 +277,65 @@ describe('ChannelEditDetails', () => {
       });
 
       await waitFor(() => expect(onImageReset).toHaveBeenCalledTimes(1));
+    });
+  });
+
+  describe('avatar preview', () => {
+    it('shows the live channel image while untouched', () => {
+      renderComponent({ channel: buildChannel({ image: 'https://example.com/live.png' }) });
+
+      expect(avatarImageUri()).toBe('https://example.com/live.png');
+    });
+
+    it('previews a gallery-picked image before it is saved', async () => {
+      const file = generateFileReference();
+      jest
+        .spyOn(NativeHandlers, 'pickImage')
+        .mockResolvedValue({ assets: [file], cancelled: false });
+
+      renderComponent({ channel: buildChannel({ image: 'https://example.com/live.png' }) });
+      fireEvent.press(screen.getByTestId('channel-edit-upload-button'));
+
+      act(() => {
+        fireEvent.press(screen.getByTestId('sheet-probe-library'));
+        fireEvent.press(screen.getByTestId('sheet-probe-close'));
+      });
+
+      await waitFor(() => expect(avatarImageUri()).toBe(file.uri));
+    });
+
+    it('previews a camera-captured image before it is saved', async () => {
+      const file = generateFileReference();
+      jest.spyOn(NativeHandlers, 'takePhoto').mockResolvedValue(file);
+
+      renderComponent({ channel: buildChannel({ image: 'https://example.com/live.png' }) });
+      fireEvent.press(screen.getByTestId('channel-edit-upload-button'));
+
+      act(() => {
+        fireEvent.press(screen.getByTestId('sheet-probe-camera'));
+        fireEvent.press(screen.getByTestId('sheet-probe-close'));
+      });
+
+      await waitFor(() => expect(avatarImageUri()).toBe(file.uri));
+    });
+
+    it('drops the live image when the user resets the picture', async () => {
+      const onImageReset = jest.fn();
+      renderComponent({
+        channel: buildChannel({ image: 'https://example.com/live.png' }),
+        onImageReset,
+      });
+      expect(avatarImageUri()).toBe('https://example.com/live.png');
+
+      fireEvent.press(screen.getByTestId('channel-edit-upload-button'));
+
+      act(() => {
+        fireEvent.press(screen.getByTestId('sheet-probe-reset'));
+        fireEvent.press(screen.getByTestId('sheet-probe-close'));
+      });
+
+      await waitFor(() => expect(onImageReset).toHaveBeenCalledTimes(1));
+      expect(avatarImageUri()).toBeUndefined();
     });
   });
 });

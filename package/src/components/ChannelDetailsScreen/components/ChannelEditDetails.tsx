@@ -62,6 +62,8 @@ export const ChannelEditDetails = ({
   const [name, setName] = useState(initialName);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+  // `undefined` = untouched (show live channel image), `string` = picked uri, `null` = reset.
+  const [previewUri, setPreviewUri] = useState<string | null | undefined>(undefined);
 
   const lastNameRef = useRef(name);
   useEffect(() => {
@@ -84,11 +86,18 @@ export const ChannelEditDetails = ({
     (async () => {
       if (action === 'camera') {
         const file = await takePhoto();
-        if (file) onImagePicked(file);
+        if (file) {
+          setPreviewUri(file.uri);
+          onImagePicked(file);
+        }
       } else if (action === 'library') {
         const file = await pickImageFromNativePicker();
-        if (file) onImagePicked(file);
+        if (file) {
+          setPreviewUri(file.uri);
+          onImagePicked(file);
+        }
       } else if (action === 'reset') {
+        setPreviewUri(null);
         onImageReset?.();
       }
     })();
@@ -104,7 +113,13 @@ export const ChannelEditDetails = ({
   return (
     <View style={[styles.container, containerOverride]}>
       <View style={[styles.avatarSection, avatarSectionOverride]}>
-        <ChannelAvatar channel={channel} showBorder={false} size='2xl' />
+        <ChannelAvatar
+          channel={channel}
+          isPreview={previewUri !== undefined}
+          previewUri={previewUri ?? null}
+          showBorder={false}
+          size='2xl'
+        />
         <Button
           accessibilityLabelKey='a11y/Upload channel image'
           label={t('Upload')}

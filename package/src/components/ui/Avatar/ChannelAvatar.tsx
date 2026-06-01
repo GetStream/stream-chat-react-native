@@ -18,6 +18,17 @@ import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMember
 
 export type ChannelAvatarProps = {
   channel: Channel;
+  /**
+   * When true, the avatar renders based on `previewUri` instead of the
+   * channel's stored image. Useful for previewing a pending image change before
+   * it is saved. Defaults to false.
+   */
+  isPreview?: boolean;
+  /**
+   * Image to display while in preview mode (`isPreview` is true). A `string`
+   * shows that image; `null` shows the no-image fallback (member/user avatar).
+   */
+  previewUri?: string | null;
   showOnlineIndicator?: boolean;
   size?: 'lg' | 'xl' | '2xl';
   showBorder?: boolean;
@@ -27,7 +38,13 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const { client } = useChatContext();
   const { channel } = props;
   const online = useChannelPreviewDisplayPresence(channel);
-  const { showOnlineIndicator = online, size = 'xl', showBorder = true } = props;
+  const {
+    isPreview = false,
+    previewUri = null,
+    showOnlineIndicator = online,
+    size = 'xl',
+    showBorder = true,
+  } = props;
 
   const {
     theme: { semantics },
@@ -38,6 +55,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
 
   const channelImage = useChannelImage(channel);
+  const imageToDisplay = isPreview ? previewUri : channelImage;
 
   const members = useChannelMembersState(channel);
   const usersForGroup = useMemo(
@@ -51,11 +69,11 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   const channelName = useChannelName(channel) ?? channel.cid;
 
-  if (channelImage) {
+  if (imageToDisplay) {
     return (
       <Avatar
         backgroundColor={avatarBackgroundColor}
-        imageUrl={channelImage}
+        imageUrl={imageToDisplay}
         name={channelName}
         showBorder={showBorder}
         size={size}
