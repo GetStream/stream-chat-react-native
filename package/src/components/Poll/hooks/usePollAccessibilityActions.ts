@@ -20,19 +20,13 @@ import { useStableCallback } from '../../../hooks';
 import { defaultPollOptionCount } from '../../../utils/constants';
 import { usePollUIStateContext } from '../contexts/PollUIStateContext';
 
-export const POLL_VIEW_RESULTS_ACTION_NAME = 'streamPollViewResults';
-export const POLL_VOTE_OPTION_ACTION_PREFIX = 'streamPollVoteOption_';
-export const POLL_SHOW_ALL_OPTIONS_ACTION_NAME = 'streamPollShowAllOptions';
-export const POLL_END_VOTE_ACTION_NAME = 'streamPollEndVote';
-export const POLL_ADD_COMMENT_ACTION_NAME = 'streamPollAddComment';
-export const POLL_SUGGEST_OPTION_ACTION_NAME = 'streamPollSuggestOption';
-
 type AccessibilityAction = NonNullable<AccessibilityProps['accessibilityActions']>[number];
 type OnAccessibilityAction = NonNullable<AccessibilityProps['onAccessibilityAction']>;
 
 type PollA11yActionsSelectorResult = {
   allowAnswers: boolean | undefined;
   allowUserSuggestedOptions: boolean | undefined;
+  answersCount: number;
   createdBy: UserResponse | null;
   isClosed: boolean | undefined;
   options: PollOption[];
@@ -41,6 +35,7 @@ type PollA11yActionsSelectorResult = {
 const a11yActionsSelector = (state: PollState): PollA11yActionsSelectorResult => ({
   allowAnswers: state.allow_answers,
   allowUserSuggestedOptions: state.allow_user_suggested_options,
+  answersCount: state.answers_count,
   createdBy: state.created_by,
   isClosed: state.is_closed,
   options: state.options,
@@ -51,20 +46,38 @@ export type UsePollAccessibilityActionsResult = {
   onAccessibilityAction: OnAccessibilityAction | undefined;
 };
 
+type ActionKind =
+  | { type: 'addComment' }
+  | { type: 'endVote' }
+  | { type: 'showAllComments' }
+  | { type: 'showAllOptions' }
+  | { type: 'suggestOption' }
+  | { type: 'viewResults' }
+  | { type: 'vote'; optionId: string };
+
 /**
  * Returns the `accessibilityActions` array and `onAccessibilityAction` handler
  * for the poll composite container. Action set is gated by poll state +
  * capabilities so each rotor entry corresponds to an interaction the user is
  * actually allowed to perform. Returns `undefined`s when a11y is disabled.
+ *
+ * NOTE: We set both `name` and `label` to the same human-readable string on
+ * every action. iOS Fabric (new architecture, on by default in RN 0.81+) uses
+ * `accessibilityAction.name` as the string VoiceOver reads — `label` is
+ * ignored on that path (RCTViewComponentView.mm). iOS legacy (Paper) and
+ * Android both read `label`. Using the same value for both fields means the
+ * announcement is human-readable on every platform/architecture. Dispatch
+ * uses the action name as the lookup key into an internal kind map, so the
+ * raw strings never need to be exposed to consumers.
  */
 export const usePollAccessibilityActions = (): UsePollAccessibilityActionsResult => {
   const { enabled } = useAccessibilityContext();
   const { t } = useTranslationContext();
   const { client } = useChatContext();
   const { castPollVote } = useOwnCapabilitiesContext();
-  const { allowAnswers, allowUserSuggestedOptions, createdBy, isClosed, options } =
+  const { allowAnswers, allowUserSuggestedOptions, answersCount, createdBy, isClosed, options } =
     usePollStateStore(a11yActionsSelector);
-  const { openAddComment, openAllOptions, openSuggestOption, openViewResults } =
+  const { openAddComment, openAllComments, openAllOptions, openSuggestOption, openViewResults } =
     usePollUIStateContext();
   const toggleVote = usePollVoteToggle();
   const endVote = useEndVote();
@@ -74,71 +87,97 @@ export const usePollAccessibilityActions = (): UsePollAccessibilityActionsResult
   const canComment = !isClosed && !!allowAnswers;
   const canSuggest = !isClosed && !!allowUserSuggestedOptions;
   const hasMoreOptions = !!options && options.length > defaultPollOptionCount;
+  const hasComments = answersCount > 0;
 
-  const accessibilityActions = useMemo<readonly AccessibilityAction[] | undefined>(() => {
-    if (!enabled) return undefined;
+  const { accessibilityActions, actionKindByName } = useMemo<{
+    accessibilityActions: readonly AccessibilityAction[] | undefined;
+    actionKindByName: Map<string, ActionKind> | undefined;
+  }>(() => {
+    if (!enabled) {
+      return { accessibilityActions: undefined, actionKindByName: undefined };
+    }
 
-    const actions: AccessibilityAction[] = [
-      { label: t('View Results'), name: POLL_VIEW_RESULTS_ACTION_NAME },
-    ];
+    const actions: AccessibilityAction[] = [];
+    const kindByName = new Map<string, ActionKind>();
+
+    const push = (name: string, kind: ActionKind) => {
+      actions.push({ label: name, name });
+      kindByName.set(name, kind);
+    };
+
+    push(t('View Results'), { type: 'viewResults' });
 
     if (canVote && options) {
       for (const option of options.slice(0, defaultPollOptionCount)) {
-        actions.push({
-          label: t('a11y/Vote on {{option}}', { option: option.text }),
-          name: `${POLL_VOTE_OPTION_ACTION_PREFIX}${option.id}`,
+        push(t('a11y/Vote on {{option}}', { option: option.text }), {
+          optionId: option.id,
+          type: 'vote',
         });
       }
     }
 
     if (hasMoreOptions) {
-      actions.push({
-        label: t('a11y/Show all options'),
-        name: POLL_SHOW_ALL_OPTIONS_ACTION_NAME,
-      });
+      push(t('a11y/Show all options'), { type: 'showAllOptions' });
     }
 
     if (canEnd) {
-      actions.push({ label: t('a11y/End vote'), name: POLL_END_VOTE_ACTION_NAME });
+      push(t('a11y/End vote'), { type: 'endVote' });
     }
 
     if (canComment) {
-      actions.push({ label: t('Add a comment'), name: POLL_ADD_COMMENT_ACTION_NAME });
+      push(t('Add a comment'), { type: 'addComment' });
     }
 
     if (canSuggest) {
-      actions.push({ label: t('Suggest an option'), name: POLL_SUGGEST_OPTION_ACTION_NAME });
+      push(t('Suggest an option'), { type: 'suggestOption' });
     }
 
-    return actions;
-  }, [canComment, canEnd, canSuggest, canVote, enabled, hasMoreOptions, options, t]);
+    if (hasComments) {
+      push(t('View {{count}} comments', { count: answersCount }), { type: 'showAllComments' });
+    }
+
+    return { accessibilityActions: actions, actionKindByName: kindByName };
+  }, [
+    answersCount,
+    canComment,
+    canEnd,
+    canSuggest,
+    canVote,
+    enabled,
+    hasComments,
+    hasMoreOptions,
+    options,
+    t,
+  ]);
 
   const onAccessibilityAction = useStableCallback((event: AccessibilityActionEvent) => {
-    const { actionName } = event.nativeEvent;
+    const kind = actionKindByName?.get(event.nativeEvent.actionName);
+    if (!kind) return;
 
-    if (actionName === POLL_VIEW_RESULTS_ACTION_NAME) {
-      openViewResults();
-      return;
-    }
-    if (actionName === POLL_SHOW_ALL_OPTIONS_ACTION_NAME) {
-      openAllOptions();
-      return;
-    }
-    if (actionName === POLL_END_VOTE_ACTION_NAME) {
-      void endVote();
-      return;
-    }
-    if (actionName === POLL_ADD_COMMENT_ACTION_NAME) {
-      openAddComment();
-      return;
-    }
-    if (actionName === POLL_SUGGEST_OPTION_ACTION_NAME) {
-      openSuggestOption();
-      return;
-    }
-    if (actionName.startsWith(POLL_VOTE_OPTION_ACTION_PREFIX)) {
-      const optionId = actionName.slice(POLL_VOTE_OPTION_ACTION_PREFIX.length);
-      void toggleVote(optionId);
+    switch (kind.type) {
+      case 'viewResults':
+        openViewResults();
+        return;
+      case 'showAllOptions':
+        openAllOptions();
+        return;
+      case 'endVote':
+        void endVote();
+        return;
+      case 'addComment':
+        openAddComment();
+        return;
+      case 'suggestOption':
+        openSuggestOption();
+        return;
+      case 'showAllComments':
+        openAllComments();
+        return;
+      case 'vote':
+        void toggleVote(kind.optionId);
+        return;
+      default:
+        return;
     }
   });
 
