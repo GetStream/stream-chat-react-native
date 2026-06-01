@@ -511,7 +511,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         "borderBottomLeftRadius": 0,
                                         "borderBottomRightRadius": 20,
                                       },
-                                      {},
+                                      null,
                                       {},
                                       {},
                                     ]
@@ -843,7 +843,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         "borderBottomLeftRadius": 0,
                                         "borderBottomRightRadius": 20,
                                       },
-                                      {},
+                                      null,
                                       {},
                                       {},
                                     ]
@@ -1208,7 +1208,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         "borderBottomLeftRadius": 0,
                                         "borderBottomRightRadius": 20,
                                       },
-                                      {},
+                                      null,
                                       {},
                                       {},
                                     ]
@@ -1534,7 +1534,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                         "borderBottomLeftRadius": 0,
                                         "borderBottomRightRadius": 20,
                                       },
-                                      {},
+                                      null,
                                       {},
                                       {},
                                     ]

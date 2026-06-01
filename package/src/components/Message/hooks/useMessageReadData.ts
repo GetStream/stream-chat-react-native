@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Event, LocalMessage, UserResponse } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useStableCallback } from '../../../hooks';
 
 export const useMessageReadData = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();
   const { client } = useChatContext();
-  const calculate = useCallback(() => {
+
+  const messageIdRef = useRef<string>(message?.id);
+
+  const calculate = useStableCallback(() => {
     if (!message?.created_at) {
       return [];
     }
@@ -18,13 +22,14 @@ export const useMessageReadData = ({ message }: { message?: LocalMessage }) => {
     };
 
     return channel.messageReceiptsTracker.readersForMessage(messageRef);
-  }, [channel, message]);
+  });
 
-  const [readBy, setReadBy] = useState<UserResponse[]>([]);
+  const [readBy, setReadBy] = useState<UserResponse[]>(() => calculate());
 
-  useEffect(() => {
+  if (!!messageIdRef.current && !!message?.id && messageIdRef.current !== message.id) {
     setReadBy(calculate());
-  }, [calculate]);
+    messageIdRef.current = message.id;
+  }
 
   useEffect(() => {
     const { unsubscribe } = channel.on('message.read', (event: Event) => {
