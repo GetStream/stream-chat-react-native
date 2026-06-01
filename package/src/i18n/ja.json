@@ -352,10 +352,10 @@
   "size limit": "サイズ制限",
   "unknown error": "不明なエラー",
   "unsupported file type": "サポートされていないファイル形式",
-  "a11y/Activate to view results": "Activate to view results",
-  "a11y/End vote": "End vote",
-  "a11y/Show all options": "Show all options",
-  "a11y/Vote on {{option}}": "Vote on {{option}}",
-  "a11y/Double tap and hold to activate contextual menu": "Double tap and hold to activate contextual menu",
-  "a11y/Swipe right to go through different actions": "Swipe right to go through different actions"
+  "a11y/Activate to view results": "結果を表示するには有効化",
+  "a11y/End vote": "投票を終了",
+  "a11y/Show all options": "すべてのオプションを表示",
+  "a11y/Vote on {{option}}": "{{option}}に投票",
+  "a11y/Double tap and hold to activate contextual menu": "コンテキストメニューを表示するにはダブルタップして長押し",
+  "a11y/Swipe right to go through different actions": "右にスワイプして異なるアクションを切り替えます"
 }

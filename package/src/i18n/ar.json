@@ -352,10 +352,10 @@
   "size limit": "حد الحجم",
   "unknown error": "خطأ غير معروف",
   "unsupported file type": "نوع ملف غير مدعوم",
-  "a11y/Activate to view results": "Activate to view results",
-  "a11y/End vote": "End vote",
-  "a11y/Show all options": "Show all options",
-  "a11y/Vote on {{option}}": "Vote on {{option}}",
-  "a11y/Double tap and hold to activate contextual menu": "Double tap and hold to activate contextual menu",
-  "a11y/Swipe right to go through different actions": "Swipe right to go through different actions"
+  "a11y/Activate to view results": "فعّل لعرض النتائج",
+  "a11y/End vote": "إنهاء التصويت",
+  "a11y/Show all options": "إظهار جميع الخيارات",
+  "a11y/Vote on {{option}}": "صوّت على {{option}}",
+  "a11y/Double tap and hold to activate contextual menu": "انقر نقرًا مزدوجًا مع الاستمرار لتفعيل قائمة السياق",
+  "a11y/Swipe right to go through different actions": "اسحب لليمين للتنقل بين الإجراءات المختلفة"
 }

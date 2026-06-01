@@ -352,10 +352,10 @@
   "size limit": "limite de taille",
   "unknown error": "erreur inconnue",
   "unsupported file type": "type de fichier non pris en charge",
-  "a11y/Activate to view results": "Activate to view results",
-  "a11y/End vote": "End vote",
-  "a11y/Show all options": "Show all options",
-  "a11y/Vote on {{option}}": "Vote on {{option}}",
-  "a11y/Double tap and hold to activate contextual menu": "Double tap and hold to activate contextual menu",
-  "a11y/Swipe right to go through different actions": "Swipe right to go through different actions"
+  "a11y/Activate to view results": "Activer pour voir les résultats",
+  "a11y/End vote": "Terminer le vote",
+  "a11y/Show all options": "Afficher toutes les options",
+  "a11y/Vote on {{option}}": "Voter pour {{option}}",
+  "a11y/Double tap and hold to activate contextual menu": "Appuyez deux fois et maintenez pour activer le menu contextuel",
+  "a11y/Swipe right to go through different actions": "Glissez vers la droite pour parcourir les différentes actions"
 }
