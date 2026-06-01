@@ -79,11 +79,13 @@ const MemberActionsSheetProbe = ({ member }: ChannelMemberActionsSheetProps) => 
 );
 
 const renderList = ({
+  additionalFlatListProps,
   channel,
   currentUserId,
   onMemberPress,
 }: {
   channel: Channel;
+  additionalFlatListProps?: Partial<FlatListProps>;
   currentUserId?: string;
   onMemberPress?: (member: ChannelMemberResponse) => void;
 }) =>
@@ -119,7 +121,7 @@ const renderList = ({
                   ChannelMemberItem: MemberListItemProbe,
                 }}
               >
-                <ChannelMemberList />
+                <ChannelMemberList additionalFlatListProps={additionalFlatListProps} />
               </WithComponents>
             </ChannelDetailsContextProvider>
           </BottomSheetProvider>
@@ -198,6 +200,20 @@ describe('ChannelMemberList', () => {
     expect(data.map((m) => m.user?.id)).toEqual(['alice', 'bob']);
     expect(typeof props?.renderItem).toBe('function');
     expect(typeof props?.keyExtractor).toBe('function');
+  });
+
+  it('forwards additionalFlatListProps to the underlying flat list', () => {
+    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+    const channel = buildChannel({ memberCount: 1, members: [alice] });
+
+    renderList({
+      additionalFlatListProps: { bounces: false, testID: 'custom-member-list' },
+      channel,
+    });
+
+    const props = latestListProps();
+    expect(props?.testID).toBe('custom-member-list');
+    expect(props?.bounces).toBe(false);
   });
 
   it('uses a stable keyExtractor based on user.id', () => {

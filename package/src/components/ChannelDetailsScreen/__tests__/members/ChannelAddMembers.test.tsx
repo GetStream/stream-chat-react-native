@@ -11,7 +11,10 @@ import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import { ChannelAddMembers } from '../../components/members/ChannelAddMembers';
+import {
+  ChannelAddMembers,
+  type ChannelAddMembersProps,
+} from '../../components/members/ChannelAddMembers';
 
 const buildChannel = (members: ChannelMemberResponse[]): Channel =>
   ({
@@ -28,14 +31,16 @@ const buildChannel = (members: ChannelMemberResponse[]): Channel =>
 type QueryUsersMock = jest.Mock<Promise<{ users: UserResponse[] }>, [unknown, unknown, unknown]>;
 
 const renderComponent = ({
+  additionalFlatListProps,
   channel,
   onSelectionChange = jest.fn(),
   queryUsers,
   userID = 'me',
 }: {
   channel: Channel;
-  onSelectionChange?: (users: UserResponse[]) => void;
   queryUsers: QueryUsersMock;
+  additionalFlatListProps?: ChannelAddMembersProps['additionalFlatListProps'];
+  onSelectionChange?: (users: UserResponse[]) => void;
   userID?: string;
 }) =>
   render(
@@ -58,7 +63,10 @@ const renderComponent = ({
         >
           <ChatContext.Provider value={{ client: { queryUsers, userID } } as never}>
             <ChannelDetailsContextProvider value={{ channel }}>
-              <ChannelAddMembers onSelectionChange={onSelectionChange} />
+              <ChannelAddMembers
+                additionalFlatListProps={additionalFlatListProps}
+                onSelectionChange={onSelectionChange}
+              />
             </ChannelDetailsContextProvider>
           </ChatContext.Provider>
         </TranslationProvider>
@@ -275,6 +283,22 @@ describe('ChannelAddMembers', () => {
     const list = screen.getByTestId('channel-add-members-list');
     expect(typeof list.props.onEndReached).toBe('function');
     expect(list.props.onEndReachedThreshold).toBe(0.2);
+  });
+
+  it('forwards additionalFlatListProps to the underlying flat list', async () => {
+    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
+    const channel = buildChannel([]);
+
+    renderComponent({
+      additionalFlatListProps: { bounces: false, testID: 'custom-add-members-list' },
+      channel,
+      queryUsers,
+    });
+
+    const list = await waitFor(() => screen.getByTestId('custom-add-members-list'));
+    expect(list.props.bounces).toBe(false);
+    // The customer-provided testID replaces the component default (spread-last wins).
+    expect(screen.queryByTestId('channel-add-members-list')).toBeNull();
   });
 
   it('flips an already-rendered row to disabled when the user becomes a channel member', async () => {

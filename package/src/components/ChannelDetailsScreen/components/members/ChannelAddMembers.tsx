@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -24,11 +24,21 @@ export type ChannelAddMembersProps = {
    * selected user ids when committing the add).
    */
   onSelectionChange: (selectedUsers: UserResponse[]) => void;
+  /**
+   * Besides the existing default behavior of the user list, you can attach
+   * additional props to the underlying React Native FlatList.
+   *
+   * See https://reactnative.dev/docs/flatlist#props for the full list.
+   */
+  additionalFlatListProps?: Partial<FlatListProps<AddMemberSearchResult>>;
 };
 
 const keyExtractor = (user: AddMemberSearchResult) => user.id;
 
-export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps) => {
+export const ChannelAddMembers = ({
+  additionalFlatListProps,
+  onSelectionChange,
+}: ChannelAddMembersProps) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const {
@@ -97,6 +107,7 @@ export const ChannelAddMembers = ({ onSelectionChange }: ChannelAddMembersProps)
         renderItem={renderItem}
         style={styles.list}
         testID='channel-add-members-list'
+        {...additionalFlatListProps}
       />
     </View>
   );
