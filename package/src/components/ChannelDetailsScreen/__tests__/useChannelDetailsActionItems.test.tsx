@@ -175,6 +175,55 @@ describe('useChannelDetailsActionItems', () => {
     expect(callOrder).toEqual(['delete-start', 'delete-resolved', 'onChannelDismiss']);
   });
 
+  it('wraps block action to call onChannelDismiss after the original action resolves', async () => {
+    const { onChannelDismiss } = mockContext();
+
+    const callOrder: string[] = [];
+    let resolveBlock: (() => void) | undefined;
+    const originalBlock = jest.fn(
+      (options?: { onSuccess?: () => unknown }) =>
+        new Promise<void>((resolve) => {
+          callOrder.push('block-start');
+          resolveBlock = async () => {
+            callOrder.push('block-resolved');
+            await options?.onSuccess?.();
+            resolve();
+          };
+        }),
+    );
+    (onChannelDismiss as jest.Mock).mockImplementation(() => {
+      callOrder.push('onChannelDismiss');
+    });
+
+    const blockItem = buildItem({
+      action: originalBlock,
+      id: 'block',
+      label: 'Block User',
+      placement: 'sheet',
+      type: 'destructive',
+    });
+    mockUseChannelActionItems([blockItem]);
+
+    const { result } = renderHook(() => useChannelDetailsActionItems());
+    const [wrapped] = result.current;
+
+    expect(wrapped).not.toBe(blockItem);
+    expect(wrapped.id).toBe('block');
+    expect(wrapped.label).toBe('Block User');
+    expect(wrapped.type).toBe('destructive');
+
+    const pending = wrapped.action();
+    expect(originalBlock).toHaveBeenCalledTimes(1);
+    expect(onChannelDismiss).not.toHaveBeenCalled();
+
+    resolveBlock!();
+    await pending;
+
+    expect(onChannelDismiss).toHaveBeenCalledTimes(1);
+    expect(onChannelDismiss).toHaveBeenCalledWith();
+    expect(callOrder).toEqual(['block-start', 'block-resolved', 'onChannelDismiss']);
+  });
+
   it('preserves caller-supplied options when wrapping the leave action', () => {
     const { onChannelDismiss } = mockContext();
     const originalLeave = jest.fn();

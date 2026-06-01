@@ -75,7 +75,7 @@ export type ChannelDetailsScreenProps = {
    * Fired when the back button is pressed on the channel details header.
    */
   onBack?: () => void;
-  /** Fired after the channel is no longer available to the current user (delete or leave actions). */
+  /** Fired after the channel is no longer available to the current user (delete, leave, or block actions). */
   onChannelDismiss?: () => void;
   /**
    * Fired when the user taps the "Edit" button in the channel details header.

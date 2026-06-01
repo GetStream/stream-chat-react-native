@@ -14,7 +14,7 @@ export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
   return useMemo(
     () =>
       items.map((item) => {
-        if (item.id === 'leave' || item.id === 'deleteChannel') {
+        if (item.id === 'leave' || item.id === 'deleteChannel' || item.id === 'block') {
           return {
             ...item,
             action: (options) => item.action({ ...options, onSuccess: onChannelDismiss }),
