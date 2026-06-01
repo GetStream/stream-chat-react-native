@@ -5,7 +5,7 @@ module.exports = {
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },
-  preset: 'react-native',
+  preset: '@react-native/jest-preset',
   setupFiles: ['./node_modules/react-native-gesture-handler/jestSetup.js'],
   setupFilesAfterEnv: [
     '@testing-library/jest-native/extend-expect',

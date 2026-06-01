@@ -80,9 +80,9 @@
     }
   },
   "devDependencies": {
-    "expo": "^53.0.12",
-    "expo-audio": "~0.4.6",
-    "expo-image-manipulator": "^12.0.5"
+    "expo": "^55.0.26",
+    "expo-audio": "~55.0.14",
+    "expo-image-manipulator": "~13.0.6"
   },
   "scripts": {
     "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",

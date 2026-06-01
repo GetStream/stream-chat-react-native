@@ -102,6 +102,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
       return channelMessageActions({
         params,
         chatClient,
+        handleMessageInfo: () => undefined,
         semantics,
         t,
       });

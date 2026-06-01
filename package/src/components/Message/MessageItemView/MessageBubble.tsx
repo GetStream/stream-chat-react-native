@@ -100,7 +100,6 @@ export const SwipableMessageWrapper = React.memo(function SwipableMessageWrapper
               dampingRatio: 1,
               duration: 500,
               overshootClamping: true,
-              stiffness: 1,
             },
             () => {
               runOnJS(setShouldRenderAnimatedWrapper)(false);
