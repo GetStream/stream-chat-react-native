@@ -3,6 +3,7 @@ import { ColorValue, Pressable, StyleSheet, View, ViewStyle } from 'react-native
 
 import { MessageTextContainer } from './MessageTextContainer';
 
+import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChatContext } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
@@ -127,6 +128,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     hidePaddingBottom,
   } = props;
   const { client } = useChatContext();
+  const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
   const {
     Attachment,
     FileAttachmentGroup,
@@ -318,6 +320,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   return (
     <Pressable
+      accessibilityHint={accessibilityHint}
       accessible={message.poll_id ? false : undefined}
       disabled={preventPress}
       onLongPress={(event) => {
