@@ -7,6 +7,7 @@ import { useChannelDetailsContext } from '../../../contexts/channelDetailsContex
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
+import { useChannelName } from '../../../hooks/useChannelName';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
 import type { File } from '../../../types/types';
@@ -34,7 +35,7 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
   const { updateImage, updateName } = useChannelActions(channel);
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();
-  const initialName = (channel.data?.name as string | undefined) ?? '';
+  const initialName = useChannelName(channel) ?? '';
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
   // Tri-state: `undefined` = untouched, `File` = picked, `null` = reset.

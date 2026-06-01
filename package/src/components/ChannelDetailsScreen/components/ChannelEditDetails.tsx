@@ -5,6 +5,7 @@ import { useChannelDetailsContext } from '../../../contexts/channelDetailsContex
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelName } from '../../../hooks/useChannelName';
 import { primitives } from '../../../theme';
 import type { File } from '../../../types/types';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
@@ -57,7 +58,7 @@ export const ChannelEditDetails = ({
   const styles = useStyles();
   const { pickImageFromNativePicker, takePhoto } = useEditChannelImage();
 
-  const initialName = (channel.data?.name as string | undefined) ?? '';
+  const initialName = useChannelName(channel) ?? '';
   const [name, setName] = useState(initialName);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);

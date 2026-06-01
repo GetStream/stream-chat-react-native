@@ -11,7 +11,10 @@ import { UserAvatar } from './UserAvatar';
 import { useChannelPreviewDisplayPresence } from '../../../components/ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useChannelImage } from '../../../hooks/useChannelImage';
+import { useChannelName } from '../../../hooks/useChannelName';
 import { hashStringToNumber } from '../../../utils/utils';
+import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
 export type ChannelAvatarProps = {
   channel: Channel;
@@ -34,18 +37,19 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
   const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
 
-  const channelImage = channel.data?.image;
+  const channelImage = useChannelImage(channel);
 
+  const members = useChannelMembersState(channel);
   const usersForGroup = useMemo(
-    () => Object.values(channel.state.members).map((member) => member.user as UserResponse),
-    [channel.state.members],
+    () => Object.values(members).map((member) => member.user as UserResponse),
+    [members],
   );
   const usersWithoutSelf = useMemo(
     () => usersForGroup.filter((user) => user.id !== client.user?.id),
     [usersForGroup, client.user?.id],
   );
 
-  const channelName = (channel.data?.name as string | undefined) ?? channel.cid;
+  const channelName = useChannelName(channel) ?? channel.cid;
 
   if (channelImage) {
     return (
