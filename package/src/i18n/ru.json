@@ -351,5 +351,13 @@
   "{{ user }} has been unmuted": "{{ user }} включен(а)",
   "size limit": "лимит размера",
   "unknown error": "неизвестная ошибка",
-  "unsupported file type": "неподдерживаемый тип файла"
+  "unsupported file type": "неподдерживаемый тип файла",
+  "a11y/Activate to view results": "Активируйте, чтобы увидеть результаты",
+  "a11y/End vote": "Завершить голосование",
+  "a11y/Show all options": "Показать все варианты",
+  "a11y/Vote on {{option}}": "Голосовать за {{option}}",
+  "a11y/Double tap and hold to activate contextual menu": "Дважды коснитесь и удерживайте, чтобы открыть контекстное меню",
+  "a11y/Swipe right to go through different actions": "Смахните вправо, чтобы переключаться между действиями",
+  "a11y/Close": "Close",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

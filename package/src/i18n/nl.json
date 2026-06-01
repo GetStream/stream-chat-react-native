@@ -351,5 +351,13 @@
   "{{ user }} has been unmuted": "{{ user }} is niet meer gedempt",
   "size limit": "groottelimiet",
   "unknown error": "onbekende fout",
-  "unsupported file type": "niet-ondersteund bestandstype"
+  "unsupported file type": "niet-ondersteund bestandstype",
+  "a11y/Activate to view results": "Activeer om resultaten te bekijken",
+  "a11y/End vote": "Stemming beëindigen",
+  "a11y/Show all options": "Alle opties weergeven",
+  "a11y/Vote on {{option}}": "Stem op {{option}}",
+  "a11y/Double tap and hold to activate contextual menu": "Dubbeltik en houd vast om het contextmenu te openen",
+  "a11y/Swipe right to go through different actions": "Veeg naar rechts om door verschillende acties te bladeren",
+  "a11y/Close": "Close",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }
