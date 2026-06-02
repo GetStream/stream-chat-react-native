@@ -1,5 +1,5 @@
 import type { Theme } from '@react-navigation/native';
-import type { Channel, LocalMessage, SharedLocationResponse, UserResponse } from 'stream-chat';
+import type { Channel, LocalMessage, SharedLocationResponse } from 'stream-chat';
 import type { ThreadType } from 'stream-chat-react-native';
 
 export type DrawerNavigatorParamList = {
@@ -27,19 +27,10 @@ export type StackNavigatorParamList = {
   ChannelDetailsScreen: {
     channel: Channel;
   };
-  ChannelAllMembersScreen: {
-    channel: Channel;
-  };
-  ChannelAddMembersScreen: {
-    channel: Channel;
-  };
   MessagingScreen: undefined;
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;
-  SharedGroupsScreen: {
-    user: UserResponse;
-  };
   ThreadScreen: {
     channel: Channel;
     thread: LocalMessage | ThreadType;
