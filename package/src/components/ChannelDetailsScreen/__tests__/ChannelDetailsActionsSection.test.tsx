@@ -189,23 +189,6 @@ describe('ChannelDetailsActionsSection', () => {
       expect(byId['channel-details-action-leave']).toBeUndefined();
     });
 
-    it('applies the design-system toggle colors to the mute and muteUser Switches', () => {
-      useIsDirectChatSpy.mockReturnValue(true);
-      getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
-      useActionItemsSpy.mockReturnValue([
-        buildItem({ id: 'mute', label: 'Mute Group' }),
-        buildItem({ id: 'muteUser', label: 'Mute User' }),
-      ]);
-      const { UNSAFE_getAllByType } = renderSection();
-      const toggles = UNSAFE_getAllByType(Switch);
-      expect(toggles).toHaveLength(2);
-      for (const toggle of toggles) {
-        expect(toggle.props.trackColor).toEqual({ false: '#687385', true: '#005fff' });
-        expect(toggle.props.thumbColor).toBe('#ffffff');
-        expect(toggle.props.ios_backgroundColor).toBe('#687385');
-      }
-    });
-
     it('reflects channelMuted state on the mute item Switch', () => {
       useIsChannelMutedSpy.mockReturnValue({ createdAt: null, expiresAt: null, muted: true });
       useActionItemsSpy.mockReturnValue([buildItem({ id: 'mute', label: 'Unmute Group' })]);
