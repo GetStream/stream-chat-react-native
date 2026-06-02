@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelName } from '../../../hooks/useChannelName';
 import { primitives } from '../../../theme';
 import type { File } from '../../../types/types';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
 import { Button } from '../../ui/Button/Button';
-import { Input } from '../../ui/Input/Input';
 import { useEditChannelImage } from '../hooks/useEditChannelImage';
 
 type PendingAction = 'camera' | 'library' | 'reset';
@@ -41,7 +39,7 @@ export const ChannelEditDetails = ({
   onNameChange,
 }: ChannelEditDetailsProps) => {
   const { channel } = useChannelDetailsContext();
-  const { ChannelEditImageSheet } = useComponentsContext();
+  const { ChannelEditImageSheet, ChannelEditName } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -49,7 +47,6 @@ export const ChannelEditDetails = ({
         editChannel: {
           avatarSection: avatarSectionOverride,
           container: containerOverride,
-          nameInput: nameInputOverride,
           uploadButton: uploadButtonOverride,
         },
       },
@@ -58,19 +55,10 @@ export const ChannelEditDetails = ({
   const styles = useStyles();
   const { pickImageFromNativePicker, takePhoto } = useEditChannelImage();
 
-  const initialName = useChannelName(channel) ?? '';
-  const [name, setName] = useState(initialName);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   // `undefined` = untouched (show live channel image), `string` = picked uri, `null` = reset.
   const [previewUri, setPreviewUri] = useState<string | null | undefined>(undefined);
-
-  const lastNameRef = useRef(name);
-  useEffect(() => {
-    if (lastNameRef.current === name) return;
-    lastNameRef.current = name;
-    onNameChange(name);
-  }, [name, onNameChange]);
 
   const openSheet = useCallback(() => setSheetVisible(true), []);
   const closeSheet = useCallback(() => setSheetVisible(false), []);
@@ -131,19 +119,7 @@ export const ChannelEditDetails = ({
           variant='primary'
         />
       </View>
-      <Input
-        accessibilityLabel={t('a11y/Channel name')}
-        autoCapitalize='words'
-        autoCorrect={false}
-        containerStyle={nameInputOverride}
-        helperText={false}
-        onChangeText={setName}
-        placeholder={t('Channel name')}
-        returnKeyType='done'
-        testID='channel-edit-name-input'
-        value={name}
-        variant='outline'
-      />
+      <ChannelEditName onNameChange={onNameChange} />
       <ChannelEditImageSheet
         onClose={closeSheet}
         onSelectCamera={handleSelectCamera}

@@ -7,4 +7,5 @@ export * from './ChannelDetailsScreenHeader';
 export * from './ChannelEditDetails';
 export * from './ChannelEditDetailsModal';
 export * from './ChannelEditImageSheet';
+export * from './ChannelEditName';
 export * from './members';

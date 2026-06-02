@@ -14,6 +14,7 @@ import { generateFileReference } from '../../../mock-builders/attachments';
 import { NativeHandlers } from '../../../native';
 import { ChannelEditDetails } from '../components/ChannelEditDetails';
 import type { ChannelEditImageSheetProps } from '../components/ChannelEditImageSheet';
+import type { ChannelEditNameProps } from '../components/ChannelEditName';
 
 type SheetProbeRecord = ChannelEditImageSheetProps;
 const sheetCalls: SheetProbeRecord[] = [];
@@ -108,59 +109,51 @@ describe('ChannelEditDetails', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the input pre-filled with the channel name', () => {
-    renderComponent({ channel: buildChannel({ name: 'Original' }) });
-
-    expect(screen.getByTestId('channel-edit-name-input').props.value).toBe('Original');
-  });
-
-  it('renders the input empty when the channel has no name', () => {
-    renderComponent({ channel: buildChannel({ name: undefined }) });
-
-    expect(screen.getByTestId('channel-edit-name-input').props.value).toBe('');
-  });
-
   it('renders the upload button', () => {
     renderComponent({ channel: buildChannel() });
 
     expect(screen.getByTestId('channel-edit-upload-button')).toBeTruthy();
   });
 
-  it('fires onNameChange with the typed value', () => {
+  it('delegates the name field to the context-resolved ChannelEditName', () => {
+    const nameCalls: ChannelEditNameProps[] = [];
+    const NameProbe = (props: ChannelEditNameProps) => {
+      nameCalls.push(props);
+      return null;
+    };
     const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
 
-    fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), 'Renamed');
+    render(
+      <ThemeProvider theme={defaultTheme}>
+        <TranslationProvider
+          value={{
+            t: ((key: string) => key) as never,
+            tDateTimeParser: ((input: unknown) => input) as never,
+            userLanguage: 'en',
+          }}
+        >
+          <ChatContext.Provider
+            value={
+              { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
+            }
+          >
+            <ChannelDetailsContextProvider value={{ channel: buildChannel() }}>
+              <WithComponents
+                overrides={{ ChannelEditImageSheet: SheetProbe, ChannelEditName: NameProbe }}
+              >
+                <ChannelEditDetails
+                  onImagePicked={jest.fn() as never}
+                  onNameChange={onNameChange}
+                />
+              </WithComponents>
+            </ChannelDetailsContextProvider>
+          </ChatContext.Provider>
+        </TranslationProvider>
+      </ThemeProvider>,
+    );
 
-    expect(onNameChange).toHaveBeenLastCalledWith('Renamed');
-  });
-
-  it('fires onNameChange with an empty string when the user clears the input', () => {
-    const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
-
-    fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), '');
-
-    expect(onNameChange).toHaveBeenLastCalledWith('');
-  });
-
-  it('does not fire onNameChange on initial mount', () => {
-    const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
-
-    expect(onNameChange).not.toHaveBeenCalled();
-  });
-
-  it('does not fire onNameChange when the typed value matches the current value', () => {
-    const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
-
-    fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), 'Renamed');
-    onNameChange.mockClear();
-
-    fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), 'Renamed');
-
-    expect(onNameChange).not.toHaveBeenCalled();
+    expect(nameCalls).toHaveLength(1);
+    expect(nameCalls[0].onNameChange).toBe(onNameChange);
   });
 
   describe('upload button + edit-picture sheet', () => {
