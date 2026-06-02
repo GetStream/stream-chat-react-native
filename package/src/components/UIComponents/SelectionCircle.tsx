@@ -26,7 +26,7 @@ export const SelectionCircle = React.memo(({ selected }: SelectionCircleProps) =
           circleSelected,
         ]}
       >
-        <Checkmark height={14} pathFill={semantics.textOnInverse} width={14} />
+        <Checkmark height={14} pathFill={semantics.textOnAccent} width={14} />
       </View>
     );
   }
