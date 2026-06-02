@@ -155,7 +155,6 @@ const useSwitchColors = () => {
   } = useTheme();
   return useMemo(
     () => ({
-      ios_backgroundColor: semantics.controlToggleSwitchBg,
       thumbColor: semantics.controlToggleSwitchKnob,
       trackColor: {
         false: semantics.controlToggleSwitchBg,
