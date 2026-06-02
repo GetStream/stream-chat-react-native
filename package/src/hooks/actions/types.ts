@@ -3,7 +3,8 @@ import type React from 'react';
 import type { IconProps } from '../../icons';
 
 export type ActionOptions = {
-  onSuccess?: () => unknown;
+  onSuccess?: () => void;
+  onFailure?: (error: unknown) => void;
 };
 
 export type ActionHandler = (options?: ActionOptions) => Promise<void>;

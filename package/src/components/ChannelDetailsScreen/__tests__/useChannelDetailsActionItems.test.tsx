@@ -127,41 +127,47 @@ describe('useChannelDetailsActionItems', () => {
     },
   );
 
-  it('preserves caller-supplied options when wrapping the leave action', () => {
+  it('composes a caller-supplied onSuccess with onChannelDismiss and passes other options through', () => {
     const { onChannelDismiss } = mockContext();
     const originalLeave = jest.fn();
     mockUseChannelActionItems([buildItem({ action: originalLeave, id: 'leave' })]);
 
     const { result } = renderHook(() => useChannelDetailsActionItems());
     const callerOnSuccess = jest.fn();
-    // @ts-expect-error - extra caller-supplied option to ensure the wrapper merges options
-    result.current[0].action({ extra: 'value', onSuccess: callerOnSuccess });
+    const callerOnFailure = jest.fn();
+    result.current[0].action({
+      // @ts-expect-error - extra caller-supplied option to ensure the wrapper merges options
+      extra: 'value',
+      onFailure: callerOnFailure,
+      onSuccess: callerOnSuccess,
+    });
 
     expect(originalLeave).toHaveBeenCalledTimes(1);
-    expect(originalLeave).toHaveBeenCalledWith({ extra: 'value', onSuccess: onChannelDismiss });
+    const passedOptions = (originalLeave as jest.Mock).mock.calls[0][0];
+    // Caller-supplied options (including onFailure) pass through untouched.
+    expect(passedOptions).toMatchObject({ extra: 'value', onFailure: callerOnFailure });
+    // onSuccess is composed: it runs the caller's callback and then onChannelDismiss.
+    expect(typeof passedOptions.onSuccess).toBe('function');
+
+    passedOptions.onSuccess();
+    expect(callerOnSuccess).toHaveBeenCalledTimes(1);
+    expect(onChannelDismiss).toHaveBeenCalledTimes(1);
   });
 
-  it('does not throw when onChannelDismiss is undefined on the leave path', async () => {
-    mockContext({ onChannelDismiss: undefined });
-    const originalLeave = jest.fn().mockResolvedValue(undefined);
-    mockUseChannelActionItems([buildItem({ action: originalLeave, id: 'leave' })]);
+  it.each([{ id: 'leave' }, { id: 'deleteChannel' }])(
+    'does not throw when onChannelDismiss is undefined on the $id path',
+    async ({ id }) => {
+      mockContext({ onChannelDismiss: undefined });
+      const originalAction = jest.fn().mockResolvedValue(undefined);
+      mockUseChannelActionItems([buildItem({ action: originalAction, id })]);
 
-    const { result } = renderHook(() => useChannelDetailsActionItems());
+      const { result } = renderHook(() => useChannelDetailsActionItems());
 
-    await expect(result.current[0].action()).resolves.toBeUndefined();
-    expect(originalLeave).toHaveBeenCalledTimes(1);
-    expect(originalLeave).toHaveBeenCalledWith({ onSuccess: undefined });
-  });
-
-  it('does not throw when onChannelDismiss is undefined on the deleteChannel path', async () => {
-    mockContext({ onChannelDismiss: undefined });
-    const originalDelete = jest.fn().mockResolvedValue(undefined);
-    mockUseChannelActionItems([buildItem({ action: originalDelete, id: 'deleteChannel' })]);
-
-    const { result } = renderHook(() => useChannelDetailsActionItems());
-
-    await expect(result.current[0].action()).resolves.toBeUndefined();
-    expect(originalDelete).toHaveBeenCalledTimes(1);
-    expect(originalDelete).toHaveBeenCalledWith({ onSuccess: undefined });
-  });
+      await expect(result.current[0].action()).resolves.toBeUndefined();
+      expect(originalAction).toHaveBeenCalledTimes(1);
+      const passedOptions = (originalAction as jest.Mock).mock.calls[0][0];
+      expect(typeof passedOptions.onSuccess).toBe('function');
+      expect(() => passedOptions.onSuccess()).not.toThrow();
+    },
+  );
 });

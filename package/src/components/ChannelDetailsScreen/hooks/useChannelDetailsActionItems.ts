@@ -17,7 +17,14 @@ export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
         if (item.id === 'leave' || item.id === 'deleteChannel' || item.id === 'block') {
           return {
             ...item,
-            action: (options) => item.action({ ...options, onSuccess: onChannelDismiss }),
+            action: (options) =>
+              item.action({
+                ...options,
+                onSuccess: () => {
+                  options?.onSuccess?.();
+                  onChannelDismiss?.();
+                },
+              }),
           };
         }
         return item;

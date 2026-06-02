@@ -164,29 +164,6 @@ describe('useChannelActions', () => {
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });
 
-  it('awaits async onSuccess before the action promise resolves', async () => {
-    const client = createClient();
-    const channel = createChannel(client);
-    const calls: string[] = [];
-    jest.mocked(channel.mute).mockImplementation(() => {
-      calls.push('mute');
-      return Promise.resolve({} as Awaited<ReturnType<typeof channel.mute>>);
-    });
-    const onSuccess = jest.fn(async () => {
-      await Promise.resolve();
-      calls.push('onSuccess');
-    });
-    const { result } = renderHook(() => useChannelActions(channel), {
-      wrapper: createWrapper(client),
-    });
-
-    await act(async () => {
-      await result.current.muteChannel({ onSuccess });
-    });
-
-    expect(calls).toEqual(['mute', 'onSuccess']);
-  });
-
   it('does not call onSuccess when the underlying action throws', async () => {
     const client = createClient();
     const channel = createChannel(client);
@@ -201,6 +178,41 @@ describe('useChannelActions', () => {
     });
 
     expect(onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('calls onFailure with the thrown error when the underlying action throws', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const error = new Error('mute failed');
+    jest.mocked(channel.mute).mockRejectedValue(error);
+    const onSuccess = jest.fn();
+    const onFailure = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.muteChannel({ onFailure, onSuccess });
+    });
+
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(onFailure).toHaveBeenCalledTimes(1);
+    expect(onFailure).toHaveBeenCalledWith(error);
+  });
+
+  it('does not call onFailure when the underlying action succeeds', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const onFailure = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.muteChannel({ onFailure });
+    });
+
+    expect(onFailure).not.toHaveBeenCalled();
   });
 
   it('does not call onSuccess when a direct-channel action short-circuits with no other user', async () => {

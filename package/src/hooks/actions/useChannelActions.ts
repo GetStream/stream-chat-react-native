@@ -74,7 +74,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:pin:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel pinned status'),
@@ -85,6 +85,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -99,7 +100,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:unpin:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel pinned status'),
@@ -110,6 +111,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -124,7 +126,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:archive:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel archive status'),
@@ -135,6 +137,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -149,7 +152,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:unarchive:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel archive status'),
@@ -160,6 +163,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -175,7 +179,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:channel:leave:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       } catch (error) {
         addNotification({
           message: t('Failed to leave channel'),
@@ -186,6 +190,7 @@ export const useChannelActions = (channel: Channel) => {
           },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        options?.onFailure?.(error);
       }
     }
   });
@@ -202,7 +207,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:channel:add-members:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       } catch (error) {
         addNotification({
           message: t('Failed to add members'),
@@ -213,6 +218,7 @@ export const useChannelActions = (channel: Channel) => {
           },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        options?.onFailure?.(error);
       }
     },
   );
@@ -229,7 +235,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:delete:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to delete channel'),
@@ -240,6 +246,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -260,7 +267,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:mute:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -272,6 +279,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -292,7 +300,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:unmute:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -304,6 +312,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -319,7 +328,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:mute:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel mute status'),
@@ -330,6 +339,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -345,7 +355,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:unmute:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel mute status'),
@@ -356,6 +366,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -374,7 +385,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:block:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -386,6 +397,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -405,7 +417,7 @@ export const useChannelActions = (channel: Channel) => {
         options: { severity: 'success', type: 'api:channel:update-name:success' },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
-      await options?.onSuccess?.();
+      options?.onSuccess?.();
     } catch (error) {
       addNotification({
         message: t('Failed to update channel name'),
@@ -416,6 +428,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
@@ -443,7 +456,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:channel:update-image:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       } catch (error) {
         addNotification({
           message: t('Failed to update channel image'),
@@ -454,6 +467,7 @@ export const useChannelActions = (channel: Channel) => {
           },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
+        options?.onFailure?.(error);
       }
     },
   );
@@ -473,7 +487,7 @@ export const useChannelActions = (channel: Channel) => {
           options: { severity: 'success', type: 'api:user:unblock:success' },
           origin: { context: { channel }, emitter: 'ChannelActions' },
         });
-        await options?.onSuccess?.();
+        options?.onSuccess?.();
       }
     } catch (error) {
       addNotification({
@@ -485,6 +499,7 @@ export const useChannelActions = (channel: Channel) => {
         },
         origin: { context: { channel }, emitter: 'ChannelActions' },
       });
+      options?.onFailure?.(error);
     }
   });
 
