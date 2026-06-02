@@ -18,6 +18,7 @@ const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   const { ChannelDetailsActionItem } = useComponentsContext();
   const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   const { muted } = useIsChannelMuted(channel);
+  const switchColors = useSwitchColors();
   const [isMuted, setIsMuted] = useState(muted);
 
   useEffect(() => {
@@ -45,6 +46,7 @@ const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
       testID={testID}
       trailing={
         <Switch
+          {...switchColors}
           onValueChange={handleValueChange}
           style={rtlMirrorSwitchStyle}
           testID={`${testID}-switch`}
@@ -60,6 +62,7 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   const { ChannelDetailsActionItem } = useComponentsContext();
   const isDirect = useIsDirectChat(channel);
   const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
+  const switchColors = useSwitchColors();
   const mutedUsers = useMutedUsers(channel);
   const otherUserId = isDirect ? getOtherUserInDirectChannel(channel)?.user?.id : undefined;
   const userMuted =
@@ -90,6 +93,7 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
       testID={testID}
       trailing={
         <Switch
+          {...switchColors}
           onValueChange={handleValueChange}
           style={rtlMirrorSwitchStyle}
           testID={`${testID}-switch`}
@@ -142,6 +146,23 @@ export const ChannelDetailsActionsSection = () => {
         );
       })}
     </View>
+  );
+};
+
+const useSwitchColors = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+  return useMemo(
+    () => ({
+      ios_backgroundColor: semantics.controlToggleSwitchBg,
+      thumbColor: semantics.controlToggleSwitchKnob,
+      trackColor: {
+        false: semantics.controlToggleSwitchBg,
+        true: semantics.controlToggleSwitchBgSelected,
+      },
+    }),
+    [semantics],
   );
 };
 
