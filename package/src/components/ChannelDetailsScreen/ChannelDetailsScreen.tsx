@@ -131,7 +131,7 @@ export const ChannelDetailsScreenContent = () => {
       <ChannelDetailsScreenHeader />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>
         <ChannelDetailsProfile />
-        <ChannelDetailsNavigationSection />
+        {ChannelDetailsNavigationSection ? <ChannelDetailsNavigationSection /> : null}
         {isDirect ? null : <ChannelDetailsMemberSection />}
         <ChannelDetailsActionsSection />
       </ScrollView>

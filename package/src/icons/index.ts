@@ -12,6 +12,7 @@ export * from './delete';
 export * from './filetype-text-xl';
 export * from './edit';
 export * from './flag';
+export * from './gallery';
 export { GiphyIcon } from './giphy';
 export * from './loading';
 export * from './mute';

@@ -34,31 +34,8 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       }),
     [navigation],
   );
-  const onViewAllMembersPress = useCallback(() => {
-    navigation.navigate('ChannelAllMembersScreen', { channel });
-  }, [navigation, channel]);
-
-  const onAddMembersPress = useCallback(() => {
-    navigation.navigate('ChannelAddMembersScreen', { channel });
-  }, [navigation, channel]);
 
   return (
-    <>
-      {(channel.data?.member_count ?? 0) % 2 === 0 ? (
-        <StreamChannelDetailsScreen
-          channel={channel}
-          onBack={onBack}
-          onChannelDismiss={popToRoot}
-        />
-      ) : (
-        <StreamChannelDetailsScreen
-          channel={channel}
-          onBack={onBack}
-          onChannelDismiss={popToRoot}
-          onViewAllMembersPress={onViewAllMembersPress}
-          onAddMembersPress={onAddMembersPress}
-        />
-      )}
-    </>
+    <StreamChannelDetailsScreen channel={channel} onBack={onBack} onChannelDismiss={popToRoot} />
   );
 };
