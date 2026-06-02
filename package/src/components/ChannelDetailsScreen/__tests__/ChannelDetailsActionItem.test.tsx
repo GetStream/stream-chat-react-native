@@ -108,12 +108,10 @@ describe('ChannelDetailsActionItem', () => {
   });
 
   describe('accessibility', () => {
-    it('hides the trailing slot from assistive tech (label carries the announcement)', () => {
+    it('leaves the trailing slot exposed to assistive tech (hiding is the caller’s job)', () => {
       renderItem({ testID: 'item', trailing: <Text testID='trailing'>5</Text> });
-      // Hidden by default (a11y queries skip it)…
-      expect(screen.queryByTestId('trailing')).toBeNull();
-      // …but still present in the tree.
-      expect(screen.queryByTestId('trailing', { includeHiddenElements: true })).toBeTruthy();
+      // The component no longer force-hides the trailing slot — a plain node stays visible to a11y.
+      expect(screen.queryByTestId('trailing')).toBeTruthy();
     });
   });
 });

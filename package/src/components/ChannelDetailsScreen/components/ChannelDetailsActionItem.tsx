@@ -59,15 +59,7 @@ export const ChannelDetailsActionItem = ({
       >
         {label}
       </Text>
-      {trailing ? (
-        <View
-          accessibilityElementsHidden
-          importantForAccessibility='no-hide-descendants'
-          style={styles.trailing}
-        >
-          {trailing}
-        </View>
-      ) : null}
+      {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
     </View>
   );
 

@@ -22,7 +22,11 @@ export const ChannelDetailsNavigationSection = () => {
   const styles = useStyles();
 
   const chevron = useMemo(
-    () => <ChevronRight height={20} stroke={semantics.textTertiary} width={20} />,
+    () => (
+      <View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>
+        <ChevronRight height={20} stroke={semantics.textTertiary} width={20} />
+      </View>
+    ),
     [semantics.textTertiary],
   );
 
