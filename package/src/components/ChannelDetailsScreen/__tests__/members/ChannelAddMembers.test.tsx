@@ -1,337 +1,215 @@
 import React from 'react';
 
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import type { Channel, UserResponse } from 'stream-chat';
 
-import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
-import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
+import type { AddMemberSearchResultItemProps } from '../../components/members/AddMemberSearchResultItem';
+import { ChannelAddMembers } from '../../components/members/ChannelAddMembers';
 import {
-  ChannelAddMembers,
-  type ChannelAddMembersProps,
-} from '../../components/members/ChannelAddMembers';
+  type UseChannelAddMembersResult,
+  useChannelAddMembers,
+} from '../../hooks/members/useChannelAddMembers';
 
-const buildChannel = (members: ChannelMemberResponse[]): Channel =>
-  ({
-    cid: 'messaging:test',
-    data: { member_count: members.length },
-    on: () => ({ unsubscribe: () => undefined }),
-    state: {
-      members: Object.fromEntries(
-        members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),
+const mockRowProbe: AddMemberSearchResultItemProps[] = [];
+
+jest.mock('../../hooks/members/useChannelAddMembers', () => ({
+  useChannelAddMembers: jest.fn(),
+}));
+
+jest.mock('../../../UIComponents/SearchInput', () => {
+  const ReactLib = require('react');
+  const { Text } = require('react-native');
+  return {
+    SearchInput: ({
+      onChangeText,
+      onClear,
+    }: {
+      onChangeText: (t: string) => void;
+      onClear: () => void;
+    }) =>
+      ReactLib.createElement(
+        ReactLib.Fragment,
+        null,
+        ReactLib.createElement(
+          Text,
+          { onPress: () => onChangeText('query'), testID: 'search-change' },
+          'change',
+        ),
+        ReactLib.createElement(Text, { onPress: onClear, testID: 'search-clear' }, 'clear'),
       ),
+  };
+});
+
+jest.mock('../../components/members/AddMemberSearchResultItem', () => {
+  const ReactLib = require('react');
+  const { Text } = require('react-native');
+  return {
+    AddMemberSearchResultItem: (props: AddMemberSearchResultItemProps) => {
+      mockRowProbe.push(props);
+      return ReactLib.createElement(
+        Text,
+        { onPress: props.onPress, testID: `add-member-row-${props.user.id}` },
+        props.user.id,
+      );
     },
-  }) as unknown as Channel;
+  };
+});
 
-type QueryUsersMock = jest.Mock<Promise<{ users: UserResponse[] }>, [unknown, unknown, unknown]>;
+const channel = {
+  cid: 'messaging:test',
+  on: () => ({ unsubscribe: () => undefined }),
+} as unknown as Channel;
 
-const renderComponent = ({
-  additionalFlatListProps,
-  channel,
-  onSelectionChange = jest.fn(),
-  queryUsers,
-  userID = 'me',
-}: {
-  channel: Channel;
-  queryUsers: QueryUsersMock;
-  additionalFlatListProps?: ChannelAddMembersProps['additionalFlatListProps'];
-  onSelectionChange?: (users: UserResponse[]) => void;
-  userID?: string;
-}) =>
-  render(
-    <ThemeProvider theme={defaultTheme}>
-      <AccessibilityProvider value={{ enabled: true }}>
-        <TranslationProvider
-          value={{
-            t: ((key: string, options?: Record<string, unknown>) => {
-              if (options && typeof options === 'object') {
-                return Object.entries(options).reduce(
-                  (acc, [k, v]) => acc.replace(`{{${k}}}`, String(v)),
-                  key,
-                );
-              }
-              return key;
-            }) as never,
-            tDateTimeParser: ((input: unknown) => input) as never,
-            userLanguage: 'en',
-          }}
-        >
-          <ChatContext.Provider value={{ client: { queryUsers, userID } } as never}>
-            <ChannelDetailsContextProvider value={{ channel }}>
-              <ChannelAddMembers
-                additionalFlatListProps={additionalFlatListProps}
-                onSelectionChange={onSelectionChange}
-              />
-            </ChannelDetailsContextProvider>
-          </ChatContext.Provider>
-        </TranslationProvider>
-      </AccessibilityProvider>
-    </ThemeProvider>,
-  );
+const baseHookResult = (): UseChannelAddMembersResult => ({
+  clearSearch: jest.fn(),
+  hasMore: true,
+  isSelected: jest.fn(() => false),
+  loading: false,
+  loadingMore: false,
+  loadMore: jest.fn(),
+  onChangeSearchText: jest.fn(),
+  results: [],
+  selectedUsers: [],
+  toggleUser: jest.fn(),
+});
+
+const mockHook = (overrides: Partial<UseChannelAddMembersResult> = {}) => {
+  const value = { ...baseHookResult(), ...overrides };
+  (useChannelAddMembers as jest.Mock).mockReturnValue(value);
+  return value;
+};
+
+const tree = (
+  props: {
+    onSelectionChange?: (selectedUsers: UserResponse[]) => void;
+    additionalFlatListProps?: object;
+  } = {},
+) => (
+  <ThemeProvider theme={defaultTheme}>
+    <TranslationProvider
+      value={{
+        t: ((key: string) => key) as never,
+        tDateTimeParser: ((input: unknown) => input) as never,
+        userLanguage: 'en',
+      }}
+    >
+      <ChannelDetailsContextProvider value={{ channel }}>
+        <ChannelAddMembers
+          additionalFlatListProps={props.additionalFlatListProps as never}
+          onSelectionChange={props.onSelectionChange ?? jest.fn()}
+        />
+      </ChannelDetailsContextProvider>
+    </TranslationProvider>
+  </ThemeProvider>
+);
+
+const renderComponent = (
+  props: {
+    onSelectionChange?: (selectedUsers: UserResponse[]) => void;
+    additionalFlatListProps?: object;
+  } = {},
+) => render(tree(props));
 
 describe('ChannelAddMembers', () => {
-  let warnSpy: jest.SpyInstance;
-
   beforeEach(() => {
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    mockRowProbe.length = 0;
+    mockHook();
   });
 
-  afterEach(() => {
-    jest.useRealTimers();
-    warnSpy.mockRestore();
+  afterEach(() => jest.clearAllMocks());
+
+  it('wires the search input to the hook callbacks', () => {
+    const hook = mockHook();
+    renderComponent();
+
+    fireEvent.press(screen.getByTestId('search-change'));
+    expect(hook.onChangeSearchText).toHaveBeenCalledWith('query');
+
+    fireEvent.press(screen.getByTestId('search-clear'));
+    expect(hook.clearSearch).toHaveBeenCalledTimes(1);
   });
 
-  it('renders the search input and shows a loading indicator while the initial fetch is pending', () => {
-    const queryUsers: QueryUsersMock = jest.fn().mockReturnValue(new Promise(() => undefined));
-    const channel = buildChannel([]);
+  it('renders a row per result and forwards selection/membership flags and toggle handler', () => {
+    const userA = generateUser({ id: 'u-1' });
+    const userB = generateUser({ id: 'u-2' });
+    const isSelected = jest.fn((id: string) => id === 'u-2');
+    const toggleUser = jest.fn();
+    mockHook({
+      isSelected,
+      results: [
+        { ...userA, isAlreadyMember: true },
+        { ...userB, isAlreadyMember: false },
+      ],
+      toggleUser,
+    });
 
-    renderComponent({ channel, queryUsers });
+    renderComponent();
 
-    expect(screen.getByTestId('search-input')).toBeTruthy();
+    expect(mockRowProbe).toHaveLength(2);
+    expect(mockRowProbe[0]).toMatchObject({ isAlreadyMember: true, selected: false });
+    expect(mockRowProbe[1]).toMatchObject({ isAlreadyMember: false, selected: true });
+
+    fireEvent.press(screen.getByTestId('add-member-row-u-1'));
+    expect(toggleUser).toHaveBeenCalledWith(expect.objectContaining({ id: 'u-1' }));
+  });
+
+  it('shows the loading skeleton while loading and the empty state when no results', () => {
+    mockHook({ loading: true });
+    const { rerender } = renderComponent();
     expect(screen.getByTestId('user-list-loading-skeleton')).toBeTruthy();
-  });
 
-  it('fires an initial queryUsers call on mount with the role filter and pagination opts', async () => {
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
-    const channel = buildChannel([]);
+    mockHook({ loading: false, results: [] });
+    rerender(tree());
 
-    renderComponent({ channel, queryUsers });
-
-    await waitFor(() => expect(queryUsers).toHaveBeenCalledTimes(1));
-    expect(queryUsers).toHaveBeenCalledWith(
-      {},
-      { name: 1 },
-      expect.objectContaining({ limit: 25, offset: 0 }),
-    );
-  });
-
-  it('debounces search and triggers an autocomplete query with the latest value only', async () => {
-    jest.useFakeTimers();
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
-    const channel = buildChannel([]);
-
-    renderComponent({ channel, queryUsers });
-
-    // Initial mount fetch (no autocomplete filter)
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    const input = screen.getByTestId('search-input');
-    fireEvent.changeText(input, 'E');
-    fireEvent.changeText(input, 'Et');
-    fireEvent.changeText(input, 'Eth');
-
-    // Before debounce fires, only the initial mount call should exist.
-    expect(queryUsers).toHaveBeenCalledTimes(1);
-
-    await act(async () => {
-      jest.advanceTimersByTime(250);
-      await Promise.resolve();
-    });
-
-    const autocompleteCalls = queryUsers.mock.calls.filter(
-      ([filter]) => (filter as { name?: unknown })?.name !== undefined,
-    );
-    expect(autocompleteCalls).toHaveLength(1);
-    expect(autocompleteCalls[0][0]).toEqual({
-      name: { $autocomplete: 'Eth' },
-    });
-  });
-
-  it('flags channel.state.members as already-member rows and does not toggle them on press', async () => {
-    const existingUser = generateUser({ id: 'u-1', name: 'Existing Member' });
-    const newUser = generateUser({ id: 'u-2', name: 'New User' });
-    const channel = buildChannel([generateMember({ user: existingUser })]);
-    const queryUsers: QueryUsersMock = jest
-      .fn()
-      .mockResolvedValue({ users: [existingUser, newUser] });
-    const onSelectionChange = jest.fn();
-
-    renderComponent({ channel, onSelectionChange, queryUsers });
-
-    const existingRow = await waitFor(() => screen.getByTestId('channel-add-members-row-u-1'));
-    fireEvent.press(existingRow);
-    expect(onSelectionChange).not.toHaveBeenCalled();
-    expect(screen.getByTestId('channel-add-members-row-u-2')).toBeTruthy();
-  });
-
-  it('treats the current user as a regular row when not in channel.state.members', async () => {
-    const me = generateUser({ id: 'me', name: 'Me' });
-    const newUser = generateUser({ id: 'u-2', name: 'New User' });
-    const channel = buildChannel([]);
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [me, newUser] });
-
-    renderComponent({ channel, queryUsers, userID: 'me' });
-
-    const meRow = await waitFor(() => screen.getByTestId('channel-add-members-row-me'));
-    expect(meRow.props.accessibilityState).toMatchObject({ disabled: false });
-  });
-
-  it('toggles selection state through the hook on successive row presses', async () => {
-    const newUser = generateUser({ id: 'u-2', name: 'New User' });
-    const channel = buildChannel([]);
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [newUser] });
-    const onSelectionChange = jest.fn();
-
-    renderComponent({ channel, onSelectionChange, queryUsers });
-
-    const row = await waitFor(() => screen.getByTestId('channel-add-members-row-u-2'));
-
-    fireEvent.press(row);
-    await waitFor(() =>
-      expect(onSelectionChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: 'u-2' })]),
-    );
-
-    fireEvent.press(screen.getByTestId('channel-add-members-row-u-2'));
-    await waitFor(() => expect(onSelectionChange).toHaveBeenLastCalledWith([]));
-  });
-
-  it('emits onSelectionChange with the latest selection on toggle', async () => {
-    const newUser = generateUser({ id: 'u-2', name: 'New User' });
-    const channel = buildChannel([]);
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [newUser] });
-    const onSelectionChange = jest.fn();
-
-    renderComponent({ channel, onSelectionChange, queryUsers });
-
-    const row = await waitFor(() => screen.getByTestId('channel-add-members-row-u-2'));
-    fireEvent.press(row);
-
-    await waitFor(() =>
-      expect(onSelectionChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: 'u-2' })]),
-    );
-
-    fireEvent.press(row);
-    await waitFor(() => expect(onSelectionChange).toHaveBeenLastCalledWith([]));
-  });
-
-  it('renders the empty state when queryUsers returns no users', async () => {
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
-    const channel = buildChannel([]);
-
-    renderComponent({ channel, queryUsers });
-
-    await waitFor(() => expect(screen.getByTestId('empty-search-result')).toBeTruthy());
+    expect(screen.queryByTestId('user-list-loading-skeleton')).toBeNull();
     expect(screen.getByText('No user found')).toBeTruthy();
   });
 
-  it('renders the clear-search button only when search text is non-empty', async () => {
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
-    const channel = buildChannel([]);
-
-    renderComponent({ channel, queryUsers });
-
-    expect(screen.queryByTestId('clear-search')).toBeNull();
-
-    fireEvent.changeText(screen.getByTestId('search-input'), 'X');
-    expect(screen.getByTestId('clear-search')).toBeTruthy();
-
-    fireEvent.press(screen.getByTestId('clear-search'));
-    await waitFor(() => expect(screen.queryByTestId('clear-search')).toBeNull());
+  it('renders the loading-more indicator only while loadingMore is true', () => {
+    mockHook({ loadingMore: true });
+    renderComponent();
+    expect(screen.UNSAFE_getByType(require('react-native').ActivityIndicator)).toBeTruthy();
   });
 
-  it('keeps the selection when the search text changes', async () => {
-    jest.useFakeTimers();
-    const userA = generateUser({ id: 'u-2', name: 'New User' });
-    const userB = generateUser({ id: 'u-3', name: 'Other User' });
-    const channel = buildChannel([]);
-    const queryUsers: QueryUsersMock = jest
-      .fn()
-      .mockResolvedValueOnce({ users: [userA, userB] })
-      .mockResolvedValueOnce({ users: [userA] });
-
-    const onSelectionChange = jest.fn();
-    renderComponent({ channel, onSelectionChange, queryUsers });
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    const row = screen.getByTestId('channel-add-members-row-u-2');
-    fireEvent.press(row);
-    expect(onSelectionChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: 'u-2' })]);
-
-    fireEvent.changeText(screen.getByTestId('search-input'), 'New');
-    await act(async () => {
-      jest.advanceTimersByTime(250);
-      await Promise.resolve();
-    });
-
-    expect(onSelectionChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: 'u-2' })]);
-    expect(
-      screen.getByTestId('channel-add-members-row-u-2').props.accessibilityState,
-    ).toMatchObject({ selected: true });
-  });
-
-  it('wires onEndReached on the list so it can request additional pages', async () => {
-    const firstPage = Array.from({ length: 25 }, (_, i) =>
-      generateUser({ id: `p1-${i}`, name: `User P1 ${i}` }),
-    );
-    const channel = buildChannel([]);
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: firstPage });
-
-    renderComponent({ channel, queryUsers });
-
-    await waitFor(() => expect(screen.getByTestId('channel-add-members-row-p1-0')).toBeTruthy());
+  it('wires onEndReached and the end-reached threshold on the list', () => {
+    const loadMore = jest.fn();
+    mockHook({ loadMore });
+    renderComponent();
 
     const list = screen.getByTestId('channel-add-members-list');
-    expect(typeof list.props.onEndReached).toBe('function');
     expect(list.props.onEndReachedThreshold).toBe(0.2);
+    list.props.onEndReached();
+    expect(loadMore).toHaveBeenCalledTimes(1);
   });
 
-  it('forwards additionalFlatListProps to the underlying flat list', async () => {
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
-    const channel = buildChannel([]);
+  it('forwards additionalFlatListProps to the underlying list', () => {
+    mockHook();
+    renderComponent({ additionalFlatListProps: { bounces: false, testID: 'custom-list' } });
 
-    renderComponent({
-      additionalFlatListProps: { bounces: false, testID: 'custom-add-members-list' },
-      channel,
-      queryUsers,
-    });
-
-    const list = await waitFor(() => screen.getByTestId('custom-add-members-list'));
+    const list = screen.getByTestId('custom-list');
     expect(list.props.bounces).toBe(false);
-    // The customer-provided testID replaces the component default (spread-last wins).
     expect(screen.queryByTestId('channel-add-members-list')).toBeNull();
   });
 
-  it('flips an already-rendered row to disabled when the user becomes a channel member', async () => {
-    const newUser = generateUser({ id: 'u-2', name: 'New User' });
-    const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [newUser] });
+  it('emits onSelectionChange only when the selection reference changes (not on mount)', () => {
+    const onSelectionChange = jest.fn();
+    const selectionA: never[] = [];
+    mockHook({ selectedUsers: selectionA });
 
-    const listeners: Array<(event: unknown) => void> = [];
-    const state: { members: Record<string, ChannelMemberResponse> } = { members: {} };
-    const channel = {
-      cid: 'messaging:test',
-      data: { member_count: 0 },
-      on: (_event: string, cb: (event: unknown) => void) => {
-        listeners.push(cb);
-        return { unsubscribe: () => undefined };
-      },
-      state,
-    } as unknown as Channel;
+    const { rerender } = render(tree({ onSelectionChange }));
 
-    renderComponent({ channel, queryUsers });
+    expect(onSelectionChange).not.toHaveBeenCalled();
 
-    const row = await waitFor(() => screen.getByTestId('channel-add-members-row-u-2'));
-    expect(row.props.accessibilityState).toMatchObject({ disabled: false });
+    const selectionB = [generateUser({ id: 'u-1' })];
+    mockHook({ selectedUsers: selectionB as never });
+    rerender(tree({ onSelectionChange }));
 
-    act(() => {
-      state.members = { 'u-2': generateMember({ user: newUser }) };
-      listeners.forEach((cb) => cb({ type: 'member.added' }));
-    });
-
-    await waitFor(() =>
-      expect(
-        screen.getByTestId('channel-add-members-row-u-2').props.accessibilityState,
-      ).toMatchObject({ disabled: true }),
-    );
-    expect(screen.getByTestId('channel-add-members-row-u-2-member-label')).toBeTruthy();
+    expect(onSelectionChange).toHaveBeenCalledTimes(1);
+    expect(onSelectionChange).toHaveBeenCalledWith(selectionB);
   });
 });

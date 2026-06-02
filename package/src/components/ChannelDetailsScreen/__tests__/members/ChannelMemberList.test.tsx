@@ -1,10 +1,9 @@
 import React from 'react';
-import { type FlatListProps as RNFlatListProps, Text } from 'react-native';
+import { ActivityIndicator, type FlatListProps as RNFlatListProps, Text } from 'react-native';
 
-import { act, render, waitFor } from '@testing-library/react-native';
+import { act, render } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { BottomSheetProvider } from '../../../../contexts/bottomSheetContext/BottomSheetContext';
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -16,10 +15,15 @@ import { generateUser } from '../../../../mock-builders/generator/user';
 import type { ChannelMemberActionsSheetProps } from '../../components/members/ChannelMemberActionsSheet';
 import type { ChannelMemberItemProps } from '../../components/members/ChannelMemberItem';
 import { ChannelMemberList } from '../../components/members/ChannelMemberList';
+import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
 
 type FlatListProps = RNFlatListProps<ChannelMemberResponse>;
 
 const mockFlatList = jest.fn((_props: FlatListProps) => null);
+
+jest.mock('../../hooks/members/useChannelAllMembers', () => ({
+  useChannelAllMembers: jest.fn(),
+}));
 
 jest.mock('react-native', () => {
   const actual = jest.requireActual('react-native');
@@ -35,60 +39,48 @@ jest.mock('react-native', () => {
   });
 });
 
-type QueryMembersMock = jest.Mock<
-  Promise<{ members: ChannelMemberResponse[] }>,
-  [unknown, unknown, unknown]
->;
+const channel = {
+  cid: 'messaging:test',
+  on: () => ({ unsubscribe: () => undefined }),
+} as unknown as Channel;
 
-const buildChannel = ({
-  memberCount,
-  members,
-  queryMembers,
-}: {
-  members: ChannelMemberResponse[];
-  memberCount?: number;
-  queryMembers?: QueryMembersMock;
-}): Channel =>
-  ({
-    cid: 'messaging:test',
-    data: memberCount == null ? {} : { member_count: memberCount },
-    on: () => ({ unsubscribe: () => undefined }),
-    queryMembers: queryMembers ?? jest.fn(),
-    state: {
-      members: Object.fromEntries(
-        members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),
-      ),
-    },
-  }) as unknown as Channel;
+type HookResult = ReturnType<typeof useChannelAllMembers>;
 
-const buildMembers = (count: number, prefix = 'u') =>
-  Array.from({ length: count }, (_, i) =>
-    generateMember({ user: generateUser({ id: `${prefix}-${i}`, name: `User ${i}` }) }),
-  );
+const baseHookResult = (): HookResult => ({
+  hasMore: false,
+  loading: false,
+  loadingMore: false,
+  loadMore: jest.fn(),
+  results: [],
+});
 
-type Probe = ChannelMemberItemProps;
+const mockHook = (overrides: Partial<HookResult> = {}) => {
+  const value = { ...baseHookResult(), ...overrides };
+  (useChannelAllMembers as jest.Mock).mockReturnValue(value);
+  return value;
+};
 
-const probeCalls: Probe[] = [];
-const MemberListItemProbe = (props: Probe) => {
-  probeCalls.push(props);
+const itemProbeCalls: ChannelMemberItemProps[] = [];
+const MemberListItemProbe = (props: ChannelMemberItemProps) => {
+  itemProbeCalls.push(props);
   return <Text testID={`member-${props.member.user?.id}`}>{props.member.user?.name}</Text>;
 };
 
-const MemberActionsSheetProbe = ({ member }: ChannelMemberActionsSheetProps) => (
-  <Text testID='member-actions-sheet-probe'>{member.user?.id ?? ''}</Text>
-);
+const sheetProbeCalls: ChannelMemberActionsSheetProps[] = [];
+const MemberActionsSheetProbe = (props: ChannelMemberActionsSheetProps) => {
+  sheetProbeCalls.push(props);
+  return <Text testID='member-actions-sheet-probe'>{props.member.user?.id ?? ''}</Text>;
+};
 
 const renderList = ({
   additionalFlatListProps,
-  channel,
   currentUserId,
   onMemberPress,
 }: {
-  channel: Channel;
   additionalFlatListProps?: Partial<FlatListProps>;
   currentUserId?: string;
   onMemberPress?: (member: ChannelMemberResponse) => void;
-}) =>
+} = {}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
@@ -98,33 +90,17 @@ const renderList = ({
           userLanguage: 'en',
         }}
       >
-        <ChatContext.Provider
-          value={
-            {
-              client: { userID: currentUserId },
-            } as never
-          }
-        >
-          <BottomSheetProvider
-            value={
-              {
-                close: () => undefined,
-                currentSnapIndex: { value: 0 },
-                topSnapIndex: { value: 0 },
-              } as never
-            }
-          >
-            <ChannelDetailsContextProvider value={{ channel, onMemberPress }}>
-              <WithComponents
-                overrides={{
-                  ChannelMemberActionsSheet: MemberActionsSheetProbe,
-                  ChannelMemberItem: MemberListItemProbe,
-                }}
-              >
-                <ChannelMemberList additionalFlatListProps={additionalFlatListProps} />
-              </WithComponents>
-            </ChannelDetailsContextProvider>
-          </BottomSheetProvider>
+        <ChatContext.Provider value={{ client: { userID: currentUserId } } as never}>
+          <ChannelDetailsContextProvider value={{ channel, onMemberPress }}>
+            <WithComponents
+              overrides={{
+                ChannelMemberActionsSheet: MemberActionsSheetProbe,
+                ChannelMemberItem: MemberListItemProbe,
+              }}
+            >
+              <ChannelMemberList additionalFlatListProps={additionalFlatListProps} />
+            </WithComponents>
+          </ChannelDetailsContextProvider>
         </ChatContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
@@ -138,258 +114,144 @@ const latestListProps = () => {
 describe('ChannelMemberList', () => {
   beforeEach(() => {
     mockFlatList.mockClear();
-    probeCalls.length = 0;
+    itemProbeCalls.length = 0;
+    sheetProbeCalls.length = 0;
+    mockHook();
   });
 
-  it('opens the per-member actions sheet when a member is pressed and no onMemberPress override is provided', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    const channel = buildChannel({ memberCount: 2, members: [alice, bob] });
+  afterEach(() => jest.clearAllMocks());
 
-    const list = renderList({ channel });
+  it('renders the loading skeleton while loading with no results yet', () => {
+    mockHook({ loading: true, results: [] });
 
-    const { renderItem } = latestListProps() ?? {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render((renderItem as any)({ index: 0, item: bob, separators: {} as never }));
+    const list = renderList();
 
-    const captured = probeCalls.find((p) => p.member.user?.id === 'bob');
-    expect(captured?.onPress).toBeDefined();
-
-    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
-    act(() => {
-      captured?.onPress?.();
-    });
-    expect(list.getByTestId('member-actions-sheet-probe')).toBeTruthy();
-    expect(list.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
+    expect(list.getByTestId('member-list-loading-skeleton')).toBeTruthy();
+    expect(mockFlatList).not.toHaveBeenCalled();
   });
 
-  it('calls onMemberPress instead of opening the per-member actions sheet when provided', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const channel = buildChannel({ memberCount: 1, members: [alice] });
-    const onMemberPress = jest.fn();
-
-    const list = renderList({ channel, onMemberPress });
-
-    const { renderItem } = latestListProps() ?? {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render((renderItem as any)({ index: 0, item: alice, separators: {} as never }));
-
-    const captured = probeCalls.find((p) => p.member.user?.id === 'alice');
-    act(() => {
-      captured?.onPress?.();
+  it('renders the list (not the skeleton) once results exist even while loading', () => {
+    mockHook({
+      loading: true,
+      results: [generateMember({ user: generateUser({ id: 'alice' }) })],
     });
 
-    expect(onMemberPress).toHaveBeenCalledTimes(1);
-    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');
-    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
-  });
+    const list = renderList();
 
-  it('forwards every channel member into the flat list', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    const queryMembers: QueryMembersMock = jest.fn();
-    const channel = buildChannel({ memberCount: 2, members: [alice, bob], queryMembers });
-
-    renderList({ channel });
-
-    expect(queryMembers).not.toHaveBeenCalled();
+    expect(list.queryByTestId('member-list-loading-skeleton')).toBeNull();
     expect(mockFlatList).toHaveBeenCalled();
+  });
+
+  it('feeds the hook results into the flat list with a stable keyExtractor', () => {
+    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+    const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
+    mockHook({ results: [alice, bob] });
+
+    renderList();
+
     const props = latestListProps();
-    const data = props?.data as ChannelMemberResponse[];
-    expect(data).toHaveLength(2);
-    expect(data.map((m) => m.user?.id)).toEqual(['alice', 'bob']);
-    expect(typeof props?.renderItem).toBe('function');
-    expect(typeof props?.keyExtractor).toBe('function');
+    expect((props?.data as ChannelMemberResponse[]).map((m) => m.user?.id)).toEqual([
+      'alice',
+      'bob',
+    ]);
+    expect(props?.keyExtractor?.(alice, 0)).toBe('alice');
+  });
+
+  it('renders each item with the isCurrentUser flag derived from the chat client', () => {
+    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+    const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
+    mockHook({ results: [alice, bob] });
+
+    renderList({ currentUserId: 'alice' });
+
+    const { data, renderItem } = latestListProps() ?? {};
+    (data as ChannelMemberResponse[]).forEach((member, index) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render((renderItem as any)({ index, item: member, separators: {} as never })),
+    );
+
+    const byId = Object.fromEntries(itemProbeCalls.map((p) => [p.member.user?.id, p]));
+    expect(byId.alice.isCurrentUser).toBe(true);
+    expect(byId.bob.isCurrentUser).toBe(false);
+  });
+
+  it('wires onEndReached to loadMore (with threshold) only when there is more to load', () => {
+    const loadMore = jest.fn();
+    mockHook({ hasMore: true, loadMore, results: [] });
+
+    renderList();
+
+    const props = latestListProps();
+    expect(props?.onEndReachedThreshold).toBe(0.2);
+    expect(props?.onEndReached).toBe(loadMore);
+  });
+
+  it('omits onEndReached when there is no more to load', () => {
+    mockHook({ hasMore: false, results: [] });
+
+    renderList();
+
+    expect(latestListProps()?.onEndReached).toBeUndefined();
+  });
+
+  it('renders a footer spinner only while loadingMore', () => {
+    mockHook({ loadingMore: true, results: [] });
+    renderList();
+    const footer = latestListProps()?.ListFooterComponent as React.ReactElement;
+    expect(footer).not.toBeNull();
+    expect(footer.type).toBe(ActivityIndicator);
+
+    mockFlatList.mockClear();
+    mockHook({ loadingMore: false, results: [] });
+    renderList();
+    expect(latestListProps()?.ListFooterComponent).toBeNull();
   });
 
   it('forwards additionalFlatListProps to the underlying flat list', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const channel = buildChannel({ memberCount: 1, members: [alice] });
+    mockHook({ results: [generateMember({ user: generateUser({ id: 'alice' }) })] });
 
-    renderList({
-      additionalFlatListProps: { bounces: false, testID: 'custom-member-list' },
-      channel,
-    });
+    renderList({ additionalFlatListProps: { bounces: false, testID: 'custom-member-list' } });
 
     const props = latestListProps();
     expect(props?.testID).toBe('custom-member-list');
     expect(props?.bounces).toBe(false);
   });
 
-  it('uses a stable keyExtractor based on user.id', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice' }) });
-    const channel = buildChannel({ memberCount: 1, members: [alice] });
-
-    renderList({ channel });
-
-    const { keyExtractor } = latestListProps() ?? {};
-    expect(keyExtractor?.(alice, 0)).toBe('alice');
-  });
-
-  it('renders the resolved item component with the isCurrentUser flag', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+  it('opens the per-member actions sheet on press when no onMemberPress override is provided, and closes it', () => {
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    const channel = buildChannel({ memberCount: 2, members: [alice, bob] });
+    mockHook({ results: [bob] });
 
-    renderList({ channel, currentUserId: 'alice' });
+    const list = renderList();
 
-    const { data: dataArray, renderItem } = latestListProps() ?? {};
-    const data = dataArray as ChannelMemberResponse[];
+    const { renderItem } = latestListProps() ?? {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render((renderItem as any)({ index: 0, item: bob, separators: {} as never }));
+    const captured = itemProbeCalls.find((p) => p.member.user?.id === 'bob');
 
-    expect(data).toHaveLength(2);
+    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
+    act(() => captured?.onPress?.());
+    expect(list.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
 
-    data?.forEach((member, index) => {
-      render(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (renderItem as any)({ index, item: member, separators: {} as never }),
-      );
-    });
-
-    expect(probeCalls).toHaveLength(2);
-    const byId = Object.fromEntries(probeCalls.map((p) => [p.member.user?.id, p]));
-    expect(byId.alice.isCurrentUser).toBe(true);
-    expect(byId.bob.isCurrentUser).toBe(false);
+    act(() => sheetProbeCalls[sheetProbeCalls.length - 1]?.onClose?.());
+    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
-  describe('paginated mode (member_count > loaded)', () => {
-    let warnSpy: jest.SpyInstance;
+  it('calls onMemberPress instead of opening the sheet when an override is provided', () => {
+    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
+    const onMemberPress = jest.fn();
+    mockHook({ results: [alice] });
 
-    beforeEach(() => {
-      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-    });
+    const list = renderList({ onMemberPress });
 
-    afterEach(() => {
-      warnSpy.mockRestore();
-    });
+    const { renderItem } = latestListProps() ?? {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render((renderItem as any)({ index: 0, item: alice, separators: {} as never }));
+    const captured = itemProbeCalls.find((p) => p.member.user?.id === 'alice');
 
-    it('renders the loading skeleton while the initial paginated fetch is pending', () => {
-      const queryMembers: QueryMembersMock = jest
-        .fn()
-        .mockReturnValue(new Promise(() => undefined));
-      const channel = buildChannel({
-        memberCount: 200,
-        members: buildMembers(25, 'loaded'),
-        queryMembers,
-      });
+    act(() => captured?.onPress?.());
 
-      const list = renderList({ channel });
-
-      expect(list.getByTestId('member-list-loading-skeleton')).toBeTruthy();
-      expect(mockFlatList).not.toHaveBeenCalled();
-    });
-
-    it('calls queryMembers and feeds the response into the flat list', async () => {
-      const firstPage = buildMembers(25, 'page1');
-      const queryMembers: QueryMembersMock = jest.fn().mockResolvedValue({ members: firstPage });
-      const channel = buildChannel({
-        memberCount: 250,
-        members: buildMembers(25, 'loaded'),
-        queryMembers,
-      });
-
-      renderList({ channel });
-
-      await waitFor(() => expect(queryMembers).toHaveBeenCalledTimes(1));
-      expect(queryMembers).toHaveBeenCalledWith({}, { created_at: 1 }, { limit: 25, offset: 0 });
-
-      await waitFor(() => {
-        const props = latestListProps();
-        expect((props?.data as ChannelMemberResponse[])?.length).toBe(25);
-      });
-      const data = latestListProps()?.data as ChannelMemberResponse[];
-      expect(data[0]?.user?.id).toBe('page1-0');
-    });
-
-    it('triggers a second queryMembers page when onEndReached fires', async () => {
-      const queryMembers: QueryMembersMock = jest
-        .fn()
-        .mockResolvedValueOnce({ members: buildMembers(25, 'page1') })
-        .mockResolvedValueOnce({ members: buildMembers(10, 'page2') });
-      const channel = buildChannel({
-        memberCount: 300,
-        members: buildMembers(25, 'loaded'),
-        queryMembers,
-      });
-
-      renderList({ channel });
-
-      await waitFor(() => expect(queryMembers).toHaveBeenCalledTimes(1));
-      await waitFor(() =>
-        expect((latestListProps()?.data as ChannelMemberResponse[])?.length).toBe(25),
-      );
-
-      const props = latestListProps();
-      expect(typeof props?.onEndReached).toBe('function');
-      await act(() => {
-        props?.onEndReached?.({ distanceFromEnd: 0 });
-        return Promise.resolve();
-      });
-
-      await waitFor(() => expect(queryMembers).toHaveBeenCalledTimes(2));
-      expect(queryMembers).toHaveBeenNthCalledWith(
-        2,
-        {},
-        { created_at: 1 },
-        { limit: 25, offset: 25 },
-      );
-    });
-
-    it('renders a footer spinner while loadingMore', async () => {
-      let resolveSecond: ((value: { members: ChannelMemberResponse[] }) => void) | undefined;
-      const queryMembers: QueryMembersMock = jest
-        .fn()
-        .mockResolvedValueOnce({ members: buildMembers(25, 'page1') })
-        .mockReturnValueOnce(
-          new Promise<{ members: ChannelMemberResponse[] }>((resolve) => {
-            resolveSecond = resolve;
-          }),
-        );
-      const channel = buildChannel({
-        memberCount: 500,
-        members: buildMembers(25, 'loaded'),
-        queryMembers,
-      });
-
-      renderList({ channel });
-
-      await waitFor(() => expect(queryMembers).toHaveBeenCalledTimes(1));
-      await waitFor(() =>
-        expect((latestListProps()?.data as ChannelMemberResponse[])?.length).toBe(25),
-      );
-      expect(latestListProps()?.ListFooterComponent).toBeNull();
-
-      await act(() => {
-        latestListProps()?.onEndReached?.({ distanceFromEnd: 0 });
-        return Promise.resolve();
-      });
-
-      await waitFor(() => expect(latestListProps()?.ListFooterComponent).not.toBeNull());
-
-      await act(() => {
-        resolveSecond?.({ members: buildMembers(10, 'page2') });
-        return Promise.resolve();
-      });
-
-      await waitFor(() => expect(latestListProps()?.ListFooterComponent).toBeNull());
-    });
-
-    it('omits onEndReached when there is no more to load', async () => {
-      const queryMembers: QueryMembersMock = jest
-        .fn()
-        .mockResolvedValue({ members: buildMembers(10, 'page1') });
-      const channel = buildChannel({
-        memberCount: 200,
-        members: buildMembers(25, 'loaded'),
-        queryMembers,
-      });
-
-      renderList({ channel });
-
-      await waitFor(() =>
-        expect((latestListProps()?.data as ChannelMemberResponse[])?.length).toBe(10),
-      );
-
-      expect(latestListProps()?.onEndReached).toBeUndefined();
-    });
+    expect(onMemberPress).toHaveBeenCalledTimes(1);
+    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');
+    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 });
