@@ -4,16 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { IconProps } from './utils/base';
 
-export const NewClose = ({
-  fill,
-  height,
-  pathFill,
-  size,
-  stroke,
-  strokeWidth,
-  width,
-  ...rest
-}: IconProps) => {
+export const NewClose = ({ fill, height, pathFill, size, stroke, width, ...rest }: IconProps) => {
   const color = stroke ?? pathFill ?? fill ?? 'black';
 
   return (
@@ -23,7 +14,7 @@ export const NewClose = ({
         stroke={color}
         strokeLinecap='round'
         strokeLinejoin='round'
-        strokeWidth={strokeWidth ?? 1.5}
+        strokeWidth={1.5}
       />
     </Svg>
   );
