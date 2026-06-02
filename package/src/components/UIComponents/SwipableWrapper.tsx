@@ -20,7 +20,6 @@ import { useStableCallback } from '../../hooks';
 
 const ACTION_WIDTH = 80;
 const MAX_RIGHT_ACTIONS_WIDTH = 240;
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const animationOptions = {
   damping: 24,
@@ -107,17 +106,15 @@ export const RightActions = ({
       {actionItems.map((item) => {
         const Content = item.Content;
         return (
-          <AnimatedPressable
-            key={item.id}
-            onPress={item.action}
-            style={[styles.action, animatedActionWidthStyle]}
-          >
-            <View style={item.contentContainerStyle}>
-              <Animated.View style={animatedIconScaleStyle}>
-                <Content />
-              </Animated.View>
-            </View>
-          </AnimatedPressable>
+          <Animated.View key={item.id} style={[styles.action, animatedActionWidthStyle]}>
+            <Pressable onPress={item.action} style={StyleSheet.absoluteFill}>
+              <View style={item.contentContainerStyle}>
+                <Animated.View style={animatedIconScaleStyle}>
+                  <Content />
+                </Animated.View>
+              </View>
+            </Pressable>
+          </Animated.View>
         );
       })}
     </Animated.View>

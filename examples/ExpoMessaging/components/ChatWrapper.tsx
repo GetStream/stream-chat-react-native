@@ -54,8 +54,17 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
 
   return (
     <WithComponents overrides={componentOverrides}>
-      <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
-        <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+      <OverlayProvider
+        accessibility={{ enabled: true }}
+        i18nInstance={streami18n}
+        value={{ style: theme }}
+      >
+        <Chat
+          client={chatClient}
+          i18nInstance={streami18n}
+          enableOfflineSupport
+          useNativeMultipartUpload
+        >
           {children}
         </Chat>
       </OverlayProvider>

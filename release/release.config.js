@@ -72,9 +72,21 @@ module.exports = Promise.resolve().then(() => {
       },
     ],
     [
-      '@semantic-release/npm',
+      '@semantic-release/exec',
       {
-        npmPublish: isSDK,
+        // Bump the version (which also runs the `version` script, before-tag.sh)
+        // with --no-workspaces so npm doesn't try to reify the Yarn workspace
+        // tree — npm can't parse Yarn's workspace:/patch: protocols.
+        prepareCmd:
+          'npm version ${nextRelease.version} --no-workspaces --no-git-tag-version --allow-same-version',
+        // Only the SDK publishes to npm. Publishing core triggers its
+        // prepublishOnly hook (before-tag.sh && release.sh), which in turn
+        // publishes native-package and expo-package.
+        ...(isSDK
+          ? {
+              publishCmd: 'npm publish --no-workspaces --tag ${nextRelease.channel || "latest"}',
+            }
+          : {}),
       },
     ],
   ];

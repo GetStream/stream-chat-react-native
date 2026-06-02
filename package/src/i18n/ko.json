@@ -401,5 +401,12 @@
   "a11y/Confirm edit channel": "Confirm edit channel",
   "a11y/Upload channel image": "Upload channel image",
   "Reset Picture": "Reset Picture",
-  "a11y/Close edit picture sheet": "Close edit picture sheet"
+  "a11y/Close edit picture sheet": "Close edit picture sheet",
+  "a11y/Activate to view results": "결과를 보려면 활성화",
+  "a11y/End vote": "투표 종료",
+  "a11y/Show all options": "모든 옵션 표시",
+  "a11y/Vote on {{option}}": "{{option}}에 투표",
+  "a11y/Double tap and hold to activate contextual menu": "컨텍스트 메뉴를 활성화하려면 두 번 탭하고 길게 누르세요",
+  "a11y/Swipe right to go through different actions": "다른 작업을 탐색하려면 오른쪽으로 스와이프하세요",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

@@ -401,5 +401,12 @@
   "a11y/Confirm edit channel": "Confirm edit channel",
   "a11y/Upload channel image": "Upload channel image",
   "Reset Picture": "Reset Picture",
-  "a11y/Close edit picture sheet": "Close edit picture sheet"
+  "a11y/Close edit picture sheet": "Close edit picture sheet",
+  "a11y/Activate to view results": "فعّل لعرض النتائج",
+  "a11y/End vote": "إنهاء التصويت",
+  "a11y/Show all options": "إظهار جميع الخيارات",
+  "a11y/Vote on {{option}}": "صوّت على {{option}}",
+  "a11y/Double tap and hold to activate contextual menu": "انقر نقرًا مزدوجًا مع الاستمرار لتفعيل قائمة السياق",
+  "a11y/Swipe right to go through different actions": "اسحب لليمين للتنقل بين الإجراءات المختلفة",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

@@ -401,5 +401,12 @@
   "a11y/Confirm edit channel": "Confirm edit channel",
   "a11y/Upload channel image": "Upload channel image",
   "Reset Picture": "Reset Picture",
-  "a11y/Close edit picture sheet": "Close edit picture sheet"
+  "a11y/Close edit picture sheet": "Close edit picture sheet",
+  "a11y/Activate to view results": "परिणाम देखने के लिए सक्रिय करें",
+  "a11y/End vote": "मतदान समाप्त करें",
+  "a11y/Show all options": "सभी विकल्प दिखाएं",
+  "a11y/Vote on {{option}}": "{{option}} पर वोट करें",
+  "a11y/Double tap and hold to activate contextual menu": "संदर्भ मेनू सक्रिय करने के लिए दो बार टैप करें और होल्ड करें",
+  "a11y/Swipe right to go through different actions": "विभिन्न क्रियाओं के बीच जाने के लिए दाएं स्वाइप करें",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

@@ -27,7 +27,9 @@ type SwipableMessageWrapperProps = Pick<
   onSwipe: () => void;
 };
 
-export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperProps) => {
+export const SwipableMessageWrapper = React.memo(function SwipableMessageWrapper(
+  props: SwipableMessageWrapperProps,
+) {
   const { children, messageSwipeToReplyHitSlop, onSwipe } = props;
   const { MessageSwipeContent } = useComponentsContext();
   const isRTL = I18nManager.isRTL;
@@ -98,7 +100,6 @@ export const SwipableMessageWrapper = React.memo((props: SwipableMessageWrapperP
               dampingRatio: 1,
               duration: 500,
               overshootClamping: true,
-              stiffness: 1,
             },
             () => {
               runOnJS(setShouldRenderAnimatedWrapper)(false);

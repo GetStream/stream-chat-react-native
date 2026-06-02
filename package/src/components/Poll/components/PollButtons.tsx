@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -13,13 +13,22 @@ import { useChatContext, usePollContext, useTheme, useTranslationContext } from 
 import { primitives } from '../../../theme';
 import { defaultPollOptionCount } from '../../../utils/constants';
 import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
+import {
+  useAddCommentOpen,
+  useAllCommentsOpen,
+  useAllOptionsOpen,
+  usePollUIStateContext,
+  useSuggestOptionOpen,
+  useViewResultsOpen,
+} from '../contexts/PollUIStateContext';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
 
 export const ViewResultsButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
-  const [showResults, setShowResults] = useState(false);
+  const { closeViewResults, openViewResults } = usePollUIStateContext();
+  const showResults = useViewResultsOpen();
   const { onPress } = props;
 
   const onPressHandler = useCallback(() => {
@@ -28,14 +37,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
       return;
     }
 
-    setShowResults(true);
-  }, [message, onPress, poll]);
+    openViewResults();
+  }, [message, onPress, openViewResults, poll]);
 
   const styles = useStyles();
-
-  const onRequestClose = useCallback(() => {
-    setShowResults(false);
-  }, []);
 
   return (
     <>
@@ -46,10 +51,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
         type='outline'
       />
       {showResults ? (
-        <Modal animationType='slide' onRequestClose={onRequestClose} visible={showResults}>
+        <Modal animationType='slide' onRequestClose={closeViewResults} visible={showResults}>
           <GestureHandlerRootView style={styles.modalRoot}>
             <SafeAreaViewWrapper style={styles.safeArea}>
-              <PollModalHeader onPress={onRequestClose} title={t('Poll Results')} />
+              <PollModalHeader onPress={closeViewResults} title={t('Poll Results')} />
               <PollResults message={message} poll={poll} />
             </SafeAreaViewWrapper>
           </GestureHandlerRootView>
@@ -61,7 +66,8 @@ export const ViewResultsButton = (props: PollButtonProps) => {
 
 export const ShowAllOptionsButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
-  const [showAllOptions, setShowAllOptions] = useState(false);
+  const { closeAllOptions, openAllOptions } = usePollUIStateContext();
+  const showAllOptions = useAllOptionsOpen();
   const { message, poll } = usePollContext();
   const { options } = usePollState();
   const { onPress } = props;
@@ -72,12 +78,8 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
       return;
     }
 
-    setShowAllOptions(true);
-  }, [message, onPress, poll]);
-
-  const onRequestClose = useCallback(() => {
-    setShowAllOptions(false);
-  }, []);
+    openAllOptions();
+  }, [message, onPress, openAllOptions, poll]);
 
   const styles = useStyles();
 
@@ -90,10 +92,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
         />
       ) : null}
       {showAllOptions ? (
-        <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAllOptions}>
+        <Modal animationType='slide' onRequestClose={closeAllOptions} visible={showAllOptions}>
           <GestureHandlerRootView style={styles.modalRoot}>
             <SafeAreaViewWrapper style={styles.safeArea}>
-              <PollModalHeader onPress={onRequestClose} title={t('Poll Options')} />
+              <PollModalHeader onPress={closeAllOptions} title={t('Poll Options')} />
               <PollAllOptions message={message} poll={poll} />
             </SafeAreaViewWrapper>
           </GestureHandlerRootView>
@@ -107,7 +109,8 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { answersCount } = usePollState();
-  const [showAnswers, setShowAnswers] = useState(false);
+  const { closeAllComments, openAllComments } = usePollUIStateContext();
+  const showAnswers = useAllCommentsOpen();
   const { onPress } = props;
 
   const onPressHandler = useCallback(() => {
@@ -116,14 +119,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       return;
     }
 
-    setShowAnswers(true);
-  }, [message, onPress, poll]);
+    openAllComments();
+  }, [message, onPress, openAllComments, poll]);
 
   const styles = useStyles();
-
-  const onRequestClose = useCallback(() => {
-    setShowAnswers(false);
-  }, []);
 
   return (
     <>
@@ -134,10 +133,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
         />
       ) : null}
       {showAnswers ? (
-        <Modal animationType='slide' onRequestClose={onRequestClose} visible={showAnswers}>
+        <Modal animationType='slide' onRequestClose={closeAllComments} visible={showAnswers}>
           <GestureHandlerRootView style={styles.modalRoot}>
             <SafeAreaViewWrapper style={styles.safeArea}>
-              <PollModalHeader onPress={onRequestClose} title={t('Poll Comments')} />
+              <PollModalHeader onPress={closeAllComments} title={t('Poll Comments')} />
               <PollAnswersList message={message} poll={poll} />
             </SafeAreaViewWrapper>
           </GestureHandlerRootView>
@@ -151,7 +150,8 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { addOption, allowUserSuggestedOptions, isClosed } = usePollState();
-  const [showAddOptionDialog, setShowAddOptionDialog] = useState(false);
+  const { closeSuggestOption, openSuggestOption } = usePollUIStateContext();
+  const showAddOptionDialog = useSuggestOptionOpen();
   const { onPress } = props;
 
   const onPressHandler = useCallback(() => {
@@ -160,12 +160,8 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
       return;
     }
 
-    setShowAddOptionDialog(true);
-  }, [message, onPress, poll]);
-
-  const onRequestClose = useCallback(() => {
-    setShowAddOptionDialog(false);
-  }, []);
+    openSuggestOption();
+  }, [message, onPress, openSuggestOption, poll]);
 
   return (
     <>
@@ -174,7 +170,7 @@ export const SuggestOptionButton = (props: PollButtonProps) => {
       ) : null}
       {showAddOptionDialog ? (
         <PollInputDialog
-          closeDialog={onRequestClose}
+          closeDialog={closeSuggestOption}
           onSubmit={addOption}
           placeholder={t('Enter a new option')}
           title={t('Suggest an option')}
@@ -189,7 +185,8 @@ export const AddCommentButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
   const { message, poll } = usePollContext();
   const { addComment, allowAnswers, isClosed, ownAnswer } = usePollState();
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
+  const { closeAddComment, openAddComment } = usePollUIStateContext();
+  const showAddCommentDialog = useAddCommentOpen();
   const { onPress } = props;
 
   const onPressHandler = useCallback(() => {
@@ -198,12 +195,8 @@ export const AddCommentButton = (props: PollButtonProps) => {
       return;
     }
 
-    setShowAddCommentDialog(true);
-  }, [message, onPress, poll]);
-
-  const onRequestClose = useCallback(() => {
-    setShowAddCommentDialog(false);
-  }, []);
+    openAddComment();
+  }, [message, onPress, openAddComment, poll]);
 
   return (
     <>
@@ -212,7 +205,7 @@ export const AddCommentButton = (props: PollButtonProps) => {
       ) : null}
       {showAddCommentDialog ? (
         <PollInputDialog
-          closeDialog={onRequestClose}
+          closeDialog={closeAddComment}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
           placeholder={t('Your comment')}

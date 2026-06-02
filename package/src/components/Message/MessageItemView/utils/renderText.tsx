@@ -101,6 +101,37 @@ const defaultMarkdownStyles: MarkdownStyle = {
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
   },
+  // Heading sizes are derived from the body font size (`typographyFontSizeMd`) so they
+  // scale with the integrator's typography settings. lineHeight = fontSize × 1.25 to
+  // give headings room to breathe. Both fields are required here: without lineHeight,
+  // the inherited `lineHeight: typographyLineHeightNormal` (20) from `styles.text` (set
+  // in renderText below) leaks into the heading's inner Text via the markdown library's
+  // text rule (`{...styles.text, ...state.style}`) and squishes larger heading fontSizes
+  // into a 20px line box.
+  heading1: {
+    fontSize: primitives.typographyFontSizeMd * 2,
+    lineHeight: primitives.typographyFontSizeMd * 2 * 1.25,
+  },
+  heading2: {
+    fontSize: primitives.typographyFontSizeMd * 1.5,
+    lineHeight: primitives.typographyFontSizeMd * 1.5 * 1.25,
+  },
+  heading3: {
+    fontSize: primitives.typographyFontSizeMd * 1.25,
+    lineHeight: primitives.typographyFontSizeMd * 1.25 * 1.25,
+  },
+  heading4: {
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyFontSizeMd * 1.25,
+  },
+  heading5: {
+    fontSize: primitives.typographyFontSizeMd * 0.875,
+    lineHeight: primitives.typographyFontSizeMd * 0.875 * 1.25,
+  },
+  heading6: {
+    fontSize: primitives.typographyFontSizeMd * 0.75,
+    lineHeight: primitives.typographyFontSizeMd * 0.75 * 1.25,
+  },
   inlineCode: {
     padding: primitives.spacingXxs,
     paddingHorizontal: primitives.spacingXxs,

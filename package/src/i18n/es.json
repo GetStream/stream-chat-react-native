@@ -401,5 +401,12 @@
   "a11y/Confirm edit channel": "Confirm edit channel",
   "a11y/Upload channel image": "Upload channel image",
   "Reset Picture": "Reset Picture",
-  "a11y/Close edit picture sheet": "Close edit picture sheet"
+  "a11y/Close edit picture sheet": "Close edit picture sheet",
+  "a11y/Activate to view results": "Activa para ver los resultados",
+  "a11y/End vote": "Finalizar votación",
+  "a11y/Show all options": "Mostrar todas las opciones",
+  "a11y/Vote on {{option}}": "Votar por {{option}}",
+  "a11y/Double tap and hold to activate contextual menu": "Toca dos veces y mantén pulsado para activar el menú contextual",
+  "a11y/Swipe right to go through different actions": "Desliza a la derecha para recorrer las diferentes acciones",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

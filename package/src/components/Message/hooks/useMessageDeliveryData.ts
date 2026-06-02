@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Event, LocalMessage, UserResponse } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useStableCallback } from '../../../hooks';
 
 export const useMessageDeliveredData = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();
   const { client } = useChatContext();
-  const calculate = useCallback(() => {
+
+  const messageIdRef = useRef<string>(message?.id);
+
+  const calculate = useStableCallback(() => {
     if (!message?.created_at) {
       return [];
     }
@@ -17,13 +21,14 @@ export const useMessageDeliveredData = ({ message }: { message?: LocalMessage })
       timestampMs: new Date(message.created_at).getTime(),
     };
     return channel.messageReceiptsTracker.deliveredForMessage(messageRef);
-  }, [channel, message]);
+  });
 
-  const [deliveredTo, setDeliveredTo] = useState<UserResponse[]>([]);
+  const [deliveredTo, setDeliveredTo] = useState<UserResponse[]>(() => calculate());
 
-  useEffect(() => {
+  if (!!messageIdRef.current && !!message?.id && messageIdRef.current !== message.id) {
     setDeliveredTo(calculate());
-  }, [calculate]);
+    messageIdRef.current = message.id;
+  }
 
   useEffect(() => {
     const { unsubscribe } = channel.on('message.delivered', (event: Event) => {

@@ -401,5 +401,12 @@
   "a11y/Confirm edit channel": "Confirm edit channel",
   "a11y/Upload channel image": "Upload channel image",
   "Reset Picture": "Reset Picture",
-  "a11y/Close edit picture sheet": "Close edit picture sheet"
+  "a11y/Close edit picture sheet": "Close edit picture sheet",
+  "a11y/Activate to view results": "結果を表示するには有効化",
+  "a11y/End vote": "投票を終了",
+  "a11y/Show all options": "すべてのオプションを表示",
+  "a11y/Vote on {{option}}": "{{option}}に投票",
+  "a11y/Double tap and hold to activate contextual menu": "コンテキストメニューを表示するにはダブルタップして長押し",
+  "a11y/Swipe right to go through different actions": "右にスワイプして異なるアクションを切り替えます",
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   I18nManager,
   Platform,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  type AnimatedStyle,
   clamp,
   runOnJS,
   useAnimatedStyle,
@@ -23,6 +24,8 @@ import { PortalHost } from 'react-native-teleport';
 
 import { ClosingPortalHostsLayer } from './ClosingPortalHostsLayer';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
+import { useAccessibilityAnnouncer } from '../../components/Accessibility/useAccessibilityAnnouncer';
 import {
   closeOverlay,
   finalizeCloseOverlay,
@@ -56,10 +59,10 @@ export const DefaultMessageOverlayBackground = () => {
 };
 
 export type MessageActionsProps = {
-  bottomItemStyle: StyleProp<ViewStyle>;
-  hostStyle: StyleProp<ViewStyle>;
+  bottomItemStyle: StyleProp<AnimatedStyle<ViewStyle>>;
+  hostStyle: StyleProp<AnimatedStyle<ViewStyle>>;
   portalHostStyle: StyleProp<ViewStyle>;
-  topItemStyle: StyleProp<ViewStyle>;
+  topItemStyle: StyleProp<AnimatedStyle<ViewStyle>>;
 };
 
 export const MessageOverlayHostLayer = () => {
@@ -80,6 +83,20 @@ export const MessageOverlayHostLayer = () => {
   const bottomInset = insets.bottom === 0 && Platform.OS === 'android' ? 60 : insets.bottom;
 
   const isActive = !!id;
+
+  const announce = useAccessibilityAnnouncer();
+  const overlayOpenHint = useA11yLabel('a11y/Swipe right to go through different actions');
+  const announcedOpenRef = useRef(false);
+  useEffect(() => {
+    if (isActive) {
+      if (overlayOpenHint && !announcedOpenRef.current) {
+        announce(overlayOpenHint, 'polite');
+        announcedOpenRef.current = true;
+      }
+    } else {
+      announcedOpenRef.current = false;
+    }
+  }, [isActive, overlayOpenHint, announce]);
 
   const padding = 8;
   const minY = topInset + padding;

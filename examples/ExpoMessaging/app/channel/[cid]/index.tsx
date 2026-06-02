@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,

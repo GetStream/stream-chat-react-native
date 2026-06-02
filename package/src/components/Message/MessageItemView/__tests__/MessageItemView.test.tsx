@@ -136,9 +136,16 @@ describe('MessageItemView', () => {
     renderMessage({ message });
 
     await waitFor(() => {
-      const gestureDetector = screen.UNSAFE_getByType(GestureDetector);
+      const gestureDetectors = screen.UNSAFE_getAllByType(GestureDetector);
+      const wrapsMessageItemView = gestureDetectors.some((detector) => {
+        try {
+          return Boolean(detector.findByProps({ testID: 'message-item-view-wrapper' }));
+        } catch {
+          return false;
+        }
+      });
 
-      expect(gestureDetector.findByProps({ testID: 'message-item-view-wrapper' })).toBeTruthy();
+      expect(wrapsMessageItemView).toBe(true);
     });
   });
 

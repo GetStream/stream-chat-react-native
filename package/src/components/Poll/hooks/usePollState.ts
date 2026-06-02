@@ -12,10 +12,10 @@ import {
   VotingVisibility,
 } from 'stream-chat';
 
+import { useEndVote } from './useEndVote';
 import { usePollStateStore } from './usePollStateStore';
 
-import { usePollContext, useTranslationContext } from '../../../contexts';
-import { useNotificationApi } from '../../Notifications';
+import { usePollContext } from '../../../contexts';
 
 export type UsePollStateSelectorReturnType = {
   allowAnswers: boolean | undefined;
@@ -63,8 +63,6 @@ const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
 
 export const usePollState = (): UsePollStateReturnType => {
   const { message, poll } = usePollContext();
-  const { addNotification } = useNotificationApi();
-  const { t } = useTranslationContext();
   const {
     allowAnswers,
     allowUserSuggestedOptions,
@@ -94,28 +92,7 @@ export const usePollState = (): UsePollStateReturnType => {
     (answerText: string) => poll.addAnswer(answerText, message.id),
     [message.id, poll],
   );
-  const endVote = useCallback(async () => {
-    try {
-      const response = await poll.close();
-      addNotification({
-        message: t('Poll ended'),
-        options: { severity: 'success', type: 'api:poll:end:success' },
-        origin: { emitter: 'PollActions' },
-      });
-      return response;
-    } catch (error) {
-      addNotification({
-        message: t('Failed to end the poll'),
-        options: {
-          ...(error instanceof Error ? { originalError: error } : {}),
-          severity: 'error',
-          type: 'api:poll:end:failed',
-        },
-        origin: { emitter: 'PollActions' },
-      });
-      throw error;
-    }
-  }, [addNotification, poll, t]);
+  const endVote = useEndVote();
 
   return {
     addComment,
