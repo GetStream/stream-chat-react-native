@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Text } from 'react-native';
 
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -133,11 +133,11 @@ describe('ChannelDetailsActionsSection', () => {
     });
 
     it('forwards the icon, label, and onPress to ChannelDetailsActionItem', () => {
-      useActionItemsSpy.mockReturnValue([muteItem]);
+      useActionItemsSpy.mockReturnValue([leaveItem]);
       renderSection();
       const [item] = probeCalls;
-      expect(item.Icon).toBe(muteItem.Icon);
-      expect(item.label).toBe('Mute Group');
+      expect(item.Icon).toBe(leaveItem.Icon);
+      expect(item.label).toBe('Leave Group');
       expect(typeof item.onPress).toBe('function');
     });
 
@@ -150,12 +150,19 @@ describe('ChannelDetailsActionsSection', () => {
       expect(byId['channel-details-action-deleteChannel']).toBe(true);
     });
 
-    it('invokes the original action when the list item is pressed', () => {
+    it('invokes the original action when a non-toggle list item is pressed', () => {
       const action = jest.fn();
-      useActionItemsSpy.mockReturnValue([buildItem({ action, id: 'mute', label: 'Mute Group' })]);
+      useActionItemsSpy.mockReturnValue([buildItem({ action, id: 'leave', label: 'Leave Group' })]);
       renderSection();
-      fireEvent.press(screen.getByTestId('channel-details-action-mute'));
+      fireEvent.press(screen.getByTestId('channel-details-action-leave'));
       expect(action).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not forward onPress for the mute toggle row (Switch-driven)', () => {
+      useActionItemsSpy.mockReturnValue([buildItem({ id: 'mute', label: 'Mute Group' })]);
+      renderSection();
+      const [item] = probeCalls;
+      expect(item.onPress).toBeUndefined();
     });
   });
 
@@ -190,13 +197,40 @@ describe('ChannelDetailsActionsSection', () => {
       expect(muteSwitch.props.value).toBe(true);
     });
 
-    it('invokes the item action when the mute Switch is toggled', () => {
+    it('invokes the item action with an onFailure callback when the mute Switch is toggled', () => {
       const action = jest.fn();
       useActionItemsSpy.mockReturnValue([buildItem({ action, id: 'mute', label: 'Mute Group' })]);
       renderSection();
       const muteSwitch = screen.getByTestId('channel-details-action-mute-switch');
       fireEvent(muteSwitch, 'valueChange', true);
       expect(action).toHaveBeenCalledTimes(1);
+      expect(typeof action.mock.calls[0][0].onFailure).toBe('function');
+    });
+
+    it('optimistically reflects the new value on the mute Switch before the action resolves', () => {
+      useIsChannelMutedSpy.mockReturnValue({ createdAt: null, expiresAt: null, muted: false });
+      useActionItemsSpy.mockReturnValue([
+        buildItem({ action: jest.fn(), id: 'mute', label: 'Mute Group' }),
+      ]);
+      renderSection();
+      const muteSwitch = screen.getByTestId('channel-details-action-mute-switch');
+      expect(muteSwitch.props.value).toBe(false);
+      fireEvent(muteSwitch, 'valueChange', true);
+      expect(screen.getByTestId('channel-details-action-mute-switch').props.value).toBe(true);
+    });
+
+    it('rolls back the mute Switch when the action invokes onFailure', () => {
+      const action = jest.fn();
+      useIsChannelMutedSpy.mockReturnValue({ createdAt: null, expiresAt: null, muted: false });
+      useActionItemsSpy.mockReturnValue([buildItem({ action, id: 'mute', label: 'Mute Group' })]);
+      renderSection();
+      const muteSwitch = screen.getByTestId('channel-details-action-mute-switch');
+      fireEvent(muteSwitch, 'valueChange', true);
+      expect(screen.getByTestId('channel-details-action-mute-switch').props.value).toBe(true);
+      act(() => {
+        action.mock.calls[0][0].onFailure();
+      });
+      expect(screen.getByTestId('channel-details-action-mute-switch').props.value).toBe(false);
     });
 
     it('reflects userMuted state on the muteUser item Switch in direct chats', () => {
@@ -207,6 +241,26 @@ describe('ChannelDetailsActionsSection', () => {
       renderSection();
       const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
       expect(userMuteSwitch.props.value).toBe(true);
+    });
+
+    it('optimistically updates and rolls back the muteUser Switch on failure', () => {
+      const action = jest.fn();
+      useIsDirectChatSpy.mockReturnValue(true);
+      getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
+      useMutedUsersSpy.mockReturnValue([]);
+      useActionItemsSpy.mockReturnValue([
+        buildItem({ action, id: 'muteUser', label: 'Mute User' }),
+      ]);
+      renderSection();
+      const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
+      expect(userMuteSwitch.props.value).toBe(false);
+      fireEvent(userMuteSwitch, 'valueChange', true);
+      expect(screen.getByTestId('channel-details-action-muteUser-switch').props.value).toBe(true);
+      expect(action).toHaveBeenCalledTimes(1);
+      act(() => {
+        action.mock.calls[0][0].onFailure();
+      });
+      expect(screen.getByTestId('channel-details-action-muteUser-switch').props.value).toBe(false);
     });
 
     it('userMuted is false when the other user is not in mutedUsers', () => {

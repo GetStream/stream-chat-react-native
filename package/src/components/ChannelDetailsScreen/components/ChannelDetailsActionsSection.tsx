@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -18,6 +18,23 @@ const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   const { ChannelDetailsActionItem } = useComponentsContext();
   const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   const { muted } = useIsChannelMuted(channel);
+  const [isMuted, setIsMuted] = useState(muted);
+
+  useEffect(() => {
+    setIsMuted(muted);
+  }, [muted]);
+
+  const handleValueChange = useCallback(
+    (value: boolean) => {
+      setIsMuted(value);
+      const onFailure = () => {
+        setIsMuted(!value);
+      };
+      item.action({ onFailure });
+    },
+    [item],
+  );
+
   const testID = `channel-details-action-${item.id}`;
 
   return (
@@ -25,14 +42,13 @@ const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
       destructive={item.type === 'destructive'}
       Icon={item.Icon}
       label={item.label}
-      onPress={() => item.action()}
       testID={testID}
       trailing={
         <Switch
-          onValueChange={() => item.action()}
+          onValueChange={handleValueChange}
           style={rtlMirrorSwitchStyle}
           testID={`${testID}-switch`}
-          value={muted}
+          value={isMuted}
         />
       }
     />
@@ -50,6 +66,20 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
     isDirect && !!otherUserId
       ? mutedUsers.some((mutedUser) => mutedUser.target.id === otherUserId)
       : false;
+  const [isUserMuted, setIsUserMuted] = useState(userMuted);
+
+  useEffect(() => {
+    setIsUserMuted(userMuted);
+  }, [userMuted]);
+
+  const handleValueChange = useCallback(
+    (value: boolean) => {
+      setIsUserMuted(value);
+      item.action({ onFailure: () => setIsUserMuted(!value) });
+    },
+    [item],
+  );
+
   const testID = `channel-details-action-${item.id}`;
 
   return (
@@ -57,14 +87,13 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
       destructive={item.type === 'destructive'}
       Icon={item.Icon}
       label={item.label}
-      onPress={() => item.action()}
       testID={testID}
       trailing={
         <Switch
-          onValueChange={() => item.action()}
+          onValueChange={handleValueChange}
           style={rtlMirrorSwitchStyle}
           testID={`${testID}-switch`}
-          value={userMuted}
+          value={isUserMuted}
         />
       }
     />
