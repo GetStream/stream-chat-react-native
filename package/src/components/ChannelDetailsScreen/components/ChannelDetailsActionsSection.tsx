@@ -4,6 +4,7 @@ import { StyleSheet, Switch, View } from 'react-native';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { ChannelActionItem } from '../../../hooks/actions/useChannelActionItems';
 import { getOtherUserInDirectChannel } from '../../../hooks/actions/useChannelActions';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { primitives } from '../../../theme';
@@ -12,8 +13,65 @@ import { useMutedUsers } from '../../ChannelList/hooks/useMutedUsers';
 import { useIsChannelMuted } from '../../ChannelPreview/hooks/useIsChannelMuted';
 import { useChannelDetailsActionItems } from '../hooks';
 
-export const ChannelDetailsActionsSection = () => {
+const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   const { channel } = useChannelDetailsContext();
+  const { ChannelDetailsActionItem } = useComponentsContext();
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
+  const { muted } = useIsChannelMuted(channel);
+  const testID = `channel-details-action-${item.id}`;
+
+  return (
+    <ChannelDetailsActionItem
+      destructive={item.type === 'destructive'}
+      Icon={item.Icon}
+      label={item.label}
+      onPress={() => item.action()}
+      testID={testID}
+      trailing={
+        <Switch
+          onValueChange={() => item.action()}
+          style={rtlMirrorSwitchStyle}
+          testID={`${testID}-switch`}
+          value={muted}
+        />
+      }
+    />
+  );
+};
+
+const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
+  const { channel } = useChannelDetailsContext();
+  const { ChannelDetailsActionItem } = useComponentsContext();
+  const isDirect = useIsDirectChat(channel);
+  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
+  const mutedUsers = useMutedUsers(channel);
+  const otherUserId = isDirect ? getOtherUserInDirectChannel(channel)?.user?.id : undefined;
+  const userMuted =
+    isDirect && !!otherUserId
+      ? mutedUsers.some((mutedUser) => mutedUser.target.id === otherUserId)
+      : false;
+  const testID = `channel-details-action-${item.id}`;
+
+  return (
+    <ChannelDetailsActionItem
+      destructive={item.type === 'destructive'}
+      Icon={item.Icon}
+      label={item.label}
+      onPress={() => item.action()}
+      testID={testID}
+      trailing={
+        <Switch
+          onValueChange={() => item.action()}
+          style={rtlMirrorSwitchStyle}
+          testID={`${testID}-switch`}
+          value={userMuted}
+        />
+      }
+    />
+  );
+};
+
+export const ChannelDetailsActionsSection = () => {
   const {
     theme: {
       channelDetailsScreen: { sectionCard: sectionCardOverride },
@@ -21,18 +79,9 @@ export const ChannelDetailsActionsSection = () => {
     },
   } = useTheme();
   const { ChannelDetailsActionItem } = useComponentsContext();
-  const isDirect = useIsDirectChat(channel);
   const styles = useStyles();
-  const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
 
   const items = useChannelDetailsActionItems();
-  const { muted: channelMuted } = useIsChannelMuted(channel);
-  const mutedUsers = useMutedUsers(channel);
-  const otherUserId = isDirect ? getOtherUserInDirectChannel(channel)?.user?.id : undefined;
-  const userMuted =
-    isDirect && !!otherUserId
-      ? mutedUsers.some((mutedUser) => mutedUser.target.id === otherUserId)
-      : false;
 
   if (items.length === 0) return null;
 
@@ -45,16 +94,12 @@ export const ChannelDetailsActionsSection = () => {
       ]}
     >
       {items.map((item) => {
-        const testID = `channel-details-action-${item.id}`;
-        const isMuteToggle = item.id === 'mute' || item.id === 'muteUser';
-        const trailing = isMuteToggle ? (
-          <Switch
-            onValueChange={() => item.action()}
-            style={rtlMirrorSwitchStyle}
-            testID={`${testID}-switch`}
-            value={item.id === 'mute' ? channelMuted : userMuted}
-          />
-        ) : undefined;
+        if (item.id === 'mute') {
+          return <ChannelMuteToggleRow item={item} key={item.id} />;
+        }
+        if (item.id === 'muteUser') {
+          return <UserMuteToggleRow item={item} key={item.id} />;
+        }
 
         return (
           <ChannelDetailsActionItem
@@ -63,8 +108,7 @@ export const ChannelDetailsActionsSection = () => {
             key={item.id}
             label={item.label}
             onPress={() => item.action()}
-            testID={testID}
-            trailing={trailing}
+            testID={`channel-details-action-${item.id}`}
           />
         );
       })}
