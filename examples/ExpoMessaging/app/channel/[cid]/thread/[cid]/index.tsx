@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { Platform } from 'react-native';
 
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Stack } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { Channel, Thread } from 'stream-chat-expo';
 
 import { AppContext } from '../../../../../context/AppContext';

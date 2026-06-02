@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import Animated from 'react-native-reanimated';
+
 import * as SafeAreaContext from 'react-native-safe-area-context';
 
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react-native';
@@ -100,9 +102,9 @@ const CustomMessageActions = ({
 }: MessageActionsProps) => (
   <>
     <Text testID='custom-message-actions'>Custom</Text>
-    <Text style={topItemStyle} testID='custom-message-actions-top' />
-    <Text style={hostStyle} testID='custom-message-actions-message' />
-    <Text style={bottomItemStyle} testID='custom-message-actions-bottom' />
+    <Animated.View style={topItemStyle} testID='custom-message-actions-top' />
+    <Animated.View style={hostStyle} testID='custom-message-actions-message' />
+    <Animated.View style={bottomItemStyle} testID='custom-message-actions-bottom' />
   </>
 );
 

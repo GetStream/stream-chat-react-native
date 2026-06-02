@@ -5,34 +5,6 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-react_native_path = File.dirname(
-  Pod::Executable.execute_command('node', ['-p',
-    'require.resolve(
-      "react-native/package.json",
-      {paths: [process.argv[1]]},
-    )', __dir__]).strip,
-)
-
-fmt_podspec_path = File.join(react_native_path, 'third-party-podspecs', 'fmt.podspec')
-rct_folly_podspec_path = File.join(react_native_path, 'third-party-podspecs', 'RCT-Folly.podspec')
-
-fmt_podspec = File.read(fmt_podspec_path)
-fmt_podspec = fmt_podspec.gsub('spec.version = "11.0.2"', 'spec.version = "12.1.0"')
-fmt_podspec = fmt_podspec.gsub(':tag => "11.0.2"', ':tag => "12.1.0"')
-fmt_podspec = fmt_podspec.gsub(
-  '"GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don\'t control this library',
-  "\"GCC_WARN_INHIBIT_ALL_WARNINGS\" => \"YES\", \"OTHER_CPLUSPLUSFLAGS\" => \"$(inherited) -DFMT_USE_CONSTEVAL=0\" # Disable warnings because we don't control this library",
-)
-File.write(fmt_podspec_path, fmt_podspec)
-
-rct_folly_podspec = File.read(rct_folly_podspec_path)
-rct_folly_podspec = rct_folly_podspec.gsub('spec.dependency "fmt", "11.0.2"', 'spec.dependency "fmt", "12.1.0"')
-rct_folly_podspec = rct_folly_podspec.gsub(
-  '"GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don\'t control this library',
-  "\"GCC_WARN_INHIBIT_ALL_WARNINGS\" => \"YES\", \"OTHER_CPLUSPLUSFLAGS\" => \"$(inherited) -DFMT_USE_CONSTEVAL=0\" # Disable warnings because we don't control this library",
-)
-File.write(rct_folly_podspec_path, rct_folly_podspec)
-
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -46,9 +18,16 @@ target 'SampleApp' do
   config = use_native_modules!
 
   # Added for op-sqlite library - https://ospfranco.notion.site/Installation-93044890aa3d4d14b6c525ba4ba8686f#acdc7a6723234f8b8440acb1ae0e7d87
+  # Also force the @react-native-firebase shim pods to build as plain static
+  # libraries. Under `use_frameworks! :linkage => :static`, each RNFB pod
+  # otherwise emits its own modulemap and ends up "owning" React-Core
+  # declarations like RCTPromiseRejectBlock that it merely #imports — which
+  # clang then rejects when a second RNFB pod (RNFBMessaging) tries to use
+  # the same type. Static-library mode removes the framework module wrapper
+  # so React-Core's module remains the authoritative owner.
   pre_install do |installer|
     installer.pod_targets.each do |pod|
-      if pod.name.eql?('op-sqlite')
+      if pod.name.eql?('op-sqlite') || pod.name.start_with?('RNFB')
         def pod.build_type
           Pod::BuildType.static_library
         end
@@ -71,9 +50,15 @@ target 'SampleApp' do
     inherit! :complete
     # Pods for testing
   end
-  pod 'Firebase/Crashlytics'
-  pod 'Firebase/Analytics'
-  pod 'Firebase/AppDistribution'
+  # Pin Firebase iOS SDK to match what @react-native-firebase 24.x declares
+  # (sdkVersions.ios.firebase = 12.10.0). RNFBMessaging's podspec declares
+  # `FirebaseCoreExtension` without a version, so CocoaPods otherwise resolves
+  # it to the latest spec-repo entry (often older 11.x), which then conflicts
+  # with RNFBApp's Firebase/CoreOnly 12.10.0.
+  pod 'Firebase/Crashlytics', '12.10.0'
+  pod 'Firebase/Analytics', '12.10.0'
+  pod 'Firebase/AppDistribution', '12.10.0'
+  pod 'FirebaseCoreExtension', '12.10.0'
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
@@ -84,17 +69,13 @@ target 'SampleApp' do
       # :ccache_enabled => true
     )
 
+    # RNFBApp's RCTConvert+FIRApp.h imports <React/RCTConvert.h> non-modularly.
+    # Under `use_frameworks! :linkage => :static`, clang treats that as an
+    # error unless the importing framework opts into non-modular includes.
     installer.pods_project.targets.each do |target|
-      next unless ['fmt', 'RCT-Folly'].include?(target.name)
-
       target.build_configurations.each do |config|
-        flags = Array(config.build_settings['OTHER_CPLUSPLUSFLAGS'] || '$(inherited)')
-        unless flags.include?('-DFMT_USE_CONSTEVAL=0')
-          flags << '-DFMT_USE_CONSTEVAL=0'
-        end
-        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = flags
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       end
     end
-
   end
 end

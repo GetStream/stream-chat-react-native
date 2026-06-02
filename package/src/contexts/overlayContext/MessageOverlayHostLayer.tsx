@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  type AnimatedStyle,
   clamp,
   runOnJS,
   useAnimatedStyle,
@@ -58,10 +59,10 @@ export const DefaultMessageOverlayBackground = () => {
 };
 
 export type MessageActionsProps = {
-  bottomItemStyle: StyleProp<ViewStyle>;
-  hostStyle: StyleProp<ViewStyle>;
+  bottomItemStyle: StyleProp<AnimatedStyle<ViewStyle>>;
+  hostStyle: StyleProp<AnimatedStyle<ViewStyle>>;
   portalHostStyle: StyleProp<ViewStyle>;
-  topItemStyle: StyleProp<ViewStyle>;
+  topItemStyle: StyleProp<AnimatedStyle<ViewStyle>>;
 };
 
 export const MessageOverlayHostLayer = () => {

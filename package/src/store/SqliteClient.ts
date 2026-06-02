@@ -1,4 +1,4 @@
-import type { DB, OPSQLiteProxy } from '@op-engineering/op-sqlite';
+import type { _InternalDB, OPSQLiteProxy } from '@op-engineering/op-sqlite';
 let sqlite: OPSQLiteProxy;
 
 try {
@@ -33,7 +33,7 @@ export class SqliteClient {
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
   static logger: Logger | undefined;
-  static db: DB | undefined;
+  static db: _InternalDB | undefined;
 
   static getDbVersion = () => SqliteClient.dbVersion;
   // Force a specific db version. This is mainly useful for testsuit.

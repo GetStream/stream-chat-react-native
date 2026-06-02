@@ -135,7 +135,7 @@ dependencies {
         implementation jscFlavor
     }
 
-    implementation platform('com.google.firebase:firebase-bom:29.3.0')
+    implementation platform('com.google.firebase:firebase-bom:34.13.0')
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
 
     // For React native video

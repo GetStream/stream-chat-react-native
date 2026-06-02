@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated, { type AnimatedStyle, LinearTransition } from 'react-native-reanimated';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { ChevronUp } from '../../../../icons/chevron-up';
@@ -18,7 +18,7 @@ export type AudioRecordingLockIndicatorProps = Pick<AudioRecorderManagerState, '
   /**
    * Styles of the lock indicator.
    */
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<AnimatedStyle<ViewStyle>>;
 };
 
 /**

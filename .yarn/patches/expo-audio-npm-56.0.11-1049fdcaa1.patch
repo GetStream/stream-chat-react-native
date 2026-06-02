@@ -1,8 +1,8 @@
 diff --git a/android/src/main/java/expo/modules/audio/AudioModule.kt b/android/src/main/java/expo/modules/audio/AudioModule.kt
-index 72a6e9e990bdc9bab549536981fc2e08eeb4837e..6e12fa5e4e17e39eeee171e265ba254f83991ef7 100644
+index 992239ba7631ce0c97c0b41c5fbf61cc842386fe..ebc0933beaf40414887ff634029ca8eb0d0558c9 100644
 --- a/android/src/main/java/expo/modules/audio/AudioModule.kt
 +++ b/android/src/main/java/expo/modules/audio/AudioModule.kt
-@@ -27,6 +27,9 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
+@@ -28,6 +28,9 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
  import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
  import androidx.media3.exoplayer.source.MediaSource
  import androidx.media3.exoplayer.source.ProgressiveMediaSource
@@ -12,7 +12,7 @@ index 72a6e9e990bdc9bab549536981fc2e08eeb4837e..6e12fa5e4e17e39eeee171e265ba254f
  import expo.modules.interfaces.permissions.Permissions
  import expo.modules.kotlin.Promise
  import expo.modules.kotlin.exception.Exceptions
-@@ -851,7 +854,12 @@ class AudioModule : Module() {
+@@ -931,7 +934,12 @@ class AudioModule : Module() {
        CONTENT_TYPE_SS -> SsMediaSource.Factory(factory)
        CONTENT_TYPE_DASH -> DashMediaSource.Factory(factory)
        CONTENT_TYPE_HLS -> HlsMediaSource.Factory(factory)
@@ -27,7 +27,7 @@ index 72a6e9e990bdc9bab549536981fc2e08eeb4837e..6e12fa5e4e17e39eeee171e265ba254f
      }.createMediaSource(mediaItem)
    }
 diff --git a/expo-module.config.json b/expo-module.config.json
-index 52e634b2b196055a6007d4a37d441670756f155a..9a131dd948d2eb5adf3cf9b759829a0e8fed15a1 100644
+index 9ee5fdcd7a6e698c8cdcf42ee137239220aec190..9a131dd948d2eb5adf3cf9b759829a0e8fed15a1 100644
 --- a/expo-module.config.json
 +++ b/expo-module.config.json
 @@ -4,12 +4,6 @@
@@ -38,7 +38,7 @@ index 52e634b2b196055a6007d4a37d441670756f155a..9a131dd948d2eb5adf3cf9b759829a0e
 -    "publication": {
 -      "groupId": "expo.modules.audio",
 -      "artifactId": "expo.modules.audio",
--      "version": "55.0.14",
+-      "version": "56.0.11",
 -      "repository": "local-maven-repo"
 -    }
 +    "modules": ["expo.modules.audio.AudioModule"]
