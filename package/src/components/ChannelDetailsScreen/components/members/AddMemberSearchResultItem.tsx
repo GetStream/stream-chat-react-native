@@ -106,6 +106,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         alreadyMemberInfo: {
+          flex: 1,
           flexDirection: 'column',
         },
         memberLabel: {

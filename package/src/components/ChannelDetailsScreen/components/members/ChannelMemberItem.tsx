@@ -65,7 +65,7 @@ const ChannelMemberItemInner = ({
 
   const content = (
     <>
-      <UserAvatar showOnlineIndicator={user.online} size={isLarge ? 'lg' : 'sm'} user={user} />
+      <UserAvatar showOnlineIndicator={user.online} size={isLarge ? 'lg' : 'md'} user={user} />
       <View style={styles.body}>
         <Text
           numberOfLines={1}
@@ -169,7 +169,7 @@ const useStyles = () => {
           flexDirection: 'row',
           gap: primitives.spacingSm,
           minHeight: 48,
-          paddingHorizontal: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
           paddingVertical: primitives.spacingXs,
         },
         containerLarge: {
