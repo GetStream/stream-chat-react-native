@@ -359,5 +359,8 @@
   "{{ user }} has been unmuted": "{{ user }} has been unmuted",
   "size limit": "size limit",
   "unknown error": "unknown error",
-  "unsupported file type": "unsupported file type"
+  "unsupported file type": "unsupported file type",
+  "Notify all {{ role }} members": "Notify all {{ role }} members",
+  "mention/Channel Description": "Notify everyone in this channel",
+  "mention/Here Description": "Notify every online member in this channel"
 }

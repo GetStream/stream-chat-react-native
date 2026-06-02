@@ -359,5 +359,8 @@
   "a11y/Double tap and hold to activate contextual menu": "Toca dos veces y mantén pulsado para activar el menú contextual",
   "a11y/Swipe right to go through different actions": "Desliza a la derecha para recorrer las diferentes acciones",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "Notify all {{ role }} members": "Notify all {{ role }} members",
+  "mention/Channel Description": "Notify everyone in this channel",
+  "mention/Here Description": "Notify every online member in this channel"
 }

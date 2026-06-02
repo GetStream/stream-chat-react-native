@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
+import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -93,7 +93,19 @@ export type TouchableEmitter =
   | 'messageReplies'
   | 'reactionList';
 
-export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
+export type TextMentionTouchableHandlerAdditionalInfo = {
+  /**
+   * The typed mention entity for the pressed mention (user / channel / here /
+   * role / user_group). Always populated by the default renderText pipeline;
+   * undefined only when a custom renderer doesn't resolve a match.
+   */
+  mentionedEntity?: MentionEntity;
+  /**
+   * Back-compat: still populated when the mention is a user, so existing
+   * integrators reading `additionalInfo.user` keep working.
+   */
+  user?: UserResponse;
+};
 
 export type TextMentionTouchableHandlerPayload = {
   emitter: 'textMention';

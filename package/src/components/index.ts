@@ -28,6 +28,7 @@ export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
 export * from './AutoCompleteInput/AutoCompleteSuggestionItem';
 export * from './AutoCompleteInput/AutoCompleteSuggestionList';
 export * from './AutoCompleteInput/InputView';
+export * from './AutoCompleteInput/mentionItems';
 
 export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';

@@ -1,9 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { CommandSuggestion, TextComposerSuggestion, UserSuggestion } from 'stream-chat';
+import type { CommandSuggestion, MentionSuggestion, TextComposerSuggestion } from 'stream-chat';
 
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
+import {
+  MentionBroadcastItem,
+  MentionRoleItem,
+  MentionUserGroupItem,
+  MentionUserItem,
+} from './mentionItems';
 
 import { useIsCommandDisabled } from '../../contexts/messageInputContext/hooks/useIsCommandDisabled';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
@@ -11,36 +17,25 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 import type { Emoji } from '../../types/types';
 
-import { UserAvatar } from '../ui/Avatar/UserAvatar';
-
 export type AutoCompleteSuggestionItemProps = {
   itemProps: TextComposerSuggestion;
   triggerType?: string;
 };
 
-export const MentionSuggestionItem = (item: UserSuggestion) => {
-  const { id, name, online } = item;
-  const {
-    theme: {
-      messageComposer: {
-        suggestions: {
-          mention: { column, container: mentionContainer, name: nameStyle },
-        },
-      },
-    },
-  } = useTheme();
-  const styles = useStyles();
-
-  return (
-    <View style={[styles.container, mentionContainer]}>
-      <UserAvatar user={item} size='md' showOnlineIndicator={online} />
-      <View style={[styles.column, column]}>
-        <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
-          {name || id}
-        </Text>
-      </View>
-    </View>
-  );
+export const MentionSuggestionItem = (item: MentionSuggestion) => {
+  switch (item.mentionType) {
+    case 'user':
+      return <MentionUserItem entity={item} />;
+    case 'channel':
+    case 'here':
+      return <MentionBroadcastItem entity={item} />;
+    case 'role':
+      return <MentionRoleItem entity={item} />;
+    case 'user_group':
+      return <MentionUserGroupItem entity={item} />;
+    default:
+      return null;
+  }
 };
 
 export const EmojiSuggestionItem = (item: Emoji) => {
@@ -116,7 +111,7 @@ const SuggestionItem = ({
 }) => {
   switch (triggerType) {
     case 'mention':
-      return <MentionSuggestionItem {...(item as UserSuggestion)} />;
+      return <MentionSuggestionItem {...(item as MentionSuggestion)} />;
     case 'emoji':
       return <EmojiSuggestionItem {...(item as Emoji)} />;
     case 'command':
@@ -194,11 +189,6 @@ const useStyles = () => {
           fontSize: primitives.typographyFontSizeMd,
           color: semantics.textTertiary,
         },
-        column: {
-          flex: 1,
-          justifyContent: 'space-evenly',
-          paddingLeft: 8,
-        },
         container: {
           alignItems: 'center',
           flexDirection: 'row',
@@ -210,16 +200,6 @@ const useStyles = () => {
           flexDirection: 'row',
           paddingHorizontal: primitives.spacingSm,
           paddingVertical: primitives.spacingXs,
-        },
-        name: {
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-          color: semantics.textPrimary,
-          paddingBottom: 2,
-        },
-        tag: {
-          fontSize: 12,
-          fontWeight: '600',
         },
         text: {
           fontSize: primitives.typographyFontSizeMd,
