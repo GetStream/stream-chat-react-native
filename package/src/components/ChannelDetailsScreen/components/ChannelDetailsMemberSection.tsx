@@ -15,7 +15,7 @@ import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilit
 import { useMutedMemberIds } from '../../../hooks/useMutedMemberIds';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
-import { useChannelDetailsMembersPreview } from '../hooks/members/useChannelDetailsMembersPreview';
+import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =

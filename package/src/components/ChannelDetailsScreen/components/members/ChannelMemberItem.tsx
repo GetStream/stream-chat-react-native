@@ -9,7 +9,7 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { Mute } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
-import { useChannelDetailsMemberRoleLabel } from '../../hooks/members/useChannelDetailsMemberRoleLabel';
+import { useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
 import { useUserActivityStatus } from '../../hooks/useUserActivityStatus';
 
 export type ChannelMemberItemSize = 'sm' | 'lg';
@@ -58,7 +58,7 @@ const ChannelMemberItemInner = ({
   } = useTheme();
   const styles = useStyles();
   const statusLine = useUserActivityStatus(member.user);
-  const roleLabel = useChannelDetailsMemberRoleLabel(member);
+  const roleLabel = useMemberRoleLabel(member);
 
   const user = member.user;
   if (!user) return null;

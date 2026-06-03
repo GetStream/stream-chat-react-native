@@ -12,7 +12,7 @@ import { primitives } from '../../../theme';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelPreviewDisplayName } from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
-import { useChannelDetailsMemberStatusText } from '../hooks/members/useChannelDetailsMemberStatusText';
+import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMemberStatusText';
 
 export const ChannelDetailsProfile = () => {
   const { channel } = useChannelDetailsContext();

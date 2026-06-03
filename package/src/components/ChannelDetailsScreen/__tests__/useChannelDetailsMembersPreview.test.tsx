@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { generateMember } from '../../../../mock-builders/generator/member';
-import { generateUser } from '../../../../mock-builders/generator/user';
-import { useChannelDetailsMembersPreview } from '../../hooks/members/useChannelDetailsMembersPreview';
+import { generateMember } from '../../../mock-builders/generator/member';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 const buildChannel = ({
   members,

@@ -9,7 +9,7 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
  * Priority — Owner > Admin > Moderator. When a member matches none of the rules
  * (and no custom `getMemberRoleLabel` is provided on the screen), returns `null`.
  */
-export const useChannelDetailsMemberRoleLabel = (member: ChannelMemberResponse): string | null => {
+export const useMemberRoleLabel = (member: ChannelMemberResponse): string | null => {
   const { channel, getMemberRoleLabel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
 

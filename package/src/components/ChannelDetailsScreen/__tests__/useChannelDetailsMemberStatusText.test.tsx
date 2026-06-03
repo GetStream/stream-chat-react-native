@@ -3,21 +3,21 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
-import { useChannelMemberCount } from '../../../../hooks/useChannelMemberCount';
-import { useChannelMembersState } from '../../../ChannelList/hooks/useChannelMembersState';
-import { useChannelOnlineMemberCount } from '../../../ChannelList/hooks/useChannelOnlineMemberCount';
-import { useChannelDetailsMemberStatusText } from '../../hooks/members/useChannelDetailsMemberStatusText';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelMemberCount } from '../../../hooks/useChannelMemberCount';
+import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
+import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
+import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMemberStatusText';
 
-jest.mock('../../../../hooks/useChannelMemberCount', () => ({
+jest.mock('../../../hooks/useChannelMemberCount', () => ({
   useChannelMemberCount: jest.fn(),
 }));
 
-jest.mock('../../../ChannelList/hooks/useChannelMembersState', () => ({
+jest.mock('../../ChannelList/hooks/useChannelMembersState', () => ({
   useChannelMembersState: jest.fn(() => ({})),
 }));
 
-jest.mock('../../../ChannelList/hooks/useChannelOnlineMemberCount', () => ({
+jest.mock('../../ChannelList/hooks/useChannelOnlineMemberCount', () => ({
   useChannelOnlineMemberCount: jest.fn(),
 }));
 

@@ -23,7 +23,7 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { ChannelDetailsMemberSection } from '../components/ChannelDetailsMemberSection';
 import type { ChannelMemberActionsSheetProps } from '../components/members/ChannelMemberActionsSheet';
 import type { ChannelMemberItemProps } from '../components/members/ChannelMemberItem';
-import * as useChannelDetailsMembersPreviewModule from '../hooks/members/useChannelDetailsMembersPreview';
+import * as useChannelDetailsMembersPreviewModule from '../hooks/useChannelDetailsMembersPreview';
 
 jest.mock('../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);

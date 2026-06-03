@@ -6,7 +6,7 @@ import { useOwnCapabilitiesContext } from '../../../../contexts/ownCapabilitiesC
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { UserAdd } from '../../../../icons/user-add';
 import { Button } from '../../../ui/Button/Button';
-import { useChannelDetailsMembersPreview } from '../../hooks/members/useChannelDetailsMembersPreview';
+import { useChannelDetailsMembersPreview } from '../../hooks/useChannelDetailsMembersPreview';
 import { ChannelDetailsModal } from '../modal/Modal';
 import { ModalHeader } from '../modal/ModalHeader';
 

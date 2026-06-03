@@ -8,7 +8,7 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import type { GetMemberRoleLabel } from '../../ChannelDetailsScreen';
-import { useChannelDetailsMemberRoleLabel } from '../../hooks/members/useChannelDetailsMemberRoleLabel';
+import { useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
 
 const buildChannel = (createdById = 'creator'): Channel =>
   ({
@@ -37,7 +37,7 @@ const renderRoleLabel = (
     getMemberRoleLabel,
   }: { channel?: Channel; getMemberRoleLabel?: GetMemberRoleLabel } = {},
 ) =>
-  renderHook(() => useChannelDetailsMemberRoleLabel(member), {
+  renderHook(() => useMemberRoleLabel(member), {
     wrapper: ({ children }) => (
       <TranslationProvider
         value={{ t, tDateTimeParser: ((input: unknown) => input) as never, userLanguage: 'en' }}
@@ -49,7 +49,7 @@ const renderRoleLabel = (
     ),
   });
 
-describe('useChannelDetailsMemberRoleLabel', () => {
+describe('useMemberRoleLabel', () => {
   describe('default rules', () => {
     it('returns "Owner" when the member is the channel creator', () => {
       const { result } = renderRoleLabel(buildMember(), { channel: buildChannel('alice') });

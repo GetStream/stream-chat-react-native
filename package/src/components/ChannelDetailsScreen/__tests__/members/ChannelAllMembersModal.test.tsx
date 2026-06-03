@@ -20,7 +20,7 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelAllMembersModal } from '../../components/members/ChannelAllMembersModal';
-import * as useChannelDetailsMembersPreviewModule from '../../hooks/members/useChannelDetailsMembersPreview';
+import * as useChannelDetailsMembersPreviewModule from '../../hooks/useChannelDetailsMembersPreview';
 
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;
 

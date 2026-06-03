@@ -13,7 +13,7 @@ import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import * as useChannelMembersStateModule from '../../ChannelList/hooks/useChannelMembersState';
 import * as useChannelPreviewDisplayNameModule from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { ChannelDetailsProfile } from '../components/ChannelDetailsProfile';
-import * as useChannelDetailsMemberStatusTextModule from '../hooks/members/useChannelDetailsMemberStatusText';
+import * as useChannelDetailsMemberStatusTextModule from '../hooks/useChannelDetailsMemberStatusText';
 
 const channelAvatarCalls: Array<{ size?: string; showBorder?: boolean }> = [];
 jest.mock('../../ui/Avatar/ChannelAvatar', () => {

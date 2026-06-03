@@ -137,7 +137,7 @@ describe('ChannelMemberItem activity status', () => {
 });
 
 describe('ChannelMemberItem role label rendering', () => {
-  it('renders the role label string returned by useChannelDetailsMemberRoleLabel', () => {
+  it('renders the role label string returned by useMemberRoleLabel', () => {
     renderRow({
       getMemberRoleLabel: () => 'Admin',
       member: memberFor(),
