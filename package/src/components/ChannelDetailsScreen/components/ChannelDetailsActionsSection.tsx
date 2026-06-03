@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -20,18 +20,17 @@ const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   const { muted } = useIsChannelMuted(channel);
   const switchColors = useSwitchColors();
   const [isMuted, setIsMuted] = useState(muted);
+  const mutedRef = useRef(muted);
 
   useEffect(() => {
+    mutedRef.current = muted;
     setIsMuted(muted);
   }, [muted]);
 
   const handleValueChange = useCallback(
     (value: boolean) => {
       setIsMuted(value);
-      const onFailure = () => {
-        setIsMuted(!value);
-      };
-      item.action({ onFailure });
+      item.action({ onFailure: () => setIsMuted(mutedRef.current) });
     },
     [item],
   );
@@ -70,15 +69,17 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
       ? mutedUsers.some((mutedUser) => mutedUser.target.id === otherUserId)
       : false;
   const [isUserMuted, setIsUserMuted] = useState(userMuted);
+  const userMutedRef = useRef(userMuted);
 
   useEffect(() => {
+    userMutedRef.current = userMuted;
     setIsUserMuted(userMuted);
   }, [userMuted]);
 
   const handleValueChange = useCallback(
     (value: boolean) => {
       setIsUserMuted(value);
-      item.action({ onFailure: () => setIsUserMuted(!value) });
+      item.action({ onFailure: () => setIsUserMuted(userMutedRef.current) });
     },
     [item],
   );

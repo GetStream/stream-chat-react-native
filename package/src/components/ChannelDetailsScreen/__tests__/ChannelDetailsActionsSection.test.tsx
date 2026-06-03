@@ -50,24 +50,25 @@ const ActionItemProbe = (props: Probe) => {
   );
 };
 
-const renderSection = () =>
-  render(
-    <ThemeProvider theme={defaultTheme}>
-      <TranslationProvider
-        value={{
-          t: ((key: string) => key) as never,
-          tDateTimeParser: ((input: unknown) => input) as never,
-          userLanguage: 'en',
-        }}
-      >
-        <ChannelDetailsContextProvider value={{ channel }}>
-          <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
-            <ChannelDetailsActionsSection />
-          </WithComponents>
-        </ChannelDetailsContextProvider>
-      </TranslationProvider>
-    </ThemeProvider>,
-  );
+const sectionElement = () => (
+  <ThemeProvider theme={defaultTheme}>
+    <TranslationProvider
+      value={{
+        t: ((key: string) => key) as never,
+        tDateTimeParser: ((input: unknown) => input) as never,
+        userLanguage: 'en',
+      }}
+    >
+      <ChannelDetailsContextProvider value={{ channel }}>
+        <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
+          <ChannelDetailsActionsSection />
+        </WithComponents>
+      </ChannelDetailsContextProvider>
+    </TranslationProvider>
+  </ThemeProvider>
+);
+
+const renderSection = () => render(sectionElement());
 
 describe('ChannelDetailsActionsSection', () => {
   let useIsDirectChatSpy: jest.SpyInstance;
@@ -233,6 +234,25 @@ describe('ChannelDetailsActionsSection', () => {
       expect(screen.getByTestId('channel-details-action-mute-switch').props.value).toBe(false);
     });
 
+    it('rolls back the mute Switch to the current hook value (not !value) when it changed mid-flight', () => {
+      const action = jest.fn();
+      useIsChannelMutedSpy.mockReturnValue({ createdAt: null, expiresAt: null, muted: false });
+      useActionItemsSpy.mockReturnValue([buildItem({ action, id: 'mute', label: 'Mute Group' })]);
+      const { rerender } = renderSection();
+      const muteSwitch = screen.getByTestId('channel-details-action-mute-switch');
+      // Optimistically flip on while the mute request is in flight.
+      fireEvent(muteSwitch, 'valueChange', true);
+      expect(screen.getByTestId('channel-details-action-mute-switch').props.value).toBe(true);
+      // A server event reports the channel as muted before the request resolves.
+      useIsChannelMutedSpy.mockReturnValue({ createdAt: null, expiresAt: null, muted: true });
+      rerender(sectionElement());
+      // The request fails: revert to the current hook value (true), not !value (false).
+      act(() => {
+        action.mock.calls[0][0].onFailure();
+      });
+      expect(screen.getByTestId('channel-details-action-mute-switch').props.value).toBe(true);
+    });
+
     it('reflects userMuted state on the muteUser item Switch in direct chats', () => {
       useIsDirectChatSpy.mockReturnValue(true);
       getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
@@ -261,6 +281,29 @@ describe('ChannelDetailsActionsSection', () => {
         action.mock.calls[0][0].onFailure();
       });
       expect(screen.getByTestId('channel-details-action-muteUser-switch').props.value).toBe(false);
+    });
+
+    it('rolls back the muteUser Switch to the current hook value (not !value) when it changed mid-flight', () => {
+      const action = jest.fn();
+      useIsDirectChatSpy.mockReturnValue(true);
+      getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
+      useMutedUsersSpy.mockReturnValue([]);
+      useActionItemsSpy.mockReturnValue([
+        buildItem({ action, id: 'muteUser', label: 'Mute User' }),
+      ]);
+      const { rerender } = renderSection();
+      const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
+      // Optimistically flip on while the mute request is in flight.
+      fireEvent(userMuteSwitch, 'valueChange', true);
+      expect(screen.getByTestId('channel-details-action-muteUser-switch').props.value).toBe(true);
+      // A server event reports the user as muted before the request resolves.
+      useMutedUsersSpy.mockReturnValue([{ target: { id: 'other-user' } }]);
+      rerender(sectionElement());
+      // The request fails: revert to the current hook value (true), not !value (false).
+      act(() => {
+        action.mock.calls[0][0].onFailure();
+      });
+      expect(screen.getByTestId('channel-details-action-muteUser-switch').props.value).toBe(true);
     });
 
     it('userMuted is false when the other user is not in mutedUsers', () => {
