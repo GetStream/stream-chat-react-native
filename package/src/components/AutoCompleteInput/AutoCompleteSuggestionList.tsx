@@ -13,8 +13,9 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
+import { ClippingFadeBottom } from '../UIComponents/ClippingFadeBottom';
 
-export const DEFAULT_LIST_HEIGHT = 208;
+export const DEFAULT_LIST_HEIGHT = 240;
 
 export type AutoCompleteSuggestionListProps = Record<string, never>;
 
@@ -49,6 +50,7 @@ export const AutoCompleteSuggestionList = () => {
 
   const {
     theme: {
+      semantics,
       messageComposer: {
         container: { maxHeight },
       },
@@ -96,6 +98,7 @@ export const AutoCompleteSuggestionList = () => {
         contentContainerStyle={styles.flatlistContentContainer}
         testID={'auto-complete-suggestion-list'}
       />
+      <ClippingFadeBottom backgroundColor={String(semantics.backgroundCoreElevation1)} />
     </Animated.View>
   );
 };
@@ -119,7 +122,8 @@ const useStyles = () => {
           borderColor: semantics.borderCoreDefault,
         },
         flatlistContentContainer: {
-          paddingVertical: primitives.spacingSm,
+          paddingVertical: primitives.spacingXs,
+          backgroundColor: 'transparent',
           ...flatlistContentContainer,
         },
         flatlist: {
