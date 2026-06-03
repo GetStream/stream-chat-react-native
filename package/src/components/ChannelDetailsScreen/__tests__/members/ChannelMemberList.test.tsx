@@ -167,24 +167,6 @@ describe('ChannelMemberList', () => {
     expect(props?.keyExtractor?.(alice, 0)).toBe('alice');
   });
 
-  it('renders each item with the isCurrentUser flag derived from the chat client', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    mockHook({ results: [alice, bob] });
-
-    renderList({ currentUserId: 'alice' });
-
-    const { data, renderItem } = latestListProps() ?? {};
-    (data as ChannelMemberResponse[]).forEach((member, index) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render((renderItem as any)({ index, item: member, separators: {} as never })),
-    );
-
-    const byId = Object.fromEntries(itemProbeCalls.map((p) => [p.member.user?.id, p]));
-    expect(byId.alice.isCurrentUser).toBe(true);
-    expect(byId.bob.isCurrentUser).toBe(false);
-  });
-
   it('wires onEndReached to loadMore (with threshold) only when there is more to load', () => {
     const loadMore = jest.fn();
     mockHook({ hasMore: true, loadMore, results: [] });

@@ -4,6 +4,7 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ChannelMemberResponse } from 'stream-chat';
 
 import { composeAccessibilityLabel } from '../../../../a11y/a11yUtils';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mute } from '../../../../icons';
@@ -16,7 +17,6 @@ export type ChannelMemberItemSize = 'sm' | 'lg';
 
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
-  isCurrentUser?: boolean;
   /**
    * Whether the current user has muted this member. Compute once at the list level
    * (see `useMutedMemberIds`) and pass it down — when `true` a muted
@@ -35,7 +35,6 @@ export type ChannelMemberItemProps = {
 };
 
 const ChannelMemberItemInner = ({
-  isCurrentUser,
   isMuted,
   member,
   onPress,
@@ -43,6 +42,7 @@ const ChannelMemberItemInner = ({
   testID,
 }: ChannelMemberItemProps) => {
   const { t } = useTranslationContext();
+  const { client } = useChatContext();
   const {
     theme: {
       channelDetailsScreen: {
@@ -64,6 +64,7 @@ const ChannelMemberItemInner = ({
   if (!user) return null;
 
   const isLarge = size === 'lg';
+  const isCurrentUser = !!client?.userID && user.id === client.userID;
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
   const accessibilityLabel = composeAccessibilityLabel(
     displayName,
@@ -154,7 +155,6 @@ const ChannelMemberItemInner = ({
 };
 
 const areEqual = (prev: ChannelMemberItemProps, next: ChannelMemberItemProps) => {
-  if (prev.isCurrentUser !== next.isCurrentUser) return false;
   if (prev.isMuted !== next.isMuted) return false;
   if (prev.onPress !== next.onPress) return false;
   if (prev.size !== next.size) return false;

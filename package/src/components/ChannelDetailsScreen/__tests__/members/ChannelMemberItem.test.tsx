@@ -7,6 +7,7 @@ import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../../contexts';
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
@@ -34,10 +35,12 @@ const defaultChannel = {
 
 const renderRow = ({
   channel = defaultChannel,
+  currentUserId,
   getMemberRoleLabel,
   ...props
 }: React.ComponentProps<typeof ChannelMemberItem> & {
   channel?: Channel;
+  currentUserId?: string;
   getMemberRoleLabel?: GetMemberRoleLabel;
 }) =>
   render(
@@ -54,9 +57,11 @@ const renderRow = ({
           userLanguage: 'en',
         }}
       >
-        <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
-          <ChannelMemberItem {...props} />
-        </ChannelDetailsContextProvider>
+        <ChatContext.Provider value={{ client: { userID: currentUserId } } as never}>
+          <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
+            <ChannelMemberItem {...props} />
+          </ChannelDetailsContextProvider>
+        </ChatContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
   );
@@ -73,7 +78,7 @@ describe('ChannelMemberItem accessibility', () => {
   });
 
   it('uses "You" when the row represents the current user', () => {
-    renderRow({ isCurrentUser: true, member: memberFor() });
+    renderRow({ currentUserId: 'alice', member: memberFor() });
     expect(screen.getByLabelText('You, Offline')).toBeTruthy();
   });
 

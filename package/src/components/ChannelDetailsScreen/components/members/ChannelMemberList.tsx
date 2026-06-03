@@ -6,7 +6,6 @@ import type { ChannelMemberResponse } from 'stream-chat';
 import { MemberListLoadingSkeleton } from './MemberListLoadingSkeleton';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMutedMemberIds } from '../../../../hooks/useMutedMemberIds';
 import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
@@ -28,7 +27,6 @@ export type ChannelMemberListProps = {
  */
 export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberListProps = {}) => {
   const { channel, onMemberPress } = useChannelDetailsContext();
-  const { client } = useChatContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { hasMore, loading, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
   const mutedMemberIds = useMutedMemberIds(channel);
@@ -50,13 +48,12 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (
       <ChannelMemberItem
-        isCurrentUser={item.user?.id === client.userID}
         isMuted={mutedMemberIds.has(item.user?.id ?? '')}
         member={item}
         onPress={() => handleMemberPress(item)}
       />
     ),
-    [ChannelMemberItem, client.userID, handleMemberPress, mutedMemberIds],
+    [ChannelMemberItem, handleMemberPress, mutedMemberIds],
   );
 
   const ListFooterComponent = useMemo(

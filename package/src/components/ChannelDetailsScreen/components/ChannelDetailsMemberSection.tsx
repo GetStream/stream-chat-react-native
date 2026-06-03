@@ -7,7 +7,6 @@ import { ChannelAddMembersModal } from './members/ChannelAddMembersModal';
 import { ChannelAllMembersModal } from './members/ChannelAllMembersModal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -20,7 +19,6 @@ import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembe
 export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =
     useChannelDetailsContext();
-  const { client } = useChatContext();
   const { t } = useTranslationContext();
   const ownCapabilities = useChannelOwnCapabilities(channel);
   const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
@@ -115,7 +113,6 @@ export const ChannelDetailsMemberSection = () => {
           if (!member.user?.id) return null;
           return (
             <ChannelMemberItem
-              isCurrentUser={member.user.id === client.userID}
               isMuted={mutedMemberIds.has(member.user.id)}
               key={member.user.id}
               member={member}
