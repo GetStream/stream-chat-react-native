@@ -3,7 +3,12 @@ import React, { useCallback } from 'react';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { ChannelDetailsScreen as StreamChannelDetailsScreen } from 'stream-chat-react-native';
+import {
+  ChannelDetailsScreen as StreamChannelDetailsScreen,
+  GetChannelMemberActionItems,
+} from 'stream-chat-react-native';
+
+import { SendDirectMessage } from '../icons/SendDirectMessage';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -35,7 +40,36 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
     [navigation],
   );
 
+  const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
+    ({ context, defaultItems }) => {
+      const user = context.member.user;
+      // Don't offer sending a direct message to yourself.
+      if (!user || user.id === context.channel.getClient().userID) {
+        return defaultItems;
+      }
+      return [
+        {
+          action: () => {
+            navigation.navigate('NewDirectMessagingScreen', { initialUser: user });
+            return Promise.resolve();
+          },
+          Icon: SendDirectMessage,
+          id: 'sendDirectMessage',
+          label: context.t('Send Direct Message'),
+          type: 'standard',
+        },
+        ...defaultItems,
+      ];
+    },
+    [navigation],
+  );
+
   return (
-    <StreamChannelDetailsScreen channel={channel} onBack={onBack} onChannelDismiss={popToRoot} />
+    <StreamChannelDetailsScreen
+      channel={channel}
+      getChannelMemberActionItems={getChannelMemberActionItems}
+      onBack={onBack}
+      onChannelDismiss={popToRoot}
+    />
   );
 };
