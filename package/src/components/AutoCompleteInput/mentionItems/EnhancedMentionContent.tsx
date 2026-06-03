@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
@@ -34,14 +34,14 @@ export const EnhancedMentionContent = ({
   const styles = useStyles();
 
   return (
-    <>
+    <View style={styles.container}>
       <Text style={[styles.title, { color: semantics.textPrimary }, nameStyle]} testID={testID}>
         {title}
       </Text>
       {subtitle ? (
         <Text style={[styles.subtitle, { color: semantics.textSecondary }]}>{subtitle}</Text>
       ) : null}
-    </>
+    </View>
   );
 };
 
@@ -49,10 +49,12 @@ const useStyles = () =>
   useMemo(
     () =>
       StyleSheet.create({
+        container: {
+          gap: primitives.spacingXxxs,
+        },
         subtitle: {
           fontSize: primitives.typographyFontSizeXs,
           lineHeight: primitives.typographyLineHeightTight,
-          marginTop: 2,
         },
         title: {
           fontSize: primitives.typographyFontSizeMd,

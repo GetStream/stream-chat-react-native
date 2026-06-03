@@ -36,7 +36,7 @@ export const EnhancedMentionIcon = ({ color, Icon, size = 32 }: EnhancedMentionI
 
   return (
     <View style={styles.chip}>
-      <Icon pathFill={color ?? semantics.textSecondary} size={size / 2} />
+      <Icon pathFill={color ?? semantics.textPrimary} size={size / 2} />
     </View>
   );
 };

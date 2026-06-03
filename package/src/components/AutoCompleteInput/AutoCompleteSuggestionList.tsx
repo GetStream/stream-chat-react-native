@@ -12,6 +12,7 @@ import { useMessageComposer } from '../../contexts/messageInputContext/hooks/use
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
+import { primitives } from '../../theme';
 
 export const DEFAULT_LIST_HEIGHT = 208;
 
@@ -92,6 +93,7 @@ export const AutoCompleteSuggestionList = () => {
         onEndReachedThreshold={0.1}
         renderItem={renderItem}
         style={[styles.flatlist, { maxHeight }]}
+        contentContainerStyle={styles.flatlistContentContainer}
         testID={'auto-complete-suggestion-list'}
       />
     </Animated.View>
@@ -103,7 +105,7 @@ const useStyles = () => {
     theme: {
       semantics,
       messageComposer: {
-        suggestionsListContainer: { flatlist },
+        suggestionsListContainer: { flatlist, flatlistContentContainer },
       },
     },
   } = useTheme();
@@ -115,6 +117,10 @@ const useStyles = () => {
           backgroundColor: semantics.backgroundCoreElevation1,
           borderTopWidth: 1,
           borderColor: semantics.borderCoreDefault,
+        },
+        flatlistContentContainer: {
+          paddingVertical: primitives.spacingSm,
+          ...flatlistContentContainer,
         },
         flatlist: {
           backgroundColor: semantics.backgroundCoreElevation1,

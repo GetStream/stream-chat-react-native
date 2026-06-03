@@ -2,6 +2,7 @@ import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { primitives } from '../../../theme';
 
 export type MentionItemProps = PropsWithChildren<{
   /**
@@ -45,13 +46,13 @@ const useStyles = () =>
         column: {
           flex: 1,
           justifyContent: 'space-evenly',
-          paddingLeft: 8,
         },
         container: {
           alignItems: 'center',
           flexDirection: 'row',
-          paddingHorizontal: 16,
-          paddingVertical: 8,
+          paddingHorizontal: primitives.spacingXs,
+          paddingVertical: primitives.spacingXs,
+          gap: primitives.spacingSm,
         },
       }),
     [],

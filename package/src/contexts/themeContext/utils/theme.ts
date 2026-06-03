@@ -480,6 +480,7 @@ export type Theme = {
     suggestionsListContainer: {
       container: ViewStyle;
       flatlist: ViewStyle;
+      flatlistContentContainer: ViewStyle;
     };
     videoAttachmentUploadPreview: {
       durationContainer: ViewStyle;
@@ -1425,6 +1426,7 @@ export const defaultTheme: Theme = {
     suggestionsListContainer: {
       container: {},
       flatlist: {},
+      flatlistContentContainer: {},
     },
     wrapper: {},
     linkPreviewList: {
