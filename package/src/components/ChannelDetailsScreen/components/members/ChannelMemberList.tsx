@@ -8,6 +8,7 @@ import { MemberListLoadingSkeleton } from './MemberListLoadingSkeleton';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { useMutedMemberIds } from '../../../../hooks/useMutedMemberIds';
 import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
@@ -30,6 +31,7 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
   const { client } = useChatContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { hasMore, loading, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
+  const mutedMemberIds = useMutedMemberIds(channel);
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
@@ -49,11 +51,12 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
     ({ item }: { item: ChannelMemberResponse }) => (
       <ChannelMemberItem
         isCurrentUser={item.user?.id === client.userID}
+        isMuted={mutedMemberIds.has(item.user?.id ?? '')}
         member={item}
         onPress={() => handleMemberPress(item)}
       />
     ),
-    [ChannelMemberItem, client.userID, handleMemberPress],
+    [ChannelMemberItem, client.userID, handleMemberPress, mutedMemberIds],
   );
 
   const ListFooterComponent = useMemo(

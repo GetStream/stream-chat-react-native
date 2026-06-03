@@ -5,6 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -69,11 +70,23 @@ const renderSheet = ({
           userLanguage: 'en',
         }}
       >
-        <ChannelDetailsContextProvider value={{ channel }}>
-          <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
-            <ChannelMemberActionsSheet member={member} onClose={onClose} visible={visible} />
-          </WithComponents>
-        </ChannelDetailsContextProvider>
+        <ChatContext.Provider
+          value={
+            {
+              client: {
+                mutedUsers: [],
+                on: () => ({ unsubscribe: () => undefined }),
+                userID: 'me',
+              },
+            } as never
+          }
+        >
+          <ChannelDetailsContextProvider value={{ channel }}>
+            <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
+              <ChannelMemberActionsSheet member={member} onClose={onClose} visible={visible} />
+            </WithComponents>
+          </ChannelDetailsContextProvider>
+        </ChatContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
   );

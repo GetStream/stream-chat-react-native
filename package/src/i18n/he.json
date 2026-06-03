@@ -408,5 +408,6 @@
   "a11y/Vote on {{option}}": "הצבע עבור {{option}}",
   "a11y/Double tap and hold to activate contextual menu": "הקש פעמיים והחזק כדי להפעיל את התפריט ההקשרי",
   "a11y/Swipe right to go through different actions": "החלק ימינה כדי לעבור בין הפעולות השונות",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "Muted": "מושתק"
 }

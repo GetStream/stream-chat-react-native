@@ -84,6 +84,34 @@ describe('ChannelMemberItem accessibility', () => {
     });
     expect(screen.getByLabelText('Alice, Admin, Offline')).toBeTruthy();
   });
+
+  it('includes "Muted" in the accessible label when the member is muted', () => {
+    renderRow({ isMuted: true, member: memberFor() });
+    expect(screen.getByLabelText('Alice, Muted, Offline')).toBeTruthy();
+  });
+});
+
+describe('ChannelMemberItem muted indicator', () => {
+  it('renders the muted icon when the member is muted', () => {
+    renderRow({ isMuted: true, member: memberFor() });
+    expect(screen.getByLabelText('Muted')).toBeTruthy();
+  });
+
+  it('does not render the muted icon when the member is not muted', () => {
+    renderRow({ member: memberFor() });
+    expect(screen.queryByLabelText('Muted')).toBeNull();
+  });
+});
+
+describe('ChannelMemberItem large variant', () => {
+  it('renders the role label in the large profile header', () => {
+    renderRow({
+      getMemberRoleLabel: () => 'Admin',
+      member: memberFor(),
+      size: 'lg',
+    });
+    expect(screen.getByText('Admin')).toBeTruthy();
+  });
 });
 
 describe('ChannelMemberItem activity status', () => {

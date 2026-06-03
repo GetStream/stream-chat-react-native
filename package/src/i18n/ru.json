@@ -408,5 +408,6 @@
   "a11y/Vote on {{option}}": "Голосовать за {{option}}",
   "a11y/Double tap and hold to activate contextual menu": "Дважды коснитесь и удерживайте, чтобы открыть контекстное меню",
   "a11y/Swipe right to go through different actions": "Смахните вправо, чтобы переключаться между действиями",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "Muted": "Заглушён"
 }

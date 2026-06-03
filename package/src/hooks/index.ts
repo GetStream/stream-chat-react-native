@@ -7,6 +7,7 @@ export * from './useChannelImage';
 export * from './useChannelMembershipState';
 export * from './useChannelOwnCapabilities';
 export * from './useChannelMuteActive';
+export * from './useMutedMemberIds';
 export * from './useIsDirectChat';
 export * from './useStreami18n';
 export * from './useViewport';

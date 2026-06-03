@@ -6,6 +6,7 @@ import type { ChannelMemberResponse } from 'stream-chat';
 import { composeAccessibilityLabel } from '../../../../a11y/a11yUtils';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { Mute } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 import { useChannelDetailsMemberRoleLabel } from '../../hooks/members/useChannelDetailsMemberRoleLabel';
@@ -16,6 +17,12 @@ export type ChannelMemberItemSize = 'sm' | 'lg';
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
   isCurrentUser?: boolean;
+  /**
+   * Whether the current user has muted this member. Compute once at the list level
+   * (see `useMutedMemberIds`) and pass it down — when `true` a muted
+   * indicator icon is rendered in the row's trailing area.
+   */
+  isMuted?: boolean;
   onPress?: () => void;
   /**
    * Visual size of the row.
@@ -29,6 +36,7 @@ export type ChannelMemberItemProps = {
 
 const ChannelMemberItemInner = ({
   isCurrentUser,
+  isMuted,
   member,
   onPress,
   size = 'sm',
@@ -59,7 +67,8 @@ const ChannelMemberItemInner = ({
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
   const accessibilityLabel = composeAccessibilityLabel(
     displayName,
-    isLarge ? undefined : roleLabel,
+    roleLabel,
+    isMuted ? t('Muted') : undefined,
     statusLine,
   );
 
@@ -90,13 +99,25 @@ const ChannelMemberItemInner = ({
           </Text>
         ) : null}
       </View>
-      {!isLarge && roleLabel ? (
-        <Text
-          numberOfLines={1}
-          style={[styles.role, { color: semantics.textTertiary }, roleOverride]}
-        >
-          {roleLabel}
-        </Text>
+      {isMuted || roleLabel ? (
+        <View style={styles.trailing}>
+          {isMuted ? (
+            <Mute
+              accessibilityLabel={t('Muted')}
+              height={16}
+              pathFill={semantics.textTertiary}
+              width={16}
+            />
+          ) : null}
+          {roleLabel ? (
+            <Text
+              numberOfLines={1}
+              style={[styles.role, { color: semantics.textTertiary }, roleOverride]}
+            >
+              {roleLabel}
+            </Text>
+          ) : null}
+        </View>
       ) : null}
     </>
   );
@@ -134,6 +155,7 @@ const ChannelMemberItemInner = ({
 
 const areEqual = (prev: ChannelMemberItemProps, next: ChannelMemberItemProps) => {
   if (prev.isCurrentUser !== next.isCurrentUser) return false;
+  if (prev.isMuted !== next.isMuted) return false;
   if (prev.onPress !== next.onPress) return false;
   if (prev.size !== next.size) return false;
   if (prev.testID !== next.testID) return false;
@@ -209,6 +231,12 @@ const useStyles = () => {
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightNormal,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+        },
+        trailing: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          flexShrink: 0,
+          gap: primitives.spacingXs,
         },
       }),
     [],

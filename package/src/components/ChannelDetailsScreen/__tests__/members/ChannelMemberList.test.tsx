@@ -90,7 +90,17 @@ const renderList = ({
           userLanguage: 'en',
         }}
       >
-        <ChatContext.Provider value={{ client: { userID: currentUserId } } as never}>
+        <ChatContext.Provider
+          value={
+            {
+              client: {
+                mutedUsers: [],
+                on: () => ({ unsubscribe: () => undefined }),
+                userID: currentUserId,
+              },
+            } as never
+          }
+        >
           <ChannelDetailsContextProvider value={{ channel, onMemberPress }}>
             <WithComponents
               overrides={{

@@ -98,7 +98,16 @@ const renderSection = ({
           }}
         >
           <ChatContext.Provider
-            value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+            value={
+              {
+                client: {
+                  mutedUsers: [],
+                  notifications: new NotificationManager(),
+                  on: () => ({ unsubscribe: () => undefined }),
+                  userID: 'me',
+                },
+              } as never
+            }
           >
             <ChannelDetailsContextProvider
               value={{
