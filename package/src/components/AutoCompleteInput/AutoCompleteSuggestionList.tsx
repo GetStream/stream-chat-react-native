@@ -137,7 +137,7 @@ const useStyles = () => {
           ...flatlist,
         },
       }),
-    [semantics, flatlist],
+    [semantics, flatlist, flatlistContentContainer],
   );
 };
 
