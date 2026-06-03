@@ -11,6 +11,9 @@ import { ImageGrid } from '../../../icons/gallery';
 import { Pin } from '../../../icons/pin';
 import { primitives } from '../../../theme';
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelDetailsNavigationSection = () => {
   const { t } = useTranslationContext();
   const {

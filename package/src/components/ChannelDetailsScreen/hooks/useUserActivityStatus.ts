@@ -20,6 +20,7 @@ const hasFromNow = (value: unknown): value is { fromNow: () => string; isValid?:
  *
  * Uses `tDateTimeParser` from the translation context so the relative-time format
  * follows the configured locale.
+ * @experimental This hook is experimental and is subject to change.
  */
 export const useUserActivityStatus = (user?: UserResponse): string => {
   const { t, tDateTimeParser } = useTranslationContext();

@@ -139,6 +139,9 @@ export const ChannelDetailsScreenContent = () => {
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelDetailsScreen = ({
   channel,
   compressImageQuality,

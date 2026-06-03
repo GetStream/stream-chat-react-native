@@ -100,6 +100,9 @@ const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalConten
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `channel-add-members:${channel.cid}` : undefined;

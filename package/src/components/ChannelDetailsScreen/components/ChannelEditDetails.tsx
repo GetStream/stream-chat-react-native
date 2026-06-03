@@ -33,6 +33,9 @@ export type ChannelEditDetailsProps = {
   onNameChange: (name: string) => void;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelEditDetails = ({
   onImagePicked,
   onImageReset,

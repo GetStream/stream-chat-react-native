@@ -15,6 +15,9 @@ import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelDetailsMemberSection = () => {
   const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =
     useChannelDetailsContext();

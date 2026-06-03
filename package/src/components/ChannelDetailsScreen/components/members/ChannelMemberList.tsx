@@ -23,6 +23,7 @@ export type ChannelMemberListProps = {
 
 /**
  * Lists all channel members.
+ * @experimental This component is experimental and is subject to change.
  */
 export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberListProps = {}) => {
   const { channel, onMemberPress } = useChannelDetailsContext();

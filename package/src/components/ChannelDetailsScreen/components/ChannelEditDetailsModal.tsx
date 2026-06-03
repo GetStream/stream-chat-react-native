@@ -124,6 +124,9 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelEditDetailsModal = ({ onClose, visible }: ChannelEditDetailsModalProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `channel-edit-details:${channel.cid}` : undefined;

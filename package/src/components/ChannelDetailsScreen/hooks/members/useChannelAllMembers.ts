@@ -16,6 +16,9 @@ export type UseChannelAllMembersResult = {
 
 const noop = () => undefined;
 
+/**
+ * @experimental This hook is experimental and is subject to change.
+ */
 export const useChannelAllMembers = ({
   channel,
 }: {

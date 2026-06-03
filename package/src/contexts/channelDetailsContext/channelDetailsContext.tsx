@@ -7,11 +7,17 @@ import { OwnCapabilitiesProvider } from '../ownCapabilitiesContext/OwnCapabiliti
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+/**
+ * @experimental This API is experimental and is subject to change.
+ */
 export type ChannelDetailsContextValue = ChannelDetailsScreenProps;
 export const ChannelDetailsContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelDetailsContextValue,
 );
 
+/**
+ * @experimental This API is experimental and is subject to change.
+ */
 export const ChannelDetailsContextProvider = ({
   children,
   value,
@@ -27,6 +33,9 @@ export const ChannelDetailsContextProvider = ({
   );
 };
 
+/**
+ * @experimental This API is experimental and is subject to change.
+ */
 export const useChannelDetailsContext = () => {
   const contextValue = useContext(ChannelDetailsContext) as unknown as ChannelDetailsContextValue;
 

@@ -16,6 +16,9 @@ export type ChannelAllMembersModalProps = {
   visible: boolean;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelAllMembersModal = ({
   onAddMembersPress,
   onClose,

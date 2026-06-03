@@ -43,6 +43,9 @@ const MemberListSkeletonRow = () => {
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const MemberListLoadingSkeleton = () => (
   <View testID='member-list-loading-skeleton'>
     {Array.from({ length: ROW_COUNT }).map((_, index) => (

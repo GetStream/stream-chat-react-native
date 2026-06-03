@@ -101,6 +101,9 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelDetailsActionsSection = () => {
   const {
     theme: {

@@ -169,6 +169,9 @@ const areEqual = (prev: ChannelMemberItemProps, next: ChannelMemberItemProps) =>
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelMemberItem = React.memo(ChannelMemberItemInner, areEqual);
 
 const useStyles = () => {

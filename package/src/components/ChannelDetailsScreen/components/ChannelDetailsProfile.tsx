@@ -14,6 +14,9 @@ import { useChannelPreviewDisplayName } from '../../ChannelPreview/hooks/useChan
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
 import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMemberStatusText';
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelDetailsProfile = () => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();

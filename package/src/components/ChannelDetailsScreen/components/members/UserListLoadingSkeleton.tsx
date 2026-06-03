@@ -43,6 +43,9 @@ const UserListSkeletonRow = () => {
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const UserListLoadingSkeleton = () => (
   <View testID='user-list-loading-skeleton'>
     {Array.from({ length: ROW_COUNT }).map((_, index) => (

@@ -97,6 +97,9 @@ const AddMemberSearchResultItemInner = ({
   );
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const AddMemberSearchResultItem = React.memo(AddMemberSearchResultItemInner);
 
 AddMemberSearchResultItem.displayName = 'AddMemberSearchResultItem';

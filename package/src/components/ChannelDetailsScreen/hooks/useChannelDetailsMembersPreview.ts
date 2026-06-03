@@ -13,6 +13,9 @@ export type ChannelDetailsMembersPreview = {
   visible: ChannelMemberResponse[];
 };
 
+/**
+ * @experimental This hook is experimental and is subject to change.
+ */
 export const useChannelDetailsMembersPreview = (
   channel: Channel,
   max: number = DEFAULT_VISIBLE_MEMBER_COUNT,

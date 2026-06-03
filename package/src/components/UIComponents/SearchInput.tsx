@@ -15,6 +15,9 @@ export type SearchInputProps = {
   onClear: () => void;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const SearchInput = React.memo(
   ({ accessibilityLabel, onChangeText, onClear }: SearchInputProps) => {
     const { t } = useTranslationContext();

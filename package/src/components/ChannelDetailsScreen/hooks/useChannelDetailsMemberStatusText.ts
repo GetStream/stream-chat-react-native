@@ -7,6 +7,9 @@ import { useChannelMemberCount } from '../../../hooks/useChannelMemberCount';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
 
+/**
+ * @experimental This hook is experimental and is subject to change.
+ */
 export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
   const { t } = useTranslationContext();
   const members = useChannelMembersState(channel);

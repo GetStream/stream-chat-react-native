@@ -15,6 +15,9 @@ export type ChannelEditNameProps = {
   onNameChange: (name: string) => void;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelEditName = ({ onNameChange }: ChannelEditNameProps) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();

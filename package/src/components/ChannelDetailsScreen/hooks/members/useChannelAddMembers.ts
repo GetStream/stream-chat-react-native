@@ -26,6 +26,9 @@ export type UseChannelAddMembersResult = {
   toggleUser: (user: AddMemberSearchResult) => void;
 };
 
+/**
+ * @experimental This hook is experimental and is subject to change.
+ */
 export const useChannelAddMembers = ({
   channel,
 }: {

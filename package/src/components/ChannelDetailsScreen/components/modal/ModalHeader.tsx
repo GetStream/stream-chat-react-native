@@ -12,6 +12,9 @@ type ModalHeaderProps = {
   rightAction?: React.ReactNode;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
   const {
     theme: {

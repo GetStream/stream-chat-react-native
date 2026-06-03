@@ -19,6 +19,9 @@ export type ChannelDetailsScreenHeaderProps = {
   title?: string;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeaderProps) => {
   const { channel, onBack, onEditChannelPress } = useChannelDetailsContext();
   const { t } = useTranslationContext();

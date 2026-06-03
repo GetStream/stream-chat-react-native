@@ -36,6 +36,9 @@ export type ChannelAddMembersProps = {
 
 const keyExtractor = (user: AddMemberSearchResult) => user.id;
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const ChannelAddMembers = ({
   additionalFlatListProps,
   onSelectionChange,

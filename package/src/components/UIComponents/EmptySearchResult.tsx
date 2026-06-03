@@ -9,6 +9,9 @@ export type EmptySearchResultProps = {
   label: string;
 };
 
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
 export const EmptySearchResult = React.memo(({ icon, label }: EmptySearchResultProps) => {
   const {
     theme: {
