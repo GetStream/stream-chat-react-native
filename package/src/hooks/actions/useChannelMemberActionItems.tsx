@@ -5,7 +5,7 @@ import type { BlockedUsersState, Channel, ChannelMemberResponse } from 'stream-c
 import type { ActionItem } from './types';
 import { useUserActions, UserActions } from './useUserActions';
 
-import { useMutedUsers } from '../../components/ChannelList/hooks/useMutedUsers';
+import { useUserMuteActive } from '../../components/Message/hooks/useUserMuteActive';
 import { useTheme, useTranslationContext } from '../../contexts';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import { BlockUser, IconProps, Mute, Sound } from '../../icons';
@@ -110,8 +110,7 @@ export const useChannelMemberActionItems = ({
   const { t } = useTranslationContext();
   const userActions = useUserActions(member.user);
 
-  const mutedUsers = useMutedUsers(channel);
-  const userMuteActive = mutedUsers.some((mutedUser) => mutedUser.target.id === member.user?.id);
+  const userMuteActive = useUserMuteActive(member.user);
 
   const { userIds: blockedUserIds } = useStateStore(
     channel.getClient().blockedUsers,

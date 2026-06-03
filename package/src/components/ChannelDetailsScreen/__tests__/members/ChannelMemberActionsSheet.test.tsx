@@ -153,21 +153,30 @@ describe('ChannelMemberActionsSheet', () => {
     actionsSpy.mockReturnValue([]);
 
     render(
-      <ThemeProvider theme={defaultTheme}>
-        <TranslationProvider
-          value={{
-            t: ((key: string) => key) as never,
-            tDateTimeParser: ((input: unknown) => input) as never,
-            userLanguage: 'en',
-          }}
-        >
-          <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
-            <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
-              <ChannelMemberActionsSheet member={member} onClose={jest.fn()} visible />
-            </WithComponents>
-          </ChannelDetailsContextProvider>
-        </TranslationProvider>
-      </ThemeProvider>,
+      <ChatContext.Provider
+        value={
+          {
+            client: { userID: 'me', mutedUsers: [], on: () => ({ unsubscribe: () => undefined }) },
+          } as never
+        }
+      >
+        <ThemeProvider theme={defaultTheme}>
+          <TranslationProvider
+            value={{
+              t: ((key: string) => key) as never,
+              tDateTimeParser: ((input: unknown) => input) as never,
+              userLanguage: 'en',
+            }}
+          >
+            <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
+              <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
+                <ChannelMemberActionsSheet member={member} onClose={jest.fn()} visible />
+              </WithComponents>
+            </ChannelDetailsContextProvider>
+          </TranslationProvider>
+        </ThemeProvider>
+        ,
+      </ChatContext.Provider>,
     );
 
     expect(actionsSpy).toHaveBeenCalledWith({

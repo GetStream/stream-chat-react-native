@@ -1,7 +1,10 @@
+import React, { PropsWithChildren } from 'react';
+
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse, Mute } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
+import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
 import {
@@ -84,9 +87,18 @@ describe('useChannelMemberActionItems', () => {
   it('toggles muteUser to unmuteUser when the member is already muted', () => {
     jest
       .spyOn(useMutedUsersModule, 'useMutedUsers')
-      .mockReturnValue([{ target: { id: 'target-user-id' } }] as Mute[]);
+      .mockReturnValue([
+        { target: { id: 'target-user-id' }, user: { id: 'current-user-id' } },
+      ] as Mute[]);
 
-    const { result } = renderHook(() => useChannelMemberActionItems({ channel, member }));
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <ChatProvider value={{ client: { userID: 'current-user-id' } } as never}>
+        {children}
+      </ChatProvider>
+    );
+    const { result } = renderHook(() => useChannelMemberActionItems({ channel, member }), {
+      wrapper,
+    });
 
     const muteItem = result.current.find((item) => item.id === 'muteUser');
     expect(muteItem?.action).toBe(userActions.unmuteUser);

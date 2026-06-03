@@ -46,7 +46,8 @@ const createChannel = (
 
 const mutedChannelEntry = (cid: string) => ({ channel: { cid } }) as unknown as ChannelMute;
 
-const mutedUserEntry = (userId: string) => ({ target: { id: userId } }) as unknown as Mute;
+const mutedUserEntry = (userId: string) =>
+  ({ target: { id: userId }, user: { id: CURRENT_USER_ID } }) as unknown as Mute;
 
 const createWrapper =
   (client: unknown) =>

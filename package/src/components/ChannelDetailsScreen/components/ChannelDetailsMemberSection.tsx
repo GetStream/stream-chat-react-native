@@ -11,7 +11,6 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
-import { useMutedMemberIds } from '../../../hooks/useMutedMemberIds';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
@@ -38,7 +37,6 @@ export const ChannelDetailsMemberSection = () => {
   } = useTheme();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
-  const mutedMemberIds = useMutedMemberIds(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
@@ -113,7 +111,6 @@ export const ChannelDetailsMemberSection = () => {
           if (!member.user?.id) return null;
           return (
             <ChannelMemberItem
-              isMuted={mutedMemberIds.has(member.user.id)}
               key={member.user.id}
               member={member}
               onPress={() => handleMemberPress(member)}

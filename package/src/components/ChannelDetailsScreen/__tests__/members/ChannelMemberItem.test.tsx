@@ -37,11 +37,13 @@ const renderRow = ({
   channel = defaultChannel,
   currentUserId,
   getMemberRoleLabel,
+  mutedUsers = [],
   ...props
 }: React.ComponentProps<typeof ChannelMemberItem> & {
   channel?: Channel;
   currentUserId?: string;
   getMemberRoleLabel?: GetMemberRoleLabel;
+  mutedUsers?: Array<{ target: { id: string }; user: { id: string } }>;
 }) =>
   render(
     <ThemeProvider theme={defaultTheme}>
@@ -57,7 +59,17 @@ const renderRow = ({
           userLanguage: 'en',
         }}
       >
-        <ChatContext.Provider value={{ client: { userID: currentUserId } } as never}>
+        <ChatContext.Provider
+          value={
+            {
+              client: {
+                mutedUsers,
+                on: () => ({ unsubscribe: () => undefined }),
+                userID: currentUserId,
+              },
+            } as never
+          }
+        >
           <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
             <ChannelMemberItem {...props} />
           </ChannelDetailsContextProvider>
@@ -91,14 +103,22 @@ describe('ChannelMemberItem accessibility', () => {
   });
 
   it('includes "Muted" in the accessible label when the member is muted', () => {
-    renderRow({ isMuted: true, member: memberFor() });
+    renderRow({
+      currentUserId: 'me',
+      member: memberFor(),
+      mutedUsers: [{ target: { id: 'alice' }, user: { id: 'me' } }],
+    });
     expect(screen.getByLabelText('Alice, Muted, Offline')).toBeTruthy();
   });
 });
 
 describe('ChannelMemberItem muted indicator', () => {
   it('renders the muted icon when the member is muted', () => {
-    renderRow({ isMuted: true, member: memberFor() });
+    renderRow({
+      currentUserId: 'me',
+      member: memberFor(),
+      mutedUsers: [{ target: { id: 'alice' }, user: { id: 'me' } }],
+    });
     expect(screen.getByTestId('channel-member-muted-indicator')).toBeTruthy();
   });
 

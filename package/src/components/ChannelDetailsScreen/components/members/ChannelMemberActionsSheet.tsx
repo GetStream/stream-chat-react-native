@@ -10,7 +10,6 @@ import {
   ChannelMemberActionItem,
   useChannelMemberActionItems,
 } from '../../../../hooks/actions/useChannelMemberActionItems';
-import { useMutedMemberIds } from '../../../../hooks/useMutedMemberIds';
 import { primitives } from '../../../../theme';
 import { BottomSheetModal } from '../../../UIComponents/BottomSheetModal';
 import { StreamBottomSheetModalFlatList } from '../../../UIComponents/StreamBottomSheetModalFlatList';
@@ -41,7 +40,6 @@ const ChannelMemberActionsSheetInner = ({
     },
   } = useTheme();
   const styles = useStyles();
-  const mutedMemberIds = useMutedMemberIds(channel);
 
   const actionItems = useChannelMemberActionItems({
     channel,
@@ -70,11 +68,7 @@ const ChannelMemberActionsSheetInner = ({
   return (
     <View style={[styles.container, containerOverride]}>
       <View style={headerOverride}>
-        <ChannelMemberItem
-          isMuted={mutedMemberIds.has(member.user?.id ?? '')}
-          member={member}
-          size='lg'
-        />
+        <ChannelMemberItem member={member} size='lg' />
       </View>
       <StreamBottomSheetModalFlatList<ChannelMemberActionItem>
         contentContainerStyle={[styles.actionsList, actionsListOverride]}

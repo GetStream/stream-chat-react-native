@@ -9,6 +9,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mute } from '../../../../icons';
 import { primitives } from '../../../../theme';
+import { useUserMuteActive } from '../../../Message/hooks/useUserMuteActive';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 import { useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
 import { useUserActivityStatus } from '../../hooks/useUserActivityStatus';
@@ -17,12 +18,6 @@ export type ChannelMemberItemSize = 'sm' | 'lg';
 
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
-  /**
-   * Whether the current user has muted this member. Compute once at the list level
-   * (see `useMutedMemberIds`) and pass it down — when `true` a muted
-   * indicator icon is rendered in the row's trailing area.
-   */
-  isMuted?: boolean;
   onPress?: () => void;
   /**
    * Visual size of the row.
@@ -35,7 +30,6 @@ export type ChannelMemberItemProps = {
 };
 
 const ChannelMemberItemInner = ({
-  isMuted,
   member,
   onPress,
   size = 'sm',
@@ -59,6 +53,7 @@ const ChannelMemberItemInner = ({
   const styles = useStyles();
   const statusLine = useUserActivityStatus(member.user);
   const roleLabel = useMemberRoleLabel(member);
+  const isMuted = useUserMuteActive(member.user);
 
   const user = member.user;
   if (!user) return null;
@@ -155,7 +150,6 @@ const ChannelMemberItemInner = ({
 };
 
 const areEqual = (prev: ChannelMemberItemProps, next: ChannelMemberItemProps) => {
-  if (prev.isMuted !== next.isMuted) return false;
   if (prev.onPress !== next.onPress) return false;
   if (prev.size !== next.size) return false;
   if (prev.testID !== next.testID) return false;

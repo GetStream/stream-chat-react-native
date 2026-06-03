@@ -31,7 +31,6 @@ export const ChannelEditName = ({ onNameChange }: ChannelEditNameProps) => {
 
   const handleNameChange = useCallback(
     (newName: string) => {
-      console.log('newName', newName);
       setName(newName);
       onNameChange(newName);
     },

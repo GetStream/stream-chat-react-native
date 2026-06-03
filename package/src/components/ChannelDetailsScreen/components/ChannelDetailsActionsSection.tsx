@@ -9,8 +9,8 @@ import { getOtherUserInDirectChannel } from '../../../hooks/actions/useChannelAc
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { primitives } from '../../../theme';
 import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
-import { useMutedUsers } from '../../ChannelList/hooks/useMutedUsers';
 import { useIsChannelMuted } from '../../ChannelPreview/hooks/useIsChannelMuted';
+import { useUserMuteActive } from '../../Message/hooks/useUserMuteActive';
 import { useChannelDetailsActionItems } from '../hooks';
 
 const ChannelMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
@@ -62,12 +62,8 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   const isDirect = useIsDirectChat(channel);
   const rtlMirrorSwitchStyle = useRtlMirrorSwitchStyle();
   const switchColors = useSwitchColors();
-  const mutedUsers = useMutedUsers(channel);
-  const otherUserId = isDirect ? getOtherUserInDirectChannel(channel)?.user?.id : undefined;
-  const userMuted =
-    isDirect && !!otherUserId
-      ? mutedUsers.some((mutedUser) => mutedUser.target.id === otherUserId)
-      : false;
+  const otherUser = isDirect ? getOtherUserInDirectChannel(channel)?.user : undefined;
+  const userMuted = useUserMuteActive(otherUser);
   const [isUserMuted, setIsUserMuted] = useState(userMuted);
   const userMutedRef = useRef(userMuted);
 
