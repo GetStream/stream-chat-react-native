@@ -50,13 +50,12 @@ const useStyles = () =>
     () =>
       StyleSheet.create({
         subtitle: {
-          fontSize: primitives.typographyFontSizeSm,
+          fontSize: primitives.typographyFontSizeXs,
           lineHeight: primitives.typographyLineHeightTight,
           marginTop: 2,
         },
         title: {
           fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
         },
       }),
