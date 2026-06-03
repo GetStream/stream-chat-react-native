@@ -129,7 +129,7 @@ const useStyles = () => {
         shadowRadius: 12,
       },
       suggestionsListContainer: {
-        backgroundColor: semantics.backgroundCoreElevation1,
+        backgroundColor: 'transparent',
         position: 'absolute',
         width: '100%',
       },
@@ -366,7 +366,12 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
-              messageInputHeightStore.setHeight(newHeight);
+              messageInputHeightStore.setHeight(
+                newHeight -
+                  (selectedPicker && !isKeyboardVisible
+                    ? attachmentPickerBottomSheetHeight - bottomInset
+                    : 0),
+              );
             }}
             style={
               messageInputFloating
@@ -449,7 +454,17 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
             )}
           </View>
           <View
-            style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
+            style={[
+              styles.suggestionsListContainer,
+              {
+                bottom:
+                  height +
+                  (!messageInputFloating && selectedPicker && !isKeyboardVisible
+                    ? attachmentPickerBottomSheetHeight - bottomInset
+                    : 0),
+              },
+              suggestionListContainer,
+            ]}
           >
             <AutoCompleteSuggestionList />
           </View>
