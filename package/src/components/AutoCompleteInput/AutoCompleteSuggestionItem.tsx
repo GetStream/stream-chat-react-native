@@ -11,6 +11,7 @@ import {
   MentionUserItem,
 } from './mentionItems';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useIsCommandDisabled } from '../../contexts/messageInputContext/hooks/useIsCommandDisabled';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -22,6 +23,12 @@ export type AutoCompleteSuggestionItemProps = {
   triggerType?: string;
 };
 
+/**
+ * Default `@`-trigger row dispatcher. Routes a `MentionSuggestion` to the
+ * per type component. Each per type component is its own export and can be
+ * composed by integrators who override this dispatcher via
+ * `ComponentsContext.MentionSuggestionItem`.
+ */
 export const MentionSuggestionItem = (item: MentionSuggestion) => {
   switch (item.mentionType) {
     case 'user':
@@ -109,6 +116,10 @@ const SuggestionItem = ({
   item: TextComposerSuggestion;
   triggerType?: string;
 }) => {
+  // Resolve via context so integrators can swap the mention dispatcher alone
+  // (e.g. to render a custom @channel row) without re-implementing the
+  // emoji/command branches of AutoCompleteSuggestionItem.
+  const { MentionSuggestionItem } = useComponentsContext();
   switch (triggerType) {
     case 'mention':
       return <MentionSuggestionItem {...(item as MentionSuggestion)} />;

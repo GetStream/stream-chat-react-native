@@ -2,12 +2,22 @@ import React from 'react';
 
 import { cleanup, render } from '@testing-library/react-native';
 
-// UserAvatar pulls in the ComponentsContext defaults which transitively load
-// stream-chat-js's CJS dist; that fails to resolve @babel/runtime when the SDK
-// is consumed from a workspace symlink during tests. The avatar itself isn't
-// what we're asserting on here, so substitute a no-op.
+// UserAvatar pulls in ComponentsContext defaults which transitively load
+// stream-chat-js's CJS dist; that fails to resolve @babel/runtime when the
+// SDK is consumed from a workspace symlink during tests. The avatar itself
+// isn't what we assert on here, so substitute a no-op.
 jest.mock('../../../ui/Avatar/UserAvatar', () => ({
   UserAvatar: () => null,
+}));
+
+// Same reason — useMessageComposer (used by AutoCompleteSuggestionItem) pulls
+// stream-chat-js's CJS dist at module load. The dispatcher we're testing
+// doesn't use these hooks itself, so stub them.
+jest.mock('../../../../contexts/messageInputContext/hooks/useMessageComposer', () => ({
+  useMessageComposer: () => ({ textComposer: { handleSelect: () => {} } }),
+}));
+jest.mock('../../../../contexts/messageInputContext/hooks/useIsCommandDisabled', () => ({
+  useIsCommandDisabled: () => false,
 }));
 
 import type {
@@ -20,10 +30,7 @@ import type {
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
-import { MentionBroadcastItem } from '../MentionBroadcastItem';
-import { MentionRoleItem } from '../MentionRoleItem';
-import { MentionUserGroupItem } from '../MentionUserGroupItem';
-import { MentionUserItem } from '../MentionUserItem';
+import { MentionSuggestionItem } from '../../AutoCompleteSuggestionItem';
 
 const wrap = (ui: React.ReactElement) =>
   render(<ThemeProvider theme={defaultTheme}>{ui}</ThemeProvider>);
@@ -65,44 +72,58 @@ const groupEntity: UserGroupMentionSuggestion = {
   tokenizedDisplayName: { parts: ['engineering'], token: '' },
 } as unknown as UserGroupMentionSuggestion;
 
-describe('mention row components', () => {
+describe('MentionSuggestionItem', () => {
   afterEach(() => {
     cleanup();
   });
 
-  it('MentionUserItem renders the display name', () => {
-    const { getByText } = wrap(<MentionUserItem entity={userEntity} />);
+  it('renders a user row with the display name', () => {
+    const { getByText } = wrap(<MentionSuggestionItem {...userEntity} />);
     expect(getByText('Alice')).toBeTruthy();
   });
 
-  it('MentionBroadcastItem renders @channel for a channel entity', () => {
-    const { getByText } = wrap(<MentionBroadcastItem entity={channelEntity} />);
+  it('renders a broadcast row for @channel with description subtitle', () => {
+    const { getByText } = wrap(<MentionSuggestionItem {...channelEntity} />);
     expect(getByText('@channel')).toBeTruthy();
+    expect(getByText('mention/Channel Description')).toBeTruthy();
   });
 
-  it('MentionBroadcastItem renders @here for a here entity', () => {
-    const { getByText } = wrap(<MentionBroadcastItem entity={hereEntity} />);
+  it('renders a broadcast row for @here with description subtitle', () => {
+    const { getByText } = wrap(<MentionSuggestionItem {...hereEntity} />);
     expect(getByText('@here')).toBeTruthy();
+    expect(getByText('mention/Here Description')).toBeTruthy();
   });
 
-  it('MentionRoleItem renders the role name prefixed by @', () => {
-    const { getByText } = wrap(<MentionRoleItem entity={roleEntity} />);
+  it('renders a role row with the role name and the notify subtitle', () => {
+    const { getByText } = wrap(<MentionSuggestionItem {...roleEntity} />);
     expect(getByText('@admin')).toBeTruthy();
+    // The test translation context echoes the i18n key; the {{ role }}
+    // interpolation is left as-is, which is enough to assert the right key
+    // was selected with the right argument.
+    expect(getByText(/Notify all .* members/)).toBeTruthy();
   });
 
-  it('MentionUserGroupItem renders name, description, and member count', () => {
-    const { getByText } = wrap(<MentionUserGroupItem entity={groupEntity} />);
+  it('renders a user group row with name + description', () => {
+    const { getByText } = wrap(<MentionSuggestionItem {...groupEntity} />);
     expect(getByText('@engineering')).toBeTruthy();
     expect(getByText('Engineering org')).toBeTruthy();
-    expect(getByText('42')).toBeTruthy();
   });
 
-  it('MentionUserGroupItem omits the member count slot when missing', () => {
+  it('omits the subtitle slot when a user group has no description', () => {
     const { queryByText } = wrap(
-      <MentionUserGroupItem
-        entity={{ ...groupEntity, memberCount: undefined } as UserGroupMentionSuggestion}
+      <MentionSuggestionItem
+        {...({ ...groupEntity, description: undefined } as UserGroupMentionSuggestion)}
       />,
     );
-    expect(queryByText('42')).toBeNull();
+    expect(queryByText('Engineering org')).toBeNull();
+  });
+
+  it('renders nothing for an unknown mention type', () => {
+    const { toJSON } = wrap(
+      <MentionSuggestionItem
+        {...({ id: 'x', mentionType: 'unknown' } as unknown as ChannelMentionSuggestion)}
+      />,
+    );
+    expect(toJSON()).toBeNull();
   });
 });

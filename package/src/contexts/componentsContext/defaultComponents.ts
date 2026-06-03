@@ -24,7 +24,10 @@ import { AttachmentPickerContent } from '../../components/AttachmentPicker/compo
 import { AttachmentPickerSelectionBar } from '../../components/AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { ImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteSuggestionHeader } from '../../components/AutoCompleteInput/AutoCompleteSuggestionHeader';
-import { AutoCompleteSuggestionItem } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
+import {
+  AutoCompleteSuggestionItem,
+  MentionSuggestionItem,
+} from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import { InputView } from '../../components/AutoCompleteInput/InputView';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
@@ -180,6 +183,7 @@ const components = {
   AutoCompleteSuggestionHeader,
   AutoCompleteSuggestionItem,
   AutoCompleteSuggestionList,
+  MentionSuggestionItem,
   ChannelDetailsBottomSheet,
   CooldownTimer,
   CircularProgressIndicator,
