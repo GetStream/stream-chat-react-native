@@ -103,9 +103,9 @@ const ChannelMemberItemInner = ({
         <View style={styles.trailing}>
           {isMuted ? (
             <Mute
-              accessibilityLabel={t('Muted')}
               height={16}
               pathFill={semantics.textTertiary}
+              testID='channel-member-muted-indicator'
               width={16}
             />
           ) : null}

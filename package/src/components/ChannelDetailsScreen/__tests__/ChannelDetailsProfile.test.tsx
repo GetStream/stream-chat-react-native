@@ -107,10 +107,10 @@ describe('ChannelDetailsProfile', () => {
       expect(screen.getByText('Display Name')).toBeTruthy();
     });
 
-    it('marks the title with accessibilityRole="header"', () => {
+    it('exposes the title row as a header labelled with the display name', () => {
       renderProfile();
-      const title = screen.getByText('Display Name');
-      expect(title.props.accessibilityRole).toBe('header');
+      const header = screen.getByRole('header');
+      expect(header.props.accessibilityLabel).toBe('Display Name');
     });
 
     it('renders an empty title when the display name is missing', () => {
@@ -176,6 +176,12 @@ describe('ChannelDetailsProfile', () => {
       useChannelMuteActiveSpy.mockReturnValue(true);
       renderProfile();
       expect(screen.getByTestId('channel-details-profile-muted-indicator')).toBeTruthy();
+    });
+
+    it('announces the muted status in the header accessibility label', () => {
+      useChannelMuteActiveSpy.mockReturnValue(true);
+      renderProfile();
+      expect(screen.getByRole('header').props.accessibilityLabel).toBe('Display Name, Muted');
     });
 
     it('does not render the muted indicator when useChannelMuteActive returns false', () => {

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
+import { composeAccessibilityLabel } from '../../../a11y/a11yUtils';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -48,9 +49,16 @@ export const ChannelDetailsProfile = () => {
     <View style={[styles.container, containerOverride]}>
       <ChannelAvatar channel={channel} showBorder={false} size='2xl' />
       <View style={[styles.heading, headingOverride]}>
-        <View style={styles.titleRow}>
+        <View
+          accessibilityLabel={composeAccessibilityLabel(
+            displayName,
+            muted ? t('Muted') : undefined,
+          )}
+          accessibilityRole='header'
+          accessible
+          style={styles.titleRow}
+        >
           <Text
-            accessibilityRole='header'
             numberOfLines={2}
             style={[styles.title, { color: semantics.textPrimary }, titleOverride]}
           >

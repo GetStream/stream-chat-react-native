@@ -94,12 +94,12 @@ describe('ChannelMemberItem accessibility', () => {
 describe('ChannelMemberItem muted indicator', () => {
   it('renders the muted icon when the member is muted', () => {
     renderRow({ isMuted: true, member: memberFor() });
-    expect(screen.getByLabelText('Muted')).toBeTruthy();
+    expect(screen.getByTestId('channel-member-muted-indicator')).toBeTruthy();
   });
 
   it('does not render the muted icon when the member is not muted', () => {
     renderRow({ member: memberFor() });
-    expect(screen.queryByLabelText('Muted')).toBeNull();
+    expect(screen.queryByTestId('channel-member-muted-indicator')).toBeNull();
   });
 });
 
