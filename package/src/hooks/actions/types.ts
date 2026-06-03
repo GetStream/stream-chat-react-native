@@ -7,7 +7,7 @@ export type ActionOptions = {
   onFailure?: (error: unknown) => void;
 };
 
-export type ActionHandler = (options?: ActionOptions) => Promise<void>;
+export type ActionHandler = (options?: ActionOptions) => Promise<void> | void;
 
 export type ActionItem<TId extends string = string> = {
   action: ActionHandler;

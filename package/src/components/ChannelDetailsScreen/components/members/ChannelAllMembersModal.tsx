@@ -4,9 +4,9 @@ import { useChannelDetailsContext } from '../../../../contexts/channelDetailsCon
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useOwnCapabilitiesContext } from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useChannelMemberCount } from '../../../../hooks';
 import { UserAdd } from '../../../../icons/user-add';
 import { Button } from '../../../ui/Button/Button';
-import { useChannelDetailsMembersPreview } from '../../hooks/useChannelDetailsMembersPreview';
 import { ChannelDetailsModal } from '../modal/Modal';
 import { ModalHeader } from '../modal/ModalHeader';
 
@@ -16,22 +16,20 @@ export type ChannelAllMembersModalProps = {
   visible: boolean;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelAllMembersModal = ({
+type ChannelAllMembersModalContentProps = Omit<ChannelAllMembersModalProps, 'visible'>;
+
+const ChannelAllMembersModalContent = ({
   onAddMembersPress,
   onClose,
-  visible,
-}: ChannelAllMembersModalProps) => {
+}: ChannelAllMembersModalContentProps) => {
   const { channel } = useChannelDetailsContext();
   const { ChannelMemberList } = useComponentsContext();
   const { t } = useTranslationContext();
   const { updateChannelMembers } = useOwnCapabilitiesContext();
-  const { total } = useChannelDetailsMembersPreview(channel);
+  const total = useChannelMemberCount(channel);
 
   return (
-    <ChannelDetailsModal onClose={onClose} visible={visible}>
+    <>
       <ModalHeader
         onClose={onClose}
         rightAction={
@@ -51,6 +49,22 @@ export const ChannelAllMembersModal = ({
         title={t('{{count}} members', { count: total })}
       />
       <ChannelMemberList />
-    </ChannelDetailsModal>
+    </>
   );
 };
+
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
+export const ChannelAllMembersModal = ({
+  onAddMembersPress,
+  onClose,
+  visible,
+}: ChannelAllMembersModalProps) => (
+  // The content lives in a child component so its hooks (member-state subscription,
+  // member preview sort) only run while the modal is open. React Native's `Modal`
+  // renders `null` when `visible` is false, so the child never mounts until then.
+  <ChannelDetailsModal onClose={onClose} visible={visible}>
+    <ChannelAllMembersModalContent onAddMembersPress={onAddMembersPress} onClose={onClose} />
+  </ChannelDetailsModal>
+);

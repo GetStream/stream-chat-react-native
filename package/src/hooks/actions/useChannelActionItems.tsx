@@ -11,8 +11,8 @@ import {
   useChannelActions,
 } from './useChannelActions';
 
-import { useMutedUsers } from '../../components/ChannelList/hooks/useMutedUsers';
 import { useIsChannelMuted } from '../../components/ChannelPreview/hooks/useIsChannelMuted';
+import { useUserMuteActive } from '../../components/Message/hooks/useUserMuteActive';
 import { useTheme, useTranslationContext } from '../../contexts';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
 import { IconProps, Mute, BlockUser, Delete, Sound } from '../../icons';
@@ -165,8 +165,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
             text: t('Delete'),
           },
         ]);
-
-        return Promise.resolve();
       },
       Icon: (props) => <ChannelActionsIcon Icon={Delete} {...props} />,
       id: 'deleteChannel',
@@ -206,12 +204,8 @@ export const useChannelActionItems = ({
   const isArchived = Boolean(membership?.archived_at);
 
   const { muted: channelMuteActive } = useIsChannelMuted(channel);
-  const mutedUsers = useMutedUsers(channel);
-  const userMuteActive = isDirectChat
-    ? mutedUsers.some(
-        (mutedUser) => getOtherUserInDirectChannel(channel)?.user?.id === mutedUser.target.id,
-      )
-    : false;
+  const otherUser = isDirectChat ? getOtherUserInDirectChannel(channel)?.user : undefined;
+  const userMuteActive = useUserMuteActive(otherUser);
 
   const { userIds: blockedUserIds } = useStateStore(
     channel.getClient().blockedUsers,

@@ -6,10 +6,8 @@ import { useChannelDetailsContext } from '../../../contexts/channelDetailsContex
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelMuteActive } from '../../../hooks/useChannelMuteActive';
-import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { Mute } from '../../../icons/mute';
 import { primitives } from '../../../theme';
-import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelPreviewDisplayName } from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
 import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMemberStatusText';
@@ -33,20 +31,10 @@ export const ChannelDetailsProfile = () => {
       semantics,
     },
   } = useTheme();
-  const isDirect = useIsDirectChat(channel);
-  const members = useChannelMembersState(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-  const groupStatusText = useChannelDetailsMemberStatusText(channel);
+  const subtitle = useChannelDetailsMemberStatusText(channel);
   const muted = useChannelMuteActive(channel);
   const styles = useStyles();
-
-  const subtitle = useMemo(() => {
-    if (!isDirect) return groupStatusText;
-    const otherMember = Object.values(members).find(
-      (member) => member.user?.id !== channel.getClient().userID,
-    );
-    return otherMember?.user?.online ? t('Online') : '';
-  }, [channel, groupStatusText, isDirect, members, t]);
 
   return (
     <View style={[styles.container, containerOverride]}>

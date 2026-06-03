@@ -46,7 +46,7 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
 
   const renderItem = useCallback(
     ({ item }: { item: ChannelMemberResponse }) => (
-      <ChannelMemberItem member={item} onPress={() => handleMemberPress(item)} />
+      <ChannelMemberItem member={item} onPress={handleMemberPress} />
     ),
     [ChannelMemberItem, handleMemberPress],
   );

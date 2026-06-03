@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { render, screen } from '@testing-library/react-native';
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
@@ -9,8 +9,6 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import * as useChannelMuteActiveModule from '../../../hooks/useChannelMuteActive';
-import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
-import * as useChannelMembersStateModule from '../../ChannelList/hooks/useChannelMembersState';
 import * as useChannelPreviewDisplayNameModule from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { ChannelDetailsProfile } from '../components/ChannelDetailsProfile';
 import * as useChannelDetailsMemberStatusTextModule from '../hooks/useChannelDetailsMemberStatusText';
@@ -28,13 +26,6 @@ jest.mock('../../ui/Avatar/ChannelAvatar', () => {
 });
 
 const OWN_USER_ID = 'own-user';
-const OTHER_USER_ID = 'other-user';
-
-const buildMember = (id: string, online = false): ChannelMemberResponse =>
-  ({
-    user: { id, online },
-    user_id: id,
-  }) as unknown as ChannelMemberResponse;
 
 const buildChannel = () =>
   ({
@@ -64,20 +55,12 @@ const renderProfile = ({ channel = buildChannel() }: { channel?: Channel } = {})
   );
 
 describe('ChannelDetailsProfile', () => {
-  let useIsDirectChatSpy: jest.SpyInstance;
-  let useChannelMembersStateSpy: jest.SpyInstance;
   let useChannelPreviewDisplayNameSpy: jest.SpyInstance;
   let useChannelDetailsMemberStatusTextSpy: jest.SpyInstance;
   let useChannelMuteActiveSpy: jest.SpyInstance;
 
   beforeEach(() => {
     channelAvatarCalls.length = 0;
-    useIsDirectChatSpy = jest
-      .spyOn(useIsDirectChatModule, 'useIsDirectChat')
-      .mockReturnValue(false);
-    useChannelMembersStateSpy = jest
-      .spyOn(useChannelMembersStateModule, 'useChannelMembersState')
-      .mockReturnValue({});
     useChannelPreviewDisplayNameSpy = jest
       .spyOn(useChannelPreviewDisplayNameModule, 'useChannelPreviewDisplayName')
       .mockReturnValue('Display Name');
@@ -121,51 +104,20 @@ describe('ChannelDetailsProfile', () => {
     });
   });
 
-  describe('group chats', () => {
-    beforeEach(() => {
-      useIsDirectChatSpy.mockReturnValue(false);
-    });
-
-    it('renders the group status text as the subtitle', () => {
+  describe('subtitle', () => {
+    it('renders the status text returned by useChannelDetailsMemberStatusText', () => {
       renderProfile();
       expect(screen.getByText('12 members, 3 online')).toBeTruthy();
     });
 
-    it('does not render a subtitle when the group status text is empty', () => {
-      useChannelDetailsMemberStatusTextSpy.mockReturnValue('');
-      renderProfile();
-      expect(screen.queryByText('12 members, 3 online')).toBeNull();
-    });
-  });
-
-  describe('direct chats', () => {
-    beforeEach(() => {
-      useIsDirectChatSpy.mockReturnValue(true);
-    });
-
-    it('renders "Online" when the other member is online', () => {
-      useChannelMembersStateSpy.mockReturnValue({
-        [OWN_USER_ID]: buildMember(OWN_USER_ID, true),
-        [OTHER_USER_ID]: buildMember(OTHER_USER_ID, true),
-      });
+    it('renders a direct-chat status string from the hook', () => {
+      useChannelDetailsMemberStatusTextSpy.mockReturnValue('Online');
       renderProfile();
       expect(screen.getByText('Online')).toBeTruthy();
     });
 
-    it('does not render a subtitle when the other member is offline', () => {
-      useChannelMembersStateSpy.mockReturnValue({
-        [OWN_USER_ID]: buildMember(OWN_USER_ID, true),
-        [OTHER_USER_ID]: buildMember(OTHER_USER_ID, false),
-      });
-      renderProfile();
-      expect(screen.queryByText('Online')).toBeNull();
-    });
-
-    it('ignores the group status text in direct chats', () => {
-      useChannelMembersStateSpy.mockReturnValue({
-        [OWN_USER_ID]: buildMember(OWN_USER_ID, true),
-        [OTHER_USER_ID]: buildMember(OTHER_USER_ID, false),
-      });
+    it('does not render a subtitle when the status text is empty', () => {
+      useChannelDetailsMemberStatusTextSpy.mockReturnValue('');
       renderProfile();
       expect(screen.queryByText('12 members, 3 online')).toBeNull();
     });

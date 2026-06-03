@@ -113,11 +113,7 @@ export const ChannelDetailsMemberSection = () => {
         {visible.map((member) => {
           if (!member.user?.id) return null;
           return (
-            <ChannelMemberItem
-              key={member.user.id}
-              member={member}
-              onPress={() => handleMemberPress(member)}
-            />
+            <ChannelMemberItem key={member.user.id} member={member} onPress={handleMemberPress} />
           );
         })}
       </View>

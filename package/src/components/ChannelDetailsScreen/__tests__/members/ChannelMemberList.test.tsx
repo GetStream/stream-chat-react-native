@@ -221,7 +221,7 @@ describe('ChannelMemberList', () => {
     const captured = itemProbeCalls.find((p) => p.member.user?.id === 'bob');
 
     expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
-    act(() => captured?.onPress?.());
+    act(() => captured?.onPress?.(bob));
     expect(list.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
 
     act(() => sheetProbeCalls[sheetProbeCalls.length - 1]?.onClose?.());
@@ -240,7 +240,7 @@ describe('ChannelMemberList', () => {
     render((renderItem as any)({ index: 0, item: alice, separators: {} as never }));
     const captured = itemProbeCalls.find((p) => p.member.user?.id === 'alice');
 
-    act(() => captured?.onPress?.());
+    act(() => captured?.onPress?.(alice));
 
     expect(onMemberPress).toHaveBeenCalledTimes(1);
     expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');

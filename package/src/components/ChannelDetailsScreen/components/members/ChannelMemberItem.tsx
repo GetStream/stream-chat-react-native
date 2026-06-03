@@ -18,7 +18,7 @@ export type ChannelMemberItemSize = 'sm' | 'lg';
 
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
-  onPress?: () => void;
+  onPress?: (member: ChannelMemberResponse) => void;
   /**
    * Visual size of the row.
    * - `'sm'` (default) renders the compact list row with a small avatar, regular-weight name, and a trailing role label.
@@ -123,7 +123,7 @@ const ChannelMemberItemInner = ({
       <Pressable
         accessibilityLabel={accessibilityLabel}
         accessibilityRole='button'
-        onPress={onPress}
+        onPress={() => onPress(member)}
         style={({ pressed }) => [
           isLarge ? styles.containerLarge : styles.container,
           pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,

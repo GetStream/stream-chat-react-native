@@ -5,12 +5,17 @@ import type { Channel } from 'stream-chat';
 
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelMemberCount } from '../../../hooks/useChannelMemberCount';
+import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
 import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMemberStatusText';
 
 jest.mock('../../../hooks/useChannelMemberCount', () => ({
   useChannelMemberCount: jest.fn(),
+}));
+
+jest.mock('../../../hooks/useIsDirectChat', () => ({
+  useIsDirectChat: jest.fn(() => false),
 }));
 
 jest.mock('../../ChannelList/hooks/useChannelMembersState', () => ({
@@ -28,7 +33,11 @@ const t = ((key: string, options?: Record<string, unknown>) => {
   return key;
 }) as never;
 
-const channel = { cid: 'messaging:test' } as unknown as Channel;
+const OWN_USER_ID = 'own-user';
+const channel = {
+  cid: 'messaging:test',
+  getClient: () => ({ userID: OWN_USER_ID }),
+} as unknown as Channel;
 
 const renderStatusText = () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -54,16 +63,6 @@ describe('useChannelDetailsMemberStatusText', () => {
     expect(result.current).toBe('5 members, 2 online');
   });
 
-  it('falls back to the loaded member map length when the reactive count is missing', () => {
-    (useChannelMemberCount as jest.Mock).mockReturnValue(0);
-    (useChannelOnlineMemberCount as jest.Mock).mockReturnValue(1);
-    (useChannelMembersState as jest.Mock).mockReturnValue({ a: {}, b: {}, c: {} });
-
-    const { result } = renderStatusText();
-
-    expect(result.current).toBe('3 members, 1 online');
-  });
-
   it('recomputes when the online count changes', () => {
     (useChannelMemberCount as jest.Mock).mockReturnValue(4);
     (useChannelOnlineMemberCount as jest.Mock).mockReturnValue(0);
@@ -76,5 +75,43 @@ describe('useChannelDetailsMemberStatusText', () => {
     rerender({});
 
     expect(result.current).toBe('4 members, 3 online');
+  });
+
+  describe('direct chats', () => {
+    beforeEach(() => {
+      (useIsDirectChat as jest.Mock).mockReturnValue(true);
+    });
+
+    it('returns "Online" when the other member is online', () => {
+      (useChannelMembersState as jest.Mock).mockReturnValue({
+        [OWN_USER_ID]: { user: { id: OWN_USER_ID, online: true } },
+        other: { user: { id: 'other-user', online: true } },
+      });
+
+      const { result } = renderStatusText();
+
+      expect(result.current).toBe('Online');
+    });
+
+    it('returns an empty string when the other member is offline', () => {
+      (useChannelMembersState as jest.Mock).mockReturnValue({
+        [OWN_USER_ID]: { user: { id: OWN_USER_ID, online: true } },
+        other: { user: { id: 'other-user', online: false } },
+      });
+
+      const { result } = renderStatusText();
+
+      expect(result.current).toBe('');
+    });
+
+    it('ignores the current user when resolving the other member', () => {
+      (useChannelMembersState as jest.Mock).mockReturnValue({
+        [OWN_USER_ID]: { user: { id: OWN_USER_ID, online: true } },
+      });
+
+      const { result } = renderStatusText();
+
+      expect(result.current).toBe('');
+    });
   });
 });

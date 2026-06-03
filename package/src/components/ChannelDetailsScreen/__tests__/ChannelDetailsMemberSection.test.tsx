@@ -252,7 +252,7 @@ describe('ChannelDetailsMemberSection', () => {
       .reverse()
       .find((call) => call.member.user?.id === 'u-0');
     act(() => {
-      lastCallForFirstMember?.onPress?.();
+      lastCallForFirstMember?.onPress?.(lastCallForFirstMember.member);
     });
 
     expect(screen.getByTestId('member-actions-sheet-probe')).toBeTruthy();
@@ -271,7 +271,7 @@ describe('ChannelDetailsMemberSection', () => {
       .reverse()
       .find((call) => call.member.user?.id === 'u-1');
     act(() => {
-      lastCallForSecondMember?.onPress?.();
+      lastCallForSecondMember?.onPress?.(lastCallForSecondMember.member);
     });
 
     expect(onMemberPress).toHaveBeenCalledTimes(1);
