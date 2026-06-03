@@ -17,6 +17,7 @@ export type ChannelMemberActionItemsParams = {
   actions: UserActions;
   channel: Channel;
   isBlocked: boolean;
+  isCurrentUser: boolean;
   member: ChannelMemberResponse;
   t: TranslationContextValue['t'];
   userMuteActive: boolean;
@@ -43,36 +44,43 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
   const {
     actions: { blockUser, muteUser, unblockUser, unmuteUser },
     isBlocked,
+    isCurrentUser,
     t,
     userMuteActive,
   } = channelMemberActionItemsParams;
 
-  const actionItems: ChannelMemberActionItem[] = [
-    {
-      action: userMuteActive ? unmuteUser : muteUser,
-      Icon: (props) =>
-        userMuteActive ? (
-          <ChannelMemberActionsIcon Icon={Sound} {...props} />
-        ) : (
-          <ChannelMemberActionsIcon
-            Icon={Mute}
-            {...props}
-            fill={props.fill ?? props.stroke}
-            stroke={undefined}
-          />
-        ),
-      id: 'muteUser',
-      label: userMuteActive ? t('Unmute User') : t('Mute User'),
-      type: 'standard',
-    },
-    {
-      action: isBlocked ? unblockUser : blockUser,
-      Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
-      id: 'block',
-      label: isBlocked ? t('Unblock User') : t('Block User'),
-      type: isBlocked ? 'standard' : 'destructive',
-    },
-  ];
+  const actionItems: ChannelMemberActionItem[] = [];
+
+  // Muting or blocking yourself is meaningless, so these actions are only
+  // added for other members.
+  if (!isCurrentUser) {
+    actionItems.push(
+      {
+        action: userMuteActive ? unmuteUser : muteUser,
+        Icon: (props) =>
+          userMuteActive ? (
+            <ChannelMemberActionsIcon Icon={Sound} {...props} />
+          ) : (
+            <ChannelMemberActionsIcon
+              Icon={Mute}
+              {...props}
+              fill={props.fill ?? props.stroke}
+              stroke={undefined}
+            />
+          ),
+        id: 'muteUser',
+        label: userMuteActive ? t('Unmute User') : t('Mute User'),
+        type: 'standard',
+      },
+      {
+        action: isBlocked ? unblockUser : blockUser,
+        Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
+        id: 'block',
+        label: isBlocked ? t('Unblock User') : t('Block User'),
+        type: isBlocked ? 'standard' : 'destructive',
+      },
+    );
+  }
 
   return actionItems;
 };
@@ -112,16 +120,19 @@ export const useChannelMemberActionItems = ({
 
   const isBlocked = blockedUserIds.includes(member.user?.id ?? '');
 
+  const isCurrentUser = member.user?.id === channel.getClient().userID;
+
   const channelMemberActionItemsParams = useMemo<ChannelMemberActionItemsParams>(
     () => ({
       actions: userActions,
       channel,
       isBlocked,
+      isCurrentUser,
       member,
       t,
       userMuteActive,
     }),
-    [channel, isBlocked, member, t, userActions, userMuteActive],
+    [channel, isBlocked, isCurrentUser, member, t, userActions, userMuteActive],
   );
 
   const defaultItems = useMemo(

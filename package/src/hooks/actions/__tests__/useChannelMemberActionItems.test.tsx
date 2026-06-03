@@ -25,14 +25,15 @@ const createMemberMock = (userId = 'target-user-id'): ChannelMemberResponse =>
     user_id: userId,
   }) as ChannelMemberResponse;
 
-const createChannelMock = (params?: { blockedUserIds?: string[] }): Channel => {
-  const { blockedUserIds = [] } = params ?? {};
+const createChannelMock = (params?: { blockedUserIds?: string[]; userID?: string }): Channel => {
+  const { blockedUserIds = [], userID = 'current-user-id' } = params ?? {};
   return {
     getClient: () => ({
       blockedUsers: {
         getLatestValue: () => ({ userIds: blockedUserIds }),
         subscribeWithSelector: () => () => {},
       },
+      userID,
     }),
   } as unknown as Channel;
 };
@@ -68,6 +69,16 @@ describe('useChannelMemberActionItems', () => {
     ]);
     expect(result.current.map((item) => item.type)).toEqual(['standard', 'destructive']);
     expect(result.current.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
+  });
+
+  it('returns no action items when the member is the current user', () => {
+    const currentUserChannel = createChannelMock({ userID: 'target-user-id' });
+
+    const { result } = renderHook(() =>
+      useChannelMemberActionItems({ channel: currentUserChannel, member }),
+    );
+
+    expect(result.current).toEqual([]);
   });
 
   it('toggles muteUser to unmuteUser when the member is already muted', () => {
@@ -140,6 +151,7 @@ describe('useChannelMemberActionItems', () => {
         actions: userActions,
         channel,
         isBlocked: false,
+        isCurrentUser: false,
         member,
         t: expect.any(Function),
         userMuteActive: false,
@@ -161,6 +173,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       actions,
       channel,
       isBlocked: false,
+      isCurrentUser: false,
       member,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
@@ -172,12 +185,28 @@ describe('buildDefaultChannelMemberActionItems', () => {
     expect(items.map((item) => item.type)).toEqual(['standard', 'destructive']);
   });
 
+  it('returns no items when the member is the current user', () => {
+    const actions = createUserActions();
+    const items = buildDefaultChannelMemberActionItems({
+      actions,
+      channel,
+      isBlocked: false,
+      isCurrentUser: true,
+      member,
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    expect(items).toEqual([]);
+  });
+
   it('returns unmute/unblock variants when toggles are active', () => {
     const actions = createUserActions();
     const items = buildDefaultChannelMemberActionItems({
       actions,
       channel,
       isBlocked: true,
+      isCurrentUser: false,
       member,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
@@ -194,6 +223,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       actions,
       channel,
       isBlocked: false,
+      isCurrentUser: false,
       member,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
@@ -209,6 +239,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       actions,
       channel,
       isBlocked: false,
+      isCurrentUser: false,
       member,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
@@ -219,6 +250,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
         actions,
         channel,
         isBlocked: false,
+        isCurrentUser: false,
         member,
         t: ((value: string) => value) as TranslationContextValue['t'],
         userMuteActive: false,
