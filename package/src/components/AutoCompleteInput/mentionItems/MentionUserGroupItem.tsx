@@ -6,12 +6,14 @@ import { EnhancedMentionContent } from './EnhancedMentionContent';
 import { EnhancedMentionIcon } from './EnhancedMentionIcon';
 import { MentionItem } from './MentionItem';
 
+import { PeopleIcon } from '../../../icons/users';
+
 export type MentionUserGroupItemProps = {
   entity: UserGroupMentionSuggestion;
 };
 
 export const MentionUserGroupItem = ({ entity }: MentionUserGroupItemProps) => (
-  <MentionItem leading={<EnhancedMentionIcon mentionType='user_group' />}>
+  <MentionItem leading={<EnhancedMentionIcon Icon={PeopleIcon} />}>
     <EnhancedMentionContent
       subtitle={entity.description}
       testID='mentions-item-name'

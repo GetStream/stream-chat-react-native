@@ -5,8 +5,8 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 export type MentionItemProps = PropsWithChildren<{
   /**
-   * Leading visual rendered to the left of the row. Avatar for user mentions,
-   * an `EnhancedMentionIcon` for the rest.
+   * Leading visual rendered to the left of the row. UserAvatar for user
+   * mentions, an `EnhancedMentionIcon` for the rest.
    */
   leading?: ReactNode;
   testID?: string;

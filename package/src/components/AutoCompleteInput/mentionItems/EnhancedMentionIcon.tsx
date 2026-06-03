@@ -1,15 +1,16 @@
 import React from 'react';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Megaphone } from '../../../icons/megaphone';
-import { Shield } from '../../../icons/shield';
-import { PeopleIcon } from '../../../icons/users';
 import type { IconProps } from '../../../icons/utils/base';
 
-export type EnhancedMentionType = 'channel' | 'here' | 'role' | 'user_group';
-
 export type EnhancedMentionIconProps = {
-  mentionType: EnhancedMentionType;
+  /**
+   * Any icon component from `package/src/icons` (or a custom one matching the
+   * same `IconProps` shape). The wrapper standardizes size + color and is the
+   * single place future visual treatments (e.g. an icon backdrop) will be
+   * added — per-type mention items don't have to know about any of that.
+   */
+  Icon: React.ComponentType<IconProps>;
   /**
    * Icon size in px. Defaults to 24.
    */
@@ -21,29 +22,15 @@ export type EnhancedMentionIconProps = {
 };
 
 /**
- * Universal icon for non-user mention rows. Resolves a per-type icon
- * (megaphone for channel/here, shield for role, people for user_group) so the
- * dispatcher doesn't have to branch on icon imports.
+ * Universal wrapper for non-user mention-row icons. Renders the supplied
+ * `Icon` component with consistent size + color. Per-type mention items
+ * (`MentionBroadcastItem`, `MentionRoleItem`, `MentionUserGroupItem`) pass
+ * their specific icon component in — integrators wanting to swap a single
+ * type's icon can wrap their own one-liner around this same primitive.
  */
-export const EnhancedMentionIcon = ({
-  color,
-  mentionType,
-  size = 24,
-}: EnhancedMentionIconProps) => {
+export const EnhancedMentionIcon = ({ color, Icon, size = 16 }: EnhancedMentionIconProps) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const resolvedColor = color ?? semantics.textSecondary;
-
-  switch (mentionType) {
-    case 'channel':
-    case 'here':
-      return <Megaphone pathFill={resolvedColor} size={size} />;
-    case 'role':
-      return <Shield pathFill={resolvedColor} size={size} />;
-    case 'user_group':
-      return <PeopleIcon pathFill={resolvedColor} size={size} />;
-    default:
-      return null;
-  }
+  return <Icon pathFill={color ?? semantics.textSecondary} size={size} />;
 };

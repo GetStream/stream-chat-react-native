@@ -1,7 +1,7 @@
 export { EnhancedMentionContent } from './EnhancedMentionContent';
 export type { EnhancedMentionContentProps } from './EnhancedMentionContent';
 export { EnhancedMentionIcon } from './EnhancedMentionIcon';
-export type { EnhancedMentionIconProps, EnhancedMentionType } from './EnhancedMentionIcon';
+export type { EnhancedMentionIconProps } from './EnhancedMentionIcon';
 export { MentionBroadcastItem } from './MentionBroadcastItem';
 export type { MentionBroadcastItemProps } from './MentionBroadcastItem';
 export { MentionItem } from './MentionItem';

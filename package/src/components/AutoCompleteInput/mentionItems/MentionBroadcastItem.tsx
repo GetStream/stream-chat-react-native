@@ -7,6 +7,7 @@ import { EnhancedMentionIcon } from './EnhancedMentionIcon';
 import { MentionItem } from './MentionItem';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { Megaphone } from '../../../icons/megaphone';
 
 export type MentionBroadcastItemProps = {
   entity: ChannelMentionSuggestion | HereMentionSuggestion;
@@ -24,7 +25,7 @@ const SUBTITLE_KEY = {
 export const MentionBroadcastItem = ({ entity }: MentionBroadcastItemProps) => {
   const { t } = useTranslationContext();
   return (
-    <MentionItem leading={<EnhancedMentionIcon mentionType={entity.mentionType} />}>
+    <MentionItem leading={<EnhancedMentionIcon Icon={Megaphone} />}>
       <EnhancedMentionContent
         subtitle={t(SUBTITLE_KEY[entity.mentionType])}
         testID='mentions-item-name'
