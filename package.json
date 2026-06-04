@@ -11,8 +11,7 @@
   ],
   "resolutions": {
     "@types/react": "^19.2.0",
-    "@shopify/flash-list": "patch:@shopify/flash-list@npm%3A2.3.1#~/.yarn/patches/@shopify-flash-list-npm-2.3.1-8b5fd40241.patch",
-    "stream-chat": "portal:/Users/isekovanic/Projects/stream-chat-js"
+    "@shopify/flash-list": "patch:@shopify/flash-list@npm%3A2.3.1#~/.yarn/patches/@shopify-flash-list-npm-2.3.1-8b5fd40241.patch"
   },
   "engines": {
     "node": ">=20.19.4"
