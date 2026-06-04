@@ -1,9 +1,27 @@
+import React from 'react';
+
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
+import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
+
+jest.mock('../../../Notifications/hooks/useNotificationApi', () => ({
+  useNotificationApi: jest.fn(() => ({ addNotification: jest.fn() })),
+}));
+
+const t = ((key: string) => key) as never;
+
+const translationWrapper = ({ children }: { children: React.ReactNode }) => (
+  <TranslationProvider
+    value={{ t, tDateTimeParser: ((input: unknown) => input) as never, userLanguage: 'en' }}
+  >
+    {children}
+  </TranslationProvider>
+);
 
 type QueryMembersMock = jest.Mock<
   Promise<{ members: ChannelMemberResponse[] }>,
@@ -37,14 +55,11 @@ const buildMembers = (count: number, prefix = 'u') =>
   );
 
 describe('useChannelAllMembers', () => {
-  let warnSpy: jest.SpyInstance;
+  let addNotification: jest.Mock;
 
   beforeEach(() => {
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-  });
-
-  afterEach(() => {
-    warnSpy.mockRestore();
+    addNotification = jest.fn();
+    (useNotificationApi as jest.Mock).mockReturnValue({ addNotification });
   });
 
   describe('local mode', () => {
@@ -192,7 +207,7 @@ describe('useChannelAllMembers', () => {
       await waitFor(() => expect(result.current.loading).toBe(false));
     });
 
-    it('recovers from a queryMembers rejection', async () => {
+    it('recovers from a queryMembers rejection and notifies the user', async () => {
       const queryMembers: QueryMembersMock = jest.fn().mockRejectedValue(new Error('boom'));
       const channel = buildChannel({
         memberCount: 200,
@@ -200,13 +215,19 @@ describe('useChannelAllMembers', () => {
         queryMembers,
       });
 
-      const { result } = renderHook(() => useChannelAllMembers({ channel }));
+      const { result } = renderHook(() => useChannelAllMembers({ channel }), {
+        wrapper: translationWrapper,
+      });
 
       await waitFor(() => expect(result.current.loading).toBe(false));
       expect(result.current.results).toEqual([]);
-      expect(warnSpy).toHaveBeenCalledWith(
-        '[useChannelAllMembers] queryMembers failed',
-        expect.any(Error),
+      expect(addNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            severity: 'error',
+            type: 'api:channel:query-members:failed',
+          }),
+        }),
       );
     });
   });

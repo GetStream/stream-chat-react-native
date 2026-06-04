@@ -6,6 +6,8 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { useChannelMemberCount } from '../../../../hooks';
 import { useChannelOwnCapabilities } from '../../../../hooks/useChannelOwnCapabilities';
 import { UserAdd } from '../../../../icons/user-add';
+import { NotificationList } from '../../../Notifications/NotificationList';
+import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { Button } from '../../../ui/Button/Button';
 import { ChannelDetailsModal } from '../modal/Modal';
 import { ModalHeader } from '../modal/ModalHeader';
@@ -50,6 +52,7 @@ const ChannelAllMembersModalContent = ({
         title={t('{{count}} members', { count: total })}
       />
       <ChannelMemberList />
+      <NotificationList />
     </>
   );
 };
@@ -61,11 +64,20 @@ export const ChannelAllMembersModal = ({
   onAddMembersPress,
   onClose,
   visible,
-}: ChannelAllMembersModalProps) => (
+}: ChannelAllMembersModalProps) => {
+  const { channel } = useChannelDetailsContext();
+  const notificationHostId = channel?.cid ? `channel-member-list:${channel.cid}` : undefined;
+
   // The content lives in a child component so its hooks (member-state subscription,
   // member preview sort) only run while the modal is open. React Native's `Modal`
   // renders `null` when `visible` is false, so the child never mounts until then.
-  <ChannelDetailsModal onClose={onClose} visible={visible}>
-    <ChannelAllMembersModalContent onAddMembersPress={onAddMembersPress} onClose={onClose} />
-  </ChannelDetailsModal>
-);
+  return (
+    <ChannelDetailsModal onClose={onClose} visible={visible}>
+      {notificationHostId ? (
+        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+          <ChannelAllMembersModalContent onAddMembersPress={onAddMembersPress} onClose={onClose} />
+        </NotificationTargetProvider>
+      ) : null}
+    </ChannelDetailsModal>
+  );
+};

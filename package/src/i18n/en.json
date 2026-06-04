@@ -379,6 +379,7 @@
   "Failed to block user": "Failed to block user",
   "Failed to delete channel": "Failed to delete channel",
   "Failed to leave channel": "Failed to leave channel",
+  "Failed to load members": "Failed to load members",
   "Failed to load users": "Failed to load users",
   "Failed to play the recording": "Failed to play the recording",
   "Failed to update channel archive status": "Failed to update channel archive status",

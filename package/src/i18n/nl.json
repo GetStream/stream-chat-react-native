@@ -409,5 +409,6 @@
   "a11y/Double tap and hold to activate contextual menu": "Dubbeltik en houd vast om het contextmenu te openen",
   "a11y/Swipe right to go through different actions": "Veeg naar rechts om door verschillende acties te bladeren",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "Muted": "Gedempt"
+  "Muted": "Gedempt",
+  "Failed to load members": "Leden laden mislukt"
 }

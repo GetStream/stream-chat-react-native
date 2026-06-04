@@ -2,7 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Channel, ChannelMemberResponse, MemberFilters, MemberSort } from 'stream-chat';
 
+import { useTranslationContext } from '../../../../contexts';
+import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useChannelMembersState } from '../../../ChannelList/hooks/useChannelMembersState';
+import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 
 const PAGE_SIZE = 25;
 
@@ -23,6 +26,8 @@ export const useChannelAllMembers = ({
 }: {
   channel: Channel;
 }): UseChannelAllMembersResult => {
+  const { addNotification } = useNotificationApi();
+  const { t } = useTranslationContext();
   const localMembers = useChannelMembersState(channel);
 
   // Mode is decided once on mount (per channel). If member_count is unknown or matches
@@ -75,7 +80,15 @@ export const useChannelAllMembers = ({
         }
       } catch (err) {
         if (requestId !== requestIdRef.current) return;
-        console.warn('[useChannelAllMembers] queryMembers failed', err);
+        addNotification({
+          message: t('Failed to load members'),
+          options: {
+            ...getNotificationErrorOptions(err),
+            severity: 'error',
+            type: 'api:channel:query-members:failed',
+          },
+          origin: { context: { channel }, emitter: 'ChannelAllMembers' },
+        });
       } finally {
         if (requestId === requestIdRef.current) {
           inFlightRef.current = false;
@@ -83,7 +96,7 @@ export const useChannelAllMembers = ({
         }
       }
     },
-    [channel],
+    [addNotification, channel, t],
   );
 
   const fetchPageRef = useRef(fetchPage);

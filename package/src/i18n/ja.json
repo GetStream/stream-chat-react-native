@@ -409,5 +409,6 @@
   "a11y/Double tap and hold to activate contextual menu": "コンテキストメニューを表示するにはダブルタップして長押し",
   "a11y/Swipe right to go through different actions": "右にスワイプして異なるアクションを切り替えます",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "Muted": "ミュート中"
+  "Muted": "ミュート中",
+  "Failed to load members": "メンバーの読み込みに失敗しました"
 }
