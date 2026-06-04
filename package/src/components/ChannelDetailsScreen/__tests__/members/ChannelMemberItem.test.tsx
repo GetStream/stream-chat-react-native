@@ -50,8 +50,8 @@ const renderRow = ({
       <TranslationProvider
         value={{
           t: ((key: string, options?: Record<string, unknown>) => {
-            if (options && 'relativeTime' in options) {
-              return key.replace('{{relativeTime}}', String(options.relativeTime));
+            if (key === 'timestamp/UserActivityStatus' && options && 'timestamp' in options) {
+              return `Last seen ${Dayjs(options.timestamp as Date).fromNow()}`;
             }
             return key;
           }) as never,
