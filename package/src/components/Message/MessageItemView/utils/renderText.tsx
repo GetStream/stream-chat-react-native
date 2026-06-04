@@ -152,7 +152,7 @@ const defaultMarkdownStyles: MarkdownStyle = {
     flexDirection: 'row',
   },
   mentions: {
-    fontWeight: '700',
+    fontWeight: primitives.typographyFontWeightRegular,
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
   },
