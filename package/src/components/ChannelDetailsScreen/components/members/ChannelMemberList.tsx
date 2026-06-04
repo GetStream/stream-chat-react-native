@@ -28,7 +28,7 @@ export type ChannelMemberListProps = {
 export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberListProps = {}) => {
   const { channel, onMemberPress } = useChannelDetailsContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
-  const { hasMore, loading, loadingMore, loadMore, results } = useChannelAllMembers({ channel });
+  const { hasMore, loading, loadMore, results } = useChannelAllMembers({ channel });
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
@@ -52,8 +52,8 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
   );
 
   const ListFooterComponent = useMemo(
-    () => (loadingMore ? <ActivityIndicator /> : null),
-    [loadingMore],
+    () => (loading && results.length > 0 ? <ActivityIndicator /> : null),
+    [loading, results.length],
   );
 
   if (loading && results.length === 0) {

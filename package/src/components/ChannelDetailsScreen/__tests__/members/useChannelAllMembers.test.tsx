@@ -59,7 +59,6 @@ describe('useChannelAllMembers', () => {
       expect(result.current.results.map((m) => m.user?.id)).toEqual(['u-0', 'u-1', 'u-2']);
       expect(result.current.hasMore).toBe(false);
       expect(result.current.loading).toBe(false);
-      expect(result.current.loadingMore).toBe(false);
     });
 
     it('treats undefined member_count as fully loaded', () => {
@@ -137,7 +136,7 @@ describe('useChannelAllMembers', () => {
         { limit: 25, offset: 25 },
       );
 
-      await waitFor(() => expect(result.current.loadingMore).toBe(false));
+      await waitFor(() => expect(result.current.loading).toBe(false));
       expect(result.current.results).toHaveLength(35);
       expect(result.current.hasMore).toBe(false);
     });
@@ -181,7 +180,8 @@ describe('useChannelAllMembers', () => {
       await waitFor(() => expect(result.current.loading).toBe(false));
 
       act(() => result.current.loadMore());
-      await waitFor(() => expect(result.current.loadingMore).toBe(true));
+      await waitFor(() => expect(result.current.loading).toBe(true));
+      expect(result.current.results.length).toBeGreaterThan(0);
 
       act(() => result.current.loadMore());
       act(() => result.current.loadMore());
@@ -189,7 +189,7 @@ describe('useChannelAllMembers', () => {
       expect(queryMembers).toHaveBeenCalledTimes(2);
 
       act(() => resolveSecond?.({ members: buildMembers(25, 'page2') }));
-      await waitFor(() => expect(result.current.loadingMore).toBe(false));
+      await waitFor(() => expect(result.current.loading).toBe(false));
     });
 
     it('recovers from a queryMembers rejection', async () => {
@@ -204,7 +204,6 @@ describe('useChannelAllMembers', () => {
 
       await waitFor(() => expect(result.current.loading).toBe(false));
       expect(result.current.results).toEqual([]);
-      expect(result.current.loadingMore).toBe(false);
       expect(warnSpy).toHaveBeenCalledWith(
         '[useChannelAllMembers] queryMembers failed',
         expect.any(Error),

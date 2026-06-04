@@ -49,7 +49,6 @@ type HookResult = ReturnType<typeof useChannelAllMembers>;
 const baseHookResult = (): HookResult => ({
   hasMore: false,
   loading: false,
-  loadingMore: false,
   loadMore: jest.fn(),
   results: [],
 });
@@ -186,15 +185,16 @@ describe('ChannelMemberList', () => {
     expect(latestListProps()?.onEndReached).toBeUndefined();
   });
 
-  it('renders a footer spinner only while loadingMore', () => {
-    mockHook({ loadingMore: true, results: [] });
+  it('renders a footer spinner only while loading more (loading with existing results)', () => {
+    const results = [generateMember({ user: generateUser({ id: 'alice' }) })];
+    mockHook({ loading: true, results });
     renderList();
     const footer = latestListProps()?.ListFooterComponent as React.ReactElement;
     expect(footer).not.toBeNull();
     expect(footer.type).toBe(ActivityIndicator);
 
     mockFlatList.mockClear();
-    mockHook({ loadingMore: false, results: [] });
+    mockHook({ loading: false, results });
     renderList();
     expect(latestListProps()?.ListFooterComponent).toBeNull();
   });

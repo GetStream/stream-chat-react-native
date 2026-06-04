@@ -52,7 +52,6 @@ export const ChannelAddMembers = ({
     isAlreadyMember,
     isSelected,
     loading,
-    loadingMore,
     loadMore,
     onChangeSearchText,
     results,
@@ -88,7 +87,7 @@ export const ChannelAddMembers = ({
     />
   );
 
-  const loadingMoreIndicator = <>{loadingMore && <ActivityIndicator />}</>;
+  const loadingMoreIndicator = <>{loading && results.length > 0 && <ActivityIndicator />}</>;
 
   return (
     <View style={styles.container}>

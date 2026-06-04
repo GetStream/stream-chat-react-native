@@ -9,7 +9,6 @@ const PAGE_SIZE = 25;
 export type UseChannelAllMembersResult = {
   hasMore: boolean;
   loading: boolean;
-  loadingMore: boolean;
   loadMore: () => void;
   results: ChannelMemberResponse[];
 };
@@ -37,7 +36,6 @@ export const useChannelAllMembers = ({
 
   const [results, setResults] = useState<ChannelMemberResponse[]>([]);
   const [loading, setLoading] = useState(mode === 'paginated');
-  const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(mode === 'paginated');
 
   const offsetRef = useRef(0);
@@ -48,10 +46,8 @@ export const useChannelAllMembers = ({
     async ({ append }: { append: boolean }) => {
       const requestId = ++requestIdRef.current;
       inFlightRef.current = true;
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
+      setLoading(true);
+      if (!append) {
         offsetRef.current = 0;
         setHasMore(true);
       }
@@ -84,7 +80,6 @@ export const useChannelAllMembers = ({
         if (requestId === requestIdRef.current) {
           inFlightRef.current = false;
           setLoading(false);
-          setLoadingMore(false);
         }
       }
     },
@@ -114,11 +109,10 @@ export const useChannelAllMembers = ({
     return {
       hasMore: false,
       loading: false,
-      loadingMore: false,
       loadMore: noop,
       results: localResults,
     };
   }
 
-  return { hasMore, loading, loadingMore, loadMore, results };
+  return { hasMore, loading, loadMore, results };
 };

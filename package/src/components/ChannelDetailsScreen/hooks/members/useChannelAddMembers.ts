@@ -17,7 +17,6 @@ export type UseChannelAddMembersResult = {
   isAlreadyMember: (userId: string) => boolean;
   isSelected: (userId: string) => boolean;
   loading: boolean;
-  loadingMore: boolean;
   loadMore: () => void;
   onChangeSearchText: (text: string) => void;
   results: UserResponse[];
@@ -40,7 +39,6 @@ export const useChannelAddMembers = ({
   const [results, setResults] = useState<UserResponse[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
   const queryRef = useRef('');
@@ -55,10 +53,8 @@ export const useChannelAddMembers = ({
     async ({ append, query }: { append: boolean; query: string }) => {
       const requestId = ++requestIdRef.current;
       inFlightRef.current = true;
-      if (append) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
+      setLoading(true);
+      if (!append) {
         offsetRef.current = 0;
         setHasMore(true);
       }
@@ -104,7 +100,6 @@ export const useChannelAddMembers = ({
         if (requestId === requestIdRef.current) {
           inFlightRef.current = false;
           setLoading(false);
-          setLoadingMore(false);
         }
       }
     },
@@ -170,7 +165,6 @@ export const useChannelAddMembers = ({
     isAlreadyMember,
     isSelected,
     loading,
-    loadingMore,
     loadMore,
     onChangeSearchText,
     results,

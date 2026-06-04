@@ -71,7 +71,6 @@ const baseHookResult = (): UseChannelAddMembersResult => ({
   isAlreadyMember: jest.fn(() => false),
   isSelected: jest.fn(() => false),
   loading: false,
-  loadingMore: false,
   loadMore: jest.fn(),
   onChangeSearchText: jest.fn(),
   results: [],
@@ -170,8 +169,8 @@ describe('ChannelAddMembers', () => {
     expect(screen.getByText('No user found')).toBeTruthy();
   });
 
-  it('renders the loading-more indicator only while loadingMore is true', () => {
-    mockHook({ loadingMore: true });
+  it('renders the loading-more indicator only while loading with existing results', () => {
+    mockHook({ loading: true, results: [generateUser({ id: 'alice' })] });
     renderComponent();
     expect(screen.UNSAFE_getByType(require('react-native').ActivityIndicator)).toBeTruthy();
   });

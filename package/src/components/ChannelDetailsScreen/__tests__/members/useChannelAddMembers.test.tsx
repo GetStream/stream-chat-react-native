@@ -153,7 +153,7 @@ describe('useChannelAddMembers', () => {
     await waitFor(() => expect(queryUsers).toHaveBeenCalledTimes(2));
     expect(queryUsers).toHaveBeenNthCalledWith(2, {}, { name: 1 }, { limit: 25, offset: 25 });
 
-    await waitFor(() => expect(result.current.loadingMore).toBe(false));
+    await waitFor(() => expect(result.current.loading).toBe(false));
     // 25 + 10 fresh (the overlapping page1 row is deduped away)
     expect(result.current.results).toHaveLength(35);
     expect(result.current.hasMore).toBe(false);
