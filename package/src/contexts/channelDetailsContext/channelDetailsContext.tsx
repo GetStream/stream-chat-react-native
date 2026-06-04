@@ -2,8 +2,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { ChannelDetailsScreenProps } from '../../components';
 
-import { useCreateOwnCapabilitiesContext } from '../../components/Channel/hooks/useCreateOwnCapabilitiesContext';
-import { OwnCapabilitiesProvider } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -23,15 +21,11 @@ export const ChannelDetailsContextProvider = ({
   value,
 }: PropsWithChildren<{
   value: ChannelDetailsContextValue;
-}>) => {
-  const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({ channel: value.channel });
-
-  return (
-    <ChannelDetailsContext.Provider value={value as unknown as ChannelDetailsContextValue}>
-      <OwnCapabilitiesProvider value={ownCapabilitiesContext}>{children}</OwnCapabilitiesProvider>
-    </ChannelDetailsContext.Provider>
-  );
-};
+}>) => (
+  <ChannelDetailsContext.Provider value={value as unknown as ChannelDetailsContextValue}>
+    {children}
+  </ChannelDetailsContext.Provider>
+);
 
 /**
  * @experimental This API is experimental and is subject to change.

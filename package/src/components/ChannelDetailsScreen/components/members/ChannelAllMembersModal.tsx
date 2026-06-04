@@ -2,9 +2,9 @@ import React from 'react';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
-import { useOwnCapabilitiesContext } from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useChannelMemberCount } from '../../../../hooks';
+import { useChannelOwnCapabilities } from '../../../../hooks/useChannelOwnCapabilities';
 import { UserAdd } from '../../../../icons/user-add';
 import { Button } from '../../../ui/Button/Button';
 import { ChannelDetailsModal } from '../modal/Modal';
@@ -25,7 +25,8 @@ const ChannelAllMembersModalContent = ({
   const { channel } = useChannelDetailsContext();
   const { ChannelMemberList } = useComponentsContext();
   const { t } = useTranslationContext();
-  const { updateChannelMembers } = useOwnCapabilitiesContext();
+  const ownCapabilities = useChannelOwnCapabilities(channel);
+  const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
   const total = useChannelMemberCount(channel);
 
   return (
