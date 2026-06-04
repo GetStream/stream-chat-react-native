@@ -325,7 +325,7 @@
   "Edit": "संपादित करें",
   "Files": "फ़ाइलें",
   "Group Info": "ग्रुप की जानकारी",
-  "Last seen {{relativeTime}}": "अंतिम बार देखा गया {{relativeTime}}",
+  "timestamp/UserActivityStatus": "अंतिम बार देखा गया {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "फ़ोटो और वीडियो",
   "Pinned Messages": "पिन किए गए संदेश",
   "View all": "सभी देखें",

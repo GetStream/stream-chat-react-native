@@ -325,7 +325,7 @@
   "Edit": "編集",
   "Files": "ファイル",
   "Group Info": "グループ情報",
-  "Last seen {{relativeTime}}": "最終ログイン {{relativeTime}}",
+  "timestamp/UserActivityStatus": "最終ログイン {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "写真と動画",
   "Pinned Messages": "ピン留めされたメッセージ",
   "View all": "すべて表示",

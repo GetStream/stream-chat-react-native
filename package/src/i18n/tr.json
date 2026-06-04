@@ -325,7 +325,7 @@
   "Edit": "Düzenle",
   "Files": "Dosyalar",
   "Group Info": "Grup bilgileri",
-  "Last seen {{relativeTime}}": "Son görülme {{relativeTime}}",
+  "timestamp/UserActivityStatus": "Son görülme {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "Fotoğraflar ve Videolar",
   "Pinned Messages": "Sabitlenmiş mesajlar",
   "View all": "Tümünü göster",

@@ -325,7 +325,7 @@
   "Edit": "Изменить",
   "Files": "Файлы",
   "Group Info": "Информация о группе",
-  "Last seen {{relativeTime}}": "Был(а) в сети {{relativeTime}}",
+  "timestamp/UserActivityStatus": "Был(а) в сети {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "Фото и видео",
   "Pinned Messages": "Закреплённые сообщения",
   "View all": "Показать все",

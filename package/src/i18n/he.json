@@ -325,7 +325,7 @@
   "Edit": "ערוך",
   "Files": "קבצים",
   "Group Info": "פרטי הקבוצה",
-  "Last seen {{relativeTime}}": "נראה לאחרונה {{relativeTime}}",
+  "timestamp/UserActivityStatus": "נראה לאחרונה {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "תמונות וסרטונים",
   "Pinned Messages": "הודעות מוצמדות",
   "View all": "הצג הכל",

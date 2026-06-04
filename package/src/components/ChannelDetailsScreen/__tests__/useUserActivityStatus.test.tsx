@@ -1,30 +1,24 @@
 import React, { type PropsWithChildren } from 'react';
 
 import { renderHook } from '@testing-library/react-native';
-import Dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import type { UserResponse } from 'stream-chat';
 
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import {
+  TranslationProvider,
+  type TranslationContextValue,
+} from '../../../contexts/translationContext/TranslationContext';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
 
-Dayjs.extend(relativeTime);
+let translators: TranslationContextValue;
+
+beforeAll(async () => {
+  const i18nInstance = new Streami18n();
+  translators = (await i18nInstance.getTranslators()) as unknown as TranslationContextValue;
+});
 
 const wrapper = ({ children }: PropsWithChildren) => (
-  <TranslationProvider
-    value={{
-      t: ((key: string, options?: Record<string, unknown>) => {
-        if (options && 'relativeTime' in options) {
-          return `${key.replace('{{relativeTime}}', String(options.relativeTime))}`;
-        }
-        return key;
-      }) as never,
-      tDateTimeParser: (input) => Dayjs(input),
-      userLanguage: 'en',
-    }}
-  >
-    {children}
-  </TranslationProvider>
+  <TranslationProvider value={translators}>{children}</TranslationProvider>
 );
 
 const userFor = (overrides: Partial<UserResponse> = {}): UserResponse =>

@@ -325,7 +325,7 @@
   "Edit": "تعديل",
   "Files": "الملفات",
   "Group Info": "معلومات المجموعة",
-  "Last seen {{relativeTime}}": "آخر ظهور {{relativeTime}}",
+  "timestamp/UserActivityStatus": "آخر ظهور {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "الصور ومقاطع الفيديو",
   "Pinned Messages": "الرسائل المثبتة",
   "View all": "عرض الكل",

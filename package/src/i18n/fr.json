@@ -325,7 +325,7 @@
   "Edit": "Modifier",
   "Files": "Fichiers",
   "Group Info": "Informations du groupe",
-  "Last seen {{relativeTime}}": "Vu pour la dernière fois {{relativeTime}}",
+  "timestamp/UserActivityStatus": "Vu pour la dernière fois {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "Photos et vidéos",
   "Pinned Messages": "Messages épinglés",
   "View all": "Tout voir",

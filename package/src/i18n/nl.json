@@ -325,7 +325,7 @@
   "Edit": "Bewerken",
   "Files": "Bestanden",
   "Group Info": "Groepsinformatie",
-  "Last seen {{relativeTime}}": "Laatst gezien {{relativeTime}}",
+  "timestamp/UserActivityStatus": "Laatst gezien {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "Foto's en video's",
   "Pinned Messages": "Vastgemaakte berichten",
   "View all": "Alles bekijken",

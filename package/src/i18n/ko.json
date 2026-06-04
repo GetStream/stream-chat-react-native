@@ -325,7 +325,7 @@
   "Edit": "편집",
   "Files": "파일",
   "Group Info": "그룹 정보",
-  "Last seen {{relativeTime}}": "마지막 접속 {{relativeTime}}",
+  "timestamp/UserActivityStatus": "마지막 접속 {{ timestamp | fromNowFormatter }}",
   "Photos & Videos": "사진 및 동영상",
   "Pinned Messages": "고정된 메시지",
   "View all": "모두 보기",
