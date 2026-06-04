@@ -12,9 +12,8 @@ export type EnhancedMentionContentProps = {
 
 /**
  * Title + optional subtitle pair used by every non-user mention row
- * (channel / here / role / user_group). Typography and color come from the
- * SDK semantic theme — customize via `theme.messageComposer.suggestions.mention.name`
- * rather than per-instance style props.
+ * (channel / here / role / user_group). Override styling via
+ * `theme.messageComposer.suggestions.mention.enhancedMention{Container,Title,Subtitle}`.
  */
 export const EnhancedMentionContent = ({
   subtitle,
@@ -26,7 +25,7 @@ export const EnhancedMentionContent = ({
       semantics,
       messageComposer: {
         suggestions: {
-          mention: { name: nameStyle },
+          mention: { enhancedMentionContainer, enhancedMentionSubtitle, enhancedMentionTitle },
         },
       },
     },
@@ -34,12 +33,19 @@ export const EnhancedMentionContent = ({
   const styles = useStyles();
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { color: semantics.textPrimary }, nameStyle]} testID={testID}>
+    <View style={[styles.container, enhancedMentionContainer]}>
+      <Text
+        style={[styles.title, { color: semantics.textPrimary }, enhancedMentionTitle]}
+        testID={testID}
+      >
         {title}
       </Text>
       {subtitle ? (
-        <Text style={[styles.subtitle, { color: semantics.textSecondary }]}>{subtitle}</Text>
+        <Text
+          style={[styles.subtitle, { color: semantics.textSecondary }, enhancedMentionSubtitle]}
+        >
+          {subtitle}
+        </Text>
       ) : null}
     </View>
   );

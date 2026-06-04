@@ -25,17 +25,24 @@ export type EnhancedMentionIconProps = {
 
 /**
  * Universal wrapper for non-user mention-row icons. Renders the supplied
- * `Icon` inside a circular chip — `backgroundCoreSurfaceSubtle` fill,
- * `borderCoreSubtle` 1px border, `radiusMax` to keep it round.
+ * `Icon` inside a circular chip. Override chip styling via
+ * `theme.messageComposer.suggestions.mention.enhancedMentionIcon`.
  */
 export const EnhancedMentionIcon = ({ color, Icon, size = 32 }: EnhancedMentionIconProps) => {
   const {
-    theme: { semantics },
+    theme: {
+      semantics,
+      messageComposer: {
+        suggestions: {
+          mention: { enhancedMentionIcon },
+        },
+      },
+    },
   } = useTheme();
   const styles = useStyles(size);
 
   return (
-    <View style={styles.chip}>
+    <View style={[styles.chip, enhancedMentionIcon]}>
       <Icon pathFill={color ?? semantics.textPrimary} size={size / 2} />
     </View>
   );

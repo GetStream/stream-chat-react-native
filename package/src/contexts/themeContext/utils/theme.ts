@@ -473,6 +473,10 @@ export type Theme = {
         avatarSize: number;
         column: ViewStyle;
         container: ViewStyle;
+        enhancedMentionContainer: ViewStyle;
+        enhancedMentionIcon: ViewStyle;
+        enhancedMentionSubtitle: TextStyle;
+        enhancedMentionTitle: TextStyle;
         name: TextStyle;
         tag: TextStyle;
       };
@@ -1419,6 +1423,10 @@ export const defaultTheme: Theme = {
         avatarSize: 40,
         column: {},
         container: {},
+        enhancedMentionContainer: {},
+        enhancedMentionIcon: {},
+        enhancedMentionSubtitle: {},
+        enhancedMentionTitle: {},
         name: {},
         tag: {},
       },
