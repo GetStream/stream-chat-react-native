@@ -36,7 +36,7 @@ export const ChannelDetailsNavigationSection = () => {
 
   const chevron = useMemo(
     () => (
-      <View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>
+      <View>
         <ChevronRight height={20} stroke={semantics.textTertiary} width={20} />
       </View>
     ),
