@@ -11,19 +11,18 @@ import { useNotificationApi } from '../../../Notifications/hooks/useNotification
 const PAGE_SIZE = 25;
 const DEBOUNCE_MS = 200;
 
-export type AddMemberSearchResult = UserResponse & { isAlreadyMember: boolean };
-
 export type UseChannelAddMembersResult = {
   clearSearch: () => void;
   hasMore: boolean;
+  isAlreadyMember: (userId: string) => boolean;
   isSelected: (userId: string) => boolean;
   loading: boolean;
   loadingMore: boolean;
   loadMore: () => void;
   onChangeSearchText: (text: string) => void;
-  results: AddMemberSearchResult[];
+  results: UserResponse[];
   selectedUsers: UserResponse[];
-  toggleUser: (user: AddMemberSearchResult) => void;
+  toggleUser: (user: UserResponse) => void;
 };
 
 /**
@@ -38,7 +37,7 @@ export const useChannelAddMembers = ({
   const { addNotification } = useNotificationApi();
   const { t } = useTranslationContext();
 
-  const [rawResults, setRawResults] = useState<UserResponse[]>([]);
+  const [results, setResults] = useState<UserResponse[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -80,7 +79,7 @@ export const useChannelAddMembers = ({
 
         const fetched = response.users ?? [];
 
-        setRawResults((prev) => {
+        setResults((prev) => {
           if (!append) return fetched;
           const seen = new Set(prev.map((u) => u.id));
           const deduped = fetched.filter((u) => u.id && !seen.has(u.id));
@@ -150,14 +149,12 @@ export const useChannelAddMembers = ({
     fetchPageRef.current({ append: true, query: queryRef.current });
   }, [hasMore, loading]);
 
-  const toggleUser = useCallback((user: AddMemberSearchResult) => {
-    if (!user.id || user.isAlreadyMember) return;
+  const toggleUser = useCallback((user: UserResponse) => {
+    if (!user.id) return;
     setSelectedUsers((prev) => {
       const exists = prev.some((u) => u.id === user.id);
       if (exists) return prev.filter((u) => u.id !== user.id);
-      const userResponse: UserResponse = { ...user };
-      delete (userResponse as Partial<AddMemberSearchResult>).isAlreadyMember;
-      return [...prev, userResponse];
+      return [...prev, user];
     });
   }, []);
 
@@ -165,18 +162,12 @@ export const useChannelAddMembers = ({
 
   const isSelected = useCallback((userId: string) => selectedIds.has(userId), [selectedIds]);
 
-  const results = useMemo<AddMemberSearchResult[]>(
-    () =>
-      rawResults.map((user) => ({
-        ...user,
-        isAlreadyMember: !!user.id && memberIds.has(user.id),
-      })),
-    [rawResults, memberIds],
-  );
+  const isAlreadyMember = useCallback((userId: string) => memberIds.has(userId), [memberIds]);
 
   return {
     clearSearch,
     hasMore,
+    isAlreadyMember,
     isSelected,
     loading,
     loadingMore,

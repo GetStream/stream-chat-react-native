@@ -13,10 +13,7 @@ import { Search } from '../../../../icons/search';
 import { primitives } from '../../../../theme';
 import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../../UIComponents/SearchInput';
-import {
-  type AddMemberSearchResult,
-  useChannelAddMembers,
-} from '../../hooks/members/useChannelAddMembers';
+import { useChannelAddMembers } from '../../hooks/members/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
   /**
@@ -31,10 +28,10 @@ export type ChannelAddMembersProps = {
    *
    * See https://reactnative.dev/docs/flatlist#props for the full list.
    */
-  additionalFlatListProps?: Partial<FlatListProps<AddMemberSearchResult>>;
+  additionalFlatListProps?: Partial<FlatListProps<UserResponse>>;
 };
 
-const keyExtractor = (user: AddMemberSearchResult) => user.id;
+const keyExtractor = (user: UserResponse) => user.id;
 
 /**
  * @experimental This component is experimental and is subject to change.
@@ -52,6 +49,7 @@ export const ChannelAddMembers = ({
 
   const {
     clearSearch,
+    isAlreadyMember,
     isSelected,
     loading,
     loadingMore,
@@ -70,15 +68,15 @@ export const ChannelAddMembers = ({
   }, [onSelectionChange, selectedUsers]);
 
   const renderItem = useCallback(
-    ({ item }: { item: AddMemberSearchResult }) => (
+    ({ item }: { item: UserResponse }) => (
       <AddMemberSearchResultItem
-        isAlreadyMember={item.isAlreadyMember}
-        onPress={() => toggleUser(item)}
+        isAlreadyMember={isAlreadyMember(item.id)}
+        onPress={toggleUser}
         selected={isSelected(item.id)}
         user={item}
       />
     ),
-    [isSelected, toggleUser],
+    [isAlreadyMember, isSelected, toggleUser],
   );
 
   const emptyState = loading ? (

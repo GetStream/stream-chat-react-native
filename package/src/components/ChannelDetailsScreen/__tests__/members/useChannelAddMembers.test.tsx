@@ -196,18 +196,18 @@ describe('useChannelAddMembers', () => {
     expect(result.current.results.map((u) => u.id)).toEqual(['fresh-0']);
   });
 
-  it('decorates results with isAlreadyMember from the channel member state', async () => {
+  it('reports membership via isAlreadyMember from the channel member state', async () => {
     (useChannelMembersState as jest.Mock).mockReturnValue({ 'u-0': { user_id: 'u-0' } });
     const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: buildUsers(2) });
 
     const { result } = renderUseChannelAddMembers(queryUsers);
 
     await waitFor(() => expect(result.current.results).toHaveLength(2));
-    expect(result.current.results.find((u) => u.id === 'u-0')?.isAlreadyMember).toBe(true);
-    expect(result.current.results.find((u) => u.id === 'u-1')?.isAlreadyMember).toBe(false);
+    expect(result.current.isAlreadyMember('u-0')).toBe(true);
+    expect(result.current.isAlreadyMember('u-1')).toBe(false);
   });
 
-  it('toggleUser adds/removes selection, strips isAlreadyMember, and isSelected reflects it', async () => {
+  it('toggleUser adds/removes selection and isSelected reflects it', async () => {
     const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: buildUsers(1) });
 
     const { result } = renderUseChannelAddMembers(queryUsers);
@@ -218,21 +218,19 @@ describe('useChannelAddMembers', () => {
     act(() => result.current.toggleUser(user));
     expect(result.current.isSelected('u-0')).toBe(true);
     expect(result.current.selectedUsers).toHaveLength(1);
-    expect(result.current.selectedUsers[0]).not.toHaveProperty('isAlreadyMember');
 
     act(() => result.current.toggleUser(user));
     expect(result.current.isSelected('u-0')).toBe(false);
     expect(result.current.selectedUsers).toHaveLength(0);
   });
 
-  it('toggleUser ignores already-member rows and rows without an id', async () => {
+  it('toggleUser ignores rows without an id', async () => {
     const queryUsers: QueryUsersMock = jest.fn().mockResolvedValue({ users: [] });
 
     const { result } = renderUseChannelAddMembers(queryUsers);
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    act(() => result.current.toggleUser({ id: 'm-1', isAlreadyMember: true } as never));
-    act(() => result.current.toggleUser({ isAlreadyMember: false } as never));
+    act(() => result.current.toggleUser({} as never));
 
     expect(result.current.selectedUsers).toHaveLength(0);
   });

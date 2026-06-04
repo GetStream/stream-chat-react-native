@@ -11,7 +11,7 @@ import { SelectionCircle } from '../../../UIComponents/SelectionCircle';
 
 export type AddMemberSearchResultItemProps = {
   isAlreadyMember: boolean;
-  onPress: () => void;
+  onPress: (user: UserResponse) => void;
   selected: boolean;
   user: UserResponse;
 };
@@ -86,7 +86,7 @@ const AddMemberSearchResultItemInner = ({
       accessibilityLabel={accessibilityLabel}
       accessibilityRole='button'
       accessibilityState={{ disabled: false, selected }}
-      onPress={onPress}
+      onPress={() => onPress(user)}
       style={[styles.userRow, userRowOverride]}
       testID={`channel-add-members-row-${user.id}`}
     >

@@ -53,7 +53,7 @@ jest.mock('../../components/members/AddMemberSearchResultItem', () => {
       mockRowProbe.push(props);
       return ReactLib.createElement(
         Text,
-        { onPress: props.onPress, testID: `add-member-row-${props.user.id}` },
+        { onPress: () => props.onPress(props.user), testID: `add-member-row-${props.user.id}` },
         props.user.id,
       );
     },
@@ -68,6 +68,7 @@ const channel = {
 const baseHookResult = (): UseChannelAddMembersResult => ({
   clearSearch: jest.fn(),
   hasMore: true,
+  isAlreadyMember: jest.fn(() => false),
   isSelected: jest.fn(() => false),
   loading: false,
   loadingMore: false,
@@ -138,13 +139,12 @@ describe('ChannelAddMembers', () => {
     const userA = generateUser({ id: 'u-1' });
     const userB = generateUser({ id: 'u-2' });
     const isSelected = jest.fn((id: string) => id === 'u-2');
+    const isAlreadyMember = jest.fn((id: string) => id === 'u-1');
     const toggleUser = jest.fn();
     mockHook({
+      isAlreadyMember,
       isSelected,
-      results: [
-        { ...userA, isAlreadyMember: true },
-        { ...userB, isAlreadyMember: false },
-      ],
+      results: [userA, userB],
       toggleUser,
     });
 
