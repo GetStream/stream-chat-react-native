@@ -42,11 +42,11 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
 
   const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
     ({ context, defaultItems }) => {
-      const user = context.member.user;
       // Don't offer sending a direct message to yourself.
-      if (!user || user.id === context.channel.getClient().userID) {
+      if (context.isCurrentUser) {
         return defaultItems;
       }
+      const user = context.member.user;
       return [
         {
           action: () => {

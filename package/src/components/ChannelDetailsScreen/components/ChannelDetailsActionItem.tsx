@@ -44,12 +44,8 @@ export const ChannelDetailsActionItem = ({
 
   const content = (
     <View style={[styles.contentContainer, containerOverride]}>
-      <View
-        accessibilityElementsHidden
-        importantForAccessibility='no-hide-descendants'
-        style={[styles.iconWrapper, iconWrapperOverride]}
-      >
-        <Icon fill={iconColor} height={20} stroke={iconColor} width={20} />
+      <View style={[styles.iconWrapper, iconWrapperOverride]}>
+        <Icon height={20} stroke={iconColor} width={20} />
       </View>
       <Text
         numberOfLines={1}

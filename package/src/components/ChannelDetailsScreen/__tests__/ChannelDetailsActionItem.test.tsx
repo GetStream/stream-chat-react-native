@@ -81,15 +81,15 @@ describe('ChannelDetailsActionItem', () => {
       return styles.find((s) => s?.color)?.color;
     };
 
-    it('uses the same color for fill and stroke', () => {
+    it('colors the icon via stroke', () => {
       renderItem();
       const icon = lastIconProps();
-      expect(icon.fill).toBe(icon.stroke);
+      expect(icon.stroke).toBeTruthy();
     });
 
     it('paints the icon and label differently when destructive vs standard', () => {
       const { rerender } = renderItem({ destructive: false });
-      const standardIcon = lastIconProps().fill;
+      const standardIcon = lastIconProps().stroke;
       const standardLabelColor = labelColor();
 
       TestIcon.mockClear();
@@ -98,7 +98,7 @@ describe('ChannelDetailsActionItem', () => {
           <ChannelDetailsActionItem Icon={TestIcon} destructive label='Pinned Messages' />
         </ThemeProvider>,
       );
-      const destructiveIcon = lastIconProps().fill;
+      const destructiveIcon = lastIconProps().stroke;
       const destructiveLabelColor = labelColor();
 
       expect(destructiveIcon).not.toBe(standardIcon);

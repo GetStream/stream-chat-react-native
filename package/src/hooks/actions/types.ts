@@ -7,10 +7,12 @@ export type ActionOptions = {
   onFailure?: (error: unknown) => void;
 };
 
-export type ActionHandler = (options?: ActionOptions) => Promise<void> | void;
+export type ActionHandler = (options?: ActionOptions) => Promise<void>;
+
+export type ActionItemHandler = (options?: ActionOptions) => Promise<void> | void;
 
 export type ActionItem<TId extends string = string> = {
-  action: ActionHandler;
+  action: ActionItemHandler;
   Icon: React.ComponentType<IconProps>;
   id: TId;
   label: string;

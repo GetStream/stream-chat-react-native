@@ -2590,6 +2590,8 @@ exports[`Thread should match thread snapshot 1`] = `
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
+                stroke="#1a1b25"
+                strokeLinejoin="round"
                 strokeWidth={1.5}
                 style={
                   [
@@ -2613,9 +2615,18 @@ exports[`Thread should match thread snapshot 1`] = `
                   propList={
                     [
                       "fill",
+                      "stroke",
                       "strokeWidth",
+                      "strokeLinejoin",
                     ]
                   }
+                  stroke={
+                    {
+                      "payload": 4279900965,
+                      "type": 0,
+                    }
+                  }
+                  strokeLinejoin={1}
                   strokeWidth={1.5}
                 >
                   <RNSVGPath
@@ -2630,8 +2641,6 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         "stroke",
                         "strokeWidth",
-                        "strokeLinecap",
-                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -2640,8 +2649,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         "type": 0,
                       }
                     }
-                    strokeLinecap={1}
-                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                   <RNSVGPath
@@ -2656,8 +2663,6 @@ exports[`Thread should match thread snapshot 1`] = `
                       [
                         "stroke",
                         "strokeWidth",
-                        "strokeLinecap",
-                        "strokeLinejoin",
                       ]
                     }
                     stroke={
@@ -2666,8 +2671,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         "type": 0,
                       }
                     }
-                    strokeLinecap={1}
-                    strokeLinejoin={1}
                     strokeWidth={1.5}
                   />
                 </RNSVGGroup>
