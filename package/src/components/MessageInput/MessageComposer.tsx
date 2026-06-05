@@ -211,7 +211,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
-    AutoCompleteSuggestionList,
     Input,
     InputView,
     MessageComposerLeadingView,
@@ -238,7 +237,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
         inputBoxWrapper,
         inputContainer,
         inputFloatingContainer,
-        suggestionsListContainer: { container: suggestionListContainer },
         wrapper,
       },
     },
@@ -452,21 +450,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
             ) : (
               <MessageComposerTrailingView />
             )}
-          </View>
-          <View
-            style={[
-              styles.suggestionsListContainer,
-              {
-                bottom:
-                  height +
-                  (!messageInputFloating && selectedPicker && !isKeyboardVisible
-                    ? attachmentPickerBottomSheetHeight - bottomInset
-                    : 0),
-              },
-              suggestionListContainer,
-            ]}
-          >
-            <AutoCompleteSuggestionList />
           </View>
         </PortalWhileClosingView>
       </Animated.View>

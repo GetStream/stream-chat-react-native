@@ -74,6 +74,7 @@ import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
+import { PortalWhileClosingView } from '../UIComponents';
 
 // This is just to make sure that the scrolling happens in a different task queue.
 // TODO: Think if we really need this and strive to remove it if we can.
@@ -92,6 +93,9 @@ const useStyles = () => {
         scrollToBottomButtonContainer,
         unreadMessagesNotificationContainer,
       },
+      messageComposer: {
+        suggestionsListContainer: { container: suggestionListContainer },
+      },
     },
   } = useTheme();
 
@@ -100,6 +104,12 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        suggestionsListContainer: {
+          backgroundColor: 'transparent',
+          position: 'absolute',
+          width: '100%',
+          ...suggestionListContainer,
+        },
         container: {
           flex: 1,
           width: '100%',
@@ -151,6 +161,7 @@ const useStyles = () => {
       scrollToBottomButtonContainer,
       stickyHeaderContainer,
       unreadMessagesNotificationContainer,
+      suggestionListContainer,
     ],
   );
 };
@@ -360,6 +371,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     TypingIndicator,
     TypingIndicatorContainer,
     UnreadMessagesNotification,
+    AutoCompleteSuggestionList,
   } = useComponentsContext();
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const { theme } = useTheme();
@@ -1363,6 +1375,22 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
+      <Animated.View
+        layout={transitions.layout200}
+        style={[
+          {
+            bottom: messageInputFloating ? messageInputHeight + 16 : 0,
+          },
+          styles.suggestionsListContainer,
+        ]}
+      >
+        <PortalWhileClosingView
+          portalHostName='overlay-suggestion-list'
+          portalName='autocomplete-suggestion-list'
+        >
+          <AutoCompleteSuggestionList />
+        </PortalWhileClosingView>
+      </Animated.View>
       <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
