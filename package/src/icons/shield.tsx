@@ -8,15 +8,9 @@ export const Shield = ({ fill, height, pathFill, size, stroke, width, ...rest }:
   const color = stroke ?? pathFill ?? fill ?? 'black';
 
   return (
-    <Svg
-      fill={'none'}
-      height={height ?? size}
-      viewBox={`0 0 24 24`}
-      width={width ?? size}
-      {...rest}
-    >
+    <Svg width={width ?? size} height={height ?? size} viewBox='0 0 16 16' fill='none' {...rest}>
       <Path
-        d='M12 3L4 6V12C4 16.4 7.6 20.4 12 21.5C16.4 20.4 20 16.4 20 12V6L12 3Z'
+        d='M13.5 7V3.5C13.5 3.36739 13.4473 3.24021 13.3536 3.14645C13.2598 3.05268 13.1326 3 13 3H3C2.86739 3 2.74021 3.05268 2.64645 3.14645C2.55268 3.24021 2.5 3.36739 2.5 3.5V7C2.5 13 8 14.5 8 14.5C8 14.5 13.5 13 13.5 7Z'
         stroke={color}
         strokeWidth={1.5}
         strokeLinecap='round'
