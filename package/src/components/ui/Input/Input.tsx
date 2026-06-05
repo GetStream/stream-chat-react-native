@@ -111,9 +111,8 @@ export const Input = ({
             borderWidth: variant === 'outline' ? 1 : 0,
             borderColor: !editable
               ? semantics.borderUtilityDisabled
-              : // TODO: V9: This should go away as it's the same style. In a separate PR though.
-                isFocused
-                ? semantics.borderCoreDefault
+              : isFocused
+                ? semantics.borderUtilityActive
                 : semantics.borderCoreDefault,
           },
           containerStyle,

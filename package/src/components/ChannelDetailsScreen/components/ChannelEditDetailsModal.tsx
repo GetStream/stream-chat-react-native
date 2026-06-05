@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Keyboard } from 'react-native';
 
 import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
@@ -58,6 +58,7 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
 
   const handleConfirm = useStableCallback(async () => {
     if (!confirmEnabled) return;
+    Keyboard.dismiss();
     setSaving(true);
     try {
       let nameOk = true;
