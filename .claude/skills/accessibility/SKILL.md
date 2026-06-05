@@ -17,6 +17,42 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 6. **Backward-compatible.** All new props are optional. Component override pattern (`WithComponents`) must continue to work.
 7. **Floating overlays need a tall parent for Android a11y.** Android's accessibility framework uses each view's measured layout bounds (`getBoundsInScreen()`) to decide what's focusable at a given screen coordinate. Children rendered *outside* their parent's measured rect get pruned / reported with inverted (empty) bounds — RN doesn't clip them by default so the visual looks fine, but TalkBack can't focus them and `uiautomator dump` shows degenerate `[x,y][x,y]` rects. **Implication:** when mounting a floating overlay (autocomplete picker, popover, tooltip), pick a parent whose measured bounds contain the rendered area. A `flex: 1` Channel-area parent works; a `position: absolute` wrapper inside a small input-row container does not. This is why `AutoCompleteSuggestionList` is mounted from `MessageList` / `MessageFlashList` (full-screen flex parent) instead of `MessageComposer` (~228px composer parent — the suggestion list overflowed it and was a11y-invisible). Verify with `adb shell uiautomator dump` after mounting; if rows show `top > bottom`, the parent isn't tall enough.
 
+## Diagnosing Android a11y with `uiautomator dump`
+
+When TalkBack ignores a view, can't focus a row, or seems to focus the wrong thing, dump the a11y tree and read the bounds directly. This was the load-bearing technique behind rule #7.
+
+**Procedure:**
+
+```bash
+# 1. Put the app in the state you want to inspect (open the suggestion list, modal, etc.)
+adb shell uiautomator dump /sdcard/window_dump.xml
+adb pull /sdcard/window_dump.xml ./window_dump.xml
+
+# 2. Find your view. Grep by a known accessibilityLabel, text, or resource-id.
+grep -A2 'text="@channel"' window_dump.xml
+grep -B1 -A1 'content-desc="Mention suggestions available"' window_dump.xml
+```
+
+**Reading the output:** each `<node>` has `bounds="[left,top][right,bottom]"` in screen pixels.
+
+| Symptom in `bounds` | Meaning |
+|---|---|
+| `[0,0][0,0]` | View never measured (mid-mount or detached from a11y tree). |
+| `top > bottom` or `left > right` | Clipped by parent — `getBoundsInScreen()` clamped to a smaller ancestor. TalkBack treats this as empty. **Move the mount to a taller parent.** |
+| Bounds outside the screen | Off-screen or pushed by keyboard; TalkBack won't focus it. |
+| Bounds present, `clickable="true"`, `focusable="true"`, but still unreachable | Check `importantForAccessibility` chain and sibling z-order — something opaque may be above it. |
+
+**Other useful node attributes:**
+- `class` — the underlying Android View class (`android.widget.HorizontalScrollView`, etc.). Useful when an RN component compiles to something unexpected.
+- `package` — confirms you're looking at *your* app, not the system UI.
+- `clickable`, `focusable`, `enabled` — these must all be true for a row to take TalkBack focus.
+- `content-desc` — what TalkBack will speak. If empty when you expected an `accessibilityLabel`, the prop didn't bind to the right native view.
+
+**Caveats:**
+- The dump is a single snapshot. If the view animates in, dump after the animation settles.
+- TalkBack can affect what gets dumped on some devices — turn it off when diagnosing layout, on when diagnosing focus order.
+- The XML reflects native bounds *after* RN's layout pass, so a wrong dump usually means RN gave Android wrong layout, not that the dump lied.
+
 ## Where to put what
 
 - **Foundation primitives** → `package/src/a11y/` (utilities + low-level hooks).
