@@ -12,7 +12,7 @@ export type SelectionCircleProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const SelectionCircle = React.memo(({ selected }: SelectionCircleProps) => {
+export const SelectionCircle = ({ selected }: SelectionCircleProps) => {
   const {
     theme: {
       selectionCircle: { circle, circleSelected },
@@ -35,7 +35,7 @@ export const SelectionCircle = React.memo(({ selected }: SelectionCircleProps) =
   }
 
   return <View style={[styles.circle, { borderColor: semantics.borderCoreDefault }, circle]} />;
-});
+};
 
 SelectionCircle.displayName = 'SelectionCircle{selectionCircle}';
 

@@ -29,7 +29,10 @@ export type ChannelMemberItemProps = {
   testID?: string;
 };
 
-const ChannelMemberItemInner = ({
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
+export const ChannelMemberItem = ({
   member,
   onPress,
   size = 'sm',
@@ -148,31 +151,6 @@ const ChannelMemberItemInner = ({
     </View>
   );
 };
-
-const areEqual = (prev: ChannelMemberItemProps, next: ChannelMemberItemProps) => {
-  if (prev.onPress !== next.onPress) return false;
-  if (prev.size !== next.size) return false;
-  if (prev.testID !== next.testID) return false;
-  if (prev.member === next.member) return true;
-  if (prev.member.channel_role !== next.member.channel_role) return false;
-  const prevUser = prev.member.user;
-  const nextUser = next.member.user;
-  if (prevUser === nextUser) return true;
-  if (!prevUser || !nextUser) return false;
-  return (
-    prevUser.id === nextUser.id &&
-    prevUser.name === nextUser.name &&
-    prevUser.online === nextUser.online &&
-    prevUser.image === nextUser.image &&
-    prevUser.last_active === nextUser.last_active &&
-    prevUser.role === nextUser.role
-  );
-};
-
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelMemberItem = React.memo(ChannelMemberItemInner, areEqual);
 
 const useStyles = () => {
   return useMemo(

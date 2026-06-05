@@ -18,75 +18,73 @@ export type SearchInputProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const SearchInput = React.memo(
-  ({ accessibilityLabel, onChangeText, onClear }: SearchInputProps) => {
-    const { t } = useTranslationContext();
-    const {
-      theme: {
-        searchInput: { container, input, inputFocused, textInput },
-        semantics,
-      },
-    } = useTheme();
+export const SearchInput = ({ accessibilityLabel, onChangeText, onClear }: SearchInputProps) => {
+  const { t } = useTranslationContext();
+  const {
+    theme: {
+      searchInput: { container, input, inputFocused, textInput },
+      semantics,
+    },
+  } = useTheme();
 
-    const [searchText, setSearchText] = useState('');
-    const [focused, setFocused] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [focused, setFocused] = useState(false);
 
-    const handleChangeText = useCallback(
-      (text: string) => {
-        setSearchText(text);
-        onChangeText(text);
-      },
-      [onChangeText],
-    );
+  const handleChangeText = useCallback(
+    (text: string) => {
+      setSearchText(text);
+      onChangeText(text);
+    },
+    [onChangeText],
+  );
 
-    const handleClear = useCallback(() => {
-      setSearchText('');
-      onClear();
-    }, [onClear]);
+  const handleClear = useCallback(() => {
+    setSearchText('');
+    onClear();
+  }, [onClear]);
 
-    const handleFocus = useCallback(() => setFocused(true), []);
-    const handleBlur = useCallback(() => setFocused(false), []);
+  const handleFocus = useCallback(() => setFocused(true), []);
+  const handleBlur = useCallback(() => setFocused(false), []);
 
-    return (
-      <View style={[styles.container, container]}>
-        <View
-          style={[
-            styles.input,
-            { borderColor: semantics.borderCoreDefault },
-            input,
-            focused && [{ borderColor: semantics.accentPrimary }, inputFocused],
-          ]}
-        >
-          <Search height={20} stroke={semantics.textSecondary} width={20} />
-          <TextInput
-            accessibilityLabel={accessibilityLabel}
-            autoCapitalize='none'
-            autoCorrect={false}
-            onBlur={handleBlur}
-            onChangeText={handleChangeText}
-            onFocus={handleFocus}
-            placeholder={t('Search')}
-            placeholderTextColor={semantics.textSecondary}
-            style={[styles.textInput, { color: semantics.textPrimary }, textInput]}
-            testID='search-input'
-            value={searchText}
-          />
-          {searchText.length > 0 ? (
-            <Pressable
-              accessibilityLabel={t('a11y/Clear search')}
-              accessibilityRole='button'
-              hitSlop={30}
-              onPress={handleClear}
-              testID='clear-search'
-            >
-              <XCircle height={15} stroke={semantics.inputTextIcon} width={15} />
-            </Pressable>
-          ) : null}
-        </View>
+  return (
+    <View style={[styles.container, container]}>
+      <View
+        style={[
+          styles.input,
+          { borderColor: semantics.borderCoreDefault },
+          input,
+          focused && [{ borderColor: semantics.accentPrimary }, inputFocused],
+        ]}
+      >
+        <Search height={20} stroke={semantics.textSecondary} width={20} />
+        <TextInput
+          accessibilityLabel={accessibilityLabel}
+          autoCapitalize='none'
+          autoCorrect={false}
+          onBlur={handleBlur}
+          onChangeText={handleChangeText}
+          onFocus={handleFocus}
+          placeholder={t('Search')}
+          placeholderTextColor={semantics.textSecondary}
+          style={[styles.textInput, { color: semantics.textPrimary }, textInput]}
+          testID='search-input'
+          value={searchText}
+        />
+        {searchText.length > 0 ? (
+          <Pressable
+            accessibilityLabel={t('a11y/Clear search')}
+            accessibilityRole='button'
+            hitSlop={30}
+            onPress={handleClear}
+            testID='clear-search'
+          >
+            <XCircle height={15} stroke={semantics.inputTextIcon} width={15} />
+          </Pressable>
+        ) : null}
       </View>
-    );
-  },
-);
+    </View>
+  );
+};
 
 SearchInput.displayName = 'SearchInput{searchInput}';
 

@@ -16,7 +16,10 @@ export type AddMemberSearchResultItemProps = {
   user: UserResponse;
 };
 
-const AddMemberSearchResultItemInner = ({
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
+export const AddMemberSearchResultItem = ({
   isAlreadyMember,
   onPress,
   selected,
@@ -96,13 +99,6 @@ const AddMemberSearchResultItemInner = ({
     </Pressable>
   );
 };
-
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const AddMemberSearchResultItem = React.memo(AddMemberSearchResultItemInner);
-
-AddMemberSearchResultItem.displayName = 'AddMemberSearchResultItem';
 
 const useStyles = () => {
   return useMemo(

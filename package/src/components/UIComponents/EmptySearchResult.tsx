@@ -12,7 +12,7 @@ export type EmptySearchResultProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const EmptySearchResult = React.memo(({ icon, label }: EmptySearchResultProps) => {
+export const EmptySearchResult = ({ icon, label }: EmptySearchResultProps) => {
   const {
     theme: {
       emptySearchResult: { container, text },
@@ -26,7 +26,7 @@ export const EmptySearchResult = React.memo(({ icon, label }: EmptySearchResultP
       <Text style={[styles.text, { color: semantics.textSecondary }, text]}>{label}</Text>
     </View>
   );
-});
+};
 
 EmptySearchResult.displayName = 'EmptySearchResult{emptySearchResult}';
 
