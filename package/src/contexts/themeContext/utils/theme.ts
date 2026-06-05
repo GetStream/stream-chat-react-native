@@ -1078,12 +1078,6 @@ export type Theme = {
     };
   };
   screenPadding: number;
-  searchInput: {
-    container: ViewStyle;
-    input: ViewStyle;
-    inputFocused: ViewStyle;
-    textInput: TextStyle;
-  };
   selectionCircle: {
     circle: ViewStyle;
     circleSelected: ViewStyle;
@@ -2107,12 +2101,6 @@ export const defaultTheme: Theme = {
     },
   },
   screenPadding: 16,
-  searchInput: {
-    container: {},
-    input: {},
-    inputFocused: {},
-    textInput: {},
-  },
   selectionCircle: {
     circle: {},
     circleSelected: {},
