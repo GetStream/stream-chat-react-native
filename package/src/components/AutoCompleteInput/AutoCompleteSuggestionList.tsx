@@ -7,6 +7,8 @@ import Animated, { LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanim
 
 import { SearchSourceState, TextComposerState, TextComposerSuggestion } from 'stream-chat';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
+import { useAnnounceOnShow } from '../../a11y/hooks/useAnnounceOnShow';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -74,6 +76,18 @@ export const AutoCompleteSuggestionList = () => {
   }, [AutoCompleteSuggestionHeader, queryText, triggerType]);
 
   const loadMore = useStableCallback(() => suggestions?.searchSource.search());
+
+  // Polite announcement when the suggestion list appears. Different label per
+  // trigger type so the user knows whether they're looking at mentions,
+  // commands, or emoji without having to swipe in to find out.
+  const announceLabelKey =
+    triggerType === 'command'
+      ? 'a11y/Command suggestions available'
+      : triggerType === 'emoji'
+        ? 'a11y/Emoji suggestions available'
+        : 'a11y/Mention suggestions available';
+  const announceLabel = useA11yLabel(announceLabelKey);
+  useAnnounceOnShow(!!(showList && triggerType), announceLabel);
 
   if (!showList || !triggerType) {
     return null;
