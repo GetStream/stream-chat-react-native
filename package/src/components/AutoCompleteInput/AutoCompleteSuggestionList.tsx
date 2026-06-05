@@ -81,6 +81,7 @@ export const AutoCompleteSuggestionList = () => {
 
   return (
     <Animated.View
+      accessibilityRole='menu'
       entering={ZoomIn.duration(200)}
       exiting={ZoomOut.duration(200)}
       layout={LinearTransition.duration(200)}
