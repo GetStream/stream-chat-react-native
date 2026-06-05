@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
 import type { SearchSourceState, UserResponse } from 'stream-chat';
@@ -55,6 +55,15 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
   const { searchSource, selectionStore } = useChannelAddMembersContext();
   const { users, loading, hasNext, error } = useStateStore(searchSource.state, listStateSelector);
 
+  const initialized = useRef(false);
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      // TODO: search source doesn't work with empty query so we can't do proper initial load - fix this before the merge
+      searchSource.search('t');
+    }
+  }, [searchSource]);
+
   useEffect(() => {
     if (!error) {
       return;
@@ -84,23 +93,12 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
     [select],
   );
 
-  const search = useCallback(
-    (text: string) => {
-      if (text) {
-        searchSource.search(text);
-      } else {
-        searchSource.resetState();
-      }
-    },
-    [searchSource],
-  );
-
   const loadMore = useCallback(() => {
-    if (hasNext) {
-      // TODO: search source doesn't work with empty query - fix this before the merge
-      searchSource.search('t');
+    // hasNext true by default, !!users prevents calling search on initial load
+    if (hasNext && !!users) {
+      searchSource.search();
     }
-  }, [hasNext, searchSource]);
+  }, [hasNext, searchSource, users]);
 
   const emptyState = loading ? (
     <UserListLoadingSkeleton />
@@ -115,7 +113,10 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
 
   return (
     <View style={styles.container}>
-      <SearchInput accessibilityLabel={t('a11y/Search users to add')} onChangeText={search} />
+      <SearchInput
+        accessibilityLabel={t('a11y/Search users to add')}
+        onChangeText={(text) => searchSource.search(text)}
+      />
 
       <FlatList
         contentContainerStyle={styles.listContent}
