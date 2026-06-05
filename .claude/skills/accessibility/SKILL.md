@@ -9,12 +9,13 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 
 ## Non-negotiable rules
 
-1. **Native semantics first.** Use `Pressable`, `TextInput`, `Switch`, `Image` directly. Use `accessibilityRole` only when native semantics cannot represent the widget (`menu`, `menuitem`, `progressbar`, `radio`, `checkbox`, `article`, `alert`, `tablist`, `tab`).
+1. **Native semantics first.** Use `Pressable`, `TextInput`, `Switch`, `Image` directly. Use `accessibilityRole` only when native semantics cannot represent the widget (`menu`, `menuitem`, `progressbar`, `radio`, `checkbox`, `article`, `alert`, `tablist`, `tab`). **Platform caveat:** `'menu'` and `'menuitem'` are honored by iOS VoiceOver but Android TalkBack silently ignores them (no `UIAccessibilityTraits` equivalent). For interactive items that must be announceable on both platforms, use `'button'` on the leaf `Pressable`; the `'menu'` role can stay on the container as an iOS hint. iOS-supported roles that survive to VoiceOver: `button`, `link`, `search`, `image`, `keyboardkey`, `text`, `adjustable`, `imagebutton`, `header`, `summary`, `none`.
 2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. For SDK `Button`, pass `accessibilityLabelKey='a11y/...'` (and `accessibilityLabelParams` when needed). For non-Button components, use `useA11yLabel('a11y/...', params)` or `t('a11y/...')` directly when you don't need the disabled-state short-circuit. Add the key to all 12 locale files in `package/src/i18n/`.
 3. **Gate behavior on `useAccessibilityContext().enabled`.** A11y is opt-in. New listeners, subscriptions, and announcer mounts must be no-ops when `enabled` is false. New `accessibilityRole`/`accessibilityState` props are fine to render unconditionally — they cost ~zero.
 4. **One focusable target per action.** Don't nest `Pressable` inside `Pressable`. Mark inner decorative views with `accessibilityElementsHidden` (iOS) + `importantForAccessibility='no-hide-descendants'` (Android) so the parent carries the label.
 5. **Decorative visuals stay hidden from AT.** Icon-only buttons must carry an `accessibilityLabel` on the wrapper, and the SVG icon should be hidden.
 6. **Backward-compatible.** All new props are optional. Component override pattern (`WithComponents`) must continue to work.
+7. **Floating overlays need a tall parent for Android a11y.** Android's accessibility framework uses each view's measured layout bounds (`getBoundsInScreen()`) to decide what's focusable at a given screen coordinate. Children rendered *outside* their parent's measured rect get pruned / reported with inverted (empty) bounds — RN doesn't clip them by default so the visual looks fine, but TalkBack can't focus them and `uiautomator dump` shows degenerate `[x,y][x,y]` rects. **Implication:** when mounting a floating overlay (autocomplete picker, popover, tooltip), pick a parent whose measured bounds contain the rendered area. A `flex: 1` Channel-area parent works; a `position: absolute` wrapper inside a small input-row container does not. This is why `AutoCompleteSuggestionList` is mounted from `MessageList` / `MessageFlashList` (full-screen flex parent) instead of `MessageComposer` (~228px composer parent — the suggestion list overflowed it and was a11y-invisible). Verify with `adb shell uiautomator dump` after mounting; if rows show `top > bottom`, the parent isn't tall enough.
 
 ## Where to put what
 
@@ -53,6 +54,8 @@ Two complementary mechanisms:
 - **Declarative**: `accessibilityLiveRegion="polite"` (Android only) on a View that re-renders when its label changes.
 
 Use `useAnnounceOnStateChange(message, { debounceMs, priority })` for transitions (AI typing, indicators) — it dedups consecutive same-message calls and applies a default 250ms debounce.
+
+Use `useAnnounceOnShow(visible, message, { delayMs, priority })` for **transient surfaces that appear and disappear repeatedly** (modals, sheets, autocomplete pickers). It announces on each `visible: false → true` transition and resets on hide, so the next show re-announces. The two announcer hooks are not interchangeable: `useAnnounceOnStateChange` dedupes on string equality (correct for "AI is typing" → "AI is generating"), while `useAnnounceOnShow` dedupes on visibility transition (correct for "Suggestions available" each time the picker reopens with the same label). Pair with `useA11yLabel('a11y/…')` for the message so the announcement is i18n'd and gated on the SDK's a11y opt-in.
 
 For incoming messages: use `useIncomingMessageAnnouncements({ channel, ownUserId, activeThreadId, threadList })`. It throttles to 1 announcement per second, batches multi-message bursts, and bounds memory at 500 announced ids.
 
@@ -104,6 +107,7 @@ Disable spring animations and limit fade durations when this is true.
 - **Subscribing to `AccessibilityInfo` events when `enabled` is false** — wastes a listener slot. The provided hooks already gate on this; mirror that pattern.
 - **`useScreenReaderEnabled()` inside list items** — toggling SR re-renders every item. Only subscribe in components that actually swap UI on SR (`AudioRecorder`, `ImageGallery`, `Message`'s alternative-actions button).
 - **Using live regions to force-announce static modal text** — fix the dialog semantics instead (`useResolvedModalAccessibilityProps` + correct `accessibilityRole='alert'`).
+- **Auto-focusing the suggestions/listbox of a typeahead on appear** — anti-pattern for combobox-style UI. Each keystroke that produces new suggestions would re-steal focus from the active `TextInput`, breaking continuous typing. ARIA combobox spec specifically forbids this; iOS VoiceOver and Android TalkBack have the same constraint. Announce on show via `useAnnounceOnShow` instead and rely on standard screen-reader navigation gestures (swipe) for the user to reach the list when they want.
 - **Mutating `AccessibilityInfo` polyfill state in tests without restoring** — use the mock-builder helpers in `package/src/mock-builders/accessibility/` (or jest.mock the module) and reset between tests.
 
 ## Testing requirements per change
@@ -136,9 +140,11 @@ Recommended for non-trivial changes:
 - `package/src/components/Accessibility/hooks/useIncomingMessageAnnouncements.ts` — port of stream-chat-react's hook.
 - `package/src/a11y/hooks/useA11yLabel.ts` — translated-label-or-undefined.
 - `package/src/a11y/hooks/useResolvedModalAccessibilityProps.ts` — modal a11y props.
+- `package/src/a11y/hooks/useAnnounceOnShow.ts` — announce-on-visible helper for transient surfaces.
 - `package/src/components/ui/Avatar/Avatar.tsx` — example of `name` + `useA11yLabel` usage.
-- `package/src/components/UIComponents/BottomSheetModal.tsx` — example of `useResolvedModalAccessibilityProps`.
+- `package/src/components/UIComponents/BottomSheetModal.tsx` — example of `useResolvedModalAccessibilityProps` and `useAnnounceOnShow`.
 - `package/src/components/AITypingIndicatorView/AITypingIndicatorView.tsx` — example of `useAnnounceOnStateChange`.
+- `package/src/components/AutoCompleteInput/AutoCompleteSuggestionList.tsx` — example of `useAnnounceOnShow` with a per-trigger label (mention/command/emoji).
 
 ## Cross-SDK parity
 
