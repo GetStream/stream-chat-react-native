@@ -1,27 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { UserResponse } from 'stream-chat';
+import type { SearchSourceState, UserResponse } from 'stream-chat';
 
 import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 import { UserListLoadingSkeleton } from './UserListLoadingSkeleton';
 
+import { useChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
+import { useStateStore } from '../../../../hooks/useStateStore';
 import { Search } from '../../../../icons/search';
 import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../../UIComponents/SearchInput';
-import { useChannelAddMembers } from '../../hooks/members/useChannelAddMembers';
 
 export type ChannelAddMembersProps = {
-  /**
-   * Fires whenever the internal selection changes. Parent components use this to
-   * drive a confirm button (enable when the selection is non-empty, read the
-   * selected user ids when committing the add).
-   */
-  onSelectionChange: (selectedUsers: UserResponse[]) => void;
   /**
    * Besides the existing default behavior of the user list, you can attach
    * additional props to the underlying React Native FlatList.
@@ -33,50 +30,77 @@ export type ChannelAddMembersProps = {
 
 const keyExtractor = (user: UserResponse) => user.id;
 
+const listStateSelector = (state: SearchSourceState<UserResponse>) => {
+  return {
+    users: state.items,
+    loading: state.isLoading,
+    hasNext: state.hasNext,
+    error: state.lastQueryError,
+  };
+};
+
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelAddMembers = ({
-  additionalFlatListProps,
-  onSelectionChange,
-}: ChannelAddMembersProps) => {
-  const { channel } = useChannelDetailsContext();
+export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembersProps) => {
   const { t } = useTranslationContext();
   const {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
 
-  const {
-    clearSearch,
-    isAlreadyMember,
-    isSelected,
-    loading,
-    loadMore,
-    onChangeSearchText,
-    results,
-    selectedUsers,
-    toggleUser,
-  } = useChannelAddMembers({ channel });
+  const { channel } = useChannelDetailsContext();
+  const { addNotification } = useNotificationApi();
 
-  const lastSelectionRef = useRef(selectedUsers);
+  const { searchSource, selectionStore } = useChannelAddMembersContext();
+  const { users, loading, hasNext, error } = useStateStore(searchSource.state, listStateSelector);
+
   useEffect(() => {
-    if (lastSelectionRef.current === selectedUsers) return;
-    lastSelectionRef.current = selectedUsers;
-    onSelectionChange(selectedUsers);
-  }, [onSelectionChange, selectedUsers]);
+    if (!error) {
+      return;
+    }
+    addNotification({
+      message: t('Failed to load users'),
+      options: {
+        ...getNotificationErrorOptions(error),
+        severity: 'error',
+        type: 'api:channel:query-users:failed',
+      },
+      origin: { context: { channel }, emitter: 'AddChannelMembers' },
+    });
+  }, [error, addNotification, channel, t]);
+
+  const select = useCallback(
+    (user: UserResponse) => {
+      selectionStore.select(user.id);
+    },
+    [selectionStore],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: UserResponse }) => (
-      <AddMemberSearchResultItem
-        isAlreadyMember={isAlreadyMember(item.id)}
-        onPress={toggleUser}
-        selected={isSelected(item.id)}
-        user={item}
-      />
+      <AddMemberSearchResultItem onPress={select} user={item} />
     ),
-    [isAlreadyMember, isSelected, toggleUser],
+    [select],
   );
+
+  const search = useCallback(
+    (text: string) => {
+      if (text) {
+        searchSource.search(text);
+      } else {
+        searchSource.resetState();
+      }
+    },
+    [searchSource],
+  );
+
+  const loadMore = useCallback(() => {
+    if (hasNext) {
+      // TODO: search source doesn't work with empty query - fix this before the merge
+      searchSource.search('t');
+    }
+  }, [hasNext, searchSource]);
 
   const emptyState = loading ? (
     <UserListLoadingSkeleton />
@@ -87,19 +111,15 @@ export const ChannelAddMembers = ({
     />
   );
 
-  const loadingMoreIndicator = <>{loading && results.length > 0 && <ActivityIndicator />}</>;
+  const loadingMoreIndicator = <>{loading && users && users.length > 0 && <ActivityIndicator />}</>;
 
   return (
     <View style={styles.container}>
-      <SearchInput
-        accessibilityLabel={t('a11y/Search users to add')}
-        onChangeText={onChangeSearchText}
-        onClear={clearSearch}
-      />
+      <SearchInput accessibilityLabel={t('a11y/Search users to add')} onChangeText={search} />
 
       <FlatList
         contentContainerStyle={styles.listContent}
-        data={results}
+        data={users}
         keyboardDismissMode='interactive'
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}

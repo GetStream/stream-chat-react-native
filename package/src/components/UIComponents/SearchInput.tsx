@@ -14,13 +14,12 @@ import { Input } from '../ui/Input/Input';
 export type SearchInputProps = {
   accessibilityLabel: string;
   onChangeText: (text: string) => void;
-  onClear: () => void;
 };
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const SearchInput = ({ accessibilityLabel, onChangeText, onClear }: SearchInputProps) => {
+export const SearchInput = ({ accessibilityLabel, onChangeText }: SearchInputProps) => {
   const { t } = useTranslationContext();
   const {
     theme: { semantics },
@@ -38,8 +37,8 @@ export const SearchInput = ({ accessibilityLabel, onChangeText, onClear }: Searc
 
   const handleClear = useCallback(() => {
     setSearchText('');
-    onClear();
-  }, [onClear]);
+    onChangeText('');
+  }, [onChangeText]);
 
   const LeadingIcon: IconRenderer = useCallback(
     () => <Search height={20} stroke={semantics.textSecondary} width={20} />,

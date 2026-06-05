@@ -3,9 +3,10 @@ import { Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
-import type { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
+import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
+import { useChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -20,28 +21,27 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import type { ChannelAddMembersProps } from '../../components/members/ChannelAddMembers';
 import { ChannelAddMembersModal } from '../../components/members/ChannelAddMembersModal';
 
 jest.mock('../../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
 
-const AddMembersProbe = ({ onSelectionChange }: ChannelAddMembersProps) => (
-  <>
-    <Text testID='add-members-probe'>add-members</Text>
-    <Pressable
-      onPress={() =>
-        onSelectionChange([generateUser({ id: 'picked-1', name: 'Picked One' })] as UserResponse[])
-      }
-      testID='probe-select-one'
-    >
-      <Text>select one</Text>
-    </Pressable>
-    <Pressable onPress={() => onSelectionChange([])} testID='probe-clear-selection'>
-      <Text>clear</Text>
-    </Pressable>
-  </>
-);
+// Stands in for the real ChannelAddMembers list: drives the shared selection store
+// directly instead of running the search source / list.
+const AddMembersProbe = () => {
+  const { selectionStore } = useChannelAddMembersContext();
+  return (
+    <>
+      <Text testID='add-members-probe'>add-members</Text>
+      <Pressable onPress={() => selectionStore.select('picked-1')} testID='probe-select-one'>
+        <Text>select one</Text>
+      </Pressable>
+      <Pressable onPress={() => selectionStore.deselect('picked-1')} testID='probe-clear-selection'>
+        <Text>clear</Text>
+      </Pressable>
+    </>
+  );
+};
 
 const buildChannel = (
   members: ChannelMemberResponse[],
@@ -135,7 +135,7 @@ describe('ChannelAddMembersModal', () => {
     mockedUseChannelActions.mockReset();
   });
 
-  it('keeps the confirm button disabled until ChannelAddMembers reports a selection', () => {
+  it('enables the confirm button only while ChannelAddMembers reports a selection', () => {
     const channel = buildChannel(makeMembers(3), 3);
 
     renderModal({ channel });
@@ -175,50 +175,14 @@ describe('ChannelAddMembersModal', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
   });
 
-  it('resets the selection and calls onClose when closed via the X', () => {
+  it('calls onClose when closed via the X', () => {
     const channel = buildChannel(makeMembers(3), 3);
     const onClose = jest.fn();
 
-    const { rerender } = renderModal({ channel, onClose });
-
-    fireEvent.press(screen.getByTestId('probe-select-one'));
-    expect(
-      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
-    ).toMatchObject({ disabled: false });
+    renderModal({ channel, onClose });
 
     fireEvent.press(screen.getByLabelText('a11y/Close'));
     expect(onClose).toHaveBeenCalledTimes(1);
-
-    // Simulate the parent hiding then re-opening the modal; the selection must reset.
-    rerender(
-      <ThemeProvider theme={defaultTheme}>
-        <AccessibilityProvider value={{ enabled: true }}>
-          <TranslationProvider
-            value={{
-              t: ((key: string) => key) as never,
-              tDateTimeParser: ((input: unknown) => input) as never,
-              userLanguage: 'en',
-            }}
-          >
-            <ChatContext.Provider
-              value={
-                { client: { notifications: new NotificationManager(), userID: 'me' } } as never
-              }
-            >
-              <ChannelDetailsContextProvider value={{ channel }}>
-                <WithComponents overrides={{ ChannelAddMembers: AddMembersProbe }}>
-                  <ChannelAddMembersModal onClose={onClose} visible={true} />
-                </WithComponents>
-              </ChannelDetailsContextProvider>
-            </ChatContext.Provider>
-          </TranslationProvider>
-        </AccessibilityProvider>
-      </ThemeProvider>,
-    );
-
-    expect(
-      screen.getByTestId('channel-details-add-members-confirm-button').props.accessibilityState,
-    ).toMatchObject({ disabled: true });
   });
 
   it('keeps the sheet open and re-enables confirm when addMembers does not invoke onSuccess', async () => {

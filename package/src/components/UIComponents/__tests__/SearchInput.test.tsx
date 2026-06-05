@@ -19,12 +19,7 @@ const renderComponent = (props: Partial<SearchInputProps> = {}) =>
           userLanguage: 'en',
         }}
       >
-        <SearchInput
-          accessibilityLabel='Search users'
-          onChangeText={jest.fn()}
-          onClear={jest.fn()}
-          {...props}
-        />
+        <SearchInput accessibilityLabel='Search users' onChangeText={jest.fn()} {...props} />
       </TranslationProvider>
     </ThemeProvider>,
   );
@@ -69,14 +64,14 @@ describe('SearchInput', () => {
     expect(onChangeText).toHaveBeenNthCalledWith(2, 'foobar');
   });
 
-  it('calls onClear when the clear button is pressed', () => {
-    const onClear = jest.fn();
-    renderComponent({ onClear });
+  it('calls onChangeText with an empty string when the clear button is pressed', () => {
+    const onChangeText = jest.fn();
+    renderComponent({ onChangeText });
 
     fireEvent.changeText(screen.getByTestId('search-input'), 'x');
     fireEvent.press(screen.getByTestId('clear-search'));
 
-    expect(onClear).toHaveBeenCalledTimes(1);
+    expect(onChangeText).toHaveBeenLastCalledWith('');
   });
 
   it('resets the visible value when the clear button is pressed', () => {

@@ -30,6 +30,7 @@ export * from './translationContext';
 export * from './typingContext/TypingContext';
 export * from './utils/getDisplayName';
 export * from './channelDetailsContext';
+export * from './channelAddMembersContext/ChannelAddMembersContext';
 export * from './pollContext';
 export * from './liveLocationManagerContext';
 export * from './audioPlayerContext/AudioPlayerContext';

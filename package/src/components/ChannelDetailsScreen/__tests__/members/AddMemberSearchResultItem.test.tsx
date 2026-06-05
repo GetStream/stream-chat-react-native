@@ -1,15 +1,44 @@
 import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import type { UserResponse } from 'stream-chat';
 
+import { ChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { useIsChannelMember } from '../../../../hooks/useIsChannelMember';
 import { generateUser } from '../../../../mock-builders/generator/user';
+import { SelectionStore } from '../../../../state-store/selection-store';
 import { AddMemberSearchResultItem } from '../../components/members/AddMemberSearchResultItem';
 
-const renderRow = (props: React.ComponentProps<typeof AddMemberSearchResultItem>) =>
-  render(
+jest.mock('../../../../hooks/useIsChannelMember', () => ({
+  useIsChannelMember: jest.fn(),
+}));
+
+const mockedUseIsChannelMember = useIsChannelMember as jest.MockedFunction<
+  typeof useIsChannelMember
+>;
+
+type RenderRowOptions = {
+  isAlreadyMember?: boolean;
+  onPress?: (user: UserResponse) => void;
+  selected?: boolean;
+  user: UserResponse;
+};
+
+const renderRow = ({
+  isAlreadyMember = false,
+  onPress = jest.fn(),
+  selected = false,
+  user,
+}: RenderRowOptions) => {
+  mockedUseIsChannelMember.mockReturnValue(isAlreadyMember);
+  const selectionStore = new SelectionStore();
+  if (selected) {
+    selectionStore.select(user.id);
+  }
+  return render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
@@ -26,15 +55,22 @@ const renderRow = (props: React.ComponentProps<typeof AddMemberSearchResultItem>
           userLanguage: 'en',
         }}
       >
-        <AddMemberSearchResultItem {...props} />
+        <ChannelAddMembersContext.Provider value={{ selectionStore } as never}>
+          <AddMemberSearchResultItem onPress={onPress} user={user} />
+        </ChannelAddMembersContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
   );
+};
 
 describe('AddMemberSearchResultItem', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders a selectable row with unselected accessibility state by default', () => {
     const user = generateUser({ id: 'u-1', name: 'Alice' });
-    renderRow({ isAlreadyMember: false, onPress: jest.fn(), selected: false, user });
+    renderRow({ user });
 
     const row = screen.getByTestId('channel-add-members-row-u-1');
     expect(row.props.accessibilityState).toMatchObject({ disabled: false, selected: false });
@@ -42,9 +78,9 @@ describe('AddMemberSearchResultItem', () => {
     expect(screen.queryByTestId('channel-add-members-row-u-1-member-label')).toBeNull();
   });
 
-  it('flips accessibilityState.selected when selected is true', () => {
+  it('flips accessibilityState.selected when the user is selected in the store', () => {
     const user = generateUser({ id: 'u-1', name: 'Alice' });
-    renderRow({ isAlreadyMember: false, onPress: jest.fn(), selected: true, user });
+    renderRow({ selected: true, user });
 
     expect(
       screen.getByTestId('channel-add-members-row-u-1').props.accessibilityState,
@@ -54,24 +90,25 @@ describe('AddMemberSearchResultItem', () => {
   it('calls onPress when the row is pressed', () => {
     const onPress = jest.fn();
     const user = generateUser({ id: 'u-1', name: 'Alice' });
-    renderRow({ isAlreadyMember: false, onPress, selected: false, user });
+    renderRow({ onPress, user });
 
     fireEvent.press(screen.getByTestId('channel-add-members-row-u-1'));
     expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onPress).toHaveBeenCalledWith(user);
   });
 
   it('falls back to the user id when no name is set', () => {
     const user = generateUser({ id: 'u-no-name', name: undefined });
-    renderRow({ isAlreadyMember: false, onPress: jest.fn(), selected: false, user });
+    renderRow({ user });
 
     expect(screen.getByLabelText('a11y/Select u-no-name')).toBeTruthy();
     expect(screen.getByText('u-no-name')).toBeTruthy();
   });
 
-  describe('when isAlreadyMember is true', () => {
+  describe('when the user is already a member', () => {
     it('renders the disabled variant with a member label and no button role', () => {
       const user = generateUser({ id: 'u-2', name: 'Bob' });
-      renderRow({ isAlreadyMember: true, onPress: jest.fn(), selected: false, user });
+      renderRow({ isAlreadyMember: true, user });
 
       const row = screen.getByTestId('channel-add-members-row-u-2');
       expect(row.props.accessibilityState).toMatchObject({ disabled: true, selected: false });

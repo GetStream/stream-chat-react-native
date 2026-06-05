@@ -1,37 +1,31 @@
 import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import type { Channel, UserResponse } from 'stream-chat';
+import { StateStore } from 'stream-chat';
+import type { SearchSourceState, UserResponse } from 'stream-chat';
 
-import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateUser } from '../../../../mock-builders/generator/user';
+import { SelectionStore } from '../../../../state-store/selection-store';
 import type { AddMemberSearchResultItemProps } from '../../components/members/AddMemberSearchResultItem';
 import { ChannelAddMembers } from '../../components/members/ChannelAddMembers';
-import {
-  type UseChannelAddMembersResult,
-  useChannelAddMembers,
-} from '../../hooks/members/useChannelAddMembers';
 
 const mockRowProbe: AddMemberSearchResultItemProps[] = [];
 
-jest.mock('../../hooks/members/useChannelAddMembers', () => ({
-  useChannelAddMembers: jest.fn(),
+const mockAddNotification = jest.fn();
+
+jest.mock('../../../Notifications/hooks/useNotificationApi', () => ({
+  useNotificationApi: () => ({ addNotification: mockAddNotification }),
 }));
 
 jest.mock('../../../UIComponents/SearchInput', () => {
   const ReactLib = require('react');
   const { Text } = require('react-native');
   return {
-    SearchInput: ({
-      onChangeText,
-      onClear,
-    }: {
-      onChangeText: (t: string) => void;
-      onClear: () => void;
-    }) =>
+    SearchInput: ({ onChangeText }: { onChangeText: (t: string) => void }) =>
       ReactLib.createElement(
         ReactLib.Fragment,
         null,
@@ -40,7 +34,11 @@ jest.mock('../../../UIComponents/SearchInput', () => {
           { onPress: () => onChangeText('query'), testID: 'search-change' },
           'change',
         ),
-        ReactLib.createElement(Text, { onPress: onClear, testID: 'search-clear' }, 'clear'),
+        ReactLib.createElement(
+          Text,
+          { onPress: () => onChangeText(''), testID: 'search-clear' },
+          'clear',
+        ),
       ),
   };
 });
@@ -60,35 +58,36 @@ jest.mock('../../components/members/AddMemberSearchResultItem', () => {
   };
 });
 
-const channel = {
-  cid: 'messaging:test',
-  on: () => ({ unsubscribe: () => undefined }),
-} as unknown as Channel;
-
-const baseHookResult = (): UseChannelAddMembersResult => ({
-  clearSearch: jest.fn(),
-  hasMore: true,
-  isAlreadyMember: jest.fn(() => false),
-  isSelected: jest.fn(() => false),
-  loading: false,
-  loadMore: jest.fn(),
-  onChangeSearchText: jest.fn(),
-  results: [],
-  selectedUsers: [],
-  toggleUser: jest.fn(),
-});
-
-const mockHook = (overrides: Partial<UseChannelAddMembersResult> = {}) => {
-  const value = { ...baseHookResult(), ...overrides };
-  (useChannelAddMembers as jest.Mock).mockReturnValue(value);
-  return value;
+type FakeSearchSource = {
+  resetState: jest.Mock;
+  search: jest.Mock;
+  state: StateStore<
+    Pick<SearchSourceState<UserResponse>, 'hasNext' | 'isLoading' | 'items' | 'lastQueryError'>
+  >;
 };
 
+const makeSearchSource = (
+  overrides: Partial<{
+    hasNext: boolean;
+    isLoading: boolean;
+    items: UserResponse[];
+    lastQueryError: Error;
+  }> = {},
+): FakeSearchSource => ({
+  resetState: jest.fn(),
+  search: jest.fn(),
+  state: new StateStore({
+    hasNext: overrides.hasNext ?? false,
+    isLoading: overrides.isLoading ?? false,
+    items: overrides.items,
+    ...(overrides.lastQueryError ? { lastQueryError: overrides.lastQueryError } : {}),
+  }),
+});
+
 const tree = (
-  props: {
-    onSelectionChange?: (selectedUsers: UserResponse[]) => void;
-    additionalFlatListProps?: object;
-  } = {},
+  searchSource: FakeSearchSource,
+  selectionStore: SelectionStore,
+  props: { additionalFlatListProps?: object } = {},
 ) => (
   <ThemeProvider theme={defaultTheme}>
     <TranslationProvider
@@ -98,117 +97,117 @@ const tree = (
         userLanguage: 'en',
       }}
     >
-      <ChannelDetailsContextProvider value={{ channel }}>
-        <ChannelAddMembers
-          additionalFlatListProps={props.additionalFlatListProps as never}
-          onSelectionChange={props.onSelectionChange ?? jest.fn()}
-        />
-      </ChannelDetailsContextProvider>
+      <ChannelAddMembersContext.Provider value={{ searchSource, selectionStore } as never}>
+        <ChannelAddMembers additionalFlatListProps={props.additionalFlatListProps as never} />
+      </ChannelAddMembersContext.Provider>
     </TranslationProvider>
   </ThemeProvider>
 );
 
-const renderComponent = (
-  props: {
-    onSelectionChange?: (selectedUsers: UserResponse[]) => void;
-    additionalFlatListProps?: object;
-  } = {},
-) => render(tree(props));
-
 describe('ChannelAddMembers', () => {
   beforeEach(() => {
     mockRowProbe.length = 0;
-    mockHook();
   });
 
   afterEach(() => jest.clearAllMocks());
 
-  it('wires the search input to the hook callbacks', () => {
-    const hook = mockHook();
-    renderComponent();
+  it('wires the search input to the search source callbacks', () => {
+    const searchSource = makeSearchSource();
+    render(tree(searchSource, new SelectionStore()));
 
     fireEvent.press(screen.getByTestId('search-change'));
-    expect(hook.onChangeSearchText).toHaveBeenCalledWith('query');
+    expect(searchSource.search).toHaveBeenCalledWith('query');
 
     fireEvent.press(screen.getByTestId('search-clear'));
-    expect(hook.clearSearch).toHaveBeenCalledTimes(1);
+    expect(searchSource.resetState).toHaveBeenCalledTimes(1);
   });
 
-  it('renders a row per result and forwards selection/membership flags and toggle handler', () => {
+  it('renders a row per result and selects the user on press', () => {
     const userA = generateUser({ id: 'u-1' });
     const userB = generateUser({ id: 'u-2' });
-    const isSelected = jest.fn((id: string) => id === 'u-2');
-    const isAlreadyMember = jest.fn((id: string) => id === 'u-1');
-    const toggleUser = jest.fn();
-    mockHook({
-      isAlreadyMember,
-      isSelected,
-      results: [userA, userB],
-      toggleUser,
-    });
+    const selectionStore = new SelectionStore();
 
-    renderComponent();
+    render(tree(makeSearchSource({ items: [userA, userB] }), selectionStore));
 
     expect(mockRowProbe).toHaveLength(2);
-    expect(mockRowProbe[0]).toMatchObject({ isAlreadyMember: true, selected: false });
-    expect(mockRowProbe[1]).toMatchObject({ isAlreadyMember: false, selected: true });
+    expect(mockRowProbe.map((p) => p.user.id)).toEqual(['u-1', 'u-2']);
 
     fireEvent.press(screen.getByTestId('add-member-row-u-1'));
-    expect(toggleUser).toHaveBeenCalledWith(expect.objectContaining({ id: 'u-1' }));
+    expect(selectionStore.state.getLatestValue().selectedIds.has('u-1')).toBe(true);
   });
 
   it('shows the loading skeleton while loading and the empty state when no results', () => {
-    mockHook({ loading: true });
-    const { rerender } = renderComponent();
+    const { rerender } = render(tree(makeSearchSource({ isLoading: true }), new SelectionStore()));
     expect(screen.getByTestId('user-list-loading-skeleton')).toBeTruthy();
 
-    mockHook({ loading: false, results: [] });
-    rerender(tree());
+    rerender(tree(makeSearchSource({ isLoading: false, items: [] }), new SelectionStore()));
 
     expect(screen.queryByTestId('user-list-loading-skeleton')).toBeNull();
     expect(screen.getByText('No user found')).toBeTruthy();
   });
 
   it('renders the loading-more indicator only while loading with existing results', () => {
-    mockHook({ loading: true, results: [generateUser({ id: 'alice' })] });
-    renderComponent();
+    render(
+      tree(
+        makeSearchSource({ isLoading: true, items: [generateUser({ id: 'alice' })] }),
+        new SelectionStore(),
+      ),
+    );
     expect(screen.UNSAFE_getByType(require('react-native').ActivityIndicator)).toBeTruthy();
   });
 
-  it('wires onEndReached and the end-reached threshold on the list', () => {
-    const loadMore = jest.fn();
-    mockHook({ loadMore });
-    renderComponent();
+  it('loads more via the search source when the list end is reached and there is a next page', () => {
+    const searchSource = makeSearchSource({ hasNext: true });
+    render(tree(searchSource, new SelectionStore()));
+    searchSource.search.mockClear();
 
     const list = screen.getByTestId('channel-add-members-list');
     expect(list.props.onEndReachedThreshold).toBe(0.2);
     list.props.onEndReached();
-    expect(loadMore).toHaveBeenCalledTimes(1);
+    expect(searchSource.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not load more when there is no next page', () => {
+    const searchSource = makeSearchSource({ hasNext: false });
+    render(tree(searchSource, new SelectionStore()));
+    searchSource.search.mockClear();
+
+    screen.getByTestId('channel-add-members-list').props.onEndReached();
+    expect(searchSource.search).not.toHaveBeenCalled();
+  });
+
+  it('dispatches an error notification when the user search fails', () => {
+    const lastQueryError = new Error('boom');
+    render(tree(makeSearchSource({ lastQueryError }), new SelectionStore()));
+
+    expect(mockAddNotification).toHaveBeenCalledTimes(1);
+    expect(mockAddNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Failed to load users',
+        options: expect.objectContaining({
+          severity: 'error',
+          type: 'api:channel:query-users:failed',
+        }),
+        origin: expect.objectContaining({ emitter: 'AddChannelMembers' }),
+      }),
+    );
+  });
+
+  it('does not dispatch an error notification when the search succeeds', () => {
+    render(tree(makeSearchSource({ items: [generateUser({ id: 'u-1' })] }), new SelectionStore()));
+
+    expect(mockAddNotification).not.toHaveBeenCalled();
   });
 
   it('forwards additionalFlatListProps to the underlying list', () => {
-    mockHook();
-    renderComponent({ additionalFlatListProps: { bounces: false, testID: 'custom-list' } });
+    render(
+      tree(makeSearchSource(), new SelectionStore(), {
+        additionalFlatListProps: { bounces: false, testID: 'custom-list' },
+      }),
+    );
 
     const list = screen.getByTestId('custom-list');
     expect(list.props.bounces).toBe(false);
     expect(screen.queryByTestId('channel-add-members-list')).toBeNull();
-  });
-
-  it('emits onSelectionChange only when the selection reference changes (not on mount)', () => {
-    const onSelectionChange = jest.fn();
-    const selectionA: never[] = [];
-    mockHook({ selectedUsers: selectionA });
-
-    const { rerender } = render(tree({ onSelectionChange }));
-
-    expect(onSelectionChange).not.toHaveBeenCalled();
-
-    const selectionB = [generateUser({ id: 'u-1' })];
-    mockHook({ selectedUsers: selectionB as never });
-    rerender(tree({ onSelectionChange }));
-
-    expect(onSelectionChange).toHaveBeenCalledTimes(1);
-    expect(onSelectionChange).toHaveBeenCalledWith(selectionB);
   });
 });

@@ -3,29 +3,30 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
+import { useChannelAddMembersContext, useChannelDetailsContext } from '../../../../contexts';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useIsChannelMember } from '../../../../hooks';
+import { useIsSelected } from '../../../../state-store/selection-store';
 import { primitives } from '../../../../theme';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 import { SelectionCircle } from '../../../UIComponents/SelectionCircle';
 
 export type AddMemberSearchResultItemProps = {
-  isAlreadyMember: boolean;
   onPress: (user: UserResponse) => void;
-  selected: boolean;
   user: UserResponse;
 };
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const AddMemberSearchResultItem = ({
-  isAlreadyMember,
-  onPress,
-  selected,
-  user,
-}: AddMemberSearchResultItemProps) => {
+export const AddMemberSearchResultItem = ({ onPress, user }: AddMemberSearchResultItemProps) => {
   const { t } = useTranslationContext();
+  const { selectionStore } = useChannelAddMembersContext();
+  const { channel } = useChannelDetailsContext();
+
+  const selected = useIsSelected(selectionStore, user.id);
+  const isAlreadyMember = useIsChannelMember(channel, user.id);
   const {
     theme: {
       channelDetailsScreen: {

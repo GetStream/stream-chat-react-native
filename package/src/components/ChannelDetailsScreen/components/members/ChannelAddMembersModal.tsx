@@ -2,8 +2,10 @@ import React, { useCallback, useState } from 'react';
 
 import { ActivityIndicator } from 'react-native';
 
-import type { UserResponse } from 'stream-chat';
-
+import {
+  ChannelAddMembersProvider,
+  useChannelAddMembersContext,
+} from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -11,6 +13,7 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
 import { useStableCallback } from '../../../../hooks/useStableCallback';
 import { Checkmark } from '../../../../icons/checkmark-1';
+import { useIsSelectionEmpty } from '../../../../state-store/selection-store';
 import { NotificationList } from '../../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { Button } from '../../../ui/Button/Button';
@@ -31,10 +34,17 @@ type ChannelAddMembersModalContentProps = {
   onClose: () => void;
 };
 
-const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalContentProps) => {
+const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalContentProps) => (
+  <ChannelAddMembersProvider>
+    <ChannelAddMembersModalBody onClose={onClose} />
+  </ChannelAddMembersProvider>
+);
+
+const ChannelAddMembersModalBody = ({ onClose }: ChannelAddMembersModalContentProps) => {
   const { channel } = useChannelDetailsContext();
   const { addMembers } = useChannelActions(channel);
   const { ChannelAddMembers } = useComponentsContext();
+  const { selectionStore } = useChannelAddMembersContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -43,31 +53,23 @@ const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalConten
       },
     },
   } = useTheme();
-  const [addMembersSelection, setAddMembersSelection] = useState<UserResponse[]>([]);
+  const isSelectionEmpty = useIsSelectionEmpty(selectionStore);
   const [addingMembers, setAddingMembers] = useState(false);
-  const confirmEnabled = addMembersSelection.length > 0 && !addingMembers;
+  const confirmEnabled = !isSelectionEmpty && !addingMembers;
 
   const handleClose = useCallback(() => {
-    setAddMembersSelection([]);
     onClose();
   }, [onClose]);
-
-  const handleSelectionChange = useCallback((users: UserResponse[]) => {
-    setAddMembersSelection(users);
-  }, []);
 
   const handleConfirm = useStableCallback(async () => {
     setAddingMembers(true);
     try {
-      await addMembers(
-        addMembersSelection.map((u) => u.id),
-        {
-          onSuccess: () => {
-            setAddMembersSelection([]);
-            onClose();
-          },
+      const ids = Array.from(selectionStore.state.getLatestValue().selectedIds);
+      await addMembers(ids, {
+        onSuccess: () => {
+          onClose();
         },
-      );
+      });
     } finally {
       setAddingMembers(false);
     }
@@ -94,7 +96,7 @@ const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalConten
         }
         title={t('Add Members')}
       />
-      <ChannelAddMembers onSelectionChange={handleSelectionChange} />
+      <ChannelAddMembers />
       <NotificationList />
     </>
   );
