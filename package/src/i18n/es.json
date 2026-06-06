@@ -264,6 +264,7 @@
   "a11y/Loading": "Cargando",
   "a11y/Loading failed": "Error al cargar",
   "a11y/Message actions": "Acciones del mensaje",
+  "a11y/Muted": "Silenciado",
   "a11y/New message from {{user}}": "Nuevo mensaje de {{user}}",
   "a11y/Offline": "Sin conexión",
   "a11y/Open message actions": "Abrir acciones del mensaje",

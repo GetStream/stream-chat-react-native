@@ -264,6 +264,7 @@
   "a11y/Loading": "Yükleniyor",
   "a11y/Loading failed": "Yükleme başarısız",
   "a11y/Message actions": "Mesaj eylemleri",
+  "a11y/Muted": "Sessize alındı",
   "a11y/New message from {{user}}": "{{user}} kullanıcısından yeni mesaj",
   "a11y/Offline": "Çevrimdışı",
   "a11y/Open message actions": "Mesaj eylemlerini aç",
