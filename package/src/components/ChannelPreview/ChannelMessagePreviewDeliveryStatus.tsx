@@ -13,6 +13,7 @@ import { MessageDeliveryStatus, useMessageDeliveryStatus } from '../../hooks';
 import { Check, CheckAll, Time } from '../../icons';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
+import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
 
 export type ChannelMessagePreviewDeliveryStatusProps = Pick<ChannelPreviewProps, 'channel'> & {
   message: MessageResponse | LocalMessage;
@@ -66,11 +67,11 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     message.status === MessageStatusTypes.SENDING
       ? 'a11y/Sending'
       : message.status === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
-        ? 'a11y/Read'
+        ? 'a11y/Read, sent by you'
         : status === MessageDeliveryStatus.DELIVERED
-          ? 'a11y/Delivered'
+          ? 'a11y/Delivered, sent by you'
           : status === MessageDeliveryStatus.SENT
-            ? 'a11y/Sent'
+            ? 'a11y/Sent by you'
             : 'a11y/Sending',
   );
 
@@ -83,24 +84,21 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   }
 
   return (
-    <View
-      accessibilityLabel={statusLabel}
-      accessibilityRole='text'
-      accessible={statusLabel ? true : undefined}
-      style={styles.container}
-    >
-      {message.status === MessageStatusTypes.SENDING ? (
-        <Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
-      ) : message.status === MessageStatusTypes.RECEIVED &&
-        status === MessageDeliveryStatus.READ ? (
-        <CheckAll stroke={semantics.accentPrimary} height={16} width={16} {...checkAllIcon} />
-      ) : status === MessageDeliveryStatus.DELIVERED ? (
-        <CheckAll stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkAllIcon} />
-      ) : status === MessageDeliveryStatus.SENT ? (
-        <Check stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkIcon} />
-      ) : null}
-      <Text style={styles.text}>{t('You')}:</Text>
-    </View>
+    <CompositeAccessibilityProbe label={statusLabel}>
+      <View style={styles.container}>
+        {message.status === MessageStatusTypes.SENDING ? (
+          <Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
+        ) : message.status === MessageStatusTypes.RECEIVED &&
+          status === MessageDeliveryStatus.READ ? (
+          <CheckAll stroke={semantics.accentPrimary} height={16} width={16} {...checkAllIcon} />
+        ) : status === MessageDeliveryStatus.DELIVERED ? (
+          <CheckAll stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkAllIcon} />
+        ) : status === MessageDeliveryStatus.SENT ? (
+          <Check stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkIcon} />
+        ) : null}
+        <Text style={styles.text}>{t('You')}:</Text>
+      </View>
+    </CompositeAccessibilityProbe>
   );
 };
 
