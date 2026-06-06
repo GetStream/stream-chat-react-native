@@ -1,5 +1,7 @@
 import React, { PropsWithChildren } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+
+import { HiddenA11yText } from './HiddenA11yText';
 
 export type CompositeAccessibilityProbeProps = {
   /**
@@ -37,22 +39,10 @@ export const CompositeAccessibilityProbe = ({
 
   return (
     <>
-      <Text accessibilityLabel={label} style={styles.hiddenA11yText}>
-        {''}
-      </Text>
+      <HiddenA11yText label={label} />
       <View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>
         {children}
       </View>
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  hiddenA11yText: {
-    height: 1,
-    opacity: 0,
-    overflow: 'hidden',
-    position: 'absolute',
-    width: 1,
-  },
-});

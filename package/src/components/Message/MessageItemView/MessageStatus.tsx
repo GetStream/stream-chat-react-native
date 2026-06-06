@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
@@ -13,6 +13,7 @@ import { CheckAll } from '../../../icons/checks';
 import { Time } from '../../../icons/clock';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
+import { HiddenA11yText } from '../../Accessibility/HiddenA11yText';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageStatusPropsWithContext = Pick<
@@ -63,11 +64,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
 
   return (
     <>
-      {accessibilityLabel ? (
-        <Text accessibilityLabel={accessibilityLabel} style={styles.hiddenA11yText}>
-          {''}
-        </Text>
-      ) : null}
+      <HiddenA11yText label={accessibilityLabel} />
       <View
         accessibilityElementsHidden={!!accessibilityLabel}
         importantForAccessibility={accessibilityLabel ? 'no-hide-descendants' : undefined}
@@ -160,13 +157,6 @@ const useStyles = () => {
         alignItems: 'center',
         flexDirection: 'row',
         gap: primitives.spacingXxs,
-      },
-      hiddenA11yText: {
-        height: 1,
-        opacity: 0,
-        overflow: 'hidden',
-        position: 'absolute',
-        width: 1,
       },
       readCheck: {
         color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.accentPrimary,
