@@ -4,6 +4,7 @@ import { StyleSheet, Text } from 'react-native';
 import type { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewViewPropsWithContext } from './ChannelPreviewView';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
@@ -35,11 +36,16 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
     [created_at, t, tDateTimeParser],
   );
 
+  const visibleDate =
+    formatLatestMessageDate && latestMessageDate
+      ? formatLatestMessageDate(latestMessageDate).toString()
+      : formattedDate;
+  const labelParams = useMemo(() => ({ date: visibleDate ?? '' }), [visibleDate]);
+  const accessibilityLabel = useA11yLabel('a11y/Last message {{date}}', labelParams);
+
   return (
-    <Text style={styles.date}>
-      {formatLatestMessageDate && latestMessageDate
-        ? formatLatestMessageDate(latestMessageDate).toString()
-        : formattedDate}
+    <Text accessibilityLabel={accessibilityLabel} style={styles.date}>
+      {visibleDate}
     </Text>
   );
 };

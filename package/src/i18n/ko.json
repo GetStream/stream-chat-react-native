@@ -253,10 +253,14 @@
   "a11y/AI is generating": "AI가 생성 중입니다",
   "a11y/AI is thinking": "AI가 생각 중입니다",
   "a11y/Avatar of {{name}}": "{{name}}의 아바타",
+  "a11y/Channel with {{count}} members": "멤버 {{count}}명의 채널",
   "a11y/Connected": "연결됨",
   "a11y/Delivered": "전달됨",
+  "a11y/Direct chat with {{name}}": "{{name}}님과의 다이렉트 채팅",
+  "a11y/Double tap to open": "두 번 탭하여 열기",
   "a11y/Editing message": "메시지 편집 중",
   "a11y/Editing message: {{text}}": "메시지 편집 중: {{text}}",
+  "a11y/Last message {{date}}": "마지막 메시지 {{date}}",
   "a11y/Loading": "로드 중",
   "a11y/Loading failed": "로드 실패",
   "a11y/Message actions": "메시지 작업",
@@ -359,5 +363,6 @@
   "a11y/Double tap and hold to activate contextual menu": "컨텍스트 메뉴를 활성화하려면 두 번 탭하고 길게 누르세요",
   "a11y/Swipe right to go through different actions": "다른 작업을 탐색하려면 오른쪽으로 스와이프하세요",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "a11y/{{count}} unread messages": "읽지 않은 메시지 {{count}}개"
 }

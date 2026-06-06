@@ -253,10 +253,14 @@
   "a11y/AI is generating": "AI is generating",
   "a11y/AI is thinking": "AI is thinking",
   "a11y/Avatar of {{name}}": "Avatar of {{name}}",
+  "a11y/Channel with {{count}} members": "Channel with {{count}} members",
   "a11y/Connected": "Connected",
   "a11y/Delivered": "Delivered",
+  "a11y/Direct chat with {{name}}": "Direct chat with {{name}}",
+  "a11y/Double tap to open": "Double tap to open",
   "a11y/Editing message": "Editing message",
   "a11y/Editing message: {{text}}": "Editing message: {{text}}",
+  "a11y/Last message {{date}}": "Last message {{date}}",
   "a11y/Loading": "Loading",
   "a11y/Loading failed": "Loading failed",
   "a11y/Message actions": "Message actions",
@@ -359,5 +363,6 @@
   "{{ user }} has been unmuted": "{{ user }} has been unmuted",
   "size limit": "size limit",
   "unknown error": "unknown error",
-  "unsupported file type": "unsupported file type"
+  "unsupported file type": "unsupported file type",
+  "a11y/{{count}} unread messages": "{{count}} unread messages"
 }

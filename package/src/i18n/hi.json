@@ -253,10 +253,14 @@
   "a11y/AI is generating": "AI जवाब तैयार कर रहा है",
   "a11y/AI is thinking": "AI सोच रहा है",
   "a11y/Avatar of {{name}}": "{{name}} का अवतार",
+  "a11y/Channel with {{count}} members": "{{count}} सदस्यों वाला चैनल",
   "a11y/Connected": "कनेक्टेड",
   "a11y/Delivered": "डिलीवर हुआ",
+  "a11y/Direct chat with {{name}}": "{{name}} के साथ सीधी चैट",
+  "a11y/Double tap to open": "खोलने के लिए दो बार टैप करें",
   "a11y/Editing message": "संदेश संपादित कर रहे हैं",
   "a11y/Editing message: {{text}}": "संदेश संपादित कर रहे हैं: {{text}}",
+  "a11y/Last message {{date}}": "अंतिम संदेश {{date}}",
   "a11y/Loading": "लोड हो रहा है",
   "a11y/Loading failed": "लोड नहीं हो सका",
   "a11y/Message actions": "संदेश की कार्रवाइयां",
@@ -359,5 +363,6 @@
   "a11y/Double tap and hold to activate contextual menu": "संदर्भ मेनू सक्रिय करने के लिए दो बार टैप करें और होल्ड करें",
   "a11y/Swipe right to go through different actions": "विभिन्न क्रियाओं के बीच जाने के लिए दाएं स्वाइप करें",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "a11y/{{count}} unread messages": "{{count}} अपठित संदेश"
 }

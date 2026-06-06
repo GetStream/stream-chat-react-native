@@ -253,10 +253,14 @@
   "a11y/AI is generating": "Yapay zeka oluşturuyor",
   "a11y/AI is thinking": "Yapay zeka düşünüyor",
   "a11y/Avatar of {{name}}": "{{name}} avatarı",
+  "a11y/Channel with {{count}} members": "{{count}} üyeli kanal",
   "a11y/Connected": "Bağlandı",
   "a11y/Delivered": "Teslim edildi",
+  "a11y/Direct chat with {{name}}": "{{name}} ile doğrudan sohbet",
+  "a11y/Double tap to open": "Açmak için iki kez dokun",
   "a11y/Editing message": "Mesaj düzenleniyor",
   "a11y/Editing message: {{text}}": "Mesaj düzenleniyor: {{text}}",
+  "a11y/Last message {{date}}": "Son mesaj {{date}}",
   "a11y/Loading": "Yükleniyor",
   "a11y/Loading failed": "Yükleme başarısız",
   "a11y/Message actions": "Mesaj eylemleri",
@@ -359,5 +363,6 @@
   "a11y/Double tap and hold to activate contextual menu": "Bağlam menüsünü etkinleştirmek için çift dokunup basılı tut",
   "a11y/Swipe right to go through different actions": "Farklı eylemler arasında geçiş yapmak için sağa kaydır",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "a11y/{{count}} unread messages": "{{count}} okunmamış mesaj"
 }

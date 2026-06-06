@@ -5,6 +5,7 @@ import type { ChannelPreviewProps } from './ChannelPreview';
 
 import type { LastMessageType } from './hooks/useChannelPreviewData';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import {
   ChannelsContextValue,
   useChannelsContext,
@@ -70,6 +71,7 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
   } = useTheme();
   const styles = useStyles();
   const swipeRegistry = useSwipeRegistryContext();
+  const accessibilityHint = useA11yLabel('a11y/Double tap to open');
 
   const onPress = useStableCallback(() => {
     if (swipeRegistry?.hasOpen()) {
@@ -84,6 +86,7 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
   return (
     <View style={[styles.wrapper, wrapper]}>
       <Pressable
+        accessibilityHint={accessibilityHint}
         onPress={onPress}
         style={({ pressed }) => [
           styles.container,

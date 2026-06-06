@@ -253,10 +253,14 @@
   "a11y/AI is generating": "AI is generating",
   "a11y/AI is thinking": "AI is thinking",
   "a11y/Avatar of {{name}}": "Avatar of {{name}}",
+  "a11y/Channel with {{count}} members": "قناة بها {{count}} أعضاء",
   "a11y/Connected": "Connected",
   "a11y/Delivered": "Delivered",
+  "a11y/Direct chat with {{name}}": "محادثة مباشرة مع {{name}}",
+  "a11y/Double tap to open": "انقر مرتين للفتح",
   "a11y/Editing message": "تعديل الرسالة",
   "a11y/Editing message: {{text}}": "تعديل الرسالة: {{text}}",
+  "a11y/Last message {{date}}": "آخر رسالة {{date}}",
   "a11y/Loading": "Loading",
   "a11y/Loading failed": "Loading failed",
   "a11y/Message actions": "Message actions",
@@ -359,5 +363,6 @@
   "a11y/Double tap and hold to activate contextual menu": "انقر نقرًا مزدوجًا مع الاستمرار لتفعيل قائمة السياق",
   "a11y/Swipe right to go through different actions": "اسحب لليمين للتنقل بين الإجراءات المختلفة",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "a11y/{{count}} unread messages": "{{count}} رسائل غير مقروءة"
 }

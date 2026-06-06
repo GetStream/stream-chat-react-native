@@ -253,10 +253,14 @@
   "a11y/AI is generating": "L'IA sta generando",
   "a11y/AI is thinking": "L'IA sta pensando",
   "a11y/Avatar of {{name}}": "Avatar di {{name}}",
+  "a11y/Channel with {{count}} members": "Canale con {{count}} membri",
   "a11y/Connected": "Connesso",
   "a11y/Delivered": "Consegnato",
+  "a11y/Direct chat with {{name}}": "Chat diretta con {{name}}",
+  "a11y/Double tap to open": "Tocca due volte per aprire",
   "a11y/Editing message": "Modifica del messaggio",
   "a11y/Editing message: {{text}}": "Modifica del messaggio: {{text}}",
+  "a11y/Last message {{date}}": "Ultimo messaggio {{date}}",
   "a11y/Loading": "Caricamento",
   "a11y/Loading failed": "Caricamento non riuscito",
   "a11y/Message actions": "Azioni del messaggio",
@@ -359,5 +363,6 @@
   "a11y/Double tap and hold to activate contextual menu": "Tocca due volte e tieni premuto per attivare il menu contestuale",
   "a11y/Swipe right to go through different actions": "Scorri a destra per passare in rassegna le diverse azioni",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "a11y/{{count}} unread messages": "{{count}} messaggi non letti"
 }

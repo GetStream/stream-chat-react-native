@@ -83,7 +83,12 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   }
 
   return (
-    <View accessibilityLabel={statusLabel} accessibilityRole='text' style={styles.container}>
+    <View
+      accessibilityLabel={statusLabel}
+      accessibilityRole='text'
+      accessible={statusLabel ? true : undefined}
+      style={styles.container}
+    >
       {message.status === MessageStatusTypes.SENDING ? (
         <Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
       ) : message.status === MessageStatusTypes.RECEIVED &&

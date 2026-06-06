@@ -253,10 +253,14 @@
   "a11y/AI is generating": "AIが生成しています",
   "a11y/AI is thinking": "AIが考えています",
   "a11y/Avatar of {{name}}": "{{name}}のアバター",
+  "a11y/Channel with {{count}} members": "メンバー{{count}}人のチャンネル",
   "a11y/Connected": "接続済み",
   "a11y/Delivered": "配信済み",
+  "a11y/Direct chat with {{name}}": "{{name}}とのダイレクトチャット",
+  "a11y/Double tap to open": "ダブルタップで開く",
   "a11y/Editing message": "メッセージを編集中",
   "a11y/Editing message: {{text}}": "メッセージを編集中: {{text}}",
+  "a11y/Last message {{date}}": "最後のメッセージ {{date}}",
   "a11y/Loading": "読み込み中",
   "a11y/Loading failed": "読み込みに失敗しました",
   "a11y/Message actions": "メッセージの操作",
@@ -359,5 +363,6 @@
   "a11y/Double tap and hold to activate contextual menu": "コンテキストメニューを表示するにはダブルタップして長押し",
   "a11y/Swipe right to go through different actions": "右にスワイプして異なるアクションを切り替えます",
   "a11y/Close": "Close",
-  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss."
+  "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
+  "a11y/{{count}} unread messages": "未読メッセージ{{count}}件"
 }
