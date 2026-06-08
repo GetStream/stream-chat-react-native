@@ -20,6 +20,7 @@ import {
 
 import { ReplyMessageView } from './ReplyMessageView';
 
+import { useAnnounceOnShow } from '../../a11y/hooks/useAnnounceOnShow';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
@@ -41,6 +42,8 @@ import { VideoPlayIndicator } from '../ui/VideoPlayIndicator';
 const messageComposerStateStoreSelector = (state: MessageComposerState) => ({
   quotedMessage: state.quotedMessage,
 });
+
+const ANNOUNCEMENT_TEXT_MAX_LENGTH = 120;
 
 const RightContent = React.memo(
   (props: Pick<ReplyPropsWithContext, 'ImageComponent' | 'message'>) => {
@@ -234,6 +237,43 @@ export const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof Re
 export type ReplyProps = Partial<ReplyPropsWithContext> &
   Pick<ReplyPropsWithContext, 'mode' | 'onDismiss'>;
 
+/**
+ * Mounted only when the Reply is rendered as the composer header preview
+ * (edit/reply). Keeps the translation + announcer subscriptions off the
+ * per-row in-message quoted-reply render path.
+ */
+const ReplyComposerAnnouncer = ({
+  message,
+  mode,
+}: {
+  message: ReplyPropsWithContext['quotedMessage'];
+  mode: ReplyPropsWithContext['mode'];
+}) => {
+  const { t } = useTranslationContext();
+  const truncatedText = useMemo(() => {
+    const raw = message?.text?.trim();
+    if (!raw) return undefined;
+    return raw.length > ANNOUNCEMENT_TEXT_MAX_LENGTH
+      ? `${raw.slice(0, ANNOUNCEMENT_TEXT_MAX_LENGTH).trimEnd()}…`
+      : raw;
+  }, [message?.text]);
+  const announcement = useMemo(() => {
+    if (mode === 'edit') {
+      return truncatedText
+        ? t('a11y/Editing message: {{text}}', { text: truncatedText })
+        : t('a11y/Editing message');
+    }
+    const name = message?.user?.name;
+    if (!name) return undefined;
+    return truncatedText
+      ? t('a11y/Replying to {{user}}: {{text}}', { text: truncatedText, user: name })
+      : t('a11y/Replying to {{user}}', { user: name });
+  }, [mode, message?.user?.name, truncatedText, t]);
+
+  useAnnounceOnShow(true, announcement);
+  return null;
+};
+
 export const Reply = (props: ReplyProps) => {
   const { message: messageFromContext } = useMessageContext();
   const { client } = useChatContext();
@@ -251,14 +291,25 @@ export const Reply = (props: ReplyProps) => {
 
   const isMyMessage = client.user?.id === quotedMessage?.user?.id;
 
+  // Composer header passes `onDismiss`; the in-message quoted-reply renderer
+  // does not. Only the composer-preview path pays for announcement work.
+  const isComposerPreview = !!props.onDismiss;
+
   return (
-    <MemoizedReply
-      ImageComponent={ImageComponent}
-      isMyMessage={isMyMessage}
-      message={messageFromContext}
-      quotedMessage={quotedMessage}
-      {...props}
-    />
+    <>
+      {isComposerPreview ? (
+        // Edit passes the message via `quotedMessage` prop; reply uses the
+        // composer-state quoted message we computed locally.
+        <ReplyComposerAnnouncer message={props.quotedMessage ?? quotedMessage} mode={props.mode} />
+      ) : null}
+      <MemoizedReply
+        ImageComponent={ImageComponent}
+        isMyMessage={isMyMessage}
+        message={messageFromContext}
+        quotedMessage={quotedMessage}
+        {...props}
+      />
+    </>
   );
 };
 

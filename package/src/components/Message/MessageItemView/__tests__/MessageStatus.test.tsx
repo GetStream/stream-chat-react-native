@@ -5,6 +5,7 @@ import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { Channel } from '../../..';
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
@@ -54,13 +55,15 @@ describe('MessageStatus', () => {
     channelProps?: Partial<React.ComponentProps<typeof Channel>>,
   ) =>
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} {...channelProps}>
-            <MessageStatus {...options} />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <OverlayProvider accessibility={{ enabled: true }}>
+        <ChannelsStateProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel} {...channelProps}>
+              <MessageStatus {...options} />
+            </Channel>
+          </Chat>
+        </ChannelsStateProvider>
+      </OverlayProvider>,
     );
 
   // NOTE: Original source had `it.each('string', async () => { ... })` which was a

@@ -318,10 +318,21 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     </>
   );
 
+  // Drop the Pressable's single-focus-stop behavior when the message contains
+  // interactive children (poll options, attachment cells, the quoted-reply
+  // navigator, shared location). Without this, VO/TalkBack subsume those
+  // children into the row's one announcement and they can't be activated.
+  const hasInteractiveContent = !!(
+    message.poll_id ||
+    message.quoted_message ||
+    message.attachments?.length ||
+    message.shared_location
+  );
+
   return (
     <Pressable
       accessibilityHint={accessibilityHint}
-      accessible={message.poll_id ? false : undefined}
+      accessible={hasInteractiveContent ? false : undefined}
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {

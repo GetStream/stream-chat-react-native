@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
 
 import { ReactionListItemWrapper } from './ReactionListItemWrapper';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import {
   MessageContextValue,
   useMessageContext,
@@ -19,6 +20,7 @@ import type { IconProps } from '../../../../icons/utils/base';
 
 import { primitives } from '../../../../theme';
 import type { ReactionData } from '../../../../utils/utils';
+import { HiddenA11yText } from '../../../Accessibility/HiddenA11yText';
 
 type Props = Pick<IconProps, 'pathFill' | 'style'> & {
   size: number;
@@ -65,6 +67,8 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
     },
   } = useTheme();
   const styles = useStyles();
+  const accessibilityHint = useA11yLabel('a11y/Double tap to view reactions');
+  const youReacted = useA11yLabel('a11y/you reacted');
   const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
   );
@@ -72,6 +76,9 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
   const moreReactionsCount = reactionsCount - 4;
   const reactionsCountText =
     moreReactionsCount < 99 ? moreReactionsCount : `+${moreReactionsCount}`;
+  const moreReactionsA11yText = useA11yLabel('a11y/and {{count}} more reactions', {
+    count: moreReactionsCount,
+  });
 
   const hasSupportedReactions = reactions?.some((reaction) =>
     supportedReactionTypes?.includes(reaction.type),
@@ -83,6 +90,8 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
 
   return (
     <ReactionListItemWrapper
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel}
       disabled={preventPress}
       onPress={(event) => {
         if (onPress) {
@@ -111,18 +120,23 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
         }
       }}
       style={containerStyle}
-      accessibilityLabel={accessibilityLabel}
     >
       {reactions?.slice(0, 4).map((reaction) => (
-        <Icon
-          key={reaction.type}
-          size={icon.size}
-          style={[styles.iconStyle, icon.style]}
-          supportedReactions={supportedReactions}
-          type={reaction.type}
-        />
+        <Fragment key={reaction.type}>
+          <Icon
+            size={icon.size}
+            style={[styles.iconStyle, icon.style]}
+            supportedReactions={supportedReactions}
+            type={reaction.type}
+          />
+          {reaction.own ? <HiddenA11yText label={youReacted} /> : null}
+        </Fragment>
       ))}
-      {reactionsCount > 4 ? <Text style={styles.reactionCount}>{reactionsCountText}</Text> : null}
+      {reactionsCount > 4 ? (
+        <Text accessibilityLabel={moreReactionsA11yText} style={styles.reactionCount}>
+          {reactionsCountText}
+        </Text>
+      ) : null}
     </ReactionListItemWrapper>
   );
 };

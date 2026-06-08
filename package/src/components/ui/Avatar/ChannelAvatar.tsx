@@ -8,10 +8,12 @@ import { UserAvatarGroup } from './AvatarGroup';
 
 import { UserAvatar } from './UserAvatar';
 
+import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelPreviewDisplayPresence } from '../../../components/ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { hashStringToNumber } from '../../../utils/utils';
+import { CompositeAccessibilityProbe } from '../../Accessibility/CompositeAccessibilityProbe';
 
 export type ChannelAvatarProps = {
   channel: Channel;
@@ -47,34 +49,42 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   const channelName = (channel.data?.name as string | undefined) ?? channel.cid;
 
-  if (channelImage) {
-    return (
-      <Avatar
-        backgroundColor={avatarBackgroundColor}
-        imageUrl={channelImage}
-        name={channelName}
-        showBorder={showBorder}
-        size={size}
-      />
-    );
-  }
+  const memberCount = Object.keys(channel.state.members).length;
+  const isGroup = !!channel.data?.name || memberCount > 2;
+  const otherUserName = usersWithoutSelf[0]?.name || usersWithoutSelf[0]?.id;
+  const labelParams = useMemo(
+    () => ({ count: memberCount, name: otherUserName ?? '' }),
+    [memberCount, otherUserName],
+  );
+  const accessibilityLabel = useA11yLabel(
+    isGroup ? 'a11y/Channel with {{count}} members' : 'a11y/Direct chat with {{name}}',
+    labelParams,
+  );
 
-  if (usersWithoutSelf.length > 1) {
-    return (
-      <UserAvatarGroup
-        size={size}
-        users={usersForGroup}
-        showOnlineIndicator={showOnlineIndicator}
-      />
-    );
-  } else {
-    return (
-      <UserAvatar
-        user={usersWithoutSelf[0]}
-        size={size}
-        showBorder={showBorder}
-        showOnlineIndicator={showOnlineIndicator}
-      />
-    );
-  }
+  return (
+    <CompositeAccessibilityProbe label={accessibilityLabel}>
+      {channelImage ? (
+        <Avatar
+          backgroundColor={avatarBackgroundColor}
+          imageUrl={channelImage}
+          name={channelName}
+          showBorder={showBorder}
+          size={size}
+        />
+      ) : usersWithoutSelf.length > 1 ? (
+        <UserAvatarGroup
+          size={size}
+          users={usersForGroup}
+          showOnlineIndicator={showOnlineIndicator}
+        />
+      ) : (
+        <UserAvatar
+          user={usersWithoutSelf[0]}
+          size={size}
+          showBorder={showBorder}
+          showOnlineIndicator={showOnlineIndicator}
+        />
+      )}
+    </CompositeAccessibilityProbe>
+  );
 };
