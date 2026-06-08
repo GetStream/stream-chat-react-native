@@ -59,8 +59,7 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      // TODO: search source doesn't work with empty query so we can't do proper initial load - fix this before the merge
-      searchSource.search('t');
+      searchSource.search('');
     }
   }, [searchSource]);
 

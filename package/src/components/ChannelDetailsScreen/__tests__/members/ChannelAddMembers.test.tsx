@@ -111,6 +111,14 @@ describe('ChannelAddMembers', () => {
 
   afterEach(() => jest.clearAllMocks());
 
+  it('calls search with an empty string when the component is created', () => {
+    const searchSource = makeSearchSource();
+    render(tree(searchSource, new SelectionStore()));
+
+    expect(searchSource.search).toHaveBeenCalledTimes(1);
+    expect(searchSource.search).toHaveBeenCalledWith('');
+  });
+
   it('wires the search input to the search source callbacks', () => {
     const searchSource = makeSearchSource();
     render(tree(searchSource, new SelectionStore()));
@@ -119,7 +127,7 @@ describe('ChannelAddMembers', () => {
     expect(searchSource.search).toHaveBeenCalledWith('query');
 
     fireEvent.press(screen.getByTestId('search-clear'));
-    expect(searchSource.resetState).toHaveBeenCalledTimes(1);
+    expect(searchSource.search).toHaveBeenCalledWith('');
   });
 
   it('renders a row per result and selects the user on press', () => {
@@ -157,7 +165,10 @@ describe('ChannelAddMembers', () => {
   });
 
   it('loads more via the search source when the list end is reached and there is a next page', () => {
-    const searchSource = makeSearchSource({ hasNext: true });
+    const searchSource = makeSearchSource({
+      hasNext: true,
+      items: [generateUser({ id: 'alice' })],
+    });
     render(tree(searchSource, new SelectionStore()));
     searchSource.search.mockClear();
 
@@ -168,7 +179,10 @@ describe('ChannelAddMembers', () => {
   });
 
   it('does not load more when there is no next page', () => {
-    const searchSource = makeSearchSource({ hasNext: false });
+    const searchSource = makeSearchSource({
+      hasNext: false,
+      items: [generateUser({ id: 'alice' })],
+    });
     render(tree(searchSource, new SelectionStore()));
     searchSource.search.mockClear();
 

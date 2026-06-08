@@ -28,14 +28,17 @@ export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknow
   const [searchSource] = useState(() => {
     const source = new UserSearchSource(
       client,
-      { pageSize: 25 },
+      { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
       {
         initialFilterConfig: {
           $or: {
             enabled: true,
-            generate: ({ searchQuery }) => ({
-              name: { $autocomplete: searchQuery ?? '' },
-            }),
+            generate: ({ searchQuery }) =>
+              searchQuery
+                ? {
+                    name: { $autocomplete: searchQuery },
+                  }
+                : {},
           },
         },
       },
