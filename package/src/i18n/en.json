@@ -266,6 +266,8 @@
   "a11y/Loading": "Loading",
   "a11y/Loading failed": "Loading failed",
   "a11y/Message actions": "Message actions",
+  "a11y/Message from you": "Message from you",
+  "a11y/Message from {{sender}}": "Message from {{sender}}",
   "a11y/Muted": "Muted",
   "a11y/New message from {{user}}": "New message from {{user}}",
   "a11y/Offline": "Offline",

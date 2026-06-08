@@ -371,5 +371,7 @@
   "a11y/Swipe right to go through different actions": "Desliza a la derecha para recorrer las diferentes acciones",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} mensajes sin leer"
+  "a11y/{{count}} unread messages": "{{count}} mensajes sin leer",
+  "a11y/Message from you": "Mensaje tuyo",
+  "a11y/Message from {{sender}}": "Mensaje de {{sender}}"
 }

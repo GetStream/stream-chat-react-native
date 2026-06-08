@@ -371,5 +371,7 @@
   "a11y/Swipe right to go through different actions": "Farklı eylemler arasında geçiş yapmak için sağa kaydır",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} okunmamış mesaj"
+  "a11y/{{count}} unread messages": "{{count}} okunmamış mesaj",
+  "a11y/Message from you": "Senden mesaj",
+  "a11y/Message from {{sender}}": "{{sender}} kullanıcısından mesaj"
 }

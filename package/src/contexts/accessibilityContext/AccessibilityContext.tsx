@@ -162,38 +162,5 @@ export const AccessibilityProvider = ({
   );
 };
 
-export const useAccessibilityContext = (): ResolvedAccessibilityConfig => {
-  const {
-    announceConnectionState,
-    announceNewMessages,
-    announceTypingIndicator,
-    audioRecorderTapMode,
-    enabled,
-    forceScreenReaderMode,
-    imageGalleryScreenReaderMode,
-    messageActionsTrigger,
-  } = useContext(AccessibilityContext);
-
-  return useMemo(
-    () => ({
-      announceConnectionState,
-      announceNewMessages,
-      announceTypingIndicator,
-      audioRecorderTapMode,
-      enabled,
-      forceScreenReaderMode,
-      imageGalleryScreenReaderMode,
-      messageActionsTrigger,
-    }),
-    [
-      announceConnectionState,
-      announceNewMessages,
-      announceTypingIndicator,
-      audioRecorderTapMode,
-      enabled,
-      forceScreenReaderMode,
-      imageGalleryScreenReaderMode,
-      messageActionsTrigger,
-    ],
-  );
-};
+export const useAccessibilityContext = (): ResolvedAccessibilityConfig =>
+  useContext(AccessibilityContext);

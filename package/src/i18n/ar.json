@@ -371,5 +371,7 @@
   "a11y/Swipe right to go through different actions": "اسحب لليمين للتنقل بين الإجراءات المختلفة",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} رسائل غير مقروءة"
+  "a11y/{{count}} unread messages": "{{count}} رسائل غير مقروءة",
+  "a11y/Message from you": "رسالة منك",
+  "a11y/Message from {{sender}}": "رسالة من {{sender}}"
 }

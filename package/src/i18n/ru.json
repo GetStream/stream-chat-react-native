@@ -371,5 +371,7 @@
   "a11y/Swipe right to go through different actions": "Смахните вправо, чтобы переключаться между действиями",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} непрочитанных сообщений"
+  "a11y/{{count}} unread messages": "{{count}} непрочитанных сообщений",
+  "a11y/Message from you": "Сообщение от вас",
+  "a11y/Message from {{sender}}": "Сообщение от {{sender}}"
 }

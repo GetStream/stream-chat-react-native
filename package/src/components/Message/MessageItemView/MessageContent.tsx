@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ColorValue, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { ColorValue, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -129,6 +129,10 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   } = props;
   const { client } = useChatContext();
   const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
+  const a11ySenderLabel = useA11yLabel(
+    isMyMessage ? 'a11y/Message from you' : 'a11y/Message from {{sender}}',
+    isMyMessage ? undefined : { sender: message.user?.name || message.user?.id || '' },
+  );
   const {
     Attachment,
     FileAttachmentGroup,
@@ -329,8 +333,16 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     message.shared_location
   );
 
+  const a11yPressableLabel = useMemo(() => {
+    if (!a11ySenderLabel) return undefined;
+    return message.text && !hasInteractiveContent
+      ? `${a11ySenderLabel}. ${message.text}`
+      : a11ySenderLabel;
+  }, [a11ySenderLabel, hasInteractiveContent, message.text]);
+
   return (
     <Pressable
+      accessibilityLabel={a11yPressableLabel}
       accessibilityHint={accessibilityHint}
       accessible={hasInteractiveContent ? false : undefined}
       disabled={preventPress}
@@ -382,6 +394,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         ]}
         testID='message-content-wrapper'
       >
+        {a11ySenderLabel && Platform.OS !== 'android' && hasInteractiveContent ? (
+          <View
+            accessibilityLabel={a11ySenderLabel}
+            accessibilityHint={accessibilityHint}
+            accessible
+            pointerEvents='none'
+            style={StyleSheet.absoluteFill}
+          />
+        ) : null}
         {MessageContentTopView ? <MessageContentTopView /> : null}
         {hasContentSideViews ? (
           <View

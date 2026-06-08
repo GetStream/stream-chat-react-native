@@ -371,5 +371,7 @@
   "a11y/Swipe right to go through different actions": "다른 작업을 탐색하려면 오른쪽으로 스와이프하세요",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "읽지 않은 메시지 {{count}}개"
+  "a11y/{{count}} unread messages": "읽지 않은 메시지 {{count}}개",
+  "a11y/Message from you": "내가 보낸 메시지",
+  "a11y/Message from {{sender}}": "{{sender}}님의 메시지"
 }
