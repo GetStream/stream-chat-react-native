@@ -373,5 +373,7 @@
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "a11y/{{count}} unread messages": "{{count}} okunmamış mesaj",
   "a11y/Message from you": "Senden mesaj",
-  "a11y/Message from {{sender}}": "{{sender}} kullanıcısından mesaj"
+  "a11y/Message from {{sender}}": "{{sender}} kullanıcısından mesaj",
+  "a11y/Gallery Image": "Galeri görüntüsü",
+  "a11y/Gallery Video": "Galeri videosu"
 }

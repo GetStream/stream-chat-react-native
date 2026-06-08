@@ -373,5 +373,7 @@
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "a11y/{{count}} unread messages": "읽지 않은 메시지 {{count}}개",
   "a11y/Message from you": "내가 보낸 메시지",
-  "a11y/Message from {{sender}}": "{{sender}}님의 메시지"
+  "a11y/Message from {{sender}}": "{{sender}}님의 메시지",
+  "a11y/Gallery Image": "갤러리 이미지",
+  "a11y/Gallery Video": "갤러리 동영상"
 }

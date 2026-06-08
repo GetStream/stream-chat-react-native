@@ -373,5 +373,7 @@
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "a11y/{{count}} unread messages": "{{count}} अपठित संदेश",
   "a11y/Message from you": "आपका संदेश",
-  "a11y/Message from {{sender}}": "{{sender}} से संदेश"
+  "a11y/Message from {{sender}}": "{{sender}} से संदेश",
+  "a11y/Gallery Image": "गैलरी छवि",
+  "a11y/Gallery Video": "गैलरी वीडियो"
 }
