@@ -79,8 +79,17 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
 
   const markdownStyles = { ...markdown, ...markdownStylesProp };
 
+  const hasInteractiveContent = !!(
+    message.poll_id ||
+    message.quoted_message ||
+    message.attachments?.length ||
+    message.shared_location
+  );
+
   return (
     <View
+      accessible={hasInteractiveContent || undefined}
+      accessibilityRole={hasInteractiveContent ? 'text' : undefined}
       style={[styles.textContainer, textContainer, stylesProp.textContainer]}
       testID='message-text-container'
     >
