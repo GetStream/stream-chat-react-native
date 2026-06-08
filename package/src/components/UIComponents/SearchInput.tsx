@@ -9,17 +9,14 @@ import { Search } from '../../icons/search';
 import { XCircle } from '../../icons/x-circle';
 import { primitives } from '../../theme';
 import type { IconRenderer } from '../ui/Button/Button';
-import { Input } from '../ui/Input/Input';
+import { Input, InputProps } from '../ui/Input/Input';
 
-export type SearchInputProps = {
-  accessibilityLabel: string;
-  onChangeText: (text: string) => void;
-};
+export type SearchInputProps = Partial<InputProps>;
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const SearchInput = ({ accessibilityLabel, onChangeText }: SearchInputProps) => {
+export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   const { t } = useTranslationContext();
   const {
     theme: { semantics },
@@ -30,14 +27,14 @@ export const SearchInput = ({ accessibilityLabel, onChangeText }: SearchInputPro
   const handleChangeText = useCallback(
     (text: string) => {
       setSearchText(text);
-      onChangeText(text);
+      onChangeText?.(text);
     },
     [onChangeText],
   );
 
   const handleClear = useCallback(() => {
     setSearchText('');
-    onChangeText('');
+    onChangeText?.('');
   }, [onChangeText]);
 
   const LeadingIcon: IconRenderer = useCallback(
@@ -63,18 +60,18 @@ export const SearchInput = ({ accessibilityLabel, onChangeText }: SearchInputPro
   return (
     <View style={styles.container}>
       <Input
-        accessibilityLabel={accessibilityLabel}
-        autoCapitalize='none'
+        autoCapitalize='words'
         autoCorrect={false}
         containerStyle={styles.input}
         helperText={false}
         LeadingIcon={LeadingIcon}
-        onChangeText={handleChangeText}
         placeholder={t('Search')}
         testID='search-input'
         TrailingIcon={searchText.length > 0 ? ClearIcon : undefined}
-        value={searchText}
         variant='outline'
+        {...props}
+        onChangeText={handleChangeText}
+        value={searchText}
       />
     </View>
   );
