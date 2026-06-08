@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
@@ -22,18 +22,20 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
     theme: { semantics },
   } = useTheme();
 
-  const [searchText, setSearchText] = useState('');
+  const inputRef = useRef<TextInput>(null);
+  const [hasText, setHasText] = useState(() => Boolean(props.value || props.defaultValue));
 
   const handleChangeText = useCallback(
     (text: string) => {
-      setSearchText(text);
+      setHasText(text.length > 0);
       onChangeText?.(text);
     },
     [onChangeText],
   );
 
   const handleClear = useCallback(() => {
-    setSearchText('');
+    inputRef.current?.clear();
+    setHasText(false);
     onChangeText?.('');
   }, [onChangeText]);
 
@@ -60,6 +62,7 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   return (
     <View style={styles.container}>
       <Input
+        ref={inputRef}
         autoCapitalize='words'
         autoCorrect={false}
         containerStyle={styles.input}
@@ -67,11 +70,10 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
         LeadingIcon={LeadingIcon}
         placeholder={t('Search')}
         testID='search-input'
-        TrailingIcon={searchText.length > 0 ? ClearIcon : undefined}
+        TrailingIcon={hasText ? ClearIcon : undefined}
         variant='outline'
         {...props}
         onChangeText={handleChangeText}
-        value={searchText}
       />
     </View>
   );

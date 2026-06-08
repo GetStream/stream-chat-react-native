@@ -52,23 +52,26 @@ export type InputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-export const Input = ({
-  title,
-  description,
-  variant = 'outline',
-  LeadingIcon,
-  TrailingIcon,
-  editable = true,
-  state = 'default',
-  helperText = true,
-  errorMessage,
-  successMessage,
-  infoText,
-  onFocus,
-  onBlur,
-  containerStyle,
-  ...props
-}: InputProps) => {
+export const Input = React.forwardRef<TextInput, InputProps>(function Input(
+  {
+    title,
+    description,
+    variant = 'outline',
+    LeadingIcon,
+    TrailingIcon,
+    editable = true,
+    state = 'default',
+    helperText = true,
+    errorMessage,
+    successMessage,
+    infoText,
+    onFocus,
+    onBlur,
+    containerStyle,
+    ...props
+  },
+  ref,
+) {
   const [isFocused, setIsFocused] = useState(false);
   const {
     theme: { semantics },
@@ -127,6 +130,7 @@ export const Input = ({
           />
         ) : null}
         <TextInput
+          ref={ref}
           accessibilityHint={description}
           accessibilityLabel={props.accessibilityLabel ?? title}
           accessibilityState={accessibilityState}
@@ -185,7 +189,7 @@ export const Input = ({
       ) : null}
     </View>
   );
-};
+});
 
 const useStyles = () => {
   const {

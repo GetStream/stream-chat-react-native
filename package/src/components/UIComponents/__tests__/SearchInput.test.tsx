@@ -74,13 +74,25 @@ describe('SearchInput', () => {
     expect(onChangeText).toHaveBeenLastCalledWith('');
   });
 
-  it('resets the visible value when the clear button is pressed', () => {
+  it('shows the clear button on mount when an initial value is provided', () => {
+    renderComponent({ value: 'initial' });
+
+    expect(screen.getByTestId('clear-search')).toBeTruthy();
+  });
+
+  it('shows the clear button on mount when an initial defaultValue is provided', () => {
+    renderComponent({ defaultValue: 'initial' });
+
+    expect(screen.getByTestId('clear-search')).toBeTruthy();
+  });
+
+  it('hides the clear button when the text is deleted back to empty', () => {
     renderComponent();
 
-    fireEvent.changeText(screen.getByTestId('search-input'), 'typed');
-    expect(screen.getByTestId('search-input').props.value).toBe('typed');
+    fireEvent.changeText(screen.getByTestId('search-input'), 'abc');
+    expect(screen.getByTestId('clear-search')).toBeTruthy();
 
-    fireEvent.press(screen.getByTestId('clear-search'));
-    expect(screen.getByTestId('search-input').props.value).toBe('');
+    fireEvent.changeText(screen.getByTestId('search-input'), '');
+    expect(screen.queryByTestId('clear-search')).toBeNull();
   });
 });
