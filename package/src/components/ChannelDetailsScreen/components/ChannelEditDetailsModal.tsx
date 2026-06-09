@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
 import { ActivityIndicator, Keyboard } from 'react-native';
 
@@ -6,12 +6,21 @@ import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import {
+  ChannelEditDetailsProvider,
+  useChannelEditDetailsContext,
+} from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
-import { useChannelName } from '../../../hooks/useChannelName';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
+import {
+  isImageDirty,
+  isNameDirty,
+  useIsImageDirty,
+  useIsNameDirty,
+} from '../../../state-store/edit-channel-details-store';
 import type { File } from '../../../types/types';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
@@ -33,41 +42,31 @@ type ChannelEditDetailsModalContentProps = {
 
 const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalContentProps) => {
   const { channel, doFileUploadRequest } = useChannelDetailsContext();
+  const { store } = useChannelEditDetailsContext();
   const { updateImage, updateName } = useChannelActions(channel);
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();
-  const initialName = useChannelName(channel) ?? '';
-  const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
-  // Tri-state: `undefined` = untouched, `File` = picked, `null` = reset.
-  const [image, setImage] = useState<File | null | undefined>(undefined);
-  const trimmedName = name.trim();
-  const nameDirty = trimmedName !== initialName;
-  const imageDirty = image !== undefined;
+  const nameDirty = useIsNameDirty(store);
+  const imageDirty = useIsImageDirty(store);
   const confirmEnabled = (nameDirty || imageDirty) && !saving;
-
-  const handleNameChange = useCallback((newName: string) => setName(newName), []);
-  const handleImagePicked = useCallback((file: File) => setImage(file), []);
-  const handleImageReset = useCallback(() => setImage(null), []);
-
-  const handleClose = useCallback(() => {
-    setName(initialName);
-    setImage(undefined);
-    onClose();
-  }, [initialName, onClose]);
 
   const handleConfirm = useStableCallback(async () => {
     if (!confirmEnabled) return;
     Keyboard.dismiss();
     setSaving(true);
     try {
+      const state = store.state.getLatestValue();
+      const { currentName, updatedImage } = state;
+      const nameDirty = isNameDirty(state);
+      const imageDirty = isImageDirty(state);
       let nameOk = true;
       let imageOk = true;
       const tasks: Promise<void>[] = [];
       if (nameDirty) {
         nameOk = false;
         tasks.push(
-          updateName(trimmedName, {
+          updateName(currentName, {
             onSuccess: () => {
               nameOk = true;
             },
@@ -78,7 +77,7 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
         imageOk = false;
         tasks.push(
           updateImage(
-            image,
+            updatedImage as File | null,
             {
               onSuccess: () => {
                 imageOk = true;
@@ -98,7 +97,7 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
   return (
     <>
       <ModalHeader
-        onClose={handleClose}
+        onClose={onClose}
         rightAction={
           <Button
             accessibilityLabel={t('a11y/Confirm edit channel')}
@@ -115,11 +114,7 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
         }
         title={t('Edit')}
       />
-      <ChannelEditDetails
-        onImagePicked={handleImagePicked}
-        onImageReset={handleImageReset}
-        onNameChange={handleNameChange}
-      />
+      <ChannelEditDetails />
       <NotificationList />
     </>
   );
@@ -134,10 +129,12 @@ export const ChannelEditDetailsModal = ({ onClose, visible }: ChannelEditDetails
 
   return (
     <ChannelDetailsModal onClose={onClose} visible={visible}>
-      {notificationHostId ? (
-        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-          <ChannelEditDetailsModalContent onClose={onClose} />
-        </NotificationTargetProvider>
+      {visible && notificationHostId && channel ? (
+        <ChannelEditDetailsProvider channel={channel}>
+          <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+            <ChannelEditDetailsModalContent onClose={onClose} />
+          </NotificationTargetProvider>
+        </ChannelEditDetailsProvider>
       ) : null}
     </ChannelDetailsModal>
   );

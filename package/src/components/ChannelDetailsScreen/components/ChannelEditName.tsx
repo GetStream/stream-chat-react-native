@@ -1,25 +1,21 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelName } from '../../../hooks/useChannelName';
+import { useStateStore } from '../../../hooks/useStateStore';
+import type { EditChannelDetailsState } from '../../../state-store/edit-channel-details-store';
 import { Input } from '../../ui/Input/Input';
 
-export type ChannelEditNameProps = {
-  /**
-   * Fires whenever the channel name input changes. Parent components use this to
-   * track the current value so they can enable/disable a save action and read
-   * the value when committing the update.
-   */
-  onNameChange: (name: string) => void;
-};
+const selectCurrentName = (state: EditChannelDetailsState) => ({
+  currentName: state.currentName,
+});
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelEditName = ({ onNameChange }: ChannelEditNameProps) => {
-  const { channel } = useChannelDetailsContext();
+export const ChannelEditName = () => {
+  const { store } = useChannelEditDetailsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -29,15 +25,13 @@ export const ChannelEditName = ({ onNameChange }: ChannelEditNameProps) => {
     },
   } = useTheme();
 
-  const initialName = useChannelName(channel) ?? '';
-  const [name, setName] = useState(initialName);
+  const { currentName } = useStateStore(store.state, selectCurrentName);
 
   const handleNameChange = useCallback(
     (newName: string) => {
-      setName(newName);
-      onNameChange(newName);
+      store.setCurrentName(newName);
     },
-    [onNameChange],
+    [store],
   );
 
   return (
@@ -51,7 +45,7 @@ export const ChannelEditName = ({ onNameChange }: ChannelEditNameProps) => {
       placeholder={t('Channel name')}
       returnKeyType='done'
       testID='channel-edit-name-input'
-      value={name}
+      value={currentName}
       variant='outline'
     />
   );

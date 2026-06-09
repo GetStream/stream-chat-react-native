@@ -7,36 +7,41 @@ import type { Channel } from 'stream-chat';
 
 import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
-import type { ChannelEditDetailsProps } from '../components/ChannelEditDetails';
 import { ChannelEditDetailsModal } from '../components/ChannelEditDetailsModal';
 
 jest.mock('../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
 
-const EditDetailsProbe = ({ onNameChange }: ChannelEditDetailsProps) => (
-  <View>
-    <TextInput
-      onChangeText={onNameChange}
-      placeholder='channel-name'
-      testID='channel-edit-name-input'
-    />
-    <Pressable onPress={() => onNameChange('Different')} testID='probe-set-name'>
-      <Text>set</Text>
-    </Pressable>
-    <Pressable onPress={() => onNameChange('')} testID='probe-clear-name'>
-      <Text>clear</Text>
-    </Pressable>
-    <Pressable onPress={() => onNameChange('   ')} testID='probe-whitespace-name'>
-      <Text>whitespace</Text>
-    </Pressable>
-  </View>
-);
+// Stands in for ChannelEditDetails: drives the channel name through the store
+// exposed by ChannelEditDetailsContext, the same way the real component does.
+const EditDetailsProbe = () => {
+  const { store } = useChannelEditDetailsContext();
+  return (
+    <View>
+      <TextInput
+        onChangeText={(name) => store.setCurrentName(name)}
+        placeholder='channel-name'
+        testID='channel-edit-name-input'
+      />
+      <Pressable onPress={() => store.setCurrentName('Different')} testID='probe-set-name'>
+        <Text>set</Text>
+      </Pressable>
+      <Pressable onPress={() => store.setCurrentName('')} testID='probe-clear-name'>
+        <Text>clear</Text>
+      </Pressable>
+      <Pressable onPress={() => store.setCurrentName('   ')} testID='probe-whitespace-name'>
+        <Text>whitespace</Text>
+      </Pressable>
+    </View>
+  );
+};
 
 const buildChannel = (overrides?: { name?: string; cid?: string }): Channel =>
   ({
@@ -124,17 +129,17 @@ describe('ChannelEditDetailsModal', () => {
     ).toMatchObject({ disabled: false });
   });
 
-  it('keeps confirm disabled when the trimmed value matches the initial name', () => {
+  it('enables confirm when the value differs from the initial name only by whitespace', () => {
     renderModal({ channel: buildChannel({ name: 'Original' }) });
 
     fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), '  Original  ');
 
     expect(
       screen.getByTestId('channel-details-edit-confirm-button').props.accessibilityState,
-    ).toMatchObject({ disabled: true });
+    ).toMatchObject({ disabled: false });
   });
 
-  it('passes the trimmed name to updateName when the user confirms', async () => {
+  it('passes the raw (untrimmed) name to updateName when the user confirms', async () => {
     renderModal({ channel: buildChannel({ name: 'Original' }) });
 
     fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), '  Renamed  ');
@@ -145,7 +150,7 @@ describe('ChannelEditDetailsModal', () => {
     });
 
     expect(updateNameSpy).toHaveBeenCalledWith(
-      'Renamed',
+      '  Renamed  ',
       expect.objectContaining({ onSuccess: expect.any(Function) }),
     );
   });

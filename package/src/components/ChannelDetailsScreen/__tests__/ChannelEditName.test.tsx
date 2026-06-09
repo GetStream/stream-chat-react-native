@@ -3,11 +3,12 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import { ChannelEditName } from '../components/ChannelEditName';
 
 const buildChannel = (overrides?: { name?: string }): Channel =>
@@ -20,14 +21,9 @@ const buildChannel = (overrides?: { name?: string }): Channel =>
     state: { members: {} },
   }) as unknown as Channel;
 
-const renderComponent = ({
-  channel,
-  onNameChange = jest.fn(),
-}: {
-  channel: Channel;
-  onNameChange?: (name: string) => void;
-}) =>
-  render(
+const renderComponent = ({ channel }: { channel: Channel }) => {
+  const store = new EditChannelDetailsStore(channel);
+  const utils = render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
@@ -41,13 +37,15 @@ const renderComponent = ({
             { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
           }
         >
-          <ChannelDetailsContextProvider value={{ channel }}>
-            <ChannelEditName onNameChange={onNameChange} />
-          </ChannelDetailsContextProvider>
+          <ChannelEditDetailsContext.Provider value={{ store }}>
+            <ChannelEditName />
+          </ChannelEditDetailsContext.Provider>
         </ChatContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
   );
+  return { ...utils, store };
+};
 
 describe('ChannelEditName', () => {
   afterEach(() => {
@@ -66,28 +64,26 @@ describe('ChannelEditName', () => {
     expect(screen.getByTestId('channel-edit-name-input').props.value).toBe('');
   });
 
-  it('fires onNameChange with the typed value', () => {
-    const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
+  it('writes the typed value to the store', () => {
+    const { store } = renderComponent({ channel: buildChannel({ name: 'Original' }) });
 
     fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), 'Renamed');
 
-    expect(onNameChange).toHaveBeenLastCalledWith('Renamed');
+    expect(store.state.getLatestValue().currentName).toBe('Renamed');
+    expect(screen.getByTestId('channel-edit-name-input').props.value).toBe('Renamed');
   });
 
-  it('fires onNameChange with an empty string when the user clears the input', () => {
-    const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
+  it('writes an empty string to the store when the user clears the input', () => {
+    const { store } = renderComponent({ channel: buildChannel({ name: 'Original' }) });
 
     fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), '');
 
-    expect(onNameChange).toHaveBeenLastCalledWith('');
+    expect(store.state.getLatestValue().currentName).toBe('');
   });
 
-  it('does not fire onNameChange on initial mount', () => {
-    const onNameChange = jest.fn();
-    renderComponent({ channel: buildChannel({ name: 'Original' }), onNameChange });
+  it('leaves currentName at the initial name on mount', () => {
+    const { store } = renderComponent({ channel: buildChannel({ name: 'Original' }) });
 
-    expect(onNameChange).not.toHaveBeenCalled();
+    expect(store.state.getLatestValue().currentName).toBe('Original');
   });
 });

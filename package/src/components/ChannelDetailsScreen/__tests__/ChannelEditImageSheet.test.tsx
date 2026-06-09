@@ -2,11 +2,14 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import type { Channel } from 'stream-chat';
 
+import { ChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
 import { ChannelEditImageSheet } from '../components/ChannelEditImageSheet';
 
@@ -65,20 +68,27 @@ const ActionItemProbe = (props: Probe) => {
   );
 };
 
+const buildChannel = (overrides?: { image?: string }): Channel =>
+  ({
+    cid: 'messaging:test',
+    data: {
+      ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+    },
+    on: () => ({ unsubscribe: () => undefined }),
+    state: { members: {} },
+  }) as unknown as Channel;
+
 const renderSheet = ({
+  channel = buildChannel(),
   onClose = jest.fn(),
-  onSelectCamera = jest.fn(),
-  onSelectLibrary = jest.fn(),
-  onSelectReset,
   visible = true,
 }: {
+  channel?: Channel;
   onClose?: () => void;
-  onSelectCamera?: () => void;
-  onSelectLibrary?: () => void;
-  onSelectReset?: () => void;
   visible?: boolean;
-} = {}) =>
-  render(
+} = {}) => {
+  const store = new EditChannelDetailsStore(channel);
+  const utils = render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
@@ -87,18 +97,16 @@ const renderSheet = ({
           userLanguage: 'en',
         }}
       >
-        <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
-          <ChannelEditImageSheet
-            onClose={onClose}
-            onSelectCamera={onSelectCamera}
-            onSelectLibrary={onSelectLibrary}
-            onSelectReset={onSelectReset}
-            visible={visible}
-          />
-        </WithComponents>
+        <ChannelEditDetailsContext.Provider value={{ store }}>
+          <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
+            <ChannelEditImageSheet onClose={onClose} visible={visible} />
+          </WithComponents>
+        </ChannelEditDetailsContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
   );
+  return { ...utils, store };
+};
 
 describe('ChannelEditImageSheet', () => {
   beforeEach(() => {
@@ -111,15 +119,15 @@ describe('ChannelEditImageSheet', () => {
     expect(screen.getByText('Edit Group Picture')).toBeTruthy();
   });
 
-  it('renders only Take Photo and Choose Image rows when onSelectReset is omitted', () => {
-    renderSheet();
+  it('renders only Take Photo and Choose Image rows when there is no image to reset', () => {
+    renderSheet({ channel: buildChannel() });
 
     expect(probeCalls.map((p) => p.label)).toEqual(['Take Photo', 'Choose Image']);
     expect(probeCalls.every((p) => !p.destructive)).toBe(true);
   });
 
-  it('renders the destructive Reset Picture row when onSelectReset is provided', () => {
-    renderSheet({ onSelectReset: jest.fn() });
+  it('renders the destructive Reset Picture row when the channel has an image', () => {
+    renderSheet({ channel: buildChannel({ image: 'https://example.com/live.png' }) });
 
     expect(probeCalls.map((p) => p.label)).toEqual(['Take Photo', 'Choose Image', 'Reset Picture']);
     const byTestID = Object.fromEntries(probeCalls.map((p) => [p.testID, p.destructive]));
@@ -128,37 +136,37 @@ describe('ChannelEditImageSheet', () => {
     expect(byTestID['channel-edit-picture-reset']).toBe(true);
   });
 
-  it('closes the sheet and invokes onSelectCamera when Take Photo is pressed', () => {
+  it('closes the sheet and sets the camera pending action when Take Photo is pressed', () => {
     const onClose = jest.fn();
-    const onSelectCamera = jest.fn();
-    renderSheet({ onClose, onSelectCamera });
+    const { store } = renderSheet({ onClose });
 
     fireEvent.press(screen.getByTestId('channel-edit-picture-take-photo'));
 
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onSelectCamera).toHaveBeenCalledTimes(1);
+    expect(store.state.getLatestValue().pendingAction).toBe('camera');
   });
 
-  it('closes the sheet and invokes onSelectLibrary when Choose Image is pressed', () => {
+  it('closes the sheet and sets the library pending action when Choose Image is pressed', () => {
     const onClose = jest.fn();
-    const onSelectLibrary = jest.fn();
-    renderSheet({ onClose, onSelectLibrary });
+    const { store } = renderSheet({ onClose });
 
     fireEvent.press(screen.getByTestId('channel-edit-picture-choose-image'));
 
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onSelectLibrary).toHaveBeenCalledTimes(1);
+    expect(store.state.getLatestValue().pendingAction).toBe('library');
   });
 
-  it('closes the sheet and invokes onSelectReset when Reset Picture is pressed', () => {
+  it('closes the sheet and sets the reset pending action when Reset Picture is pressed', () => {
     const onClose = jest.fn();
-    const onSelectReset = jest.fn();
-    renderSheet({ onClose, onSelectReset });
+    const { store } = renderSheet({
+      channel: buildChannel({ image: 'https://example.com/live.png' }),
+      onClose,
+    });
 
     fireEvent.press(screen.getByTestId('channel-edit-picture-reset'));
 
     expect(onClose).toHaveBeenCalledTimes(1);
-    expect(onSelectReset).toHaveBeenCalledTimes(1);
+    expect(store.state.getLatestValue().pendingAction).toBe('reset');
   });
 
   it('invokes onClose when the header close button is pressed', () => {

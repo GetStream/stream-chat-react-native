@@ -10,14 +10,20 @@ import {
 } from 'react-native';
 
 import { useBottomSheetContext } from '../../../contexts';
+import { useChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { Camera } from '../../../icons/camera';
 import { Delete } from '../../../icons/delete';
 import { Picture } from '../../../icons/image';
 import type { IconProps } from '../../../icons/utils/base';
 import { NewClose } from '../../../icons/xmark';
+import type {
+  EditChannelDetailsState,
+  EditChannelImagePendingAction,
+} from '../../../state-store/edit-channel-details-store';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 import { BottomSheetModal } from '../../UIComponents/BottomSheetModal';
@@ -25,15 +31,12 @@ import { StreamBottomSheetModalFlatList } from '../../UIComponents/StreamBottomS
 
 export type ChannelEditImageSheetProps = {
   onClose: () => void;
-  onSelectCamera: () => void;
-  onSelectLibrary: () => void;
-  /**
-   * Optional handler for the destructive "Reset Picture" row. When omitted, the
-   * row is hidden.
-   */
-  onSelectReset?: () => void;
   visible: boolean;
 };
+
+const selectCanReset = (state: EditChannelDetailsState) => ({
+  canReset: Boolean(state.initialImage || state.updatedImage),
+});
 
 type SheetItem = {
   destructive?: boolean;
@@ -46,11 +49,8 @@ type SheetItem = {
 
 const keyExtractor = (item: SheetItem) => item.id;
 
-const ChannelEditImageSheetInner = ({
-  onSelectCamera,
-  onSelectLibrary,
-  onSelectReset,
-}: Omit<ChannelEditImageSheetProps, 'visible' | 'onClose'>) => {
+const ChannelEditImageSheetInner = () => {
+  const { store } = useChannelEditDetailsContext();
   const { ChannelDetailsActionItem } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
@@ -69,12 +69,13 @@ const ChannelEditImageSheetInner = ({
   const styles = useStyles();
 
   const { close, dismiss } = useBottomSheetContext();
+  const { canReset } = useStateStore(store.state, selectCanReset);
 
   const onSelect = useCallback(
-    (callback: () => void) => {
-      dismiss(callback);
+    (action: EditChannelImagePendingAction) => {
+      dismiss(() => store.setPendingAction(action));
     },
-    [dismiss],
+    [dismiss, store],
   );
 
   const items = useMemo<SheetItem[]>(() => {
@@ -84,7 +85,7 @@ const ChannelEditImageSheetInner = ({
         id: 'take-photo',
         label: t('Take Photo'),
         onPress: () => {
-          onSelect(onSelectCamera);
+          onSelect('camera');
         },
         testID: 'channel-edit-picture-take-photo',
       },
@@ -93,27 +94,27 @@ const ChannelEditImageSheetInner = ({
         id: 'choose-image',
         label: t('Choose Image'),
         onPress: () => {
-          onSelect(onSelectLibrary);
+          onSelect('library');
         },
         testID: 'channel-edit-picture-choose-image',
       },
     ];
 
-    if (onSelectReset) {
+    if (canReset) {
       base.push({
         destructive: true,
         Icon: Delete,
         id: 'reset-picture',
         label: t('Reset Picture'),
         onPress: () => {
-          onSelect(onSelectReset);
+          onSelect('reset');
         },
         testID: 'channel-edit-picture-reset',
       });
     }
 
     return base;
-  }, [onSelect, onSelectCamera, onSelectLibrary, onSelectReset, t]);
+  }, [canReset, onSelect, t]);
 
   const renderItem = useCallback<ListRenderItem<SheetItem>>(
     ({ item }) => (
@@ -167,19 +168,9 @@ const ChannelEditImageSheetInner = ({
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelEditImageSheet = ({
-  onClose,
-  onSelectCamera,
-  onSelectLibrary,
-  onSelectReset,
-  visible,
-}: ChannelEditImageSheetProps) => (
+export const ChannelEditImageSheet = ({ onClose, visible }: ChannelEditImageSheetProps) => (
   <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
-    <ChannelEditImageSheetInner
-      onSelectCamera={onSelectCamera}
-      onSelectLibrary={onSelectLibrary}
-      onSelectReset={onSelectReset}
-    />
+    <ChannelEditImageSheetInner />
   </BottomSheetModal>
 );
 
