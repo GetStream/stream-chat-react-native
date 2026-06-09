@@ -284,6 +284,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     <Animated.View
       accessibilityLabel='Image Gallery'
       pointerEvents={'auto'}
+      accessibilityViewIsModal
       style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
       <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
