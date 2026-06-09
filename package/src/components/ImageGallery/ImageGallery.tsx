@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, ImageStyle, StyleSheet, ViewStyle } from 'react-native';
+import {
+  AccessibilityInfo,
+  Image,
+  ImageStyle,
+  Platform,
+  StyleSheet,
+  ViewStyle,
+} from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
@@ -322,6 +329,26 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
     [imageGalleryStateStore, isAccessibilityEnabled],
   );
+
+  useEffect(() => {
+    return () => {
+      const handle = imageGalleryStateStore.requesterNode;
+      if (handle == null) return;
+      imageGalleryStateStore.requesterNode = null;
+      // Because of the fact that iOS and Android handle supressing
+      // the content underneath differently, we have to wait a frame
+      // before iOS is allowed to attempt to refocus (it takes a frame
+      // for the native a11y tree to become aware that it no longer has
+      // an accessibilityViewIsModal sibling).
+      if (Platform.OS === 'android') {
+        AccessibilityInfo.setAccessibilityFocus(handle);
+      } else {
+        requestAnimationFrame(() => {
+          AccessibilityInfo.setAccessibilityFocus(handle);
+        });
+      }
+    };
+  }, [imageGalleryStateStore]);
 
   return (
     <Animated.View

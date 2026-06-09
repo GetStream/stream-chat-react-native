@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { findNodeHandle, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -242,12 +242,14 @@ const GalleryThumbnail = ({
     isVideo ? 'a11y/Gallery Video' : 'a11y/Gallery Image',
   );
   const thumbnailAccessibilityHint = useA11yLabel('a11y/Double tap to open');
+  const thumbnailRef = useRef<View>(null);
   const openImageViewer = () => {
     if (!message) {
       return;
     }
     imageGalleryStateStore.openImageGallery({
       messages: [message],
+      requesterNode: findNodeHandle(thumbnailRef.current),
       selectedAttachmentUrl: thumbnail.url,
     });
     setOverlay('gallery');
@@ -271,6 +273,7 @@ const GalleryThumbnail = ({
       accessibilityRole='button'
       disabled={preventPress}
       key={`gallery-item-${message.id}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
+      ref={thumbnailRef}
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
