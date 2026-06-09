@@ -31,7 +31,13 @@ export type MessageTextProps = MessageTextContainerProps & {
 
 export type MessageTextContainerPropsWithContext = Pick<
   MessageContextValue,
-  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress' | 'isMyMessage'
+  | 'hasInteractiveAccessibilityContent'
+  | 'isMyMessage'
+  | 'message'
+  | 'onLongPress'
+  | 'onlyEmojis'
+  | 'onPress'
+  | 'preventPress'
 > &
   Pick<MessagesContextValue, 'markdownRules' | 'myMessageTheme' | 'messageTextNumberOfLines'> & {
     markdownStyles?: MarkdownStyle;
@@ -45,6 +51,7 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
   const theme = useTheme();
 
   const {
+    hasInteractiveAccessibilityContent,
     isMyMessage,
     markdownRules,
     markdownStyles: markdownStylesProp = {},
@@ -81,6 +88,8 @@ const MessageTextContainerWithContext = (props: MessageTextContainerPropsWithCon
 
   return (
     <View
+      accessible={hasInteractiveAccessibilityContent || undefined}
+      accessibilityRole={hasInteractiveAccessibilityContent ? 'text' : undefined}
       style={[styles.textContainer, textContainer, stylesProp.textContainer]}
       testID='message-text-container'
     >
@@ -113,17 +122,23 @@ const areEqual = (
   nextProps: MessageTextContainerPropsWithContext,
 ) => {
   const {
+    hasInteractiveAccessibilityContent: prevHasInteractiveAccessibilityContent,
     markdownStyles: prevMarkdownStyles,
     message: prevMessage,
     myMessageTheme: prevMyMessageTheme,
     onlyEmojis: prevOnlyEmojis,
   } = prevProps;
   const {
+    hasInteractiveAccessibilityContent: nextHasInteractiveAccessibilityContent,
     markdownStyles: nextMarkdownStyles,
     message: nextMessage,
     myMessageTheme: nextMyMessageTheme,
     onlyEmojis: nextOnlyEmojis,
   } = nextProps;
+
+  if (prevHasInteractiveAccessibilityContent !== nextHasInteractiveAccessibilityContent) {
+    return false;
+  }
 
   const messageStatusEqual = prevMessage.status === nextMessage.status;
   if (!messageStatusEqual) {
@@ -182,16 +197,24 @@ const MemoizedMessageTextContainer = React.memo(
 export type MessageTextContainerProps = Partial<MessageTextContainerPropsWithContext>;
 
 export const MessageTextContainer = (props: MessageTextContainerProps) => {
-  const { message, onLongPress, onlyEmojis, onPress, preventPress, isMyMessage } =
-    useMessageContext();
+  const {
+    hasInteractiveAccessibilityContent,
+    isMyMessage,
+    message,
+    onLongPress,
+    onlyEmojis,
+    onPress,
+    preventPress,
+  } = useMessageContext();
   const { markdownRules, messageTextNumberOfLines, myMessageTheme } = useMessagesContext();
 
   return (
     <MemoizedMessageTextContainer
       {...{
+        hasInteractiveAccessibilityContent,
+        isMyMessage,
         markdownRules,
         message,
-        isMyMessage,
         messageTextNumberOfLines,
         myMessageTheme,
         onLongPress,

@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "Direct chat met {{name}}",
   "a11y/Double tap to open": "Dubbeltik om te openen",
   "a11y/Double tap to view reactions": "Dubbeltik om reacties te bekijken",
+  "a11y/Double tap to view thread": "Dubbeltik om de thread te bekijken",
   "a11y/Editing message": "Bericht bewerken",
   "a11y/Editing message: {{text}}": "Bericht bewerken: {{text}}",
   "a11y/Last message {{date}}": "Laatste bericht {{date}}",
@@ -371,5 +372,10 @@
   "a11y/Swipe right to go through different actions": "Veeg naar rechts om door verschillende acties te bladeren",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} ongelezen berichten"
+  "a11y/{{count}} unread messages": "{{count}} ongelezen berichten",
+  "a11y/Message from you": "Bericht van jou",
+  "a11y/Message from {{sender}}": "Bericht van {{sender}}",
+  "a11y/Gallery Image": "Galerij-afbeelding",
+  "a11y/Gallery Video": "Galerij-video",
+  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}"
 }

@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "צ׳אט ישיר עם {{name}}",
   "a11y/Double tap to open": "הקש פעמיים כדי לפתוח",
   "a11y/Double tap to view reactions": "הקש פעמיים כדי לראות תגובות",
+  "a11y/Double tap to view thread": "הקש פעמיים כדי לראות את השרשור",
   "a11y/Editing message": "עריכת הודעה",
   "a11y/Editing message: {{text}}": "עריכת הודעה: {{text}}",
   "a11y/Last message {{date}}": "הודעה אחרונה {{date}}",
@@ -371,5 +372,10 @@
   "a11y/Swipe right to go through different actions": "החלק ימינה כדי לעבור בין הפעולות השונות",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} הודעות שלא נקראו"
+  "a11y/{{count}} unread messages": "{{count}} הודעות שלא נקראו",
+  "a11y/Message from you": "הודעה ממך",
+  "a11y/Message from {{sender}}": "הודעה מאת {{sender}}",
+  "a11y/Gallery Image": "תמונה מהגלריה",
+  "a11y/Gallery Video": "סרטון מהגלריה",
+  "a11y/{{position}} of {{count}}": "{{position}} מתוך {{count}}"
 }

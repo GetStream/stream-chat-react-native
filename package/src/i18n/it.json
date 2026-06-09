@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "Chat diretta con {{name}}",
   "a11y/Double tap to open": "Tocca due volte per aprire",
   "a11y/Double tap to view reactions": "Tocca due volte per vedere le reazioni",
+  "a11y/Double tap to view thread": "Tocca due volte per vedere il thread",
   "a11y/Editing message": "Modifica del messaggio",
   "a11y/Editing message: {{text}}": "Modifica del messaggio: {{text}}",
   "a11y/Last message {{date}}": "Ultimo messaggio {{date}}",
@@ -371,5 +372,10 @@
   "a11y/Swipe right to go through different actions": "Scorri a destra per passare in rassegna le diverse azioni",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} messaggi non letti"
+  "a11y/{{count}} unread messages": "{{count}} messaggi non letti",
+  "a11y/Message from you": "Messaggio da te",
+  "a11y/Message from {{sender}}": "Messaggio da {{sender}}",
+  "a11y/Gallery Image": "Immagine della galleria",
+  "a11y/Gallery Video": "Video della galleria",
+  "a11y/{{position}} of {{count}}": "{{position}} di {{count}}"
 }

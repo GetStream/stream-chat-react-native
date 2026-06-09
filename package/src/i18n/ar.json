@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "محادثة مباشرة مع {{name}}",
   "a11y/Double tap to open": "انقر مرتين للفتح",
   "a11y/Double tap to view reactions": "انقر مرتين لعرض التفاعلات",
+  "a11y/Double tap to view thread": "انقر مرتين لعرض المحادثة الفرعية",
   "a11y/Editing message": "تعديل الرسالة",
   "a11y/Editing message: {{text}}": "تعديل الرسالة: {{text}}",
   "a11y/Last message {{date}}": "آخر رسالة {{date}}",
@@ -371,5 +372,10 @@
   "a11y/Swipe right to go through different actions": "اسحب لليمين للتنقل بين الإجراءات المختلفة",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} رسائل غير مقروءة"
+  "a11y/{{count}} unread messages": "{{count}} رسائل غير مقروءة",
+  "a11y/Message from you": "رسالة منك",
+  "a11y/Message from {{sender}}": "رسالة من {{sender}}",
+  "a11y/Gallery Image": "صورة من المعرض",
+  "a11y/Gallery Video": "فيديو من المعرض",
+  "a11y/{{position}} of {{count}}": "{{position}} من {{count}}"
 }

@@ -9,6 +9,7 @@ import { PortalProvider } from 'react-native-teleport';
 import { MessageOverlayHostLayer } from './MessageOverlayHostLayer';
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
+import { OverlayA11yShield } from '../../components/Accessibility/OverlayA11yShield';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
@@ -107,7 +108,7 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
           <ImageGalleryProvider value={imageGalleryProviderProps}>
             <ThemeProvider style={overlayContext.style}>
               <PortalProvider>
-                {children}
+                <OverlayA11yShield>{children}</OverlayA11yShield>
                 {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
                 <MessageOverlayHostLayer />
               </PortalProvider>

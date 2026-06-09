@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "{{name}} के साथ सीधी चैट",
   "a11y/Double tap to open": "खोलने के लिए दो बार टैप करें",
   "a11y/Double tap to view reactions": "प्रतिक्रियाएँ देखने के लिए दो बार टैप करें",
+  "a11y/Double tap to view thread": "थ्रेड देखने के लिए दो बार टैप करें",
   "a11y/Editing message": "संदेश संपादित कर रहे हैं",
   "a11y/Editing message: {{text}}": "संदेश संपादित कर रहे हैं: {{text}}",
   "a11y/Last message {{date}}": "अंतिम संदेश {{date}}",
@@ -371,5 +372,10 @@
   "a11y/Swipe right to go through different actions": "विभिन्न क्रियाओं के बीच जाने के लिए दाएं स्वाइप करें",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} अपठित संदेश"
+  "a11y/{{count}} unread messages": "{{count}} अपठित संदेश",
+  "a11y/Message from you": "आपका संदेश",
+  "a11y/Message from {{sender}}": "{{sender}} से संदेश",
+  "a11y/Gallery Image": "गैलरी छवि",
+  "a11y/Gallery Video": "गैलरी वीडियो",
+  "a11y/{{position}} of {{count}}": "{{count}} में से {{position}}"
 }

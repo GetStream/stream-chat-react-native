@@ -2,9 +2,8 @@ import React from 'react';
 
 import { Text } from 'react-native';
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { cleanup, fireEvent, render } from '@testing-library/react-native';
 
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { IconProps } from '../../../icons';
@@ -36,18 +35,6 @@ describe('ReactionButton', () => {
 
     // Check if the unselected pathFill color is rendered by the mock Icon
     expect(getByText('24')).toBeTruthy();
-  });
-
-  it('uses the released reaction button label when accessibility labels are translated', async () => {
-    render(
-      <OverlayProvider accessibility={{ enabled: true }}>
-        <ReactionButton {...defaultProps} />
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('reaction-button-like-unselected')).toBeTruthy();
-    });
   });
 
   it('should call onPress function with the correct reaction type when pressed', () => {

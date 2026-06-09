@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "{{name}} ile doğrudan sohbet",
   "a11y/Double tap to open": "Açmak için iki kez dokun",
   "a11y/Double tap to view reactions": "Tepkileri görmek için iki kez dokun",
+  "a11y/Double tap to view thread": "Konuyu görmek için iki kez dokun",
   "a11y/Editing message": "Mesaj düzenleniyor",
   "a11y/Editing message: {{text}}": "Mesaj düzenleniyor: {{text}}",
   "a11y/Last message {{date}}": "Son mesaj {{date}}",
@@ -371,5 +372,10 @@
   "a11y/Swipe right to go through different actions": "Farklı eylemler arasında geçiş yapmak için sağa kaydır",
   "a11y/Close": "Close",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} okunmamış mesaj"
+  "a11y/{{count}} unread messages": "{{count}} okunmamış mesaj",
+  "a11y/Message from you": "Senden mesaj",
+  "a11y/Message from {{sender}}": "{{sender}} kullanıcısından mesaj",
+  "a11y/Gallery Image": "Galeri görüntüsü",
+  "a11y/Gallery Video": "Galeri videosu",
+  "a11y/{{position}} of {{count}}": "{{count}} öğeden {{position}}"
 }
