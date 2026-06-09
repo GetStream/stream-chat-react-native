@@ -69,7 +69,12 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   const isEdited = isEditedMessage(message) && !isAIGenerated;
 
   return (
-    <View style={[styles.container, container]} testID='message-status-time'>
+    <View
+      accessible
+      accessibilityRole='text'
+      style={[styles.container, container]}
+      testID='message-status-time'
+    >
       {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
         <Text numberOfLines={1} ellipsizeMode='tail' style={[styles.name, name]}>
           {message.user.name}

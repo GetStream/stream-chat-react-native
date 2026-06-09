@@ -18052,7 +18052,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:0.8.3":
+"react-native-worklets@npm:0.8.3, react-native-worklets@npm:^0.8.3":
   version: 0.8.3
   resolution: "react-native-worklets@npm:0.8.3"
   dependencies:
@@ -18887,14 +18887,14 @@ __metadata:
     react-native-maps: "npm:^1.27.2"
     react-native-nitro-modules: "npm:^0.35.9"
     react-native-nitro-sound: "npm:^0.2.15"
-    react-native-reanimated: "npm:^4.4.0"
+    react-native-reanimated: "npm:4.3.1"
     react-native-safe-area-context: "npm:^5.8.0"
     react-native-screens: "npm:^4.25.2"
     react-native-share: "npm:^12.3.1"
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.1.7"
     react-native-video: "npm:^6.19.2"
-    react-native-worklets: "npm:^0.9.1"
+    react-native-worklets: "npm:^0.8.3"
     stream-chat: "npm:^9.45.3"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
