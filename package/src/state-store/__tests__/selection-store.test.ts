@@ -84,6 +84,34 @@ describe('SelectionStore', () => {
       expect(store.state.getLatestValue().selectedIds).toBe(before);
     });
   });
+
+  describe('toggle', () => {
+    it('selects an unselected id', () => {
+      const store = new SelectionStore();
+
+      store.toggle('a');
+
+      expect(store.state.getLatestValue().selectedIds.has('a')).toBe(true);
+    });
+
+    it('deselects an already-selected id', () => {
+      const store = new SelectionStore();
+      store.select('a');
+
+      store.toggle('a');
+
+      expect(store.state.getLatestValue().selectedIds.has('a')).toBe(false);
+    });
+
+    it('is a no-op for an undefined id', () => {
+      const store = new SelectionStore();
+      const before = store.state.getLatestValue().selectedIds;
+
+      store.toggle(undefined);
+
+      expect(store.state.getLatestValue().selectedIds).toBe(before);
+    });
+  });
 });
 
 describe('useIsSelectionEmpty', () => {

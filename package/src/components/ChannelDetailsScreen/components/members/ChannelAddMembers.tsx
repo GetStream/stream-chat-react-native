@@ -80,7 +80,7 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
 
   const select = useCallback(
     (user: UserResponse) => {
-      selectionStore.select(user.id);
+      selectionStore.toggle(user.id);
     },
     [selectionStore],
   );

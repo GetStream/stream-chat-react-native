@@ -49,6 +49,18 @@ export class SelectionStore<T = string> {
     next.delete(id);
     this.state.partialNext({ selectedIds: next });
   }
+
+  toggle(id?: T) {
+    if (id === undefined || id === null) {
+      return;
+    }
+    const { selectedIds } = this.state.getLatestValue();
+    if (selectedIds.has(id)) {
+      this.deselect(id);
+    } else {
+      this.select(id);
+    }
+  }
 }
 
 const selectIsSelectionEmpty = <T>(state: SelectionState<T>) => ({
