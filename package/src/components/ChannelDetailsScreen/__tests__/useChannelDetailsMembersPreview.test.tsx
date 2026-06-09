@@ -27,7 +27,7 @@ const buildMember = (id: string, created_at?: string) =>
   generateMember({ created_at, user: generateUser({ id, name: id }) });
 
 describe('useChannelDetailsMembersPreview', () => {
-  it('orders visible members by created_at ascending', () => {
+  it('preserves the order of members from channel state', () => {
     const members = [
       buildMember('c', '2023-03-01T00:00:00.000Z'),
       buildMember('a', '2023-01-01T00:00:00.000Z'),
@@ -37,20 +37,7 @@ describe('useChannelDetailsMembersPreview', () => {
 
     const { result } = renderHook(() => useChannelDetailsMembersPreview(channel));
 
-    expect(result.current.visible.map((m) => m.user?.id)).toEqual(['a', 'b', 'c']);
-  });
-
-  it('sorts members without created_at to the end', () => {
-    const members = [
-      buildMember('no-date'),
-      buildMember('newer', '2023-02-01T00:00:00.000Z'),
-      buildMember('older', '2023-01-01T00:00:00.000Z'),
-    ];
-    const channel = buildChannel({ members });
-
-    const { result } = renderHook(() => useChannelDetailsMembersPreview(channel));
-
-    expect(result.current.visible.map((m) => m.user?.id)).toEqual(['older', 'newer', 'no-date']);
+    expect(result.current.visible.map((m) => m.user?.id)).toEqual(['c', 'a', 'b']);
   });
 
   it('limits visible members to max and sets hasMore', () => {

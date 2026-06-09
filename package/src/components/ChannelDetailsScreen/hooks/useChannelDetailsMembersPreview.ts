@@ -24,13 +24,7 @@ export const useChannelDetailsMembersPreview = (
   const memberCount = useChannelMemberCount(channel);
 
   return useMemo(() => {
-    const all = Object.values(members).sort((a, b) => {
-      const aCreated = a.created_at;
-      const bCreated = b.created_at;
-      if (!aCreated) return 1;
-      if (!bCreated) return -1;
-      return aCreated < bCreated ? -1 : aCreated > bCreated ? 1 : 0;
-    });
+    const all = Object.values(members);
     const total = memberCount || all.length;
     return {
       hasMore: total > max,
