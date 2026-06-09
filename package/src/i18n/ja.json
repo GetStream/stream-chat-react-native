@@ -375,5 +375,6 @@
   "a11y/Message from you": "あなたからのメッセージ",
   "a11y/Message from {{sender}}": "{{sender}}からのメッセージ",
   "a11y/Gallery Image": "ギャラリー画像",
-  "a11y/Gallery Video": "ギャラリービデオ"
+  "a11y/Gallery Video": "ギャラリービデオ",
+  "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}"
 }

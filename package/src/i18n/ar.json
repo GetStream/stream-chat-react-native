@@ -375,5 +375,6 @@
   "a11y/Message from you": "رسالة منك",
   "a11y/Message from {{sender}}": "رسالة من {{sender}}",
   "a11y/Gallery Image": "صورة من المعرض",
-  "a11y/Gallery Video": "فيديو من المعرض"
+  "a11y/Gallery Video": "فيديو من المعرض",
+  "a11y/{{position}} of {{count}}": "{{position}} من {{count}}"
 }

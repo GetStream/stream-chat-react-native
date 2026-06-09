@@ -375,5 +375,6 @@
   "a11y/Message from you": "Senden mesaj",
   "a11y/Message from {{sender}}": "{{sender}} kullanıcısından mesaj",
   "a11y/Gallery Image": "Galeri görüntüsü",
-  "a11y/Gallery Video": "Galeri videosu"
+  "a11y/Gallery Video": "Galeri videosu",
+  "a11y/{{position}} of {{count}}": "{{count}} öğeden {{position}}"
 }

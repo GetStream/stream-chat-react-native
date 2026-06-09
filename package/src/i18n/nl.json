@@ -375,5 +375,6 @@
   "a11y/Message from you": "Bericht van jou",
   "a11y/Message from {{sender}}": "Bericht van {{sender}}",
   "a11y/Gallery Image": "Galerij-afbeelding",
-  "a11y/Gallery Video": "Galerij-video"
+  "a11y/Gallery Video": "Galerij-video",
+  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}"
 }

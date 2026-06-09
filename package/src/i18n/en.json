@@ -375,5 +375,6 @@
   "unsupported file type": "unsupported file type",
   "a11y/{{count}} unread messages": "{{count}} unread messages",
   "a11y/Gallery Image": "Gallery image",
-  "a11y/Gallery Video": "Gallery video"
+  "a11y/Gallery Video": "Gallery video",
+  "a11y/{{position}} of {{count}}": "{{position}} of {{count}}"
 }

@@ -375,5 +375,6 @@
   "a11y/Message from you": "आपका संदेश",
   "a11y/Message from {{sender}}": "{{sender}} से संदेश",
   "a11y/Gallery Image": "गैलरी छवि",
-  "a11y/Gallery Video": "गैलरी वीडियो"
+  "a11y/Gallery Video": "गैलरी वीडियो",
+  "a11y/{{position}} of {{count}}": "{{count}} में से {{position}}"
 }

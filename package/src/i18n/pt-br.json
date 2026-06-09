@@ -375,5 +375,6 @@
   "a11y/Message from you": "Mensagem sua",
   "a11y/Message from {{sender}}": "Mensagem de {{sender}}",
   "a11y/Gallery Image": "Imagem da galeria",
-  "a11y/Gallery Video": "Vídeo da galeria"
+  "a11y/Gallery Video": "Vídeo da galeria",
+  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}"
 }
