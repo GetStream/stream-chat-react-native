@@ -19,6 +19,7 @@ import * as useChannelActionsModule from '../useChannelActions';
 
 const createChannelActions = (): useChannelActionsModule.ChannelActions => ({
   addMembers: jest.fn(),
+  removeMembers: jest.fn(),
   archive: jest.fn(),
   blockUser: jest.fn(),
   deleteChannel: jest.fn(),

@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "다른 작업을 탐색하려면 오른쪽으로 스와이프하세요",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "음소거됨",
-  "Failed to load members": "멤버 불러오기에 실패했습니다"
+  "Failed to load members": "멤버 불러오기에 실패했습니다",
+  "Remove User": "사용자 삭제",
+  "Remove": "삭제",
+  "Are you sure you want to remove this member from the channel?": "이 멤버를 채널에서 삭제하시겠습니까?",
+  "{{count}} members removed_one": "{{count}}명의 멤버가 삭제되었습니다",
+  "{{count}} members removed_other": "{{count}}명의 멤버가 삭제되었습니다",
+  "{{count}} members removed_many": "{{count}}명의 멤버가 삭제되었습니다",
+  "Failed to remove members": "멤버 삭제에 실패했습니다"
 }

@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "Farklı eylemler arasında geçiş yapmak için sağa kaydır",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "Sessize alındı",
-  "Failed to load members": "Üyeler yüklenemedi"
+  "Failed to load members": "Üyeler yüklenemedi",
+  "Remove User": "Kullanıcıyı kaldır",
+  "Remove": "Kaldır",
+  "Are you sure you want to remove this member from the channel?": "Bu üyeyi kanaldan kaldırmak istediğinizden emin misiniz?",
+  "{{count}} members removed_one": "{{count}} üye kaldırıldı",
+  "{{count}} members removed_other": "{{count}} üye kaldırıldı",
+  "{{count}} members removed_many": "{{count}} üye kaldırıldı",
+  "Failed to remove members": "Üyeler kaldırılamadı"
 }

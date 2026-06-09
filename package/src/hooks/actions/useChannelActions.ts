@@ -15,6 +15,7 @@ export type ChannelActionHandler = ActionHandler;
 
 export type ChannelActions = {
   addMembers: (memberIds: string[], options?: ChannelActionOptions) => Promise<void>;
+  removeMembers: (memberIds: string[], options?: ChannelActionOptions) => Promise<void>;
   archive: ChannelActionHandler;
   deleteChannel: ChannelActionHandler;
   leave: ChannelActionHandler;
@@ -194,6 +195,34 @@ export const useChannelActions = (channel: Channel) => {
       }
     }
   });
+
+  const removeMembers = useStableCallback(
+    async (memberIds: string[], options?: ChannelActionOptions) => {
+      if (!channel) {
+        return;
+      }
+      try {
+        await channel.removeMembers(memberIds);
+        addNotification({
+          message: t('{{count}} members removed', { count: memberIds.length }),
+          options: { severity: 'success', type: 'api:channel:remove-members:success' },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
+        options?.onSuccess?.();
+      } catch (error) {
+        addNotification({
+          message: t('Failed to remove members'),
+          options: {
+            ...getNotificationErrorOptions(error),
+            severity: 'error',
+            type: 'api:channel:remove-members:failed',
+          },
+          origin: { context: { channel }, emitter: 'ChannelActions' },
+        });
+        options?.onFailure?.(error);
+      }
+    },
+  );
 
   const addMembers = useStableCallback(
     async (memberIds: string[], options?: ChannelActionOptions) => {
@@ -506,6 +535,7 @@ export const useChannelActions = (channel: Channel) => {
   return useMemo<ChannelActions>(
     () => ({
       addMembers,
+      removeMembers,
       pin,
       unpin,
       archive,
@@ -523,6 +553,7 @@ export const useChannelActions = (channel: Channel) => {
     }),
     [
       addMembers,
+      removeMembers,
       pin,
       unpin,
       archive,

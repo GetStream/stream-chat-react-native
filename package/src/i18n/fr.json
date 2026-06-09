@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "Glissez vers la droite pour parcourir les différentes actions",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "En sourdine",
-  "Failed to load members": "Échec du chargement des membres"
+  "Failed to load members": "Échec du chargement des membres",
+  "Remove User": "Supprimer l'utilisateur",
+  "Remove": "Supprimer",
+  "Are you sure you want to remove this member from the channel?": "Êtes-vous sûr de vouloir supprimer ce membre du canal ?",
+  "{{count}} members removed_one": "{{count}} membre supprimé",
+  "{{count}} members removed_other": "{{count}} membres supprimés",
+  "{{count}} members removed_many": "{{count}} membres supprimés",
+  "Failed to remove members": "Échec de la suppression des membres"
 }

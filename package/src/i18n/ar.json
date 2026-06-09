@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "اسحب لليمين للتنقل بين الإجراءات المختلفة",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "مكتوم",
-  "Failed to load members": "فشل تحميل الأعضاء"
+  "Failed to load members": "فشل تحميل الأعضاء",
+  "Remove User": "إزالة المستخدم",
+  "Remove": "إزالة",
+  "Are you sure you want to remove this member from the channel?": "هل أنت متأكد أنك تريد إزالة هذا العضو من القناة؟",
+  "{{count}} members removed_one": "تمت إزالة {{count}} عضو",
+  "{{count}} members removed_other": "تمت إزالة {{count}} أعضاء",
+  "{{count}} members removed_many": "تمت إزالة {{count}} أعضاء",
+  "Failed to remove members": "فشل إزالة الأعضاء"
 }

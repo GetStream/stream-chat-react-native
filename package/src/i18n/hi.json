@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "विभिन्न क्रियाओं के बीच जाने के लिए दाएं स्वाइप करें",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "म्यूट किया गया",
-  "Failed to load members": "सदस्यों को लोड करने में विफल"
+  "Failed to load members": "सदस्यों को लोड करने में विफल",
+  "Remove User": "उपयोगकर्ता को हटाएं",
+  "Remove": "हटाएं",
+  "Are you sure you want to remove this member from the channel?": "क्या आप वाकई इस सदस्य को चैनल से हटाना चाहते हैं?",
+  "{{count}} members removed_one": "{{count}} सदस्य हटाया गया",
+  "{{count}} members removed_other": "{{count}} सदस्य हटाए गए",
+  "{{count}} members removed_many": "{{count}} सदस्य हटाए गए",
+  "Failed to remove members": "सदस्यों को हटाने में विफल"
 }

@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "החלק ימינה כדי לעבור בין הפעולות השונות",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "מושתק",
-  "Failed to load members": "טעינת החברים נכשלה"
+  "Failed to load members": "טעינת החברים נכשלה",
+  "Remove User": "הסר משתמש",
+  "Remove": "הסר",
+  "Are you sure you want to remove this member from the channel?": "האם אתה בטוח שברצונך להסיר חבר זה מהערוץ?",
+  "{{count}} members removed_one": "חבר אחד הוסר",
+  "{{count}} members removed_other": "{{count}} חברים הוסרו",
+  "{{count}} members removed_many": "{{count}} חברים הוסרו",
+  "Failed to remove members": "הסרת החברים נכשלה"
 }

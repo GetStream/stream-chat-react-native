@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "Смахните вправо, чтобы переключаться между действиями",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "Заглушён",
-  "Failed to load members": "Не удалось загрузить участников"
+  "Failed to load members": "Не удалось загрузить участников",
+  "Remove User": "Удалить пользователя",
+  "Remove": "Удалить",
+  "Are you sure you want to remove this member from the channel?": "Вы уверены, что хотите удалить этого участника из канала?",
+  "{{count}} members removed_one": "Удалён {{count}} участник",
+  "{{count}} members removed_other": "Удалено {{count}} участника",
+  "{{count}} members removed_many": "Удалено {{count}} участников",
+  "Failed to remove members": "Не удалось удалить участников"
 }

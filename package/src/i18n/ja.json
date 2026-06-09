@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "右にスワイプして異なるアクションを切り替えます",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "ミュート中",
-  "Failed to load members": "メンバーの読み込みに失敗しました"
+  "Failed to load members": "メンバーの読み込みに失敗しました",
+  "Remove User": "ユーザーを削除する",
+  "Remove": "削除",
+  "Are you sure you want to remove this member from the channel?": "このメンバーをチャンネルから削除してもよろしいですか？",
+  "{{count}} members removed_one": "{{count}}人のメンバーを削除しました",
+  "{{count}} members removed_other": "{{count}}人のメンバーを削除しました",
+  "{{count}} members removed_many": "{{count}}人のメンバーを削除しました",
+  "Failed to remove members": "メンバーの削除に失敗しました"
 }

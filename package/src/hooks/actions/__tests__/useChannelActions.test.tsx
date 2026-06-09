@@ -319,6 +319,74 @@ describe('useChannelActions', () => {
     expect(onSuccess).not.toHaveBeenCalled();
   });
 
+  it('notifies and calls channel.removeMembers when removing members succeeds', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.removeMembers(['u-1', 'u-2']);
+    });
+
+    expect(channel.removeMembers).toHaveBeenCalledWith(['u-1', 'u-2']);
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: '{{count}} members removed',
+      options: {
+        severity: 'success',
+        type: 'api:channel:remove-members:success',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('notifies with originalError when removing members fails', async () => {
+    const error = new Error('remove failed');
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.removeMembers).mockRejectedValue(error);
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.removeMembers(['u-1']);
+    });
+
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to remove members',
+      options: {
+        originalError: error,
+        severity: 'error',
+        type: 'api:channel:remove-members:failed',
+      },
+      origin: {
+        context: { channel },
+        emitter: 'ChannelActions',
+      },
+    });
+  });
+
+  it('does not call onSuccess when removeMembers rejects', async () => {
+    const client = createClient();
+    const channel = createChannel(client);
+    jest.mocked(channel.removeMembers).mockRejectedValue(new Error('nope'));
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() => useChannelActions(channel), {
+      wrapper: createWrapper(client),
+    });
+
+    await act(async () => {
+      await result.current.removeMembers(['u-1'], { onSuccess });
+    });
+
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
   it('notifies and calls channel.updatePartial when updateName succeeds', async () => {
     const client = createClient();
     const channel = createChannel(client);

@@ -410,5 +410,12 @@
   "a11y/Swipe right to go through different actions": "Veeg naar rechts om door verschillende acties te bladeren",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
   "Muted": "Gedempt",
-  "Failed to load members": "Leden laden mislukt"
+  "Failed to load members": "Leden laden mislukt",
+  "Remove User": "Gebruiker verwijderen",
+  "Remove": "Verwijderen",
+  "Are you sure you want to remove this member from the channel?": "Weet je zeker dat je dit lid uit het kanaal wilt verwijderen?",
+  "{{count}} members removed_one": "{{count}} lid verwijderd",
+  "{{count}} members removed_other": "{{count}} leden verwijderd",
+  "{{count}} members removed_many": "{{count}} leden verwijderd",
+  "Failed to remove members": "Leden verwijderen mislukt"
 }

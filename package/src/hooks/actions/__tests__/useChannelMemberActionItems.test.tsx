@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from 'react';
+import { Alert } from 'react-native';
 
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse, Mute } from 'stream-chat';
@@ -7,6 +8,8 @@ import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useM
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
+import * as useChannelOwnCapabilitiesModule from '../../useChannelOwnCapabilities';
+import * as useChannelActionsModule from '../useChannelActions';
 import {
   buildDefaultChannelMemberActionItems,
   getChannelMemberActionItems,
@@ -21,6 +24,9 @@ const createUserActions = (): useUserActionsModule.UserActions => ({
   unblockUser: jest.fn(),
   unmuteUser: jest.fn(),
 });
+
+const removeMembers = jest.fn();
+const channelActions = { removeMembers } as unknown as useChannelActionsModule.ChannelActions;
 
 const createMemberMock = (userId = 'target-user-id'): ChannelMemberResponse =>
   ({
@@ -55,6 +61,8 @@ describe('useChannelMemberActionItems', () => {
       );
     jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
     jest.spyOn(useUserActionsModule, 'useUserActions').mockReturnValue(userActions);
+    jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
+    jest.spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities').mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -134,6 +142,61 @@ describe('useChannelMemberActionItems', () => {
     expect(blockItem?.type).toBe('destructive');
   });
 
+  it('adds a destructive removeMember item when the user can update channel members', () => {
+    jest
+      .spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities')
+      .mockReturnValue(['update-channel-members']);
+
+    const { result } = renderHook(() => useChannelMemberActionItems({ channel, member }));
+
+    const removeItem = result.current.find((item) => item.id === 'removeMember');
+    expect(result.current.map((item) => item.id)).toEqual(['muteUser', 'block', 'removeMember']);
+    expect(removeItem?.label).toBe('Remove User');
+    expect(removeItem?.type).toBe('destructive');
+  });
+
+  it('does not add removeMember without the update-channel-members capability', () => {
+    const { result } = renderHook(() => useChannelMemberActionItems({ channel, member }));
+
+    expect(result.current.find((item) => item.id === 'removeMember')).toBeUndefined();
+  });
+
+  it('does not add removeMember for the current user even with the capability', () => {
+    jest
+      .spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities')
+      .mockReturnValue(['update-channel-members']);
+    const currentUserChannel = createChannelMock({ userID: 'target-user-id' });
+
+    const { result } = renderHook(() =>
+      useChannelMemberActionItems({ channel: currentUserChannel, member }),
+    );
+
+    expect(result.current).toEqual([]);
+  });
+
+  it('confirms via Alert before removing the member', () => {
+    jest
+      .spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities')
+      .mockReturnValue(['update-channel-members']);
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+
+    const { result } = renderHook(() => useChannelMemberActionItems({ channel, member }));
+    const removeItem = result.current.find((item) => item.id === 'removeMember');
+    removeItem?.action();
+
+    expect(alertSpy).toHaveBeenCalledTimes(1);
+    expect(removeMembers).not.toHaveBeenCalled();
+
+    // Invoke the destructive button's onPress to confirm removal.
+    const buttons = alertSpy.mock.calls[0][2] as { onPress?: () => void; style?: string }[];
+    const confirmButton = buttons.find((button) => button.style === 'destructive');
+    confirmButton?.onPress?.();
+
+    expect(removeMembers).toHaveBeenCalledWith(['target-user-id']);
+
+    alertSpy.mockRestore();
+  });
+
   it('keeps block standard when user is already blocked', () => {
     const blockedChannel = createChannelMock({ blockedUserIds: ['target-user-id'] });
 
@@ -160,12 +223,14 @@ describe('useChannelMemberActionItems', () => {
 
     expect(customGetItems).toHaveBeenCalledWith({
       context: {
-        actions: userActions,
         channel,
+        channelActions,
         isBlocked: false,
         isCurrentUser: false,
         member,
+        ownCapabilities: [],
         t: expect.any(Function),
+        userActions,
         userMuteActive: false,
       },
       defaultItems: expect.any(Array),
@@ -182,12 +247,14 @@ describe('buildDefaultChannelMemberActionItems', () => {
   it('creates default mute and block items', () => {
     const actions = createUserActions();
     const items = buildDefaultChannelMemberActionItems({
-      actions,
       channel,
+      channelActions,
       isBlocked: false,
       isCurrentUser: false,
       member,
+      ownCapabilities: undefined,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userActions: actions,
       userMuteActive: false,
     });
 
@@ -200,27 +267,51 @@ describe('buildDefaultChannelMemberActionItems', () => {
   it('returns no items when the member is the current user', () => {
     const actions = createUserActions();
     const items = buildDefaultChannelMemberActionItems({
-      actions,
       channel,
+      channelActions,
       isBlocked: false,
       isCurrentUser: true,
       member,
+      ownCapabilities: undefined,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userActions: actions,
       userMuteActive: false,
     });
 
     expect(items).toEqual([]);
   });
 
+  it('appends a destructive removeMember item when own capabilities allow updating members', () => {
+    const actions = createUserActions();
+    const items = buildDefaultChannelMemberActionItems({
+      channel,
+      channelActions,
+      isBlocked: false,
+      isCurrentUser: false,
+      member,
+      ownCapabilities: ['update-channel-members'],
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userActions: actions,
+      userMuteActive: false,
+    });
+
+    expect(items.map((item) => item.id)).toEqual(['muteUser', 'block', 'removeMember']);
+    const removeItem = items.find((item) => item.id === 'removeMember');
+    expect(removeItem?.label).toBe('Remove User');
+    expect(removeItem?.type).toBe('destructive');
+  });
+
   it('returns unmute/unblock variants when toggles are active', () => {
     const actions = createUserActions();
     const items = buildDefaultChannelMemberActionItems({
-      actions,
       channel,
+      channelActions,
       isBlocked: true,
       isCurrentUser: false,
       member,
+      ownCapabilities: undefined,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userActions: actions,
       userMuteActive: true,
     });
 
@@ -232,12 +323,14 @@ describe('buildDefaultChannelMemberActionItems', () => {
   it('mute and block reflect their respective active states independently', () => {
     const actions = createUserActions();
     const items = buildDefaultChannelMemberActionItems({
-      actions,
       channel,
+      channelActions,
       isBlocked: false,
       isCurrentUser: false,
       member,
+      ownCapabilities: undefined,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userActions: actions,
       userMuteActive: true,
     });
 
@@ -248,23 +341,27 @@ describe('buildDefaultChannelMemberActionItems', () => {
   it('default getChannelMemberActionItems returns defaultItems unchanged', () => {
     const actions = createUserActions();
     const defaultItems = buildDefaultChannelMemberActionItems({
-      actions,
       channel,
+      channelActions,
       isBlocked: false,
       isCurrentUser: false,
       member,
+      ownCapabilities: undefined,
       t: ((value: string) => value) as TranslationContextValue['t'],
+      userActions: actions,
       userMuteActive: false,
     });
 
     const items = getChannelMemberActionItems({
       context: {
-        actions,
         channel,
+        channelActions,
         isBlocked: false,
         isCurrentUser: false,
         member,
+        ownCapabilities: undefined,
         t: ((value: string) => value) as TranslationContextValue['t'],
+        userActions: actions,
         userMuteActive: false,
       },
       defaultItems,

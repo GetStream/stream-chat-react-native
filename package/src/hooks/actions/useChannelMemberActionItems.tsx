@@ -1,25 +1,30 @@
 import React, { useMemo } from 'react';
+import { Alert } from 'react-native';
 
 import type { BlockedUsersState, Channel, ChannelMemberResponse } from 'stream-chat';
 
 import type { ActionItem } from './types';
+import { ChannelActions, useChannelActions } from './useChannelActions';
 import { useUserActions, UserActions } from './useUserActions';
 
 import { useUserMuteActive } from '../../components/Message/hooks/useUserMuteActive';
 import { useTheme, useTranslationContext } from '../../contexts';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import { BlockUser, IconProps, Mute, Sound } from '../../icons';
+import { BlockUser, IconProps, Mute, Sound, UserDelete } from '../../icons';
+import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 import { useStateStore } from '../useStateStore';
 
 export type ChannelMemberActionItem = ActionItem<'muteUser' | 'block' | string>;
 
 export type ChannelMemberActionItemsParams = {
-  actions: UserActions;
   channel: Channel;
+  channelActions: ChannelActions;
   isBlocked: boolean;
   isCurrentUser: boolean;
   member: ChannelMemberResponse;
+  ownCapabilities: string[] | undefined;
   t: TranslationContextValue['t'];
+  userActions: UserActions;
   userMuteActive: boolean;
 };
 
@@ -42,12 +47,17 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
   channelMemberActionItemsParams,
 ) => {
   const {
-    actions: { blockUser, muteUser, unblockUser, unmuteUser },
+    channelActions: { removeMembers },
     isBlocked,
     isCurrentUser,
+    member,
+    ownCapabilities,
     t,
+    userActions: { blockUser, muteUser, unblockUser, unmuteUser },
     userMuteActive,
   } = channelMemberActionItemsParams;
+
+  const canRemoveMember = ownCapabilities?.includes('update-channel-members') ?? false;
 
   const actionItems: ChannelMemberActionItem[] = [];
 
@@ -80,6 +90,35 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
         type: isBlocked ? 'standard' : 'destructive',
       },
     );
+
+    if (canRemoveMember) {
+      actionItems.push({
+        action: () => {
+          const memberId = member.user?.id;
+          if (!memberId) {
+            return;
+          }
+          Alert.alert(
+            t('Remove User'),
+            t('Are you sure you want to remove this member from the channel?'),
+            [
+              { style: 'cancel', text: t('Cancel') },
+              {
+                onPress: async () => {
+                  await removeMembers([memberId]);
+                },
+                style: 'destructive',
+                text: t('Remove'),
+              },
+            ],
+          );
+        },
+        Icon: (props) => <ChannelMemberActionsIcon Icon={UserDelete} {...props} />,
+        id: 'removeMember',
+        label: t('Remove User'),
+        type: 'destructive',
+      });
+    }
   }
 
   return actionItems;
@@ -109,6 +148,9 @@ export const useChannelMemberActionItems = ({
 }: UseChannelMemberActionItemsParams) => {
   const { t } = useTranslationContext();
   const userActions = useUserActions(member.user);
+  const channelActions = useChannelActions(channel);
+
+  const ownCapabilities = useChannelOwnCapabilities(channel);
 
   const userMuteActive = useUserMuteActive(member.user);
 
@@ -123,15 +165,27 @@ export const useChannelMemberActionItems = ({
 
   const channelMemberActionItemsParams = useMemo<ChannelMemberActionItemsParams>(
     () => ({
-      actions: userActions,
       channel,
+      channelActions,
       isBlocked,
       isCurrentUser,
       member,
+      ownCapabilities,
       t,
+      userActions,
       userMuteActive,
     }),
-    [channel, isBlocked, isCurrentUser, member, t, userActions, userMuteActive],
+    [
+      channel,
+      channelActions,
+      isBlocked,
+      isCurrentUser,
+      member,
+      ownCapabilities,
+      t,
+      userActions,
+      userMuteActive,
+    ],
   );
 
   const defaultItems = useMemo(
