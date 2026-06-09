@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "Direct chat with {{name}}",
   "a11y/Double tap to open": "Double tap to open",
   "a11y/Double tap to view reactions": "Double tap to view reactions",
+  "a11y/Double tap to view thread": "Double tap to view thread",
   "a11y/Editing message": "Editing message",
   "a11y/Editing message: {{text}}": "Editing message: {{text}}",
   "a11y/Last message {{date}}": "Last message {{date}}",

@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "Прямой чат с {{name}}",
   "a11y/Double tap to open": "Дважды коснитесь, чтобы открыть",
   "a11y/Double tap to view reactions": "Дважды коснитесь, чтобы посмотреть реакции",
+  "a11y/Double tap to view thread": "Дважды коснитесь, чтобы посмотреть тред",
   "a11y/Editing message": "Редактирование сообщения",
   "a11y/Editing message: {{text}}": "Редактирование сообщения: {{text}}",
   "a11y/Last message {{date}}": "Последнее сообщение {{date}}",

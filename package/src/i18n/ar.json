@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "محادثة مباشرة مع {{name}}",
   "a11y/Double tap to open": "انقر مرتين للفتح",
   "a11y/Double tap to view reactions": "انقر مرتين لعرض التفاعلات",
+  "a11y/Double tap to view thread": "انقر مرتين لعرض المحادثة الفرعية",
   "a11y/Editing message": "تعديل الرسالة",
   "a11y/Editing message: {{text}}": "تعديل الرسالة: {{text}}",
   "a11y/Last message {{date}}": "آخر رسالة {{date}}",

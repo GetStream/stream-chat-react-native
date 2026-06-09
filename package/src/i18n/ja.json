@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "{{name}}とのダイレクトチャット",
   "a11y/Double tap to open": "ダブルタップで開く",
   "a11y/Double tap to view reactions": "ダブルタップでリアクションを表示",
+  "a11y/Double tap to view thread": "ダブルタップでスレッドを表示",
   "a11y/Editing message": "メッセージを編集中",
   "a11y/Editing message: {{text}}": "メッセージを編集中: {{text}}",
   "a11y/Last message {{date}}": "最後のメッセージ {{date}}",

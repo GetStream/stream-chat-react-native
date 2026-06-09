@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "Discussion directe avec {{name}}",
   "a11y/Double tap to open": "Appuyez deux fois pour ouvrir",
   "a11y/Double tap to view reactions": "Appuyez deux fois pour voir les réactions",
+  "a11y/Double tap to view thread": "Appuyez deux fois pour voir le fil",
   "a11y/Editing message": "Modification du message",
   "a11y/Editing message: {{text}}": "Modification du message : {{text}}",
   "a11y/Last message {{date}}": "Dernier message {{date}}",

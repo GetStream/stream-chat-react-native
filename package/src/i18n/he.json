@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "צ׳אט ישיר עם {{name}}",
   "a11y/Double tap to open": "הקש פעמיים כדי לפתוח",
   "a11y/Double tap to view reactions": "הקש פעמיים כדי לראות תגובות",
+  "a11y/Double tap to view thread": "הקש פעמיים כדי לראות את השרשור",
   "a11y/Editing message": "עריכת הודעה",
   "a11y/Editing message: {{text}}": "עריכת הודעה: {{text}}",
   "a11y/Last message {{date}}": "הודעה אחרונה {{date}}",

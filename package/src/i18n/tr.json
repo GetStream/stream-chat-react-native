@@ -260,6 +260,7 @@
   "a11y/Direct chat with {{name}}": "{{name}} ile doğrudan sohbet",
   "a11y/Double tap to open": "Açmak için iki kez dokun",
   "a11y/Double tap to view reactions": "Tepkileri görmek için iki kez dokun",
+  "a11y/Double tap to view thread": "Konuyu görmek için iki kez dokun",
   "a11y/Editing message": "Mesaj düzenleniyor",
   "a11y/Editing message: {{text}}": "Mesaj düzenleniyor: {{text}}",
   "a11y/Last message {{date}}": "Son mesaj {{date}}",
