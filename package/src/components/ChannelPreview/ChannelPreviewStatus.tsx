@@ -9,7 +9,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import { primitives } from '../../theme';
-import { getDateString } from '../../utils/i18n/getDateString';
+import { getDateString, getDateStringForA11y } from '../../utils/i18n/getDateString';
 
 export type ChannelPreviewStatusProps = Pick<
   ChannelPreviewViewPropsWithContext,
@@ -19,7 +19,7 @@ export type ChannelPreviewStatusProps = Pick<
 
 export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   const { formatLatestMessageDate, lastMessage } = props;
-  const { t, tDateTimeParser } = useTranslationContext();
+  const { t, tDateTimeParser, userLanguage } = useTranslationContext();
   const styles = useStyles();
 
   const created_at = lastMessage?.created_at;
@@ -36,11 +36,25 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
     [created_at, t, tDateTimeParser],
   );
 
+  const a11yDate = useMemo(
+    () =>
+      getDateStringForA11y({
+        calendarFormatOverrides: { sameDay: 'LT' },
+        date: created_at,
+        tDateTimeParser,
+        userLanguage,
+      }),
+    [created_at, tDateTimeParser, userLanguage],
+  );
+
   const visibleDate =
     formatLatestMessageDate && latestMessageDate
       ? formatLatestMessageDate(latestMessageDate).toString()
       : formattedDate;
-  const labelParams = useMemo(() => ({ date: visibleDate ?? '' }), [visibleDate]);
+  const labelParams = useMemo(
+    () => ({ date: a11yDate ?? visibleDate ?? '' }),
+    [a11yDate, visibleDate],
+  );
   const accessibilityLabel = useA11yLabel('a11y/Last message {{date}}', labelParams);
 
   return (
