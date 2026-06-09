@@ -7,7 +7,7 @@ import { OverlayContext } from '../../../contexts/overlayContext/OverlayContext'
 import { overlayStore } from '../../../state-store/message-overlay-store';
 import { OverlayA11yShield } from '../OverlayA11yShield';
 
-const setPlatform = (os: 'android' | 'ios') => {
+const setPlatform = (os: typeof Platform.OS) => {
   Object.defineProperty(Platform, 'OS', { configurable: true, get: () => os });
 };
 

@@ -3,7 +3,7 @@ import { FlatList } from 'react-native';
 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -16,6 +16,7 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { registerNativeHandlers } from '../../../native';
+import { closeOverlay, finalizeCloseOverlay } from '../../../state-store';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageComposer } from '../../MessageInput/MessageComposer';
@@ -49,6 +50,15 @@ describe('Own capabilities', () => {
     });
   });
 
+  afterEach(() => {
+    cleanup();
+    // The overlay state-store is module-level, so an overlay opened by a
+    // previous test would still be `active` when the next test mounts.
+    // Reset it so each test starts with `isActive=false`.
+    closeOverlay();
+    finalizeCloseOverlay();
+  });
+
   const getComponent = (props: Partial<React.ComponentProps<typeof Channel>> = {}) => (
     <SafeAreaProvider>
       <OverlayProvider>
@@ -76,7 +86,20 @@ describe('Own capabilities', () => {
     targetMessage: LocalMessage,
     props: Partial<React.ComponentProps<typeof Channel>> = {},
   ) => {
-    const { findByTestId, queryByLabelText, queryByText, unmount } = render(getComponent(props));
+    const {
+      findByTestId,
+      queryByLabelText: rawQueryByLabelText,
+      queryByText,
+      unmount,
+    } = render(getComponent(props));
+    // After the overlay opens, the host layer's `accessibilityViewIsModal`
+    // marks the chat tree as hidden to RNTL. The message action list is
+    // Portal-teleported into the overlay but its React parent stays inside
+    // the chat, so the visible-elements filter excludes it. The list IS
+    // rendered (and visible in production); we pass `includeHiddenElements`
+    // to look past the modal-sibling heuristic.
+    const queryByLabelText: typeof rawQueryByLabelText = (text, options) =>
+      rawQueryByLabelText(text, { includeHiddenElements: true, ...options });
     await waitFor(() => queryByText(targetMessage.text as string));
 
     act(() => {

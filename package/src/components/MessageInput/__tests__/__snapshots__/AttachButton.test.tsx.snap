@@ -818,6 +818,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
     </View>
   </View>
   <View
+    accessibilityViewIsModal={false}
     collapsable={false}
     pointerEvents="box-none"
     style={
@@ -1733,6 +1734,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
     </View>
   </View>
   <View
+    accessibilityViewIsModal={false}
     collapsable={false}
     pointerEvents="box-none"
     style={
@@ -2648,6 +2650,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
     </View>
   </View>
   <View
+    accessibilityViewIsModal={false}
     collapsable={false}
     pointerEvents="box-none"
     style={
