@@ -10,7 +10,6 @@ import {
   ChannelMemberActionItem,
   useChannelMemberActionItems,
 } from '../../../../hooks/actions/useChannelMemberActionItems';
-import { primitives } from '../../../../theme';
 import { BottomSheetModal } from '../../../UIComponents/BottomSheetModal';
 import { StreamBottomSheetModalFlatList } from '../../../UIComponents/StreamBottomSheetModalFlatList';
 
@@ -97,6 +96,7 @@ const useStyles = () =>
   useMemo(
     () =>
       StyleSheet.create({
+        actionsList: {},
         container: {
           flexDirection: 'column',
         },
