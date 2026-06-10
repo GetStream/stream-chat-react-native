@@ -4,7 +4,7 @@ import { AccessibilityInfo, AppState, Platform } from 'react-native';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 
 /**
- * Subscribes to Android accessibility-service availability and returns the live state.
+ * Subscribes to Android accessibility service availability and returns the live state.
  *
  * `AccessibilityInfo.isAccessibilityServiceEnabled` reports whether ANY a11y service is
  * running - TalkBack, Switch Access, Voice Access, Select to Speak, etc.  not just
@@ -14,11 +14,11 @@ import { useAccessibilityContext } from '../../contexts/accessibilityContext/Acc
  * React Native does not emit a dedicated change event for this signal, so the hook
  * re-polls when the app returns to the foreground - which is the realistic path for a
  * user toggling Accessibility settings and coming back to the app. The most common
- * single-service change (TalkBack on / off) is also covered by the `screenReaderChanged`
+ * single service change (TalkBack on/off) is also covered by the `screenReaderChanged`
  * listener.
  *
  * Returns false on non-Android platforms without subscribing.
- * Returns false when the AccessibilityContext is disabled so consumers don't pay the
+ * Returns false when the `AccessibilityContext` is disabled so consumers don't pay the
  * listener cost when the SDK's a11y is opted out.
  */
 export const useAccessibilityServiceEnabled = (): boolean => {
