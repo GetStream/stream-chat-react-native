@@ -81,6 +81,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
         getChannelMemberActionItems={getChannelMemberActionItems}
         onBack={onBack}
         onChannelDismiss={popToRoot}
+        // Handler view all members modal so we can close it after navigation is triggered by our custom action
         onViewAllMembersPress={handleAllMembersPress}
       />
       <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
