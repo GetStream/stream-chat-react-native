@@ -153,8 +153,7 @@ const UnMemoizedAutoCompleteSuggestionItem = ({
 
   return (
     <Pressable
-      accessibilityRole='menuitem'
-      accessibilityLabel='Suggestion Menu Item'
+      accessibilityRole='button'
       onPress={handlePress}
       style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, itemStyle]}
       testID='suggestion-item'

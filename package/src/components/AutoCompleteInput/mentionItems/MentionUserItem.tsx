@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { View } from 'react-native';
 
 import type { UserSuggestion } from 'stream-chat';
 
@@ -18,7 +19,11 @@ export const MentionUserItem = ({ entity }: MentionUserItemProps) => {
 
   return (
     <MentionItem
-      leading={<UserAvatar showOnlineIndicator={!!entity.online} size='md' user={entity} />}
+      leading={
+        <View importantForAccessibility='no-hide-descendants'>
+          <UserAvatar showOnlineIndicator={!!entity.online} size='md' user={entity} />
+        </View>
+      }
     >
       <TokenizedSuggestionParts
         fallback={entity.name || entity.id}
