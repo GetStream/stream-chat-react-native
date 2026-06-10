@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -6,6 +6,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ChannelDetailsScreen as StreamChannelDetailsScreen,
   GetChannelMemberActionItems,
+  ChannelAddMembersModal,
+  ChannelAllMembersModal,
+  ChannelDetailsContextProvider,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -39,6 +42,12 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       }),
     [navigation],
   );
+  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
+  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
+  const handleAddMembersPress = useCallback(() => setAddMembersVisible(true), []);
+  const [isAllMembersVisible, setAllMembersVisible] = useState(false);
+  const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
+  const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
 
   const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
     ({ context, defaultItems }) => {
@@ -50,6 +59,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       return [
         {
           action: () => {
+            setAllMembersVisible(false);
             navigation.navigate('NewDirectMessagingScreen', { initialUser: user });
             return Promise.resolve();
           },
@@ -65,11 +75,22 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   );
 
   return (
-    <StreamChannelDetailsScreen
-      channel={channel}
-      getChannelMemberActionItems={getChannelMemberActionItems}
-      onBack={onBack}
-      onChannelDismiss={popToRoot}
-    />
+    <>
+      <StreamChannelDetailsScreen
+        channel={channel}
+        getChannelMemberActionItems={getChannelMemberActionItems}
+        onBack={onBack}
+        onChannelDismiss={popToRoot}
+        onViewAllMembersPress={handleAllMembersPress}
+      />
+      <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
+        <ChannelAllMembersModal
+          onClose={handleAllMembersClose}
+          visible={isAllMembersVisible}
+          onAddMembersPress={handleAddMembersPress}
+        />
+        <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+      </ChannelDetailsContextProvider>
+    </>
   );
 };
