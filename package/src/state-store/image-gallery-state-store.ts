@@ -41,12 +41,14 @@ export type ImageGalleryState = {
   messages: LocalMessage[];
   selectedAttachmentUrl?: string;
   currentIndex: number;
+  requesterNode: number | null;
 };
 
 const INITIAL_STATE: ImageGalleryState = {
   assets: [],
   currentIndex: 0,
   messages: [],
+  requesterNode: null,
   selectedAttachmentUrl: undefined,
 };
 
@@ -78,6 +80,10 @@ export class ImageGalleryStateStore {
 
   get selectedAttachmentUrl() {
     return this.state.getLatestValue().selectedAttachmentUrl;
+  }
+
+  get requesterNode() {
+    return this.state.getLatestValue().requesterNode;
   }
 
   get attachmentsWithMessage() {
@@ -151,6 +157,10 @@ export class ImageGalleryStateStore {
     this.state.partialNext({ currentIndex });
   }
 
+  set requesterNode(requesterNode: number | null) {
+    this.state.partialNext({ requesterNode });
+  }
+
   // APIs for managing messages
   appendMessages = (messages: LocalMessage[]) => {
     this.state.partialNext({ messages: [...this.messages, ...messages] });
@@ -164,12 +174,14 @@ export class ImageGalleryStateStore {
 
   openImageGallery = ({
     messages,
+    requesterNode = null,
     selectedAttachmentUrl,
   }: {
     messages: LocalMessage[];
+    requesterNode?: number | null;
     selectedAttachmentUrl?: string;
   }) => {
-    this.state.partialNext({ messages, selectedAttachmentUrl });
+    this.state.partialNext({ messages, requesterNode, selectedAttachmentUrl });
   };
 
   subscribeToMessages = () => {

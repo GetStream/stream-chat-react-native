@@ -10,7 +10,7 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ## Non-negotiable rules
 
 1. **Native semantics first.** Use `Pressable`, `TextInput`, `Switch`, `Image` directly. Use `accessibilityRole` only when native semantics cannot represent the widget (`menu`, `menuitem`, `progressbar`, `radio`, `checkbox`, `article`, `alert`, `tablist`, `tab`). **Platform caveat:** `'menu'` and `'menuitem'` are honored by iOS VoiceOver but Android TalkBack silently ignores them (no `UIAccessibilityTraits` equivalent). For interactive items that must be announceable on both platforms, use `'button'` on the leaf `Pressable`; the `'menu'` role can stay on the container as an iOS hint. iOS-supported roles that survive to VoiceOver: `button`, `link`, `search`, `image`, `keyboardkey`, `text`, `adjustable`, `imagebutton`, `header`, `summary`, `none`.
-2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. For SDK `Button`, pass `accessibilityLabelKey='a11y/...'` (and `accessibilityLabelParams` when needed). For non-Button components, use `useA11yLabel('a11y/...', params)` or `t('a11y/...')` directly when you don't need the disabled-state short-circuit. Add the key to all 12 locale files in `package/src/i18n/`.
+2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. For SDK `Button`, pass `accessibilityLabelKey='a11y/...'` (and `accessibilityLabelParams` when needed). For non-Button components, use `useA11yLabel('a11y/...', params)` or `t('a11y/...')` directly when you don't need the disabled-state short-circuit. Add the key to all 13 locale files in `package/src/i18n/` (`ar, en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
 3. **Gate behavior on `useAccessibilityContext().enabled`.** A11y is opt-in. New listeners, subscriptions, and announcer mounts must be no-ops when `enabled` is false. New `accessibilityRole`/`accessibilityState` props are fine to render unconditionally — they cost ~zero.
 4. **One focusable target per action.** Don't nest `Pressable` inside `Pressable`. Mark inner decorative views with `accessibilityElementsHidden` (iOS) + `importantForAccessibility='no-hide-descendants'` (Android) so the parent carries the label.
 5. **Decorative visuals stay hidden from AT.** Icon-only buttons must carry an `accessibilityLabel` on the wrapper, and the SVG icon should be hidden.
@@ -58,7 +58,7 @@ grep -B1 -A1 'content-desc="Mention suggestions available"' window_dump.xml
 - **Foundation primitives** → `package/src/a11y/` (utilities + low-level hooks).
 - **Runtime announcer infra** → `package/src/components/Accessibility/` (`NotificationAnnouncer`, `useAccessibilityAnnouncer`, `useIncomingMessageAnnouncements`).
 - **Config + provider** → `package/src/contexts/accessibilityContext/`, mounted by `OverlayProvider`.
-- **i18n** → `a11y/*` keys in all 12 locale JSONs (`en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
+- **i18n** → `a11y/*` keys in all 13 locale JSONs (`ar, en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
 - **Component-level a11y attributes** → in the component itself.
 - **Platform divergence (iOS vs Android)** → use `Platform.OS` or `useResolvedModalAccessibilityProps`. Don't duplicate the file — RN doesn't need `.ios.tsx`/`.android.tsx` splits for a11y.
 - **Tests** → nearest `__tests__/` folder; use `@testing-library/react-native` semantic queries (`getByRole`, `getByLabelText`).
@@ -136,6 +136,81 @@ const transitionDuration = reduceMotion ? 0 : 250;
 
 Disable spring animations and limit fade durations when this is true.
 
+### 6) Curated single focus stop for visual content — `CompositeAccessibilityProbe`
+
+```tsx
+import { CompositeAccessibilityProbe } from 'stream-chat-react-native';
+
+<CompositeAccessibilityProbe label={accessibilityLabel}>
+  {/* avatars, icons, composed graphics — visually decorative */}
+</CompositeAccessibilityProbe>
+```
+
+Wraps non-Text visual content with a single, cross-platform-stable focus stop carrying the provided `label`. Renders a hidden `Text` sibling that carries the label + a `View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'` around the children. Use for avatars, mute icons, isolated badges, composed graphics that should announce as one semantic unit.
+
+Pass the result of `useA11yLabel(...)` directly — when `label` is `undefined` (a11y opt-out), the probe is a no-op and renders children untouched.
+
+Live examples: `ChannelAvatar.tsx`, `ChannelPreviewMutedStatus.tsx`, `ChannelMessagePreviewDeliveryStatus.tsx`.
+
+### 7) Splicing extra a11y info into compose — `HiddenA11yText`
+
+```tsx
+import { HiddenA11yText } from 'stream-chat-react-native';
+
+<Pressable>
+  <Icon />
+  {selected ? <HiddenA11yText label={useA11yLabel('a11y/you reacted')} /> : null}
+</Pressable>
+```
+
+A visually-invisible `<Text>` that exists only to contribute extra information to a parent's compose loop. Use it to splice in supplementary state ("you reacted", "and N more", "unread") that doesn't have a natural visible Text in the tree.
+
+Different concern from `CompositeAccessibilityProbe`:
+- `HiddenA11yText` — "inject extra a11y-only text into a compose chain"
+- `CompositeAccessibilityProbe` — "make this whole visual element one focus stop with a curated label"
+
+Live examples: `MessageStatus.tsx`, `ReactionListClustered.tsx`, `ReactionListItem.tsx`.
+
+### 8) Cross-platform auto-compose on a plain View
+
+```tsx
+<View accessible accessibilityRole='text'>
+  {/* children whose labels should auto-compose into one announcement */}
+</View>
+```
+
+iOS auto-composes descendant labels when a `View` is `accessible={true}` without an explicit `accessibilityLabel`. Android requires the parent to trip a gate — set any of `accessibilityRole`, `accessibilityState`, `accessibilityActions`, or `accessibilityLabelledBy`. `accessibilityRole='text'` (or `'none'`) is the lightest gate-tripper and a no-op for iOS composition.
+
+`Pressable` defaults `accessibilityRole='button'`, so it auto-trips the gate. Plain `View accessible={true}` without a role does NOT — Android falls back to its default heuristic (reads one visible Text descendant only).
+
+Live example: `MessageFooter.tsx` — `<View accessible accessibilityRole='text'>` makes the footer one focus stop on both platforms reading `"Read 11:05 AM"`.
+
+See full memory: `rn_android_a11y_compose_gate.md`.
+
+### 9) Drill-in for interactive children inside a Pressable
+
+```tsx
+<Pressable accessible={hasInteractiveContent ? false : undefined} onLongPress={...}>
+  {/* mix of interactive children — attachments, quoted reply, poll options, etc. */}
+</Pressable>
+```
+
+When a Pressable wraps mixed content that includes interactive children, the row's default single-focus-stop behavior subsumes them — screen-reader users can't activate the children individually. Setting `accessible={false}` on the Pressable removes the row stop, so VO/TalkBack drill into each interactive child. The Pressable's `onPress` / `onLongPress` still fire because VO/TalkBack synthesize taps at the focused child's coordinates, which land inside the Pressable's hit area.
+
+Live example: `MessageContent.tsx` — `accessible={hasInteractiveContent ? false : undefined}` where `hasInteractiveContent` covers poll, quoted message, attachments, shared location.
+
+### 10) Reshow announcements — `useAnnounceOnShow`
+
+```tsx
+useAnnounceOnShow(visible, useA11yLabel('a11y/Replying to {{user}}', { user: name }));
+```
+
+Announces `label` once each time `visible` flips from `false` to `true`. Resets on hide, so reshows re-announce — unlike `useAnnounceOnStateChange` which dedupes consecutive identical strings.
+
+Use for transient surfaces that appear and disappear repeatedly within a session (modals, autocomplete pickers, reply previews) where the user benefits from hearing the affordance on every reappearance.
+
+Live example: `Reply.tsx` — fires when a reply preview shows in the composer.
+
 ## Anti-patterns to avoid
 
 - **Hardcoded English `accessibilityLabel`** strings inside component code. For SDK `Button`, use `accessibilityLabelKey='a11y/...'`; otherwise use `useA11yLabel('a11y/...')` or `t('a11y/...')`.
@@ -174,13 +249,19 @@ Recommended for non-trivial changes:
 
 - `package/src/contexts/accessibilityContext/AccessibilityContext.tsx` — config schema + provider + imperative announcer context.
 - `package/src/components/Accessibility/hooks/useIncomingMessageAnnouncements.ts` — port of stream-chat-react's hook.
+- `package/src/components/Accessibility/CompositeAccessibilityProbe.tsx` — curated-single-focus-stop wrapper for visual content (avatar, icons, badges).
+- `package/src/components/Accessibility/HiddenA11yText.tsx` — visually-invisible Text that splices extra info into a parent's compose chain ("you reacted", "and N more", etc).
 - `package/src/a11y/hooks/useA11yLabel.ts` — translated-label-or-undefined.
+- `package/src/a11y/hooks/useAnnounceOnStateChange.ts` — announce on string-change with dedup.
+- `package/src/a11y/hooks/useAnnounceOnShow.ts` — announce on `visible: false → true` transitions, resets on hide (no dedup).
 - `package/src/a11y/hooks/useResolvedModalAccessibilityProps.ts` — modal a11y props.
 - `package/src/a11y/hooks/useAnnounceOnShow.ts` — announce-on-visible helper for transient surfaces.
 - `package/src/components/ui/Avatar/Avatar.tsx` — example of `name` + `useA11yLabel` usage.
 - `package/src/components/UIComponents/BottomSheetModal.tsx` — example of `useResolvedModalAccessibilityProps` and `useAnnounceOnShow`.
 - `package/src/components/AITypingIndicatorView/AITypingIndicatorView.tsx` — example of `useAnnounceOnStateChange`.
 - `package/src/components/AutoCompleteInput/AutoCompleteSuggestionList.tsx` — example of `useAnnounceOnShow` with a per-trigger label (mention/command/emoji).
+- `package/src/components/Message/MessageItemView/MessageFooter.tsx` — example of cross-platform auto-compose on a View (`accessible + accessibilityRole='text'`).
+- `package/src/components/Message/MessageItemView/MessageContent.tsx` — example of conditional drill-in (`accessible={hasInteractiveContent ? false : undefined}`).
 
 ## Cross-SDK parity
 

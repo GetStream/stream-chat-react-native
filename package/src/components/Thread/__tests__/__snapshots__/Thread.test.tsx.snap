@@ -588,6 +588,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                           </View>
                           <View
+                            accessibilityRole="text"
+                            accessible={true}
                             style={
                               [
                                 {
@@ -920,6 +922,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                           </View>
                           <View
+                            accessibilityRole="text"
+                            accessible={true}
                             style={
                               [
                                 {
@@ -1013,6 +1017,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   testID="date-separator"
                 >
                   <Text
+                    accessibilityLabel="May 5, 2020"
                     style={
                       {
                         "color": "#414552",
@@ -1285,6 +1290,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                           </View>
                           <View
+                            accessibilityRole="text"
+                            accessible={true}
                             style={
                               [
                                 {
@@ -1611,6 +1618,8 @@ exports[`Thread should match thread snapshot 1`] = `
                             </View>
                           </View>
                           <View
+                            accessibilityRole="text"
+                            accessible={true}
                             style={
                               [
                                 {

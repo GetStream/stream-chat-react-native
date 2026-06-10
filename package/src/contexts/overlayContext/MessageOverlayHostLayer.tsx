@@ -269,7 +269,11 @@ export const MessageOverlayHostLayer = () => {
 
   return (
     <GestureDetector gesture={tap}>
-      <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
+      <View
+        accessibilityViewIsModal={isActive}
+        pointerEvents='box-none'
+        style={StyleSheet.absoluteFill}
+      >
         {isActive ? (
           <Animated.View pointerEvents='none' style={[StyleSheet.absoluteFill, backdropStyle]}>
             <OverlayBackground />

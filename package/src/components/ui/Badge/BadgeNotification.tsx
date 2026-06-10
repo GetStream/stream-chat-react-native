@@ -9,6 +9,11 @@ export type BadgeNotificationProps = {
   count: number;
   size: 'sm' | 'xs';
   testID?: string;
+  /**
+   * Optional accessibility label override. When provided, screen readers
+   * announce this string instead of the bare count.
+   */
+  accessibilityLabel?: string;
 };
 
 const sizes = {
@@ -34,7 +39,7 @@ const textStyles = {
 };
 
 export const BadgeNotification = (props: BadgeNotificationProps) => {
-  const { type = 'primary', count, size = 'sm', testID } = props;
+  const { accessibilityLabel, type = 'primary', count, size = 'sm', testID } = props;
   const styles = useStyles();
   const {
     theme: { semantics },
@@ -49,7 +54,11 @@ export const BadgeNotification = (props: BadgeNotificationProps) => {
   return (
     <View style={styles.border}>
       <View style={[styles.container, { backgroundColor: colors[type] }, sizes[size]]}>
-        <Text style={[styles.text, textStyles[size]]} testID={testID}>
+        <Text
+          accessibilityLabel={accessibilityLabel}
+          style={[styles.text, textStyles[size]]}
+          testID={testID}
+        >
           {count}
         </Text>
       </View>

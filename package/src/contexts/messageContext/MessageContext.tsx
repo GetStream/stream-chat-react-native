@@ -45,6 +45,14 @@ export type MessageContextValue = {
   /** Whether or not any message attachment exposes actions. */
   hasAttachmentActions: boolean;
   handleToggleReaction: (reactionType: string) => Promise<void>;
+  /**
+   * Whether the message renders interactive children (poll options, attachment
+   * cells, the quoted-reply navigator, shared location) and the row should
+   * therefore drop its single focusstop so VO/TalkBack can drill into them.
+   * Resolved from `AccessibilityContext.hasInteractiveAccessibilityContent` -
+   * integrators override there to include their own custom content.
+   */
+  hasInteractiveAccessibilityContent: boolean;
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** Whether or not message has only a single attachment */
