@@ -187,7 +187,6 @@ const useStyles = () =>
     () =>
       StyleSheet.create({
         actionsList: {
-          paddingBottom: primitives.spacing3xl,
           paddingHorizontal: primitives.spacingXxs,
         },
         center: {

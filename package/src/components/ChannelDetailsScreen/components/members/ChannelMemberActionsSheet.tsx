@@ -97,9 +97,6 @@ const useStyles = () =>
   useMemo(
     () =>
       StyleSheet.create({
-        actionsList: {
-          paddingBottom: primitives.spacing3xl,
-        },
         container: {
           flexDirection: 'column',
         },
