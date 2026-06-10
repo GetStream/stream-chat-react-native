@@ -92,6 +92,7 @@ export const PollAllOptions = ({
 
 export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
   const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
+  const { t } = useTranslationContext();
   const styles = useStyles();
 
   const relevantVotes = useMemo(
@@ -141,7 +142,12 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
               />
             ) : null}
 
-            <Text style={[styles.votesText, votesText]}>{voteCountsByOption[option.id] || 0}</Text>
+            <Text
+              accessibilityLabel={t('{{count}} votes', { count: votes })}
+              style={[styles.votesText, votesText]}
+            >
+              {votes}
+            </Text>
           </View>
         </View>
         {showProgressBar ? (

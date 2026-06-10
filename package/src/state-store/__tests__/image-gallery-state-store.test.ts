@@ -88,6 +88,7 @@ describe('ImageGalleryStateStore', () => {
         assets: [],
         currentIndex: 0,
         messages: [],
+        requesterNode: null,
         selectedAttachmentUrl: undefined,
       });
     });

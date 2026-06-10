@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { findNodeHandle, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -14,6 +14,7 @@ import {
 
 import { openUrlSafely } from './utils/openUrlSafely';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTranslationContext } from '../../contexts';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -236,12 +237,19 @@ const GalleryThumbnail = ({
   } = useTheme();
   const { t } = useTranslationContext();
   const styles = useStyles();
+  const isVideo = thumbnail.type === FileTypes.Video;
+  const thumbnailAccessibilityLabel = useA11yLabel(
+    isVideo ? 'a11y/Gallery Video' : 'a11y/Gallery Image',
+  );
+  const thumbnailAccessibilityHint = useA11yLabel('a11y/Double tap to open');
+  const thumbnailRef = useRef<View>(null);
   const openImageViewer = () => {
     if (!message) {
       return;
     }
     imageGalleryStateStore.openImageGallery({
       messages: [message],
+      requesterNode: findNodeHandle(thumbnailRef.current),
       selectedAttachmentUrl: thumbnail.url,
     });
     setOverlay('gallery');
@@ -260,8 +268,12 @@ const GalleryThumbnail = ({
   };
   return (
     <Pressable
+      accessibilityHint={thumbnailAccessibilityHint}
+      accessibilityLabel={thumbnailAccessibilityLabel}
+      accessibilityRole='button'
       disabled={preventPress}
       key={`gallery-item-${message.id}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
+      ref={thumbnailRef}
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({

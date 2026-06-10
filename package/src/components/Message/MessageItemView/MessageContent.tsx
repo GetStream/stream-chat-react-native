@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ColorValue, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { ColorValue, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -55,6 +55,7 @@ export type MessageContentPropsWithContext = Pick<
   | 'alignment'
   | 'goToMessage'
   | 'groupStyles'
+  | 'hasInteractiveAccessibilityContent'
   | 'isMyMessage'
   | 'message'
   | 'messageContentOrder'
@@ -111,6 +112,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     enableMessageGroupingByUser,
     groupStyles,
     goToMessage,
+    hasInteractiveAccessibilityContent,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
@@ -129,6 +131,10 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   } = props;
   const { client } = useChatContext();
   const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
+  const a11ySenderLabel = useA11yLabel(
+    isMyMessage ? 'a11y/Message from you' : 'a11y/Message from {{sender}}',
+    isMyMessage ? undefined : { sender: message.user?.name || message.user?.id || '' },
+  );
   const {
     Attachment,
     FileAttachmentGroup,
@@ -317,22 +323,18 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       )}
     </>
   );
-
-  // Drop the Pressable's single-focus-stop behavior when the message contains
-  // interactive children (poll options, attachment cells, the quoted-reply
-  // navigator, shared location). Without this, VO/TalkBack subsume those
-  // children into the row's one announcement and they can't be activated.
-  const hasInteractiveContent = !!(
-    message.poll_id ||
-    message.quoted_message ||
-    message.attachments?.length ||
-    message.shared_location
-  );
+  const a11yPressableLabel = useMemo(() => {
+    if (!a11ySenderLabel) return undefined;
+    return message.text && !hasInteractiveAccessibilityContent
+      ? `${a11ySenderLabel}. ${message.text}`
+      : a11ySenderLabel;
+  }, [a11ySenderLabel, hasInteractiveAccessibilityContent, message.text]);
 
   return (
     <Pressable
+      accessibilityLabel={a11yPressableLabel}
       accessibilityHint={accessibilityHint}
-      accessible={hasInteractiveContent ? false : undefined}
+      accessible={hasInteractiveAccessibilityContent ? false : undefined}
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -382,6 +384,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         ]}
         testID='message-content-wrapper'
       >
+        {a11ySenderLabel && Platform.OS !== 'android' && hasInteractiveAccessibilityContent ? (
+          <View
+            accessibilityLabel={a11ySenderLabel}
+            accessibilityHint={accessibilityHint}
+            accessible
+            pointerEvents='none'
+            style={StyleSheet.absoluteFill}
+          />
+        ) : null}
         {MessageContentTopView ? <MessageContentTopView /> : null}
         {hasContentSideViews ? (
           <View
@@ -414,6 +425,7 @@ const areEqual = (
     preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
+    hasInteractiveAccessibilityContent: prevHasInteractiveAccessibilityContent,
     isAttachmentEqual,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
@@ -427,12 +439,17 @@ const areEqual = (
     preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
+    hasInteractiveAccessibilityContent: nextHasInteractiveAccessibilityContent,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
     myMessageTheme: nextMyMessageTheme,
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
+
+  if (prevHasInteractiveAccessibilityContent !== nextHasInteractiveAccessibilityContent) {
+    return false;
+  }
 
   if (prevBackgroundColor !== nextBackgroundColor) {
     return false;
@@ -569,8 +586,11 @@ export type MessageContentProps = Partial<MessageContentPropsWithContext>;
 export const MessageContent = (props: MessageContentProps) => {
   const {
     alignment,
+    files,
     goToMessage,
     groupStyles,
+    hasInteractiveAccessibilityContent,
+    images,
     isMessageAIGenerated,
     isMyMessage,
     message,
@@ -581,8 +601,6 @@ export const MessageContent = (props: MessageContentProps) => {
     otherAttachments,
     preventPress,
     threadList,
-    files,
-    images,
     videos,
   } = useMessageContext();
   const {
@@ -637,6 +655,7 @@ export const MessageContent = (props: MessageContentProps) => {
         enableMessageGroupingByUser,
         goToMessage,
         groupStyles,
+        hasInteractiveAccessibilityContent,
         isAttachmentEqual,
         isMessageAIGenerated,
         isMyMessage,

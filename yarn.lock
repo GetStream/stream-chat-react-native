@@ -17754,7 +17754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:^2.26.0, react-native-gesture-handler@npm:~2.31.1":
+"react-native-gesture-handler@npm:^2.26.0, react-native-gesture-handler@npm:^2.31.2, react-native-gesture-handler@npm:~2.31.1":
   version: 2.31.2
   resolution: "react-native-gesture-handler@npm:2.31.2"
   dependencies:
@@ -18881,7 +18881,7 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.85.3"
     react-native-blob-util: "npm:^0.24.9"
-    react-native-gesture-handler: "npm:^3.0.0"
+    react-native-gesture-handler: "npm:^2.31.2"
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:^1.27.2"

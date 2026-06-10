@@ -99,8 +99,16 @@ describe('ImageGallery', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryAllByLabelText('Image Item')).toHaveLength(2);
-      expect(screen.queryAllByLabelText('Image Gallery Video')).toHaveLength(1);
+      // The pager subtree is marked `accessibilityElementsHidden` /
+      // `importantForAccessibility='no-hide-descendants'` so screen readers
+      // can't land on the silent shadow views inside it; the queries here
+      // opt back into hidden elements so tests can still find the assets.
+      expect(
+        screen.queryAllByLabelText('Image Item', { includeHiddenElements: true }),
+      ).toHaveLength(2);
+      expect(
+        screen.queryAllByLabelText('Image Gallery Video', { includeHiddenElements: true }),
+      ).toHaveLength(1);
     });
   });
 
@@ -116,7 +124,9 @@ describe('ImageGallery', () => {
     );
 
     await waitFor(() => {
-      const pagerStyle = StyleSheet.flatten(screen.getByTestId('image-gallery-pager').props.style);
+      const pagerStyle = StyleSheet.flatten(
+        screen.getByTestId('image-gallery-pager', { includeHiddenElements: true }).props.style,
+      );
       expect(pagerStyle.direction).toBe('ltr');
     });
   });

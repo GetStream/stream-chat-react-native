@@ -72,6 +72,8 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
 
   return (
     <ReactionListItemWrapper
+      accessibilityRole='button'
+      accessibilityState={{ selected }}
       disabled={preventPress}
       key={reaction.type}
       testID='reaction-list-item'

@@ -274,12 +274,15 @@
   "a11y/Direct chat with {{name}}": "Direct chat with {{name}}",
   "a11y/Double tap to open": "Double tap to open",
   "a11y/Double tap to view reactions": "Double tap to view reactions",
+  "a11y/Double tap to view thread": "Double tap to view thread",
   "a11y/Editing message": "Editing message",
   "a11y/Editing message: {{text}}": "Editing message: {{text}}",
   "a11y/Last message {{date}}": "Last message {{date}}",
   "a11y/Loading": "Loading",
   "a11y/Loading failed": "Loading failed",
   "a11y/Message actions": "Message actions",
+  "a11y/Message from you": "Message from you",
+  "a11y/Message from {{sender}}": "Message from {{sender}}",
   "a11y/Muted": "Muted",
   "a11y/New message from {{user}}": "New message from {{user}}",
   "a11y/Offline": "Offline",
@@ -429,5 +432,8 @@
   "a11y/Upload channel image": "Upload channel image",
   "Reset Picture": "Reset Picture",
   "a11y/Close edit picture sheet": "Close edit picture sheet",
-  "a11y/{{count}} unread messages": "{{count}} unread messages"
+  "a11y/{{count}} unread messages": "{{count}} unread messages",
+  "a11y/Gallery Image": "Gallery image",
+  "a11y/Gallery Video": "Gallery video",
+  "a11y/{{position}} of {{count}}": "{{position}} of {{count}}"
 }

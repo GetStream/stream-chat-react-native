@@ -56,6 +56,9 @@ export const AttachmentPicker = () => {
 
   useEffect(() => {
     const backAction = () => {
+      if (currentIndexRef.current === -1) {
+        return false;
+      }
       if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
         attachmentPickerStore.setSelectedPicker(undefined);
         closePicker();

@@ -266,6 +266,7 @@
   "a11y/Direct chat with {{name}}": "Discussion directe avec {{name}}",
   "a11y/Double tap to open": "Appuyez deux fois pour ouvrir",
   "a11y/Double tap to view reactions": "Appuyez deux fois pour voir les réactions",
+  "a11y/Double tap to view thread": "Appuyez deux fois pour voir le fil",
   "a11y/Editing message": "Modification du message",
   "a11y/Editing message: {{text}}": "Modification du message : {{text}}",
   "a11y/Last message {{date}}": "Dernier message {{date}}",
@@ -429,5 +430,10 @@
   "a11y/Double tap and hold to activate contextual menu": "Appuyez deux fois et maintenez pour activer le menu contextuel",
   "a11y/Swipe right to go through different actions": "Glissez vers la droite pour parcourir les différentes actions",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "{{count}} messages non lus"
+  "a11y/{{count}} unread messages": "{{count}} messages non lus",
+  "a11y/Message from you": "Votre message",
+  "a11y/Message from {{sender}}": "Message de {{sender}}",
+  "a11y/Gallery Image": "Image de la galerie",
+  "a11y/Gallery Video": "Vidéo de la galerie",
+  "a11y/{{position}} of {{count}}": "{{position}} sur {{count}}"
 }

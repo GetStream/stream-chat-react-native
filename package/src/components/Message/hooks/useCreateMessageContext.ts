@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
 
+import { useAccessibilityContext } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 
 import { stringifyMessage } from '../../../utils/utils';
@@ -58,7 +59,7 @@ export const useCreateMessageContext = ({
   threadList,
   videos,
   setQuotedMessage,
-}: MessageContextValue) => {
+}: Omit<MessageContextValue, 'hasInteractiveAccessibilityContent'>) => {
   const stableGroupStyles = useStableRefValue(groupStyles);
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage({ message });
@@ -69,6 +70,14 @@ export const useCreateMessageContext = ({
   const stringifiedQuotedMessage = message.quoted_message
     ? stringifyMessage({ includeReactions: false, message: message.quoted_message })
     : '';
+
+  // Resolved here (not at each consumer) so the boolean lives on MessageContext
+  // and downstream components (MessageContent, MessageTextContainer) read it
+  // directly. The predicate's identity is stable in the default case; an
+  // integrator override is expected to be stable too (documented on the config).
+  const { hasInteractiveAccessibilityContent: hasInteractiveAccessibilityContentPredicate } =
+    useAccessibilityContext();
+  const hasInteractiveAccessibilityContent = hasInteractiveAccessibilityContentPredicate(message);
 
   const messageContext: MessageContextValue = useMemo(
     () => ({
@@ -85,6 +94,7 @@ export const useCreateMessageContext = ({
       hasAttachmentActions,
       handleReaction,
       handleToggleReaction,
+      hasInteractiveAccessibilityContent,
       hasReactions,
       messageHasOnlySingleAttachment,
       images,
@@ -123,6 +133,7 @@ export const useCreateMessageContext = ({
       goToMessage,
       stableGroupStyles,
       hasAttachmentActions,
+      hasInteractiveAccessibilityContent,
       hasReactions,
       messageHasOnlySingleAttachment,
       lastGroupMessage,

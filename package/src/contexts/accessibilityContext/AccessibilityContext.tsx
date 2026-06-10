@@ -8,6 +8,8 @@ import React, {
 } from 'react';
 import { AccessibilityInfo } from 'react-native';
 
+import type { LocalMessage } from 'stream-chat';
+
 import { AccessibilityAnnouncerContext } from '../../components/Accessibility/useAccessibilityAnnouncer';
 import type {
   AccessibilityAnnounce,
@@ -23,6 +25,39 @@ type TimeoutByPriority = {
 
 /** Tri-state for gesture-alternative toggles. */
 export type A11yMode = 'auto' | 'always' | 'never';
+
+/**
+ * Resolved predicate stored on the context - consumers call `(message)` and
+ * receive the boolean directly.
+ */
+export type HasInteractiveAccessibilityContent = (message: LocalMessage) => boolean;
+
+/**
+ * Integrator facing override shape. Receives the SDK's baseline boolean as the
+ * second argument so overrides can extend rather than replace:
+ *
+ * ```
+ *   hasInteractiveAccessibilityContent: (message, defaultValue) =>
+ *     defaultValue || !!message.my_custom_field
+ * ```
+ *
+ * To replace fully, ignore the second argument. Must be stable across renders
+ * an unstable function will rerender every Message context consumer on every
+ * downstream render.
+ */
+export type HasInteractiveAccessibilityContentConfig = (
+  message: LocalMessage,
+  defaultValue: boolean,
+) => boolean;
+
+/** SDK baseline — true when the message renders interactive children. */
+const defaultHasInteractiveAccessibilityContent: HasInteractiveAccessibilityContent = (message) =>
+  !!(
+    message.poll_id ||
+    message.quoted_message ||
+    message.attachments?.length ||
+    message.shared_location
+  );
 
 export type AccessibilityConfig = {
   /**
@@ -45,10 +80,22 @@ export type AccessibilityConfig = {
   imageGalleryScreenReaderMode?: A11yMode;
   /** Message actions trigger. 'long-press' (no alt button), 'auto' (default — show button when SR is on), 'always-button'. */
   messageActionsTrigger?: 'long-press' | 'auto' | 'always-button';
+  /**
+   * Override the SDK's "this message has interactive children" decision.
+   * Will control what it means for a message to have interactive content.
+   * This affects the way we mark the message bubble as accessible and whether
+   * we let the children handle it on their own or whether we want the bubble to
+   * handle everything. See {@link HasInteractiveAccessibilityContentConfig}.
+   */
+  hasInteractiveAccessibilityContent?: HasInteractiveAccessibilityContentConfig;
 };
 
 /** Fully-resolved config — every field is populated with its default. */
-export type ResolvedAccessibilityConfig = Required<AccessibilityConfig>;
+export type ResolvedAccessibilityConfig = Required<
+  Omit<AccessibilityConfig, 'hasInteractiveAccessibilityContent'>
+> & {
+  hasInteractiveAccessibilityContent: HasInteractiveAccessibilityContent;
+};
 
 export const accessibilityContextDefaultValue: ResolvedAccessibilityConfig = {
   announceConnectionState: true,
@@ -57,6 +104,7 @@ export const accessibilityContextDefaultValue: ResolvedAccessibilityConfig = {
   audioRecorderTapMode: 'auto',
   enabled: false,
   forceScreenReaderMode: false,
+  hasInteractiveAccessibilityContent: defaultHasInteractiveAccessibilityContent,
   imageGalleryScreenReaderMode: 'auto',
   messageActionsTrigger: 'auto',
 };
@@ -124,6 +172,7 @@ export const AccessibilityProvider = ({
     audioRecorderTapMode = accessibilityContextDefaultValue.audioRecorderTapMode,
     enabled = accessibilityContextDefaultValue.enabled,
     forceScreenReaderMode = accessibilityContextDefaultValue.forceScreenReaderMode,
+    hasInteractiveAccessibilityContent,
     imageGalleryScreenReaderMode = accessibilityContextDefaultValue.imageGalleryScreenReaderMode,
     messageActionsTrigger = accessibilityContextDefaultValue.messageActionsTrigger,
   } = value ?? {};
@@ -136,6 +185,13 @@ export const AccessibilityProvider = ({
       audioRecorderTapMode,
       enabled,
       forceScreenReaderMode,
+      hasInteractiveAccessibilityContent: hasInteractiveAccessibilityContent
+        ? (message) =>
+            hasInteractiveAccessibilityContent(
+              message,
+              accessibilityContextDefaultValue.hasInteractiveAccessibilityContent(message),
+            )
+        : accessibilityContextDefaultValue.hasInteractiveAccessibilityContent,
       imageGalleryScreenReaderMode,
       messageActionsTrigger,
     }),
@@ -146,6 +202,7 @@ export const AccessibilityProvider = ({
       audioRecorderTapMode,
       enabled,
       forceScreenReaderMode,
+      hasInteractiveAccessibilityContent,
       imageGalleryScreenReaderMode,
       messageActionsTrigger,
     ],
@@ -162,38 +219,5 @@ export const AccessibilityProvider = ({
   );
 };
 
-export const useAccessibilityContext = (): ResolvedAccessibilityConfig => {
-  const {
-    announceConnectionState,
-    announceNewMessages,
-    announceTypingIndicator,
-    audioRecorderTapMode,
-    enabled,
-    forceScreenReaderMode,
-    imageGalleryScreenReaderMode,
-    messageActionsTrigger,
-  } = useContext(AccessibilityContext);
-
-  return useMemo(
-    () => ({
-      announceConnectionState,
-      announceNewMessages,
-      announceTypingIndicator,
-      audioRecorderTapMode,
-      enabled,
-      forceScreenReaderMode,
-      imageGalleryScreenReaderMode,
-      messageActionsTrigger,
-    }),
-    [
-      announceConnectionState,
-      announceNewMessages,
-      announceTypingIndicator,
-      audioRecorderTapMode,
-      enabled,
-      forceScreenReaderMode,
-      imageGalleryScreenReaderMode,
-      messageActionsTrigger,
-    ],
-  );
-};
+export const useAccessibilityContext = (): ResolvedAccessibilityConfig =>
+  useContext(AccessibilityContext);

@@ -50,7 +50,7 @@ export const PollHeader = () => {
   } = useTheme();
 
   return (
-    <View style={styles.headerContainer}>
+    <View accessible accessibilityRole='text' style={styles.headerContainer}>
       <Text style={[styles.headerTitle, header.title]}>{name}</Text>
       <Text style={[styles.headerSubtitle, header.subtitle]}>{subtitle}</Text>
     </View>

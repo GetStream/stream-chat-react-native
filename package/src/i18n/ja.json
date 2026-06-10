@@ -266,6 +266,7 @@
   "a11y/Direct chat with {{name}}": "{{name}}とのダイレクトチャット",
   "a11y/Double tap to open": "ダブルタップで開く",
   "a11y/Double tap to view reactions": "ダブルタップでリアクションを表示",
+  "a11y/Double tap to view thread": "ダブルタップでスレッドを表示",
   "a11y/Editing message": "メッセージを編集中",
   "a11y/Editing message: {{text}}": "メッセージを編集中: {{text}}",
   "a11y/Last message {{date}}": "最後のメッセージ {{date}}",
@@ -429,5 +430,10 @@
   "a11y/Double tap and hold to activate contextual menu": "コンテキストメニューを表示するにはダブルタップして長押し",
   "a11y/Swipe right to go through different actions": "右にスワイプして異なるアクションを切り替えます",
   "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": "Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.",
-  "a11y/{{count}} unread messages": "未読メッセージ{{count}}件"
+  "a11y/{{count}} unread messages": "未読メッセージ{{count}}件",
+  "a11y/Message from you": "あなたからのメッセージ",
+  "a11y/Message from {{sender}}": "{{sender}}からのメッセージ",
+  "a11y/Gallery Image": "ギャラリー画像",
+  "a11y/Gallery Video": "ギャラリービデオ",
+  "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}"
 }
