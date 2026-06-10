@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 
 import { render, screen } from '@testing-library/react-native';
 
@@ -12,11 +11,7 @@ type EmptySearchResultProps = React.ComponentProps<typeof EmptySearchResult>;
 const renderComponent = (props: Partial<EmptySearchResultProps> = {}) =>
   render(
     <ThemeProvider theme={defaultTheme}>
-      <EmptySearchResult
-        icon={<View testID='empty-search-result-icon' />}
-        label='No results'
-        {...props}
-      />
+      <EmptySearchResult label='No results' {...props} />
     </ThemeProvider>,
   );
 
@@ -25,12 +20,6 @@ describe('EmptySearchResult', () => {
     renderComponent();
 
     expect(screen.getByTestId('empty-search-result')).toBeTruthy();
-  });
-
-  it('renders the icon node passed via the icon prop', () => {
-    renderComponent({ icon: <View testID='custom-icon' /> });
-
-    expect(screen.getByTestId('custom-icon')).toBeTruthy();
   });
 
   it('renders the label text', () => {
@@ -50,7 +39,7 @@ describe('EmptySearchResult', () => {
 
     render(
       <ThemeProvider theme={customTheme}>
-        <EmptySearchResult icon={<View />} label='Empty' />
+        <EmptySearchResult label='Empty' />
       </ThemeProvider>,
     );
 
@@ -72,7 +61,7 @@ describe('EmptySearchResult', () => {
 
     render(
       <ThemeProvider theme={customTheme}>
-        <EmptySearchResult icon={<View />} label='Empty' />
+        <EmptySearchResult label='Empty' />
       </ThemeProvider>,
     );
 
@@ -81,11 +70,5 @@ describe('EmptySearchResult', () => {
       ? Object.assign({}, ...(label.props.style as unknown[]).flat(Infinity).filter(Boolean))
       : label.props.style;
     expect((flattened as { color?: string }).color).toBe('rgb(0, 255, 0)');
-  });
-
-  it('renders any node passed as icon, including text', () => {
-    renderComponent({ icon: <Text testID='icon-as-text'>icon</Text> });
-
-    expect(screen.getByTestId('icon-as-text')).toBeTruthy();
   });
 });

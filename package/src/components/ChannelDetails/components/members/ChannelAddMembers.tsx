@@ -8,11 +8,9 @@ import { UserListLoadingSkeleton } from './UserListLoadingSkeleton';
 
 import { useChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
-import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Search } from '../../../../icons/search';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
@@ -44,9 +42,6 @@ const listStateSelector = (state: SearchSourceState<UserResponse>) => {
  */
 export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembersProps) => {
   const { t } = useTranslationContext();
-  const {
-    theme: { semantics },
-  } = useTheme();
   const styles = useStyles();
 
   const { channel } = useChannelDetailsContext();
@@ -102,10 +97,7 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
   const emptyState = loading ? (
     <UserListLoadingSkeleton />
   ) : (
-    <EmptySearchResult
-      icon={<Search height={24} stroke={semantics.textTertiary} width={24} />}
-      label={t('No user found')}
-    />
+    <EmptySearchResult label={t('No user found')} />
   );
 
   const loadingMoreIndicator = <>{loading && users && users.length > 0 && <ActivityIndicator />}</>;

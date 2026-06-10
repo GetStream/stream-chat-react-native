@@ -2,17 +2,17 @@ import React from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Search } from '../../icons/search';
 import { primitives } from '../../theme';
 
 export type EmptySearchResultProps = {
-  icon: React.ReactNode;
   label: string;
 };
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const EmptySearchResult = ({ icon, label }: EmptySearchResultProps) => {
+export const EmptySearchResult = ({ label }: EmptySearchResultProps) => {
   const {
     theme: {
       emptySearchResult: { container, text },
@@ -22,7 +22,7 @@ export const EmptySearchResult = ({ icon, label }: EmptySearchResultProps) => {
 
   return (
     <View style={[styles.container, container]} testID='empty-search-result'>
-      {icon}
+      <Search height={24} stroke={semantics.textTertiary} width={24} />
       <Text style={[styles.text, { color: semantics.textSecondary }, text]}>{label}</Text>
     </View>
   );
