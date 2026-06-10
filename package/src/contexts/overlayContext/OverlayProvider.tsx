@@ -108,7 +108,11 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
           <ImageGalleryProvider value={imageGalleryProviderProps}>
             <ThemeProvider style={overlayContext.style}>
               <PortalProvider>
-                <OverlayA11yShield>{children}</OverlayA11yShield>
+                {accessibility?.enabled ? (
+                  <OverlayA11yShield>{children}</OverlayA11yShield>
+                ) : (
+                  children
+                )}
                 {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
                 <MessageOverlayHostLayer />
               </PortalProvider>
