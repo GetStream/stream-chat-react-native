@@ -56,6 +56,7 @@ export const ChannelDetailsNavHeader = ({ title }: ChannelDetailsNavHeaderProps)
       style={[
         styles.container,
         { backgroundColor: semantics.backgroundCoreElevation1 },
+        { borderBottomColor: semantics.borderCoreSubtle },
         containerOverride,
       ]}
     >
@@ -119,6 +120,7 @@ const useStyles = () => {
           paddingBottom: primitives.spacingSm,
           paddingHorizontal: primitives.spacingSm,
           gap: primitives.spacingXs,
+          borderBottomWidth: 1,
         },
         sideContainer: {
           flex: 1,
