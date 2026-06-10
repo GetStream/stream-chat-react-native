@@ -3,7 +3,6 @@ import { Modal, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { SafeAreaViewWrapper } from '../../../UIComponents/SafeAreaViewWrapper';
 
 type ChannelDetailsModalProps = {
   children: React.ReactNode;
@@ -41,9 +40,7 @@ export const ChannelDetailsModal = ({ children, onClose, visible }: ChannelDetai
       visible={visible}
     >
       <GestureHandlerRootView style={rootStyle}>
-        <SafeAreaViewWrapper style={rootStyle}>
-          <View style={[styles.body, bodyOverride]}>{children}</View>
-        </SafeAreaViewWrapper>
+        <View style={[styles.body, bodyOverride]}>{children}</View>
       </GestureHandlerRootView>
     </Modal>
   );
