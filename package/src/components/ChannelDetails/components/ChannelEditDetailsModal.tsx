@@ -40,7 +40,7 @@ type ChannelEditDetailsModalContentProps = {
   onClose: () => void;
 };
 
-const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalContentProps) => {
+const ChannelEditDetailsModalBody = ({ onClose }: ChannelEditDetailsModalContentProps) => {
   const { channel, doFileUploadRequest } = useChannelDetailsContext();
   const { store } = useChannelEditDetailsContext();
   const { updateImage, updateName } = useChannelActions(channel);
@@ -123,19 +123,30 @@ const ChannelEditDetailsModalContent = ({ onClose }: ChannelEditDetailsModalCont
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelEditDetailsModal = ({ onClose, visible }: ChannelEditDetailsModalProps) => {
+export const ChannelEditDetailsModalContent = ({
+  onClose,
+}: ChannelEditDetailsModalContentProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `channel-edit-details:${channel.cid}` : undefined;
 
+  if (!notificationHostId || !channel) {
+    return null;
+  }
+
   return (
-    <ChannelDetailsModal onClose={onClose} visible={visible}>
-      {visible && notificationHostId && channel ? (
-        <ChannelEditDetailsProvider channel={channel}>
-          <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-            <ChannelEditDetailsModalContent onClose={onClose} />
-          </NotificationTargetProvider>
-        </ChannelEditDetailsProvider>
-      ) : null}
-    </ChannelDetailsModal>
+    <ChannelEditDetailsProvider channel={channel}>
+      <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+        <ChannelEditDetailsModalBody onClose={onClose} />
+      </NotificationTargetProvider>
+    </ChannelEditDetailsProvider>
   );
 };
+
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
+export const ChannelEditDetailsModal = ({ onClose, visible }: ChannelEditDetailsModalProps) => (
+  <ChannelDetailsModal onClose={onClose} visible={visible}>
+    <ChannelEditDetailsModalContent onClose={onClose} />
+  </ChannelDetailsModal>
+);

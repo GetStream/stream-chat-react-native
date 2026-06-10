@@ -34,11 +34,25 @@ type ChannelAddMembersModalContentProps = {
   onClose: () => void;
 };
 
-const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalContentProps) => (
-  <ChannelAddMembersProvider>
-    <ChannelAddMembersModalBody onClose={onClose} />
-  </ChannelAddMembersProvider>
-);
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
+export const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalContentProps) => {
+  const { channel } = useChannelDetailsContext();
+  const notificationHostId = channel?.cid ? `channel-add-members:${channel.cid}` : undefined;
+
+  if (!notificationHostId) {
+    return null;
+  }
+
+  return (
+    <ChannelAddMembersProvider>
+      <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+        <ChannelAddMembersModalBody onClose={onClose} />
+      </NotificationTargetProvider>
+    </ChannelAddMembersProvider>
+  );
+};
 
 const ChannelAddMembersModalBody = ({ onClose }: ChannelAddMembersModalContentProps) => {
   const { channel } = useChannelDetailsContext();
@@ -105,17 +119,8 @@ const ChannelAddMembersModalBody = ({ onClose }: ChannelAddMembersModalContentPr
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProps) => {
-  const { channel } = useChannelDetailsContext();
-  const notificationHostId = channel?.cid ? `channel-add-members:${channel.cid}` : undefined;
-
-  return (
-    <ChannelDetailsModal onClose={onClose} visible={visible}>
-      {notificationHostId ? (
-        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-          <ChannelAddMembersModalContent onClose={onClose} />
-        </NotificationTargetProvider>
-      ) : null}
-    </ChannelDetailsModal>
-  );
-};
+export const ChannelAddMembersModal = ({ onClose, visible }: ChannelAddMembersModalProps) => (
+  <ChannelDetailsModal onClose={onClose} visible={visible}>
+    <ChannelAddMembersModalContent onClose={onClose} />
+  </ChannelDetailsModal>
+);
