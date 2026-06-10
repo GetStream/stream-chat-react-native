@@ -9,6 +9,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { Channel } from 'stream-chat';
 import {
   BottomSheetModal,
   ChannelAvatar,
@@ -18,7 +20,6 @@ import {
 } from 'stream-chat-react-native';
 
 import { Close } from '../icons/Close';
-import type { Channel } from 'stream-chat';
 
 type EditGroupBottomSheetProps = {
   channel: Channel;

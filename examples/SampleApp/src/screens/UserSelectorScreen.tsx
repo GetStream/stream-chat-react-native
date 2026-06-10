@@ -9,19 +9,19 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme, version } from 'stream-chat-react-native';
 
 import { USERS } from '../ChatUsers';
 import { useAppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
-import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
-import AsyncStore from '../utils/AsyncStore';
+import { StreamLogo } from '../icons/StreamLogo';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import type { UserSelectorParamList } from '../types';
+import AsyncStore from '../utils/AsyncStore';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -90,9 +90,7 @@ type Props = {
 
 export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   const {
-    theme: {
-      semantics,
-    },
+    theme: { semantics },
   } = useTheme();
   const { black, grey, grey_gainsboro, grey_whisper, white_snow } = useLegacyColors();
   const { switchUser } = useAppContext();

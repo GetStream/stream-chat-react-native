@@ -5,10 +5,12 @@ import { UserResponse } from 'stream-chat';
 
 import { useUserMuteActive } from './useUserMuteActive';
 
+import { useScreenReaderEnabled } from '../../../a11y/hooks/useScreenReaderEnabled';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -67,6 +69,8 @@ export const useMessageActionHandlers = ({
   Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>) => {
   const { t } = useTranslationContext();
   const { addNotification } = useNotificationApi();
+  const { inputBoxRef } = useMessageInputContext();
+  const screenReaderEnabled = useScreenReaderEnabled();
   const handleResendMessage = useStableCallback(() => retrySendMessage(message));
   const translatedMessage = useTranslatedMessage(message);
 
@@ -74,6 +78,9 @@ export const useMessageActionHandlers = ({
 
   const handleQuotedReplyMessage = useStableCallback(() => {
     setQuotedMessage(message);
+    if (screenReaderEnabled) {
+      inputBoxRef.current?.focus();
+    }
   });
 
   const handleCopyMessage = useStableCallback(() => {

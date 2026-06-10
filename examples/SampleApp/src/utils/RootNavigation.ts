@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { CommonActions, NavigationContainerRef } from '@react-navigation/native';
+
 import { StackNavigatorParamList } from '../types';
 
 export const RootNavigationRef =

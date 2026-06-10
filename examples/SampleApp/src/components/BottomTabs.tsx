@@ -1,18 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import type { Route } from '@react-navigation/native';
 import { useTheme } from 'stream-chat-react-native';
 
 import { ChannelsUnreadCountBadge, ThreadsUnreadCountBadge } from './UnreadCountBadge';
 
 import { ChatsTab } from '../icons/ChatsTab';
-import { ThreadsTab } from '../icons/ThreadsTab';
+import { DraftsTab } from '../icons/DraftsTab';
 import { MentionsTab } from '../icons/MentionsTab';
 
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import type { Route } from '@react-navigation/native';
-import { DraftsTab } from '../icons/DraftsTab';
 import { RemindersTab } from '../icons/ReminderTab';
+import { ThreadsTab } from '../icons/ThreadsTab';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({

@@ -35,9 +35,37 @@ registerNativeHandlers({
   Video: View,
 });
 
+jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock.js'));
+// RNGH 3 throws if GestureDetector is not inside GestureHandlerRootView; tests
+// don't wrap renders in a root view, so default the context to true.
+jest.mock('react-native-gesture-handler/src/GestureHandlerRootViewContext', () => {
+  const React = require('react');
+  return { __esModule: true, default: React.createContext(true) };
+});
+jest.mock('react-native-gesture-handler/lib/module/GestureHandlerRootViewContext', () => {
+  const React = require('react');
+  return { __esModule: true, default: React.createContext(true) };
+});
 jest.mock('react-native-reanimated', () => {
   const RNReanimatedmock = require('react-native-reanimated/mock');
-  return { ...RNReanimatedmock, runOnUI: (fn: () => unknown) => fn };
+  return {
+    ...RNReanimatedmock,
+    // RNGH v3 hooks introspect Reanimated's exports; the v4 mock omits several
+    // helpers it now relies on, so we stub them here.
+    isSharedValue: (value: unknown): boolean =>
+      typeof value === 'object' && value !== null && 'value' in value,
+    isWorkletFunction: () => false,
+    NativeEventsManager: class {
+      attachEvents() {}
+      detachEvents() {}
+      updateEvents() {}
+    },
+    runOnUI: (fn: () => unknown) => fn,
+    useComposedEventHandler: (handlers: ((event: unknown) => void)[]) => (event: unknown) =>
+      handlers.forEach((h) => h?.(event)),
+    useEvent: (cb: (event: unknown) => void) => cb,
+    useHandler: () => ({ context: {}, doDependenciesDiffer: false }),
+  };
 });
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);

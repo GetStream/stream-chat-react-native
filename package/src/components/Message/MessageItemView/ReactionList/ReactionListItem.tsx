@@ -3,6 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import { ReactionListItemWrapper } from './ReactionListItemWrapper';
 
+import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import { MessagesContextValue } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -13,6 +14,7 @@ import type { IconProps } from '../../../../icons/utils/base';
 
 import { primitives } from '../../../../theme';
 import type { ReactionData } from '../../../../utils/utils';
+import { HiddenA11yText } from '../../../Accessibility/HiddenA11yText';
 import { ReactionSummary } from '../../hooks/useProcessReactions';
 
 type Props = Pick<IconProps, 'pathFill' | 'style'> & {
@@ -66,12 +68,15 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
     },
   } = useTheme();
   const styles = useStyles();
+  const youReacted = useA11yLabel('a11y/you reacted');
 
   return (
     <ReactionListItemWrapper
-      accessibilityLabel='Reaction List Item'
+      accessibilityRole='button'
+      accessibilityState={{ selected }}
       disabled={preventPress}
       key={reaction.type}
+      testID='reaction-list-item'
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
@@ -121,6 +126,7 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
         type={reaction.type}
       />
       {showCount ? <Text style={styles.reactionCount}>{reaction.count}</Text> : null}
+      {selected ? <HiddenA11yText label={youReacted} /> : null}
     </ReactionListItemWrapper>
   );
 };

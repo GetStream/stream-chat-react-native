@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+
+import { ThreadManagerState } from 'stream-chat';
 import { BadgeNotification, useStateStore } from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
-import { ThreadManagerState } from 'stream-chat';
 
 const selector = (nextValue: ThreadManagerState) =>
   ({ unreadCount: nextValue.unreadThreadCount }) as const;

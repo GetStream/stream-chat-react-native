@@ -1,8 +1,8 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-import { IconProps } from '../utils/base';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { IconProps } from '../utils/base';
 
 export const EmptySearchState: React.FC<IconProps> = ({ height, width }) => {
   const { accent_red, grey_gainsboro } = useLegacyColors();

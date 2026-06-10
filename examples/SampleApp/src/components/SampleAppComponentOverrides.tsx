@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { Platform, StyleSheet, useColorScheme, View } from 'react-native';
-import type { ComponentOverrides } from 'stream-chat-react-native';
+
 import { BlurView } from '@react-native-community/blur';
+import type { ComponentOverrides } from 'stream-chat-react-native';
 import { useTheme } from 'stream-chat-react-native';
 
 import { CustomAttachmentPickerContent } from './AttachmentPickerContent';

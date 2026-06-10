@@ -1,5 +1,6 @@
-import * as Location from 'expo-location';
 import { Alert } from 'react-native';
+
+import * as Location from 'expo-location';
 
 export type LocationHandler = (value: { latitude: number; longitude: number }) => void;
 

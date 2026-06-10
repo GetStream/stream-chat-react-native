@@ -24,7 +24,11 @@ export const MessageRepliesAvatarsWithContext = (props: MessageRepliesAvatarsPro
   const avatars = message?.thread_participants || [];
 
   return (
-    <View style={avatarStackContainer}>
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility='no-hide-descendants'
+      style={avatarStackContainer}
+    >
       <UserAvatarStack users={avatars} avatarSize='sm' maxVisible={3} overlap={0.4} />
     </View>
   );

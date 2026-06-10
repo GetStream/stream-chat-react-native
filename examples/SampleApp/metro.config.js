@@ -13,10 +13,9 @@ const PATH = require('path');
 const metroConfigPackageJsonPath = require.resolve('metro-config/package.json', {
   paths: [__dirname],
 });
-const metroExclusionList = require(PATH.join(
-  PATH.dirname(metroConfigPackageJsonPath),
-  'src/defaults/exclusionList.js',
-));
+const metroExclusionList = require(
+  PATH.join(PATH.dirname(metroConfigPackageJsonPath), 'src/defaults/exclusionList.js'),
+);
 const exclusionList = metroExclusionList.default || metroExclusionList;
 const packageDirPath = PATH.resolve(__dirname, '../../package');
 const nativePackageDirPath = PATH.resolve(__dirname, '../../package/native-package');
@@ -50,10 +49,15 @@ const uniqueModules = dependencyPackageNames.map((packageName) => {
     };
   }
   const [modulePath, blockPattern] = resolveUniqueModule(packageName, __dirname);
+  // resolveUniqueModule emits a regex ending in `/` (package-dir boundary). metro-config's
+  // exclusionList anchors every alternation branch with `$`, which would require file paths to
+  // literally end with `/node_modules/<pkg>/`. Append `.*` so the anchor lands at end-of-file
+  // instead of end-of-directory, otherwise the blocklist silently matches nothing.
+  const fixedBlockPattern = new RegExp(blockPattern.source + '.*');
   return {
     packageName, // name of the package
     modulePath, // actual path to the module in the project's node modules
-    blockPattern, // paths that match this pattern will be blocked from being resolved
+    blockPattern: fixedBlockPattern, // paths that match this pattern will be blocked from being resolved
   };
 });
 

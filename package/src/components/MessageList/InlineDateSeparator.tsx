@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
-import { getDateString } from '../../utils/i18n/getDateString';
+import { getDateString, getDateStringForA11y } from '../../utils/i18n/getDateString';
 
 /**
  * Props for the `InlineDateSeparator` component.
@@ -17,7 +17,7 @@ export type InlineDateSeparatorProps = {
 };
 
 export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
-  const { t, tDateTimeParser } = useTranslationContext();
+  const { t, tDateTimeParser, userLanguage } = useTranslationContext();
   const styles = useStyles();
 
   const dateString = useMemo(
@@ -31,9 +31,16 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
     [date, t, tDateTimeParser],
   );
 
+  const a11yDateString = useMemo(
+    () => getDateStringForA11y({ date, tDateTimeParser, userLanguage }),
+    [date, tDateTimeParser, userLanguage],
+  );
+
   return (
     <View style={styles.container} testID='date-separator'>
-      <Text style={styles.text}>{dateString}</Text>
+      <Text accessibilityLabel={a11yDateString} style={styles.text}>
+        {dateString}
+      </Text>
     </View>
   );
 };

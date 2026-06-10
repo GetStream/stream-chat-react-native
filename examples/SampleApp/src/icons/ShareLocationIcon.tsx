@@ -1,5 +1,5 @@
-import Svg, { Path } from 'react-native-svg';
 import { ColorValue } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 // Icon for "Share Location" button, next to input box.
 export const ShareLocationIcon = ({

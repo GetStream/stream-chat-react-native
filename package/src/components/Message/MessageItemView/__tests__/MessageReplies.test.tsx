@@ -33,7 +33,11 @@ describe('MessageReplies', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-replies')).toBeTruthy();
+      const pluralPressable = screen.getByTestId('message-replies');
+      expect(pluralPressable).toBeTruthy();
+      expect(pluralPressable.props.accessibilityRole).toBe('button');
+      expect(pluralPressable.props.accessibilityLabel).toBe('{{ replyCount }} Replies');
+      expect(pluralPressable.props.accessibilityHint).toBe('a11y/Double tap to view thread');
       expect(t).toHaveBeenCalledWith('{{ replyCount }} Replies', {
         replyCount: message.reply_count,
       });
@@ -57,7 +61,11 @@ describe('MessageReplies', () => {
 
     await waitFor(() => {
       expect(onPressMock).toHaveBeenCalled();
-      expect(screen.getByTestId('message-replies')).toBeTruthy();
+      const singularPressable = screen.getByTestId('message-replies');
+      expect(singularPressable).toBeTruthy();
+      expect(singularPressable.props.accessibilityRole).toBe('button');
+      expect(singularPressable.props.accessibilityLabel).toBe('1 Reply');
+      expect(singularPressable.props.accessibilityHint).toBe('a11y/Double tap to view thread');
       expect(t).toHaveBeenCalledWith('1 Reply');
       expect(screen.getByText('1 Reply')).toBeTruthy();
     });

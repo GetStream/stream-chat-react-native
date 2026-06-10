@@ -168,7 +168,7 @@ describe('ReactionListBottom', () => {
       { reactionListPosition: 'bottom', reactionListType: 'segmented' },
     );
 
-    const reactionListBottomItem = screen.getByLabelText('Reaction List Item');
+    const reactionListBottomItem = screen.getByTestId('reaction-list-item');
 
     fireEvent(reactionListBottomItem, 'onPress');
 

@@ -1,16 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import {
-  DevSettings,
-  I18nManager,
-  LogBox,
-  Platform,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { DevSettings, I18nManager, LogBox, Platform, useColorScheme, View } from 'react-native';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+import { useHeaderHeight } from '@react-navigation/elements';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 import { Channel as ChannelType, ChannelSort } from 'stream-chat';
 import {
   Channel,
@@ -27,9 +24,8 @@ import {
   useOverlayContext,
 } from 'stream-chat-react-native';
 
-import { useStreamChatTheme } from './useStreamChatTheme';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProgressLoader } from './AuthProgressLoader';
+import { useStreamChatTheme } from './useStreamChatTheme';
 
 LogBox.ignoreAllLogs(true);
 

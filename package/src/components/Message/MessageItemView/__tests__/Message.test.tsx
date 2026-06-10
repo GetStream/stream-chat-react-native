@@ -171,10 +171,17 @@ describe('Message', () => {
 
     fireEvent(getByTestId('custom-overlay-trigger'), 'longPress');
 
+    // Once the overlay opens, the host layer's `accessibilityViewIsModal`
+    // marks the chat-side subtree as hidden to RNTL. The overlay target's
+    // children are Portal-teleported but their React parent stays in the
+    // chat, so default visibility filtering excludes them. Pass
+    // `includeHiddenElements` to look past the modal-sibling heuristic.
     await waitFor(() => {
-      expect(getByText('outside:normal')).toBeTruthy();
-      expect(getByText('inside:overlay')).toBeTruthy();
-      expect(getByTestId('custom-overlay-target-placeholder')).toBeTruthy();
+      expect(getByText('outside:normal', { includeHiddenElements: true })).toBeTruthy();
+      expect(getByText('inside:overlay', { includeHiddenElements: true })).toBeTruthy();
+      expect(
+        getByTestId('custom-overlay-target-placeholder', { includeHiddenElements: true }),
+      ).toBeTruthy();
     });
   });
 });

@@ -1,4 +1,6 @@
 import React, { PropsWithChildren } from 'react';
+
+import { UserResponse } from 'stream-chat';
 import {
   Chat,
   enTranslations,
@@ -8,24 +10,27 @@ import {
   useCreateChatClient,
   WithComponents,
 } from 'stream-chat-expo';
-import { UserResponse } from 'stream-chat';
+
 import { AuthProgressLoader } from './AuthProgressLoader';
-import { useStreamChatTheme } from '../hooks/useStreamChatTheme';
-import { useUserContext } from '@/context/UserContext';
-import { STREAM_API_KEY, USER_TOKENS } from '@/constants/ChatUsers';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
+
 import { useExpoMessagingComponentOverrides } from './ExpoMessagingComponentOverrides';
+
+import { useStreamChatTheme } from '../hooks/useStreamChatTheme';
+
+import { STREAM_API_KEY, USER_TOKENS } from '@/constants/ChatUsers';
+import { useUserContext } from '@/context/UserContext';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import '../utils/backgroundMessageHandler';
 
 const streami18n = new Streami18n({
   language: 'en',
 });
 
-SqliteClient.logger = (level, message, extraData) => {
-  // console.log(level, `SqliteClient: ${message}`, extraData);
+SqliteClient.logger = (_level, _message, _extraData) => {
+  // console.log(_level, `SqliteClient: ${_message}`, _extraData);
 };
 
-export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
+export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useUserContext();
   const chatClient = useCreateChatClient({
     apiKey: STREAM_API_KEY,
@@ -49,8 +54,17 @@ export const ChatWrapper = ({ children }: PropsWithChildren<{}>) => {
 
   return (
     <WithComponents overrides={componentOverrides}>
-      <OverlayProvider i18nInstance={streami18n} value={{ style: theme }}>
-        <Chat client={chatClient} i18nInstance={streami18n} enableOfflineSupport>
+      <OverlayProvider
+        accessibility={{ enabled: true }}
+        i18nInstance={streami18n}
+        value={{ style: theme }}
+      >
+        <Chat
+          client={chatClient}
+          i18nInstance={streami18n}
+          enableOfflineSupport
+          useNativeMultipartUpload
+        >
           {children}
         </Chat>
       </OverlayProvider>

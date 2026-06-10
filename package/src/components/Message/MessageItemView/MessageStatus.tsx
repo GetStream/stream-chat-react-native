@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import {
   MessageContextValue,
@@ -12,6 +13,7 @@ import { CheckAll } from '../../../icons/checks';
 import { Time } from '../../../icons/clock';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
+import { HiddenA11yText } from '../../Accessibility/HiddenA11yText';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageStatusPropsWithContext = Pick<
@@ -32,10 +34,6 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     },
   } = useTheme();
 
-  if (message.status === MessageStatusTypes.FAILED || message.type === 'error') {
-    return null;
-  }
-
   const hasReadByGreaterThanOne = typeof readBy === 'number' && readBy > 1;
 
   // Variables to determine the status of the message
@@ -48,42 +46,41 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     !read &&
     message.type !== 'ephemeral';
 
+  const accessibilityLabel = useA11yLabel(
+    read
+      ? 'a11y/Read'
+      : delivered
+        ? 'a11y/Delivered'
+        : sending
+          ? 'a11y/Sending'
+          : sent
+            ? 'a11y/Sent'
+            : '',
+  );
+
+  if (message.status === MessageStatusTypes.FAILED || message.type === 'error') {
+    return null;
+  }
+
   return (
-    <View style={[styles.container, container]}>
-      {read ? (
-        <CheckAll
-          height={16}
-          stroke={styles.readCheck.color}
-          width={16}
-          accessibilityLabel='Read'
-          {...checkAllIcon}
-        />
-      ) : delivered ? (
-        <CheckAll
-          stroke={styles.deliveredCheck.color}
-          height={16}
-          width={16}
-          accessibilityLabel='Delivered'
-          {...checkAllIcon}
-        />
-      ) : sending ? (
-        <Time
-          stroke={styles.sendingCheck.color}
-          height={16}
-          width={16}
-          accessibilityLabel='Sending'
-          {...timeIcon}
-        />
-      ) : sent ? (
-        <Check
-          stroke={styles.sentCheck.color}
-          height={16}
-          width={16}
-          accessibilityLabel='Sent'
-          {...checkIcon}
-        />
-      ) : null}
-    </View>
+    <>
+      <HiddenA11yText label={accessibilityLabel} />
+      <View
+        accessibilityElementsHidden={!!accessibilityLabel}
+        importantForAccessibility={accessibilityLabel ? 'no-hide-descendants' : undefined}
+        style={[styles.container, container]}
+      >
+        {read ? (
+          <CheckAll height={16} stroke={styles.readCheck.color} width={16} {...checkAllIcon} />
+        ) : delivered ? (
+          <CheckAll stroke={styles.deliveredCheck.color} height={16} width={16} {...checkAllIcon} />
+        ) : sending ? (
+          <Time stroke={styles.sendingCheck.color} height={16} width={16} {...timeIcon} />
+        ) : sent ? (
+          <Check stroke={styles.sentCheck.color} height={16} width={16} {...checkIcon} />
+        ) : null}
+      </View>
+    </>
   );
 };
 

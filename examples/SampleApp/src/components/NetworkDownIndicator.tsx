@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { Spinner, useTheme } from 'stream-chat-react-native';
+
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
@@ -28,7 +30,11 @@ export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = 
 
   return (
     <View style={styles.networkDownContainer} testID='network-down-indicator'>
-      <Spinner height={12} style={{ backgroundColor: semantics.backgroundCoreElevation1 }} width={12} />
+      <Spinner
+        height={12}
+        style={{ backgroundColor: semantics.backgroundCoreElevation1 }}
+        width={12}
+      />
       <Text
         style={[
           styles.networkDownText,

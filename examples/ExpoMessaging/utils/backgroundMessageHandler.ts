@@ -1,9 +1,9 @@
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import {
   FirebaseMessagingTypes,
   getMessaging,
   setBackgroundMessageHandler,
 } from '@react-native-firebase/messaging';
-import notifee, { AndroidImportance } from '@notifee/react-native';
 
 const messaging = getMessaging();
 

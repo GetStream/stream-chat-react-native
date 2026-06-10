@@ -1,8 +1,8 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-import { IconProps } from '../utils/base';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { IconProps } from '../utils/base';
 
 export const DraftsIcon: React.FC<IconProps> = ({ height = 29, width = 30 }) => {
   const { grey } = useLegacyColors();

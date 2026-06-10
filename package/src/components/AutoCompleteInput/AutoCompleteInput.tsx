@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   I18nManager,
   Platform,
@@ -109,6 +109,42 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
   const { enabled } = useStateStore(messageComposer.configState, configStateSelector);
 
+  // RN's onChangeText doesn't carry cursor info, and iOS / Android fire
+  // onChangeText vs onSelectionChange in different orders. Rather than derive
+  // the caret from a text-length delta (fragile — gets clobbered by re-renders
+  // and varies across platforms), we hold the latest values reported by native
+  // and call into the LLC once both have settled.
+  const latestTextRef = useRef('');
+  const latestSelectionRef = useRef<{ end: number; start: number }>({
+    end: 0,
+    start: 0,
+  });
+  const flushHandleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushChange = useCallback(() => {
+    flushHandleRef.current = null;
+    textComposer.handleChange({
+      selection: latestSelectionRef.current,
+      text: latestTextRef.current,
+    });
+  }, [textComposer]);
+
+  // Defer to the next task so onChangeText and onSelectionChange both land
+  // before we forward to the LLC, regardless of platform ordering.
+  const scheduleChange = useCallback(() => {
+    if (flushHandleRef.current !== null) return;
+    flushHandleRef.current = setTimeout(flushChange, 0);
+  }, [flushChange]);
+
+  useEffect(() => {
+    return () => {
+      if (flushHandleRef.current !== null) {
+        clearTimeout(flushHandleRef.current);
+        flushHandleRef.current = null;
+      }
+    };
+  }, []);
+
   const maxMessageLength = useMemo(() => {
     return channel.getConfig()?.max_message_length;
   }, [channel]);
@@ -119,6 +155,14 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   useEffect(() => {
     setLocalText(text);
+    // Only resync the refs when the text change came from outside (clear after
+    // send, draft restore, programmatic setText). For changes we triggered
+    // ourselves, latestTextRef is already up to date and overwriting the
+    // selection would clobber what onSelectionChange just told us.
+    if (text !== latestTextRef.current) {
+      latestTextRef.current = text;
+      latestSelectionRef.current = { end: text.length, start: text.length };
+    }
   }, [text]);
 
   const clearState = useCallback(() => {
@@ -148,24 +192,20 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const handleSelectionChange = useCallback(
     (e: TextInputSelectionChangeEvent) => {
       const { selection } = e.nativeEvent;
+      latestSelectionRef.current = selection;
       textComposer.setSelection(selection);
+      scheduleChange();
     },
-    [textComposer],
+    [scheduleChange, textComposer],
   );
 
   const onChangeTextHandler = useCallback(
     (newText: string) => {
       setLocalText(newText);
-
-      textComposer.handleChange({
-        selection: {
-          end: newText.length,
-          start: newText.length,
-        },
-        text: newText,
-      });
+      latestTextRef.current = newText;
+      scheduleChange();
     },
-    [textComposer],
+    [scheduleChange],
   );
 
   const {

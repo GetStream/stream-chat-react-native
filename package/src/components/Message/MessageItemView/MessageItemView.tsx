@@ -212,6 +212,7 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'lastGroupMessage'
   | 'contextMenuAnchorRef'
   | 'members'
+  | 'threadList'
 > &
   Pick<
     MessagesContextValue,
@@ -243,6 +244,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     reactionListPosition,
     reactionListType,
     setQuotedMessage,
+    threadList,
   } = props;
   const {
     MessageAuthor,
@@ -357,9 +359,11 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
             </View>
           </View>
 
-          <View style={styles.repliesContainer}>
-            <MessageReplies />
-          </View>
+          {!threadList && !!message.reply_count ? (
+            <View style={styles.repliesContainer}>
+              <MessageReplies />
+            </View>
+          ) : null}
 
           {reactionListPosition === 'bottom' && ReactionListBottom ? (
             <ReactionListBottom type={reactionListType} />
@@ -526,6 +530,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     setQuotedMessage,
     lastGroupMessage,
     members,
+    threadList,
   } = useMessageContext();
 
   const {
@@ -560,6 +565,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         setQuotedMessage,
         lastGroupMessage,
         members,
+        threadList,
       }}
       {...props}
     />

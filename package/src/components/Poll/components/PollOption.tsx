@@ -20,11 +20,11 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 
 import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
-import { useNotificationApi } from '../../Notifications';
 import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
+import { usePollVoteToggle } from '../hooks/usePollVoteToggle';
 
 const pollVoteAccessibilityStates = {
   checked: { checked: true, selected: true },
@@ -92,6 +92,7 @@ export const PollAllOptions = ({
 
 export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
   const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
+  const { t } = useTranslationContext();
   const styles = useStyles();
 
   const relevantVotes = useMemo(
@@ -141,7 +142,12 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
               />
             ) : null}
 
-            <Text style={[styles.votesText, votesText]}>{voteCountsByOption[option.id] || 0}</Text>
+            <Text
+              accessibilityLabel={t('{{count}} votes', { count: votes })}
+              style={[styles.votesText, votesText]}
+            >
+              {votes}
+            </Text>
           </View>
         </View>
         {showProgressBar ? (
@@ -161,7 +167,6 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
-  const { runWithNotificationTarget } = useNotificationApi();
   const ownCapabilities = useOwnCapabilitiesContext();
   const {
     theme: { semantics },
@@ -179,15 +184,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
     },
   } = useTheme();
 
-  const toggleVote = useCallback(async () => {
-    await runWithNotificationTarget(async () => {
-      if (ownVotesByOptionId[option.id]) {
-        await poll.removeVote(ownVotesByOptionId[option.id]?.id, message.id);
-      } else {
-        await poll.castVote(option.id, message.id);
-      }
-    });
-  }, [message.id, option.id, ownVotesByOptionId, poll, runWithNotificationTarget]);
+  const toggleVote = usePollVoteToggle();
 
   const onPressHandler = useCallback(() => {
     if (onPress) {
@@ -195,8 +192,8 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
       return;
     }
 
-    toggleVote();
-  }, [message, onPress, poll, toggleVote]);
+    toggleVote(option.id);
+  }, [message, onPress, option.id, poll, toggleVote]);
 
   const hasVote = !!ownVotesByOptionId[option.id];
   const accessibilityState = hasVote

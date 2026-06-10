@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+
 import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
+
 import Animated, {
   cancelAnimation,
   Easing,
@@ -14,23 +14,30 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+import { UserResponse } from 'stream-chat';
 import { useChatContext, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
+
+import type { ConfirmationData } from './ConfirmationBottomSheet';
+
+import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 
-import { useAppContext } from '../context/AppContext';
-import { UserResponse } from 'stream-chat';
 import { useUserInfoOverlayActions } from '../hooks/useUserInfoOverlayActions';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { UserMinus } from '../icons/UserMinus';
+
 import { CircleClose } from '../icons/CircleClose';
 import { Message } from '../icons/Message';
 import { User } from '../icons/User';
+import { UserMinus } from '../icons/UserMinus';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { ConfirmationData } from './ConfirmationBottomSheet';
 
 dayjs.extend(relativeTime);
 

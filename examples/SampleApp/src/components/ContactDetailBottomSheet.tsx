@@ -1,6 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { Channel, ChannelMemberResponse } from 'stream-chat';
 import {
   BottomSheetModal,
   CircleBan,
@@ -14,11 +17,8 @@ import { ListItem } from './ListItem';
 
 import { Message } from '../icons/Message';
 import { Mute } from '../icons/Mute';
-import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
 import type { StackNavigatorParamList } from '../types';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 const SHEET_HEIGHT = 260;
 
@@ -73,8 +73,8 @@ export const ContactDetailBottomSheet = React.memo(
       if (!user?.id) return;
 
       try {
-        const _isMuted = client.mutedUsers?.some((m) => m.target.id === user.id);
-        if (_isMuted) {
+        const isMuted = client.mutedUsers?.some((m) => m.target.id === user.id);
+        if (isMuted) {
           await client.unmuteUser(user.id);
         } else {
           await client.muteUser(user.id);

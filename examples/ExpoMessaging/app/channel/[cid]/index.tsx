@@ -1,4 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
+
+import { StyleSheet, View } from 'react-native';
+
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
@@ -7,11 +12,9 @@ import {
   ThreadContextValue,
   MessageList,
 } from 'stream-chat-expo';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { StyleSheet, View } from 'react-native';
 
 export default function ChannelScreen() {
   const { client } = useChatContext();

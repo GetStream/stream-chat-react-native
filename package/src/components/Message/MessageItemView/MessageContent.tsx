@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { AnimatableNumericValue, ColorValue, Pressable, StyleSheet, View } from 'react-native';
+import { ColorValue, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
+import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChatContext } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
@@ -54,6 +55,7 @@ export type MessageContentPropsWithContext = Pick<
   | 'alignment'
   | 'goToMessage'
   | 'groupStyles'
+  | 'hasInteractiveAccessibilityContent'
   | 'isMyMessage'
   | 'message'
   | 'messageContentOrder'
@@ -110,6 +112,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     enableMessageGroupingByUser,
     groupStyles,
     goToMessage,
+    hasInteractiveAccessibilityContent,
     isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
@@ -127,6 +130,11 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     hidePaddingBottom,
   } = props;
   const { client } = useChatContext();
+  const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
+  const a11ySenderLabel = useA11yLabel(
+    isMyMessage ? 'a11y/Message from you' : 'a11y/Message from {{sender}}',
+    isMyMessage ? undefined : { sender: message.user?.name || message.user?.id || '' },
+  );
   const {
     Attachment,
     FileAttachmentGroup,
@@ -169,47 +177,46 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
-  const getBorderRadius = () => {
+  // Merged background-color + border-radius object passed directly into the
+  // bubble's style array (no spread at the call site). Theme-defined radii
+  // override the group-position-computed defaults; theme-undefined radii are
+  // omitted so they don't override the computed defaults.
+  const bubbleColorAndRadius = useMemo<ViewStyle>(() => {
     // enum('top', 'middle', 'bottom', 'single')
     const groupPosition = groupStyles?.[0];
-
     const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
-    let borderBottomLeftRadius = components.messageBubbleRadiusGroupBottom;
-    let borderBottomRightRadius = components.messageBubbleRadiusGroupBottom;
 
+    let computedBottomLeftRadius = components.messageBubbleRadiusGroupBottom;
+    let computedBottomRightRadius = components.messageBubbleRadiusGroupBottom;
     if (isBottomOrSingle) {
-      // add relevant sharp corner
+      // add relevant sharp corner (the "tail")
       if (isMyMessage) {
-        borderBottomRightRadius = components.messageBubbleRadiusTail;
+        computedBottomRightRadius = components.messageBubbleRadiusTail;
       } else {
-        borderBottomLeftRadius = components.messageBubbleRadiusTail;
+        computedBottomLeftRadius = components.messageBubbleRadiusTail;
       }
     }
 
-    return {
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
+    const style: ViewStyle = {
+      backgroundColor,
+      borderBottomLeftRadius: borderBottomLeftRadius ?? computedBottomLeftRadius,
+      borderBottomRightRadius: borderBottomRightRadius ?? computedBottomRightRadius,
     };
-  };
+    if (borderRadius !== undefined) style.borderRadius = borderRadius;
+    if (borderTopLeftRadius !== undefined) style.borderTopLeftRadius = borderTopLeftRadius;
+    if (borderTopRightRadius !== undefined) style.borderTopRightRadius = borderTopRightRadius;
 
-  const getBorderRadiusFromTheme = () => {
-    const bordersFromTheme: Record<string, string | AnimatableNumericValue | undefined> = {
-      borderBottomLeftRadius,
-      borderBottomRightRadius,
-      borderRadius,
-      borderTopLeftRadius,
-      borderTopRightRadius,
-    };
-
-    // filter out undefined values
-    for (const key in bordersFromTheme) {
-      if (bordersFromTheme[key] === undefined) {
-        delete bordersFromTheme[key];
-      }
-    }
-
-    return bordersFromTheme;
-  };
+    return style;
+  }, [
+    backgroundColor,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
+    borderRadius,
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    groupStyles,
+    isMyMessage,
+  ]);
 
   const { setNativeScrollability } = useMessageListItemContext();
   const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
@@ -316,9 +323,18 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       )}
     </>
   );
+  const a11yPressableLabel = useMemo(() => {
+    if (!a11ySenderLabel) return undefined;
+    return message.text && !hasInteractiveAccessibilityContent
+      ? `${a11ySenderLabel}. ${message.text}`
+      : a11ySenderLabel;
+  }, [a11ySenderLabel, hasInteractiveAccessibilityContent, message.text]);
 
   return (
     <Pressable
+      accessibilityLabel={a11yPressableLabel}
+      accessibilityHint={accessibilityHint}
+      accessible={hasInteractiveAccessibilityContent ? false : undefined}
       disabled={preventPress}
       onLongPress={(event) => {
         if (onLongPress) {
@@ -357,12 +373,8 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       <View
         style={[
           styles.containerInner,
-          {
-            backgroundColor,
-            ...getBorderRadius(),
-            ...getBorderRadiusFromTheme(),
-          },
-          noBorder ? { borderWidth: 0 } : {},
+          bubbleColorAndRadius,
+          noBorder ? styles.noBorder : null,
           containerInner,
           messageGroupedSingleOrBottom
             ? isVeryLastMessage && enableMessageGroupingByUser
@@ -372,6 +384,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
         ]}
         testID='message-content-wrapper'
       >
+        {a11ySenderLabel && Platform.OS !== 'android' && hasInteractiveAccessibilityContent ? (
+          <View
+            accessibilityLabel={a11ySenderLabel}
+            accessibilityHint={accessibilityHint}
+            accessible
+            pointerEvents='none'
+            style={StyleSheet.absoluteFill}
+          />
+        ) : null}
         {MessageContentTopView ? <MessageContentTopView /> : null}
         {hasContentSideViews ? (
           <View
@@ -404,6 +425,7 @@ const areEqual = (
     preventPress: prevPreventPress,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
+    hasInteractiveAccessibilityContent: prevHasInteractiveAccessibilityContent,
     isAttachmentEqual,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
@@ -417,12 +439,17 @@ const areEqual = (
     preventPress: nextPreventPress,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
+    hasInteractiveAccessibilityContent: nextHasInteractiveAccessibilityContent,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
     myMessageTheme: nextMyMessageTheme,
     otherAttachments: nextOtherAttachments,
     t: nextT,
   } = nextProps;
+
+  if (prevHasInteractiveAccessibilityContent !== nextHasInteractiveAccessibilityContent) {
+    return false;
+  }
 
   if (prevBackgroundColor !== nextBackgroundColor) {
     return false;
@@ -559,8 +586,11 @@ export type MessageContentProps = Partial<MessageContentPropsWithContext>;
 export const MessageContent = (props: MessageContentProps) => {
   const {
     alignment,
+    files,
     goToMessage,
     groupStyles,
+    hasInteractiveAccessibilityContent,
+    images,
     isMessageAIGenerated,
     isMyMessage,
     message,
@@ -571,8 +601,6 @@ export const MessageContent = (props: MessageContentProps) => {
     otherAttachments,
     preventPress,
     threadList,
-    files,
-    images,
     videos,
   } = useMessageContext();
   const {
@@ -627,6 +655,7 @@ export const MessageContent = (props: MessageContentProps) => {
         enableMessageGroupingByUser,
         goToMessage,
         groupStyles,
+        hasInteractiveAccessibilityContent,
         isAttachmentEqual,
         isMessageAIGenerated,
         isMyMessage,
@@ -684,6 +713,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   galleryContainer: {},
+  noBorder: { borderWidth: 0 },
   rightAlignContent: {
     justifyContent: 'flex-end',
   },

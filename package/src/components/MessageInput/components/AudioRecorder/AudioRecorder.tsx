@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import Animated from 'react-native-reanimated';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 
 import dayjs from 'dayjs';
 
@@ -37,7 +37,7 @@ type AudioRecorderPropsWithContext = Pick<
     /**
      * Style used in slide to cancel container.
      */
-    slideToCancelStyle?: StyleProp<ViewStyle>;
+    slideToCancelStyle?: StyleProp<AnimatedStyle<ViewStyle>>;
   };
 
 const StopRecording = ({

@@ -9,13 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Edit, useTheme } from 'stream-chat-react-native';
 
-import { useAppContext } from '../context/AppContext';
-import { SecretMenu } from './SecretMenu.tsx';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Edit, useTheme } from 'stream-chat-react-native';
+
+import { SecretMenu } from './SecretMenu.tsx';
+
+import { useAppContext } from '../context/AppContext';
+
 import { Group } from '../icons/Group.tsx';
 import { User } from '../icons/User';
 import { useLegacyColors } from '../theme/useLegacyColors';
@@ -181,19 +184,8 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
                 New Group
               </Text>
             </TouchableOpacity>
-            <View
-              style={[
-                styles.menuItem,
-                styles.rtlMenuItem,
-                isRTL && styles.rowReverse,
-              ]}
-            >
-              <View
-                style={[
-                  styles.rtlMenuItemContent,
-                  isRTL && styles.rowReverse,
-                ]}
-              >
+            <View style={[styles.menuItem, styles.rtlMenuItem, isRTL && styles.rowReverse]}>
+              <View style={[styles.rtlMenuItemContent, isRTL && styles.rowReverse]}>
                 <User height={24} pathFill={grey} width={24} />
                 <View style={styles.rtlTextContainer}>
                   <Text

@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { useTheme, UserAvatar } from 'stream-chat-react-native';
 
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import type { UserResponse } from 'stream-chat';
+import { useTheme, UserAvatar } from 'stream-chat-react-native';
 
 import { Close } from '../../icons/Close';
 import { useLegacyColors } from '../../theme/useLegacyColors';

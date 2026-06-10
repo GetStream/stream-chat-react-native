@@ -1,9 +1,16 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+import { Pressable } from 'react-native-gesture-handler';
+
+import Animated from 'react-native-reanimated';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Pressable } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
+
+import { ChannelMemberResponse } from 'stream-chat';
 import {
   CircleClose,
   Delete,
@@ -14,19 +21,19 @@ import {
   BottomSheetModal,
   useStableCallback,
 } from 'stream-chat-react-native';
-import { ChannelMemberResponse } from 'stream-chat';
 
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
+
+import type { ConfirmationData } from './ConfirmationBottomSheet';
+
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
-import { Archive } from '../icons/Archive';
 import { useChannelInfoOverlayActions } from '../hooks/useChannelInfoOverlayActions';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Archive } from '../icons/Archive';
+
 import { Pin } from '../icons/Pin.tsx';
 import { User } from '../icons/User';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
-import type { ConfirmationData } from './ConfirmationBottomSheet';
 
 dayjs.extend(relativeTime);
 

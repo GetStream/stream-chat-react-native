@@ -75,10 +75,18 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
     return null;
   }
 
+  const replyCountLabel =
+    message.reply_count === 1
+      ? t('1 Reply')
+      : t('{{ replyCount }} Replies', { replyCount: message.reply_count });
+
   return (
     <View style={[styles.container, container]}>
       {alignment === 'left' ? connector : null}
       <Pressable
+        accessibilityHint={t('a11y/Double tap to view thread')}
+        accessibilityLabel={replyCountLabel}
+        accessibilityRole='button'
         disabled={preventPress}
         onLongPress={(event) => {
           if (onLongPress) {
@@ -114,13 +122,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
         testID='message-replies'
       >
         <MessageRepliesAvatars />
-        <Text style={[styles.messageRepliesText, messageRepliesText]}>
-          {message.reply_count === 1
-            ? t('1 Reply')
-            : t('{{ replyCount }} Replies', {
-                replyCount: message.reply_count,
-              })}
-        </Text>
+        <Text style={[styles.messageRepliesText, messageRepliesText]}>{replyCountLabel}</Text>
       </Pressable>
       {alignment === 'right' ? connector : null}
     </View>

@@ -5,6 +5,12 @@
 !.yarn/sdks
 !.yarn/versions
 
+# In case someone runs `yarn install` inside a workspace child, Yarn 4 will
+# emit a transient .yarn/install-state.gz there; the root-anchored pattern
+# above doesn't catch nested copies.
+**/.yarn/install-state.gz
+**/.yarn/cache
+
 node_modules
 NEXT_RELEASE_CHANGELOG.md
 artifacts

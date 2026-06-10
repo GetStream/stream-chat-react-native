@@ -1,5 +1,6 @@
-const execa = require('execa');
 const path = require('path');
+
+const execa = require('execa');
 
 const rootPath = path.resolve(`${__dirname}/..`);
 
@@ -9,7 +10,7 @@ const git = async (args, options = {}) => {
 };
 
 const revertRegexSubject = new RegExp('^Revert "(.*)"');
-const revertRegexBody = new RegExp('This reverts commit ([a-z0-9]*)\.?');
+const revertRegexBody = new RegExp('This reverts commit ([a-z0-9]*).?');
 
 // This function hooks into semantic-release steps and filter out some commits
 // we dont want to include in the release checks/changelog

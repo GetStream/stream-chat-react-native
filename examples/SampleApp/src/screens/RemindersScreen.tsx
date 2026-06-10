@@ -1,12 +1,16 @@
 import React from 'react';
 
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BottomTabNavigatorParamList } from '../types';
 import { StyleSheet, View } from 'react-native';
-import { ChatScreenHeader } from '../components/ChatScreenHeader';
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import { useTheme } from 'stream-chat-react-native';
+
+import { ChatScreenHeader } from '../components/ChatScreenHeader';
+
 import { RemindersList } from '../components/Reminders/RemindersList';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { BottomTabNavigatorParamList } from '../types';
 
 export type RemindersScreenProps = {
   navigation: NativeStackNavigationProp<BottomTabNavigatorParamList, 'RemindersScreen'>;

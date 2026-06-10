@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 import {
+  BlurEvent,
+  FocusEvent,
   I18nManager,
   StyleProp,
   StyleSheet,
   Text,
   TextInput,
-  TextInputFocusEvent,
   TextInputProps,
   View,
   ViewStyle,
@@ -84,7 +85,7 @@ export const Input = ({
   });
 
   const handleFocus = useCallback(
-    (e: TextInputFocusEvent) => {
+    (e: FocusEvent) => {
       setIsFocused(true);
       onFocus?.(e);
     },
@@ -92,7 +93,7 @@ export const Input = ({
   );
 
   const handleBlur = useCallback(
-    (e: TextInputFocusEvent) => {
+    (e: BlurEvent) => {
       setIsFocused(false);
       onBlur?.(e);
     },

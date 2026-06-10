@@ -13,12 +13,6 @@ jobs:
       matrix:
         node-version: [ 24.x ]
     steps:
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install Linux build tools
-        run: sudo apt-get update && sudo apt-get install -y build-essential
       - uses: actions/checkout@v6
         with:
           ref: develop
@@ -31,15 +25,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
+      - name: Install Linux build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Installation
-        run: |
-          yarn --frozen-lockfile
-          cd package/
-          yarn --frozen-lockfile
-          cd native-package/
-          yarn
-          cd ../../examples/SampleApp/
-          yarn
+        run: yarn install --immutable
 
       - name: Generate Changelog
         id: generate_changelog
@@ -54,13 +45,13 @@ jobs:
 
             echo "Changelog file ready! Setting up outputs"
             CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md)
-          
-            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
-            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\n'/'%0A'}"
-            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\r'/'%0D'}"
 
-            echo "::set-output name=exists::true"
-            echo "::set-output name=preview::$CHANGELOG_PREVIEW_ESCAPED"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "preview<<CHANGELOG_PREVIEW_EOF"
+              echo "$CHANGELOG_PREVIEW"
+              echo "CHANGELOG_PREVIEW_EOF"
+            } >> "$GITHUB_OUTPUT"
           fi
       - uses: marocchino/sticky-pull-request-comment@v3
         if: steps.generate_changelog.outputs.exists == 'true'

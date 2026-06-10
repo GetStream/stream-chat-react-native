@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, ViewProps } from 'react-native';
+
 import { useTheme } from 'stream-chat-react-native';
 
 type SectionCardProps = ViewProps & {
@@ -13,7 +14,14 @@ export const SectionCard = React.memo(({ children, style, ...rest }: SectionCard
   const themedStyles = useThemedStyles();
 
   return (
-    <View style={[themedStyles.container, { backgroundColor: semantics.backgroundCoreSurfaceCard }, style]} {...rest}>
+    <View
+      style={[
+        themedStyles.container,
+        { backgroundColor: semantics.backgroundCoreSurfaceCard },
+        style,
+      ]}
+      {...rest}
+    >
       {children}
     </View>
   );

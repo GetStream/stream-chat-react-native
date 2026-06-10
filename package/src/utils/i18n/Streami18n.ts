@@ -6,7 +6,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
-import i18n, { FallbackLng, TFunction } from 'i18next';
+import i18n, { type i18n as I18nInstance, FallbackLng, TFunction } from 'i18next';
 
 import type momentTimezone from 'moment-timezone';
 
@@ -373,7 +373,7 @@ const defaultStreami18nOptions = {
 export const defaultTranslatorFunction = ((key: string) => key) as TFunction;
 
 export class Streami18n {
-  i18nInstance = i18n.createInstance();
+  i18nInstance: I18nInstance = i18n.createInstance();
   Dayjs = null;
   initialized = false;
   /* this promise is used to prevent simultaneous calls to init (happens in Overlay and Chat) */
@@ -622,7 +622,7 @@ export class Streami18n {
   };
 
   /** Returns an instance of i18next used within this class instance */
-  geti18Instance = () => this.i18nInstance;
+  geti18Instance = (): I18nInstance => this.i18nInstance;
 
   /** Returns list of available languages. */
   getAvailableLanguages = () => Object.keys(this.translations);

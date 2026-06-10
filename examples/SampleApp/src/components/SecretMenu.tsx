@@ -1,10 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
 import {
   LayoutChangeEvent,
   Text,
@@ -14,15 +8,24 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { Edit, Delete, ZIP, useTheme } from 'stream-chat-react-native';
-import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
-import AsyncStore from '../utils/AsyncStore.ts';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+
 import { StreamChat } from 'stream-chat';
-import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
+import { Edit, Delete, ZIP, useTheme } from 'stream-chat-react-native';
+
+import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
+
 import { Close } from '../icons/Close.tsx';
-import { Notification } from '../icons/Notification.tsx';
 import { Folder } from '../icons/Folder.tsx';
+import { Notification } from '../icons/Notification.tsx';
+import { LabeledTextInput } from '../screens/AdvancedUserSelectorScreen.tsx';
 import { useLegacyColors } from '../theme/useLegacyColors.ts';
+import AsyncStore from '../utils/AsyncStore.ts';
 
 const isAndroid = Platform.OS === 'android';
 

@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -8,7 +7,7 @@
     "jsx": "react-native",
     "lib": ["esnext", "DOM", "DOM.Iterable"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -24,8 +23,7 @@
     "noEmitOnError": false,
     "noImplicitAny": true,
     "allowJs": true,
-    "checkJs": false,
-    "moduleSuffixes": [".ios", ".android", "", ".web"]
+    "checkJs": false
   },
   "include": ["./src/**/*"],
   "exclude": [

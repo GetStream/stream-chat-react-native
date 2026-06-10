@@ -43,7 +43,13 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
       </Text>
       {showViewText ? (
         <>
-          <Text style={styles.dot}>·</Text>
+          <Text
+            accessibilityElementsHidden
+            importantForAccessibility='no-hide-descendants'
+            style={styles.dot}
+          >
+            ·
+          </Text>
           <Pressable onPress={onPress}>
             <Text style={styles.link}>{t('View')}</Text>
           </Pressable>

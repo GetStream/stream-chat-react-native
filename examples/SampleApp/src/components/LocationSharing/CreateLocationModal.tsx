@@ -14,6 +14,9 @@ import {
   Image,
   Platform,
 } from 'react-native';
+
+import MapView, { MapMarker, Marker } from 'react-native-maps';
+
 import Geolocation, {
   GeolocationError,
   GeolocationResponse,
@@ -24,7 +27,7 @@ import {
   useTheme,
   useTranslationContext,
 } from 'stream-chat-react-native';
-import MapView, { MapMarker, Marker } from 'react-native-maps';
+
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 type LiveLocationCreateModalProps = {

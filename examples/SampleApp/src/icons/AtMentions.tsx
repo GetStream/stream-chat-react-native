@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { IconProps, RootPath, RootSvg } from 'stream-chat-react-native';
 
 export const AtMentions = (props: IconProps) => (

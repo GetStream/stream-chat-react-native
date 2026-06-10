@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PollOption as PollOptionClass } from 'stream-chat';
 
 import { PollOption, ShowAllOptionsButton } from './components';
+import { PollUIStateProvider } from './contexts/PollUIStateContext';
 
 import { usePollState } from './hooks/usePollState';
 
@@ -49,7 +50,7 @@ export const PollHeader = () => {
   } = useTheme();
 
   return (
-    <View style={styles.headerContainer}>
+    <View accessible accessibilityRole='text' style={styles.headerContainer}>
       <Text style={[styles.headerTitle, header.title]}>{name}</Text>
       <Text style={[styles.headerSubtitle, header.subtitle]}>{subtitle}</Text>
     </View>
@@ -74,11 +75,9 @@ export const PollContent = () => {
     <View style={[styles.container, container]}>
       <PollHeaderComponent />
       <View style={[styles.optionsWrapper, optionsWrapper]}>
-        {options
-          ?.slice(0, defaultPollOptionCount)
-          ?.map((option: PollOptionClass) => (
-            <PollOption key={`message_poll_option_${option.id}`} option={option} />
-          ))}
+        {options?.slice(0, defaultPollOptionCount)?.map((option: PollOptionClass) => (
+          <PollOption key={`message_poll_option_${option.id}`} option={option} />
+        ))}
         <ShowAllOptionsButton />
       </View>
       <PollButtonsComponent />
@@ -95,7 +94,9 @@ export const Poll = ({ message, poll }: PollProps) => {
         poll,
       }}
     >
-      {PollContentOverride ? <PollContentOverride /> : <PollContent />}
+      <PollUIStateProvider>
+        {PollContentOverride ? <PollContentOverride /> : <PollContent />}
+      </PollUIStateProvider>
     </PollContextProvider>
   );
 };
