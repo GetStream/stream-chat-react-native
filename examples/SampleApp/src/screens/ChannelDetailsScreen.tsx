@@ -44,7 +44,10 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   );
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
   const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-  const handleAddMembersPress = useCallback(() => setAddMembersVisible(true), []);
+  const handleAddMembersPress = useCallback(() => {
+    setAllMembersVisible(false);
+    setAddMembersVisible(true);
+  }, []);
   const [isAllMembersVisible, setAllMembersVisible] = useState(false);
   const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
   const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
