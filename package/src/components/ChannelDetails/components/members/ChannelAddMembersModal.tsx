@@ -48,7 +48,7 @@ const ChannelAddMembersModalBody = ({ onClose }: ChannelAddMembersModalContentPr
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         memberSection: { confirmButton: confirmButtonOverride },
       },
     },

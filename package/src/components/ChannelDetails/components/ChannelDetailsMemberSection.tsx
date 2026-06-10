@@ -26,7 +26,7 @@ export const ChannelDetailsMemberSection = () => {
   const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         memberSection: {
           footer: footerOverride,
           header: headerOverride,

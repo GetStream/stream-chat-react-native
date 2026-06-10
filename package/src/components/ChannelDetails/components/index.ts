@@ -3,7 +3,7 @@ export * from './ChannelDetailsActionItem';
 export * from './ChannelDetailsMemberSection';
 export * from './ChannelDetailsNavigationSection';
 export * from './ChannelDetailsProfile';
-export * from './ChannelDetailsScreenHeader';
+export * from './ChannelDetailsNavHeader';
 export * from './ChannelEditDetails';
 export * from './ChannelEditDetailsModal';
 export * from './ChannelEditImageSheet';

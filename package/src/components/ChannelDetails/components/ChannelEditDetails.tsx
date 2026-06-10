@@ -28,7 +28,7 @@ export const ChannelEditDetails = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         editChannel: {
           avatarSection: avatarSectionOverride,
           container: containerOverride,

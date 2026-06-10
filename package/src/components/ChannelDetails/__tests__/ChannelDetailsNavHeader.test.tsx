@@ -14,7 +14,7 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
-import { ChannelDetailsScreenHeader } from '../components/ChannelDetailsScreenHeader';
+import { ChannelDetailsNavHeader } from '../components/ChannelDetailsNavHeader';
 
 jest.mock('../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
@@ -66,13 +66,13 @@ const renderHeader = ({
     <Providers>
       <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
         <ChannelDetailsContextProvider value={{ channel, onBack, onEditChannelPress }}>
-          <ChannelDetailsScreenHeader />
+          <ChannelDetailsNavHeader />
         </ChannelDetailsContextProvider>
       </WithComponents>
     </Providers>,
   );
 
-describe('ChannelDetailsScreenHeader', () => {
+describe('ChannelDetailsNavHeader', () => {
   beforeEach(() => {
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     mockedUseChannelActions.mockReturnValue({
@@ -135,7 +135,7 @@ describe('ChannelDetailsScreenHeader', () => {
       <Providers>
         <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
           <ChannelDetailsContextProvider value={{ channel: buildChannel([]), onBack: jest.fn() }}>
-            <ChannelDetailsScreenHeader />
+            <ChannelDetailsNavHeader />
           </ChannelDetailsContextProvider>
         </WithComponents>
       </Providers>,

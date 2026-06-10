@@ -4,7 +4,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
-  ChannelDetailsScreen as StreamChannelDetailsScreen,
+  ChannelDetails,
   GetChannelMemberActionItems,
   ChannelAddMembersModal,
   ChannelAllMembersModal,
@@ -76,7 +76,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
 
   return (
     <>
-      <StreamChannelDetailsScreen
+      <ChannelDetails
         channel={channel}
         getChannelMemberActionItems={getChannelMemberActionItems}
         onBack={onBack}

@@ -16,7 +16,7 @@ type ChannelDetailsModalProps = {
 export const ChannelDetailsModal = ({ children, onClose, visible }: ChannelDetailsModalProps) => {
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         modal: { body: bodyOverride, root: rootOverride },
       },
       semantics,

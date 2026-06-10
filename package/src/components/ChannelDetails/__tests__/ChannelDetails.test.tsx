@@ -12,7 +12,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
-import { ChannelDetailsScreen } from '../ChannelDetailsScreen';
+import { ChannelDetails } from '../ChannelDetails';
 
 const Providers = ({ children }: PropsWithChildren) => (
   <ThemeProvider theme={defaultTheme}>
@@ -43,7 +43,7 @@ const SECTION_OVERRIDES = {
   ChannelDetailsMemberSection: MemberProbe,
   ChannelDetailsNavigationSection: NavigationProbe,
   ChannelDetailsProfile: ProfileProbe,
-  ChannelDetailsScreenHeader: HeaderProbe,
+  ChannelDetailsNavHeader: HeaderProbe,
 };
 
 const channel = {
@@ -56,12 +56,12 @@ const renderContent = () =>
   render(
     <Providers>
       <WithComponents overrides={SECTION_OVERRIDES}>
-        <ChannelDetailsScreen channel={channel} />
+        <ChannelDetails channel={channel} />
       </WithComponents>
     </Providers>,
   );
 
-describe('ChannelDetailsScreenContent', () => {
+describe('ChannelDetailsContent', () => {
   let useIsDirectChatSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -97,7 +97,7 @@ describe('ChannelDetailsScreenContent', () => {
   });
 });
 
-describe('ChannelDetailsScreen', () => {
+describe('ChannelDetails', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -117,14 +117,10 @@ describe('ChannelDetailsScreen', () => {
           <WithComponents
             overrides={{
               ...SECTION_OVERRIDES,
-              ChannelDetailsScreenContent: ContextProbe,
+              ChannelDetailsContent: ContextProbe,
             }}
           >
-            <ChannelDetailsScreen
-              channel={channel}
-              onBack={onBack}
-              onChannelDismiss={onChannelDismiss}
-            />
+            <ChannelDetails channel={channel} onBack={onBack} onChannelDismiss={onChannelDismiss} />
           </WithComponents>
         </Providers>,
       );
@@ -136,7 +132,7 @@ describe('ChannelDetailsScreen', () => {
     });
   });
 
-  describe('ChannelDetailsScreenContent override', () => {
+  describe('ChannelDetailsContent override', () => {
     it('renders the override instead of the default content', () => {
       const Override = () => <Text testID='custom-content'>CUSTOM</Text>;
       render(
@@ -144,10 +140,10 @@ describe('ChannelDetailsScreen', () => {
           <WithComponents
             overrides={{
               ...SECTION_OVERRIDES,
-              ChannelDetailsScreenContent: Override,
+              ChannelDetailsContent: Override,
             }}
           >
-            <ChannelDetailsScreen channel={channel} />
+            <ChannelDetails channel={channel} />
           </WithComponents>
         </Providers>,
       );
@@ -160,14 +156,14 @@ describe('ChannelDetailsScreen', () => {
   });
 
   describe('default content path', () => {
-    it('falls back to ChannelDetailsScreenContent when no override is supplied', () => {
+    it('falls back to ChannelDetailsContent when no override is supplied', () => {
       jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
       // Note: re-export the default Content via the override map so we can prove it
       // wasn't swapped out — the section probes from SECTION_OVERRIDES should appear.
       render(
         <Providers>
           <WithComponents overrides={SECTION_OVERRIDES}>
-            <ChannelDetailsScreen channel={channel} />
+            <ChannelDetails channel={channel} />
           </WithComponents>
         </Providers>,
       );

@@ -55,7 +55,7 @@ const ChannelEditImageSheetInner = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         editImageSheet: {
           actionsList: actionsListOverride,
           container: containerOverride,

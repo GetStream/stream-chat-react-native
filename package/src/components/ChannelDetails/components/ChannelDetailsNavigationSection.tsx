@@ -18,7 +18,7 @@ export const ChannelDetailsNavigationSection = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetailsScreen: { sectionCard: sectionCardOverride },
+      channelDetails: { sectionCard: sectionCardOverride },
       semantics,
     },
   } = useTheme();

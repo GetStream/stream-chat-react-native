@@ -42,7 +42,7 @@ export const ChannelMemberItem = ({
   const { client } = useChatContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         memberItem: {
           container: containerOverride,
           name: nameOverride,

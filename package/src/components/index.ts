@@ -179,7 +179,7 @@ export * from './Notifications';
 
 export * from './ProgressControl/ProgressControl';
 export * from './ProgressControl/WaveProgressBar';
-export * from './ChannelDetailsScreen';
+export * from './ChannelDetails';
 export * from './Poll';
 
 export * from './Reply/Reply';

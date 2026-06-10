@@ -14,7 +14,7 @@ import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 
-export type ChannelDetailsScreenHeaderProps = {
+export type ChannelDetailsNavHeaderProps = {
   /** Override the auto-resolved screen title (1:1 → "Contact Info", group → "Group Info"). */
   title?: string;
 };
@@ -22,14 +22,14 @@ export type ChannelDetailsScreenHeaderProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetailsScreenHeader = ({ title }: ChannelDetailsScreenHeaderProps) => {
+export const ChannelDetailsNavHeader = ({ title }: ChannelDetailsNavHeaderProps) => {
   const { channel, onBack, onEditChannelPress } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const ownCapabilities = useChannelOwnCapabilities(channel);
   const canUpdateChannel = ownCapabilities?.includes('update-channel') ?? false;
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         header: { container: containerOverride, title: titleOverride },
       },
       semantics,

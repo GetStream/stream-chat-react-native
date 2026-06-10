@@ -107,7 +107,7 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
 export const ChannelDetailsActionsSection = () => {
   const {
     theme: {
-      channelDetailsScreen: { sectionCard: sectionCardOverride },
+      channelDetails: { sectionCard: sectionCardOverride },
       semantics,
     },
   } = useTheme();

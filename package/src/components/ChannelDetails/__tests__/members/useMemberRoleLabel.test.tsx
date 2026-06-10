@@ -7,7 +7,7 @@ import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetai
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import type { GetMemberRoleLabel } from '../../ChannelDetailsScreen';
+import type { GetMemberRoleLabel } from '../../ChannelDetails';
 import { useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
 
 const buildChannel = (createdById = 'creator'): Channel =>

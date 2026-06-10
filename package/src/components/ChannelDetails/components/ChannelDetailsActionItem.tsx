@@ -27,7 +27,7 @@ export const ChannelDetailsActionItem = ({
 }: ChannelDetailsActionItemProps) => {
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         actionItem: {
           container: containerOverride,
           destructiveLabel: destructiveLabelOverride,

@@ -18,7 +18,7 @@ type ModalHeaderProps = {
 export const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         modal: { header: headerOverride, headerTitle: headerTitleOverride },
       },
       semantics,

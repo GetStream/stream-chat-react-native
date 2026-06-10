@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { ChannelDetailsScreenProps } from '../../components';
+import { ChannelDetailsProps } from '../../components';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -8,7 +8,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 /**
  * @experimental This API is experimental and is subject to change.
  */
-export type ChannelDetailsContextValue = ChannelDetailsScreenProps;
+export type ChannelDetailsContextValue = ChannelDetailsProps;
 export const ChannelDetailsContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelDetailsContextValue,
 );
@@ -35,7 +35,7 @@ export const useChannelDetailsContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useChannelDetailsContext hook was called outside of the ChannelDetailsContext provider. Render the ChannelDetailsScreen component (or its content) inside a ChannelDetailsContextProvider.',
+      'The useChannelDetailsContext hook was called outside of the ChannelDetailsContext provider. Render the ChannelDetails component (or its content) inside a ChannelDetailsContextProvider.',
     );
   }
 

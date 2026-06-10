@@ -29,7 +29,7 @@ const ChannelMemberActionsSheetInner = ({
   const { ChannelDetailsActionItem, ChannelMemberItem } = useComponentsContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         memberActionsSheet: {
           actionsList: actionsListOverride,
           container: containerOverride,

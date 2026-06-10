@@ -10,7 +10,7 @@ import { compressedImageURI } from '../../../utils/compressImage';
 export type UseEditChannelImageResult = {
   /**
    * Open the device's native image picker and return a single picked image
-   * with the compression configured on `ChannelDetailsScreen` already applied
+   * with the compression configured on `ChannelDetails` already applied
    * to its `uri`. Returns `undefined` if the user cancels or denies access.
    */
   pickImageFromNativePicker: () => Promise<File | undefined>;

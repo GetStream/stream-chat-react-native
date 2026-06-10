@@ -30,7 +30,7 @@ export type GetMemberRoleLabel = (params: {
   t: TranslationContextValue['t'];
 }) => string | null | undefined;
 
-export type ChannelDetailsScreenProps = {
+export type ChannelDetailsProps = {
   channel: Channel;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -102,11 +102,11 @@ export type ChannelDetailsScreenProps = {
   doFileUploadRequest?: GlobalFileUploadRequest;
 };
 
-export const ChannelDetailsScreenContent = () => {
+export const ChannelDetailsContent = () => {
   const { channel } = useChannelDetailsContext();
   const {
     theme: {
-      channelDetailsScreen: { container: containerOverride, scrollContent: scrollContentOverride },
+      channelDetails: { container: containerOverride, scrollContent: scrollContentOverride },
       semantics,
     },
   } = useTheme();
@@ -115,7 +115,7 @@ export const ChannelDetailsScreenContent = () => {
     ChannelDetailsMemberSection,
     ChannelDetailsNavigationSection,
     ChannelDetailsProfile,
-    ChannelDetailsScreenHeader,
+    ChannelDetailsNavHeader,
   } = useComponentsContext();
   const isDirect = useIsDirectChat(channel);
   const styles = useStyles();
@@ -128,7 +128,7 @@ export const ChannelDetailsScreenContent = () => {
         containerOverride,
       ]}
     >
-      <ChannelDetailsScreenHeader />
+      <ChannelDetailsNavHeader />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>
         <ChannelDetailsProfile />
         {ChannelDetailsNavigationSection ? <ChannelDetailsNavigationSection /> : null}
@@ -142,7 +142,7 @@ export const ChannelDetailsScreenContent = () => {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetailsScreen = ({
+export const ChannelDetails = ({
   channel,
   compressImageQuality,
   doFileUploadRequest,
@@ -155,9 +155,8 @@ export const ChannelDetailsScreen = ({
   onEditChannelPress,
   onMemberPress,
   onViewAllMembersPress,
-}: ChannelDetailsScreenProps) => {
-  const { ChannelDetailsScreenContent: ChannelDetailsScreenContentOverride } =
-    useComponentsContext();
+}: ChannelDetailsProps) => {
+  const { ChannelDetailsContent: ChannelDetailsContentOverride } = useComponentsContext();
   const value = useMemo<ChannelDetailsContextValue>(
     () => ({
       channel,
@@ -188,7 +187,7 @@ export const ChannelDetailsScreen = ({
       onViewAllMembersPress,
     ],
   );
-  const Content = ChannelDetailsScreenContentOverride ?? ChannelDetailsScreenContent;
+  const Content = ChannelDetailsContentOverride ?? ChannelDetailsContent;
   const notificationHostId = channel?.cid ? `channel-details:${channel.cid}` : undefined;
 
   return (

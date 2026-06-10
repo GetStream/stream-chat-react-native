@@ -29,7 +29,7 @@ export const AddMemberSearchResultItem = ({ onPress, user }: AddMemberSearchResu
   const isAlreadyMember = useIsChannelMember(channel, user.id);
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         addMembers: {
           searchResultItem: {
             alreadyMemberInfo: alreadyMemberInfoOverride,

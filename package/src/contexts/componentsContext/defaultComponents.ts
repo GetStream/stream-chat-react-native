@@ -27,21 +27,21 @@ import { AutoCompleteSuggestionHeader } from '../../components/AutoCompleteInput
 import { AutoCompleteSuggestionItem } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import { InputView } from '../../components/AutoCompleteInput/InputView';
-import { ChannelDetailsScreenContent } from '../../components/ChannelDetailsScreen/ChannelDetailsScreen';
+import { ChannelDetailsContent } from '../../components/ChannelDetails/ChannelDetails';
 import {
   ChannelAddMembers,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
   ChannelDetailsProfile,
-  ChannelDetailsScreenHeader,
+  ChannelDetailsNavHeader,
   ChannelEditDetails,
   ChannelEditImageSheet,
   ChannelEditName,
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
-} from '../../components/ChannelDetailsScreen/components';
+} from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from '../../components/ChannelList/ChannelListHeaderNetworkDownIndicator';
@@ -310,8 +310,8 @@ const components = {
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
   ChannelDetailsProfile,
-  ChannelDetailsScreenContent,
-  ChannelDetailsScreenHeader,
+  ChannelDetailsContent,
+  ChannelDetailsNavHeader,
   ChannelEditDetails,
   ChannelEditImageSheet,
   ChannelEditName,

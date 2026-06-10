@@ -20,7 +20,7 @@ export const ChannelDetailsProfile = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         profile: {
           container: containerOverride,
           heading: headingOverride,

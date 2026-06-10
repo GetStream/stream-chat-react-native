@@ -12,7 +12,7 @@ import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import type { GetMemberRoleLabel } from '../../ChannelDetailsScreen';
+import type { GetMemberRoleLabel } from '../../ChannelDetails';
 import { ChannelMemberItem } from '../../components/members/ChannelMemberItem';
 
 Dayjs.extend(relativeTime);

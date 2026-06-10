@@ -19,7 +19,7 @@ export const ChannelEditName = () => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetailsScreen: {
+      channelDetails: {
         editChannel: { nameInput: nameInputOverride },
       },
     },

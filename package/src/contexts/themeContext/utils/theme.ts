@@ -185,7 +185,7 @@ export type Theme = {
       standardText: TextStyle;
     };
   };
-  channelDetailsScreen: {
+  channelDetails: {
     container: ViewStyle;
     scrollContent: ViewStyle;
     header: {
@@ -1230,7 +1230,7 @@ export const defaultTheme: Theme = {
       standardText: {},
     },
   },
-  channelDetailsScreen: {
+  channelDetails: {
     container: {},
     scrollContent: {},
     header: {

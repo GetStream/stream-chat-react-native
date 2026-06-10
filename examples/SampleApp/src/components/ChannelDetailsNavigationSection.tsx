@@ -28,7 +28,7 @@ export const ChannelDetailsNavigationSection = () => {
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const {
     theme: {
-      channelDetailsScreen: { sectionCard: sectionCardOverride },
+      channelDetails: { sectionCard: sectionCardOverride },
       semantics,
     },
   } = useTheme();
