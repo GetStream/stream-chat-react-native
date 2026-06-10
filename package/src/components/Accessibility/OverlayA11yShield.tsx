@@ -1,6 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { useAccessibilityServiceEnabled } from '../../a11y';
+import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useStateStore } from '../../hooks';
 import { overlayStore } from '../../state-store/message-overlay-store';
@@ -8,6 +10,15 @@ import { overlayStore } from '../../state-store/message-overlay-store';
 const messageOverlayActiveSelector = (state: { id: string | undefined }) => ({
   isMessageOverlayActive: state.id !== undefined,
 });
+
+const useShouldActivateTrap = (): boolean => {
+  const { enabled: a11yEnabled } = useAccessibilityContext();
+  const { overlay } = useOverlayContext();
+  const { isMessageOverlayActive } = useStateStore(overlayStore, messageOverlayActiveSelector);
+  const a11yServiceEnabled = useAccessibilityServiceEnabled();
+
+  return a11yEnabled && (overlay === 'gallery' || isMessageOverlayActive) && a11yServiceEnabled;
+};
 
 /**
  * Android only accessibility focus trap for the OverlayProvider's children
@@ -27,20 +38,17 @@ const messageOverlayActiveSelector = (state: { id: string | undefined }) => ({
  * On iOS the wrapper is skipped entirely.
  */
 export function OverlayA11yShield({ children }: PropsWithChildren) {
-  const { overlay } = useOverlayContext();
-  const { isMessageOverlayActive } = useStateStore(overlayStore, messageOverlayActiveSelector);
+  const shouldActivateTrap = useShouldActivateTrap();
 
   if (Platform.OS !== 'android') {
     return <>{children}</>;
   }
 
-  const isAnyOverlayActive = overlay === 'gallery' || isMessageOverlayActive;
-
   return (
     <View
-      accessibilityElementsHidden={isAnyOverlayActive}
-      importantForAccessibility={isAnyOverlayActive ? 'no-hide-descendants' : 'auto'}
+      importantForAccessibility={shouldActivateTrap ? 'no-hide-descendants' : undefined}
       style={StyleSheet.absoluteFill}
+      pointerEvents='box-none'
       testID='overlay-a11y-shield'
     >
       {children}
