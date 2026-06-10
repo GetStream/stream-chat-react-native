@@ -50,7 +50,7 @@
     "react": "19.2.3",
     "react-native": "0.85.3",
     "react-native-blob-util": "^0.24.9",
-    "react-native-gesture-handler": "^3.0.0",
+    "react-native-gesture-handler": "patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch",
     "react-native-haptic-feedback": "^3.0.0",
     "react-native-image-picker": "^8.2.1",
     "react-native-maps": "^1.27.2",

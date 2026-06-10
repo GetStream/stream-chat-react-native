@@ -17723,6 +17723,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-gesture-handler@npm:3.0.0, react-native-gesture-handler@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "react-native-gesture-handler@npm:3.0.0"
+  dependencies:
+    "@types/react-test-renderer": "npm:^19.1.0"
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/abc2c02d89c7dba0a1c58a02a99f136bfedcffc1d28e879045e5cc7738a12fd2ad76c5175987cd642141cce59ea104eb2337c4595d91b56ab2f43e1563c27747
+  languageName: node
+  linkType: hard
+
 "react-native-gesture-handler@npm:^2.26.0, react-native-gesture-handler@npm:~2.31.1":
   version: 2.31.2
   resolution: "react-native-gesture-handler@npm:2.31.2"
@@ -17738,16 +17751,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:^3.0.0":
+"react-native-gesture-handler@patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch":
   version: 3.0.0
-  resolution: "react-native-gesture-handler@npm:3.0.0"
+  resolution: "react-native-gesture-handler@patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch::version=3.0.0&hash=78c2cf"
   dependencies:
     "@types/react-test-renderer": "npm:^19.1.0"
     invariant: "npm:^2.2.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/abc2c02d89c7dba0a1c58a02a99f136bfedcffc1d28e879045e5cc7738a12fd2ad76c5175987cd642141cce59ea104eb2337c4595d91b56ab2f43e1563c27747
+  checksum: 10c0/7e7e2ac293d4174af4d7e54bcf8a0b595e6fef8108e9341b36d5fd0b0f7aca469677f592f677f739163704fb0d7c86f2b25f956ab8fe3c3c79f8ba48ea9e1f7f
   languageName: node
   linkType: hard
 
@@ -18850,7 +18863,7 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.85.3"
     react-native-blob-util: "npm:^0.24.9"
-    react-native-gesture-handler: "npm:^3.0.0"
+    react-native-gesture-handler: "patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch"
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:^1.27.2"
