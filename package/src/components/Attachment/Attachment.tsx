@@ -224,16 +224,17 @@ const useAudioAttachmentStyles = () => {
   const messageHasSingleAttachment = message.attachments?.length === 1;
   const messageHasCaption = !!message.text?.trim();
   const messageIsQuotedReply = !!(message.quoted_message || message.quoted_message_id);
+  const shouldRemoveAudioAttachmentPadding =
+    messageIsQuotedReply && messageHasSingleAttachment && !messageHasCaption;
   const showBackgroundTransparent =
-    messageHasOnlySingleAttachment ||
-    (messageIsQuotedReply && messageHasSingleAttachment && !messageHasCaption);
+    messageHasOnlySingleAttachment || shouldRemoveAudioAttachmentPadding;
 
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         paddingVertical: primitives.spacingXs,
-        paddingLeft: primitives.spacingXs,
-        paddingRight: primitives.spacingSm,
+        paddingLeft: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingXs,
+        paddingRight: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingSm,
         borderWidth: 0,
         backgroundColor: showBackgroundTransparent
           ? 'transparent'
@@ -255,6 +256,9 @@ const useAudioAttachmentStyles = () => {
         color: semantics.chatTextIncoming,
         fontWeight: primitives.typographyFontWeightSemiBold,
       },
+      leftContainer: {
+        padding: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingXxs,
+      },
     });
-  }, [semantics, isMyMessage, showBackgroundTransparent]);
+  }, [shouldRemoveAudioAttachmentPadding, showBackgroundTransparent, isMyMessage, semantics]);
 };
