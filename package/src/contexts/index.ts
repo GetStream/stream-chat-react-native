@@ -32,6 +32,7 @@ export * from './utils/getDisplayName';
 export * from './channelDetailsContext';
 export * from './channelAddMembersContext/ChannelAddMembersContext';
 export * from './channelEditDetailsContext';
+export * from './channelPinnedMessageListContext/ChannelPinnedMessageListContext';
 export * from './pollContext';
 export * from './liveLocationManagerContext';
 export * from './audioPlayerContext/AudioPlayerContext';
