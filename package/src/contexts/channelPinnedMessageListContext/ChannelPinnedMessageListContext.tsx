@@ -1,9 +1,8 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import { MessageSearchSource } from 'stream-chat';
+import { Channel, MessageSearchSource } from 'stream-chat';
 
 import { useChatContext } from '..';
-import { useChannelDetailsContext } from '../channelDetailsContext/channelDetailsContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -21,9 +20,11 @@ export const ChannelPinnedMessageListContext = React.createContext(
 /**
  * @experimental This API is experimental and is subject to change.
  */
-export const ChannelPinnedMessageListProvider = ({ children }: PropsWithChildren<unknown>) => {
+export const ChannelPinnedMessageListProvider = ({
+  channel,
+  children,
+}: PropsWithChildren<{ channel: Channel }>) => {
   const { client } = useChatContext();
-  const { channel } = useChannelDetailsContext();
   const [searchSource] = useState(() => {
     const source = new MessageSearchSource(
       client,
