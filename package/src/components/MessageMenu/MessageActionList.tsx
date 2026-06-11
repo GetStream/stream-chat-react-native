@@ -78,7 +78,7 @@ const useStyles = () => {
       StyleSheet.create({
         container: {
           borderRadius: primitives.radiusLg,
-          marginTop: 6,
+          marginTop: 8,
           backgroundColor: semantics.backgroundCoreElevation2,
           borderWidth: 1,
           borderColor: semantics.borderCoreDefault,

@@ -115,6 +115,10 @@ const useStyles = ({
           alignItems: 'flex-end',
           ...rightAlignItems,
         },
+        single: messageGroupedSingleStyles,
+        top: messageGroupedTopStyles,
+        middle: messageGroupedMiddleStyles,
+        bottom: messageGroupedBottomStyles,
       }),
     [
       alignment,
@@ -125,37 +129,14 @@ const useStyles = ({
       container,
       contentContainer,
       leftAlignItems,
+      messageGroupedBottomStyles,
+      messageGroupedMiddleStyles,
+      messageGroupedSingleStyles,
+      messageGroupedTopStyles,
       repliesContainer,
       rightAlignItems,
     ],
   );
-
-  const groupStylesMap = useMemo(() => {
-    return {
-      single: {
-        paddingVertical: primitives.spacingXs,
-        ...messageGroupedSingleStyles,
-      },
-      top: {
-        paddingTop: primitives.spacingXs,
-        paddingBottom: primitives.spacingXxs,
-        ...messageGroupedTopStyles,
-      },
-      middle: {
-        paddingBottom: primitives.spacingXxs,
-        ...messageGroupedMiddleStyles,
-      },
-      bottom: {
-        paddingBottom: primitives.spacingXs,
-        ...messageGroupedBottomStyles,
-      },
-    };
-  }, [
-    messageGroupedBottomStyles,
-    messageGroupedMiddleStyles,
-    messageGroupedSingleStyles,
-    messageGroupedTopStyles,
-  ]);
 
   const containerStyle = useMemo(() => {
     let results: ViewStyle = styles.baseContainer;
@@ -163,27 +144,19 @@ const useStyles = ({
     if (groupType) {
       results = {
         ...results,
-        ...groupStylesMap[groupType],
+        ...styles[groupType],
       };
     }
 
     if (isVeryLastMessage && enableMessageGroupingByUser) {
       results = {
         ...results,
-        marginBottom: primitives.spacingSm,
         ...lastMessageContainer,
       };
     }
 
     return results;
-  }, [
-    styles.baseContainer,
-    groupStylesMap,
-    groupType,
-    isVeryLastMessage,
-    enableMessageGroupingByUser,
-    lastMessageContainer,
-  ]);
+  }, [styles, groupType, isVeryLastMessage, enableMessageGroupingByUser, lastMessageContainer]);
 
   return {
     container: containerStyle,
