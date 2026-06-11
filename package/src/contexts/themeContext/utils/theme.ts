@@ -334,6 +334,11 @@ export type Theme = {
     container: ViewStyle;
     text: TextStyle;
   };
+  emptyList: {
+    container: ViewStyle;
+    subtitle: TextStyle;
+    title: TextStyle;
+  };
   emptySearchResult: {
     container: ViewStyle;
     text: TextStyle;
@@ -1378,6 +1383,11 @@ export const defaultTheme: Theme = {
   dateHeader: {
     container: {},
     text: {},
+  },
+  emptyList: {
+    container: {},
+    subtitle: {},
+    title: {},
   },
   emptySearchResult: {
     container: {},
