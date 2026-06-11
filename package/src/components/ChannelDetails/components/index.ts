@@ -9,4 +9,6 @@ export * from './ChannelEditDetails';
 export * from './ChannelEditDetailsModal';
 export * from './ChannelEditImageSheet';
 export * from './ChannelEditName';
+export * from './ChannelDetailsEditButton';
 export * from './members';
+export * from './navigation-section';

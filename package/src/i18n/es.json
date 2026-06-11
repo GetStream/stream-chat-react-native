@@ -387,6 +387,7 @@
   "Failed to block user": "No se pudo bloquear al usuario",
   "Failed to delete channel": "Error al eliminar el canal",
   "Failed to leave channel": "No se pudo salir del canal",
+  "Failed to load pinned messages": "No se pudieron cargar los mensajes fijados",
   "Failed to load users": "No se pudieron cargar los usuarios",
   "Failed to play the recording": "No se pudo reproducir la grabación",
   "Failed to update channel archive status": "No se pudo actualizar el estado de archivo del canal",
@@ -435,5 +436,8 @@
   "a11y/Message from {{sender}}": "Mensaje de {{sender}}",
   "a11y/Gallery Image": "Imagen de la galería",
   "a11y/Gallery Video": "Vídeo de la galería",
-  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}",
+  "No pinned messages": "No hay mensajes fijados",
+  "a11y/Search pinned messages": "Buscar mensajes fijados",
+  "Long-press a message to pin it to the chat": "Mantén pulsado un mensaje para fijarlo en el chat"
 }

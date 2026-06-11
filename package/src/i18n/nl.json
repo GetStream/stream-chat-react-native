@@ -387,6 +387,7 @@
   "Failed to block user": "Gebruiker blokkeren mislukt",
   "Failed to delete channel": "Kanaal verwijderen mislukt",
   "Failed to leave channel": "Kanaal verlaten mislukt",
+  "Failed to load pinned messages": "Vastgemaakte berichten laden mislukt",
   "Failed to load users": "Gebruikers laden mislukt",
   "Failed to play the recording": "Opname afspelen mislukt",
   "Failed to update channel archive status": "Bijwerken van kanaalarchiefstatus mislukt",
@@ -435,5 +436,8 @@
   "a11y/Message from {{sender}}": "Bericht van {{sender}}",
   "a11y/Gallery Image": "Galerij-afbeelding",
   "a11y/Gallery Video": "Galerij-video",
-  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}",
+  "No pinned messages": "Geen vastgemaakte berichten",
+  "a11y/Search pinned messages": "Zoek vastgemaakte berichten",
+  "Long-press a message to pin it to the chat": "Houd een bericht lang ingedrukt om het vast te pinnen in de chat"
 }

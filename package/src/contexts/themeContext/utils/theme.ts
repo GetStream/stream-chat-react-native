@@ -250,6 +250,17 @@ export type Theme = {
       nameInput: ViewStyle;
       uploadButton: ViewStyle;
     };
+    pinnedMessageList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    pinnedMessageItem: {
+      container: ViewStyle;
+      content: ViewStyle;
+      name: TextStyle;
+      title: ViewStyle;
+    };
   };
   channelListSkeleton: {
     animationTime: number;
@@ -286,6 +297,15 @@ export type Theme = {
     title: ViewStyle;
   };
   userListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  pinnedMessageListSkeleton: {
     animationTime: number;
     avatar: ViewStyle;
     container: ViewStyle;
@@ -1300,6 +1320,17 @@ export const defaultTheme: Theme = {
       nameInput: {},
       uploadButton: {},
     },
+    pinnedMessageList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    pinnedMessageItem: {
+      container: {},
+      content: {},
+      name: {},
+      title: {},
+    },
   },
   channelListSkeleton: {
     animationTime: 1000, // in milliseconds
@@ -1336,6 +1367,15 @@ export const defaultTheme: Theme = {
     title: {},
   },
   userListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  pinnedMessageListSkeleton: {
     animationTime: 1000, // in milliseconds
     avatar: {},
     container: {},

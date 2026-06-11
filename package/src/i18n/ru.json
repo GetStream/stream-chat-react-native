@@ -387,6 +387,7 @@
   "Failed to block user": "Не удалось заблокировать пользователя",
   "Failed to delete channel": "Не удалось удалить канал",
   "Failed to leave channel": "Не удалось покинуть канал",
+  "Failed to load pinned messages": "Не удалось загрузить закреплённые сообщения",
   "Failed to load users": "Не удалось загрузить пользователей",
   "Failed to play the recording": "Не удалось воспроизвести запись",
   "Failed to update channel archive status": "Не удалось обновить статус архивации канала",
@@ -435,5 +436,8 @@
   "a11y/Message from {{sender}}": "Сообщение от {{sender}}",
   "a11y/Gallery Image": "Изображение из галереи",
   "a11y/Gallery Video": "Видео из галереи",
-  "a11y/{{position}} of {{count}}": "{{position}} из {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} из {{count}}",
+  "No pinned messages": "Нет закреплённых сообщений",
+  "a11y/Search pinned messages": "Поиск закреплённых сообщений",
+  "Long-press a message to pin it to the chat": "Нажмите и удерживайте сообщение, чтобы закрепить его в чате"
 }

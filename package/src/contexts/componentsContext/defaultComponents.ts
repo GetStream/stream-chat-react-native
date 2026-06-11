@@ -33,6 +33,7 @@ import {
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
   ChannelDetailsProfile,
   ChannelDetailsEditButton,
   ChannelDetailsNavHeader,
@@ -310,6 +311,7 @@ const components = {
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
   ChannelDetailsProfile,
   ChannelDetailsContent,
   ChannelDetailsEditButton,
@@ -359,7 +361,6 @@ const components = {
  */
 export interface OptionalComponentOverrides {
   AttachmentPickerIOSSelectMorePhotos?: React.ComponentType;
-  ChannelDetailsNavigationSection?: React.ComponentType;
   ChatLoadingIndicator?: React.ComponentType | null;
   CreatePollContent?: React.ComponentType;
   Input?: React.ComponentType<{

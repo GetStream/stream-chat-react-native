@@ -132,7 +132,7 @@ export const ChannelDetailsContent = () => {
       <ChannelDetailsNavHeader action={<ChannelDetailsEditButton />} />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>
         <ChannelDetailsProfile />
-        {ChannelDetailsNavigationSection ? <ChannelDetailsNavigationSection /> : null}
+        <ChannelDetailsNavigationSection />
         {isDirect ? null : <ChannelDetailsMemberSection />}
         <ChannelDetailsActionsSection />
       </ScrollView>

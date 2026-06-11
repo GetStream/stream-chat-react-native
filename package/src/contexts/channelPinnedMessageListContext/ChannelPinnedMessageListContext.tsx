@@ -10,6 +10,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  * @experimental This API is experimental and is subject to change.
  */
 export type ChannelPinnedMessageListContextValue = {
+  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -28,26 +29,26 @@ export const ChannelPinnedMessageListProvider = ({
   const [searchSource] = useState(() => {
     const source = new MessageSearchSource(
       client,
-      { allowEmptySearchString: true, resetOnNewSearchQuery: false },
+      { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
       {
         messageSearch: {
           initialFilterConfig: {
-            text: {
+            $or: {
               enabled: true,
-              generate: ({ searchQuery }) => (searchQuery ? { text: { $q: searchQuery } } : null),
+              generate: ({ searchQuery }) => (searchQuery ? { text: { $q: searchQuery } } : {}),
             },
           },
         },
       },
     );
-    source.messageSearchChannelFilters = { cid: channel.cid };
-    source.messageSearchFilters = { pinned: true };
+    source.messageSearchChannelFilters = { cid: channel.cid, members: undefined };
+    source.messageSearchFilters = { pinned: true, type: undefined };
     source.activate();
     return source;
   });
 
   return (
-    <ChannelPinnedMessageListContext.Provider value={{ searchSource }}>
+    <ChannelPinnedMessageListContext.Provider value={{ channel, searchSource }}>
       {children}
     </ChannelPinnedMessageListContext.Provider>
   );

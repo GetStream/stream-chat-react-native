@@ -387,6 +387,7 @@
   "Failed to block user": "ユーザーのブロックに失敗しました",
   "Failed to delete channel": "チャンネルの削除に失敗しました",
   "Failed to leave channel": "チャンネルの退出に失敗しました",
+  "Failed to load pinned messages": "ピン留めされたメッセージの読み込みに失敗しました",
   "Failed to load users": "ユーザーの読み込みに失敗しました",
   "Failed to play the recording": "録音の再生に失敗しました",
   "Failed to update channel archive status": "チャンネルのアーカイブ状態の更新に失敗しました",
@@ -435,5 +436,8 @@
   "a11y/Message from {{sender}}": "{{sender}}からのメッセージ",
   "a11y/Gallery Image": "ギャラリー画像",
   "a11y/Gallery Video": "ギャラリービデオ",
-  "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}"
+  "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}",
+  "No pinned messages": "ピン留めされたメッセージはありません",
+  "a11y/Search pinned messages": "ピン留めされたメッセージを検索",
+  "Long-press a message to pin it to the chat": "メッセージを長押ししてチャットにピン留めします"
 }

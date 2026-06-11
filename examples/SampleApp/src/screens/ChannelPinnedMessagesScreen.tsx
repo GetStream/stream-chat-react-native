@@ -1,15 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { RouteProp } from '@react-navigation/native';
-import { useTheme } from 'stream-chat-react-native';
+import { useTheme, PinnedMessageList } from 'stream-chat-react-native';
 
-import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { usePaginatedPinnedMessages } from '../hooks/usePaginatedPinnedMessages';
-import { Message } from '../icons/Message';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
@@ -80,7 +77,6 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
 }) => {
   useTheme();
   const { white_snow } = useLegacyColors();
-  const { loading, loadMore, messages } = usePaginatedPinnedMessages(channel);
   const insets = useSafeAreaInsets();
   return (
     <View
@@ -93,26 +89,7 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
       ]}
     >
       <ScreenHeader titleText='Pinned Messages' />
-      <MessageSearchList
-        EmptySearchIndicator={EmptyListComponent}
-        loading={loading}
-        loadMore={loadMore}
-        messages={messages}
-      />
-    </View>
-  );
-};
-
-const EmptyListComponent = () => {
-  useTheme();
-  const { black, grey, grey_gainsboro } = useLegacyColors();
-  return (
-    <View style={styles.emptyContainer}>
-      <Message fill={grey_gainsboro} height={110} width={130} />
-      <Text style={[styles.noFiles, { color: black }]}>No pinned messages</Text>
-      <Text style={[styles.noFilesDetails, { color: grey }]}>
-        Long-press an important message and choose Pin to conversation.
-      </Text>
+      <PinnedMessageList channel={channel} />
     </View>
   );
 };
