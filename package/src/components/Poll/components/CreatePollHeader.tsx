@@ -43,9 +43,16 @@ export const CreatePollHeader = ({
 
   const renderSendPollIcon = useCallback(
     (props: IconProps) => {
-      return <Check {...props} height={18} stroke={semantics.textOnAccent} width={18} />;
+      return (
+        <Check
+          {...props}
+          height={18}
+          stroke={canCreatePoll ? semantics.textOnAccent : semantics.textDisabled}
+          width={18}
+        />
+      );
     },
-    [semantics.textOnAccent],
+    [canCreatePoll, semantics.textOnAccent, semantics.textDisabled],
   );
 
   return (
