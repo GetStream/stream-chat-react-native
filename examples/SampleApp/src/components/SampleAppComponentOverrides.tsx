@@ -6,6 +6,7 @@ import type { ComponentOverrides } from 'stream-chat-react-native';
 import { useTheme } from 'stream-chat-react-native';
 
 import { CustomAttachmentPickerContent } from './AttachmentPickerContent';
+import { ChannelDetailsNavigationSection } from './ChannelDetailsNavigationSection';
 import { CustomChannelPreviewStatus } from './ChannelPreview';
 import { FastImageAdapter } from './FastImageAdapter';
 import { MessageLocation } from './LocationSharing/MessageLocation';
@@ -45,6 +46,7 @@ export const useSampleAppComponentOverrides = (
   useMemo<ComponentOverrides>(
     () => ({
       AttachmentPickerContent: CustomAttachmentPickerContent,
+      ChannelDetailsNavigationSection,
       ChannelListHeaderNetworkDownIndicator: RenderNull,
       ImageComponent: FastImageAdapter,
       MessageLocation,

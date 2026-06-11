@@ -179,6 +179,7 @@ export * from './Notifications';
 
 export * from './ProgressControl/ProgressControl';
 export * from './ProgressControl/WaveProgressBar';
+export * from './ChannelDetails';
 export * from './Poll';
 
 export * from './Reply/Reply';

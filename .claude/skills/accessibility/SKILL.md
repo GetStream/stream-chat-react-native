@@ -10,7 +10,7 @@ Use this skill whenever code changes can affect screen-reader users (VoiceOver o
 ## Non-negotiable rules
 
 1. **Native semantics first.** Use `Pressable`, `TextInput`, `Switch`, `Image` directly. Use `accessibilityRole` only when native semantics cannot represent the widget (`menu`, `menuitem`, `progressbar`, `radio`, `checkbox`, `article`, `alert`, `tablist`, `tab`).
-2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. For SDK `Button`, pass `accessibilityLabelKey='a11y/...'` (and `accessibilityLabelParams` when needed). For non-Button components, use `useA11yLabel('a11y/...', params)` or `t('a11y/...')` directly when you don't need the disabled-state short-circuit. Add the key to all 13 locale files in `package/src/i18n/` (`ar, en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`).
+2. **Never hardcode English** in `accessibilityLabel`/`accessibilityHint`/announcement strings. For SDK `Button`, pass `accessibilityLabelKey='a11y/...'` (and `accessibilityLabelParams` when needed). For non-Button components, use `useA11yLabel('a11y/...', params)` or `t('a11y/...')` directly when you don't need the disabled-state short-circuit. Add the key to all 13 locale files in `package/src/i18n/` (`ar, en, es, fr, he, hi, it, ja, ko, nl, pt-br, ru, tr`). You can omit a11y keys if a button contains a text label that describes what it does.
 3. **Gate behavior on `useAccessibilityContext().enabled`.** A11y is opt-in. New listeners, subscriptions, and announcer mounts must be no-ops when `enabled` is false. New `accessibilityRole`/`accessibilityState` props are fine to render unconditionally — they cost ~zero.
 4. **One focusable target per action.** Don't nest `Pressable` inside `Pressable`. Mark inner decorative views with `accessibilityElementsHidden` (iOS) + `importantForAccessibility='no-hide-descendants'` (Android) so the parent carries the label.
 5. **Decorative visuals stay hidden from AT.** Icon-only buttons must carry an `accessibilityLabel` on the wrapper, and the SVG icon should be hidden.
@@ -68,6 +68,7 @@ const a11yProps = useResolvedModalAccessibilityProps();
 ```
 
 This returns:
+
 - iOS: `{ accessibilityViewIsModal: true }`
 - Android: `{ importantForAccessibility: 'yes' }`
 - Either platform when `enabled` is false: `{}`
@@ -81,9 +82,7 @@ Mobile gestures (long-press, hold-to-record, pinch/pan) must have a tap-equivale
 ```tsx
 const { audioRecorderTapMode } = useAccessibilityContext();
 const screenReaderOn = useScreenReaderEnabled();
-const useTapMode =
-  audioRecorderTapMode === 'always' ||
-  (audioRecorderTapMode === 'auto' && screenReaderOn);
+const useTapMode = audioRecorderTapMode === 'always' || (audioRecorderTapMode === 'auto' && screenReaderOn);
 ```
 
 Three-state semantics: `'auto'` (swap when SR is on), `'always'` (swap for everyone), `'never'` (integrator handles).
@@ -184,10 +183,12 @@ Live example: `Reply.tsx` — fires when a reply preview shows in the composer.
 ## Testing requirements per change
 
 Minimum:
+
 - Unit tests for new keyboard/focus/semantics behavior in nearest `__tests__/`.
 - Use `@testing-library/react-native` semantic queries: `getByRole`, `getByLabelText`, `getByA11yState`, `getByA11yValue`.
 
 Recommended for non-trivial changes:
+
 - Render with `<OverlayProvider accessibility={{ enabled: true, forceScreenReaderMode: true }}>` and assert the accessible variant renders.
 - Render with `<OverlayProvider accessibility={{ enabled: false }}>` and assert the legacy behavior is unchanged (no extra buttons, no listeners).
 
@@ -224,6 +225,7 @@ Recommended for non-trivial changes:
 ## Cross-SDK parity
 
 API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146):
+
 - `useAccessibilityAnnouncer` ≈ React's `useAriaLiveAnnouncer`
 - `useIncomingMessageAnnouncements` — same params, same throttle/batch logic
 - `a11y/*` i18n namespace shared

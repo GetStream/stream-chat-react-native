@@ -52,6 +52,16 @@ export const predefinedFormatters: PredefinedFormatters = {
       }
       return result;
     },
+  fromNowFormatter:
+    (streamI18n) =>
+    (value, _, { withSuffix }: { withSuffix?: boolean } = {}) => {
+      const parsedTime = streamI18n.tDateTimeParser(value);
+      if (!isDayOrMoment(parsedTime) || typeof parsedTime.fromNow !== 'function') {
+        return JSON.stringify(value);
+      }
+      // fromNow(withoutSuffix); default to including the "ago" suffix
+      return parsedTime.fromNow(withSuffix === false);
+    },
   relativeCompactDateFormatter: (streamI18n) => (value) => {
     if (value === undefined || value === null) {
       return JSON.stringify(value);

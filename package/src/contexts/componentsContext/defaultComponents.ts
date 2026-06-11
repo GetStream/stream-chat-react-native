@@ -27,6 +27,21 @@ import { AutoCompleteSuggestionHeader } from '../../components/AutoCompleteInput
 import { AutoCompleteSuggestionItem } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import { InputView } from '../../components/AutoCompleteInput/InputView';
+import { ChannelDetailsContent } from '../../components/ChannelDetails/ChannelDetails';
+import {
+  ChannelAddMembers,
+  ChannelDetailsActionsSection,
+  ChannelDetailsActionItem,
+  ChannelDetailsMemberSection,
+  ChannelDetailsProfile,
+  ChannelDetailsNavHeader,
+  ChannelEditDetails,
+  ChannelEditImageSheet,
+  ChannelEditName,
+  ChannelMemberActionsSheet,
+  ChannelMemberItem,
+  ChannelMemberList,
+} from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from '../../components/ChannelList/ChannelListHeaderNetworkDownIndicator';
@@ -289,6 +304,21 @@ const components = {
   // Channel details
   ChannelDetailsHeader,
 
+  // Channel Details Screen
+  ChannelAddMembers,
+  ChannelDetailsActionsSection,
+  ChannelDetailsActionItem,
+  ChannelDetailsMemberSection,
+  ChannelDetailsProfile,
+  ChannelDetailsContent,
+  ChannelDetailsNavHeader,
+  ChannelEditDetails,
+  ChannelEditImageSheet,
+  ChannelEditName,
+  ChannelMemberActionsSheet,
+  ChannelMemberItem,
+  ChannelMemberList,
+
   // Thread
   ThreadMessageComposer: MessageComposer,
   ThreadListComponent,
@@ -327,6 +357,7 @@ const components = {
  */
 export interface OptionalComponentOverrides {
   AttachmentPickerIOSSelectMorePhotos?: React.ComponentType;
+  ChannelDetailsNavigationSection?: React.ComponentType;
   ChatLoadingIndicator?: React.ComponentType | null;
   CreatePollContent?: React.ComponentType;
   Input?: React.ComponentType<{

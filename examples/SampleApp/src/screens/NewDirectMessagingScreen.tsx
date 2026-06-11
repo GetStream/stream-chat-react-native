@@ -4,6 +4,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useFocusEffect } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
@@ -111,10 +112,12 @@ export type NewDirectMessagingScreenNavigationProp = NativeStackNavigationProp<
 
 export type NewDirectMessagingScreenProps = {
   navigation: NewDirectMessagingScreenNavigationProp;
+  route: RouteProp<StackNavigatorParamList, 'NewDirectMessagingScreen'>;
 };
 
 export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> = ({
   navigation,
+  route,
 }) => {
   const {
     theme: { semantics },
@@ -137,11 +140,23 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   const searchInputRef = useRef<TextInput>(null);
   const currentChannel = useRef<StreamChatChannel>(undefined);
   const isDraft = useRef(true);
+  const initialUserIdRef = useRef<string>(undefined);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
   // As we don't use the state value, we can omit it here and separate it with a comma within the array.
   const [, setMessageInputText] = useState('');
+
+  useEffect(() => {
+    const initialUser = route.params?.initialUser;
+    if (!initialUser || initialUserIdRef.current === initialUser.id) {
+      return;
+    }
+    // Ensures we initialize the selection only once per navigation.
+    initialUserIdRef.current = initialUser.id;
+    reset();
+    toggleUser(initialUser);
+  }, [route.params?.initialUser, reset, toggleUser]);
 
   // When selectedUsers are changed, initiate a channel with those users as members,
   // and set it as a channel on current screen.
@@ -172,6 +187,11 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         setFocusOnSearchInput(true);
         return;
       }
+
+      // With members selected, collapse the user search so the composer takes over.
+      // The manual "tap a user in the list" path sets this directly; doing it here as
+      // well covers the seeded path (navigated in with a preselected user).
+      setFocusOnSearchInput(false);
 
       const members = [chatClient.user.id, ...selectedUserIds];
 

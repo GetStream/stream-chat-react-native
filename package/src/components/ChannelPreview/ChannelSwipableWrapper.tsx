@@ -1,19 +1,19 @@
 import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { type ColorValue, StyleSheet } from 'react-native';
 
 import type { SharedValue } from 'react-native-reanimated';
 
 import type { Channel } from 'stream-chat';
 
-import { useIsChannelMuted } from './hooks/useIsChannelMuted';
-
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { MenuPointHorizontal, Mute, Sound } from '../../icons';
-import type { GetChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
-import { useChannelActionItems } from '../ChannelList/hooks/useChannelActionItems';
-import { useChannelActions } from '../ChannelList/hooks/useChannelActions';
+import type {
+  ChannelActionItem,
+  GetChannelActionItems,
+} from '../../hooks/actions/useChannelActionItems';
+import { useChannelActionItems } from '../../hooks/actions/useChannelActionItems';
+import { MenuPointHorizontal } from '../../icons';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {
   RightActions,
@@ -41,10 +41,13 @@ export const ChannelSwipableWrapper = ({
 }>) => {
   const { ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent } = useComponentsContext();
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
-  const { muteChannel, unmuteChannel } = useChannelActions(channel);
   const channelActionItems = useChannelActionItems({ channel, getChannelActionItems });
   const sheetItems = useMemo(
     () => channelActionItems.filter((item) => item.placement !== 'swipe'),
+    [channelActionItems],
+  );
+  const swipeItems = useMemo(
+    () => channelActionItems.filter((item) => item.placement !== 'sheet'),
     [channelActionItems],
   );
   const swipableRegistry = useSwipeRegistryContext();
@@ -53,19 +56,6 @@ export const ChannelSwipableWrapper = ({
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
-
-  const channelMuteState = useIsChannelMuted(channel);
-  const channelMuteActive = channelMuteState.muted;
-
-  const Icon = useCallback(
-    () =>
-      channelMuteActive ? (
-        <Sound width={20} height={20} stroke={semantics.textOnAccent} />
-      ) : (
-        <Mute width={20} height={20} fill={semantics.textOnAccent} />
-      ),
-    [channelMuteActive, semantics.textOnAccent],
-  );
 
   const swipableActions = useMemo<SwipableActionItem[]>(() => {
     const items: SwipableActionItem[] = [
@@ -77,15 +67,16 @@ export const ChannelSwipableWrapper = ({
       },
     ];
 
-    items.push({
-      id: 'mute',
-      action: () => {
-        const action = channelMuteActive ? unmuteChannel : muteChannel;
-        action();
-        swipableRegistry?.closeAll();
-      },
-      Content: Icon,
-      contentContainerStyle: [styles.contentContainerStyle, styles.standard],
+    swipeItems.forEach((item) => {
+      items.push({
+        id: item.id,
+        action: () => {
+          item.action();
+          swipableRegistry?.closeAll();
+        },
+        Content: createSwipeContent(item, semantics.textOnAccent),
+        contentContainerStyle: [styles.contentContainerStyle, styles.standard],
+      });
     });
 
     return items;
@@ -93,11 +84,9 @@ export const ChannelSwipableWrapper = ({
     styles.contentContainerStyle,
     styles.elipsis,
     styles.standard,
-    channelMuteActive,
-    muteChannel,
-    unmuteChannel,
-    Icon,
+    swipeItems,
     swipableRegistry,
+    semantics.textOnAccent,
   ]);
 
   const renderRightActions = useCallback(
@@ -127,6 +116,11 @@ export const ChannelSwipableWrapper = ({
       </BottomSheetModal>
     </>
   );
+};
+
+const createSwipeContent = (item: ChannelActionItem, color: ColorValue) => {
+  const SwipeContent = () => <item.Icon fill={color} stroke={color} />;
+  return SwipeContent;
 };
 
 const useStyles = () => {
