@@ -51,7 +51,12 @@ export const ViewResultsButton = (props: PollButtonProps) => {
         type='outline'
       />
       {showResults ? (
-        <Modal animationType='slide' onRequestClose={closeViewResults} visible={showResults}>
+        <Modal
+          animationType='slide'
+          onRequestClose={closeViewResults}
+          presentationStyle='pageSheet'
+          visible={showResults}
+        >
           <GestureHandlerRootView style={styles.modalRoot}>
             <SafeAreaViewWrapper style={styles.safeArea}>
               <PollModalHeader onPress={closeViewResults} title={t('Poll Results')} />
@@ -92,7 +97,12 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
         />
       ) : null}
       {showAllOptions ? (
-        <Modal animationType='slide' onRequestClose={closeAllOptions} visible={showAllOptions}>
+        <Modal
+          animationType='slide'
+          onRequestClose={closeAllOptions}
+          presentationStyle='pageSheet'
+          visible={showAllOptions}
+        >
           <GestureHandlerRootView style={styles.modalRoot}>
             <SafeAreaViewWrapper style={styles.safeArea}>
               <PollModalHeader onPress={closeAllOptions} title={t('Poll Options')} />
@@ -133,7 +143,12 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
         />
       ) : null}
       {showAnswers ? (
-        <Modal animationType='slide' onRequestClose={closeAllComments} visible={showAnswers}>
+        <Modal
+          animationType='slide'
+          onRequestClose={closeAllComments}
+          presentationStyle='pageSheet'
+          visible={showAnswers}
+        >
           <GestureHandlerRootView style={styles.modalRoot}>
             <SafeAreaViewWrapper style={styles.safeArea}>
               <PollModalHeader onPress={closeAllComments} title={t('Poll Comments')} />

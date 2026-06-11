@@ -67,12 +67,6 @@ const useStyles = () => {
         flexShrink: 1,
         minWidth: 0,
       },
-      pollModalWrapper: {
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: semantics.backgroundCoreElevation1,
-      },
       pollSafeArea: {
         flex: 1,
         backgroundColor: semantics.backgroundCoreElevation1,
@@ -457,23 +451,22 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
       </Animated.View>
 
       {showPollCreationDialog ? (
-        <View style={styles.pollModalWrapper}>
-          <Modal
-            animationType='slide'
-            onRequestClose={closePollCreationDialog}
-            visible={showPollCreationDialog}
-          >
-            <GestureHandlerRootView style={styles.pollSafeArea}>
-              <SafeAreaViewWrapper style={styles.pollSafeArea}>
-                <CreatePoll
-                  closePollCreationDialog={closePollCreationDialog}
-                  createPollOptionGap={createPollOptionGap}
-                  sendMessage={sendMessage}
-                />
-              </SafeAreaViewWrapper>
-            </GestureHandlerRootView>
-          </Modal>
-        </View>
+        <Modal
+          animationType='slide'
+          onRequestClose={closePollCreationDialog}
+          presentationStyle='pageSheet'
+          visible={showPollCreationDialog}
+        >
+          <GestureHandlerRootView style={styles.pollSafeArea}>
+            <SafeAreaViewWrapper style={styles.pollSafeArea}>
+              <CreatePoll
+                closePollCreationDialog={closePollCreationDialog}
+                createPollOptionGap={createPollOptionGap}
+                sendMessage={sendMessage}
+              />
+            </SafeAreaViewWrapper>
+          </GestureHandlerRootView>
+        </Modal>
       ) : null}
     </MicPositionProvider>
   );
