@@ -6,4 +6,5 @@ export * from './PollInputDialog';
 export * from './MultipleVotesSettings';
 export * from './PollOption';
 export * from './PollResults';
+export * from './PollModal';
 export * from './PollModalHeader';
