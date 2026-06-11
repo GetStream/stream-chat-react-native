@@ -53,8 +53,10 @@ export const ViewResultsButton = (props: PollButtonProps) => {
       {showResults ? (
         <Modal
           animationType='slide'
+          navigationBarTranslucent
           onRequestClose={closeViewResults}
           presentationStyle='pageSheet'
+          statusBarTranslucent
           visible={showResults}
         >
           <GestureHandlerRootView style={styles.modalRoot}>
@@ -99,8 +101,10 @@ export const ShowAllOptionsButton = (props: PollButtonProps) => {
       {showAllOptions ? (
         <Modal
           animationType='slide'
+          navigationBarTranslucent
           onRequestClose={closeAllOptions}
           presentationStyle='pageSheet'
+          statusBarTranslucent
           visible={showAllOptions}
         >
           <GestureHandlerRootView style={styles.modalRoot}>
@@ -145,8 +149,10 @@ export const ShowAllCommentsButton = (props: PollButtonProps) => {
       {showAnswers ? (
         <Modal
           animationType='slide'
+          navigationBarTranslucent
           onRequestClose={closeAllComments}
           presentationStyle='pageSheet'
+          statusBarTranslucent
           visible={showAnswers}
         >
           <GestureHandlerRootView style={styles.modalRoot}>

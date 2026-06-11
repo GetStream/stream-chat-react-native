@@ -453,8 +453,10 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
       {showPollCreationDialog ? (
         <Modal
           animationType='slide'
+          navigationBarTranslucent
           onRequestClose={closePollCreationDialog}
           presentationStyle='pageSheet'
+          statusBarTranslucent
           visible={showPollCreationDialog}
         >
           <GestureHandlerRootView style={styles.pollSafeArea}>

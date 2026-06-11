@@ -64,8 +64,10 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       {showAllVotes ? (
         <Modal
           animationType='fade'
+          navigationBarTranslucent
           onRequestClose={() => setShowAllVotes(false)}
           presentationStyle='pageSheet'
+          statusBarTranslucent
           visible={showAllVotes}
         >
           <GestureHandlerRootView style={styles.modalRoot}>
