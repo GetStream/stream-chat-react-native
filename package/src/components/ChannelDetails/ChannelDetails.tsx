@@ -112,6 +112,7 @@ export const ChannelDetailsContent = () => {
   } = useTheme();
   const {
     ChannelDetailsActionsSection,
+    ChannelDetailsEditButton,
     ChannelDetailsMemberSection,
     ChannelDetailsNavigationSection,
     ChannelDetailsProfile,
@@ -128,7 +129,7 @@ export const ChannelDetailsContent = () => {
         containerOverride,
       ]}
     >
-      <ChannelDetailsNavHeader />
+      <ChannelDetailsNavHeader action={<ChannelDetailsEditButton />} />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>
         <ChannelDetailsProfile />
         {ChannelDetailsNavigationSection ? <ChannelDetailsNavigationSection /> : null}
