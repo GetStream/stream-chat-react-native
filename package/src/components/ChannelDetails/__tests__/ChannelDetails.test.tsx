@@ -52,6 +52,15 @@ const channel = {
   on: jest.fn(() => ({ unsubscribe: jest.fn() })),
 } as unknown as Channel;
 
+const buildChannel = (capabilities: string[] = []) =>
+  ({
+    cid: 'messaging:test',
+    data: { own_capabilities: capabilities },
+    id: 'test',
+    on: jest.fn(() => ({ unsubscribe: jest.fn() })),
+    state: { members: {} },
+  }) as unknown as Channel;
+
 const renderContent = () =>
   render(
     <Providers>
@@ -93,6 +102,26 @@ describe('ChannelDetailsContent', () => {
       useIsDirectChatSpy.mockReturnValue(true);
       renderContent();
       expect(screen.queryByTestId('probe-member')).toBeNull();
+    });
+
+    it('displays the edit button in the header for a group channel with the update-channel capability', () => {
+      useIsDirectChatSpy.mockReturnValue(false);
+      render(
+        <Providers>
+          <WithComponents
+            overrides={{
+              ChannelDetailsActionsSection: ActionsProbe,
+              ChannelDetailsMemberSection: MemberProbe,
+              ChannelDetailsNavigationSection: NavigationProbe,
+              ChannelDetailsProfile: ProfileProbe,
+            }}
+          >
+            <ChannelDetails channel={buildChannel(['update-channel'])} />
+          </WithComponents>
+        </Providers>,
+      );
+
+      expect(screen.getByTestId('channel-details-edit-button')).toBeTruthy();
     });
   });
 });
