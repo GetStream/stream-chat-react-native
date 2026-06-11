@@ -827,11 +827,6 @@ export type Theme = {
       roundedView: ViewStyle;
     };
     wrapper: ViewStyle;
-    wrapperGroupedSingleStyles: ViewStyle;
-    wrapperGroupedTopStyles: ViewStyle;
-    wrapperGroupedMiddleStyles: ViewStyle;
-    wrapperGroupedBottomStyles: ViewStyle;
-    wrapperLastMessageContainer: ViewStyle;
   };
   poll: {
     allOptions: {
@@ -1763,11 +1758,6 @@ export const defaultTheme: Theme = {
       roundedView: {},
     },
     wrapper: {},
-    wrapperGroupedSingleStyles: {},
-    wrapperGroupedTopStyles: {},
-    wrapperGroupedMiddleStyles: {},
-    wrapperGroupedBottomStyles: {},
-    wrapperLastMessageContainer: {},
   },
   poll: {
     allOptions: {

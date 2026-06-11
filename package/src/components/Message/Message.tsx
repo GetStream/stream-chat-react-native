@@ -1177,20 +1177,20 @@ const useStyles = ({
     const groupStylesMap: Record<'single' | 'top' | 'middle' | 'bottom', ViewStyle> = {
       single: {
         paddingVertical: primitives.spacingXs,
-        ...messageItemView.wrapperGroupedSingleStyles,
+        ...messageItemView.messageGroupedSingleStyles,
       },
       top: {
         paddingTop: primitives.spacingXs,
         paddingBottom: primitives.spacingXxs,
-        ...messageItemView.wrapperGroupedTopStyles,
+        ...messageItemView.messageGroupedTopStyles,
       },
       middle: {
         paddingBottom: primitives.spacingXxs,
-        ...messageItemView.wrapperGroupedMiddleStyles,
+        ...messageItemView.messageGroupedMiddleStyles,
       },
       bottom: {
         paddingBottom: primitives.spacingXs,
-        ...messageItemView.wrapperGroupedBottomStyles,
+        ...messageItemView.messageGroupedBottomStyles,
       },
     };
 
@@ -1211,7 +1211,7 @@ const useStyles = ({
       wrapper = {
         ...wrapper,
         marginBottom: primitives.spacingSm,
-        ...messageItemView.wrapperLastMessageContainer,
+        ...messageItemView.lastMessageContainer,
       };
     }
 
