@@ -111,6 +111,15 @@ class _Audio {
       audioSet: {
         // Android specific properties
         AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+        // Pin nitro-sound 0.2.10+'s bitrate to 128 kbps. Its `.high` quality
+        // preset otherwise defaults to (48 kHz, 2ch, 192 kbps), a combination
+        // the iOS hardware AAC encoder rejects with
+        // kAudioFormatUnsupportedDataFormatError ('fmt?', OSStatus 1718449215)
+        // in AppStore signed binaries.
+        // https://www.osstatus.com/search/results?search=1718449215
+        // Older nitro-sound and the legacy `react-native-audio-recorder-player`
+        // ignore this key.
+        AudioEncodingBitRate: 128000,
         AudioSourceAndroid: AudioSourceAndroidType.MIC,
         OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
 
@@ -121,6 +130,11 @@ class _Audio {
           ? AVModeIOSOptionNitroSound.spokenaudio
           : AVModeIOSOption.spokenaudio,
         AVNumberOfChannelsKeyIOS: 2,
+        // Pair with `AudioEncodingBitRate` above override nitro-sound 0.2.10+'s
+        // 48 kHz default back to 44.1 kHz so the encoder gets the combo that
+        // 0.2.9 was implicitly using. Idempotent for older nitro-sound and the
+        // legacy lib (their default is already 44.1 kHz).
+        AVSampleRateKeyIOS: 44100,
       },
       isMeteringEnabled: true,
     },
