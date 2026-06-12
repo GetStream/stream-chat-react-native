@@ -67,6 +67,24 @@ describe('FileAttachmentItem', () => {
     expect(screen.queryByText('a-photo.png')).toBeNull();
   });
 
+  it('skips OG/scraped link-preview attachments', () => {
+    const file = generateFileAttachment({ title: 'a-file.pdf' });
+    const ogPreview = generateFileAttachment({
+      og_scrape_url: 'https://example.com',
+      title: 'link-preview',
+      title_link: 'https://example.com',
+    });
+    const message = generateMessage({
+      attachments: [file, ogPreview],
+      id: 'm-og',
+    }) as unknown as MessageResponse;
+
+    render(tree(message));
+
+    expect(mockFilePreviewProbe.map((p) => p.title)).toEqual(['a-file.pdf']);
+    expect(screen.queryByText('link-preview')).toBeNull();
+  });
+
   it('renders nothing when the message has no file or audio attachments', () => {
     const message = generateMessage({
       attachments: [generateImageAttachment()],

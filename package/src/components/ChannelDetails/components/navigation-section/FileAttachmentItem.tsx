@@ -6,6 +6,7 @@ import {
   type Channel,
   isAudioAttachment,
   isFileAttachment,
+  isScrapedContent,
   type MessageResponse,
 } from 'stream-chat';
 
@@ -52,7 +53,9 @@ export const FileAttachmentItem = (props: FileAttachmentItemProps) => {
   const fileAttachments = useMemo(
     () =>
       (message.attachments ?? []).filter(
-        (attachment) => isFileAttachment(attachment) || isAudioAttachment(attachment),
+        (attachment) =>
+          (isFileAttachment(attachment) || isAudioAttachment(attachment)) &&
+          !isScrapedContent(attachment),
       ),
     [message.attachments],
   );

@@ -8,7 +8,13 @@ import {
   View,
 } from 'react-native';
 
-import type { Attachment, LocalMessage, MessageResponse, SearchSourceState } from 'stream-chat';
+import {
+  type Attachment,
+  isScrapedContent,
+  type LocalMessage,
+  type MessageResponse,
+  type SearchSourceState,
+} from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
@@ -83,7 +89,7 @@ const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => 
     for (const attachment of message.attachments) {
       if (
         (attachment.type === FileTypes.Image || attachment.type === FileTypes.Video) &&
-        !(attachment.og_scrape_url || attachment.title_link)
+        !isScrapedContent(attachment)
       ) {
         tiles.push({ attachment, message });
       }
