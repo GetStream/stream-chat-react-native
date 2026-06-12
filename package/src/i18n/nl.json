@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "reageerde op",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Gisteren]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Morgen]\",\"nextWeek\":\"dddd [om] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{position}} van {{count}}",
   "No pinned messages": "Geen vastgemaakte berichten",
   "a11y/Search pinned messages": "Zoek vastgemaakte berichten",
-  "Long-press a message to pin it to the chat": "Houd een bericht lang ingedrukt om het vast te pinnen in de chat"
+  "Long-press a message to pin it to the chat": "Houd een bericht lang ingedrukt om het vast te pinnen in de chat",
+  "No media": "Geen media",
+  "Photos and videos sent in this chat will appear here": "Foto's en video's die in deze chat zijn verzonden, verschijnen hier",
+  "Failed to load media": "Media laden mislukt",
+  "No files": "Geen bestanden",
+  "Files shared in this chat will appear here": "Bestanden die in deze chat zijn gedeeld, verschijnen hier",
+  "Failed to load files": "Bestanden laden mislukt"
 }

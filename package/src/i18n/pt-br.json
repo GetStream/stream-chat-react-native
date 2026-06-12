@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "respondeu a",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Ontem]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Amanhã]\",\"nextWeek\":\"dddd [às] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{position}} de {{count}}",
   "No pinned messages": "Nenhuma mensagem fixada",
   "a11y/Search pinned messages": "Pesquisar mensagens fixadas",
-  "Long-press a message to pin it to the chat": "Mantenha pressionada uma mensagem para fixá-la no chat"
+  "Long-press a message to pin it to the chat": "Mantenha pressionada uma mensagem para fixá-la no chat",
+  "No media": "Nenhuma mídia",
+  "Photos and videos sent in this chat will appear here": "Fotos e vídeos enviados neste chat aparecerão aqui",
+  "Failed to load media": "Falha ao carregar mídia",
+  "No files": "Nenhum arquivo",
+  "Files shared in this chat will appear here": "Os arquivos compartilhados neste chat aparecerão aqui",
+  "Failed to load files": "Falha ao carregar os arquivos"
 }

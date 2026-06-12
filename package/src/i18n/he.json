@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "הגיב ל",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[אתמול]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[מחר]\",\"nextWeek\":\"dddd [בשעה] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{position}} מתוך {{count}}",
   "No pinned messages": "אין הודעות מוצמדות",
   "a11y/Search pinned messages": "חיפוש הודעות מוצמדות",
-  "Long-press a message to pin it to the chat": "לחץ לחיצה ארוכה על הודעה כדי להצמיד אותה לצ'אט"
+  "Long-press a message to pin it to the chat": "לחץ לחיצה ארוכה על הודעה כדי להצמיד אותה לצ'אט",
+  "No media": "אין מדיה",
+  "Photos and videos sent in this chat will appear here": "תמונות וסרטונים שנשלחו בצ׳אט הזה יופיעו כאן",
+  "Failed to load media": "טעינת המדיה נכשלה",
+  "No files": "אין קבצים",
+  "Files shared in this chat will appear here": "קבצים ששותפו בצ׳אט הזה יופיעו כאן",
+  "Failed to load files": "טעינת הקבצים נכשלה"
 }

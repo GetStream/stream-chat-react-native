@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "に返信しました",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[昨日]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[明日]\",\"nextWeek\":\"dddd [の] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}",
   "No pinned messages": "ピン留めされたメッセージはありません",
   "a11y/Search pinned messages": "ピン留めされたメッセージを検索",
-  "Long-press a message to pin it to the chat": "メッセージを長押ししてチャットにピン留めします"
+  "Long-press a message to pin it to the chat": "メッセージを長押ししてチャットにピン留めします",
+  "No media": "メディアがありません",
+  "Photos and videos sent in this chat will appear here": "このチャットで送信された写真や動画がここに表示されます",
+  "Failed to load media": "メディアの読み込みに失敗しました",
+  "No files": "ファイルがありません",
+  "Files shared in this chat will appear here": "このチャットで共有されたファイルがここに表示されます",
+  "Failed to load files": "ファイルの読み込みに失敗しました"
 }

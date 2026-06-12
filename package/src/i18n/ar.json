@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "رد على",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[أمس]\", \"lastWeek\":\"dddd\", \"nextDay\":\"[غدًا]\", \"nextWeek\":\"dddd [في] LT\", \"sameDay\":\"LT\", \"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{position}} من {{count}}",
   "No pinned messages": "لا توجد رسائل مثبتة",
   "a11y/Search pinned messages": "البحث في الرسائل المثبتة",
-  "Long-press a message to pin it to the chat": "اضغط مطولاً على رسالة لتثبيتها في المحادثة"
+  "Long-press a message to pin it to the chat": "اضغط مطولاً على رسالة لتثبيتها في المحادثة",
+  "No media": "لا توجد وسائط",
+  "Photos and videos sent in this chat will appear here": "ستظهر الصور ومقاطع الفيديو المرسلة في هذه المحادثة هنا",
+  "Failed to load media": "فشل تحميل الوسائط",
+  "No files": "لا توجد ملفات",
+  "Files shared in this chat will appear here": "ستظهر الملفات المشتركة في هذه المحادثة هنا",
+  "Failed to load files": "فشل تحميل الملفات"
 }

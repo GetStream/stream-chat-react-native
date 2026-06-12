@@ -1,38 +1,46 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  SectionList,
+  type SectionListProps,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
-import { PinnedMessageListLoadingSkeleton } from './PinnedMessageListLoadingSkeleton';
+import { FileAttachmentListLoadingSkeleton } from './FileAttachmentListLoadingSkeleton';
+import { FileAttachmentListSectionHeader } from './FileAttachmentListSectionHeader';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
-  ChannelPinnedMessageListProvider,
-  useChannelPinnedMessageListContext,
-} from '../../../../contexts/channelPinnedMessageListContext/ChannelPinnedMessageListContext';
+  ChannelFileAttachmentListProvider,
+  useChannelFileAttachmentListContext,
+} from '../../../../contexts/channelFileAttachmentListContext/ChannelFileAttachmentListContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Pin } from '../../../../icons/pin';
+import { File } from '../../../../icons/file';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { NotificationList } from '../../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { EmptyList } from '../../../UIComponents/EmptyList';
-import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
-import { SearchInput, SearchInputProps } from '../../../UIComponents/SearchInput';
+import {
+  type FileAttachmentSection,
+  useFileAttachmentListSections,
+} from '../../hooks/useFileAttachmentListSections';
 
-export type PinnedMessageListProps = {
+export type FileAttachmentListProps = {
   /**
-   * Besides the existing default behavior of the pinned message list, you can attach
-   * additional props to the underlying React Native FlatList.
+   * Besides the existing default behavior of the file attachment list, you can attach
+   * additional props to the underlying React Native SectionList.
    *
-   * See https://reactnative.dev/docs/flatlist#props for the full list.
+   * See https://reactnative.dev/docs/sectionlist#props for the full list.
    */
-  additionalFlatListProps?: Partial<FlatListProps<MessageResponse>>;
-  searchInputProps?: SearchInputProps;
+  additionalSectionListProps?: Partial<SectionListProps<MessageResponse, FileAttachmentSection>>;
 };
 
 const keyExtractor = (message: MessageResponse) => message.id;
@@ -42,26 +50,22 @@ const listStateSelector = (state: SearchSourceState<MessageResponse>) => ({
   hasNext: state.hasNext,
   loading: state.isLoading,
   messages: state.items,
-  searchQuery: state.searchQuery,
 });
 
-const PinnedMessageListContent = ({
-  additionalFlatListProps,
-  searchInputProps,
-}: PinnedMessageListProps) => {
+const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmentListProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
-      channelDetails: { pinnedMessageList },
+      channelDetails: { fileAttachmentList },
     },
   } = useTheme();
   const styles = useStyles();
-  const { PinnedMessageItem } = useComponentsContext();
+  const { FileAttachmentItem } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelPinnedMessageListContext();
-  const { error, hasNext, loading, messages, searchQuery } = useStateStore(
+  const { channel, searchSource } = useChannelFileAttachmentListContext();
+  const { error, hasNext, loading, messages } = useStateStore(
     searchSource.state,
     listStateSelector,
   );
@@ -76,30 +80,45 @@ const PinnedMessageListContent = ({
 
   const [isEmpty, setIsEmpty] = useState<boolean | undefined>(undefined);
   useEffect(() => {
-    if (!messages || isEmpty !== undefined) return;
-    if (!searchSource.state.getLatestValue().searchQuery && messages.length === 0) {
-      setIsEmpty(true);
+    if (!messages || isEmpty !== undefined) {
+      return;
     }
-  }, [isEmpty, messages, searchSource]);
+    if (messages.length === 0) {
+      setIsEmpty(true);
+    } else {
+      setIsEmpty(false);
+    }
+  }, [isEmpty, messages]);
 
   useEffect(() => {
     if (!error) {
       return;
     }
     addNotification({
-      message: t('Failed to load pinned messages'),
+      message: t('Failed to load files'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
-        type: 'api:channel:query-pinned-messages:failed',
+        type: 'api:channel:query-file-attachments:failed',
       },
-      origin: { context: { channel }, emitter: 'ChannelPinnedMessageList' },
+      origin: { context: { channel }, emitter: 'ChannelFileAttachmentList' },
     });
   }, [error, addNotification, channel, t]);
 
+  const sections = useFileAttachmentListSections(messages);
+
   const renderItem = useCallback(
-    ({ item }: { item: MessageResponse }) => <PinnedMessageItem channel={channel} message={item} />,
-    [channel, PinnedMessageItem],
+    ({ item }: { item: MessageResponse }) => (
+      <FileAttachmentItem channel={channel} message={item} />
+    ),
+    [channel, FileAttachmentItem],
+  );
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: FileAttachmentSection }) => (
+      <FileAttachmentListSectionHeader title={section.title} />
+    ),
+    [],
   );
 
   const loadMore = useCallback(() => {
@@ -109,38 +128,25 @@ const PinnedMessageListContent = ({
     }
   }, [hasNext, messages, searchSource]);
 
-  const emptyState = loading ? (
-    <PinnedMessageListLoadingSkeleton />
-  ) : isEmpty ? (
-    <EmptyList
-      icon={Pin}
-      subtitle={t('Long-press a message to pin it to the chat')}
-      title={t('No pinned messages')}
-    />
-  ) : (
-    <EmptySearchResult label={t('No pinned messages')} />
-  );
+  const emptyState =
+    loading || isEmpty === undefined ? (
+      <FileAttachmentListLoadingSkeleton />
+    ) : (
+      <EmptyList
+        icon={File}
+        subtitle={t('Files shared in this chat will appear here')}
+        title={t('No files')}
+      />
+    );
 
   const loadingMoreIndicator = (
     <>{loading && messages && messages.length > 0 && <ActivityIndicator />}</>
   );
 
   return (
-    <View style={[styles.container, pinnedMessageList.container]}>
-      {!isEmpty && (
-        <SearchInput
-          value={searchQuery}
-          accessibilityLabel={t('a11y/Search pinned messages')}
-          onChangeText={(text) => {
-            searchSource.state.partialNext({ searchQuery: text });
-            searchSource.search(text);
-          }}
-          {...searchInputProps}
-        />
-      )}
-      <FlatList
-        contentContainerStyle={[styles.listContent, pinnedMessageList.listContent]}
-        data={messages}
+    <View style={[styles.container, fileAttachmentList.container]}>
+      <SectionList
+        contentContainerStyle={[styles.listContent, fileAttachmentList.listContent]}
         keyboardDismissMode='interactive'
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
@@ -149,9 +155,12 @@ const PinnedMessageListContent = ({
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}
-        style={[styles.list, pinnedMessageList.list]}
-        testID='pinned-message-list'
-        {...additionalFlatListProps}
+        renderSectionHeader={renderSectionHeader}
+        sections={sections}
+        stickySectionHeadersEnabled
+        style={[styles.list, fileAttachmentList.list]}
+        testID='file-attachment-list'
+        {...additionalSectionListProps}
       />
       <NotificationList />
     </View>
@@ -161,20 +170,20 @@ const PinnedMessageListContent = ({
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const PinnedMessageList = (props: PinnedMessageListProps) => {
+export const FileAttachmentList = (props: FileAttachmentListProps) => {
   const { channel } = useChannelDetailsContext();
-  const notificationHostId = channel?.cid ? `pinned-message-list:${channel.cid}` : undefined;
+  const notificationHostId = channel?.cid ? `file-attachment-list:${channel.cid}` : undefined;
 
   if (!notificationHostId) {
     return null;
   }
 
   return (
-    <ChannelPinnedMessageListProvider channel={channel}>
+    <ChannelFileAttachmentListProvider channel={channel}>
       <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-        <PinnedMessageListContent {...props} />
+        <FileAttachmentListContent {...props} />
       </NotificationTargetProvider>
-    </ChannelPinnedMessageListProvider>
+    </ChannelFileAttachmentListProvider>
   );
 };
 

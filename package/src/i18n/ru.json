@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "ответил на",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Вчера]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Завтра]\",\"nextWeek\":\"dddd [в] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{position}} из {{count}}",
   "No pinned messages": "Нет закреплённых сообщений",
   "a11y/Search pinned messages": "Поиск закреплённых сообщений",
-  "Long-press a message to pin it to the chat": "Нажмите и удерживайте сообщение, чтобы закрепить его в чате"
+  "Long-press a message to pin it to the chat": "Нажмите и удерживайте сообщение, чтобы закрепить его в чате",
+  "No media": "Нет медиафайлов",
+  "Photos and videos sent in this chat will appear here": "Здесь появятся фото и видео, отправленные в этом чате",
+  "Failed to load media": "Не удалось загрузить медиафайлы",
+  "No files": "Нет файлов",
+  "Files shared in this chat will appear here": "Здесь появятся файлы, отправленные в этом чате",
+  "Failed to load files": "Не удалось загрузить файлы"
 }

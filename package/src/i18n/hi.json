@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "को उत्तर दिया",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[कल]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[कल]\",\"nextWeek\":\"dddd [को] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{count}} में से {{position}}",
   "No pinned messages": "कोई पिन किया गया संदेश नहीं",
   "a11y/Search pinned messages": "पिन किए गए संदेश खोजें",
-  "Long-press a message to pin it to the chat": "किसी संदेश को चैट में पिन करने के लिए उसे देर तक दबाएँ"
+  "Long-press a message to pin it to the chat": "किसी संदेश को चैट में पिन करने के लिए उसे देर तक दबाएँ",
+  "No media": "कोई मीडिया नहीं",
+  "Photos and videos sent in this chat will appear here": "इस चैट में भेजे गए फ़ोटो और वीडियो यहाँ दिखाई देंगे",
+  "Failed to load media": "मीडिया लोड करने में विफल",
+  "No files": "कोई फ़ाइल नहीं",
+  "Files shared in this chat will appear here": "इस चैट में साझा की गई फ़ाइलें यहाँ दिखाई देंगी",
+  "Failed to load files": "फ़ाइलें लोड करने में विफल"
 }

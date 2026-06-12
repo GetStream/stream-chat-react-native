@@ -4,8 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
 import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
-import { PinnedMessageList } from './navigation-section/PinnedMessageList';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { ChevronRight } from '../../../icons';
 import { primitives } from '../../../theme';
@@ -25,6 +25,7 @@ export const ChannelDetailsNavigationSection = () => {
     },
   } = useTheme();
   const styles = useStyles();
+  const { FileAttachmentList, MediaList, PinnedMessageList } = useComponentsContext();
   const items = useChannelDetailsNavigationItems();
   const [activeSection, setActiveSection] = useState<ChannelDetailsNavigationSectionType | null>(
     null,
@@ -36,10 +37,14 @@ export const ChannelDetailsNavigationSection = () => {
     switch (activeSection) {
       case 'pinned-messages':
         return <PinnedMessageList />;
+      case 'photos-and-videos':
+        return <MediaList />;
+      case 'files':
+        return <FileAttachmentList />;
       default:
         return null;
     }
-  }, [activeSection]);
+  }, [activeSection, FileAttachmentList, MediaList, PinnedMessageList]);
 
   const activeItem = useMemo(
     () => items.find((item) => item.section === activeSection),

@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "yanıtladı",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Dün]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[Yarın]\",\"nextWeek\":\"dddd [saat] LT\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{count}} öğeden {{position}}",
   "No pinned messages": "Sabitlenmiş mesaj yok",
   "a11y/Search pinned messages": "Sabitlenmiş mesajları ara",
-  "Long-press a message to pin it to the chat": "Bir mesajı sohbete sabitlemek için uzun basın"
+  "Long-press a message to pin it to the chat": "Bir mesajı sohbete sabitlemek için uzun basın",
+  "No media": "Medya yok",
+  "Photos and videos sent in this chat will appear here": "Bu sohbette gönderilen fotoğraflar ve videolar burada görünecek",
+  "Failed to load media": "Medya yüklenemedi",
+  "No files": "Dosya yok",
+  "Files shared in this chat will appear here": "Bu sohbette paylaşılan dosyalar burada görünecek",
+  "Failed to load files": "Dosyalar yüklenemedi"
 }

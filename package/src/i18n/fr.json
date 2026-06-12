@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "a répondu à",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[Hier]\", \"lastWeek\":\"dddd\", \"nextDay\":\"[Demain]\", \"nextWeek\":\"dddd [à] LT\", \"sameDay\":\"LT\", \"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{position}} sur {{count}}",
   "No pinned messages": "Aucun message épinglé",
   "a11y/Search pinned messages": "Rechercher des messages épinglés",
-  "Long-press a message to pin it to the chat": "Appuyez longuement sur un message pour l’épingler à la discussion"
+  "Long-press a message to pin it to the chat": "Appuyez longuement sur un message pour l’épingler à la discussion",
+  "No media": "Aucun média",
+  "Photos and videos sent in this chat will appear here": "Les photos et vidéos envoyées dans cette discussion apparaîtront ici",
+  "Failed to load media": "Échec du chargement des médias",
+  "No files": "Aucun fichier",
+  "Files shared in this chat will appear here": "Les fichiers partagés dans cette discussion apparaîtront ici",
+  "Failed to load files": "Échec du chargement des fichiers"
 }

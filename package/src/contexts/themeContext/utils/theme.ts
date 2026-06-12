@@ -261,6 +261,28 @@ export type Theme = {
       name: TextStyle;
       title: ViewStyle;
     };
+    fileAttachmentList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+      sectionHeader: ViewStyle;
+      sectionHeaderText: TextStyle;
+    };
+    fileAttachmentItem: {
+      container: ViewStyle;
+    };
+    mediaList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    mediaItem: {
+      avatar: ViewStyle;
+      container: ViewStyle;
+      thumbnail: ImageStyle;
+      videoBadge: ViewStyle;
+      videoBadgeText: TextStyle;
+    };
   };
   channelListSkeleton: {
     animationTime: number;
@@ -306,6 +328,15 @@ export type Theme = {
     title: ViewStyle;
   };
   pinnedMessageListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  fileAttachmentListSkeleton: {
     animationTime: number;
     avatar: ViewStyle;
     container: ViewStyle;
@@ -1331,6 +1362,28 @@ export const defaultTheme: Theme = {
       name: {},
       title: {},
     },
+    fileAttachmentList: {
+      container: {},
+      list: {},
+      listContent: {},
+      sectionHeader: {},
+      sectionHeaderText: {},
+    },
+    fileAttachmentItem: {
+      container: {},
+    },
+    mediaList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    mediaItem: {
+      avatar: {},
+      container: {},
+      thumbnail: {},
+      videoBadge: {},
+      videoBadgeText: {},
+    },
   },
   channelListSkeleton: {
     animationTime: 1000, // in milliseconds
@@ -1376,6 +1429,15 @@ export const defaultTheme: Theme = {
     title: {},
   },
   pinnedMessageListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  fileAttachmentListSkeleton: {
     animationTime: 1000, // in milliseconds
     avatar: {},
     container: {},

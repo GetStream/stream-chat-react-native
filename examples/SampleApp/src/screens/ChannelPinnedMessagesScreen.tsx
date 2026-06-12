@@ -1,13 +1,17 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { RouteProp } from '@react-navigation/native';
+import { useNavigation, type RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   useTheme,
   PinnedMessageList,
   ChannelDetailsContextProvider,
+  PinnedMessageItemProps,
+  PinnedMessageItem,
+  WithComponents,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -70,8 +74,30 @@ type ChannelPinnedMessagesScreenRouteProp = RouteProp<
   'ChannelPinnedMessagesScreen'
 >;
 
+type ChannelPinnedMessagesScreenNavigationProp = NativeStackNavigationProp<
+  StackNavigatorParamList,
+  'ChannelPinnedMessagesScreen'
+>;
+
 export type ChannelPinnedMessagesScreenProps = {
   route: ChannelPinnedMessagesScreenRouteProp;
+};
+
+const PinnedMessage = (props: PinnedMessageItemProps) => {
+  const navigation = useNavigation<ChannelPinnedMessagesScreenNavigationProp>();
+
+  const onPress = useCallback(() => {
+    navigation.navigate('ChannelScreen', {
+      channel: props.channel,
+      messageId: props.message.parent_id ?? props.message.id,
+    });
+  }, [props.channel, navigation, props.message.parent_id, props.message.id]);
+
+  return (
+    <Pressable onPress={onPress}>
+      <PinnedMessageItem {...props} />
+    </Pressable>
+  );
 };
 
 export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenProps> = ({
@@ -94,7 +120,9 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
     >
       <ScreenHeader titleText='Pinned Messages' />
       <ChannelDetailsContextProvider value={{ channel }}>
-        <PinnedMessageList />
+        <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
+          <PinnedMessageList />
+        </WithComponents>
       </ChannelDetailsContextProvider>
     </View>
   );

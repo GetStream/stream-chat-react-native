@@ -43,6 +43,12 @@ import {
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
+  FileAttachmentItem,
+  FileAttachmentList,
+  MediaItem,
+  MediaList,
+  PinnedMessageItem,
+  PinnedMessageList,
 } from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -322,6 +328,12 @@ const components = {
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
+  FileAttachmentItem,
+  FileAttachmentList,
+  MediaItem,
+  MediaList,
+  PinnedMessageItem,
+  PinnedMessageList,
 
   // Thread
   ThreadMessageComposer: MessageComposer,

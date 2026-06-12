@@ -162,6 +162,7 @@
   "duration/Remind Me": "{{ milliseconds | durationFormatter(withSuffix: true) }}",
   "replied to": "에 답장했습니다",
   "timestamp/ChannelPreviewStatus": "{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {\"lastDay\":\"[어제]\",\"lastWeek\":\"dddd\",\"nextDay\":\"[내일]\",\"nextWeek\":\"dddd [LT에]\",\"sameDay\":\"LT\",\"sameElse\":\"L\"}) }}",
+  "timestamp/FileAttachmentListSection": "{{ timestamp | timestampFormatter(format: MMMM YYYY) }}",
   "timestamp/ImageGalleryHeader": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/InlineDateSeparator": "{{ timestamp | timestampFormatter(calendar: true) }}",
   "timestamp/MessageEditedTimestamp": "{{ timestamp | timestampFormatter(calendar: true) }}",
@@ -439,5 +440,11 @@
   "a11y/{{position}} of {{count}}": "{{count}}개 중 {{position}}번째",
   "No pinned messages": "고정된 메시지가 없습니다",
   "a11y/Search pinned messages": "고정된 메시지 검색",
-  "Long-press a message to pin it to the chat": "메시지를 길게 눌러 채팅에 고정하세요"
+  "Long-press a message to pin it to the chat": "메시지를 길게 눌러 채팅에 고정하세요",
+  "No media": "미디어 없음",
+  "Photos and videos sent in this chat will appear here": "이 채팅에서 보낸 사진과 동영상이 여기에 표시됩니다",
+  "Failed to load media": "미디어를 불러오지 못했습니다",
+  "No files": "파일 없음",
+  "Files shared in this chat will appear here": "이 채팅에서 공유된 파일이 여기에 표시됩니다",
+  "Failed to load files": "파일을 불러오지 못했습니다"
 }
