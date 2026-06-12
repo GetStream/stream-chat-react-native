@@ -501,6 +501,15 @@ type AVEncodingType =
 export interface AudioSet {
   AudioChannelsAndroid?: number;
   AudioEncoderAndroid?: AudioEncoderAndroidType;
+  /**
+   * Cross-platform bitrate hint introduced in `react-native-nitro-sound` 0.2.10+.
+   * Sits alongside the iOS-native `AVEncoderBitRateKeyIOS` because nitro-sound
+   * reads `AudioEncodingBitRate` on iOS (mapping it to `AVEncoderBitRateKey`),
+   * not the platform-specific key. Older nitro-sound builds and the legacy
+   * `react-native-audio-recorder-player` ignore this field, so it's safe to
+   * include unconditionally.
+   */
+  AudioEncodingBitRate?: number;
   AudioEncodingBitRateAndroid?: number;
   AudioSamplingRateAndroid?: number;
   AudioSourceAndroid?: AudioSourceAndroidType;
