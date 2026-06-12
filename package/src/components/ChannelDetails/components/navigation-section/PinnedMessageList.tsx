@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { Channel, MessageResponse, SearchSourceState } from 'stream-chat';
+import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
 import { PinnedMessageItem } from './PinnedMessageItem';
 import { PinnedMessageListLoadingSkeleton } from './PinnedMessageListLoadingSkeleton';
 
+import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
   ChannelPinnedMessageListProvider,
   useChannelPinnedMessageListContext,
@@ -24,10 +25,6 @@ import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput, SearchInputProps } from '../../../UIComponents/SearchInput';
 
 export type PinnedMessageListProps = {
-  /**
-   * The channel whose pinned messages should be listed.
-   */
-  channel: Channel;
   /**
    * Besides the existing default behavior of the pinned message list, you can attach
    * additional props to the underlying React Native FlatList.
@@ -51,7 +48,7 @@ const listStateSelector = (state: SearchSourceState<MessageResponse>) => ({
 const PinnedMessageListContent = ({
   additionalFlatListProps,
   searchInputProps,
-}: Omit<PinnedMessageListProps, 'channel'>) => {
+}: PinnedMessageListProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -72,7 +69,7 @@ const PinnedMessageListContent = ({
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      searchSource.search('');
+      searchSource.search();
     }
   }, [searchSource]);
 
@@ -163,7 +160,8 @@ const PinnedMessageListContent = ({
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const PinnedMessageList = ({ channel, ...props }: PinnedMessageListProps) => {
+export const PinnedMessageList = (props: PinnedMessageListProps) => {
+  const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `pinned-message-list:${channel.cid}` : undefined;
 
   if (!notificationHostId) {

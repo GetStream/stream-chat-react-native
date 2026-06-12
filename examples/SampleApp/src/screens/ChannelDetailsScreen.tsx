@@ -1,18 +1,16 @@
 import React, { useCallback, useState } from 'react';
 
-import { useNavigation, type RouteProp } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ChannelDetails,
-  ChannelDetailsNavigationSectionProps,
+  GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
   ChannelAddMembersModal,
   ChannelAllMembersModal,
   ChannelDetailsContextProvider,
-  useChannelDetailsContext,
-  ChannelDetailsNavigationSection,
-  WithComponents,
+  ChannelDetailsNavigationSectionType,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -31,30 +29,10 @@ type Props = {
   route: ChannelDetailsScreenRouteProp;
 };
 
-const NavSection = (props: ChannelDetailsNavigationSectionProps) => {
-  const navigation = useNavigation();
-  const { channel } = useChannelDetailsContext();
-
-  const onPress = useCallback(
-    (section: ChannelDetailsNavigationSectionType) => {
-      switch (section) {
-        case 'pinned-messages':
-          navigation.navigate('ChannelPinnedMessagesScreen', { channel });
-          break;
-        case 'photos-and-videos':
-          navigation.navigate('ChannelImagesScreen', { channel });
-          break;
-        case 'files':
-          navigation.navigate('ChannelFilesScreen', { channel });
-          break;
-        default:
-          break;
-      }
-    },
-    [navigation, channel],
-  );
-
-  return <ChannelDetailsNavigationSection {...props} onPress={onPress} />;
+const navigationItems: { [key in ChannelDetailsNavigationSectionType]: RouteName } = {
+  'pinned-messages': 'ChannelPinnedMessagesScreen',
+  'photos-and-videos': 'ChannelImagesScreen',
+  files: 'ChannelFilesScreen',
 };
 
 export const ChannelDetailsScreen: React.FC<Props> = ({
@@ -64,6 +42,16 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   },
 }) => {
   const onBack = useCallback(() => navigation.goBack(), [navigation]);
+  const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
+    ({ defaultItems }) =>
+      defaultItems.map((item) => ({
+        ...item,
+        ...(navigationItems[item.section]
+          ? { onPress: () => navigation.navigate(navigationItems[item.section], { channel }) }
+          : {}),
+      })),
+    [navigation, channel],
+  );
   const popToRoot = useCallback(
     () =>
       navigation.reset({
@@ -109,16 +97,15 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
 
   return (
     <>
-      <WithComponents overrides={{ ChannelDetailsNavigationSection: NavSection }}>
-        <ChannelDetails
-          channel={channel}
-          getChannelMemberActionItems={getChannelMemberActionItems}
-          onBack={onBack}
-          onChannelDismiss={popToRoot}
-          // Handler view all members modal so we can close it after navigation is triggered by our custom action
-          onViewAllMembersPress={handleAllMembersPress}
-        />
-      </WithComponents>
+      <ChannelDetails
+        channel={channel}
+        getChannelMemberActionItems={getChannelMemberActionItems}
+        getNavigationItems={getNavigationItems}
+        onBack={onBack}
+        onChannelDismiss={popToRoot}
+        // Handler view all members modal so we can close it after navigation is triggered by our custom action
+        onViewAllMembersPress={handleAllMembersPress}
+      />
       <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
         <ChannelAllMembersModal
           onClose={handleAllMembersClose}

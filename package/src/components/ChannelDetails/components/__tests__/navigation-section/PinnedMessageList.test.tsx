@@ -4,6 +4,10 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { StateStore } from 'stream-chat';
 import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
+import {
+  ChannelDetailsContextProvider,
+  type ChannelDetailsContextValue,
+} from '../../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ThemeProvider } from '../../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../../contexts/translationContext/TranslationContext';
@@ -143,10 +147,11 @@ const tree = (searchSource: FakeSearchSource, props: { additionalFlatListProps?:
           userLanguage: 'en',
         }}
       >
-        <PinnedMessageList
-          additionalFlatListProps={props.additionalFlatListProps as never}
-          channel={mockChannel as never}
-        />
+        <ChannelDetailsContextProvider
+          value={{ channel: mockChannel } as unknown as ChannelDetailsContextValue}
+        >
+          <PinnedMessageList additionalFlatListProps={props.additionalFlatListProps as never} />
+        </ChannelDetailsContextProvider>
       </TranslationProvider>
     </ThemeProvider>
   );

@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
+import type { GetChannelDetailsNavigationItems } from './hooks/useChannelDetailsNavigationItems';
+
 import {
   ChannelDetailsContextProvider,
   type ChannelDetailsContextValue,
@@ -59,6 +61,15 @@ export type ChannelDetailsProps = {
    * or add items — for example, to inject a "Send Direct Message" action in your app.
    */
   getChannelMemberActionItems?: GetChannelMemberActionItems;
+  /**
+   * Customize the navigation rows rendered in the channel details navigation section.
+   *
+   * Receives the built-in `defaultItems` (and a `context`) and returns the rows to render.
+   * Map over `defaultItems` to override a row's `onPress` (e.g. to push your own screen) or
+   * to add/remove rows. Any row whose `onPress` you leave untouched keeps its built-in
+   * behavior (opening the built-in modal), including sections added in future SDK versions.
+   */
+  getNavigationItems?: GetChannelDetailsNavigationItems;
   /**
    * Override the role label shown next to each member in the channel details screen.
    *
@@ -150,6 +161,7 @@ export const ChannelDetails = ({
   getChannelActionItems,
   getChannelMemberActionItems,
   getMemberRoleLabel,
+  getNavigationItems,
   onAddMembersPress,
   onBack,
   onChannelDismiss,
@@ -166,6 +178,7 @@ export const ChannelDetails = ({
       getChannelActionItems,
       getChannelMemberActionItems,
       getMemberRoleLabel,
+      getNavigationItems,
       onAddMembersPress,
       onBack,
       onChannelDismiss,
@@ -180,6 +193,7 @@ export const ChannelDetails = ({
       getChannelActionItems,
       getChannelMemberActionItems,
       getMemberRoleLabel,
+      getNavigationItems,
       onAddMembersPress,
       onBack,
       onChannelDismiss,

@@ -4,7 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { RouteProp } from '@react-navigation/native';
-import { useTheme, PinnedMessageList } from 'stream-chat-react-native';
+import {
+  useTheme,
+  PinnedMessageList,
+  ChannelDetailsContextProvider,
+} from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLegacyColors } from '../theme/useLegacyColors';
@@ -89,7 +93,9 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
       ]}
     >
       <ScreenHeader titleText='Pinned Messages' />
-      <PinnedMessageList channel={channel} />
+      <ChannelDetailsContextProvider value={{ channel }}>
+        <PinnedMessageList />
+      </ChannelDetailsContextProvider>
     </View>
   );
 };
