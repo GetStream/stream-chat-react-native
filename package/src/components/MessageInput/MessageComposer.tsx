@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -52,9 +51,9 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
+import { PollModal } from '../Poll/components/PollModal';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
-import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const useStyles = () => {
   const {
@@ -66,16 +65,6 @@ const useStyles = () => {
         flex: 1,
         flexShrink: 1,
         minWidth: 0,
-      },
-      pollModalWrapper: {
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: semantics.backgroundCoreElevation1,
-      },
-      pollSafeArea: {
-        flex: 1,
-        backgroundColor: semantics.backgroundCoreElevation1,
       },
       container: {
         alignItems: 'center',
@@ -457,23 +446,13 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
       </Animated.View>
 
       {showPollCreationDialog ? (
-        <View style={styles.pollModalWrapper}>
-          <Modal
-            animationType='slide'
-            onRequestClose={closePollCreationDialog}
-            visible={showPollCreationDialog}
-          >
-            <GestureHandlerRootView style={styles.pollSafeArea}>
-              <SafeAreaViewWrapper style={styles.pollSafeArea}>
-                <CreatePoll
-                  closePollCreationDialog={closePollCreationDialog}
-                  createPollOptionGap={createPollOptionGap}
-                  sendMessage={sendMessage}
-                />
-              </SafeAreaViewWrapper>
-            </GestureHandlerRootView>
-          </Modal>
-        </View>
+        <PollModal onRequestClose={closePollCreationDialog} visible={showPollCreationDialog}>
+          <CreatePoll
+            closePollCreationDialog={closePollCreationDialog}
+            createPollOptionGap={createPollOptionGap}
+            sendMessage={sendMessage}
+          />
+        </PollModal>
       ) : null}
     </MicPositionProvider>
   );
