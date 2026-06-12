@@ -12,7 +12,7 @@ export const useCreateMessageComposer = ({
   channel,
 }: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread' | 'editing'>) => {
   const { client } = useChatContext();
-  const { messageComposerFixedSizeQueue: queueCache } = client;
+  const { messageComposerCache: queueCache } = client;
 
   const cachedEditedMessage = useMemo(() => {
     if (!editedMessage) return undefined;
