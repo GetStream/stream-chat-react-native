@@ -1,11 +1,9 @@
 import { useEffect, useMemo } from 'react';
 
-import { FixedSizeQueueCache, MessageComposer } from 'stream-chat';
+import { MessageComposer } from 'stream-chat';
 
 import { useChatContext } from '../../chatContext/ChatContext';
 import { MessageComposerContextValue } from '../../messageComposerContext/MessageComposerContext';
-
-const queueCache = new FixedSizeQueueCache<string, MessageComposer>(64);
 
 export const useCreateMessageComposer = ({
   editing: editedMessage,
@@ -14,6 +12,7 @@ export const useCreateMessageComposer = ({
   channel,
 }: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread' | 'editing'>) => {
   const { client } = useChatContext();
+  const { messageComposerCache: queueCache } = client;
 
   const cachedEditedMessage = useMemo(() => {
     if (!editedMessage) return undefined;
@@ -69,7 +68,14 @@ export const useCreateMessageComposer = ({
     } else {
       return channel.messageComposer;
     }
-  }, [cachedEditedMessage, cachedParentMessage, channel, client, threadInstance]);
+  }, [
+    cachedEditedMessage,
+    cachedParentMessage,
+    channel.messageComposer,
+    client,
+    queueCache,
+    threadInstance,
+  ]);
 
   if (
     (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(

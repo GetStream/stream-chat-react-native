@@ -275,6 +275,7 @@
   "a11y/Loading failed": "Laden mislukt",
   "a11y/Message actions": "Berichtacties",
   "a11y/Muted": "Gedempt",
+  "a11y/Pinned": "Vastgemaakt",
   "a11y/New message from {{user}}": "Nieuw bericht van {{user}}",
   "a11y/Offline": "Offline",
   "a11y/Open message actions": "Berichtacties openen",
@@ -446,5 +447,9 @@
   "Failed to load media": "Media laden mislukt",
   "No files": "Geen bestanden",
   "Share a file to see it here": "Deel een bestand om het hier te zien",
-  "Failed to load files": "Bestanden laden mislukt"
+  "Failed to load files": "Bestanden laden mislukt",
+  "Pin Chat": "Chat vastmaken",
+  "Pin Group": "Groep vastmaken",
+  "Unpin Chat": "Chat losmaken",
+  "Unpin Group": "Groep losmaken"
 }

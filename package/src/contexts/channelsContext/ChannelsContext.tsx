@@ -118,6 +118,7 @@ export type ChannelsContextValue = {
   swipeActionsEnabled?: boolean;
 
   mutedStatusPosition?: 'trailingBottom' | 'inlineTitle';
+  pinnedStatusPosition?: 'trailingBottom' | 'inlineTitle';
 };
 
 export const ChannelsContext = React.createContext(

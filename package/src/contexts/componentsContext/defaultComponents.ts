@@ -61,6 +61,7 @@ import { ChannelLastMessagePreview } from '../../components/ChannelPreview/Chann
 import { ChannelMessagePreviewDeliveryStatus } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewMessage } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import { ChannelPreviewMutedStatus } from '../../components/ChannelPreview/ChannelPreviewMutedStatus';
+import { ChannelPreviewPinnedStatus } from '../../components/ChannelPreview/ChannelPreviewPinnedStatus';
 import { ChannelPreviewStatus } from '../../components/ChannelPreview/ChannelPreviewStatus';
 import { ChannelPreviewTitle } from '../../components/ChannelPreview/ChannelPreviewTitle';
 import { ChannelPreviewTypingIndicator } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
@@ -279,6 +280,7 @@ const components = {
   ChannelPreviewMessage,
   ChannelPreviewMessageDeliveryStatus: ChannelMessagePreviewDeliveryStatus,
   ChannelPreviewMutedStatus,
+  ChannelPreviewPinnedStatus,
   ChannelPreviewStatus,
   ChannelPreviewTitle,
   ChannelPreviewTypingIndicator,

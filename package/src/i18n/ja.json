@@ -275,6 +275,7 @@
   "a11y/Loading failed": "読み込みに失敗しました",
   "a11y/Message actions": "メッセージの操作",
   "a11y/Muted": "ミュート中",
+  "a11y/Pinned": "ピン留め中",
   "a11y/New message from {{user}}": "{{user}}からの新しいメッセージ",
   "a11y/Offline": "オフライン",
   "a11y/Open message actions": "メッセージの操作を開く",
@@ -446,5 +447,9 @@
   "Failed to load media": "メディアの読み込みに失敗しました",
   "No files": "ファイルがありません",
   "Share a file to see it here": "ファイルを共有すると、ここに表示されます",
-  "Failed to load files": "ファイルの読み込みに失敗しました"
+  "Failed to load files": "ファイルの読み込みに失敗しました",
+  "Pin Chat": "チャットをピン留め",
+  "Pin Group": "グループをピン留め",
+  "Unpin Chat": "チャットのピン留めを解除",
+  "Unpin Group": "グループのピン留めを解除"
 }

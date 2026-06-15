@@ -41,7 +41,11 @@ export const ChannelSwipableWrapper = ({
 }>) => {
   const { ChannelDetailsBottomSheet: ChannelDetailsBottomSheetComponent } = useComponentsContext();
   const [channelDetailSheetOpen, setChannelDetailSheetOpen] = useState(false);
-  const channelActionItems = useChannelActionItems({ channel, getChannelActionItems });
+  const channelActionItems = useChannelActionItems({
+    channel,
+    getChannelActionItems,
+    surface: 'list',
+  });
   const sheetItems = useMemo(
     () => channelActionItems.filter((item) => item.placement !== 'swipe'),
     [channelActionItems],

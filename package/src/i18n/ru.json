@@ -275,6 +275,7 @@
   "a11y/Loading failed": "Не удалось загрузить",
   "a11y/Message actions": "Действия с сообщением",
   "a11y/Muted": "Без звука",
+  "a11y/Pinned": "Закреплено",
   "a11y/New message from {{user}}": "Новое сообщение от {{user}}",
   "a11y/Offline": "Не в сети",
   "a11y/Open message actions": "Открыть действия с сообщением",
@@ -446,5 +447,9 @@
   "Failed to load media": "Не удалось загрузить медиафайлы",
   "No files": "Нет файлов",
   "Share a file to see it here": "Поделитесь файлом, чтобы увидеть его здесь",
-  "Failed to load files": "Не удалось загрузить файлы"
+  "Failed to load files": "Не удалось загрузить файлы",
+  "Pin Chat": "Закрепить чат",
+  "Pin Group": "Закрепить группу",
+  "Unpin Chat": "Открепить чат",
+  "Unpin Group": "Открепить группу"
 }

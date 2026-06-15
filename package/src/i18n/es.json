@@ -275,6 +275,7 @@
   "a11y/Loading failed": "Error al cargar",
   "a11y/Message actions": "Acciones del mensaje",
   "a11y/Muted": "Silenciado",
+  "a11y/Pinned": "Fijado",
   "a11y/New message from {{user}}": "Nuevo mensaje de {{user}}",
   "a11y/Offline": "Sin conexión",
   "a11y/Open message actions": "Abrir acciones del mensaje",
@@ -446,5 +447,9 @@
   "Failed to load media": "Error al cargar multimedia",
   "No files": "No hay archivos",
   "Share a file to see it here": "Comparte un archivo para verlo aquí",
-  "Failed to load files": "Error al cargar los archivos"
+  "Failed to load files": "Error al cargar los archivos",
+  "Pin Chat": "Fijar chat",
+  "Pin Group": "Fijar grupo",
+  "Unpin Chat": "Desfijar chat",
+  "Unpin Group": "Desfijar grupo"
 }

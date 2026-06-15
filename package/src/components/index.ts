@@ -56,6 +56,7 @@ export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/ChannelPreviewMessage';
 export * from './ChannelPreview/ChannelPreviewView';
 export * from './ChannelPreview/ChannelPreviewMutedStatus';
+export * from './ChannelPreview/ChannelPreviewPinnedStatus';
 export * from './ChannelPreview/ChannelLastMessagePreview';
 export * from './ChannelPreview/ChannelPreviewStatus';
 export * from './ChannelPreview/ChannelPreviewTitle';

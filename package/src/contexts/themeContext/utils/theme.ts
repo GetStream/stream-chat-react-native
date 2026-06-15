@@ -349,6 +349,7 @@ export type Theme = {
     contentContainer: ViewStyle;
     date: TextStyle;
     mutedStatus: IconProps;
+    pinnedStatus: IconProps;
     messageDeliveryStatus: {
       container: ViewStyle;
       text: TextStyle;
@@ -1462,6 +1463,7 @@ export const defaultTheme: Theme = {
       timeIcon: {},
     },
     mutedStatus: {},
+    pinnedStatus: {},
     lowerRow: {},
     title: {},
     unreadContainer: {},

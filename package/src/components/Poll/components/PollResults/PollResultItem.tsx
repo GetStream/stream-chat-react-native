@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
 
@@ -15,9 +14,9 @@ import {
 } from '../../../../contexts';
 
 import { primitives } from '../../../../theme';
-import { SafeAreaViewWrapper } from '../../../UIComponents/SafeAreaViewWrapper';
 import { usePollState } from '../../hooks/usePollState';
 import { GenericPollButton } from '../Button';
+import { PollModal } from '../PollModal';
 import { PollModalHeader } from '../PollModalHeader';
 
 export type ShowAllVotesButtonProps = {
@@ -62,18 +61,14 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
         </View>
       ) : null}
       {showAllVotes ? (
-        <Modal
+        <PollModal
           animationType='fade'
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <GestureHandlerRootView style={styles.modalRoot}>
-            <SafeAreaViewWrapper style={styles.safeArea}>
-              <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
-              <PollOptionFullResults message={message} option={option} poll={poll} />
-            </SafeAreaViewWrapper>
-          </GestureHandlerRootView>
-        </Modal>
+          <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
+          <PollOptionFullResults message={message} option={option} poll={poll} />
+        </PollModal>
       ) : null}
     </>
   );
@@ -156,9 +151,6 @@ const useStyles = () => {
         alignItems: 'center',
         paddingBottom: primitives.spacingXs,
       },
-      modalRoot: {
-        flex: 1,
-      },
       title: {
         flex: 1,
         fontSize: primitives.typographyFontSizeLg,
@@ -182,10 +174,6 @@ const useStyles = () => {
         color: semantics.textPrimary,
         marginStart: primitives.spacingMd,
         textAlign: 'left',
-      },
-      safeArea: {
-        backgroundColor: semantics.backgroundCoreElevation1,
-        flex: 1,
       },
       inlineButton: {
         borderColor: semantics.borderCoreDefault,

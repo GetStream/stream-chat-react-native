@@ -12,7 +12,7 @@ import {
 export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
   const { channel, getChannelActionItems, onChannelDismiss } = useChannelDetailsContext();
 
-  const items = useChannelActionItems({ channel, getChannelActionItems });
+  const items = useChannelActionItems({ channel, getChannelActionItems, surface: 'details' });
 
   return useMemo(
     () =>

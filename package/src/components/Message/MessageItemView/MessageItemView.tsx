@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
 import { SwipableMessageWrapper } from './MessageBubble';
 
@@ -22,25 +22,7 @@ import { FileTypes } from '../../../types/types';
 import { checkMessageEquality, checkQuotedMessageEquality } from '../../../utils/utils';
 import { useMessageData } from '../hooks/useMessageData';
 
-type GroupType = 'single' | 'top' | 'middle' | 'bottom' | undefined;
-
-const useStyles = ({
-  alignment,
-  isVeryLastMessage,
-  messageGroupedSingle,
-  messageGroupedBottom,
-  messageGroupedTop,
-  messageGroupedMiddle,
-  enableMessageGroupingByUser,
-}: {
-  alignment: Alignment;
-  isVeryLastMessage: boolean;
-  messageGroupedSingle: boolean;
-  messageGroupedBottom: boolean;
-  messageGroupedTop: boolean;
-  messageGroupedMiddle: boolean;
-  enableMessageGroupingByUser: boolean;
-}) => {
+const useStyles = ({ alignment }: { alignment: Alignment }) => {
   const {
     theme: {
       messageItemView: {
@@ -53,24 +35,11 @@ const useStyles = ({
         repliesContainer,
         leftAlignItems,
         rightAlignItems,
-        messageGroupedSingleStyles,
-        messageGroupedBottomStyles,
-        messageGroupedTopStyles,
-        messageGroupedMiddleStyles,
-        lastMessageContainer,
       },
     },
   } = useTheme();
 
-  const groupType: GroupType = useMemo(() => {
-    if (messageGroupedSingle) return 'single';
-    if (messageGroupedTop) return 'top';
-    if (messageGroupedMiddle) return 'middle';
-    if (messageGroupedBottom) return 'bottom';
-    return undefined;
-  }, [messageGroupedSingle, messageGroupedTop, messageGroupedMiddle, messageGroupedBottom]);
-
-  const styles = useMemo(
+  return useMemo(
     () =>
       StyleSheet.create({
         baseContainer: {
@@ -129,73 +98,6 @@ const useStyles = ({
       rightAlignItems,
     ],
   );
-
-  const groupStylesMap = useMemo(() => {
-    return {
-      single: {
-        paddingVertical: primitives.spacingXs,
-        ...messageGroupedSingleStyles,
-      },
-      top: {
-        paddingTop: primitives.spacingXs,
-        paddingBottom: primitives.spacingXxs,
-        ...messageGroupedTopStyles,
-      },
-      middle: {
-        paddingBottom: primitives.spacingXxs,
-        ...messageGroupedMiddleStyles,
-      },
-      bottom: {
-        paddingBottom: primitives.spacingXs,
-        ...messageGroupedBottomStyles,
-      },
-    };
-  }, [
-    messageGroupedBottomStyles,
-    messageGroupedMiddleStyles,
-    messageGroupedSingleStyles,
-    messageGroupedTopStyles,
-  ]);
-
-  const containerStyle = useMemo(() => {
-    let results: ViewStyle = styles.baseContainer;
-
-    if (groupType) {
-      results = {
-        ...results,
-        ...groupStylesMap[groupType],
-      };
-    }
-
-    if (isVeryLastMessage && enableMessageGroupingByUser) {
-      results = {
-        ...results,
-        marginBottom: primitives.spacingSm,
-        ...lastMessageContainer,
-      };
-    }
-
-    return results;
-  }, [
-    styles.baseContainer,
-    groupStylesMap,
-    groupType,
-    isVeryLastMessage,
-    enableMessageGroupingByUser,
-    lastMessageContainer,
-  ]);
-
-  return {
-    container: containerStyle,
-    bubbleContentContainer: styles.bubbleContentContainer,
-    bubbleErrorContainer: styles.bubbleErrorContainer,
-    bubbleReactionListTopContainer: styles.bubbleReactionListTopContainer,
-    bubbleWrapper: styles.bubbleWrapper,
-    contentContainer: styles.contentContainer,
-    repliesContainer: styles.repliesContainer,
-    leftAlignItems: styles.leftAlignItems,
-    rightAlignItems: styles.rightAlignItems,
-  };
 };
 
 export type MessageItemViewPropsWithContext = Pick<
@@ -232,7 +134,6 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     channel,
     contextMenuAnchorRef,
     customMessageSwipeAction,
-    enableMessageGroupingByUser,
     enableSwipeToReply,
     groupStyles,
     hasAttachmentActions,
@@ -273,22 +174,10 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     isMessageReceivedOrErrorType,
     isMessageTypeDeleted,
     isVeryLastMessage,
-    messageGroupedSingle,
-    messageGroupedBottom,
-    messageGroupedTop,
     messageGroupedSingleOrBottom,
-    messageGroupedMiddle,
   } = useMessageData({});
 
-  const styles = useStyles({
-    alignment,
-    isVeryLastMessage,
-    messageGroupedSingle,
-    messageGroupedBottom,
-    messageGroupedTop,
-    messageGroupedMiddle,
-    enableMessageGroupingByUser,
-  });
+  const styles = useStyles({ alignment });
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
   const hasVisibleQuotedReply = !!message.quoted_message && !hasAttachmentActions;
@@ -324,7 +213,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
   });
 
   const itemViewContent = (
-    <View pointerEvents='box-none' style={styles.container} testID='message-item-view-wrapper'>
+    <View pointerEvents='box-none' style={styles.baseContainer} testID='message-item-view-wrapper'>
       {alignment === 'left' ? <MessageAuthor /> : null}
       {isMessageTypeDeleted ? (
         <MessageDeleted date={message.created_at} groupStyle={groupStyle} />

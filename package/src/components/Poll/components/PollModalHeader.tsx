@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { ArrowLeft } from '../../../icons/arrow-left';
+import { Cross } from '../../../icons/xmark-1';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 
@@ -27,10 +27,10 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
         <Button
           accessibilityLabelKey='a11y/Close poll'
           variant='secondary'
-          type='ghost'
+          type='outline'
           size='md'
           iconOnly
-          LeadingIcon={ArrowLeft}
+          LeadingIcon={Cross}
           onPress={onPress}
           testID='poll-results-close-button'
         />

@@ -275,6 +275,7 @@
   "a11y/Loading failed": "लोड नहीं हो सका",
   "a11y/Message actions": "संदेश की कार्रवाइयां",
   "a11y/Muted": "म्यूट किया गया",
+  "a11y/Pinned": "पिन किया गया",
   "a11y/New message from {{user}}": "{{user}} से नया संदेश",
   "a11y/Offline": "ऑफलाइन",
   "a11y/Open message actions": "संदेश की कार्रवाइयां खोलें",
@@ -446,5 +447,9 @@
   "Failed to load media": "मीडिया लोड करने में विफल",
   "No files": "कोई फ़ाइल नहीं",
   "Share a file to see it here": "इसे यहाँ देखने के लिए कोई फ़ाइल शेयर करें",
-  "Failed to load files": "फ़ाइलें लोड करने में विफल"
+  "Failed to load files": "फ़ाइलें लोड करने में विफल",
+  "Pin Chat": "चैट पिन करें",
+  "Pin Group": "ग्रुप पिन करें",
+  "Unpin Chat": "चैट अनपिन करें",
+  "Unpin Group": "ग्रुप अनपिन करें"
 }

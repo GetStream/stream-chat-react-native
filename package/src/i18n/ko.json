@@ -275,6 +275,7 @@
   "a11y/Loading failed": "로드 실패",
   "a11y/Message actions": "메시지 작업",
   "a11y/Muted": "음소거됨",
+  "a11y/Pinned": "고정됨",
   "a11y/New message from {{user}}": "{{user}}님의 새 메시지",
   "a11y/Offline": "오프라인",
   "a11y/Open message actions": "메시지 작업 열기",
@@ -446,5 +447,9 @@
   "Failed to load media": "미디어를 불러오지 못했습니다",
   "No files": "파일 없음",
   "Share a file to see it here": "파일을 공유하면 여기에 표시됩니다",
-  "Failed to load files": "파일을 불러오지 못했습니다"
+  "Failed to load files": "파일을 불러오지 못했습니다",
+  "Pin Chat": "채팅 고정",
+  "Pin Group": "그룹 고정",
+  "Unpin Chat": "채팅 고정 해제",
+  "Unpin Group": "그룹 고정 해제"
 }

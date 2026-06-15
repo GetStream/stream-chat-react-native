@@ -275,6 +275,7 @@
   "a11y/Loading failed": "Échec du chargement",
   "a11y/Message actions": "Actions du message",
   "a11y/Muted": "Mis en sourdine",
+  "a11y/Pinned": "Épinglé",
   "a11y/New message from {{user}}": "Nouveau message de {{user}}",
   "a11y/Offline": "Hors ligne",
   "a11y/Open message actions": "Ouvrir les actions du message",
@@ -446,5 +447,9 @@
   "Failed to load media": "Échec du chargement des médias",
   "No files": "Aucun fichier",
   "Share a file to see it here": "Partagez un fichier pour le voir ici",
-  "Failed to load files": "Échec du chargement des fichiers"
+  "Failed to load files": "Échec du chargement des fichiers",
+  "Pin Chat": "Épingler la discussion",
+  "Pin Group": "Épingler le groupe",
+  "Unpin Chat": "Détacher la discussion",
+  "Unpin Group": "Détacher le groupe"
 }

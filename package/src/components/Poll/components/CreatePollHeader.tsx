@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Check, IconProps } from '../../../icons';
-import { ArrowLeft } from '../../../icons/arrow-left';
+import { Cross } from '../../../icons/xmark-1';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
@@ -43,9 +43,16 @@ export const CreatePollHeader = ({
 
   const renderSendPollIcon = useCallback(
     (props: IconProps) => {
-      return <Check {...props} height={18} stroke={semantics.textOnAccent} width={18} />;
+      return (
+        <Check
+          {...props}
+          height={18}
+          stroke={canCreatePoll ? semantics.textOnAccent : semantics.textDisabled}
+          width={18}
+        />
+      );
     },
-    [semantics.textOnAccent],
+    [canCreatePoll, semantics.textOnAccent, semantics.textDisabled],
   );
 
   return (
@@ -54,9 +61,9 @@ export const CreatePollHeader = ({
         accessibilityLabelKey='a11y/Close poll creation'
         variant='secondary'
         onPress={onBackPressHandler}
-        type='ghost'
+        type='outline'
         size='md'
-        LeadingIcon={ArrowLeft}
+        LeadingIcon={Cross}
         iconOnly
       />
 

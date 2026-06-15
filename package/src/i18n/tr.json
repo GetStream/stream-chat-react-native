@@ -275,6 +275,7 @@
   "a11y/Loading failed": "Yükleme başarısız",
   "a11y/Message actions": "Mesaj eylemleri",
   "a11y/Muted": "Sessize alındı",
+  "a11y/Pinned": "Sabitlendi",
   "a11y/New message from {{user}}": "{{user}} kullanıcısından yeni mesaj",
   "a11y/Offline": "Çevrimdışı",
   "a11y/Open message actions": "Mesaj eylemlerini aç",
@@ -446,5 +447,9 @@
   "Failed to load media": "Medya yüklenemedi",
   "No files": "Dosya yok",
   "Share a file to see it here": "Burada görmek için bir dosya paylaşın",
-  "Failed to load files": "Dosyalar yüklenemedi"
+  "Failed to load files": "Dosyalar yüklenemedi",
+  "Pin Chat": "Sohbeti sabitle",
+  "Pin Group": "Grubu sabitle",
+  "Unpin Chat": "Sohbetin sabitlemesini kaldır",
+  "Unpin Group": "Grubun sabitlemesini kaldır"
 }

@@ -275,6 +275,7 @@
   "a11y/Loading failed": "הטעינה נכשלה",
   "a11y/Message actions": "פעולות הודעה",
   "a11y/Muted": "מושתק",
+  "a11y/Pinned": "מוצמד",
   "a11y/New message from {{user}}": "הודעה חדשה מ-{{user}}",
   "a11y/Offline": "לא מקוון",
   "a11y/Open message actions": "פתח פעולות הודעה",
@@ -446,5 +447,9 @@
   "Failed to load media": "טעינת המדיה נכשלה",
   "No files": "אין קבצים",
   "Share a file to see it here": "שתפו קובץ כדי לראות אותו כאן",
-  "Failed to load files": "טעינת הקבצים נכשלה"
+  "Failed to load files": "טעינת הקבצים נכשלה",
+  "Pin Chat": "הצמד/י צ'אט",
+  "Pin Group": "הצמד/י קבוצה",
+  "Unpin Chat": "בטל/י הצמדת צ'אט",
+  "Unpin Group": "בטל/י הצמדת קבוצה"
 }
