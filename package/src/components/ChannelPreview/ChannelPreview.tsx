@@ -39,7 +39,6 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
   const translatedLastMessage = useTranslatedMessage(lastMessage);
 
   const message = translatedLastMessage ? translatedLastMessage : lastMessage;
-  console.log('ISITPINNED ?', pinned);
 
   if (!swipeActionsEnabled) {
     return (

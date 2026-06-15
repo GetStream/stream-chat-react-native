@@ -17,8 +17,6 @@ export const ChannelPreviewPinnedStatus = () => {
   } = useTheme();
   const accessibilityLabel = useA11yLabel('a11y/Pinned');
 
-  console.log('THIS GOT RENDERED !');
-
   return (
     <CompositeAccessibilityProbe label={accessibilityLabel}>
       <Pin height={20} stroke={semantics.textTertiary} width={20} {...pinnedStatus} />
