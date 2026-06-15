@@ -1,4 +1,5 @@
 import React from 'react';
+import { Modal } from 'react-native';
 
 import type { SharedValue } from 'react-native-reanimated';
 
@@ -32,23 +33,6 @@ jest.mock('../components/ChannelDetailsActionItem', () => {
         { onPress: props.onPress, testID: props.testID },
         props.label,
       );
-    },
-  };
-});
-
-const modalProbeCalls: { onClose: () => void; visible: boolean }[] = [];
-
-jest.mock('../components/modal/Modal', () => {
-  const ReactLib = require('react');
-  const { View } = require('react-native');
-  return {
-    ChannelDetailsModal: (props: {
-      children: React.ReactNode;
-      onClose: () => void;
-      visible: boolean;
-    }) => {
-      modalProbeCalls.push({ onClose: props.onClose, visible: props.visible });
-      return ReactLib.createElement(View, { testID: 'channel-details-modal' }, props.children);
     },
   };
 });
@@ -113,7 +97,6 @@ const renderSection = (
 describe('ChannelDetailsNavigationSection', () => {
   beforeEach(() => {
     probeCalls.length = 0;
-    modalProbeCalls.length = 0;
     pinnedListProbe.length = 0;
   });
 
@@ -161,41 +144,41 @@ describe('ChannelDetailsNavigationSection', () => {
     });
 
     it('renders a single modal that is hidden with no content until a section is selected', () => {
-      const { queryByTestId } = renderSection();
+      const { UNSAFE_getByType, queryByTestId } = renderSection();
 
-      expect(modalProbeCalls.at(-1)?.visible).toBe(false);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(false);
       expect(queryByTestId('pinned-message-list')).toBeNull();
     });
 
     it('opens the modal with the pinned messages content when the pinned messages row is pressed', () => {
-      const { getByTestId } = renderSection();
+      const { UNSAFE_getByType, getByTestId } = renderSection();
 
       fireEvent.press(getByTestId('channel-details-pinned-messages'));
 
-      expect(modalProbeCalls.at(-1)?.visible).toBe(true);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(true);
       expect(getByTestId('pinned-message-list')).toBeTruthy();
     });
 
     it('opens an empty modal (no pinned list) for sections without a built-in screen', () => {
-      const { getByTestId, queryByTestId } = renderSection();
+      const { UNSAFE_getByType, getByTestId, queryByTestId } = renderSection();
 
       fireEvent.press(getByTestId('channel-details-photos-and-videos'));
 
-      expect(modalProbeCalls.at(-1)?.visible).toBe(true);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(true);
       expect(queryByTestId('pinned-message-list')).toBeNull();
     });
 
     it('closes the modal and clears its content when the modal requests it', () => {
-      const { getByTestId, queryByTestId } = renderSection();
+      const { UNSAFE_getByType, getByTestId, queryByTestId } = renderSection();
 
       fireEvent.press(getByTestId('channel-details-pinned-messages'));
-      expect(modalProbeCalls.at(-1)?.visible).toBe(true);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(true);
 
       act(() => {
-        modalProbeCalls.at(-1)?.onClose();
+        UNSAFE_getByType(Modal).props.onRequestClose();
       });
 
-      expect(modalProbeCalls.at(-1)?.visible).toBe(false);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(false);
       expect(queryByTestId('pinned-message-list')).toBeNull();
     });
   });
@@ -272,21 +255,25 @@ describe('ChannelDetailsNavigationSection', () => {
       const customOnPress = jest.fn();
       const getNavigationItems = ({ defaultItems }: { defaultItems: { onPress: () => void }[] }) =>
         defaultItems.map((item) => ({ ...item, onPress: customOnPress }));
-      const { getByTestId } = renderSection({ getNavigationItems: getNavigationItems as never });
+      const { UNSAFE_getByType, getByTestId } = renderSection({
+        getNavigationItems: getNavigationItems as never,
+      });
 
       fireEvent.press(getByTestId('channel-details-pinned-messages'));
 
       expect(customOnPress).toHaveBeenCalledTimes(1);
-      expect(modalProbeCalls.at(-1)?.visible).toBe(false);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(false);
     });
 
     it('still opens the built-in modal when a row keeps its default onPress', () => {
       const getNavigationItems = ({ defaultItems }: { defaultItems: unknown[] }) => defaultItems;
-      const { getByTestId } = renderSection({ getNavigationItems: getNavigationItems as never });
+      const { UNSAFE_getByType, getByTestId } = renderSection({
+        getNavigationItems: getNavigationItems as never,
+      });
 
       fireEvent.press(getByTestId('channel-details-pinned-messages'));
 
-      expect(modalProbeCalls.at(-1)?.visible).toBe(true);
+      expect(UNSAFE_getByType(Modal).props.visible).toBe(true);
       expect(getByTestId('pinned-message-list')).toBeTruthy();
     });
 
