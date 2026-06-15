@@ -1,8 +1,6 @@
 import React, { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -105,16 +103,8 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
   },
 }) => {
   useTheme();
-  const insets = useSafeAreaInsets();
   return (
-    <View
-      style={[
-        styles.flex,
-        {
-          paddingBottom: insets.bottom,
-        },
-      ]}
-    >
+    <View style={[styles.flex]}>
       <ScreenHeader titleText='Pinned Messages' />
       <ChannelDetailsContextProvider value={{ channel }}>
         <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>

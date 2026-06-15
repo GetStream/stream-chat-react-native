@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import type { RouteProp } from '@react-navigation/native';
 import {
   ChannelDetailsContextProvider,
@@ -32,17 +30,9 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   },
 }) => {
   useTheme();
-  const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={[
-        styles.flex,
-        {
-          paddingBottom: insets.bottom,
-        },
-      ]}
-    >
+    <View style={[styles.flex]}>
       <ScreenHeader titleText='Files' />
       <ChannelDetailsContextProvider value={{ channel }}>
         <FileAttachmentList />
