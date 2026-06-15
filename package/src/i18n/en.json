@@ -284,6 +284,7 @@
   "a11y/Message from you": "Message from you",
   "a11y/Message from {{sender}}": "Message from {{sender}}",
   "a11y/Muted": "Muted",
+  "a11y/Pinned": "Pinned",
   "a11y/New message from {{user}}": "New message from {{user}}",
   "a11y/Offline": "Offline",
   "a11y/Open message actions": "Open message actions",

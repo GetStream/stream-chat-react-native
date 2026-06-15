@@ -274,6 +274,7 @@
   "a11y/Loading failed": "लोड नहीं हो सका",
   "a11y/Message actions": "संदेश की कार्रवाइयां",
   "a11y/Muted": "म्यूट किया गया",
+  "a11y/Pinned": "पिन किया गया",
   "a11y/New message from {{user}}": "{{user}} से नया संदेश",
   "a11y/Offline": "ऑफलाइन",
   "a11y/Open message actions": "संदेश की कार्रवाइयां खोलें",

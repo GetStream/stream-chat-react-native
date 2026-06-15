@@ -274,6 +274,7 @@
   "a11y/Loading failed": "로드 실패",
   "a11y/Message actions": "메시지 작업",
   "a11y/Muted": "음소거됨",
+  "a11y/Pinned": "고정됨",
   "a11y/New message from {{user}}": "{{user}}님의 새 메시지",
   "a11y/Offline": "오프라인",
   "a11y/Open message actions": "메시지 작업 열기",

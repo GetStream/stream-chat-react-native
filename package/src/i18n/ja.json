@@ -274,6 +274,7 @@
   "a11y/Loading failed": "読み込みに失敗しました",
   "a11y/Message actions": "メッセージの操作",
   "a11y/Muted": "ミュート中",
+  "a11y/Pinned": "ピン留め中",
   "a11y/New message from {{user}}": "{{user}}からの新しいメッセージ",
   "a11y/Offline": "オフライン",
   "a11y/Open message actions": "メッセージの操作を開く",

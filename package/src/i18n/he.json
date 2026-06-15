@@ -274,6 +274,7 @@
   "a11y/Loading failed": "הטעינה נכשלה",
   "a11y/Message actions": "פעולות הודעה",
   "a11y/Muted": "מושתק",
+  "a11y/Pinned": "מוצמד",
   "a11y/New message from {{user}}": "הודעה חדשה מ-{{user}}",
   "a11y/Offline": "לא מקוון",
   "a11y/Open message actions": "פתח פעולות הודעה",

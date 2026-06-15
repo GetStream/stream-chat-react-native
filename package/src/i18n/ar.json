@@ -274,6 +274,7 @@
   "a11y/Loading failed": "Loading failed",
   "a11y/Message actions": "Message actions",
   "a11y/Muted": "مكتوم",
+  "a11y/Pinned": "مثبت",
   "a11y/New message from {{user}}": "New message from {{user}}",
   "a11y/Offline": "Offline",
   "a11y/Open message actions": "Open message actions",
