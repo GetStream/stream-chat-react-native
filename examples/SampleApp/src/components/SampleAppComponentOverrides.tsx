@@ -7,7 +7,6 @@ import { useTheme } from 'stream-chat-react-native';
 
 import { CustomAttachmentPickerContent } from './AttachmentPickerContent';
 import { ChannelDetailsNavigationSection } from './ChannelDetailsNavigationSection';
-import { CustomChannelPreviewStatus } from './ChannelPreview';
 import { FastImageAdapter } from './FastImageAdapter';
 import { MessageLocation } from './LocationSharing/MessageLocation';
 import type { MessageOverlayBackdropConfigItem } from './SecretMenu';
@@ -51,7 +50,6 @@ export const useSampleAppComponentOverrides = (
       ImageComponent: FastImageAdapter,
       MessageLocation,
       NetworkDownIndicator: RenderNull,
-      ChannelPreviewStatus: CustomChannelPreviewStatus,
       ...(messageOverlayBackdrop === 'blurview'
         ? { MessageOverlayBackground: MessageOverlayBlurBackground }
         : {}),

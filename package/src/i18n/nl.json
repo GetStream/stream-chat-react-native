@@ -274,6 +274,7 @@
   "a11y/Loading failed": "Laden mislukt",
   "a11y/Message actions": "Berichtacties",
   "a11y/Muted": "Gedempt",
+  "a11y/Pinned": "Vastgemaakt",
   "a11y/New message from {{user}}": "Nieuw bericht van {{user}}",
   "a11y/Offline": "Offline",
   "a11y/Open message actions": "Berichtacties openen",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "Bericht van {{sender}}",
   "a11y/Gallery Image": "Galerij-afbeelding",
   "a11y/Gallery Video": "Galerij-video",
-  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}",
+  "Pin Chat": "Chat vastmaken",
+  "Pin Group": "Groep vastmaken",
+  "Unpin Chat": "Chat losmaken",
+  "Unpin Group": "Groep losmaken"
 }

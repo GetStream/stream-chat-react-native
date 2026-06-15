@@ -274,6 +274,7 @@
   "a11y/Loading failed": "Error al cargar",
   "a11y/Message actions": "Acciones del mensaje",
   "a11y/Muted": "Silenciado",
+  "a11y/Pinned": "Fijado",
   "a11y/New message from {{user}}": "Nuevo mensaje de {{user}}",
   "a11y/Offline": "Sin conexión",
   "a11y/Open message actions": "Abrir acciones del mensaje",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "Mensaje de {{sender}}",
   "a11y/Gallery Image": "Imagen de la galería",
   "a11y/Gallery Video": "Vídeo de la galería",
-  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}",
+  "Pin Chat": "Fijar chat",
+  "Pin Group": "Fijar grupo",
+  "Unpin Chat": "Desfijar chat",
+  "Unpin Group": "Desfijar grupo"
 }

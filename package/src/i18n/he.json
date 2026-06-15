@@ -274,6 +274,7 @@
   "a11y/Loading failed": "הטעינה נכשלה",
   "a11y/Message actions": "פעולות הודעה",
   "a11y/Muted": "מושתק",
+  "a11y/Pinned": "מוצמד",
   "a11y/New message from {{user}}": "הודעה חדשה מ-{{user}}",
   "a11y/Offline": "לא מקוון",
   "a11y/Open message actions": "פתח פעולות הודעה",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "הודעה מאת {{sender}}",
   "a11y/Gallery Image": "תמונה מהגלריה",
   "a11y/Gallery Video": "סרטון מהגלריה",
-  "a11y/{{position}} of {{count}}": "{{position}} מתוך {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} מתוך {{count}}",
+  "Pin Chat": "הצמד/י צ'אט",
+  "Pin Group": "הצמד/י קבוצה",
+  "Unpin Chat": "בטל/י הצמדת צ'אט",
+  "Unpin Group": "בטל/י הצמדת קבוצה"
 }

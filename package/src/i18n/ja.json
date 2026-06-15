@@ -274,6 +274,7 @@
   "a11y/Loading failed": "読み込みに失敗しました",
   "a11y/Message actions": "メッセージの操作",
   "a11y/Muted": "ミュート中",
+  "a11y/Pinned": "ピン留め中",
   "a11y/New message from {{user}}": "{{user}}からの新しいメッセージ",
   "a11y/Offline": "オフライン",
   "a11y/Open message actions": "メッセージの操作を開く",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "{{sender}}からのメッセージ",
   "a11y/Gallery Image": "ギャラリー画像",
   "a11y/Gallery Video": "ギャラリービデオ",
-  "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}"
+  "a11y/{{position}} of {{count}}": "{{count}} 中 {{position}}",
+  "Pin Chat": "チャットをピン留め",
+  "Pin Group": "グループをピン留め",
+  "Unpin Chat": "チャットのピン留めを解除",
+  "Unpin Group": "グループのピン留めを解除"
 }

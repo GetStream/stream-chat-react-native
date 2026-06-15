@@ -41,7 +41,7 @@ describe('useChannelActionItemsById', () => {
       .spyOn(useChannelActionItemsModule, 'useChannelActionItems')
       .mockReturnValue(channelActionItems);
 
-    const { result } = renderHook(() => useChannelActionItemsById({ channel }));
+    const { result } = renderHook(() => useChannelActionItemsById({ channel, surface: 'list' }));
 
     expect(result.current.pin).toBe(channelActionItems[0]);
     expect(result.current.deleteChannel).toBe(channelActionItems[1]);
@@ -59,12 +59,14 @@ describe('useChannelActionItemsById', () => {
       useChannelActionItemsById({
         channel,
         getChannelActionItems,
+        surface: 'list',
       }),
     );
 
     expect(useChannelActionItemsSpy).toHaveBeenCalledWith({
       channel,
       getChannelActionItems,
+      surface: 'list',
     });
   });
 });

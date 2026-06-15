@@ -274,6 +274,7 @@
   "a11y/Loading failed": "Не удалось загрузить",
   "a11y/Message actions": "Действия с сообщением",
   "a11y/Muted": "Без звука",
+  "a11y/Pinned": "Закреплено",
   "a11y/New message from {{user}}": "Новое сообщение от {{user}}",
   "a11y/Offline": "Не в сети",
   "a11y/Open message actions": "Открыть действия с сообщением",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "Сообщение от {{sender}}",
   "a11y/Gallery Image": "Изображение из галереи",
   "a11y/Gallery Video": "Видео из галереи",
-  "a11y/{{position}} of {{count}}": "{{position}} из {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} из {{count}}",
+  "Pin Chat": "Закрепить чат",
+  "Pin Group": "Закрепить группу",
+  "Unpin Chat": "Открепить чат",
+  "Unpin Group": "Открепить группу"
 }

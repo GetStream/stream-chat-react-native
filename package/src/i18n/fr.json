@@ -274,6 +274,7 @@
   "a11y/Loading failed": "Échec du chargement",
   "a11y/Message actions": "Actions du message",
   "a11y/Muted": "Mis en sourdine",
+  "a11y/Pinned": "Épinglé",
   "a11y/New message from {{user}}": "Nouveau message de {{user}}",
   "a11y/Offline": "Hors ligne",
   "a11y/Open message actions": "Ouvrir les actions du message",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "Message de {{sender}}",
   "a11y/Gallery Image": "Image de la galerie",
   "a11y/Gallery Video": "Vidéo de la galerie",
-  "a11y/{{position}} of {{count}}": "{{position}} sur {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} sur {{count}}",
+  "Pin Chat": "Épingler la discussion",
+  "Pin Group": "Épingler le groupe",
+  "Unpin Chat": "Détacher la discussion",
+  "Unpin Group": "Détacher le groupe"
 }

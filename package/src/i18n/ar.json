@@ -274,6 +274,7 @@
   "a11y/Loading failed": "Loading failed",
   "a11y/Message actions": "Message actions",
   "a11y/Muted": "مكتوم",
+  "a11y/Pinned": "مثبت",
   "a11y/New message from {{user}}": "New message from {{user}}",
   "a11y/Offline": "Offline",
   "a11y/Open message actions": "Open message actions",
@@ -435,5 +436,9 @@
   "a11y/Message from {{sender}}": "رسالة من {{sender}}",
   "a11y/Gallery Image": "صورة من المعرض",
   "a11y/Gallery Video": "فيديو من المعرض",
-  "a11y/{{position}} of {{count}}": "{{position}} من {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} من {{count}}",
+  "Pin Chat": "تثبيت الدردشة",
+  "Pin Group": "تثبيت المجموعة",
+  "Unpin Chat": "إلغاء تثبيت الدردشة",
+  "Unpin Group": "إلغاء تثبيت المجموعة"
 }

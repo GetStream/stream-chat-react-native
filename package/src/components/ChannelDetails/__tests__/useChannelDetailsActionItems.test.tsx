@@ -51,7 +51,11 @@ describe('useChannelDetailsActionItems', () => {
     renderHook(() => useChannelDetailsActionItems());
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({ channel, getChannelActionItems: undefined });
+    expect(spy).toHaveBeenCalledWith({
+      channel,
+      getChannelActionItems: undefined,
+      surface: 'details',
+    });
   });
 
   it('forwards the getChannelActionItems prop from context unchanged', () => {
@@ -61,7 +65,7 @@ describe('useChannelDetailsActionItems', () => {
 
     renderHook(() => useChannelDetailsActionItems());
 
-    expect(spy).toHaveBeenCalledWith({ channel, getChannelActionItems });
+    expect(spy).toHaveBeenCalledWith({ channel, getChannelActionItems, surface: 'details' });
   });
 
   it('returns non-leave/non-delete items referentially unchanged', () => {

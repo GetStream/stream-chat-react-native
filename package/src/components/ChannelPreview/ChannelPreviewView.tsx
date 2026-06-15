@@ -17,7 +17,10 @@ import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
 
 export type ChannelPreviewViewPropsWithContext = Pick<ChannelPreviewProps, 'channel'> &
-  Pick<ChannelsContextValue, 'maxUnreadCount' | 'onSelect' | 'mutedStatusPosition'> & {
+  Pick<
+    ChannelsContextValue,
+    'maxUnreadCount' | 'onSelect' | 'mutedStatusPosition' | 'pinnedStatusPosition'
+  > & {
     /**
      * Formatter function for date of latest message.
      * @param date Message date
@@ -30,6 +33,8 @@ export type ChannelPreviewViewPropsWithContext = Pick<ChannelPreviewProps, 'chan
     formatLatestMessageDate?: (date: Date) => string;
     /** If the channel is muted. */
     muted?: boolean;
+    /** If the channel is pinned for the current user. */
+    pinned?: boolean;
     /** Number of unread messages on the channel */
     unread?: number;
     lastMessage?: LastMessageType;
@@ -42,14 +47,17 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
     maxUnreadCount,
     muted,
     onSelect,
+    pinned,
     unread,
     mutedStatusPosition,
+    pinnedStatusPosition,
     lastMessage,
   } = props;
   const {
     ChannelPreviewAvatar,
     ChannelPreviewMessage,
     ChannelPreviewMutedStatus,
+    ChannelPreviewPinnedStatus,
     ChannelPreviewStatus,
     ChannelPreviewTitle,
     ChannelPreviewUnreadCount,
@@ -111,6 +119,9 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
               {muted && mutedStatusPosition === 'inlineTitle' ? (
                 <ChannelPreviewMutedStatus />
               ) : null}
+              {pinned && pinnedStatusPosition === 'inlineTitle' ? (
+                <ChannelPreviewPinnedStatus />
+              ) : null}
             </View>
 
             <View style={[styles.statusContainer, statusContainer]}>
@@ -132,6 +143,9 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
             {muted && mutedStatusPosition === 'trailingBottom' ? (
               <ChannelPreviewMutedStatus />
             ) : null}
+            {pinned && pinnedStatusPosition === 'trailingBottom' ? (
+              <ChannelPreviewPinnedStatus />
+            ) : null}
           </View>
         </View>
       </Pressable>
@@ -151,7 +165,8 @@ const MemoizedChannelPreviewViewWithContext = React.memo(
  * from the ChannelPreview component.
  */
 export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
-  const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition } = useChannelsContext();
+  const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition, pinnedStatusPosition } =
+    useChannelsContext();
   return (
     <MemoizedChannelPreviewViewWithContext
       {...{
@@ -159,6 +174,7 @@ export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
         maxUnreadCount,
         onSelect,
         mutedStatusPosition,
+        pinnedStatusPosition,
       }}
       {...props}
     />
