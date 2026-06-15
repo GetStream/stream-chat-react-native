@@ -1,11 +1,18 @@
 import React from 'react';
 
-import { act, fireEvent, render, within } from '@testing-library/react-native';
+import type { SharedValue } from 'react-native-reanimated';
+
+import { act, fireEvent, render } from '@testing-library/react-native';
 
 import {
   ChannelDetailsContextProvider,
   type ChannelDetailsContextValue,
 } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import {
+  type Overlay,
+  OverlayContext,
+  type OverlayContextValue,
+} from '../../../contexts/overlayContext/OverlayContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
@@ -67,17 +74,24 @@ jest.mock('../components/navigation-section/MediaList', () => {
   };
 });
 
-jest.mock('../components/modal/ChannelDetailsOverlayProvider', () => {
+jest.mock('../../ImageGallery/ImageGallery', () => {
   const ReactLib = require('react');
-  const { View } = require('react-native');
+  const { Text: RNText } = require('react-native');
   return {
-    ChannelDetailsOverlayProvider: ({ children }: { children: React.ReactNode }) =>
-      ReactLib.createElement(View, { testID: 'media-overlay-provider' }, children),
+    ImageGallery: () => ReactLib.createElement(RNText, { testID: 'image-gallery' }, 'gallery'),
   };
 });
 
-const renderSection = (contextValue: Partial<ChannelDetailsContextValue> = {}) =>
-  render(
+const renderSection = (
+  contextValue: Partial<ChannelDetailsContextValue> = {},
+  overlay: Overlay = 'none',
+) => {
+  const overlayContextValue: OverlayContextValue = {
+    overlay,
+    overlayOpacity: { value: overlay === 'none' ? 0 : 1 } as SharedValue<number>,
+    setOverlay: jest.fn(),
+  };
+  return render(
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
@@ -86,12 +100,15 @@ const renderSection = (contextValue: Partial<ChannelDetailsContextValue> = {}) =
           userLanguage: 'en',
         }}
       >
-        <ChannelDetailsContextProvider value={contextValue as ChannelDetailsContextValue}>
-          <ChannelDetailsNavigationSection />
-        </ChannelDetailsContextProvider>
+        <OverlayContext.Provider value={overlayContextValue}>
+          <ChannelDetailsContextProvider value={contextValue as ChannelDetailsContextValue}>
+            <ChannelDetailsNavigationSection />
+          </ChannelDetailsContextProvider>
+        </OverlayContext.Provider>
       </TranslationProvider>
     </ThemeProvider>,
   );
+};
 
 describe('ChannelDetailsNavigationSection', () => {
   beforeEach(() => {
@@ -183,25 +200,33 @@ describe('ChannelDetailsNavigationSection', () => {
     });
   });
 
-  describe('image gallery overlay scoping', () => {
-    it('wraps the photos-and-videos content in a ChannelDetailsOverlayProvider so the gallery is scoped to the modal', () => {
-      const { getByTestId } = renderSection();
+  describe('image gallery overlay', () => {
+    it('renders the gallery above the media list when the overlay is set to "gallery"', () => {
+      const { getByTestId } = renderSection({}, 'gallery');
 
       fireEvent.press(getByTestId('channel-details-photos-and-videos'));
 
-      const overlay = getByTestId('media-overlay-provider');
-      expect(overlay).toBeTruthy();
-      expect(within(overlay).getByTestId('media-list')).toBeTruthy();
+      expect(getByTestId('media-list')).toBeTruthy();
+      expect(getByTestId('image-gallery')).toBeTruthy();
     });
 
-    it('does not wrap non-media sections in a ChannelDetailsOverlayProvider', () => {
-      const { getByTestId, queryByTestId } = renderSection();
+    it('does not render the gallery while the overlay is "none"', () => {
+      const { getByTestId, queryByTestId } = renderSection({}, 'none');
+
+      fireEvent.press(getByTestId('channel-details-photos-and-videos'));
+
+      expect(getByTestId('media-list')).toBeTruthy();
+      expect(queryByTestId('image-gallery')).toBeNull();
+    });
+
+    it('does not render the gallery for non-media sections even when the overlay is "gallery"', () => {
+      const { getByTestId, queryByTestId } = renderSection({}, 'gallery');
 
       fireEvent.press(getByTestId('channel-details-pinned-messages'));
-      expect(queryByTestId('media-overlay-provider')).toBeNull();
+      expect(queryByTestId('image-gallery')).toBeNull();
 
       fireEvent.press(getByTestId('channel-details-files'));
-      expect(queryByTestId('media-overlay-provider')).toBeNull();
+      expect(queryByTestId('image-gallery')).toBeNull();
     });
   });
 

@@ -2,14 +2,15 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
-import { ChannelDetailsOverlayProvider } from './modal/ChannelDetailsOverlayProvider';
 import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { ChevronRight } from '../../../icons';
 import { primitives } from '../../../theme';
+import { ImageGallery } from '../../ImageGallery/ImageGallery';
 import {
   type ChannelDetailsNavigationSectionType,
   useChannelDetailsNavigationItems,
@@ -31,6 +32,7 @@ export const ChannelDetailsNavigationSection = () => {
   const [activeSection, setActiveSection] = useState<ChannelDetailsNavigationSectionType | null>(
     null,
   );
+  const { overlayOpacity, overlay } = useOverlayContext();
   const closeModal = useCallback(() => setActiveSection(null), []);
 
   const modalContent = useMemo(() => {
@@ -39,16 +41,17 @@ export const ChannelDetailsNavigationSection = () => {
         return <PinnedMessageList />;
       case 'photos-and-videos':
         return (
-          <ChannelDetailsOverlayProvider>
+          <>
             <MediaList />
-          </ChannelDetailsOverlayProvider>
+            {overlay === 'gallery' ? <ImageGallery overlayOpacity={overlayOpacity} /> : null}
+          </>
         );
       case 'files':
         return <FileAttachmentList />;
       default:
         return null;
     }
-  }, [activeSection, FileAttachmentList, MediaList, PinnedMessageList]);
+  }, [activeSection, FileAttachmentList, MediaList, PinnedMessageList, overlayOpacity, overlay]);
 
   const activeItem = useMemo(
     () => items.find((item) => item.section === activeSection),
