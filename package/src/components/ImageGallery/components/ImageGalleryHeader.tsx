@@ -73,15 +73,17 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
     >
       <ReanimatedSafeAreaView edges={['top']} style={[styles.container, headerStyle]}>
         <View style={styles.innerContainer}>
-          <Button
-            accessibilityLabelKey='a11y/Hide Overlay'
-            variant='secondary'
-            type='ghost'
-            size='md'
-            onPress={hideOverlay}
-            LeadingIcon={ChevronLeft}
-            iconOnly
-          />
+          <View style={styles.leftContainer}>
+            <Button
+              accessibilityLabelKey='a11y/Hide Overlay'
+              variant='secondary'
+              type='ghost'
+              size='md'
+              onPress={hideOverlay}
+              LeadingIcon={ChevronLeft}
+              iconOnly
+            />
+          </View>
           <View style={styles.centerContainer} accessibilityLabel='Center element'>
             <Text style={styles.userName}>
               {asset?.user?.name || asset?.user?.id || t('Unknown User')}
@@ -114,7 +116,7 @@ const useStyles = () => {
         },
         centerContainer: {
           alignItems: 'center',
-          flex: 1,
+          flex: 2,
           justifyContent: 'center',
           gap: primitives.spacingXxs,
           ...header.centerContainer,
@@ -134,9 +136,13 @@ const useStyles = () => {
           borderBottomColor: semantics.borderCoreSubtle,
           ...header.innerContainer,
         },
+        leftContainer: {
+          flex: 1,
+        },
         rightContainer: {
           width: 24,
           height: 24,
+          flex: 1,
         },
         userName: {
           color: semantics.textPrimary,
