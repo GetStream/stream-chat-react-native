@@ -4,9 +4,10 @@ import { I18nManager, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { NewClose } from '../../../../icons/xmark';
 import { primitives } from '../../../../theme';
-import { Button } from '../../../ui/Button/Button';
+import { Button, ButtonProps } from '../../../ui/Button/Button';
 
 type ModalHeaderProps = {
+  additionalCloseButtonProps?: Partial<ButtonProps>;
   onClose: () => void;
   title: string;
   rightAction?: React.ReactNode;
@@ -15,7 +16,12 @@ type ModalHeaderProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) => {
+export const ModalHeader = ({
+  onClose,
+  rightAction,
+  title,
+  additionalCloseButtonProps,
+}: ModalHeaderProps) => {
   const {
     theme: {
       channelDetails: {
@@ -37,6 +43,7 @@ export const ModalHeader = ({ onClose, rightAction, title }: ModalHeaderProps) =
           size='md'
           type='outline'
           variant='secondary'
+          {...additionalCloseButtonProps}
         />
       </View>
       <View style={styles.center}>

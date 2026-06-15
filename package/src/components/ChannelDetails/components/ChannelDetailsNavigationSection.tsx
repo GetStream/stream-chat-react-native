@@ -1,16 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 
 import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
-import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { ChevronRight } from '../../../icons';
+import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { ImageGallery } from '../../ImageGallery/ImageGallery';
+import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import {
   type ChannelDetailsNavigationSectionType,
   useChannelDetailsNavigationItems,
@@ -67,6 +68,11 @@ export const ChannelDetailsNavigationSection = () => {
     [semantics.textTertiary],
   );
 
+  const closeButtonProps = useMemo(
+    () => ({ type: 'ghost' as const, LeadingIcon: ChevronLeft }),
+    [],
+  );
+
   return (
     <>
       <View
@@ -87,10 +93,23 @@ export const ChannelDetailsNavigationSection = () => {
           />
         ))}
       </View>
-      <ChannelDetailsModal onClose={closeModal} visible={activeSection !== null}>
-        {activeItem ? <ModalHeader onClose={closeModal} title={activeItem.label} /> : null}
-        {modalContent}
-      </ChannelDetailsModal>
+      <Modal
+        animationType='slide'
+        onRequestClose={closeModal}
+        presentationStyle='fullScreen'
+        visible={activeSection !== null}
+      >
+        <SafeAreaViewWrapper style={styles.modalContent}>
+          {activeItem ? (
+            <ModalHeader
+              onClose={closeModal}
+              title={activeItem.label}
+              additionalCloseButtonProps={closeButtonProps}
+            />
+          ) : null}
+          {modalContent}
+        </SafeAreaViewWrapper>
+      </Modal>
     </>
   );
 };
@@ -103,6 +122,9 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
           paddingVertical: primitives.spacingXs,
+        },
+        modalContent: {
+          flex: 1,
         },
       }),
     [],

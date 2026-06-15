@@ -234,7 +234,6 @@ export type Theme = {
       body: ViewStyle;
       header: ViewStyle;
       headerTitle: TextStyle;
-      root: ViewStyle;
     };
     addMembers: {
       searchResultItem: {
@@ -1335,7 +1334,6 @@ export const defaultTheme: Theme = {
       body: {},
       header: {},
       headerTitle: {},
-      root: {},
     },
     addMembers: {
       searchResultItem: {

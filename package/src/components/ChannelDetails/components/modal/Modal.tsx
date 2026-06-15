@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 
@@ -17,20 +16,10 @@ export const ChannelDetailsModal = ({ children, onClose, visible }: ChannelDetai
   const {
     theme: {
       channelDetails: {
-        modal: { body: bodyOverride, root: rootOverride },
+        modal: { body: bodyOverride },
       },
-      semantics,
     },
   } = useTheme();
-  const rootStyle = useMemo(
-    () =>
-      StyleSheet.flatten([
-        styles.root,
-        { backgroundColor: semantics.backgroundCoreElevation1 },
-        rootOverride,
-      ]),
-    [rootOverride, semantics.backgroundCoreElevation1],
-  );
 
   return (
     <Modal
@@ -39,18 +28,13 @@ export const ChannelDetailsModal = ({ children, onClose, visible }: ChannelDetai
       presentationStyle='pageSheet'
       visible={visible}
     >
-      <GestureHandlerRootView style={rootStyle}>
-        <View style={[styles.body, bodyOverride]}>{children}</View>
-      </GestureHandlerRootView>
+      <View style={[styles.body, bodyOverride]}>{children}</View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   body: {
-    flex: 1,
-  },
-  root: {
     flex: 1,
   },
 });
