@@ -33,7 +33,7 @@ export const EmptyList = ({ icon: Icon, subtitle, title }: EmptyListProps) => {
 
   return (
     <View style={[styles.container, container]} testID='empty-list'>
-      <Icon stroke={semantics.textPrimary} size={32} />
+      <Icon stroke={semantics.textTertiary} size={32} />
       <View style={styles.content}>
         <Text style={[styles.title, { color: semantics.textPrimary }, titleStyle]}>{title}</Text>
         {subtitle ? (

@@ -3,8 +3,9 @@ import React, { useMemo } from 'react';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { File } from '../../../icons/file';
-import { ImageGrid } from '../../../icons/gallery';
+import { Picture } from '../../../icons';
+import { Folder } from '../../../icons/folder';
+
 import { Pin } from '../../../icons/pin';
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -49,8 +50,8 @@ const SECTION_CONFIG: Record<
   { Icon: React.ComponentType<IconProps>; label: string }
 > = {
   'pinned-messages': { Icon: Pin, label: 'Pinned Messages' },
-  'photos-and-videos': { Icon: ImageGrid, label: 'Photos & Videos' },
-  files: { Icon: File, label: 'Files' },
+  'photos-and-videos': { Icon: Picture, label: 'Photos & Videos' },
+  files: { Icon: Folder, label: 'Files' },
 };
 
 const SECTIONS = Object.keys(SECTION_CONFIG) as Array<keyof typeof SECTION_CONFIG>;

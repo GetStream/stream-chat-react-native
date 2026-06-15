@@ -441,10 +441,10 @@
   "No pinned messages": "Aucun message épinglé",
   "a11y/Search pinned messages": "Rechercher des messages épinglés",
   "Long-press a message to pin it to the chat": "Appuyez longuement sur un message pour l’épingler à la discussion",
-  "No media": "Aucun média",
-  "Photos and videos sent in this chat will appear here": "Les photos et vidéos envoyées dans cette discussion apparaîtront ici",
+  "No photos or videos": "Aucune photo ni vidéo",
+  "Share a photo or video to see it here": "Partagez une photo ou une vidéo pour la voir ici",
   "Failed to load media": "Échec du chargement des médias",
   "No files": "Aucun fichier",
-  "Files shared in this chat will appear here": "Les fichiers partagés dans cette discussion apparaîtront ici",
+  "Share a file to see it here": "Partagez un fichier pour le voir ici",
   "Failed to load files": "Échec du chargement des fichiers"
 }

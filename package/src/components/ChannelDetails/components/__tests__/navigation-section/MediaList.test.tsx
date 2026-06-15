@@ -254,8 +254,8 @@ describe('MediaList', () => {
     render(tree(makeSearchSource({ isLoading: false, items: [] })));
 
     expect(screen.getByTestId('empty-list')).toBeTruthy();
-    expect(screen.getByText('No media')).toBeTruthy();
-    expect(screen.getByText('Photos and videos sent in this chat will appear here')).toBeTruthy();
+    expect(screen.getByText('No photos or videos')).toBeTruthy();
+    expect(screen.getByText('Share a photo or video to see it here')).toBeTruthy();
   });
 
   it('renders the loading-more indicator only while loading with existing results', () => {

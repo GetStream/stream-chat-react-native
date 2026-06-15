@@ -172,8 +172,8 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
     ) : (
       <EmptyList
         icon={Picture}
-        subtitle={t('Photos and videos sent in this chat will appear here')}
-        title={t('No media')}
+        subtitle={t('Share a photo or video to see it here')}
+        title={t('No photos or videos')}
       />
     );
 

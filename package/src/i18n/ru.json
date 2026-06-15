@@ -441,10 +441,10 @@
   "No pinned messages": "Нет закреплённых сообщений",
   "a11y/Search pinned messages": "Поиск закреплённых сообщений",
   "Long-press a message to pin it to the chat": "Нажмите и удерживайте сообщение, чтобы закрепить его в чате",
-  "No media": "Нет медиафайлов",
-  "Photos and videos sent in this chat will appear here": "Здесь появятся фото и видео, отправленные в этом чате",
+  "No photos or videos": "Нет фото и видео",
+  "Share a photo or video to see it here": "Поделитесь фото или видео, чтобы увидеть их здесь",
   "Failed to load media": "Не удалось загрузить медиафайлы",
   "No files": "Нет файлов",
-  "Files shared in this chat will appear here": "Здесь появятся файлы, отправленные в этом чате",
+  "Share a file to see it here": "Поделитесь файлом, чтобы увидеть его здесь",
   "Failed to load files": "Не удалось загрузить файлы"
 }

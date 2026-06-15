@@ -441,10 +441,10 @@
   "No pinned messages": "Sabitlenmiş mesaj yok",
   "a11y/Search pinned messages": "Sabitlenmiş mesajları ara",
   "Long-press a message to pin it to the chat": "Bir mesajı sohbete sabitlemek için uzun basın",
-  "No media": "Medya yok",
-  "Photos and videos sent in this chat will appear here": "Bu sohbette gönderilen fotoğraflar ve videolar burada görünecek",
+  "No photos or videos": "Fotoğraf veya video yok",
+  "Share a photo or video to see it here": "Burada görmek için bir fotoğraf veya video paylaşın",
   "Failed to load media": "Medya yüklenemedi",
   "No files": "Dosya yok",
-  "Files shared in this chat will appear here": "Bu sohbette paylaşılan dosyalar burada görünecek",
+  "Share a file to see it here": "Burada görmek için bir dosya paylaşın",
   "Failed to load files": "Dosyalar yüklenemedi"
 }

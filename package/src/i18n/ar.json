@@ -441,10 +441,10 @@
   "No pinned messages": "لا توجد رسائل مثبتة",
   "a11y/Search pinned messages": "البحث في الرسائل المثبتة",
   "Long-press a message to pin it to the chat": "اضغط مطولاً على رسالة لتثبيتها في المحادثة",
-  "No media": "لا توجد وسائط",
-  "Photos and videos sent in this chat will appear here": "ستظهر الصور ومقاطع الفيديو المرسلة في هذه المحادثة هنا",
+  "No photos or videos": "لا توجد صور أو مقاطع فيديو",
+  "Share a photo or video to see it here": "شارك صورة أو مقطع فيديو لرؤيته هنا",
   "Failed to load media": "فشل تحميل الوسائط",
   "No files": "لا توجد ملفات",
-  "Files shared in this chat will appear here": "ستظهر الملفات المشتركة في هذه المحادثة هنا",
+  "Share a file to see it here": "شارك ملفًا لرؤيته هنا",
   "Failed to load files": "فشل تحميل الملفات"
 }

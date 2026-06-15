@@ -240,7 +240,7 @@ describe('FileAttachmentList', () => {
 
     expect(screen.getByTestId('empty-list')).toBeTruthy();
     expect(screen.getByText('No files')).toBeTruthy();
-    expect(screen.getByText('Files shared in this chat will appear here')).toBeTruthy();
+    expect(screen.getByText('Share a file to see it here')).toBeTruthy();
   });
 
   it('renders the loading-more indicator only while loading with existing results', () => {

@@ -441,10 +441,10 @@
   "No pinned messages": "ピン留めされたメッセージはありません",
   "a11y/Search pinned messages": "ピン留めされたメッセージを検索",
   "Long-press a message to pin it to the chat": "メッセージを長押ししてチャットにピン留めします",
-  "No media": "メディアがありません",
-  "Photos and videos sent in this chat will appear here": "このチャットで送信された写真や動画がここに表示されます",
+  "No photos or videos": "写真や動画はありません",
+  "Share a photo or video to see it here": "写真や動画を共有すると、ここに表示されます",
   "Failed to load media": "メディアの読み込みに失敗しました",
   "No files": "ファイルがありません",
-  "Files shared in this chat will appear here": "このチャットで共有されたファイルがここに表示されます",
+  "Share a file to see it here": "ファイルを共有すると、ここに表示されます",
   "Failed to load files": "ファイルの読み込みに失敗しました"
 }

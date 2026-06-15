@@ -441,10 +441,10 @@
   "No pinned messages": "Geen vastgemaakte berichten",
   "a11y/Search pinned messages": "Zoek vastgemaakte berichten",
   "Long-press a message to pin it to the chat": "Houd een bericht lang ingedrukt om het vast te pinnen in de chat",
-  "No media": "Geen media",
-  "Photos and videos sent in this chat will appear here": "Foto's en video's die in deze chat zijn verzonden, verschijnen hier",
+  "No photos or videos": "Geen foto's of video's",
+  "Share a photo or video to see it here": "Deel een foto of video om deze hier te zien",
   "Failed to load media": "Media laden mislukt",
   "No files": "Geen bestanden",
-  "Files shared in this chat will appear here": "Bestanden die in deze chat zijn gedeeld, verschijnen hier",
+  "Share a file to see it here": "Deel een bestand om het hier te zien",
   "Failed to load files": "Bestanden laden mislukt"
 }

@@ -441,10 +441,10 @@
   "No pinned messages": "कोई पिन किया गया संदेश नहीं",
   "a11y/Search pinned messages": "पिन किए गए संदेश खोजें",
   "Long-press a message to pin it to the chat": "किसी संदेश को चैट में पिन करने के लिए उसे देर तक दबाएँ",
-  "No media": "कोई मीडिया नहीं",
-  "Photos and videos sent in this chat will appear here": "इस चैट में भेजे गए फ़ोटो और वीडियो यहाँ दिखाई देंगे",
+  "No photos or videos": "कोई फ़ोटो या वीडियो नहीं",
+  "Share a photo or video to see it here": "इसे यहाँ देखने के लिए कोई फ़ोटो या वीडियो शेयर करें",
   "Failed to load media": "मीडिया लोड करने में विफल",
   "No files": "कोई फ़ाइल नहीं",
-  "Files shared in this chat will appear here": "इस चैट में साझा की गई फ़ाइलें यहाँ दिखाई देंगी",
+  "Share a file to see it here": "इसे यहाँ देखने के लिए कोई फ़ाइल शेयर करें",
   "Failed to load files": "फ़ाइलें लोड करने में विफल"
 }

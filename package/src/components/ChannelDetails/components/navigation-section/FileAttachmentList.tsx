@@ -22,7 +22,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { File } from '../../../../icons/file';
+import { Folder } from '../../../../icons/folder';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { NotificationList } from '../../../Notifications/NotificationList';
@@ -133,11 +133,7 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
     loading || isEmpty === undefined ? (
       <FileAttachmentListLoadingSkeleton />
     ) : (
-      <EmptyList
-        icon={File}
-        subtitle={t('Files shared in this chat will appear here')}
-        title={t('No files')}
-      />
+      <EmptyList icon={Folder} subtitle={t('Share a file to see it here')} title={t('No files')} />
     );
 
   const loadingMoreIndicator = (
