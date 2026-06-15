@@ -29,7 +29,12 @@ type Props = {
   route: ChannelDetailsScreenRouteProp;
 };
 
-const navigationItems: { [key in ChannelDetailsNavigationSectionType]: RouteName } = {
+const navigationItems: {
+  [key in ChannelDetailsNavigationSectionType]:
+    | 'ChannelPinnedMessagesScreen'
+    | 'ChannelImagesScreen'
+    | 'ChannelFilesScreen';
+} = {
   'pinned-messages': 'ChannelPinnedMessagesScreen',
   'photos-and-videos': 'ChannelImagesScreen',
   files: 'ChannelFilesScreen',
