@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "{{sender}} kullanıcısından mesaj",
   "a11y/Gallery Image": "Galeri görüntüsü",
   "a11y/Gallery Video": "Galeri videosu",
-  "a11y/{{position}} of {{count}}": "{{count}} öğeden {{position}}"
+  "a11y/{{position}} of {{count}}": "{{count}} öğeden {{position}}",
+  "Pin Chat": "Sohbeti sabitle",
+  "Pin Group": "Grubu sabitle",
+  "Unpin Chat": "Sohbetin sabitlemesini kaldır",
+  "Unpin Group": "Grubun sabitlemesini kaldır"
 }

@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "{{sender}} से संदेश",
   "a11y/Gallery Image": "गैलरी छवि",
   "a11y/Gallery Video": "गैलरी वीडियो",
-  "a11y/{{position}} of {{count}}": "{{count}} में से {{position}}"
+  "a11y/{{position}} of {{count}}": "{{count}} में से {{position}}",
+  "Pin Chat": "चैट पिन करें",
+  "Pin Group": "ग्रुप पिन करें",
+  "Unpin Chat": "चैट अनपिन करें",
+  "Unpin Group": "ग्रुप अनपिन करें"
 }

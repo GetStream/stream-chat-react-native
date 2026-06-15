@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "Bericht van {{sender}}",
   "a11y/Gallery Image": "Galerij-afbeelding",
   "a11y/Gallery Video": "Galerij-video",
-  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} van {{count}}",
+  "Pin Chat": "Chat vastmaken",
+  "Pin Group": "Groep vastmaken",
+  "Unpin Chat": "Chat losmaken",
+  "Unpin Group": "Groep losmaken"
 }

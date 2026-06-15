@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "{{sender}}님의 메시지",
   "a11y/Gallery Image": "갤러리 이미지",
   "a11y/Gallery Video": "갤러리 동영상",
-  "a11y/{{position}} of {{count}}": "{{count}}개 중 {{position}}번째"
+  "a11y/{{position}} of {{count}}": "{{count}}개 중 {{position}}번째",
+  "Pin Chat": "채팅 고정",
+  "Pin Group": "그룹 고정",
+  "Unpin Chat": "채팅 고정 해제",
+  "Unpin Group": "그룹 고정 해제"
 }

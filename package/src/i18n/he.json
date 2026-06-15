@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "הודעה מאת {{sender}}",
   "a11y/Gallery Image": "תמונה מהגלריה",
   "a11y/Gallery Video": "סרטון מהגלריה",
-  "a11y/{{position}} of {{count}}": "{{position}} מתוך {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} מתוך {{count}}",
+  "Pin Chat": "הצמד/י צ'אט",
+  "Pin Group": "הצמד/י קבוצה",
+  "Unpin Chat": "בטל/י הצמדת צ'אט",
+  "Unpin Group": "בטל/י הצמדת קבוצה"
 }

@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "Mensaje de {{sender}}",
   "a11y/Gallery Image": "Imagen de la galería",
   "a11y/Gallery Video": "Vídeo de la galería",
-  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} de {{count}}",
+  "Pin Chat": "Fijar chat",
+  "Pin Group": "Fijar grupo",
+  "Unpin Chat": "Desfijar chat",
+  "Unpin Group": "Desfijar grupo"
 }

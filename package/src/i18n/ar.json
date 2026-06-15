@@ -436,5 +436,9 @@
   "a11y/Message from {{sender}}": "رسالة من {{sender}}",
   "a11y/Gallery Image": "صورة من المعرض",
   "a11y/Gallery Video": "فيديو من المعرض",
-  "a11y/{{position}} of {{count}}": "{{position}} من {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} من {{count}}",
+  "Pin Chat": "تثبيت الدردشة",
+  "Pin Group": "تثبيت المجموعة",
+  "Unpin Chat": "إلغاء تثبيت الدردشة",
+  "Unpin Group": "إلغاء تثبيت المجموعة"
 }

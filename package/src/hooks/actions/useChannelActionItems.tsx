@@ -15,14 +15,14 @@ import { useIsChannelMuted } from '../../components/ChannelPreview/hooks/useIsCh
 import { useUserMuteActive } from '../../components/Message/hooks/useUserMuteActive';
 import { useTheme, useTranslationContext } from '../../contexts';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import { IconProps, Mute, BlockUser, Delete, Sound } from '../../icons';
+import { IconProps, Mute, BlockUser, Delete, Pin, Sound, Unpin } from '../../icons';
 import { ArrowBoxLeft } from '../../icons/leave';
 import { useChannelMembershipState } from '../useChannelMembershipState';
 import { useIsDirectChat } from '../useIsDirectChat';
 import { useStateStore } from '../useStateStore';
 
 export type ChannelActionItem = ActionItem<
-  'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | string
+  'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | 'pin' | string
 > & {
   placement: 'both' | 'sheet' | 'swipe';
 };
@@ -67,10 +67,13 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       unmuteUser,
       blockUser,
       unblockUser,
+      pin,
+      unpin,
     },
     channelMuteActive,
     isBlocked,
     isDirectChat,
+    isPinned,
     userMuteActive,
     t,
     channel,
@@ -104,6 +107,21 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       type: 'standard',
     },
   ];
+
+  actionItems.push({
+    action: isPinned ? unpin : pin,
+    Icon: (props) => <ChannelActionsIcon Icon={isPinned ? Unpin : Pin} {...props} />,
+    id: 'pin',
+    label: isDirectChat
+      ? isPinned
+        ? t('Unpin Chat')
+        : t('Pin Chat')
+      : isPinned
+        ? t('Unpin Group')
+        : t('Pin Group'),
+    placement: 'sheet',
+    type: 'standard',
+  });
 
   if (isDirectChat) {
     actionItems.push({

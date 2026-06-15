@@ -101,19 +101,31 @@ describe('useChannelActionItems', () => {
   it('returns default channel action items', () => {
     const { result } = renderHook(() => useChannelActionItems({ channel }));
 
-    expect(result.current).toHaveLength(3);
+    expect(result.current).toHaveLength(4);
     expect(result.current.map((item) => item.action)).toEqual([
       channelActions.muteChannel,
+      channelActions.pin,
       channelActions.leave,
       expect.any(Function),
     ]);
-    expect(result.current.map((item) => item.id)).toEqual(['mute', 'leave', 'deleteChannel']);
+    expect(result.current.map((item) => item.id)).toEqual([
+      'mute',
+      'pin',
+      'leave',
+      'deleteChannel',
+    ]);
     expect(result.current.map((item) => item.type)).toEqual([
+      'standard',
       'standard',
       'destructive',
       'destructive',
     ]);
-    expect(result.current.map((item) => item.placement)).toEqual(['swipe', 'sheet', 'sheet']);
+    expect(result.current.map((item) => item.placement)).toEqual([
+      'swipe',
+      'sheet',
+      'sheet',
+      'sheet',
+    ]);
   });
 
   it('returns muteUser only in direct chats', () => {
@@ -123,6 +135,7 @@ describe('useChannelActionItems', () => {
 
     expect(result.current.map((item) => item.id)).toEqual([
       'mute',
+      'pin',
       'muteUser',
       'block',
       'leave',
@@ -248,11 +261,13 @@ describe('getChannelActionItems', () => {
 
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.muteChannel,
+      channelActions.pin,
       channelActions.leave,
       expect.any(Function),
     ]);
-    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'leave', 'deleteChannel']);
+    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'pin', 'leave', 'deleteChannel']);
     expect(actionItems.map((item) => item.type)).toEqual([
+      'standard',
       'standard',
       'destructive',
       'destructive',
@@ -275,6 +290,7 @@ describe('getChannelActionItems', () => {
 
     expect(actionItems.map((item) => item.id)).toEqual([
       'mute',
+      'pin',
       'muteUser',
       'block',
       'leave',
@@ -282,6 +298,7 @@ describe('getChannelActionItems', () => {
     ]);
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.unmuteChannel,
+      channelActions.pin,
       channelActions.unmuteUser,
       channelActions.unblockUser,
       channelActions.leave,
@@ -289,6 +306,7 @@ describe('getChannelActionItems', () => {
     ]);
     expect(actionItems.map((item) => item.label)).toEqual([
       'Unmute Chat',
+      'Pin Chat',
       'Unmute User',
       'Unblock User',
       'Leave Chat',
@@ -296,6 +314,7 @@ describe('getChannelActionItems', () => {
     ]);
     expect(actionItems.map((item) => item.placement)).toEqual([
       'swipe',
+      'sheet',
       'sheet',
       'sheet',
       'sheet',
@@ -332,7 +351,7 @@ describe('getChannelActionItems', () => {
       userMuteActive: false,
     });
 
-    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'leave']);
+    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'pin', 'leave']);
   });
 
   it('uses group mute variants for labels and placements', () => {
@@ -353,9 +372,49 @@ describe('getChannelActionItems', () => {
     expect(actionItems[0].label).toBe('Unmute Group');
     expect(actionItems[0].placement).toBe('swipe');
 
-    expect(actionItems[1].action).toBe(channelActions.leave);
-    expect(actionItems[1].label).toBe('Leave Group');
-    expect(actionItems[1].placement).toBe('sheet');
+    const leaveItem = actionItems.find((item) => item.id === 'leave');
+    expect(leaveItem?.action).toBe(channelActions.leave);
+    expect(leaveItem?.label).toBe('Leave Group');
+    expect(leaveItem?.placement).toBe('sheet');
+  });
+
+  it('pin item toggles to unpin when channel is pinned', () => {
+    const channelActions = createChannelActions();
+    const actionItems = buildDefaultChannelActionItems({
+      actions: channelActions,
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: false,
+      isPinned: true,
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    const pinItem = actionItems.find((item) => item.id === 'pin');
+    expect(pinItem?.action).toBe(channelActions.unpin);
+    expect(pinItem?.label).toBe('Unpin Group');
+    expect(pinItem?.placement).toBe('sheet');
+  });
+
+  it('pin item uses direct-chat label variant', () => {
+    const channelActions = createChannelActions();
+    const actionItems = buildDefaultChannelActionItems({
+      actions: channelActions,
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: true,
+      isPinned: false,
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    const pinItem = actionItems.find((item) => item.id === 'pin');
+    expect(pinItem?.action).toBe(channelActions.pin);
+    expect(pinItem?.label).toBe('Pin Chat');
   });
 
   it('mute and muteUser reflect their respective active states independently', () => {
