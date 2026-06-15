@@ -99,7 +99,7 @@ describe('useChannelActionItems', () => {
   });
 
   it('returns default channel action items', () => {
-    const { result } = renderHook(() => useChannelActionItems({ channel }));
+    const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 
     expect(result.current).toHaveLength(4);
     expect(result.current.map((item) => item.action)).toEqual([
@@ -131,7 +131,7 @@ describe('useChannelActionItems', () => {
   it('returns muteUser only in direct chats', () => {
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
 
-    const { result } = renderHook(() => useChannelActionItems({ channel }));
+    const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 
     expect(result.current.map((item) => item.id)).toEqual([
       'mute',
@@ -156,7 +156,7 @@ describe('useChannelActionItems', () => {
     });
     jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
 
-    const { result } = renderHook(() => useChannelActionItems({ channel }));
+    const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 
     const muteItem = result.current.find((item) => item.id === 'mute');
     const muteUserItem = result.current.find((item) => item.id === 'muteUser');
@@ -165,7 +165,7 @@ describe('useChannelActionItems', () => {
   });
 
   it('forwards options from item.action to the underlying channel action', async () => {
-    const { result } = renderHook(() => useChannelActionItems({ channel }));
+    const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 
     const muteItem = result.current.find((item) => item.id === 'mute');
     expect(muteItem).toBeDefined();
@@ -178,7 +178,7 @@ describe('useChannelActionItems', () => {
   it('marks block as destructive when user is not blocked', () => {
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
 
-    const { result } = renderHook(() => useChannelActionItems({ channel }));
+    const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 
     const blockItem = result.current.find((item) => item.id === 'block');
     expect(blockItem?.type).toBe('destructive');
@@ -188,7 +188,9 @@ describe('useChannelActionItems', () => {
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
     const blockedChannel = createChannelMock({ blockedUserIds: ['other-user-id'] });
 
-    const { result } = renderHook(() => useChannelActionItems({ channel: blockedChannel }));
+    const { result } = renderHook(() =>
+      useChannelActionItems({ channel: blockedChannel, surface: 'list' }),
+    );
 
     const blockItem = result.current.find((item) => item.id === 'block');
     expect(blockItem?.type).toBe('standard');
@@ -203,6 +205,7 @@ describe('useChannelActionItems', () => {
       useChannelActionItems({
         channel,
         getChannelActionItems: customGetChannelActionItems,
+        surface: 'list',
       }),
     );
 
@@ -215,6 +218,7 @@ describe('useChannelActionItems', () => {
         isBlocked: undefined,
         isDirectChat: false,
         isPinned: false,
+        surface: 'list',
         t: expect.any(Function),
         userMuteActive: false,
       },
@@ -241,6 +245,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -253,6 +258,7 @@ describe('getChannelActionItems', () => {
         isBlocked: undefined,
         isDirectChat: false,
         isPinned: false,
+        surface: 'list',
         t: ((value: string) => value) as TranslationContextValue['t'],
         userMuteActive: false,
       },
@@ -284,6 +290,7 @@ describe('getChannelActionItems', () => {
       isBlocked: true,
       isDirectChat: true,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
@@ -331,6 +338,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -347,6 +355,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -364,6 +373,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -388,6 +398,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: true,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -408,6 +419,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: true,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -415,6 +427,56 @@ describe('getChannelActionItems', () => {
     const pinItem = actionItems.find((item) => item.id === 'pin');
     expect(pinItem?.action).toBe(channelActions.pin);
     expect(pinItem?.label).toBe('Pin Chat');
+  });
+
+  it('omits the pin item when building for the details surface', () => {
+    const actionItems = buildDefaultChannelActionItems({
+      actions: createChannelActions(),
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: false,
+      isPinned: false,
+      surface: 'details',
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    expect(actionItems.map((item) => item.id)).not.toContain('pin');
+  });
+
+  it('includes the pin item when building for the list surface', () => {
+    const actionItems = buildDefaultChannelActionItems({
+      actions: createChannelActions(),
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: false,
+      isPinned: false,
+      surface: 'list',
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    expect(actionItems.map((item) => item.id)).toContain('pin');
+  });
+
+  it('applies no surface-specific filtering when surface is omitted', () => {
+    const actionItems = buildDefaultChannelActionItems({
+      actions: createChannelActions(),
+      channel,
+      channelMuteActive: false,
+      isArchived: false,
+      isBlocked: undefined,
+      isDirectChat: false,
+      isPinned: false,
+      t: ((value: string) => value) as TranslationContextValue['t'],
+      userMuteActive: false,
+    });
+
+    expect(actionItems.map((item) => item.id)).toEqual(['mute', 'pin', 'leave', 'deleteChannel']);
   });
 
   it('mute and muteUser reflect their respective active states independently', () => {
@@ -427,6 +489,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: true,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
@@ -452,6 +515,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
+      surface: 'list',
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });

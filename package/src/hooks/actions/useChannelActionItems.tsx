@@ -24,8 +24,40 @@ import { useStateStore } from '../useStateStore';
 export type ChannelActionItem = ActionItem<
   'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | 'pin' | string
 > & {
+  /**
+   * Per item routing **within a channel preview interaction** (swipe row vs
+   * the sheet that opens from it). Only meaningful when the items are consumed
+   * from `<ChannelSwipableWrapper>`:
+   *
+   * - `'swipe'`: shown only in the swipe-row chips.
+   * - `'sheet'`: shown only in the swipe-triggered options sheet.
+   * - `'both'`: shown in both swipe row and sheet.
+   *
+   * The standalone Channel Details screen does **not** filter by `placement` -
+   * use {@link ChannelActionSurface} (`surface`) instead to vary items between
+   * the channel list and the Channel Details screen.
+   */
   placement: 'both' | 'sheet' | 'swipe';
 };
+
+/**
+ * Identifies which top level UI surface is requesting channel action items.
+ * Passed verbatim into {@link ChannelActionItemsParams} so the default builder
+ * and any integrator supplied `getChannelActionItems` can branch on it - i.e.
+ * to drop or relabel an item on a specific surface or to provide an entirely
+ * different builder per surface.
+ *
+ * - `'list'`: anything driven by a ChannelList interaction, the swipe row
+ *   chips on a channel preview and the bottom sheet that opens from them.
+ *   Subrouting between the swipe row and the sheet is handled by the per item
+ *   {@link ChannelActionItem.placement} field.
+ * - `'details'`: items for the standalone Channel Details screen.
+ *
+ * `surface` operates at the call site level (which UI is asking). It is
+ * optional and when omitted, the default builder applies no surface specific
+ * filtering and returns every item it would otherwise produce.
+ */
+export type ChannelActionSurface = 'list' | 'details';
 
 export type ChannelActionItemsParams = {
   actions: ChannelActions;
@@ -35,6 +67,7 @@ export type ChannelActionItemsParams = {
   isBlocked: boolean | undefined;
   isDirectChat: boolean;
   isPinned: boolean;
+  surface?: ChannelActionSurface;
   t: TranslationContextValue['t'];
   userMuteActive: boolean;
 };
@@ -74,6 +107,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     isBlocked,
     isDirectChat,
     isPinned,
+    surface,
     userMuteActive,
     t,
     channel,
@@ -108,21 +142,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     },
   ];
 
-  actionItems.push({
-    action: isPinned ? unpin : pin,
-    Icon: (props) => <ChannelActionsIcon Icon={isPinned ? Unpin : Pin} {...props} />,
-    id: 'pin',
-    label: isDirectChat
-      ? isPinned
-        ? t('Unpin Chat')
-        : t('Pin Chat')
-      : isPinned
-        ? t('Unpin Group')
-        : t('Pin Group'),
-    placement: 'sheet',
-    type: 'standard',
-  });
-
   if (isDirectChat) {
     actionItems.push({
       action: userMuteActive ? unmuteUser : muteUser,
@@ -150,6 +169,23 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       label: isBlocked ? t('Unblock User') : t('Block User'),
       placement: 'sheet',
       type: isBlocked ? 'standard' : 'destructive',
+    });
+  }
+
+  if (surface !== 'details') {
+    actionItems.push({
+      action: isPinned ? unpin : pin,
+      Icon: (props) => <ChannelActionsIcon Icon={isPinned ? Unpin : Pin} {...props} />,
+      id: 'pin',
+      label: isDirectChat
+        ? isPinned
+          ? t('Unpin Chat')
+          : t('Pin Chat')
+        : isPinned
+          ? t('Unpin Group')
+          : t('Pin Group'),
+      placement: 'sheet',
+      type: 'standard',
     });
   }
 
@@ -204,6 +240,7 @@ export const getChannelActionItems: GetChannelActionItems = ({ defaultItems }) =
 
 type UseChannelActionItemsParams = {
   channel: Channel;
+  surface?: ChannelActionSurface;
   getChannelActionItems?: GetChannelActionItems;
 };
 
@@ -212,6 +249,7 @@ const blockedUsersStateSelector = (state: BlockedUsersState) =>
 
 export const useChannelActionItems = ({
   channel,
+  surface,
   getChannelActionItems: getChannelActionItemsProp = getChannelActionItems,
 }: UseChannelActionItemsParams) => {
   const { t } = useTranslationContext();
@@ -243,6 +281,7 @@ export const useChannelActionItems = ({
       isBlocked,
       isDirectChat,
       isPinned,
+      surface,
       t,
       userMuteActive,
     }),
@@ -254,6 +293,7 @@ export const useChannelActionItems = ({
       isBlocked,
       isDirectChat,
       isPinned,
+      surface,
       t,
       userMuteActive,
     ],
