@@ -91,6 +91,8 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
     }
   });
 
+  console.log('FINALLY ?!', pinned, pinnedStatusPosition);
+
   return (
     <View style={[styles.wrapper, wrapper]}>
       <Pressable
@@ -167,6 +169,7 @@ const MemoizedChannelPreviewViewWithContext = React.memo(
 export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
   const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition, pinnedStatusPosition } =
     useChannelsContext();
+  console.log('REALLYTHO: ', props.pinned);
   return (
     <MemoizedChannelPreviewViewWithContext
       {...{
