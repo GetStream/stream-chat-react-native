@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
+import { ChannelDetailsOverlayProvider } from './modal/ChannelDetailsOverlayProvider';
 import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
 
@@ -30,7 +31,6 @@ export const ChannelDetailsNavigationSection = () => {
   const [activeSection, setActiveSection] = useState<ChannelDetailsNavigationSectionType | null>(
     null,
   );
-
   const closeModal = useCallback(() => setActiveSection(null), []);
 
   const modalContent = useMemo(() => {
@@ -38,7 +38,11 @@ export const ChannelDetailsNavigationSection = () => {
       case 'pinned-messages':
         return <PinnedMessageList />;
       case 'photos-and-videos':
-        return <MediaList />;
+        return (
+          <ChannelDetailsOverlayProvider>
+            <MediaList />
+          </ChannelDetailsOverlayProvider>
+        );
       case 'files':
         return <FileAttachmentList />;
       default:

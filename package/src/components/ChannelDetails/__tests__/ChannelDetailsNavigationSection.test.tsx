@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render, within } from '@testing-library/react-native';
 
 import {
   ChannelDetailsContextProvider,
@@ -56,6 +56,23 @@ jest.mock('../components/navigation-section/PinnedMessageList', () => {
       pinnedListProbe.push(props);
       return ReactLib.createElement(RNText, { testID: 'pinned-message-list' }, 'list');
     },
+  };
+});
+
+jest.mock('../components/navigation-section/MediaList', () => {
+  const ReactLib = require('react');
+  const { Text: RNText } = require('react-native');
+  return {
+    MediaList: () => ReactLib.createElement(RNText, { testID: 'media-list' }, 'media'),
+  };
+});
+
+jest.mock('../components/modal/ChannelDetailsOverlayProvider', () => {
+  const ReactLib = require('react');
+  const { View } = require('react-native');
+  return {
+    ChannelDetailsOverlayProvider: ({ children }: { children: React.ReactNode }) =>
+      ReactLib.createElement(View, { testID: 'media-overlay-provider' }, children),
   };
 });
 
@@ -163,6 +180,28 @@ describe('ChannelDetailsNavigationSection', () => {
 
       expect(modalProbeCalls.at(-1)?.visible).toBe(false);
       expect(queryByTestId('pinned-message-list')).toBeNull();
+    });
+  });
+
+  describe('image gallery overlay scoping', () => {
+    it('wraps the photos-and-videos content in a ChannelDetailsOverlayProvider so the gallery is scoped to the modal', () => {
+      const { getByTestId } = renderSection();
+
+      fireEvent.press(getByTestId('channel-details-photos-and-videos'));
+
+      const overlay = getByTestId('media-overlay-provider');
+      expect(overlay).toBeTruthy();
+      expect(within(overlay).getByTestId('media-list')).toBeTruthy();
+    });
+
+    it('does not wrap non-media sections in a ChannelDetailsOverlayProvider', () => {
+      const { getByTestId, queryByTestId } = renderSection();
+
+      fireEvent.press(getByTestId('channel-details-pinned-messages'));
+      expect(queryByTestId('media-overlay-provider')).toBeNull();
+
+      fireEvent.press(getByTestId('channel-details-files'));
+      expect(queryByTestId('media-overlay-provider')).toBeNull();
     });
   });
 

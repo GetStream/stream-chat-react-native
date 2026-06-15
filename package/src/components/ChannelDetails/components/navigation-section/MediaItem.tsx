@@ -75,7 +75,7 @@ export const MediaItem = (props: MediaItemProps) => {
       ref={containerRef}
       style={[
         styles.container,
-        { backgroundColor: semantics.backgroundCoreSurfaceStrong },
+        { backgroundColor: semantics.backgroundCoreSurfaceStrong, width: size },
         mediaItem.container,
       ]}
       testID={`media-item-${message.id}`}
@@ -128,7 +128,6 @@ const useStyles = () => {
         container: {
           aspectRatio: 1,
           borderRadius: primitives.radiusXxs,
-          flex: 1,
           overflow: 'hidden',
         },
         thumbnail: {
