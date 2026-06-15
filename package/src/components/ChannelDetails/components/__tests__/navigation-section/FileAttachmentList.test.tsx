@@ -16,6 +16,7 @@ import {
   TranslationProvider,
   type TranslationContextValue,
 } from '../../../../../contexts/translationContext/TranslationContext';
+import { generateFileAttachment } from '../../../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../../../mock-builders/generator/message';
 import { Streami18n } from '../../../../../utils/i18n/Streami18n';
 import type { FileAttachmentItemProps } from '../../navigation-section/FileAttachmentItem';
@@ -188,12 +189,14 @@ describe('FileAttachmentList', () => {
     expect(screen.queryByPlaceholderText('Search')).toBeNull();
   });
 
-  it('renders a row per message and forwards the channel', () => {
+  it('renders a row per attachment', () => {
     const messageA = generateMessage({
+      attachments: [generateFileAttachment()] as never,
       created_at: new Date('2026-03-15T00:00:00.000Z'),
       id: 'm-1',
     }) as unknown as MessageResponse;
     const messageB = generateMessage({
+      attachments: [generateFileAttachment()] as never,
       created_at: new Date('2026-03-16T00:00:00.000Z'),
       id: 'm-2',
     }) as unknown as MessageResponse;
@@ -202,17 +205,18 @@ describe('FileAttachmentList', () => {
 
     // The probe accumulates across re-renders, so assert on distinct rows instead of call count.
     expect(new Set(mockRowProbe.map((p) => p.message.id))).toEqual(new Set(['m-1', 'm-2']));
-    expect(mockRowProbe.every((p) => p.channel === mockChannel)).toBe(true);
     expect(screen.getByTestId('file-row-m-1')).toBeTruthy();
     expect(screen.getByTestId('file-row-m-2')).toBeTruthy();
   });
 
   it('groups messages under month section headers in newest-first order', () => {
     const march = generateMessage({
+      attachments: [generateFileAttachment()] as never,
       created_at: new Date('2026-03-15T00:00:00.000Z'),
       id: 'm-mar',
     }) as unknown as MessageResponse;
     const february = generateMessage({
+      attachments: [generateFileAttachment()] as never,
       created_at: new Date('2026-02-10T00:00:00.000Z'),
       id: 'm-feb',
     }) as unknown as MessageResponse;

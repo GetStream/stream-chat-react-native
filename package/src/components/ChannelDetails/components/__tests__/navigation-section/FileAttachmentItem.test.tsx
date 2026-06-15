@@ -2,15 +2,11 @@ import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
-import type { Channel, MessageResponse } from 'stream-chat';
+import type { Attachment, MessageResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../../contexts/themeContext/utils/theme';
-import {
-  generateAudioAttachment,
-  generateFileAttachment,
-  generateImageAttachment,
-} from '../../../../../mock-builders/generator/attachment';
+import { generateFileAttachment } from '../../../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../../../mock-builders/generator/message';
 import { FileAttachmentItem } from '../../navigation-section/FileAttachmentItem';
 
@@ -33,14 +29,13 @@ jest.mock('../../../../Attachment/FilePreview', () => {
   };
 });
 
-const mockChannel = { cid: 'messaging:1' } as unknown as Channel;
-
 const tree = (
+  attachment: Attachment,
   message: MessageResponse,
   onPress?: React.ComponentProps<typeof FileAttachmentItem>['onPress'],
 ) => (
   <ThemeProvider theme={defaultTheme}>
-    <FileAttachmentItem channel={mockChannel} message={message} onPress={onPress} />
+    <FileAttachmentItem attachment={attachment} message={message} onPress={onPress} />
   </ThemeProvider>
 );
 
@@ -51,76 +46,34 @@ describe('FileAttachmentItem', () => {
 
   afterEach(() => jest.clearAllMocks());
 
-  it('renders only file and audio attachments, skipping images', () => {
+  it('renders the attachment preview', () => {
     const file = generateFileAttachment({ title: 'a-file.pdf' });
-    const audio = generateAudioAttachment({ title: 'a-clip.mp3' });
-    const image = generateImageAttachment({ title: 'a-photo.png' });
-    const message = generateMessage({
-      attachments: [file, image, audio],
-      id: 'm-1',
-    }) as unknown as MessageResponse;
+    const message = generateMessage({ id: 'm-1' }) as unknown as MessageResponse;
 
-    render(tree(message));
-
-    expect(mockFilePreviewProbe.map((p) => p.title)).toEqual(['a-file.pdf', 'a-clip.mp3']);
-    expect(screen.getByTestId('file-attachment-item-m-1')).toBeTruthy();
-    expect(screen.queryByText('a-photo.png')).toBeNull();
-  });
-
-  it('skips OG/scraped link-preview attachments', () => {
-    const file = generateFileAttachment({ title: 'a-file.pdf' });
-    const ogPreview = generateFileAttachment({
-      og_scrape_url: 'https://example.com',
-      title: 'link-preview',
-      title_link: 'https://example.com',
-    });
-    const message = generateMessage({
-      attachments: [file, ogPreview],
-      id: 'm-og',
-    }) as unknown as MessageResponse;
-
-    render(tree(message));
+    render(tree(file, message));
 
     expect(mockFilePreviewProbe.map((p) => p.title)).toEqual(['a-file.pdf']);
-    expect(screen.queryByText('link-preview')).toBeNull();
-  });
-
-  it('renders nothing when the message has no file or audio attachments', () => {
-    const message = generateMessage({
-      attachments: [generateImageAttachment()],
-      id: 'm-2',
-    }) as unknown as MessageResponse;
-
-    render(tree(message));
-
-    expect(mockFilePreviewProbe).toHaveLength(0);
-    expect(screen.queryByTestId('file-attachment-item-m-2')).toBeNull();
+    expect(screen.getByTestId('file-attachment-item-m-1')).toBeTruthy();
   });
 
   it('opens the attachment url when a row is pressed', () => {
     const file = generateFileAttachment({ asset_url: 'https://example.com/a.pdf', title: 'a.pdf' });
-    const message = generateMessage({
-      attachments: [file],
-      id: 'm-3',
-    }) as unknown as MessageResponse;
+    const message = generateMessage({ id: 'm-3' }) as unknown as MessageResponse;
 
-    render(tree(message));
+    render(tree(file, message));
 
-    fireEvent.press(screen.getByTestId('file-attachment-row-m-3-0'));
+    fireEvent.press(screen.getByTestId('file-attachment-row-m-3'));
     expect(mockOpenUrlSafely).toHaveBeenCalledWith('https://example.com/a.pdf');
   });
 
   it('calls the provided onPress with the attachment and message, overriding the default', () => {
     const file = generateFileAttachment({ asset_url: 'https://example.com/a.pdf', title: 'a.pdf' });
-    const message = generateMessage({
-      attachments: [file],
-      id: 'm-4',
-    }) as unknown as MessageResponse;
+    const message = generateMessage({ id: 'm-4' }) as unknown as MessageResponse;
     const onPress = jest.fn();
 
-    render(tree(message, onPress));
+    render(tree(file, message, onPress));
 
-    fireEvent.press(screen.getByTestId('file-attachment-row-m-4-0'));
+    fireEvent.press(screen.getByTestId('file-attachment-row-m-4'));
     expect(onPress).toHaveBeenCalledWith({ attachment: file, message });
     expect(mockOpenUrlSafely).not.toHaveBeenCalled();
   });

@@ -1,14 +1,7 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import {
-  type Attachment,
-  type Channel,
-  isAudioAttachment,
-  isFileAttachment,
-  isScrapedContent,
-  type MessageResponse,
-} from 'stream-chat';
+import { type Attachment, type MessageResponse } from 'stream-chat';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
@@ -27,9 +20,9 @@ export type FileAttachmentItemPressParams = {
 };
 
 export type FileAttachmentItemProps = {
-  /** The channel the file attachment belongs to. */
-  channel: Channel;
-  /** The message whose file attachments are rendered. */
+  /** The file/audio attachment to render. */
+  attachment: Attachment;
+  /** The message the attachment belongs to. */
   message: MessageResponse;
   /**
    * Fired with the pressed attachment and its message. When provided, this overrides the default
@@ -42,7 +35,7 @@ export type FileAttachmentItemProps = {
  * @experimental This component is experimental and is subject to change.
  */
 export const FileAttachmentItem = (props: FileAttachmentItemProps) => {
-  const { message, onPress } = props;
+  const { attachment, message, onPress } = props;
   const {
     theme: {
       channelDetails: { fileAttachmentItem },
@@ -50,37 +43,20 @@ export const FileAttachmentItem = (props: FileAttachmentItemProps) => {
   } = useTheme();
   const styles = useStyles();
 
-  const fileAttachments = useMemo(
-    () =>
-      (message.attachments ?? []).filter(
-        (attachment) =>
-          (isFileAttachment(attachment) || isAudioAttachment(attachment)) &&
-          !isScrapedContent(attachment),
-      ),
-    [message.attachments],
-  );
-
-  if (fileAttachments.length === 0) {
-    return null;
-  }
-
   return (
     <View
       style={[styles.container, fileAttachmentItem.container]}
       testID={`file-attachment-item-${message.id}`}
     >
-      {fileAttachments.map((attachment, index) => (
-        <Pressable
-          accessibilityRole='button'
-          key={`${message.id}-${index}`}
-          onPress={() =>
-            onPress ? onPress({ attachment, message }) : openUrlSafely(attachment.asset_url)
-          }
-          testID={`file-attachment-row-${message.id}-${index}`}
-        >
-          <FilePreview attachment={attachment} styles={styles.filePreview} />
-        </Pressable>
-      ))}
+      <Pressable
+        accessibilityRole='button'
+        onPress={() =>
+          onPress ? onPress({ attachment, message }) : openUrlSafely(attachment.asset_url)
+        }
+        testID={`file-attachment-row-${message.id}`}
+      >
+        <FilePreview attachment={attachment} styles={styles.filePreview} />
+      </Pressable>
     </View>
   );
 };

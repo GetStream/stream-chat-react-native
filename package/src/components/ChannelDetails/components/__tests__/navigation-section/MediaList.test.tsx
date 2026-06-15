@@ -202,30 +202,16 @@ describe('MediaList', () => {
     expect(searchSource.search).toHaveBeenCalledWith();
   });
 
-  it('renders one tile per image/video attachment and skips non-media attachments', () => {
+  it('renders one tile per media attachment returned by the search source', () => {
     const messageA = messageWithAttachments('m-1', [
       generateImageAttachment(),
       generateVideoAttachment(),
     ]);
-    const messageB = messageWithAttachments('m-2', [
-      // excluded: image used as a link preview / og scrape
-      generateImageAttachment({ og_scrape_url: 'https://example.com' }),
-      generateImageAttachment({ title_link: 'https://example.com' }),
-      // excluded: not media
-      { type: 'file' },
-      // included
-      generateImageAttachment(),
-    ]);
 
-    render(tree(makeSearchSource({ items: [messageA, messageB] })));
+    render(tree(makeSearchSource({ items: [messageA] })));
 
     const tiles = screen.getAllByTestId('media-tile');
-    expect(tiles).toHaveLength(3);
-    expect(tiles.map((tile) => tile.props.children)).toEqual([
-      'm-1-image',
-      'm-1-video',
-      'm-2-image',
-    ]);
+    expect(tiles.map((tile) => tile.props.children)).toEqual(['m-1-image', 'm-1-video']);
   });
 
   it('opens the fullscreen gallery over all loaded media when an image tile is pressed', () => {

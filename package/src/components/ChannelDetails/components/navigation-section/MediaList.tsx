@@ -8,13 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import {
-  type Attachment,
-  isScrapedContent,
-  type LocalMessage,
-  type MessageResponse,
-  type SearchSourceState,
-} from 'stream-chat';
+import { type LocalMessage, type MessageResponse, type SearchSourceState } from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
@@ -41,18 +35,10 @@ import { useNotificationApi } from '../../../Notifications/hooks/useNotification
 import { NotificationList } from '../../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { EmptyList } from '../../../UIComponents/EmptyList';
+import { type MediaTile, useMediaList } from '../../hooks/useMediaList';
 
 const NUMBER_OF_COLUMNS = 3;
 const GRID_GAP = primitives.spacingXxxs;
-
-/**
- * A single image/video attachment paired with the message it belongs to. The media grid renders
- * one tile per attachment, so a message with multiple media attachments yields multiple tiles.
- */
-type MediaTile = {
-  attachment: Attachment;
-  message: MessageResponse;
-};
 
 export type MediaListProps = {
   /**
@@ -72,31 +58,6 @@ const listStateSelector = (state: SearchSourceState<MessageResponse>) => ({
   loading: state.isLoading,
   messages: state.items,
 });
-
-/**
- * Flattens search-result messages into one tile per renderable image/video attachment, applying
- * the same attachment rules the message list uses to decide what counts as gallery media.
- */
-const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => {
-  if (!messages) {
-    return [];
-  }
-  const tiles: MediaTile[] = [];
-  for (const message of messages) {
-    if (!message.attachments) {
-      continue;
-    }
-    for (const attachment of message.attachments) {
-      if (
-        (attachment.type === FileTypes.Image || attachment.type === FileTypes.Video) &&
-        !isScrapedContent(attachment)
-      ) {
-        tiles.push({ attachment, message });
-      }
-    }
-  }
-  return tiles;
-};
 
 const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   const { t } = useTranslationContext();
@@ -154,7 +115,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
     });
   }, [error, addNotification, channel, t]);
 
-  const tiles = useMemo(() => getMediaTiles(messages), [messages]);
+  const tiles = useMediaList(messages);
 
   // Tile side length: full width minus the inter-column gaps, split across the columns.
   const tileSize = useMemo(

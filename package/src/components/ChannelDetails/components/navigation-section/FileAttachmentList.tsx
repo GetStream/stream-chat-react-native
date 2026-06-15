@@ -30,6 +30,7 @@ import { NotificationTargetProvider } from '../../../Notifications/NotificationT
 import { EmptyList } from '../../../UIComponents/EmptyList';
 import {
   type FileAttachmentSection,
+  type FileAttachmentTile,
   useFileAttachmentListSections,
 } from '../../hooks/useFileAttachmentListSections';
 
@@ -40,10 +41,10 @@ export type FileAttachmentListProps = {
    *
    * See https://reactnative.dev/docs/sectionlist#props for the full list.
    */
-  additionalSectionListProps?: Partial<SectionListProps<MessageResponse, FileAttachmentSection>>;
+  additionalSectionListProps?: Partial<SectionListProps<FileAttachmentTile, FileAttachmentSection>>;
 };
 
-const keyExtractor = (message: MessageResponse) => message.id;
+const keyExtractor = (item: FileAttachmentTile, index: number) => `${item.message.id}-${index}`;
 
 const listStateSelector = (state: SearchSourceState<MessageResponse>) => ({
   error: state.lastQueryError,
@@ -108,10 +109,10 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
   const sections = useFileAttachmentListSections(messages);
 
   const renderItem = useCallback(
-    ({ item }: { item: MessageResponse }) => (
-      <FileAttachmentItem channel={channel} message={item} />
+    ({ item }: { item: FileAttachmentTile }) => (
+      <FileAttachmentItem attachment={item.attachment} message={item.message} />
     ),
-    [channel, FileAttachmentItem],
+    [FileAttachmentItem],
   );
 
   const renderSectionHeader = useCallback(
