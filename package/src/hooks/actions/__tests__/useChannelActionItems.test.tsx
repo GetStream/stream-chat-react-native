@@ -135,9 +135,9 @@ describe('useChannelActionItems', () => {
 
     expect(result.current.map((item) => item.id)).toEqual([
       'mute',
-      'pin',
       'muteUser',
       'block',
+      'pin',
       'leave',
       'deleteChannel',
     ]);
@@ -297,25 +297,25 @@ describe('getChannelActionItems', () => {
 
     expect(actionItems.map((item) => item.id)).toEqual([
       'mute',
-      'pin',
       'muteUser',
       'block',
+      'pin',
       'leave',
       'deleteChannel',
     ]);
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.unmuteChannel,
-      channelActions.pin,
       channelActions.unmuteUser,
       channelActions.unblockUser,
+      channelActions.pin,
       channelActions.leave,
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.label)).toEqual([
       'Unmute Chat',
-      'Pin Chat',
       'Unmute User',
       'Unblock User',
+      'Pin Chat',
       'Leave Chat',
       'Delete Chat',
     ]);
