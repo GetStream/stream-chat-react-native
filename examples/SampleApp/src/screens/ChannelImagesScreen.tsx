@@ -4,10 +4,9 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RouteProp } from '@react-navigation/native';
-import { ChannelDetailsContextProvider, MediaList, useTheme } from 'stream-chat-react-native';
+import { ChannelDetailsContextProvider, MediaList } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
-import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -26,11 +25,8 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  useTheme();
-  const { white } = useLegacyColors();
-
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
+    <SafeAreaView style={[styles.flex]}>
       <ScreenHeader inSafeArea titleText='Photos and Videos' />
       <ChannelDetailsContextProvider value={{ channel }}>
         <MediaList />

@@ -11,7 +11,6 @@ import {
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
-import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -34,14 +33,12 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 }) => {
   useTheme();
   const insets = useSafeAreaInsets();
-  const { white_snow } = useLegacyColors();
 
   return (
     <View
       style={[
         styles.flex,
         {
-          backgroundColor: white_snow,
           paddingBottom: insets.bottom,
         },
       ]}
