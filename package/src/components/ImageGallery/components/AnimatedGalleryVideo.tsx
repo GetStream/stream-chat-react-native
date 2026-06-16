@@ -81,8 +81,6 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     id: attachmentId,
   });
 
-  const selected = currentIndex === index;
-
   useEffect(() => {
     if (videoRef.current) {
       videoPlayer.initPlayer({ playerRef: videoRef.current });
@@ -150,16 +148,14 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     }
   };
 
-  const previous = currentIndex > index;
   const shouldRender = Math.abs(currentIndex - index) < 2;
 
   const animatedStyles = useAnimatedGalleryStyle({
+    currentIndexShared: imageGalleryStateStore.currentIndexShared,
     index,
     offsetScale,
-    previous,
     scale,
     screenHeight,
-    selected,
     translateX,
     translateY,
   });

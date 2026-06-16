@@ -62,17 +62,14 @@ export const AnimatedGalleryImage = React.memo(
     }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
 
     const isSvg = useIsSvg(uri);
-    const selected = currentIndex === index;
-    const previous = currentIndex > index;
     const shouldRender = Math.abs(currentIndex - index) < 4;
 
     const animatedStyles = useAnimatedGalleryStyle({
+      currentIndexShared: imageGalleryStateStore.currentIndexShared,
       index,
       offsetScale,
-      previous,
       scale,
       screenHeight,
-      selected,
       translateX,
       translateY,
     });
