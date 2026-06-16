@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
+import { ChannelDetailsModal } from './modal/Modal';
 import { ModalHeader } from './modal/ModalHeader';
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -11,7 +12,6 @@ import { ChevronRight } from '../../../icons';
 import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { ImageGallery } from '../../ImageGallery/ImageGallery';
-import { SafeAreaViewWrapper } from '../../UIComponents/SafeAreaViewWrapper';
 import {
   type ChannelDetailsNavigationSectionType,
   useChannelDetailsNavigationItems,
@@ -93,23 +93,20 @@ export const ChannelDetailsNavigationSection = () => {
           />
         ))}
       </View>
-      <Modal
-        animationType='slide'
-        onRequestClose={closeModal}
-        presentationStyle='fullScreen'
+      <ChannelDetailsModal
+        onClose={closeModal}
         visible={activeSection !== null}
+        presentationStyle='fullScreen'
       >
-        <SafeAreaViewWrapper style={styles.modalContent}>
-          {activeItem ? (
-            <ModalHeader
-              onClose={closeModal}
-              title={activeItem.label}
-              additionalCloseButtonProps={closeButtonProps}
-            />
-          ) : null}
-          {modalContent}
-        </SafeAreaViewWrapper>
-      </Modal>
+        {activeItem ? (
+          <ModalHeader
+            onClose={closeModal}
+            title={activeItem.label}
+            additionalCloseButtonProps={closeButtonProps}
+          />
+        ) : null}
+        {modalContent}
+      </ChannelDetailsModal>
     </>
   );
 };
@@ -122,9 +119,6 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
           paddingVertical: primitives.spacingXs,
-        },
-        modalContent: {
-          flex: 1,
         },
       }),
     [],
