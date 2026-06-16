@@ -38,7 +38,7 @@
     "stream-chat-react-native-core": "workspace:^"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.6",
     "@babel/runtime": "^7.29.2",
     "@react-native-community/cli": "19.1.2",
     "@react-native-community/cli-platform-android": "19.1.1",
