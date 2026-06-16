@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  AccessibilityInfo,
-  Image,
-  ImageStyle,
-  Platform,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { AccessibilityInfo, ImageStyle, Platform, StyleSheet, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
@@ -26,6 +19,7 @@ import type {
   ImageGalleryHeaderProps,
 } from './components/types';
 
+import { useCurrentImageHeight } from './hooks/useCurrentImageHeight';
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
 import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
@@ -139,9 +133,17 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   }, [showScreen]);
 
   /**
-   * Image height from URL or default to full screen height
+   * Image height for the currently selected asset. SharedValue so worklet
+   * consumers (gesture math, header/footer opacity) read it directly on the
+   * UI thread — updating it doesn't trigger a parent re-render. The hook
+   * owns the value and updates it via a store subscription.
    */
-  const [currentImageHeight, setCurrentImageHeight] = useState<number>(fullWindowHeight);
+  const currentImageHeight = useCurrentImageHeight({
+    assets,
+    fullWindowHeight,
+    fullWindowWidth,
+    imageGalleryStateStore,
+  });
 
   /**
    * Header visible value for animating in out
@@ -164,34 +166,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
     [currentIndex, fullWindowWidth],
   );
-
-  /**
-   * Image heights are not provided and therefore need to be calculated.
-   * We start by allowing the image to be the full height then reduce it
-   * to the proper scaled height based on the width being restricted to the
-   * screen width when the dimensions are received.
-   */
-  useEffect(() => {
-    let currentImageHeight = fullWindowHeight;
-    const photo = assets[currentIndex];
-    const height = photo?.original_height;
-    const width = photo?.original_width;
-
-    if (height && width) {
-      const imageHeight = Math.floor(height * (fullWindowWidth / width));
-      currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-    } else if (photo?.uri) {
-      if (photo.type === FileTypes.Image) {
-        Image.getSize(photo.uri, (width, height) => {
-          const imageHeight = Math.floor(height * (fullWindowWidth / width));
-          currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-        });
-      }
-    }
-
-    setCurrentImageHeight(currentImageHeight);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex]);
 
   // If you change the current index, pause the active video player.
   useEffect(() => {
@@ -219,20 +193,21 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 
   /**
    * If the header is visible we scale down the opacity of it as the
-   * image is swiped downward
+   * image is swiped downward. Reads currentImageHeight from a SharedValue so
+   * the worklet doesn't need to be re-registered when the image dimensions
+   * change between slides.
    */
-  const headerFooterOpacity = useDerivedValue(
-    () =>
-      currentImageHeight * scale.value < fullWindowHeight && translateY.value > 0
-        ? 1 - translateY.value / quarterScreenHeight
-        : currentImageHeight * scale.value > fullWindowHeight &&
-            translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-          ? 1 -
-            (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
-              quarterScreenHeight
-          : 1,
-    [currentImageHeight],
-  );
+  const headerFooterOpacity = useDerivedValue(() => {
+    const imageHeight = currentImageHeight.value;
+    return imageHeight * scale.value < fullWindowHeight && translateY.value > 0
+      ? 1 - translateY.value / quarterScreenHeight
+      : imageHeight * scale.value > fullWindowHeight &&
+          translateY.value > (imageHeight / 2) * scale.value - halfScreenHeight
+        ? 1 -
+          (translateY.value - ((imageHeight / 2) * scale.value - halfScreenHeight)) /
+            quarterScreenHeight
+        : 1;
+  }, []);
 
   /**
    * This transition and scaleX reverse lets use scroll right
