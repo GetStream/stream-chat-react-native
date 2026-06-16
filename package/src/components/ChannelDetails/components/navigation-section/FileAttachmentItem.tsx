@@ -64,6 +64,10 @@ export const FileAttachmentItem = (props: FileAttachmentItemProps) => {
 FileAttachmentItem.displayName = 'FileAttachmentItem{fileAttachmentItem}';
 
 const useStyles = () => {
+  const {
+    theme: { semantics },
+  } = useTheme();
+
   return useMemo(
     () => ({
       ...StyleSheet.create({
@@ -74,8 +78,15 @@ const useStyles = () => {
         },
       }),
       // FilePreview's default container has a hardcoded width; stretch it to the row width.
-      filePreview: StyleSheet.create({ container: { width: '100%' } }),
+      filePreview: StyleSheet.create({
+        container: { width: '100%' },
+        title: {
+          fontWeight: primitives.typographyFontWeightRegular,
+          fontSize: primitives.typographyFontSizeMd,
+        },
+        size: { color: semantics.textTertiary },
+      }),
     }),
-    [],
+    [semantics],
   );
 };
