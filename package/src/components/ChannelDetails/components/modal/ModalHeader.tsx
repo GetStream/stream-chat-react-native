@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { NewClose } from '../../../../icons/xmark';
+import { Cross } from '../../../../icons/xmark-1';
 import { primitives } from '../../../../theme';
 import { Button, ButtonProps } from '../../../ui/Button/Button';
 
@@ -38,7 +38,7 @@ export const ModalHeader = ({
         <Button
           accessibilityLabelKey='a11y/Close'
           iconOnly
-          LeadingIcon={NewClose}
+          LeadingIcon={Cross}
           onPress={onClose}
           size='md'
           type='outline'
