@@ -232,9 +232,13 @@ const useAudioAttachmentStyles = () => {
   return useMemo(() => {
     return StyleSheet.create({
       container: {
-        paddingVertical: primitives.spacingXs,
+        paddingVertical: shouldRemoveAudioAttachmentPadding
+          ? primitives.spacingXxs
+          : primitives.spacingXs,
         paddingLeft: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingXs,
-        paddingRight: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingSm,
+        paddingRight: shouldRemoveAudioAttachmentPadding
+          ? primitives.spacingXxs
+          : primitives.spacingSm,
         borderWidth: 0,
         backgroundColor: showBackgroundTransparent
           ? 'transparent'
@@ -257,7 +261,8 @@ const useAudioAttachmentStyles = () => {
         fontWeight: primitives.typographyFontWeightSemiBold,
       },
       leftContainer: {
-        padding: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingXxs,
+        paddingVertical: shouldRemoveAudioAttachmentPadding ? 0 : primitives.spacingXxs,
+        paddingHorizontal: primitives.spacingXxs,
       },
     });
   }, [shouldRemoveAudioAttachmentPadding, showBackgroundTransparent, isMyMessage, semantics]);

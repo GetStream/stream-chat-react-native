@@ -90,6 +90,10 @@ export const tables: Tables = {
       attachments: 'TEXT',
       custom: 'TEXT',
       id: 'TEXT NOT NULL',
+      mentionedChannel: 'BOOLEAN DEFAULT FALSE',
+      mentionedGroupIds: 'TEXT',
+      mentionedHere: 'BOOLEAN DEFAULT FALSE',
+      mentionedRoles: 'TEXT',
       mentionedUsers: 'TEXT',
       parentId: 'TEXT',
       poll_id: 'TEXT',
@@ -381,6 +385,10 @@ export type Schema = {
     id: string;
     attachments?: string;
     custom?: string;
+    mentionedChannel?: boolean;
+    mentionedGroupIds?: string;
+    mentionedHere?: boolean;
+    mentionedRoles?: string;
     mentionedUsers?: string;
     parentId?: string;
     poll_id?: string;

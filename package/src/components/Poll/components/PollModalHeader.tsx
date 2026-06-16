@@ -56,8 +56,7 @@ const useStyles = () => {
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          paddingHorizontal: primitives.spacingMd,
-          paddingVertical: 10,
+          padding: primitives.spacingMd,
           backgroundColor: semantics.backgroundCoreElevation1,
         },
         centerContainer: {

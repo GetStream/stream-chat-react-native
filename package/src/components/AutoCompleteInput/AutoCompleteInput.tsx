@@ -165,8 +165,20 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     }
   }, [text]);
 
+  const nativeInputRef = useRef<RNTextInput | null>(null);
+
   const clearState = useCallback(() => {
     setLocalText('');
+    // iOS UITextView caches its intrinsicContentSize while focused, so a
+    // controlled `value` change to '' after a multiline send doesn't shrink
+    // the input back to single line height and UIKit keeps rendering at the
+    // previously cached focused size until blur. Not particularly sure which
+    // RN version regressed this, but 0.85.3 for sure has the bug. Forcebly
+    // setting its native prop forces UITextView to reconcile its content size
+    // and update accordingly.
+    if (Platform.OS === 'ios') {
+      nativeInputRef.current?.setNativeProps({ text: '' });
+    }
   }, []);
 
   const restoreState = useStableCallback((restoredText: string) => {
@@ -175,6 +187,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   const setExtendedInputRef = useCallback(
     (ref: RNTextInput | null) => {
+      nativeInputRef.current = ref;
       if (!ref) {
         setRef(setInputBoxRef, null);
         return;

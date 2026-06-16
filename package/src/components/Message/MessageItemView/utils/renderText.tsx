@@ -27,7 +27,7 @@ import {
   State,
 } from 'simple-markdown';
 
-import type { LocalMessage, UserResponse } from 'stream-chat';
+import type { LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
 
 import { generateMarkdownText } from './generateMarkdownText';
 
@@ -152,7 +152,7 @@ const defaultMarkdownStyles: MarkdownStyle = {
     flexDirection: 'row',
   },
   mentions: {
-    fontWeight: '700',
+    fontWeight: primitives.typographyFontWeightRegular,
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
   },
@@ -286,7 +286,7 @@ export const renderText = (params: RenderTextParams) => {
     },
     mentions: {
       ...defaultMarkdownStyles.mentions,
-      color: semantics.accentPrimary,
+      color: semantics.chatTextMention,
       ...markdownStyles?.mentions,
     },
     table: {
@@ -404,26 +404,96 @@ export const renderText = (params: RenderTextParams) => {
     );
   };
 
-  // take the @ mentions and turn them into markdown?
-  // translate links
-  const { mentioned_users } = message;
-  const mentionedUsernames = (mentioned_users || [])
-    .map((user) => user.name || user.id)
-    .filter(Boolean)
+  // Collect every mention type the server sent us into a single typed list so
+  // the markdown rule, the lookup, and the press payload all see the same shape.
+  const {
+    mentioned_channel,
+    mentioned_group_ids,
+    mentioned_groups,
+    mentioned_here,
+    mentioned_roles,
+    mentioned_users,
+  } = message;
+
+  const mentionEntities: MentionEntity[] = [
+    ...((mentioned_users ?? []) as UserResponse[]).map(
+      (user) => ({ ...user, mentionType: 'user' }) as MentionEntity,
+    ),
+    ...(mentioned_channel
+      ? ([{ id: 'channel', mentionType: 'channel', name: 'channel' }] as MentionEntity[])
+      : []),
+    ...(mentioned_here
+      ? ([{ id: 'here', mentionType: 'here', name: 'here' }] as MentionEntity[])
+      : []),
+    ...((mentioned_roles ?? []) as string[]).map(
+      (role) => ({ id: role, mentionType: 'role', name: role }) as MentionEntity,
+    ),
+    ...(
+      (mentioned_groups ?? (mentioned_group_ids ?? []).map((id) => ({ id, name: id }))) as Array<{
+        id: string;
+        name?: string;
+      }>
+    ).map(
+      (group) =>
+        ({
+          id: group.id,
+          mentionType: 'user_group',
+          name: group.name ?? group.id,
+        }) as MentionEntity,
+    ),
+  ];
+
+  // Lookup keyed by the rendered mention text (sans `@`), lowercased so we
+  // resolve case-insensitively. First-write-wins: if a user shares a name with
+  // a role/group, the user entity is preferred — same precedence the React SDK
+  // applies via insertion order in its plugin.
+  const mentionLookup = new Map<string, MentionEntity>();
+  for (const entity of mentionEntities) {
+    const key = (entity.name ?? entity.id).toLowerCase();
+    if (!mentionLookup.has(key)) mentionLookup.set(key, entity);
+  }
+
+  const mentionTokens = mentionEntities
+    .map((entity) => entity.name ?? entity.id)
+    .filter((value): value is string => Boolean(value))
     .sort((a, b) => b.length - a.length)
-    .map(escapeRegExp);
-  const mentionedUsers = mentionedUsernames.map((username) => `@${username}`).join('|');
-  const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
+    .map((value) => `@${escapeRegExp(value)}`)
+    .join('|');
+  const regEx = new RegExp(`^\\B(${mentionTokens})`, 'g');
   const mentionsMatchFunction: MatchFunction = (source) => regEx.exec(source);
 
+  const colorForMentionType = (mentionType: MentionEntity['mentionType']) => {
+    switch (mentionType) {
+      case 'user':
+        return semantics.chatTextMentionUser;
+      case 'channel':
+      case 'here':
+        return semantics.chatTextMentionBroadcast;
+      case 'role':
+        return semantics.chatTextMentionRole;
+      case 'user_group':
+        return semantics.chatTextMentionGroup;
+      default:
+        return semantics.chatTextMention;
+    }
+  };
+
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
-    /**removes the @ prefix of username */
-    const userName = node.content[0]?.content?.substring(1);
+    const matchedText: string | undefined = node.content[0]?.content;
+    const matchedName = matchedText?.substring(1) ?? '';
+    const matchedEntity = mentionLookup.get(matchedName.toLowerCase());
+    const mentionedUser =
+      matchedEntity?.mentionType === 'user' ? (matchedEntity as UserResponse) : undefined;
+    const mentionColor = matchedEntity
+      ? colorForMentionType(matchedEntity.mentionType)
+      : semantics.chatTextMention;
+
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
           additionalInfo: {
-            user: mentioned_users?.find((user: UserResponse) => userName === user.name),
+            mentionedEntity: matchedEntity,
+            user: mentionedUser,
           },
           emitter: 'textMention',
           event,
@@ -434,6 +504,10 @@ export const renderText = (params: RenderTextParams) => {
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
         onLongPressParam({
+          additionalInfo: {
+            mentionedEntity: matchedEntity,
+            user: mentionedUser,
+          },
           emitter: 'textMention',
           event,
         });
@@ -441,7 +515,12 @@ export const renderText = (params: RenderTextParams) => {
     };
 
     return (
-      <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
+      <Text
+        key={state.key}
+        onLongPress={onLongPress}
+        onPress={onPress}
+        style={[styles.mentions, { color: mentionColor }]}
+      >
         {Array.isArray(node.content)
           ? node.content.reduce((acc, current) => acc + current.content, '') || ''
           : output(node.content, state)}
@@ -492,7 +571,7 @@ export const renderText = (params: RenderTextParams) => {
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
     sublist: { react: listReact },
-    ...(mentionedUsers
+    ...(mentionTokens
       ? {
           mentions: {
             match: mentionsMatchFunction,
@@ -507,7 +586,7 @@ export const renderText = (params: RenderTextParams) => {
 
   return (
     <Markdown
-      key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}-${
+      key={`${JSON.stringify(mentionEntities)}-${onlyEmojis}-${
         messageOverlay ? JSON.stringify(markdownStyles) : undefined
       }-${JSON.stringify(semantics)}`}
       onLink={onLink}

@@ -130,10 +130,6 @@ const useSyncingApi = (portalHostName: string, registrationId: string) => {
         y: y + (Platform.OS === 'android' ? insets.top : 0),
       };
 
-      if (!width || !height) {
-        return;
-      }
-
       placeholderLayout.value = { h: height, w: width };
 
       setClosingPortalLayout(portalHostName, registrationId, {

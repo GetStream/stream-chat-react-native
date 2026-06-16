@@ -60,6 +60,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
+import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
 
@@ -297,6 +298,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     threadList = false,
   } = props;
   const {
+    AutoCompleteSuggestionList,
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
@@ -1135,6 +1137,22 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           />
         </View>
       ) : null}
+      <Animated.View
+        layout={transitions.layout200}
+        style={[
+          {
+            bottom: messageInputFloating ? messageInputHeight + 16 : 0,
+          },
+          styles.suggestionsListContainer,
+        ]}
+      >
+        <PortalWhileClosingView
+          portalHostName='overlay-suggestion-list'
+          portalName='autocomplete-suggestion-list'
+        >
+          <AutoCompleteSuggestionList />
+        </PortalWhileClosingView>
+      </Animated.View>
       <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
     </View>
   );
@@ -1279,6 +1297,9 @@ const useStyles = () => {
         scrollToBottomButtonContainer,
         unreadMessagesNotificationContainer,
       },
+      messageComposer: {
+        suggestionsListContainer: { container: suggestionListContainer },
+      },
     },
   } = useTheme();
 
@@ -1287,6 +1308,12 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        suggestionsListContainer: {
+          backgroundColor: 'transparent',
+          position: 'absolute',
+          width: '100%',
+          ...suggestionListContainer,
+        },
         container: {
           flex: 1,
           width: '100%',
@@ -1338,6 +1365,7 @@ const useStyles = () => {
       scrollToBottomButtonContainer,
       stickyHeaderContainer,
       unreadMessagesNotificationContainer,
+      suggestionListContainer,
     ],
   );
 };

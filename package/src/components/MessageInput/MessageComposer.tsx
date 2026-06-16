@@ -118,7 +118,7 @@ const useStyles = () => {
         shadowRadius: 12,
       },
       suggestionsListContainer: {
-        backgroundColor: semantics.backgroundCoreElevation1,
+        backgroundColor: 'transparent',
         position: 'absolute',
         width: '100%',
       },
@@ -200,7 +200,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
-    AutoCompleteSuggestionList,
     Input,
     InputView,
     MessageComposerLeadingView,
@@ -227,7 +226,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
         inputBoxWrapper,
         inputContainer,
         inputFloatingContainer,
-        suggestionsListContainer: { container: suggestionListContainer },
         wrapper,
       },
     },
@@ -355,7 +353,12 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
-              messageInputHeightStore.setHeight(newHeight);
+              messageInputHeightStore.setHeight(
+                newHeight -
+                  (selectedPicker && !isKeyboardVisible
+                    ? attachmentPickerBottomSheetHeight - bottomInset
+                    : 0),
+              );
             }}
             style={
               messageInputFloating
@@ -436,11 +439,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
             ) : (
               <MessageComposerTrailingView />
             )}
-          </View>
-          <View
-            style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-          >
-            <AutoCompleteSuggestionList />
           </View>
         </PortalWhileClosingView>
       </Animated.View>

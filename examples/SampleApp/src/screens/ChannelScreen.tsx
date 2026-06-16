@@ -88,12 +88,17 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
         <Pressable
+          accessibilityRole='button'
           onPress={onRightContentPress}
           style={({ pressed }) => ({
+            alignItems: 'center',
+            height: 48,
+            justifyContent: 'center',
             opacity: pressed ? 0.5 : 1,
+            width: 48,
           })}
         >
-          <ChannelAvatar channel={channel} size='xl' />
+          <ChannelAvatar channel={channel} size='lg' />
         </Pressable>
       )}
       showUnreadCountBadge

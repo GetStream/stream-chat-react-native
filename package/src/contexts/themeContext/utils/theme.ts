@@ -356,6 +356,7 @@ export type Theme = {
       checkAllIcon: IconProps;
       checkIcon: IconProps;
       timeIcon: IconProps;
+      username: TextStyle;
     };
     lowerRow: ViewStyle;
     title: TextStyle;
@@ -617,6 +618,10 @@ export type Theme = {
         avatarSize: number;
         column: ViewStyle;
         container: ViewStyle;
+        enhancedMentionContainer: ViewStyle;
+        enhancedMentionIcon: ViewStyle;
+        enhancedMentionSubtitle: TextStyle;
+        enhancedMentionTitle: TextStyle;
         name: TextStyle;
         tag: TextStyle;
       };
@@ -624,6 +629,7 @@ export type Theme = {
     suggestionsListContainer: {
       container: ViewStyle;
       flatlist: ViewStyle;
+      flatlistContentContainer: ViewStyle;
     };
     videoAttachmentUploadPreview: {
       durationContainer: ViewStyle;
@@ -1461,6 +1467,7 @@ export const defaultTheme: Theme = {
       checkAllIcon: {},
       checkIcon: {},
       timeIcon: {},
+      username: {},
     },
     mutedStatus: {},
     pinnedStatus: {},
@@ -1710,6 +1717,10 @@ export const defaultTheme: Theme = {
         avatarSize: 40,
         column: {},
         container: {},
+        enhancedMentionContainer: {},
+        enhancedMentionIcon: {},
+        enhancedMentionSubtitle: {},
+        enhancedMentionTitle: {},
         name: {},
         tag: {},
       },
@@ -1717,6 +1728,7 @@ export const defaultTheme: Theme = {
     suggestionsListContainer: {
       container: {},
       flatlist: {},
+      flatlistContentContainer: {},
     },
     wrapper: {},
     linkPreviewList: {
