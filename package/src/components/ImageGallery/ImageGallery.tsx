@@ -135,7 +135,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   /**
    * Image height for the currently selected asset. SharedValue so worklet
    * consumers (gesture math, header/footer opacity) read it directly on the
-   * UI thread — updating it doesn't trigger a parent re-render. The hook
+   * UI thread so updating it doesn't trigger a parent rerender. The hook
    * owns the value and updates it via a store subscription.
    */
   const currentImageHeight = useCurrentImageHeight({
@@ -157,14 +157,18 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   const translateY = useSharedValue(0);
   const offsetScale = useSharedValue(1);
   const scale = useSharedValue(1);
-  const translationX = useSharedValue(-(fullWindowWidth + MARGIN) * currentIndex);
+  const translationX = useSharedValue(
+    -(fullWindowWidth + MARGIN) * imageGalleryStateStore.state.getLatestValue().currentIndex,
+  );
+
+  const currentIndexShared = imageGalleryStateStore.currentIndexShared;
 
   useAnimatedReaction(
-    () => currentIndex,
+    () => currentIndexShared.value,
     (index) => {
       translationX.value = -(fullWindowWidth + MARGIN) * index;
     },
-    [currentIndex, fullWindowWidth],
+    [fullWindowWidth],
   );
 
   // If you change the current index, pause the active video player.
