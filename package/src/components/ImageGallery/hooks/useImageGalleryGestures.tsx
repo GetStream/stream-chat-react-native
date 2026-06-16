@@ -221,7 +221,7 @@ export const useImageGalleryGestures = ({
          * true, or false and is reset on releasing the touch
          */
         if (isSwiping.value === IsSwiping.UNDETERMINED) {
-          const maxXYRatio = isAndroid ? 1 : 0.25;
+          const maxXYRatio = 0.25;
           if (
             Math.abs(event.translationX / event.translationY) > maxXYRatio &&
             (Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) < 3 ||

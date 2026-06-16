@@ -151,7 +151,7 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
   };
 
   const previous = currentIndex > index;
-  const shouldRender = Math.abs(currentIndex - index) < 4;
+  const shouldRender = Math.abs(currentIndex - index) < 2;
 
   const animatedStyles = useAnimatedGalleryStyle({
     index,
