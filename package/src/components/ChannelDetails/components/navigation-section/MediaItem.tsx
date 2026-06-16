@@ -1,9 +1,10 @@
 import React, { useMemo, useRef } from 'react';
-import { findNodeHandle, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { findNodeHandle, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, MessageResponse } from 'stream-chat';
 
 import { useChatConfigContext } from '../../../../contexts/chatConfigContext/ChatConfigContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../../../icons/video-fill';
 import { primitives } from '../../../../theme';
@@ -44,6 +45,7 @@ export type MediaItemProps = {
  * @experimental This component is experimental and is subject to change.
  */
 export const MediaItem = (props: MediaItemProps) => {
+  const { ImageComponent: Image } = useComponentsContext();
   const { attachment, message, onPress, size } = props;
   const {
     theme: {
