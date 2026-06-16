@@ -38,7 +38,7 @@ export const ChannelMediaListProvider = ({
       type: undefined,
     };
     // Newest media first so the grid reads top-to-bottom from most recent.
-    source.messageSearchSort = [{ created_at: -1 }];
+    source.messageSearchSort = { created_at: -1 };
     source.activate();
     return source;
   });
