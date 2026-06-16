@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
@@ -49,19 +49,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const imageGallerySelector = (state: ImageGalleryState) => ({
-  currentIndex: state.currentIndex,
-});
-
 const videoPlayerSelector = (state: VideoPlayerState) => ({
   currentPlaybackRate: state.currentPlaybackRate,
   isPlaying: state.isPlaying,
 });
 
-export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
+const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   const [opacity, setOpacity] = useState<number>(1);
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
 
   const {
     attachmentId,
@@ -74,6 +69,14 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     translateX,
     translateY,
   } = props;
+
+  const shouldRenderSelector = useCallback(
+    (state: ImageGalleryState) => ({
+      shouldRender: Math.abs(state.currentIndex - index) < 2,
+    }),
+    [index],
+  );
+  const { shouldRender } = useStateStore(imageGalleryStateStore.state, shouldRenderSelector);
 
   const videoRef = useRef<VideoType>(null);
 
@@ -148,8 +151,6 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     }
   };
 
-  const shouldRender = Math.abs(currentIndex - index) < 2;
-
   const animatedStyles = useAnimatedGalleryStyle({
     currentIndexShared: imageGalleryStateStore.currentIndexShared,
     index,
@@ -213,5 +214,19 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     </Animated.View>
   );
 };
+
+export const AnimatedGalleryVideo = React.memo(
+  AnimatedGalleryVideoComponent,
+  (prevProps, nextProps) => {
+    if (
+      prevProps.photo.uri === nextProps.photo.uri &&
+      prevProps.index === nextProps.index &&
+      prevProps.screenHeight === nextProps.screenHeight
+    ) {
+      return true;
+    }
+    return false;
+  },
+);
 
 AnimatedGalleryVideo.displayName = 'AnimatedGalleryVideo';

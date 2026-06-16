@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
@@ -30,10 +30,6 @@ type Props = {
   style?: StyleProp<ImageStyle>;
 };
 
-const imageGallerySelector = (state: ImageGalleryState) => ({
-  currentIndex: state.currentIndex,
-});
-
 export const AnimatedGalleryImage = React.memo(
   (props: Props) => {
     const {
@@ -50,7 +46,13 @@ export const AnimatedGalleryImage = React.memo(
     } = props;
     const { imageGalleryStateStore } = useImageGalleryContext();
     const { resizableCDNHosts } = useChatConfigContext();
-    const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
+    const shouldRenderSelector = useCallback(
+      (state: ImageGalleryState) => ({
+        shouldRender: Math.abs(state.currentIndex - index) < 4,
+      }),
+      [index],
+    );
+    const { shouldRender } = useStateStore(imageGalleryStateStore.state, shouldRenderSelector);
 
     const uri = useMemo(() => {
       return getResizedImageUrl({
@@ -62,7 +64,6 @@ export const AnimatedGalleryImage = React.memo(
     }, [photo.uri, resizableCDNHosts, screenHeight, screenWidth]);
 
     const isSvg = useIsSvg(uri);
-    const shouldRender = Math.abs(currentIndex - index) < 4;
 
     const animatedStyles = useAnimatedGalleryStyle({
       currentIndexShared: imageGalleryStateStore.currentIndexShared,
