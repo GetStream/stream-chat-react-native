@@ -142,6 +142,23 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     },
   ];
 
+  if (surface !== 'details') {
+    actionItems.push({
+      action: isPinned ? unpin : pin,
+      Icon: (props) => <ChannelActionsIcon Icon={isPinned ? Unpin : Pin} {...props} />,
+      id: 'pin',
+      label: isDirectChat
+        ? isPinned
+          ? t('Unpin Chat')
+          : t('Pin Chat')
+        : isPinned
+          ? t('Unpin Group')
+          : t('Pin Group'),
+      placement: 'sheet',
+      type: 'standard',
+    });
+  }
+
   if (isDirectChat) {
     actionItems.push({
       action: userMuteActive ? unmuteUser : muteUser,
@@ -169,23 +186,6 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       label: isBlocked ? t('Unblock User') : t('Block User'),
       placement: 'sheet',
       type: isBlocked ? 'standard' : 'destructive',
-    });
-  }
-
-  if (surface !== 'details') {
-    actionItems.push({
-      action: isPinned ? unpin : pin,
-      Icon: (props) => <ChannelActionsIcon Icon={isPinned ? Unpin : Pin} {...props} />,
-      id: 'pin',
-      label: isDirectChat
-        ? isPinned
-          ? t('Unpin Chat')
-          : t('Pin Chat')
-        : isPinned
-          ? t('Unpin Group')
-          : t('Pin Group'),
-      placement: 'sheet',
-      type: 'standard',
     });
   }
 
