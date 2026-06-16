@@ -50,13 +50,24 @@ export const useCurrentImageHeight = ({
       }
 
       if (photo?.uri && photo.type === FileTypes.Image) {
-        Image.getSize(photo.uri, (width, height) => {
-          // Stale result, currentIndex moved on before getSize resolved.
-          if (currentToken !== latestToken) return;
-          const imageHeight = Math.floor(height * (fullWindowWidth / width));
-          currentImageHeight.value =
-            imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-        });
+        Image.getSize(
+          photo.uri,
+          (width, height) => {
+            // Stale result, currentIndex moved on before getSize resolved.
+            if (currentToken !== latestToken) return;
+            if (!width || !height) {
+              currentImageHeight.value = fullWindowHeight;
+              return;
+            }
+            const imageHeight = Math.floor(height * (fullWindowWidth / width));
+            currentImageHeight.value =
+              imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
+          },
+          () => {
+            if (currentToken !== latestToken) return;
+            currentImageHeight.value = fullWindowHeight;
+          },
+        );
         return;
       }
 
