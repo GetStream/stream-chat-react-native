@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { Modal, View } from 'react-native';
+import { Modal } from 'react-native';
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -38,7 +39,7 @@ export const ChannelDetailsModal = ({
       presentationStyle={presentationStyle}
       visible={visible}
     >
-      <View
+      <GestureHandlerRootView
         style={[
           styles.body,
           presentationStyle === 'fullScreen' ? { paddingTop: top } : {},
@@ -46,7 +47,7 @@ export const ChannelDetailsModal = ({
         ]}
       >
         {children}
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
