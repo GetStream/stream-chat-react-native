@@ -306,6 +306,7 @@ export type Theme = {
       checkAllIcon: IconProps;
       checkIcon: IconProps;
       timeIcon: IconProps;
+      username: TextStyle;
     };
     lowerRow: ViewStyle;
     title: TextStyle;
@@ -1356,6 +1357,7 @@ export const defaultTheme: Theme = {
       checkAllIcon: {},
       checkIcon: {},
       timeIcon: {},
+      username: {},
     },
     mutedStatus: {},
     pinnedStatus: {},
