@@ -5,8 +5,8 @@ import type { FlatList } from 'react-native-gesture-handler';
 
 import type { Channel } from 'stream-chat';
 
-import type { GetChannelActionItems } from '../../components/ChannelList/hooks/useChannelActionItems';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
+import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -118,6 +118,7 @@ export type ChannelsContextValue = {
   swipeActionsEnabled?: boolean;
 
   mutedStatusPosition?: 'trailingBottom' | 'inlineTitle';
+  pinnedStatusPosition?: 'trailingBottom' | 'inlineTitle';
 };
 
 export const ChannelsContext = React.createContext(

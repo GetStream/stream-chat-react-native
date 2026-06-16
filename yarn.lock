@@ -5420,7 +5420,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/slider@npm:^5.2.0":
+"@react-native-community/slider@npm:^5.0.1":
   version: 5.2.0
   resolution: "@react-native-community/slider@npm:5.2.0"
   checksum: 10c0/58ec6a47b5aafefd98a61c79aeae05f1ab8371782eb497d9af665bf2f62a1c372da8fed6dead30e1d6c9e01bfb12bfdbafcde7890736f4f5d55502dabf2e01ad
@@ -7442,7 +7442,7 @@ __metadata:
     react-native-teleport: "npm:^1.0.2"
     react-native-web: "npm:^0.21.0"
     react-native-worklets: "npm:0.8.3"
-    stream-chat: "npm:^9.44.2"
+    stream-chat: "npm:^9.45.6"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:~5.9.2"
@@ -7929,14 +7929,14 @@ __metadata:
   linkType: hard
 
 "axios@npm:^1.16.1":
-  version: 1.16.1
-  resolution: "axios@npm:1.16.1"
+  version: 1.17.0
+  resolution: "axios@npm:1.17.0"
   dependencies:
     follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.5"
     https-proxy-agent: "npm:^5.0.1"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10c0/2f77e37e6552bbff8a772d058fb09500198e9188c6b20dc799d82dbe12a8cb506f6eed4e4e62a9ba612a35cbab496faa26d68f9bff14a53af6d15c3e136391a7
+  checksum: 10c0/c4fa19ff3a3a63bde48beec03ad816b133b9a6385cccffffe172577ab18c6a70e299280d57f12c80c867fe25df41f92cb91d3a8258708a6d2be3e9e085f92650
   languageName: node
   linkType: hard
 
@@ -17872,26 +17872,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.35.9":
-  version: 0.35.9
-  resolution: "react-native-nitro-modules@npm:0.35.9"
+"react-native-nitro-modules@npm:0.31.3":
+  version: 0.31.3
+  resolution: "react-native-nitro-modules@npm:0.31.3"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/2e5c1b3eed1d187e7c2bbbf661e6405cb69c6a20b01427ea4c8a3bfe07a4baf2efbeb170a21f8c17fb0e18f022244f4b1fe1ce69a7ec824a7a4cf72441893cf1
+  checksum: 10c0/ec37750c9ae0a1c433c307cfba78474cb1c2593f6b4780d00250755688ed049602e28fa3c4e2b9f922a815353b6ed8c74db580973e736a4d8aba4f06eed7c91b
   languageName: node
   linkType: hard
 
-"react-native-nitro-sound@npm:^0.2.15":
-  version: 0.2.15
-  resolution: "react-native-nitro-sound@npm:0.2.15"
+"react-native-nitro-sound@npm:0.2.9":
+  version: 0.2.9
+  resolution: "react-native-nitro-sound@npm:0.2.9"
   dependencies:
-    "@react-native-community/slider": "npm:^5.2.0"
+    "@react-native-community/slider": "npm:^5.0.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-    react-native-nitro-modules: ">=0.35.4"
-  checksum: 10c0/215624ccc6303475ee21ac734b40bcddb9bf8ad8996a3ea8af3c98d507280261686f8d7289a5eac56736ad33c0e20395fb843d78c5441c58f79f70086c5759fe
+    react-native-nitro-modules: "*"
+  checksum: 10c0/10fdb135ef226b0de845ae91d4cfb88fec8a55ee5350919b8005589fa08750b934c76b5ccd0265ae38e7d9aa14b28f83d156d3d3582cfef15e9b9f93873a2505
   languageName: node
   linkType: hard
 
@@ -18874,8 +18874,8 @@ __metadata:
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:^1.27.2"
-    react-native-nitro-modules: "npm:^0.35.9"
-    react-native-nitro-sound: "npm:^0.2.15"
+    react-native-nitro-modules: "npm:0.31.3"
+    react-native-nitro-sound: "npm:0.2.9"
     react-native-reanimated: "npm:4.3.1"
     react-native-safe-area-context: "npm:^5.8.0"
     react-native-screens: "npm:^4.25.2"
@@ -18884,7 +18884,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.7"
     react-native-video: "npm:^6.19.2"
     react-native-worklets: "npm:^0.8.3"
-    stream-chat: "npm:^9.45.0"
+    stream-chat: "npm:^9.45.6"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:5.9.3"
@@ -19611,7 +19611,7 @@ __metadata:
     react-native-worklets: "npm:^0.9.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^9.45.0"
+    stream-chat: "npm:^9.45.6"
     typescript: "npm:5.9.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -19683,9 +19683,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.44.2, stream-chat@npm:^9.45.0":
-  version: 9.45.0
-  resolution: "stream-chat@npm:9.45.0"
+"stream-chat@npm:^9.45.6":
+  version: 9.45.6
+  resolution: "stream-chat@npm:9.45.6"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
@@ -19701,7 +19701,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/549fe5ecee248653e00a8d31e11813aebe31a76c26f84e67589251e0bb2e48781dbc8925785a16dabe8a688eba317da3d63042887b7e7a6c528c38f836c6f421
+  checksum: 10c0/b121144eb7aef34c989bb1702e0bc09a98bb4089f785d530c26721377d308eea9c8e7b11e387f66dd42a663dbeca76e2a8ba54b43ddb93496b4251bcc8c2df48
   languageName: node
   linkType: hard
 
@@ -20536,7 +20536,7 @@ __metadata:
     react-native-svg: "npm:^15.12.0"
     react-native-video: "npm:^6.16.1"
     react-native-worklets: "npm:^0.4.1"
-    stream-chat: "npm:^9.44.2"
+    stream-chat: "npm:^9.45.6"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:5.9.3"

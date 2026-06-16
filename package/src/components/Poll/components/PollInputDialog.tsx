@@ -73,24 +73,24 @@ export const PollInputDialog = ({
             </View>
             <View style={[styles.buttonContainer, buttonContainer]}>
               <Button
-                variant={'secondary'}
-                type={'ghost'}
-                label={t('Cancel')}
-                size='md'
-                onPress={closeDialog}
-                style={styles.button}
-              />
-              <Button
                 variant={'primary'}
                 type={'solid'}
                 label={t('Send')}
-                size='md'
+                size='lg'
                 onPress={() => {
                   onSubmit(dialogInput);
                   closeDialog();
                 }}
                 style={styles.button}
                 disabled={!dialogInput}
+              />
+              <Button
+                variant={'secondary'}
+                type={'outline'}
+                label={t('Cancel')}
+                size='lg'
+                onPress={closeDialog}
+                style={styles.button}
               />
             </View>
           </Animated.View>
@@ -112,8 +112,8 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        button: { flex: 1, width: undefined, ...button },
-        buttonContainer: { flexDirection: 'row', gap: primitives.spacingXs },
+        button: { width: undefined, ...button },
+        buttonContainer: { gap: primitives.spacingXs },
         container: {
           backgroundColor: semantics.backgroundCoreElevation1,
           borderRadius: primitives.radiusXl,
@@ -132,7 +132,7 @@ const useStyles = () => {
         input: {
           alignItems: 'center',
           borderColor: semantics.borderUtilityActive,
-          borderRadius: primitives.radiusMd,
+          borderRadius: primitives.radiusLg,
           borderWidth: 1,
           fontSize: primitives.typographyFontSizeMd,
           padding: primitives.spacingSm,

@@ -41,6 +41,7 @@ export type ChannelListProps = Partial<
     | 'maxUnreadCount'
     | 'numberOfSkeletons'
     | 'mutedStatusPosition'
+    | 'pinnedStatusPosition'
   >
 > & {
   /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
@@ -252,6 +253,7 @@ export const ChannelList = (props: ChannelListProps) => {
     queryChannelsOverride,
     notificationHostId: notificationHostIdProp,
     mutedStatusPosition = 'inlineTitle',
+    pinnedStatusPosition = 'inlineTitle',
     swipeActionsEnabled = true,
   } = props;
 
@@ -375,6 +377,7 @@ export const ChannelList = (props: ChannelListProps) => {
       }
     },
     mutedStatusPosition,
+    pinnedStatusPosition,
   });
 
   return (

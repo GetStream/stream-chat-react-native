@@ -43,39 +43,8 @@ const collectPathData = (node: unknown): string[] => {
   return [...(typeof props?.d === 'string' ? [props.d] : []), ...collectPathData(children)];
 };
 
-const collectTransforms = (node: unknown): string[] => {
-  if (!node || typeof node !== 'object') {
-    return [];
-  }
-
-  if (Array.isArray(node)) {
-    return node.reduce<string[]>((acc, child) => [...acc, ...collectTransforms(child)], []);
-  }
-
-  const { children, props } = node as {
-    children?: unknown;
-    props?: { style?: StyleProp<ViewStyle> };
-  };
-  const style = StyleSheet.flatten(props?.style);
-  const styleTransforms = Array.isArray(style?.transform)
-    ? style.transform.flatMap((transform) => {
-        if (
-          transform &&
-          typeof transform === 'object' &&
-          'rotate' in transform &&
-          typeof transform.rotate === 'string'
-        ) {
-          return [transform.rotate];
-        }
-        return [];
-      })
-    : [];
-
-  return [...styleTransforms, ...collectTransforms(children)];
-};
-
 describe('CreatePollHeader', () => {
-  it('renders a secondary ghost arrow-left close button', () => {
+  it('renders a secondary outline cross close button', () => {
     render(
       <ThemeProvider>
         <CreatePollHeader onBackPressHandler={jest.fn()} onCreatePollPressHandler={jest.fn()} />
@@ -84,11 +53,10 @@ describe('CreatePollHeader', () => {
 
     const style = getCloseButtonWrapperStyle();
     expect(style.backgroundColor).toBeUndefined();
-    expect(style.borderWidth).toBeUndefined();
-    expect(style.borderColor).toBeUndefined();
+    expect(style.borderWidth).toBe(1);
+    expect(style.borderColor).toBeDefined();
     expect(collectPathData(screen.toJSON())).toContain(
-      'M10 16.875V3.125M10 3.125L4.375 8.75M10 3.125L15.625 8.75',
+      'M15.625 4.375L4.375 15.625M15.625 15.625L4.375 4.375',
     );
-    expect(collectTransforms(screen.toJSON())).toContain('-90deg');
   });
 });

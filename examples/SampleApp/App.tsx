@@ -36,25 +36,22 @@ import {
   MessageListPruningConfigItem,
 } from './src/components/SecretMenu.tsx';
 import { AppContext } from './src/context/AppContext';
-import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { StreamChatProvider } from './src/context/StreamChatContext';
 import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
+import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen.tsx';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
 import { ChannelScreen } from './src/screens/ChannelScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
-import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
 import { MapScreen } from './src/screens/MapScreen';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
-import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetailScreen';
-import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
@@ -346,11 +343,9 @@ const DrawerNavigatorWrapper: React.FC<{
       useNativeMultipartUpload
     >
       <StreamChatProvider>
-        <AppOverlayProvider>
-          <UserSearchProvider>
-            <DrawerNavigator />
-          </UserSearchProvider>
-        </AppOverlayProvider>
+        <UserSearchProvider>
+          <DrawerNavigator />
+        </UserSearchProvider>
       </StreamChatProvider>
     </Chat>
   );
@@ -420,13 +415,8 @@ const HomeScreen = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        component={OneOnOneChannelDetailScreen}
-        name='OneOnOneChannelDetailScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={GroupChannelDetailsScreen}
-        name='GroupChannelDetailsScreen'
+        component={ChannelDetailsScreen}
+        name='ChannelDetailsScreen'
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -442,11 +432,6 @@ const HomeScreen = () => {
       <Stack.Screen
         component={ChannelPinnedMessagesScreen}
         name='ChannelPinnedMessagesScreen'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={SharedGroupsScreen}
-        name='SharedGroupsScreen'
         options={{ headerShown: false }}
       />
       <Stack.Screen

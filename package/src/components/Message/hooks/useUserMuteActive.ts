@@ -1,12 +1,11 @@
 import { UserResponse } from 'stream-chat';
 
-import { useChannelContext, useChatContext } from '../../../contexts';
+import { useChatContext } from '../../../contexts';
 import { useMutedUsers } from '../../ChannelList/hooks/useMutedUsers';
 
 export const useUserMuteActive = (user: UserResponse | null | undefined) => {
   const { client } = useChatContext();
-  const { channel } = useChannelContext();
-  const mutedUsers = useMutedUsers(channel);
+  const mutedUsers = useMutedUsers();
 
   if (!user) {
     return false;

@@ -42,9 +42,12 @@ yarn lint-fix    # Auto-fix lint and formatting issues
 ```bash
 yarn test:unit                                          # All unit tests (sets TZ=UTC)
 yarn test:coverage                                      # With coverage report
+yarn test:typecheck                                     # Type-check tests against tsconfig.test.json (run after any code change)
 yarn workspace stream-chat-react-native-core test:unit  # Same as `yarn test:unit`
 cd package && TZ=UTC npx jest path/to/test.test.tsx     # Single test file
 ```
+
+Always run `yarn test:typecheck` after making code changes — `yarn lint` and `yarn test:unit` do not catch all type errors.
 
 Tests use Jest with `react-native` preset and `@testing-library/react-native`. Test files live alongside source at `src/**/__tests__/*.test.ts(x)`. Mock builders are in `src/mock-builders/`.
 

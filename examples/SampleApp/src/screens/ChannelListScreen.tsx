@@ -142,36 +142,28 @@ export const ChannelListScreen: React.FC = () => {
     [],
   );
 
-  const getChannelActionItems = useStableCallback(
-    ({ context: { isDirectChat, channel }, defaultItems }) => {
-      const viewInfo = () => {
-        if (!channel) {
-          return;
-        }
-        if (navigation) {
-          if (isDirectChat) {
-            navigation.navigate('OneOnOneChannelDetailScreen', {
-              channel,
-            });
-          } else {
-            navigation.navigate('GroupChannelDetailsScreen', {
-              channel,
-            });
-          }
-        }
-      };
+  const getChannelActionItems = useStableCallback(({ context: { channel }, defaultItems }) => {
+    const viewInfo = () => {
+      if (!channel) {
+        return;
+      }
+      if (navigation) {
+        navigation.navigate('ChannelDetailsScreen', {
+          channel,
+        });
+      }
+    };
 
-      const viewInfoItem: ChannelActionItem = {
-        action: viewInfo,
-        Icon: ChannelInfo,
-        id: 'info',
-        label: 'View Info',
-        placement: 'sheet',
-        type: 'standard',
-      };
-      return [viewInfoItem, ...defaultItems];
-    },
-  );
+    const viewInfoItem: ChannelActionItem = {
+      action: viewInfo,
+      Icon: ChannelInfo,
+      id: 'info',
+      label: 'View Info',
+      placement: 'sheet',
+      type: 'standard',
+    };
+    return [viewInfoItem, ...defaultItems];
+  });
 
   if (!chatClient) {
     return null;
