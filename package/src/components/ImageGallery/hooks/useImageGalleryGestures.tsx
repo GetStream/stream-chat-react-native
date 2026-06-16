@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Platform } from 'react-native';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import {
@@ -14,9 +14,7 @@ import {
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
-import { useStateStore } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
-import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 
 export enum HasPinched {
   FALSE = 0,
@@ -30,10 +28,6 @@ export enum IsSwiping {
 }
 
 const MARGIN = 32;
-
-const imageGallerySelector = (state: ImageGalleryState) => ({
-  currentIndex: state.currentIndex,
-});
 
 export const useImageGalleryGestures = ({
   currentImageHeight,
@@ -62,20 +56,8 @@ export const useImageGalleryGestures = ({
   translateY: SharedValue<number>;
   translationX: SharedValue<number>;
 }) => {
-  /**
-   * if a specific image index > 0 has been passed in
-   * while creating the hook, set the value of the index
-   * reference to its value.
-   *
-   * This makes it possible to seelct an image in the list,
-   * and scroll/pan as normal. Prior to this,
-   * it was always assumed that one started at index 0 in the
-   * gallery.
-   * */
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
-
-  const [index, setIndex] = useState(currentIndex);
+  const currentIndexShared = imageGalleryStateStore.currentIndexShared;
 
   /**
    * Gesture handler refs
@@ -163,13 +145,16 @@ export const useImageGalleryGestures = ({
   };
 
   const moveToNextImage = () => {
-    runOnJS(setIndex)(index + 1);
-    imageGalleryStateStore.currentIndex = index + 1;
+    // Read fresh — both moveToNext/Previous are invoked via runOnJS from a
+    // worklet, so we'd otherwise be using a value captured at hook-creation
+    // time. The setter mirrors into currentIndexShared.
+    const currentIndex = imageGalleryStateStore.state.getLatestValue().currentIndex;
+    imageGalleryStateStore.currentIndex = currentIndex + 1;
   };
 
   const moveToPreviousImage = () => {
-    runOnJS(setIndex)(index - 1);
-    imageGalleryStateStore.currentIndex = index - 1;
+    const currentIndex = imageGalleryStateStore.state.getLatestValue().currentIndex;
+    imageGalleryStateStore.currentIndex = currentIndex - 1;
   };
 
   /**
@@ -287,6 +272,8 @@ export const useImageGalleryGestures = ({
         const finalXPosition = event.translationX - event.velocityX * 0.3;
         const finalYPosition = event.translationY + event.velocityY * 0.1;
 
+        const currentIndex = currentIndexShared.value;
+
         /**
          * If there is a next photo, the image is lined up to the right
          * edge, the swipe is to the left, and the final position is more
@@ -295,7 +282,7 @@ export const useImageGalleryGestures = ({
          * As we move towards the left to move to next image, the translationX value will be negative on X axis.
          */
         if (
-          index < assetsLength - 1 &&
+          currentIndex < assetsLength - 1 &&
           Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value < 0 &&
           finalXPosition > halfScreenWidth &&
@@ -303,7 +290,7 @@ export const useImageGalleryGestures = ({
         ) {
           cancelAnimation(translationX);
           translationX.value = withTiming(
-            -(screenWidth + MARGIN) * (index + 1),
+            -(screenWidth + MARGIN) * (currentIndex + 1),
             {
               duration: 200,
               easing: Easing.out(Easing.ease),
@@ -322,7 +309,7 @@ export const useImageGalleryGestures = ({
            * As we move towards the right to move to previous image, the translationX value will be positive on X axis.
            */
         } else if (
-          index > 0 &&
+          currentIndex > 0 &&
           Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value > 0 &&
           finalXPosition < -halfScreenWidth &&
@@ -330,7 +317,7 @@ export const useImageGalleryGestures = ({
         ) {
           cancelAnimation(translationX);
           translationX.value = withTiming(
-            -(screenWidth + MARGIN) * (index - 1),
+            -(screenWidth + MARGIN) * (currentIndex - 1),
             {
               duration: 200,
               easing: Easing.out(Easing.ease),
