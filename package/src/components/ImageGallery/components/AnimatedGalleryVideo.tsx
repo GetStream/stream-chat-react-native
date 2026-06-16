@@ -81,6 +81,8 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     id: attachmentId,
   });
 
+  const selected = currentIndex === index;
+
   useEffect(() => {
     if (videoRef.current) {
       videoPlayer.initPlayer({ playerRef: videoRef.current });
@@ -88,6 +90,7 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
 
     return () => {
       videoPlayer.playerRef = null;
+      videoPlayer.onRemove();
     };
   }, [videoPlayer]);
 
@@ -147,7 +150,6 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
     }
   };
 
-  const selected = currentIndex === index;
   const previous = currentIndex > index;
   const shouldRender = Math.abs(currentIndex - index) < 4;
 
@@ -189,7 +191,7 @@ export const AnimatedGalleryVideo = (props: AnimatedGalleryVideoType) => {
           paused={!isPlaying}
           repeat={true}
           resizeMode='contain'
-          style={style}
+          style={[style, { pointerEvents: 'none' }]}
           testID='video-player'
           uri={photo.uri}
           videoRef={videoRef as RefObject<VideoType>}
