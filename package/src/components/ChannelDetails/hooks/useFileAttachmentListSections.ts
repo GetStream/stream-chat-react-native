@@ -27,7 +27,9 @@ export type FileAttachmentSection = { data: FileAttachmentTile[]; title: string 
 const getFileAttachments = (message: MessageResponse): Attachment[] =>
   (message.attachments ?? []).filter(
     (attachment) =>
-      (isFileAttachment(attachment) || isAudioAttachment(attachment)) &&
+      // We provide mime_type here to avoid attachments with mime_type being categorized as file
+      (isFileAttachment(attachment, attachment?.mime_type ? [attachment.mime_type] : []) ||
+        isAudioAttachment(attachment)) &&
       !isScrapedContent(attachment),
   );
 
