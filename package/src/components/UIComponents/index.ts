@@ -1,4 +1,5 @@
 export * from './BottomSheetModal';
+export * from './ClippingFadeBottom';
 export * from './StreamBottomSheetModalFlatList';
 export * from './EmptySearchResult';
 export * from './ImageBackground';

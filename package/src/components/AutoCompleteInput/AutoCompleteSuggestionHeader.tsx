@@ -27,6 +27,7 @@ export const CommandsHeader: React.FC<AutoCompleteSuggestionHeaderProps> = () =>
   return (
     <View style={[styles.container, container]}>
       <Text
+        accessibilityRole='header'
         style={[styles.title, { color: semantics.textTertiary }, title]}
         testID='commands-header-title'
       >
@@ -52,7 +53,7 @@ export const EmojiHeader: React.FC<AutoCompleteSuggestionHeaderProps> = ({ query
   return (
     <View style={[styles.container, container]}>
       <Smile pathFill={semantics.accentPrimary} />
-      <Text style={[styles.title, title]} testID='emojis-header-title'>
+      <Text accessibilityRole='header' style={[styles.title, title]} testID='emojis-header-title'>
         {`Emoji matching "${queryText}"`}
       </Text>
     </View>

@@ -440,5 +440,11 @@
   "a11y/{{count}} unread messages": "{{count}} unread messages",
   "a11y/Gallery Image": "Gallery image",
   "a11y/Gallery Video": "Gallery video",
-  "a11y/{{position}} of {{count}}": "{{position}} of {{count}}"
+  "a11y/{{position}} of {{count}}": "{{position}} of {{count}}",
+  "Notify all {{ role }} members": "Notify all {{ role }} members",
+  "a11y/Command suggestions available": "Command suggestions available",
+  "a11y/Emoji suggestions available": "Emoji suggestions available",
+  "a11y/Mention suggestions available": "Mention suggestions available",
+  "mention/Channel Description": "Notify everyone in this channel",
+  "mention/Here Description": "Notify every online member in this channel"
 }

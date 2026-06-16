@@ -166,6 +166,31 @@ const areEqual = (
     return false;
   }
 
+  // Enhanced mention sources (channel/here/roles/groups) — without these the
+  // renderText cache would refresh on a new entity but this comparator would
+  // short-circuit it away and the highlight would not appear until something
+  // else re-rendered the row.
+  const mentionedBroadcastEqual =
+    prevMessage.mentioned_channel === nextMessage.mentioned_channel &&
+    prevMessage.mentioned_here === nextMessage.mentioned_here;
+  if (!mentionedBroadcastEqual) {
+    return false;
+  }
+
+  const joinIds = (values?: string[]) => (values ?? []).join('|');
+  const mentionedRolesEqual =
+    joinIds(prevMessage.mentioned_roles) === joinIds(nextMessage.mentioned_roles);
+  if (!mentionedRolesEqual) {
+    return false;
+  }
+
+  const groupIds = (m: typeof prevMessage) =>
+    joinIds(m.mentioned_groups?.map((g) => g.id) ?? m.mentioned_group_ids);
+  const mentionedGroupsEqual = groupIds(prevMessage) === groupIds(nextMessage);
+  if (!mentionedGroupsEqual) {
+    return false;
+  }
+
   // stringify could be an expensive operation, so lets rule out the obvious
   // possibilities first such as different object reference or empty objects etc.
   // Also keeping markdown equality check at the last to make sure other less

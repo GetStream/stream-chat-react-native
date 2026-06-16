@@ -39,12 +39,12 @@ import {
 } from './BottomSheetModal.utils';
 
 import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
+import { useAnnounceOnShow } from '../../a11y/hooks/useAnnounceOnShow';
 import { useResolvedModalAccessibilityProps } from '../../a11y/hooks/useResolvedModalAccessibilityProps';
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
-import { useAccessibilityAnnouncer } from '../Accessibility/useAccessibilityAnnouncer';
 
 export type BottomSheetModalProps = {
   /**
@@ -544,25 +544,10 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
 
   const modalA11yProps = useResolvedModalAccessibilityProps();
 
-  const announce = useAccessibilityAnnouncer();
   const openAnnouncement = useA11yLabel(
     'a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.',
   );
-  const announcedOpenRef = useRef(false);
-  useEffect(() => {
-    if (!visible) {
-      announcedOpenRef.current = false;
-      return;
-    }
-    if (!openAnnouncement || announcedOpenRef.current) {
-      return;
-    }
-    const id = setTimeout(() => {
-      announce(openAnnouncement, 'polite');
-      announcedOpenRef.current = true;
-    }, 800);
-    return () => clearTimeout(id);
-  }, [visible, openAnnouncement, announce]);
+  useAnnounceOnShow(visible, openAnnouncement, { delayMs: 800 });
 
   const closeLabel = useA11yLabel('a11y/Close');
   const closeAccessibilityActions = useMemo(
