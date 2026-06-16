@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import { type LocalMessage, type MessageResponse, type SearchSourceState } from 'stream-chat';
+import { formatMessage, type MessageResponse, type SearchSourceState } from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
@@ -138,7 +138,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
         return;
       }
       imageGalleryStateStore.openImageGallery({
-        messages: (messages ?? []) as unknown as LocalMessage[],
+        messages: messages?.map((message) => formatMessage(message)) ?? [],
         requesterNode,
         selectedAttachmentUrl: url,
       });
