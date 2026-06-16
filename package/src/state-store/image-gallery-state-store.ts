@@ -1,3 +1,5 @@
+import { makeMutable, SharedValue } from 'react-native-reanimated';
+
 import { Attachment, LocalMessage, StateStore, Unsubscribe, UserResponse } from 'stream-chat';
 
 import { VideoPlayerPool } from './video-player-pool';
@@ -66,11 +68,19 @@ export class ImageGalleryStateStore {
   state: StateStore<ImageGalleryState>;
   options: ImageGalleryOptions;
   videoPlayerPool: VideoPlayerPool;
+  /**
+   * SharedValue mirror of `state.currentIndex` for worklet consumers (gesture
+   * handlers, animated styles). Maintained in lockstep with the setter and the
+   * reset path in `clear()`. Reads from worklets bypass the JS bridge entirely;
+   * any code path that updates `currentIndex` must keep this mirror in sync.
+   */
+  currentIndexShared: SharedValue<number>;
 
   constructor(options: Partial<ImageGalleryOptions> = {}) {
     this.options = { ...INITIAL_IMAGE_GALLERY_OPTIONS, ...options };
     this.state = new StateStore<ImageGalleryState>(INITIAL_STATE);
     this.videoPlayerPool = new VideoPlayerPool();
+    this.currentIndexShared = makeMutable(INITIAL_STATE.currentIndex);
   }
 
   // Getters
@@ -155,6 +165,7 @@ export class ImageGalleryStateStore {
 
   set currentIndex(currentIndex: number) {
     this.state.partialNext({ currentIndex });
+    this.currentIndexShared.value = currentIndex;
   }
 
   set requesterNode(requesterNode: number | null) {
@@ -212,7 +223,8 @@ export class ImageGalleryStateStore {
           (asset) =>
             stripQueryFromUrl(asset.uri) === stripQueryFromUrl(selectedAttachmentUrl ?? ''),
         );
-        this.state.partialNext({ currentIndex: index === -1 ? 0 : index });
+        // Route through the setter so currentIndexShared stays in sync.
+        this.currentIndex = index === -1 ? 0 : index;
       },
     );
 
@@ -233,5 +245,6 @@ export class ImageGalleryStateStore {
   clear = () => {
     this.videoPlayerPool.clear();
     this.state.partialNext(INITIAL_STATE);
+    this.currentIndexShared.value = INITIAL_STATE.currentIndex;
   };
 }

@@ -179,6 +179,33 @@ describe('ImageGalleryStateStore', () => {
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
     });
+
+    it('should mirror currentIndex into currentIndexShared.value', () => {
+      const store = new ImageGalleryStateStore();
+
+      store.currentIndex = 7;
+
+      expect(store.currentIndexShared.value).toBe(7);
+    });
+  });
+
+  describe('currentIndexShared mirror', () => {
+    it('should initialize at INITIAL_STATE.currentIndex (0)', () => {
+      const store = new ImageGalleryStateStore();
+
+      expect(store.currentIndexShared.value).toBe(0);
+    });
+
+    it('should reset to 0 on clear() even after non-zero set', () => {
+      const store = new ImageGalleryStateStore();
+      store.currentIndex = 12;
+      expect(store.currentIndexShared.value).toBe(12);
+
+      store.clear();
+
+      expect(store.state.getLatestValue().currentIndex).toBe(0);
+      expect(store.currentIndexShared.value).toBe(0);
+    });
   });
 
   describe('attachmentsWithMessage getter', () => {
@@ -703,6 +730,29 @@ describe('ImageGalleryStateStore', () => {
       store.selectedAttachmentUrl = 'https://example.com/image.jpg?size=large';
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
+
+      unsubscribe();
+    });
+
+    it('should mirror the matched index into currentIndexShared', () => {
+      const store = new ImageGalleryStateStore();
+      store.subscribeToMessages();
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
+
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/2.jpg' })],
+          id: 'msg-2',
+        }),
+      ];
+      store.selectedAttachmentUrl = 'https://example.com/2.jpg';
+
+      expect(store.state.getLatestValue().currentIndex).toBe(1);
+      expect(store.currentIndexShared.value).toBe(1);
 
       unsubscribe();
     });
