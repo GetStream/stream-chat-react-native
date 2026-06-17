@@ -457,5 +457,8 @@
   "Pin Chat": "채팅 고정",
   "Pin Group": "그룹 고정",
   "Unpin Chat": "채팅 고정 해제",
-  "Unpin Group": "그룹 고정 해제"
+  "Unpin Group": "그룹 고정 해제",
+  "Block": "차단",
+  "Block {{ name }}": "{{ name }} 차단",
+  "They won't be able to message or call you. You can unblock them later.": "메시지를 보내거나 전화를 걸 수 없게 됩니다. 나중에 차단을 해제할 수 있습니다."
 }

@@ -457,5 +457,8 @@
   "Pin Chat": "チャットをピン留め",
   "Pin Group": "グループをピン留め",
   "Unpin Chat": "チャットのピン留めを解除",
-  "Unpin Group": "グループのピン留めを解除"
+  "Unpin Group": "グループのピン留めを解除",
+  "Block": "ブロック",
+  "Block {{ name }}": "{{ name }} をブロック",
+  "They won't be able to message or call you. You can unblock them later.": "メッセージや通話ができなくなります。あとでブロックを解除することもできます。"
 }

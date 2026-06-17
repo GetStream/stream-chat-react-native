@@ -457,5 +457,8 @@
   "Pin Chat": "चैट पिन करें",
   "Pin Group": "ग्रुप पिन करें",
   "Unpin Chat": "चैट अनपिन करें",
-  "Unpin Group": "ग्रुप अनपिन करें"
+  "Unpin Group": "ग्रुप अनपिन करें",
+  "Block": "ब्लॉक करें",
+  "Block {{ name }}": "{{ name }} को ब्लॉक करें",
+  "They won't be able to message or call you. You can unblock them later.": "वे आपको संदेश या कॉल नहीं कर पाएंगे। आप उन्हें बाद में अनब्लॉक कर सकते हैं।"
 }

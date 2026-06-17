@@ -179,8 +179,31 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       type: 'standard',
     });
 
+    const blockUserWithConfirmation = (...args: Parameters<ChannelActionHandler>) => {
+      const otherUser = getOtherUserInDirectChannel(channel)?.user;
+      const name = otherUser?.name || otherUser?.id || '';
+
+      Alert.alert(
+        t('Block {{ name }}', { name }),
+        t("They won't be able to message or call you. You can unblock them later."),
+        [
+          {
+            style: 'cancel',
+            text: t('Cancel'),
+          },
+          {
+            onPress: async () => {
+              await blockUser(...args);
+            },
+            style: 'destructive',
+            text: t('Block'),
+          },
+        ],
+      );
+    };
+
     actionItems.push({
-      action: isBlocked ? unblockUser : blockUser,
+      action: isBlocked ? unblockUser : blockUserWithConfirmation,
       Icon: (props) => <ChannelActionsIcon Icon={BlockUser} {...props} />,
       id: 'block',
       label: isBlocked ? t('Unblock User') : t('Block User'),

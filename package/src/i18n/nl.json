@@ -457,5 +457,8 @@
   "Pin Chat": "Chat vastmaken",
   "Pin Group": "Groep vastmaken",
   "Unpin Chat": "Chat losmaken",
-  "Unpin Group": "Groep losmaken"
+  "Unpin Group": "Groep losmaken",
+  "Block": "Blokkeren",
+  "Block {{ name }}": "{{ name }} blokkeren",
+  "They won't be able to message or call you. You can unblock them later.": "Deze persoon kan je geen berichten sturen of bellen. Je kunt de blokkering later opheffen."
 }

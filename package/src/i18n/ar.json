@@ -457,5 +457,8 @@
   "Pin Chat": "تثبيت الدردشة",
   "Pin Group": "تثبيت المجموعة",
   "Unpin Chat": "إلغاء تثبيت الدردشة",
-  "Unpin Group": "إلغاء تثبيت المجموعة"
+  "Unpin Group": "إلغاء تثبيت المجموعة",
+  "Block": "حظر",
+  "Block {{ name }}": "حظر {{ name }}",
+  "They won't be able to message or call you. You can unblock them later.": "لن يتمكن/تتمكن من مراسلتك أو الاتصال بك. يمكنك إلغاء الحظر لاحقًا."
 }

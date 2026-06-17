@@ -457,5 +457,8 @@
   "Pin Chat": "Fixar conversa",
   "Pin Group": "Fixar grupo",
   "Unpin Chat": "Desafixar conversa",
-  "Unpin Group": "Desafixar grupo"
+  "Unpin Group": "Desafixar grupo",
+  "Block": "Bloquear",
+  "Block {{ name }}": "Bloquear {{ name }}",
+  "They won't be able to message or call you. You can unblock them later.": "Essa pessoa não poderá enviar mensagens ou ligar para você. Você pode desbloqueá-la mais tarde."
 }

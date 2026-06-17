@@ -457,5 +457,8 @@
   "Pin Chat": "Закрепить чат",
   "Pin Group": "Закрепить группу",
   "Unpin Chat": "Открепить чат",
-  "Unpin Group": "Открепить группу"
+  "Unpin Group": "Открепить группу",
+  "Block": "Заблокировать",
+  "Block {{ name }}": "Заблокировать {{ name }}",
+  "They won't be able to message or call you. You can unblock them later.": "Он не сможет писать вам и звонить. Вы сможете снять блокировку позже."
 }
