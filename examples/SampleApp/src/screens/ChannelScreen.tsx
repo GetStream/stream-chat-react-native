@@ -31,6 +31,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
+import type { StreamThemeWithColors } from '../theme/AppTheme';
 
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
@@ -54,7 +55,7 @@ export type ChannelHeaderProps = {
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
-  const displayName = useChannelPreviewDisplayName(channel, 30);
+  const displayName = useChannelPreviewDisplayName(channel);
   const { isOnline } = useChatContext();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
@@ -121,7 +122,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   } = useAppContext();
   const {
     theme: { semantics, colors },
-  } = useTheme();
+  } = useTheme() as unknown as { theme: StreamThemeWithColors };
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
   const [modalVisible, setModalVisible] = useState(false);

@@ -1,0 +1,16 @@
+{
+  "extends": "@stream-io/typescript-config/library.json",
+  "compilerOptions": {
+    // The optional-dependency shims dynamically `require()` peer deps that are
+    // not installed here (so their values are untyped) and guard them behind
+    // runtime checks TS can't narrow across closures. The strict-`any`/null/
+    // unused checks (meant for the first-party core source) are therefore
+    // relaxed for these thin wrapper packages; `noImplicitReturns` is kept.
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "**/__tests__"]
+}

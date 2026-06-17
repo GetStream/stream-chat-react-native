@@ -40,6 +40,7 @@ export const shareImage = RNShare
         return true;
       } catch (error) {
         console.warn('Sharing failed...', error);
+        return false;
       }
     }
   : null;

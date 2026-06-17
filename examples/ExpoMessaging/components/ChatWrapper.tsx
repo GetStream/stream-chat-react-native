@@ -42,8 +42,11 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
 
   streami18n.registerTranslation('en', {
     ...enTranslations,
+    // Custom translation key used by the live-location feature. It is not part of the
+    // SDK's `enTranslations` (a closed key set), but i18next resolves arbitrary keys at
+    // runtime, so we cast to the expected parameter type to register it.
     'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
-  });
+  } as typeof enTranslations);
 
   const theme = useStreamChatTheme();
   const componentOverrides = useExpoMessagingComponentOverrides();

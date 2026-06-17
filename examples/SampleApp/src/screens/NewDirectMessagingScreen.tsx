@@ -144,8 +144,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
-  // As we don't use the state value, we can omit it here and separate it with a comma within the array.
-  const [, setMessageInputText] = useState('');
 
   useEffect(() => {
     const initialUser = route.params?.initialUser;
@@ -374,7 +372,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         channel={currentChannel.current}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
-        onChangeText={setMessageInputText}
         overrideOwnCapabilities={{ sendMessage: true }}
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >

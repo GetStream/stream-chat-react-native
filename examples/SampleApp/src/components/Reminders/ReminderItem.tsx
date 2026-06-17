@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { Alert, AlertButton, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { ReminderResponse } from 'stream-chat';
@@ -18,12 +18,13 @@ import {
 import { ReminderBanner } from './ReminderBanner';
 
 import { useLegacyColors } from '../../theme/useLegacyColors';
+import type { StackNavigatorParamList } from '../../types';
 
 export const ReminderItem = (
   item: ReminderResponse & { onDeleteHandler?: (id: string) => void },
 ) => {
   const { channel, message } = item;
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const channelName = channel?.name ? channel.name : 'Channel';

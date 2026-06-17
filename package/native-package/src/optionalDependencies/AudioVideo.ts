@@ -16,6 +16,8 @@ let AudioVideoComponent:
       audioOnly?: boolean;
       ignoreSilentSwitch?: 'ignore' | 'obey';
       repeat?: boolean;
+      resizeMode?: string;
+      rate?: number;
     }>
   | undefined;
 try {

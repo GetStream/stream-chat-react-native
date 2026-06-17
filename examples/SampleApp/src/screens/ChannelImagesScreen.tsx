@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RouteProp } from '@react-navigation/native';
 import Dayjs from 'dayjs';
+import type { LocalMessage } from 'stream-chat';
 import {
   DateHeader,
   useImageGalleryContext,
@@ -104,6 +105,11 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     }
   });
 
+  // These are display-only messages built from search results (`MessageResponse`),
+  // which the image gallery consumes purely to render attachments. The gallery
+  // store is typed for `LocalMessage` (with `Date` timestamps), so we cast the
+  // search-shaped objects to satisfy that API without converting fields the
+  // gallery never reads.
   const messagesWithImages = messages
     .map((message) => ({ ...message, groupStyles: [], readBy: false }))
     .filter((message) => {
@@ -117,7 +123,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
         );
       }
       return false;
-    });
+    }) as unknown as LocalMessage[];
 
   useEffect(() => {
     imageGalleryStateStore.openImageGallery({ messages: messagesWithImages });

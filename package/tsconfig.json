@@ -1,29 +1,7 @@
 {
+  "extends": "@stream-io/typescript-config/library.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-native",
-    "lib": ["esnext", "DOM", "DOM.Iterable"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noImplicitUseStrict": false,
-    "noStrictGenericChecks": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strictNullChecks": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "esnext",
-    "allowSyntheticDefaultImports": true,
-    "noEmitOnError": false,
-    "noImplicitAny": true,
-    "allowJs": true,
-    "checkJs": false
+    "rootDir": "./src"
   },
   "include": ["./src/**/*"],
   "exclude": [
@@ -35,6 +13,8 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js",
-    "**/__tests__"
+    "**/__tests__",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

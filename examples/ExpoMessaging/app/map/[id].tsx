@@ -13,10 +13,12 @@ import MapView, { MapMarker, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { Channel, SharedLocationResponse, StreamChat } from 'stream-chat';
 import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-expo';
 
 import { AppContext } from '../../context/AppContext';
+
+import type { AppTheme } from '@/types/theme';
 
 export type SharedLiveLocationParamsStringType = SharedLocationResponse & {
   latitude: string;
@@ -40,12 +42,19 @@ const MapScreenFooter = ({
     theme: {
       colors: { accent_blue, accent_red, grey },
     },
-  } = useTheme();
-  const liveLocationActive = isLiveLocationStopped ? false : new Date(end_at) > new Date();
+  } = useTheme() as unknown as { theme: AppTheme };
   const endedAtDate = end_at ? new Date(end_at) : null;
+  const liveLocationActive = isLiveLocationStopped
+    ? false
+    : endedAtDate
+      ? endedAtDate > new Date()
+      : false;
   const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
 
   const stopSharingLiveLocation = useCallback(async () => {
+    if (!channel || !locationResponse) {
+      return;
+    }
     await channel.stopLiveLocationSharing(locationResponse);
   }, [channel, locationResponse]);
 
@@ -53,7 +62,7 @@ const MapScreenFooter = ({
     return null;
   }
 
-  const isCurrentUser = user_id === client.user.id;
+  const isCurrentUser = user_id === client.user?.id;
   if (!isCurrentUser) {
     return (
       <View style={styles.footer}>
@@ -107,7 +116,7 @@ export default function MapScreen() {
     theme: {
       colors: { accent_blue },
     },
-  } = useTheme();
+  } = useTheme() as unknown as { theme: AppTheme };
 
   const { width, height } = useWindowDimensions();
   const aspect_ratio = width / height;
@@ -131,7 +140,10 @@ export default function MapScreen() {
   }, []);
 
   const { isLiveLocationStopped, locationResponse } = useHandleLiveLocationEvents({
-    channel,
+    // This screen is only reached by navigating from an open channel (which sets `channel`
+    // in AppContext), so a channel is always present here even though the context type
+    // allows `undefined`.
+    channel: channel as Channel,
     messageId: shared_location.message_id,
     onLocationUpdate,
   });
@@ -152,13 +164,15 @@ export default function MapScreen() {
   const region = useMemo(() => {
     const latitudeDelta = 0.1;
     const longitudeDelta = latitudeDelta * aspect_ratio;
+    // Fall back to the initial coordinates parsed from the route params when no live
+    // location update has arrived yet, so the values are always concrete numbers.
     return {
-      latitude: locationResponse?.latitude,
-      longitude: locationResponse?.longitude,
+      latitude: locationResponse?.latitude ?? parseFloat(shared_location.latitude),
+      longitude: locationResponse?.longitude ?? parseFloat(shared_location.longitude),
       latitudeDelta,
       longitudeDelta,
     };
-  }, [aspect_ratio, locationResponse]);
+  }, [aspect_ratio, locationResponse, shared_location.latitude, shared_location.longitude]);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -181,7 +195,7 @@ export default function MapScreen() {
             <View style={styles.markerWrapper}>
               <Image
                 style={[styles.markerImage, { borderColor: accent_blue }]}
-                source={{ uri: client.user.image }}
+                source={{ uri: client.user?.image }}
               />
             </View>
           </Marker>
@@ -193,7 +207,7 @@ export default function MapScreen() {
         client={client}
         shared_location={shared_location}
         locationResponse={locationResponse}
-        isLiveLocationStopped={isLiveLocationStopped}
+        isLiveLocationStopped={isLiveLocationStopped ?? undefined}
       />
     </SafeAreaView>
   );
