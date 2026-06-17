@@ -85,7 +85,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   });
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && shouldRender) {
       videoPlayer.initPlayer({ playerRef: videoRef.current });
     }
 
@@ -93,7 +93,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
       videoPlayer.playerRef = null;
       videoPlayer.onRemove();
     };
-  }, [videoPlayer]);
+  }, [videoPlayer, shouldRender]);
 
   const { isPlaying, currentPlaybackRate } = useStateStore(videoPlayer.state, videoPlayerSelector);
 
@@ -188,7 +188,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
           paused={!isPlaying}
           repeat={true}
           resizeMode='contain'
-          style={[style, { pointerEvents: 'none' }]}
+          style={style}
           testID='video-player'
           uri={photo.uri}
           videoRef={videoRef as RefObject<VideoType>}
