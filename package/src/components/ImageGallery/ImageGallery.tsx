@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AccessibilityInfo, ImageStyle, Platform, StyleSheet, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -13,6 +13,7 @@ import Animated, {
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
+import { ImageGalleryA11yProbe } from './components/ImageGalleryA11yProbe';
 import type {
   ImageGalleryFooterProps,
   ImageGalleryGridProps,
@@ -22,7 +23,6 @@ import type {
 import { useCurrentImageHeight } from './hooks/useCurrentImageHeight';
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
-import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
@@ -67,7 +67,6 @@ export enum IsSwiping {
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   assets: state.assets,
-  currentIndex: state.currentIndex,
 });
 
 type ImageGalleryWithContextProps = Pick<
@@ -96,10 +95,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { assets, currentIndex } = useStateStore(
-    imageGalleryStateStore.state,
-    imageGallerySelector,
-  );
+  const { assets } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { vh, vw } = useViewport();
 
   const fullWindowHeight = vh(100);
@@ -258,45 +254,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   };
 
   const { enabled: isAccessibilityEnabled } = useAccessibilityContext();
-  const assetsCount = assets.length;
-  const isAdjustable = isAccessibilityEnabled;
-  const accessibilityValueParams = useMemo(
-    () => ({ count: assetsCount, position: currentIndex + 1 }),
-    [currentIndex, assetsCount],
-  );
-  const accessibilityValueText = useA11yLabel(
-    'a11y/{{position}} of {{count}}',
-    accessibilityValueParams,
-  );
-  const accessibilityValue = useMemo(
-    () => (accessibilityValueText ? { text: accessibilityValueText } : undefined),
-    [accessibilityValueText],
-  );
-  const adjustableActions = useMemo(
-    () =>
-      isAdjustable ? [{ name: 'increment' as const }, { name: 'decrement' as const }] : undefined,
-    [isAdjustable],
-  );
-
-  const onAccessibilityAction = useCallback(
-    (event: { nativeEvent: { actionName: string } }) => {
-      if (!isAccessibilityEnabled) return;
-      const latest = imageGalleryStateStore.state.getLatestValue();
-      const latestCount = latest.assets.length;
-      const latestIndex = latest.currentIndex;
-      if (latestCount <= 1) return;
-      if (event.nativeEvent.actionName === 'increment') {
-        if (latestIndex < latestCount - 1) {
-          imageGalleryStateStore.currentIndex = latestIndex + 1;
-        }
-      } else if (event.nativeEvent.actionName === 'decrement') {
-        if (latestIndex > 0) {
-          imageGalleryStateStore.currentIndex = latestIndex - 1;
-        }
-      }
-    },
-    [imageGalleryStateStore, isAccessibilityEnabled],
-  );
 
   useEffect(() => {
     return () => {
@@ -324,15 +281,11 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
       pointerEvents={'auto'}
       style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
-      <Animated.View
-        accessible
-        accessibilityActions={adjustableActions}
-        accessibilityLabel='Image Gallery'
-        accessibilityRole={isAdjustable ? 'adjustable' : undefined}
-        accessibilityValue={isAdjustable ? accessibilityValue : undefined}
-        onAccessibilityAction={isAdjustable ? onAccessibilityAction : undefined}
-        style={[StyleSheet.absoluteFill, containerBackground]}
-      />
+      {isAccessibilityEnabled ? (
+        <ImageGalleryA11yProbe containerBackground={containerBackground} />
+      ) : (
+        <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
+      )}
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View
