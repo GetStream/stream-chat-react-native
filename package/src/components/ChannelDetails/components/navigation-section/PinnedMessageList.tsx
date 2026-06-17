@@ -190,7 +190,7 @@ const useStyles = () => {
         },
         listContent: {
           flexGrow: 1,
-          paddingBottom: primitives.spacingXl,
+          paddingBottom: primitives.spacing3xl,
         },
       }),
     [],

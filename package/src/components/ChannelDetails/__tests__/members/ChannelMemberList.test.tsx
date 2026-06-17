@@ -1,11 +1,13 @@
 import React from 'react';
-import { ActivityIndicator, type FlatListProps as RNFlatListProps, Text } from 'react-native';
 
-import { act, render } from '@testing-library/react-native';
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { StateStore } from 'stream-chat';
+import type { ChannelMemberResponse, SearchSourceState } from 'stream-chat';
 
-import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
-import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
+import {
+  ChannelDetailsContextProvider,
+  type ChannelDetailsContextValue,
+} from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -15,72 +17,141 @@ import { generateUser } from '../../../../mock-builders/generator/user';
 import type { ChannelMemberActionsSheetProps } from '../../components/members/ChannelMemberActionsSheet';
 import type { ChannelMemberItemProps } from '../../components/members/ChannelMemberItem';
 import { ChannelMemberList } from '../../components/members/ChannelMemberList';
-import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
 
-type FlatListProps = RNFlatListProps<ChannelMemberResponse>;
+const mockItemProbe: ChannelMemberItemProps[] = [];
+const mockSheetProbe: ChannelMemberActionsSheetProps[] = [];
 
-const mockFlatList = jest.fn((_props: FlatListProps) => null);
+const mockChannel = { cid: 'messaging:1' };
+let mockCurrentSearchSource: FakeSearchSource;
+const mockProviderProbe: { channel: unknown }[] = [];
+const mockNotificationTargetProbe: { hostId?: string; panel?: string }[] = [];
+const mockAddNotification = jest.fn();
 
-jest.mock('../../hooks/members/useChannelAllMembers', () => ({
-  useChannelAllMembers: jest.fn(),
+jest.mock('../../../Notifications/hooks/useNotificationApi', () => ({
+  useNotificationApi: () => ({ addNotification: mockAddNotification }),
 }));
 
-jest.mock('react-native', () => {
-  const actual = jest.requireActual('react-native');
+jest.mock('../../../Notifications/NotificationTargetContext', () => ({
+  NotificationTargetProvider: ({
+    children,
+    hostId,
+    panel,
+  }: {
+    children: React.ReactNode;
+    hostId?: string;
+    panel?: string;
+  }) => {
+    mockNotificationTargetProbe.push({ hostId, panel });
+    return children;
+  },
+}));
 
-  return new Proxy(actual, {
-    get(target, prop, receiver) {
-      if (prop === 'FlatList') {
-        return (props: FlatListProps) => mockFlatList(props);
-      }
+jest.mock('../../../Notifications/NotificationList', () => {
+  const ReactLib = require('react');
+  const { View } = require('react-native');
+  return {
+    NotificationList: () => ReactLib.createElement(View, { testID: 'notification-list' }),
+  };
+});
 
-      return Reflect.get(target, prop, receiver);
-    },
+jest.mock('../../../../contexts/channelMemberListContext/ChannelMemberListContext', () => ({
+  ChannelMemberListProvider: ({
+    channel: providedChannel,
+    children,
+  }: {
+    channel: unknown;
+    children: React.ReactNode;
+  }) => {
+    mockProviderProbe.push({ channel: providedChannel });
+    return children;
+  },
+  useChannelMemberListContext: () => ({
+    channel: mockChannel,
+    searchSource: mockCurrentSearchSource,
+  }),
+}));
+
+jest.mock('../../../UIComponents/SearchInput', () => {
+  const ReactLib = require('react');
+  const { Text } = require('react-native');
+  return {
+    SearchInput: ({ onChangeText }: { onChangeText: (t: string) => void }) =>
+      ReactLib.createElement(
+        ReactLib.Fragment,
+        null,
+        ReactLib.createElement(
+          Text,
+          { onPress: () => onChangeText('query'), testID: 'search-change' },
+          'change',
+        ),
+        ReactLib.createElement(
+          Text,
+          { onPress: () => onChangeText(''), testID: 'search-clear' },
+          'clear',
+        ),
+      ),
+  };
+});
+
+type FakeSearchSource = {
+  search: jest.Mock;
+  state: StateStore<
+    Pick<
+      SearchSourceState<ChannelMemberResponse>,
+      'hasNext' | 'isLoading' | 'items' | 'lastQueryError' | 'searchQuery'
+    >
+  > & { partialNext: jest.Mock };
+};
+
+const makeSearchSource = (
+  overrides: Partial<{
+    hasNext: boolean;
+    isLoading: boolean;
+    items: ChannelMemberResponse[];
+    lastQueryError: Error;
+    searchQuery: string;
+  }> = {},
+): FakeSearchSource => {
+  const state = new StateStore({
+    hasNext: overrides.hasNext ?? false,
+    isLoading: overrides.isLoading ?? false,
+    items: overrides.items,
+    searchQuery: overrides.searchQuery ?? '',
+    ...(overrides.lastQueryError ? { lastQueryError: overrides.lastQueryError } : {}),
   });
-});
-
-const channel = {
-  cid: 'messaging:test',
-  on: () => ({ unsubscribe: () => undefined }),
-} as unknown as Channel;
-
-type HookResult = ReturnType<typeof useChannelAllMembers>;
-
-const baseHookResult = (): HookResult => ({
-  hasMore: false,
-  loading: false,
-  loadMore: jest.fn(),
-  results: [],
-});
-
-const mockHook = (overrides: Partial<HookResult> = {}) => {
-  const value = { ...baseHookResult(), ...overrides };
-  (useChannelAllMembers as jest.Mock).mockReturnValue(value);
-  return value;
+  // The component calls state.partialNext on search input change; spy on it.
+  jest.spyOn(state, 'partialNext');
+  return {
+    search: jest.fn(),
+    state: state as FakeSearchSource['state'],
+  };
 };
 
-const itemProbeCalls: ChannelMemberItemProps[] = [];
-const MemberListItemProbe = (props: ChannelMemberItemProps) => {
-  itemProbeCalls.push(props);
-  return <Text testID={`member-${props.member.user?.id}`}>{props.member.user?.name}</Text>;
+const MemberItemProbe = (props: ChannelMemberItemProps) => {
+  const { Text } = require('react-native');
+  mockItemProbe.push(props);
+  return (
+    <Text onPress={() => props.onPress?.(props.member)} testID={`member-${props.member.user?.id}`}>
+      {props.member.user?.id}
+    </Text>
+  );
 };
 
-const sheetProbeCalls: ChannelMemberActionsSheetProps[] = [];
 const MemberActionsSheetProbe = (props: ChannelMemberActionsSheetProps) => {
-  sheetProbeCalls.push(props);
+  const { Text } = require('react-native');
+  mockSheetProbe.push(props);
   return <Text testID='member-actions-sheet-probe'>{props.member.user?.id ?? ''}</Text>;
 };
 
-const renderList = ({
-  additionalFlatListProps,
-  currentUserId,
-  onMemberPress,
-}: {
-  additionalFlatListProps?: Partial<FlatListProps>;
-  currentUserId?: string;
-  onMemberPress?: (member: ChannelMemberResponse) => void;
-} = {}) =>
-  render(
+const tree = (
+  searchSource: FakeSearchSource,
+  props: {
+    additionalFlatListProps?: object;
+    onMemberPress?: (member: ChannelMemberResponse) => void;
+  } = {},
+) => {
+  mockCurrentSearchSource = searchSource;
+  return (
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
@@ -89,161 +160,204 @@ const renderList = ({
           userLanguage: 'en',
         }}
       >
-        <ChatContext.Provider
+        <ChannelDetailsContextProvider
           value={
             {
-              client: {
-                mutedUsers: [],
-                on: () => ({ unsubscribe: () => undefined }),
-                userID: currentUserId,
-              },
-            } as never
+              channel: mockChannel,
+              onMemberPress: props.onMemberPress,
+            } as unknown as ChannelDetailsContextValue
           }
         >
-          <ChannelDetailsContextProvider value={{ channel, onMemberPress }}>
-            <WithComponents
-              overrides={{
-                ChannelMemberActionsSheet: MemberActionsSheetProbe,
-                ChannelMemberItem: MemberListItemProbe,
-              }}
-            >
-              <ChannelMemberList additionalFlatListProps={additionalFlatListProps} />
-            </WithComponents>
-          </ChannelDetailsContextProvider>
-        </ChatContext.Provider>
+          <WithComponents
+            overrides={{
+              ChannelMemberActionsSheet: MemberActionsSheetProbe,
+              ChannelMemberItem: MemberItemProbe,
+            }}
+          >
+            <ChannelMemberList additionalFlatListProps={props.additionalFlatListProps as never} />
+          </WithComponents>
+        </ChannelDetailsContextProvider>
       </TranslationProvider>
-    </ThemeProvider>,
+    </ThemeProvider>
   );
-
-const latestListProps = () => {
-  const calls = mockFlatList.mock.calls;
-  return calls[calls.length - 1]?.[0];
 };
 
 describe('ChannelMemberList', () => {
   beforeEach(() => {
-    mockFlatList.mockClear();
-    itemProbeCalls.length = 0;
-    sheetProbeCalls.length = 0;
-    mockHook();
+    mockItemProbe.length = 0;
+    mockSheetProbe.length = 0;
+    mockProviderProbe.length = 0;
+    mockNotificationTargetProbe.length = 0;
   });
 
   afterEach(() => jest.clearAllMocks());
 
-  it('renders the loading skeleton while loading with no results yet', () => {
-    mockHook({ loading: true, results: [] });
+  it('wraps its content in the member list provider for the channel', () => {
+    render(tree(makeSearchSource()));
 
-    const list = renderList();
-
-    expect(list.getByTestId('member-list-loading-skeleton')).toBeTruthy();
-    expect(mockFlatList).not.toHaveBeenCalled();
+    expect(mockProviderProbe).toHaveLength(1);
+    expect(mockProviderProbe[0].channel).toBe(mockChannel);
   });
 
-  it('renders the list (not the skeleton) once results exist even while loading', () => {
-    mockHook({
-      loading: true,
-      results: [generateMember({ user: generateUser({ id: 'alice' }) })],
+  it('calls search when the component is created', () => {
+    const searchSource = makeSearchSource();
+    render(tree(searchSource));
+
+    expect(searchSource.search).toHaveBeenCalledTimes(1);
+    expect(searchSource.search).toHaveBeenCalledWith();
+  });
+
+  it('wires the search input to the search source callbacks', () => {
+    const searchSource = makeSearchSource({
+      items: [generateMember({ user: generateUser({ id: 'alice' }) })],
     });
+    render(tree(searchSource));
+    searchSource.search.mockClear();
 
-    const list = renderList();
+    fireEvent.press(screen.getByTestId('search-change'));
+    expect(searchSource.state.partialNext).toHaveBeenCalledWith({ searchQuery: 'query' });
+    expect(searchSource.search).toHaveBeenCalledWith('query');
 
-    expect(list.queryByTestId('member-list-loading-skeleton')).toBeNull();
-    expect(mockFlatList).toHaveBeenCalled();
+    fireEvent.press(screen.getByTestId('search-clear'));
+    expect(searchSource.search).toHaveBeenCalledWith('');
   });
 
-  it('feeds the hook results into the flat list with a stable keyExtractor', () => {
+  it('renders a row per member and forwards a stable keyExtractor', () => {
     const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    mockHook({ results: [alice, bob] });
 
-    renderList();
+    render(tree(makeSearchSource({ items: [alice, bob] })));
 
-    const props = latestListProps();
-    expect((props?.data as ChannelMemberResponse[]).map((m) => m.user?.id)).toEqual([
-      'alice',
-      'bob',
-    ]);
-    expect(props?.keyExtractor?.(alice, 0)).toBe('alice');
+    expect(mockItemProbe.map((p) => p.member.user?.id)).toEqual(['alice', 'bob']);
+    expect(screen.getByTestId('member-alice')).toBeTruthy();
+    expect(screen.getByTestId('channel-member-list').props.keyExtractor(alice, 0)).toBe('alice');
   });
 
-  it('wires onEndReached to loadMore (with threshold) only when there is more to load', () => {
-    const loadMore = jest.fn();
-    mockHook({ hasMore: true, loadMore, results: [] });
+  it('shows the loading skeleton and keeps the search bar on the initial load', () => {
+    render(tree(makeSearchSource({ isLoading: true })));
 
-    renderList();
-
-    const props = latestListProps();
-    expect(props?.onEndReachedThreshold).toBe(0.2);
-    expect(props?.onEndReached).toBe(loadMore);
+    expect(screen.getByTestId('member-list-loading-skeleton')).toBeTruthy();
+    expect(screen.getByTestId('search-change')).toBeTruthy();
   });
 
-  it('omits onEndReached when there is no more to load', () => {
-    mockHook({ hasMore: false, results: [] });
+  it('shows the empty search result and keeps the search bar when there are no results', () => {
+    render(tree(makeSearchSource({ isLoading: false, items: [] })));
 
-    renderList();
-
-    expect(latestListProps()?.onEndReached).toBeUndefined();
+    expect(screen.getByTestId('empty-search-result')).toBeTruthy();
+    expect(screen.getByText('No members found')).toBeTruthy();
+    expect(screen.getByTestId('search-change')).toBeTruthy();
   });
 
-  it('renders a footer spinner only while loading more (loading with existing results)', () => {
-    const results = [generateMember({ user: generateUser({ id: 'alice' }) })];
-    mockHook({ loading: true, results });
-    renderList();
-    const footer = latestListProps()?.ListFooterComponent as React.ReactElement;
-    expect(footer).not.toBeNull();
-    expect(footer.type).toBe(ActivityIndicator);
-
-    mockFlatList.mockClear();
-    mockHook({ loading: false, results });
-    renderList();
-    expect(latestListProps()?.ListFooterComponent).toBeNull();
+  it('renders the loading-more indicator only while loading with existing results', () => {
+    render(
+      tree(
+        makeSearchSource({
+          isLoading: true,
+          items: [generateMember({ user: generateUser({ id: 'alice' }) })],
+        }),
+      ),
+    );
+    expect(screen.UNSAFE_getByType(require('react-native').ActivityIndicator)).toBeTruthy();
   });
 
-  it('forwards additionalFlatListProps to the underlying flat list', () => {
-    mockHook({ results: [generateMember({ user: generateUser({ id: 'alice' }) })] });
+  it('loads more via the search source when the list end is reached and there is a next page', () => {
+    const searchSource = makeSearchSource({
+      hasNext: true,
+      items: [generateMember({ user: generateUser({ id: 'alice' }) })],
+    });
+    render(tree(searchSource));
+    searchSource.search.mockClear();
 
-    renderList({ additionalFlatListProps: { bounces: false, testID: 'custom-member-list' } });
+    const list = screen.getByTestId('channel-member-list');
+    expect(list.props.onEndReachedThreshold).toBe(0.2);
+    list.props.onEndReached();
+    expect(searchSource.search).toHaveBeenCalledTimes(1);
+  });
 
-    const props = latestListProps();
-    expect(props?.testID).toBe('custom-member-list');
-    expect(props?.bounces).toBe(false);
+  it('does not load more when there is no next page', () => {
+    const searchSource = makeSearchSource({
+      hasNext: false,
+      items: [generateMember({ user: generateUser({ id: 'alice' }) })],
+    });
+    render(tree(searchSource));
+    searchSource.search.mockClear();
+
+    screen.getByTestId('channel-member-list').props.onEndReached();
+    expect(searchSource.search).not.toHaveBeenCalled();
+  });
+
+  it('forwards additionalFlatListProps to the underlying list', () => {
+    render(
+      tree(makeSearchSource({ items: [generateMember({ user: generateUser({ id: 'alice' }) })] }), {
+        additionalFlatListProps: { bounces: false, testID: 'custom-list' },
+      }),
+    );
+
+    const list = screen.getByTestId('custom-list');
+    expect(list.props.bounces).toBe(false);
+    expect(screen.queryByTestId('channel-member-list')).toBeNull();
   });
 
   it('opens the per-member actions sheet on press when no onMemberPress override is provided, and closes it', () => {
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
-    mockHook({ results: [bob] });
+    render(tree(makeSearchSource({ items: [bob] })));
 
-    const list = renderList();
+    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
 
-    const { renderItem } = latestListProps() ?? {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render((renderItem as any)({ index: 0, item: bob, separators: {} as never }));
-    const captured = itemProbeCalls.find((p) => p.member.user?.id === 'bob');
+    fireEvent.press(screen.getByTestId('member-bob'));
+    expect(screen.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
 
-    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
-    act(() => captured?.onPress?.(bob));
-    expect(list.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
-
-    act(() => sheetProbeCalls[sheetProbeCalls.length - 1]?.onClose?.());
-    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
+    act(() => mockSheetProbe[mockSheetProbe.length - 1]?.onClose?.());
+    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
   it('calls onMemberPress instead of opening the sheet when an override is provided', () => {
     const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
     const onMemberPress = jest.fn();
-    mockHook({ results: [alice] });
+    render(tree(makeSearchSource({ items: [alice] }), { onMemberPress }));
 
-    const list = renderList({ onMemberPress });
-
-    const { renderItem } = latestListProps() ?? {};
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render((renderItem as any)({ index: 0, item: alice, separators: {} as never }));
-    const captured = itemProbeCalls.find((p) => p.member.user?.id === 'alice');
-
-    act(() => captured?.onPress?.(alice));
+    fireEvent.press(screen.getByTestId('member-alice'));
 
     expect(onMemberPress).toHaveBeenCalledTimes(1);
     expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');
-    expect(list.queryByTestId('member-actions-sheet-probe')).toBeNull();
+    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
+  });
+
+  it('targets the channel-details panel with a channel-scoped notification host', () => {
+    render(tree(makeSearchSource()));
+
+    expect(mockNotificationTargetProbe).toHaveLength(1);
+    expect(mockNotificationTargetProbe[0]).toEqual({
+      hostId: 'channel-member-list:messaging:1',
+      panel: 'channel-details',
+    });
+  });
+
+  it('renders the notification list host', () => {
+    render(tree(makeSearchSource({ items: [] })));
+
+    expect(screen.getByTestId('notification-list')).toBeTruthy();
+  });
+
+  it('adds an error notification when the search source reports a query error', () => {
+    const lastQueryError = new Error('boom');
+    render(tree(makeSearchSource({ lastQueryError })));
+
+    expect(mockAddNotification).toHaveBeenCalledTimes(1);
+    expect(mockAddNotification).toHaveBeenCalledWith({
+      message: 'Failed to load members',
+      options: {
+        originalError: lastQueryError,
+        severity: 'error',
+        type: 'api:channel:query-members:failed',
+      },
+      origin: { context: { channel: mockChannel }, emitter: 'ChannelMemberList' },
+    });
+  });
+
+  it('does not add a notification when there is no query error', () => {
+    render(tree(makeSearchSource({ items: [] })));
+
+    expect(mockAddNotification).not.toHaveBeenCalled();
   });
 });

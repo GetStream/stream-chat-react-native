@@ -219,6 +219,11 @@ export type Theme = {
       role: TextStyle;
       status: TextStyle;
     };
+    memberList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
     memberActionsSheet: {
       actionsList: ViewStyle;
       container: ViewStyle;
@@ -236,6 +241,9 @@ export type Theme = {
       headerTitle: TextStyle;
     };
     addMembers: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
       searchResultItem: {
         alreadyMemberInfo: ViewStyle;
         memberLabel: TextStyle;
@@ -1326,6 +1334,11 @@ export const defaultTheme: Theme = {
       role: {},
       status: {},
     },
+    memberList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
     memberActionsSheet: {
       actionsList: {},
       container: {},
@@ -1343,6 +1356,9 @@ export const defaultTheme: Theme = {
       headerTitle: {},
     },
     addMembers: {
+      container: {},
+      list: {},
+      listContent: {},
       searchResultItem: {
         alreadyMemberInfo: {},
         memberLabel: {},

@@ -34,6 +34,7 @@ export * from './channelAddMembersContext/ChannelAddMembersContext';
 export * from './channelEditDetailsContext';
 export * from './channelFileAttachmentListContext/ChannelFileAttachmentListContext';
 export * from './channelPinnedMessageListContext/ChannelPinnedMessageListContext';
+export * from './channelMemberListContext/ChannelMemberListContext';
 export * from './channelMediaListContext/ChannelMediaListContext';
 export * from './pollContext';
 export * from './liveLocationManagerContext';

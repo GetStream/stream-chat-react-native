@@ -83,9 +83,7 @@ SearchInput.displayName = 'SearchInput{searchInput}';
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: primitives.spacingSm,
-    paddingHorizontal: primitives.spacingMd,
-    paddingTop: primitives.spacingXs,
+    padding: primitives.spacingMd,
   },
   input: {
     borderRadius: primitives.radiusMax,
