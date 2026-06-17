@@ -460,5 +460,8 @@
   "Unpin Group": "Détacher le groupe",
   "Block": "Bloquer",
   "Block {{ name }}": "Bloquer {{ name }}",
-  "They won't be able to message or call you. You can unblock them later.": "Cette personne ne pourra plus vous envoyer de messages ni vous appeler. Vous pourrez la débloquer plus tard."
+  "They won't be able to message or call you. You can unblock them later.": "Cette personne ne pourra plus vous envoyer de messages ni vous appeler. Vous pourrez la débloquer plus tard.",
+  "Leave": "Quitter",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Vous ne recevrez plus de messages de {{ name }}. Vous pouvez rejoindre à tout moment.",
+  "group": "ce groupe"
 }

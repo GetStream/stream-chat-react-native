@@ -460,5 +460,8 @@
   "Unpin Group": "Открепить группу",
   "Block": "Заблокировать",
   "Block {{ name }}": "Заблокировать {{ name }}",
-  "They won't be able to message or call you. You can unblock them later.": "Он не сможет писать вам и звонить. Вы сможете снять блокировку позже."
+  "They won't be able to message or call you. You can unblock them later.": "Он не сможет писать вам и звонить. Вы сможете снять блокировку позже.",
+  "Leave": "Покинуть",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Вы перестанете получать сообщения от {{ name }}. Вы можете присоединиться снова в любое время.",
+  "group": "группы"
 }

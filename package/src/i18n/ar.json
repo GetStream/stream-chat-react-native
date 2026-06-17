@@ -460,5 +460,8 @@
   "Unpin Group": "إلغاء تثبيت المجموعة",
   "Block": "حظر",
   "Block {{ name }}": "حظر {{ name }}",
-  "They won't be able to message or call you. You can unblock them later.": "لن يتمكن/تتمكن من مراسلتك أو الاتصال بك. يمكنك إلغاء الحظر لاحقًا."
+  "They won't be able to message or call you. You can unblock them later.": "لن يتمكن/تتمكن من مراسلتك أو الاتصال بك. يمكنك إلغاء الحظر لاحقًا.",
+  "Leave": "مغادرة",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "ستتوقف عن تلقي الرسائل من {{ name }}. يمكنك الانضمام مجددًا في أي وقت.",
+  "group": "المجموعة"
 }

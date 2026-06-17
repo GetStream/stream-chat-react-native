@@ -460,5 +460,8 @@
   "Unpin Group": "Desafixar grupo",
   "Block": "Bloquear",
   "Block {{ name }}": "Bloquear {{ name }}",
-  "They won't be able to message or call you. You can unblock them later.": "Essa pessoa não poderá enviar mensagens ou ligar para você. Você pode desbloqueá-la mais tarde."
+  "They won't be able to message or call you. You can unblock them later.": "Essa pessoa não poderá enviar mensagens ou ligar para você. Você pode desbloqueá-la mais tarde.",
+  "Leave": "Sair",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Você deixará de receber mensagens de {{ name }}. Pode entrar novamente a qualquer momento.",
+  "group": "o grupo"
 }

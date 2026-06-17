@@ -460,5 +460,8 @@
   "Unpin Group": "Grubun sabitlemesini kaldır",
   "Block": "Engelle",
   "Block {{ name }}": "{{ name }} kullanıcısını engelle",
-  "They won't be able to message or call you. You can unblock them later.": "Size mesaj gönderemez veya sizi arayamaz. Engeli daha sonra kaldırabilirsiniz."
+  "They won't be able to message or call you. You can unblock them later.": "Size mesaj gönderemez veya sizi arayamaz. Engeli daha sonra kaldırabilirsiniz.",
+  "Leave": "Ayrıl",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "{{ name }} kanalından mesaj almayı bırakacaksınız. İstediğiniz zaman tekrar katılabilirsiniz.",
+  "group": "grup"
 }

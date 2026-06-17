@@ -460,5 +460,8 @@
   "Unpin Group": "ग्रुप अनपिन करें",
   "Block": "ब्लॉक करें",
   "Block {{ name }}": "{{ name }} को ब्लॉक करें",
-  "They won't be able to message or call you. You can unblock them later.": "वे आपको संदेश या कॉल नहीं कर पाएंगे। आप उन्हें बाद में अनब्लॉक कर सकते हैं।"
+  "They won't be able to message or call you. You can unblock them later.": "वे आपको संदेश या कॉल नहीं कर पाएंगे। आप उन्हें बाद में अनब्लॉक कर सकते हैं।",
+  "Leave": "छोड़ें",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "आपको {{ name }} से संदेश मिलना बंद हो जाएंगे। आप कभी भी दोबारा जुड़ सकते हैं।",
+  "group": "ग्रुप"
 }
