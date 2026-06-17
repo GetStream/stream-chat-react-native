@@ -13,6 +13,7 @@ import { VideoPlayerPool } from '../video-player-pool';
 jest.mock('../video-player-pool', () => ({
   VideoPlayerPool: jest.fn().mockImplementation(() => ({
     clear: jest.fn(),
+    getActivePlayer: jest.fn(() => null),
     pool: new Map(),
     state: {
       getLatestValue: () => ({ activeVideoPlayer: null }),
@@ -186,6 +187,36 @@ describe('ImageGalleryStateStore', () => {
       store.currentIndex = 7;
 
       expect(store.currentIndexShared.value).toBe(7);
+    });
+
+    it('should pause the active video player when currentIndex changes', () => {
+      const store = new ImageGalleryStateStore();
+      const pause = jest.fn();
+      (store.videoPlayerPool.getActivePlayer as jest.Mock).mockReturnValue({ pause });
+
+      store.currentIndex = 3;
+
+      expect(pause).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not pause the active player when currentIndex setter is called with the same value', () => {
+      const store = new ImageGalleryStateStore();
+      store.currentIndex = 3;
+      const pause = jest.fn();
+      (store.videoPlayerPool.getActivePlayer as jest.Mock).mockReturnValue({ pause });
+
+      store.currentIndex = 3;
+
+      expect(pause).not.toHaveBeenCalled();
+    });
+
+    it('should not throw when there is no active player on index change', () => {
+      const store = new ImageGalleryStateStore();
+      (store.videoPlayerPool.getActivePlayer as jest.Mock).mockReturnValue(null);
+
+      expect(() => {
+        store.currentIndex = 5;
+      }).not.toThrow();
     });
   });
 

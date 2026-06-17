@@ -164,8 +164,21 @@ export class ImageGalleryStateStore {
   }
 
   set currentIndex(currentIndex: number) {
+    const previousIndex = this.state.getLatestValue().currentIndex;
     this.state.partialNext({ currentIndex });
     this.currentIndexShared.value = currentIndex;
+    // When the user moves off the current slide, pause whatever video was
+    // playing. Moved here from a useEffect in ImageGallery so the invariant
+    // lives next to the state it depends on — and the parent no longer needs
+    // to subscribe to currentIndex purely to drive this side effect.
+    // `clear()` is the other reset path; it bypasses this setter but already
+    // pauses everything through `videoPlayerPool.clear()`.
+    if (previousIndex !== currentIndex) {
+      const activePlayer = this.videoPlayerPool.getActivePlayer();
+      if (activePlayer) {
+        activePlayer.pause();
+      }
+    }
   }
 
   set requesterNode(requesterNode: number | null) {

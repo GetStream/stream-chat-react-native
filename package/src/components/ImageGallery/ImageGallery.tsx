@@ -100,8 +100,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     imageGalleryStateStore.state,
     imageGallerySelector,
   );
-  const { videoPlayerPool } = imageGalleryStateStore;
-
   const { vh, vw } = useViewport();
 
   const fullWindowHeight = vh(100);
@@ -170,15 +168,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
     [fullWindowWidth],
   );
-
-  // If you change the current index, pause the active video player.
-  useEffect(() => {
-    const activePlayer = videoPlayerPool.getActivePlayer();
-
-    if (activePlayer) {
-      activePlayer.pause();
-    }
-  }, [currentIndex, videoPlayerPool]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
