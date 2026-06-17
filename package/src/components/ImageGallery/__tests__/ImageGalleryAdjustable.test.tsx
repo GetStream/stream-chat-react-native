@@ -95,13 +95,14 @@ describe('ImageGallery adjustable cycling', () => {
     });
   });
 
-  it('does not apply the adjustable role when accessibility is disabled', async () => {
+  it('does not mount the a11y probe when accessibility is disabled', async () => {
     renderWithAssets(3, false);
 
+    // The probe is the sole element with this label; the parent ImageGallery
+    // renders only the visual background View when a11y is off, with no
+    // accessibility attributes to expose.
     await waitFor(() => {
-      const root = findGalleryRoot();
-      expect(root.props.accessibilityRole).toBeUndefined();
-      expect(root.props.accessibilityActions).toBeUndefined();
+      expect(screen.queryByLabelText('Image Gallery', { includeHiddenElements: true })).toBeNull();
     });
   });
 

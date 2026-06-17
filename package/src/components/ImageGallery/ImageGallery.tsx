@@ -1,12 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  AccessibilityInfo,
-  Image,
-  ImageStyle,
-  Platform,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AccessibilityInfo, ImageStyle, Platform, StyleSheet, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
@@ -20,15 +13,16 @@ import Animated, {
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
+import { ImageGalleryA11yProbe } from './components/ImageGalleryA11yProbe';
 import type {
   ImageGalleryFooterProps,
   ImageGalleryGridProps,
   ImageGalleryHeaderProps,
 } from './components/types';
 
+import { useCurrentImageHeight } from './hooks/useCurrentImageHeight';
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
-import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
@@ -73,7 +67,6 @@ export enum IsSwiping {
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   assets: state.assets,
-  currentIndex: state.currentIndex,
 });
 
 type ImageGalleryWithContextProps = Pick<
@@ -102,12 +95,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { assets, currentIndex } = useStateStore(
-    imageGalleryStateStore.state,
-    imageGallerySelector,
-  );
-  const { videoPlayerPool } = imageGalleryStateStore;
-
+  const { assets } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { vh, vw } = useViewport();
 
   const fullWindowHeight = vh(100);
@@ -139,9 +127,17 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   }, [showScreen]);
 
   /**
-   * Image height from URL or default to full screen height
+   * Image height for the currently selected asset. SharedValue so worklet
+   * consumers (gesture math, header/footer opacity) read it directly on the
+   * UI thread so updating it doesn't trigger a parent rerender. The hook
+   * owns the value and updates it via a store subscription.
    */
-  const [currentImageHeight, setCurrentImageHeight] = useState<number>(fullWindowHeight);
+  const currentImageHeight = useCurrentImageHeight({
+    assets,
+    fullWindowHeight,
+    fullWindowWidth,
+    imageGalleryStateStore,
+  });
 
   /**
    * Header visible value for animating in out
@@ -155,52 +151,19 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   const translateY = useSharedValue(0);
   const offsetScale = useSharedValue(1);
   const scale = useSharedValue(1);
-  const translationX = useSharedValue(-(fullWindowWidth + MARGIN) * currentIndex);
+  const translationX = useSharedValue(
+    -(fullWindowWidth + MARGIN) * imageGalleryStateStore.state.getLatestValue().currentIndex,
+  );
+
+  const currentIndexShared = imageGalleryStateStore.currentIndexShared;
 
   useAnimatedReaction(
-    () => currentIndex,
+    () => currentIndexShared.value,
     (index) => {
       translationX.value = -(fullWindowWidth + MARGIN) * index;
     },
-    [currentIndex, fullWindowWidth],
+    [fullWindowWidth],
   );
-
-  /**
-   * Image heights are not provided and therefore need to be calculated.
-   * We start by allowing the image to be the full height then reduce it
-   * to the proper scaled height based on the width being restricted to the
-   * screen width when the dimensions are received.
-   */
-  useEffect(() => {
-    let currentImageHeight = fullWindowHeight;
-    const photo = assets[currentIndex];
-    const height = photo?.original_height;
-    const width = photo?.original_width;
-
-    if (height && width) {
-      const imageHeight = Math.floor(height * (fullWindowWidth / width));
-      currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-    } else if (photo?.uri) {
-      if (photo.type === FileTypes.Image) {
-        Image.getSize(photo.uri, (width, height) => {
-          const imageHeight = Math.floor(height * (fullWindowWidth / width));
-          currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-        });
-      }
-    }
-
-    setCurrentImageHeight(currentImageHeight);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex]);
-
-  // If you change the current index, pause the active video player.
-  useEffect(() => {
-    const activePlayer = videoPlayerPool.getActivePlayer();
-
-    if (activePlayer) {
-      activePlayer.pause();
-    }
-  }, [currentIndex, videoPlayerPool]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
@@ -219,20 +182,21 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 
   /**
    * If the header is visible we scale down the opacity of it as the
-   * image is swiped downward
+   * image is swiped downward. Reads currentImageHeight from a SharedValue so
+   * the worklet doesn't need to be re-registered when the image dimensions
+   * change between slides.
    */
-  const headerFooterOpacity = useDerivedValue(
-    () =>
-      currentImageHeight * scale.value < fullWindowHeight && translateY.value > 0
-        ? 1 - translateY.value / quarterScreenHeight
-        : currentImageHeight * scale.value > fullWindowHeight &&
-            translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-          ? 1 -
-            (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
-              quarterScreenHeight
-          : 1,
-    [currentImageHeight],
-  );
+  const headerFooterOpacity = useDerivedValue(() => {
+    const imageHeight = currentImageHeight.value;
+    return imageHeight * scale.value < fullWindowHeight && translateY.value > 0
+      ? 1 - translateY.value / quarterScreenHeight
+      : imageHeight * scale.value > fullWindowHeight &&
+          translateY.value > (imageHeight / 2) * scale.value - halfScreenHeight
+        ? 1 -
+          (translateY.value - ((imageHeight / 2) * scale.value - halfScreenHeight)) /
+            quarterScreenHeight
+        : 1;
+  }, []);
 
   /**
    * This transition and scaleX reverse lets use scroll right
@@ -290,45 +254,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   };
 
   const { enabled: isAccessibilityEnabled } = useAccessibilityContext();
-  const assetsCount = assets.length;
-  const isAdjustable = isAccessibilityEnabled;
-  const accessibilityValueParams = useMemo(
-    () => ({ count: assetsCount, position: currentIndex + 1 }),
-    [currentIndex, assetsCount],
-  );
-  const accessibilityValueText = useA11yLabel(
-    'a11y/{{position}} of {{count}}',
-    accessibilityValueParams,
-  );
-  const accessibilityValue = useMemo(
-    () => (accessibilityValueText ? { text: accessibilityValueText } : undefined),
-    [accessibilityValueText],
-  );
-  const adjustableActions = useMemo(
-    () =>
-      isAdjustable ? [{ name: 'increment' as const }, { name: 'decrement' as const }] : undefined,
-    [isAdjustable],
-  );
-
-  const onAccessibilityAction = useCallback(
-    (event: { nativeEvent: { actionName: string } }) => {
-      if (!isAccessibilityEnabled) return;
-      const latest = imageGalleryStateStore.state.getLatestValue();
-      const latestCount = latest.assets.length;
-      const latestIndex = latest.currentIndex;
-      if (latestCount <= 1) return;
-      if (event.nativeEvent.actionName === 'increment') {
-        if (latestIndex < latestCount - 1) {
-          imageGalleryStateStore.currentIndex = latestIndex + 1;
-        }
-      } else if (event.nativeEvent.actionName === 'decrement') {
-        if (latestIndex > 0) {
-          imageGalleryStateStore.currentIndex = latestIndex - 1;
-        }
-      }
-    },
-    [imageGalleryStateStore, isAccessibilityEnabled],
-  );
 
   useEffect(() => {
     return () => {
@@ -356,15 +281,11 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
       pointerEvents={'auto'}
       style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
-      <Animated.View
-        accessible
-        accessibilityActions={adjustableActions}
-        accessibilityLabel='Image Gallery'
-        accessibilityRole={isAdjustable ? 'adjustable' : undefined}
-        accessibilityValue={isAdjustable ? accessibilityValue : undefined}
-        onAccessibilityAction={isAdjustable ? onAccessibilityAction : undefined}
-        style={[StyleSheet.absoluteFill, containerBackground]}
-      />
+      {isAccessibilityEnabled ? (
+        <ImageGalleryA11yProbe containerBackground={containerBackground} />
+      ) : (
+        <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
+      )}
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View

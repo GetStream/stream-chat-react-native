@@ -1,3 +1,5 @@
+import { makeMutable, SharedValue } from 'react-native-reanimated';
+
 import { Attachment, LocalMessage, StateStore, Unsubscribe, UserResponse } from 'stream-chat';
 
 import { VideoPlayerPool } from './video-player-pool';
@@ -66,11 +68,19 @@ export class ImageGalleryStateStore {
   state: StateStore<ImageGalleryState>;
   options: ImageGalleryOptions;
   videoPlayerPool: VideoPlayerPool;
+  /**
+   * SharedValue mirror of `state.currentIndex` for worklet consumers (gesture
+   * handlers, animated styles). Maintained in lockstep with the setter and the
+   * reset path in `clear()`. Reads from worklets bypass the JS bridge entirely;
+   * any code path that updates `currentIndex` must keep this mirror in sync.
+   */
+  currentIndexShared: SharedValue<number>;
 
   constructor(options: Partial<ImageGalleryOptions> = {}) {
     this.options = { ...INITIAL_IMAGE_GALLERY_OPTIONS, ...options };
     this.state = new StateStore<ImageGalleryState>(INITIAL_STATE);
     this.videoPlayerPool = new VideoPlayerPool();
+    this.currentIndexShared = makeMutable(INITIAL_STATE.currentIndex);
   }
 
   // Getters
@@ -154,7 +164,21 @@ export class ImageGalleryStateStore {
   }
 
   set currentIndex(currentIndex: number) {
+    const previousIndex = this.state.getLatestValue().currentIndex;
     this.state.partialNext({ currentIndex });
+    this.currentIndexShared.value = currentIndex;
+    // When the user moves off the current slide, pause whatever video was
+    // playing. Moved here from a useEffect in ImageGallery so the invariant
+    // lives next to the state it depends on — and the parent no longer needs
+    // to subscribe to currentIndex purely to drive this side effect.
+    // `clear()` is the other reset path; it bypasses this setter but already
+    // pauses everything through `videoPlayerPool.clear()`.
+    if (previousIndex !== currentIndex) {
+      const activePlayer = this.videoPlayerPool.getActivePlayer();
+      if (activePlayer) {
+        activePlayer.pause();
+      }
+    }
   }
 
   set requesterNode(requesterNode: number | null) {
@@ -212,7 +236,8 @@ export class ImageGalleryStateStore {
           (asset) =>
             stripQueryFromUrl(asset.uri) === stripQueryFromUrl(selectedAttachmentUrl ?? ''),
         );
-        this.state.partialNext({ currentIndex: index === -1 ? 0 : index });
+        // Route through the setter so currentIndexShared stays in sync.
+        this.currentIndex = index === -1 ? 0 : index;
       },
     );
 
@@ -233,5 +258,6 @@ export class ImageGalleryStateStore {
   clear = () => {
     this.videoPlayerPool.clear();
     this.state.partialNext(INITIAL_STATE);
+    this.currentIndexShared.value = INITIAL_STATE.currentIndex;
   };
 }

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Platform } from 'react-native';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import {
@@ -14,9 +14,7 @@ import {
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
-import { useStateStore } from '../../../hooks';
 import { NativeHandlers } from '../../../native';
-import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 
 export enum HasPinched {
   FALSE = 0,
@@ -30,10 +28,6 @@ export enum IsSwiping {
 }
 
 const MARGIN = 32;
-
-const imageGallerySelector = (state: ImageGalleryState) => ({
-  currentIndex: state.currentIndex,
-});
 
 export const useImageGalleryGestures = ({
   currentImageHeight,
@@ -49,7 +43,7 @@ export const useImageGalleryGestures = ({
   translateY,
   translationX,
 }: {
-  currentImageHeight: number;
+  currentImageHeight: SharedValue<number>;
   halfScreenHeight: number;
   halfScreenWidth: number;
   headerFooterVisible: SharedValue<number>;
@@ -62,20 +56,8 @@ export const useImageGalleryGestures = ({
   translateY: SharedValue<number>;
   translationX: SharedValue<number>;
 }) => {
-  /**
-   * if a specific image index > 0 has been passed in
-   * while creating the hook, set the value of the index
-   * reference to its value.
-   *
-   * This makes it possible to seelct an image in the list,
-   * and scroll/pan as normal. Prior to this,
-   * it was always assumed that one started at index 0 in the
-   * gallery.
-   * */
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { currentIndex } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
-
-  const [index, setIndex] = useState(currentIndex);
+  const currentIndexShared = imageGalleryStateStore.currentIndexShared;
 
   /**
    * Gesture handler refs
@@ -163,13 +145,16 @@ export const useImageGalleryGestures = ({
   };
 
   const moveToNextImage = () => {
-    runOnJS(setIndex)(index + 1);
-    imageGalleryStateStore.currentIndex = index + 1;
+    // Read fresh — both moveToNext/Previous are invoked via runOnJS from a
+    // worklet, so we'd otherwise be using a value captured at hook-creation
+    // time. The setter mirrors into currentIndexShared.
+    const currentIndex = imageGalleryStateStore.state.getLatestValue().currentIndex;
+    imageGalleryStateStore.currentIndex = currentIndex + 1;
   };
 
   const moveToPreviousImage = () => {
-    runOnJS(setIndex)(index - 1);
-    imageGalleryStateStore.currentIndex = index - 1;
+    const currentIndex = imageGalleryStateStore.state.getLatestValue().currentIndex;
+    imageGalleryStateStore.currentIndex = currentIndex - 1;
   };
 
   /**
@@ -221,7 +206,7 @@ export const useImageGalleryGestures = ({
          * true, or false and is reset on releasing the touch
          */
         if (isSwiping.value === IsSwiping.UNDETERMINED) {
-          const maxXYRatio = isAndroid ? 1 : 0.25;
+          const maxXYRatio = 0.25;
           if (
             Math.abs(event.translationX / event.translationY) > maxXYRatio &&
             (Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) < 3 ||
@@ -261,16 +246,17 @@ export const useImageGalleryGestures = ({
          * If swiping down start scaling down the image for swipe
          * away effect
          */
+        const imageHeight = currentImageHeight.value;
         scale.value =
-          currentImageHeight * offsetScale.value < screenHeight && translateY.value > 0
+          imageHeight * offsetScale.value < screenHeight && translateY.value > 0
             ? offsetScale.value * (1 - (1 / 3) * (translateY.value / screenHeight))
-            : currentImageHeight * offsetScale.value > screenHeight &&
-                translateY.value > (currentImageHeight / 2) * offsetScale.value - halfScreenHeight
+            : imageHeight * offsetScale.value > screenHeight &&
+                translateY.value > (imageHeight / 2) * offsetScale.value - halfScreenHeight
               ? offsetScale.value *
                 (1 -
                   (1 / 3) *
                     ((translateY.value -
-                      ((currentImageHeight / 2) * offsetScale.value - halfScreenHeight)) /
+                      ((imageHeight / 2) * offsetScale.value - halfScreenHeight)) /
                       screenHeight))
               : scale.value;
 
@@ -287,6 +273,8 @@ export const useImageGalleryGestures = ({
         const finalXPosition = event.translationX - event.velocityX * 0.3;
         const finalYPosition = event.translationY + event.velocityY * 0.1;
 
+        const currentIndex = currentIndexShared.value;
+
         /**
          * If there is a next photo, the image is lined up to the right
          * edge, the swipe is to the left, and the final position is more
@@ -295,7 +283,7 @@ export const useImageGalleryGestures = ({
          * As we move towards the left to move to next image, the translationX value will be negative on X axis.
          */
         if (
-          index < assetsLength - 1 &&
+          currentIndex < assetsLength - 1 &&
           Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value < 0 &&
           finalXPosition > halfScreenWidth &&
@@ -303,7 +291,7 @@ export const useImageGalleryGestures = ({
         ) {
           cancelAnimation(translationX);
           translationX.value = withTiming(
-            -(screenWidth + MARGIN) * (index + 1),
+            -(screenWidth + MARGIN) * (currentIndex + 1),
             {
               duration: 200,
               easing: Easing.out(Easing.ease),
@@ -322,7 +310,7 @@ export const useImageGalleryGestures = ({
            * As we move towards the right to move to previous image, the translationX value will be positive on X axis.
            */
         } else if (
-          index > 0 &&
+          currentIndex > 0 &&
           Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
           translateX.value > 0 &&
           finalXPosition < -halfScreenWidth &&
@@ -330,7 +318,7 @@ export const useImageGalleryGestures = ({
         ) {
           cancelAnimation(translationX);
           translationX.value = withTiming(
-            -(screenWidth + MARGIN) * (index - 1),
+            -(screenWidth + MARGIN) * (currentIndex - 1),
             {
               duration: 200,
               easing: Easing.out(Easing.ease),
@@ -376,19 +364,20 @@ export const useImageGalleryGestures = ({
          * otherwise use decay with a clamping at the edges to give the effect
          * the image is sliding along using velocity and friction
          */
+        const imageHeight = currentImageHeight.value;
         translateY.value =
-          currentImageHeight * scale.value < screenHeight
+          imageHeight * scale.value < screenHeight
             ? withTiming(0, { reduceMotion: ReduceMotion.Never })
-            : translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-              ? withTiming((currentImageHeight / 2) * scale.value - halfScreenHeight, {
+            : translateY.value > (imageHeight / 2) * scale.value - halfScreenHeight
+              ? withTiming((imageHeight / 2) * scale.value - halfScreenHeight, {
                   reduceMotion: ReduceMotion.Never,
                 })
-              : translateY.value < (-currentImageHeight / 2) * scale.value + halfScreenHeight
-                ? withTiming((-currentImageHeight / 2) * scale.value + halfScreenHeight)
+              : translateY.value < (-imageHeight / 2) * scale.value + halfScreenHeight
+                ? withTiming((-imageHeight / 2) * scale.value + halfScreenHeight)
                 : withDecay({
                     clamp: [
-                      (-currentImageHeight / 2) * scale.value + halfScreenHeight,
-                      (currentImageHeight / 2) * scale.value - halfScreenHeight,
+                      (-imageHeight / 2) * scale.value + halfScreenHeight,
+                      (imageHeight / 2) * scale.value - halfScreenHeight,
                     ],
                     deceleration: 0.99,
                     velocity: event.velocityY,
@@ -411,7 +400,7 @@ export const useImageGalleryGestures = ({
          */
         if (
           finalYPosition > halfScreenHeight &&
-          offsetY.value + 8 >= (currentImageHeight / 2) * scale.value - halfScreenHeight &&
+          offsetY.value + 8 >= (imageHeight / 2) * scale.value - halfScreenHeight &&
           isSwiping.value !== IsSwiping.TRUE &&
           translateY.value !== 0 &&
           !(
@@ -448,7 +437,7 @@ export const useImageGalleryGestures = ({
               ? withDecay({
                   velocity: event.velocityY,
                 })
-              : withTiming(halfScreenHeight + (currentImageHeight / 2) * scale.value, {
+              : withTiming(halfScreenHeight + (imageHeight / 2) * scale.value, {
                   duration: 200,
                   easing: Easing.out(Easing.ease),
                 });
@@ -662,13 +651,14 @@ export const useImageGalleryGestures = ({
          * edges of the screen return the photo to line up with the edges,
          * otherwise leave the photo in its current position
          */
+        const imageHeight = currentImageHeight.value;
         translateY.value =
-          currentImageHeight * scale.value < screenHeight
+          imageHeight * scale.value < screenHeight
             ? withTiming(0)
-            : translateY.value > (currentImageHeight / 2) * scale.value - screenHeight / 2
-              ? withTiming((currentImageHeight / 2) * scale.value - screenHeight / 2)
-              : translateY.value < (-currentImageHeight / 2) * scale.value + screenHeight / 2
-                ? withTiming((-currentImageHeight / 2) * scale.value + screenHeight / 2)
+            : translateY.value > (imageHeight / 2) * scale.value - screenHeight / 2
+              ? withTiming((imageHeight / 2) * scale.value - screenHeight / 2)
+              : translateY.value < (-imageHeight / 2) * scale.value + screenHeight / 2
+                ? withTiming((-imageHeight / 2) * scale.value + screenHeight / 2)
                 : translateY.value;
 
         /**
@@ -724,11 +714,12 @@ export const useImageGalleryGestures = ({
             duration: 200,
             easing: Easing.out(Easing.ease),
           });
-          if (currentImageHeight * 2 > screenHeight) {
+          const imageHeight = currentImageHeight.value;
+          if (imageHeight * 2 > screenHeight) {
             const translateYTopBottom =
               event.absoluteY > halfScreenHeight
-                ? -(currentImageHeight * 2 - screenHeight) / 2
-                : (currentImageHeight * 2 - screenHeight) / 2;
+                ? -(imageHeight * 2 - screenHeight) / 2
+                : (imageHeight * 2 - screenHeight) / 2;
             translateY.value = withTiming(translateYTopBottom, {
               duration: 200,
               easing: Easing.out(Easing.ease),

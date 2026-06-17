@@ -23,6 +23,23 @@ const useVideoPlayer = videoPackage?.useVideoPlayer;
 
 let Video = null;
 
+/**
+ * Tuned for chat gallery clips. expo-video's defaults are way too
+ * generous (Android: 20s read ahead, no byte cap and ExoPlayer
+ * picks based on bitrate). These values cap each player instance at roughly
+ * 5-6 MB while still giving a comfortable margin against network stalls.
+ * Integrators with different needs can replace this wrapper via
+ * `registerNativeHandlers({ Video: ... })`.
+ *
+ * Per expo-video docs the whole object must be assigned at once and setting
+ * individual properties on `player.bufferOptions` is not supported.
+ */
+const BUFFER_OPTIONS = {
+  maxBufferBytes: 6_000_000, // Android only, ~6 MB hard cap
+  minBufferForPlayback: 1, // Android only, seconds before playback can start
+  preferredForwardBufferDuration: 10, // both platforms, seconds
+};
+
 // expo-video
 if (videoPackage) {
   Video = ({
@@ -38,6 +55,7 @@ if (videoPackage) {
   }) => {
     const player = useVideoPlayer(uri, (player) => {
       player.timeUpdateEventInterval = 0.5;
+      player.bufferOptions = BUFFER_OPTIONS;
       videoRef.current = player;
     });
 
