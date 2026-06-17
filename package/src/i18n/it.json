@@ -457,5 +457,11 @@
   "Pin Chat": "Fissa chat",
   "Pin Group": "Fissa gruppo",
   "Unpin Chat": "Sfissa chat",
-  "Unpin Group": "Sfissa gruppo"
+  "Unpin Group": "Sfissa gruppo",
+  "Block": "Blocca",
+  "Block {{ name }}": "Blocca {{ name }}",
+  "They won't be able to message or call you. You can unblock them later.": "Non potrà inviarti messaggi né chiamarti. Potrai sbloccarlo in seguito.",
+  "Leave": "Esci",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Non riceverai più messaggi da {{ name }}. Puoi rientrare in qualsiasi momento.",
+  "group": "il gruppo"
 }

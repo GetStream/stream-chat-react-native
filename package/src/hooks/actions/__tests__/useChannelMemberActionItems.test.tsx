@@ -76,7 +76,7 @@ describe('useChannelMemberActionItems', () => {
     expect(result.current.map((item) => item.id)).toEqual(['muteUser', 'block']);
     expect(result.current.map((item) => item.action)).toEqual([
       userActions.muteUser,
-      userActions.blockUser,
+      expect.any(Function),
     ]);
     expect(result.current.map((item) => item.type)).toEqual(['standard', 'destructive']);
     expect(result.current.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
@@ -259,7 +259,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
     });
 
     expect(items.map((item) => item.id)).toEqual(['muteUser', 'block']);
-    expect(items.map((item) => item.action)).toEqual([actions.muteUser, actions.blockUser]);
+    expect(items.map((item) => item.action)).toEqual([actions.muteUser, expect.any(Function)]);
     expect(items.map((item) => item.label)).toEqual(['Mute User', 'Block User']);
     expect(items.map((item) => item.type)).toEqual(['standard', 'destructive']);
   });
@@ -335,7 +335,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
     });
 
     expect(items.find((item) => item.id === 'muteUser')?.action).toBe(actions.unmuteUser);
-    expect(items.find((item) => item.id === 'block')?.action).toBe(actions.blockUser);
+    expect(items.find((item) => item.id === 'block')?.action).toEqual(expect.any(Function));
   });
 
   it('default getChannelMemberActionItems returns defaultItems unchanged', () => {

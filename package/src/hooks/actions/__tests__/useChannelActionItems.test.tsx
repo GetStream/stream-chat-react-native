@@ -105,7 +105,7 @@ describe('useChannelActionItems', () => {
     expect(result.current.map((item) => item.action)).toEqual([
       channelActions.muteChannel,
       channelActions.pin,
-      channelActions.leave,
+      expect.any(Function),
       expect.any(Function),
     ]);
     expect(result.current.map((item) => item.id)).toEqual([
@@ -268,7 +268,7 @@ describe('getChannelActionItems', () => {
     expect(actionItems.map((item) => item.action)).toEqual([
       channelActions.muteChannel,
       channelActions.pin,
-      channelActions.leave,
+      expect.any(Function),
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.id)).toEqual(['mute', 'pin', 'leave', 'deleteChannel']);
@@ -308,7 +308,7 @@ describe('getChannelActionItems', () => {
       channelActions.pin,
       channelActions.unmuteUser,
       channelActions.unblockUser,
-      channelActions.leave,
+      expect.any(Function),
       expect.any(Function),
     ]);
     expect(actionItems.map((item) => item.label)).toEqual([
@@ -383,7 +383,7 @@ describe('getChannelActionItems', () => {
     expect(actionItems[0].placement).toBe('swipe');
 
     const leaveItem = actionItems.find((item) => item.id === 'leave');
-    expect(leaveItem?.action).toBe(channelActions.leave);
+    expect(leaveItem?.action).toEqual(expect.any(Function));
     expect(leaveItem?.label).toBe('Leave Group');
     expect(leaveItem?.placement).toBe('sheet');
   });

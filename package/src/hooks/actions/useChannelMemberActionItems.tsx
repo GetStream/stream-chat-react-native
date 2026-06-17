@@ -83,7 +83,29 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
         type: 'standard',
       },
       {
-        action: isBlocked ? unblockUser : blockUser,
+        action: isBlocked
+          ? unblockUser
+          : (...args: Parameters<UserActions['blockUser']>) => {
+              const name = member.user?.name || member.user?.id || '';
+
+              Alert.alert(
+                t('Block {{ name }}', { name }),
+                t("They won't be able to message or call you. You can unblock them later."),
+                [
+                  {
+                    style: 'cancel',
+                    text: t('Cancel'),
+                  },
+                  {
+                    onPress: async () => {
+                      await blockUser(...args);
+                    },
+                    style: 'destructive',
+                    text: t('Block'),
+                  },
+                ],
+              );
+            },
         Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
         id: 'block',
         label: isBlocked ? t('Unblock User') : t('Block User'),
