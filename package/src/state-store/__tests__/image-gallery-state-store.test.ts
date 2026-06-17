@@ -13,6 +13,7 @@ import { VideoPlayerPool } from '../video-player-pool';
 jest.mock('../video-player-pool', () => ({
   VideoPlayerPool: jest.fn().mockImplementation(() => ({
     clear: jest.fn(),
+    getActivePlayer: jest.fn(() => null),
     pool: new Map(),
     state: {
       getLatestValue: () => ({ activeVideoPlayer: null }),
@@ -178,6 +179,63 @@ describe('ImageGalleryStateStore', () => {
       store.currentIndex = 0;
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
+    });
+
+    it('should mirror currentIndex into currentIndexShared.value', () => {
+      const store = new ImageGalleryStateStore();
+
+      store.currentIndex = 7;
+
+      expect(store.currentIndexShared.value).toBe(7);
+    });
+
+    it('should pause the active video player when currentIndex changes', () => {
+      const store = new ImageGalleryStateStore();
+      const pause = jest.fn();
+      (store.videoPlayerPool.getActivePlayer as jest.Mock).mockReturnValue({ pause });
+
+      store.currentIndex = 3;
+
+      expect(pause).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not pause the active player when currentIndex setter is called with the same value', () => {
+      const store = new ImageGalleryStateStore();
+      store.currentIndex = 3;
+      const pause = jest.fn();
+      (store.videoPlayerPool.getActivePlayer as jest.Mock).mockReturnValue({ pause });
+
+      store.currentIndex = 3;
+
+      expect(pause).not.toHaveBeenCalled();
+    });
+
+    it('should not throw when there is no active player on index change', () => {
+      const store = new ImageGalleryStateStore();
+      (store.videoPlayerPool.getActivePlayer as jest.Mock).mockReturnValue(null);
+
+      expect(() => {
+        store.currentIndex = 5;
+      }).not.toThrow();
+    });
+  });
+
+  describe('currentIndexShared mirror', () => {
+    it('should initialize at INITIAL_STATE.currentIndex (0)', () => {
+      const store = new ImageGalleryStateStore();
+
+      expect(store.currentIndexShared.value).toBe(0);
+    });
+
+    it('should reset to 0 on clear() even after non-zero set', () => {
+      const store = new ImageGalleryStateStore();
+      store.currentIndex = 12;
+      expect(store.currentIndexShared.value).toBe(12);
+
+      store.clear();
+
+      expect(store.state.getLatestValue().currentIndex).toBe(0);
+      expect(store.currentIndexShared.value).toBe(0);
     });
   });
 
@@ -703,6 +761,29 @@ describe('ImageGalleryStateStore', () => {
       store.selectedAttachmentUrl = 'https://example.com/image.jpg?size=large';
 
       expect(store.state.getLatestValue().currentIndex).toBe(0);
+
+      unsubscribe();
+    });
+
+    it('should mirror the matched index into currentIndexShared', () => {
+      const store = new ImageGalleryStateStore();
+      store.subscribeToMessages();
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
+
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/1.jpg' })],
+          id: 'msg-1',
+        }),
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/2.jpg' })],
+          id: 'msg-2',
+        }),
+      ];
+      store.selectedAttachmentUrl = 'https://example.com/2.jpg';
+
+      expect(store.state.getLatestValue().currentIndex).toBe(1);
+      expect(store.currentIndexShared.value).toBe(1);
 
       unsubscribe();
     });

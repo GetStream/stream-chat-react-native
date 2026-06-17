@@ -185,6 +185,104 @@ export type Theme = {
       standardText: TextStyle;
     };
   };
+  channelDetails: {
+    container: ViewStyle;
+    scrollContent: ViewStyle;
+    header: {
+      container: ViewStyle;
+      title: TextStyle;
+    };
+    profile: {
+      container: ViewStyle;
+      heading: ViewStyle;
+      subtitle: TextStyle;
+      title: TextStyle;
+    };
+    sectionCard: ViewStyle;
+    actionItem: {
+      container: ViewStyle;
+      destructiveLabel: TextStyle;
+      iconWrapper: ViewStyle;
+      label: TextStyle;
+      trailingValue: TextStyle;
+    };
+    memberSection: {
+      confirmButton: ViewStyle;
+      footer: ViewStyle;
+      header: ViewStyle;
+      headerTitle: TextStyle;
+      viewAllLabel: TextStyle;
+    };
+    memberItem: {
+      container: ViewStyle;
+      name: TextStyle;
+      role: TextStyle;
+      status: TextStyle;
+    };
+    memberActionsSheet: {
+      actionsList: ViewStyle;
+      container: ViewStyle;
+      header: ViewStyle;
+    };
+    editImageSheet: {
+      actionsList: ViewStyle;
+      container: ViewStyle;
+      header: ViewStyle;
+      headerTitle: TextStyle;
+    };
+    modal: {
+      body: ViewStyle;
+      header: ViewStyle;
+      headerTitle: TextStyle;
+    };
+    addMembers: {
+      searchResultItem: {
+        alreadyMemberInfo: ViewStyle;
+        memberLabel: TextStyle;
+        userName: TextStyle;
+        userRow: ViewStyle;
+      };
+    };
+    editChannel: {
+      avatarSection: ViewStyle;
+      container: ViewStyle;
+      nameInput: ViewStyle;
+      uploadButton: ViewStyle;
+    };
+    pinnedMessageList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    pinnedMessageItem: {
+      container: ViewStyle;
+      content: ViewStyle;
+      name: TextStyle;
+      title: ViewStyle;
+    };
+    fileAttachmentList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+      sectionHeader: ViewStyle;
+      sectionHeaderText: TextStyle;
+    };
+    fileAttachmentItem: {
+      container: ViewStyle;
+    };
+    mediaList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    mediaItem: {
+      avatar: ViewStyle;
+      container: ViewStyle;
+      thumbnail: ImageStyle;
+      videoBadge: ViewStyle;
+      videoBadgeText: TextStyle;
+    };
+  };
   channelListSkeleton: {
     animationTime: number;
     avatar: ViewStyle;
@@ -210,17 +308,55 @@ export type Theme = {
     textContainer: ViewStyle;
     timestamp: ViewStyle;
   };
+  memberListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  userListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  pinnedMessageListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  fileAttachmentListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
   channelPreview: {
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
     mutedStatus: IconProps;
+    pinnedStatus: IconProps;
     messageDeliveryStatus: {
       container: ViewStyle;
       text: TextStyle;
       checkAllIcon: IconProps;
       checkIcon: IconProps;
       timeIcon: IconProps;
+      username: TextStyle;
     };
     lowerRow: ViewStyle;
     title: TextStyle;
@@ -247,6 +383,15 @@ export type Theme = {
     };
   };
   dateHeader: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
+  emptyList: {
+    container: ViewStyle;
+    subtitle: TextStyle;
+    title: TextStyle;
+  };
+  emptySearchResult: {
     container: ViewStyle;
     text: TextStyle;
   };
@@ -473,6 +618,10 @@ export type Theme = {
         avatarSize: number;
         column: ViewStyle;
         container: ViewStyle;
+        enhancedMentionContainer: ViewStyle;
+        enhancedMentionIcon: ViewStyle;
+        enhancedMentionSubtitle: TextStyle;
+        enhancedMentionTitle: TextStyle;
         name: TextStyle;
         tag: TextStyle;
       };
@@ -480,6 +629,7 @@ export type Theme = {
     suggestionsListContainer: {
       container: ViewStyle;
       flatlist: ViewStyle;
+      flatlistContentContainer: ViewStyle;
     };
     videoAttachmentUploadPreview: {
       durationContainer: ViewStyle;
@@ -990,6 +1140,10 @@ export type Theme = {
     };
   };
   screenPadding: number;
+  selectionCircle: {
+    circle: ViewStyle;
+    circleSelected: ViewStyle;
+  };
   spinner: ViewStyle;
   thread: {
     newThread: {
@@ -1138,6 +1292,104 @@ export const defaultTheme: Theme = {
       standardText: {},
     },
   },
+  channelDetails: {
+    container: {},
+    scrollContent: {},
+    header: {
+      container: {},
+      title: {},
+    },
+    profile: {
+      container: {},
+      heading: {},
+      subtitle: {},
+      title: {},
+    },
+    sectionCard: {},
+    actionItem: {
+      container: {},
+      destructiveLabel: {},
+      iconWrapper: {},
+      label: {},
+      trailingValue: {},
+    },
+    memberSection: {
+      confirmButton: {},
+      footer: {},
+      header: {},
+      headerTitle: {},
+      viewAllLabel: {},
+    },
+    memberItem: {
+      container: {},
+      name: {},
+      role: {},
+      status: {},
+    },
+    memberActionsSheet: {
+      actionsList: {},
+      container: {},
+      header: {},
+    },
+    editImageSheet: {
+      actionsList: {},
+      container: {},
+      header: {},
+      headerTitle: {},
+    },
+    modal: {
+      body: {},
+      header: {},
+      headerTitle: {},
+    },
+    addMembers: {
+      searchResultItem: {
+        alreadyMemberInfo: {},
+        memberLabel: {},
+        userName: {},
+        userRow: {},
+      },
+    },
+    editChannel: {
+      avatarSection: {},
+      container: {},
+      nameInput: {},
+      uploadButton: {},
+    },
+    pinnedMessageList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    pinnedMessageItem: {
+      container: {},
+      content: {},
+      name: {},
+      title: {},
+    },
+    fileAttachmentList: {
+      container: {},
+      list: {},
+      listContent: {},
+      sectionHeader: {},
+      sectionHeaderText: {},
+    },
+    fileAttachmentItem: {
+      container: {},
+    },
+    mediaList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    mediaItem: {
+      avatar: {},
+      container: {},
+      thumbnail: {},
+      videoBadge: {},
+      videoBadgeText: {},
+    },
+  },
   channelListSkeleton: {
     animationTime: 1000, // in milliseconds
     avatar: {},
@@ -1163,6 +1415,42 @@ export const defaultTheme: Theme = {
     textContainer: {},
     timestamp: {},
   },
+  memberListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  userListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  pinnedMessageListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  fileAttachmentListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
   channelPreview: {
     container: {},
     contentContainer: {},
@@ -1179,8 +1467,10 @@ export const defaultTheme: Theme = {
       checkAllIcon: {},
       checkIcon: {},
       timeIcon: {},
+      username: {},
     },
     mutedStatus: {},
+    pinnedStatus: {},
     lowerRow: {},
     title: {},
     unreadContainer: {},
@@ -1200,6 +1490,15 @@ export const defaultTheme: Theme = {
     },
   },
   dateHeader: {
+    container: {},
+    text: {},
+  },
+  emptyList: {
+    container: {},
+    subtitle: {},
+    title: {},
+  },
+  emptySearchResult: {
     container: {},
     text: {},
   },
@@ -1418,6 +1717,10 @@ export const defaultTheme: Theme = {
         avatarSize: 40,
         column: {},
         container: {},
+        enhancedMentionContainer: {},
+        enhancedMentionIcon: {},
+        enhancedMentionSubtitle: {},
+        enhancedMentionTitle: {},
         name: {},
         tag: {},
       },
@@ -1425,6 +1728,7 @@ export const defaultTheme: Theme = {
     suggestionsListContainer: {
       container: {},
       flatlist: {},
+      flatlistContentContainer: {},
     },
     wrapper: {},
     linkPreviewList: {
@@ -1921,6 +2225,10 @@ export const defaultTheme: Theme = {
     },
   },
   screenPadding: 16,
+  selectionCircle: {
+    circle: {},
+    circleSelected: {},
+  },
   spinner: {},
   thread: {
     newThread: {

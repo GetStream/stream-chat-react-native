@@ -1,6 +1,12 @@
 import type { Notification } from 'stream-chat';
 
-const NOTIFICATION_TARGET_PANELS = ['channel', 'thread', 'channel-list', 'thread-list'] as const;
+const NOTIFICATION_TARGET_PANELS = [
+  'channel',
+  'thread',
+  'channel-list',
+  'thread-list',
+  'channel-details',
+] as const;
 const NOTIFICATION_TARGET_TAG_PREFIX = 'target:' as const;
 
 /** Built-in SDK surfaces that can host snackbar notifications. */

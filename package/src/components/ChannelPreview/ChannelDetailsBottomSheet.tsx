@@ -8,20 +8,19 @@ import type { Channel } from 'stream-chat';
 
 import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
-import { useIsChannelMuted } from './hooks/useIsChannelMuted';
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import type { ChannelActionItem } from '../../hooks/actions/useChannelActionItems';
+import { useChannelMuteActive } from '../../hooks/useChannelMuteActive';
+import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { primitives } from '../../theme';
-import type { ChannelActionItem } from '../ChannelList/hooks/useChannelActionItems';
 import { useChannelMembersState } from '../ChannelList/hooks/useChannelMembersState';
-import { useChannelMuteActive } from '../ChannelList/hooks/useChannelMuteActive';
 import { useChannelOnlineMemberCount } from '../ChannelList/hooks/useChannelOnlineMemberCount';
-import { useIsDirectChat } from '../ChannelList/hooks/useIsDirectChat';
 import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 import { StreamBottomSheetModalFlatList } from '../UIComponents/StreamBottomSheetModalFlatList';
 
@@ -40,9 +39,7 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
-  const { muted: channelMuted } = useIsChannelMuted(channel);
-  const directChatUserMuted = useChannelMuteActive(channel);
-  const muted = isDirectChat ? directChatUserMuted : channelMuted;
+  const muted = useChannelMuteActive(channel);
   const displayedMemberCount = memberCount > 9 ? '9+' : `${memberCount}`;
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(

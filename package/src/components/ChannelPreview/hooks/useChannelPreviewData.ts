@@ -4,6 +4,7 @@ import throttle from 'lodash/throttle';
 import type { Channel, Event, LocalMessage, MessageResponse, StreamChat } from 'stream-chat';
 
 import { useIsChannelMuted } from './useIsChannelMuted';
+import { useIsChannelPinned } from './useIsChannelPinned';
 
 import { useChannelsContext } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
@@ -39,6 +40,7 @@ export const useChannelPreviewData = (
   );
   const [unread, setUnread] = useState(channel.countUnread());
   const { muted } = useIsChannelMuted(channel);
+  const pinned = useIsChannelPinned(channel);
   const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
 
@@ -170,5 +172,5 @@ export const useChannelPreviewData = (
     return () => listeners.forEach((l) => l.unsubscribe());
   }, [channel, refreshUnreadCount, forceUpdate, channelListForceUpdate, setLastMessage]);
 
-  return { lastMessage, muted, unread };
+  return { lastMessage, muted, pinned, unread };
 };

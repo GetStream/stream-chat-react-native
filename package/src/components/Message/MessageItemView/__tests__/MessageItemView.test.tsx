@@ -223,38 +223,47 @@ describe('MessageItemView', () => {
     });
   });
 
-  it('applies correct styles for when group styles are not single or bottom', async () => {
+  it('keeps message-item-view-wrapper free of group-positional padding', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     renderMessage({ groupStyles: ['top'], message });
 
     await waitFor(() => {
-      expect(screen.getByTestId('message-item-view-wrapper').props.style).toMatchObject({
+      const innerStyle = screen.getByTestId('message-item-view-wrapper').props.style;
+      expect(innerStyle).toMatchObject({
         alignItems: 'flex-end',
         gap: 8,
         flexDirection: 'row',
-        paddingTop: 8,
-        paddingBottom: 4,
       });
+      expect(innerStyle.paddingTop).toBeUndefined();
+      expect(innerStyle.paddingBottom).toBeUndefined();
     });
   });
 
-  it('applies correct styles for when group styles are single/bottom and not last message', async () => {
+  it('hoists the per-group padding delta onto message-wrapper for top messages', async () => {
+    const user = generateUser();
+    const message = generateMessage({ user });
+
+    renderMessage({ groupStyles: ['top'], message });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('message-wrapper').props.style).toEqual(
+        expect.arrayContaining([expect.objectContaining({ paddingTop: 8 })]),
+      );
+    });
+  });
+
+  it('hoists the per-group padding delta onto message-wrapper for bottom messages', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     renderMessage({ message });
 
     await waitFor(() => {
-      const data = screen.getByTestId('message-item-view-wrapper').props.style;
-
-      expect(data).toMatchObject({
-        alignItems: 'flex-end',
-        gap: 8,
-        flexDirection: 'row',
-        paddingBottom: 8,
-      });
+      expect(screen.getByTestId('message-wrapper').props.style).toEqual(
+        expect.arrayContaining([expect.objectContaining({ paddingBottom: 8 })]),
+      );
     });
   });
 

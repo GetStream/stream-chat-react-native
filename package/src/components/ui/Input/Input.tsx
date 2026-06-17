@@ -52,23 +52,26 @@ export type InputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-export const Input = ({
-  title,
-  description,
-  variant = 'outline',
-  LeadingIcon,
-  TrailingIcon,
-  editable = true,
-  state = 'default',
-  helperText = true,
-  errorMessage,
-  successMessage,
-  infoText,
-  onFocus,
-  onBlur,
-  containerStyle,
-  ...props
-}: InputProps) => {
+export const Input = React.forwardRef<TextInput, InputProps>(function Input(
+  {
+    title,
+    description,
+    variant = 'outline',
+    LeadingIcon,
+    TrailingIcon,
+    editable = true,
+    state = 'default',
+    helperText = true,
+    errorMessage,
+    successMessage,
+    infoText,
+    onFocus,
+    onBlur,
+    containerStyle,
+    ...props
+  },
+  ref,
+) {
   const [isFocused, setIsFocused] = useState(false);
   const {
     theme: { semantics },
@@ -111,9 +114,8 @@ export const Input = ({
             borderWidth: variant === 'outline' ? 1 : 0,
             borderColor: !editable
               ? semantics.borderUtilityDisabled
-              : // TODO: V9: This should go away as it's the same style. In a separate PR though.
-                isFocused
-                ? semantics.borderCoreDefault
+              : isFocused
+                ? semantics.borderUtilityActive
                 : semantics.borderCoreDefault,
           },
           containerStyle,
@@ -128,6 +130,7 @@ export const Input = ({
           />
         ) : null}
         <TextInput
+          ref={ref}
           accessibilityHint={description}
           accessibilityLabel={props.accessibilityLabel ?? title}
           accessibilityState={accessibilityState}
@@ -186,7 +189,7 @@ export const Input = ({
       ) : null}
     </View>
   );
-};
+});
 
 const useStyles = () => {
   const {

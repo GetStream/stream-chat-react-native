@@ -59,11 +59,6 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
 
-  const isOneOnOneConversation =
-    channel &&
-    Object.values(channel.state.members).length === 2 &&
-    channel.id?.indexOf('!members-') === 0;
-
   const onBackPress = useCallback(() => {
     if (!navigation.canGoBack()) {
       // if no previous screen was present in history, go to the list screen
@@ -78,16 +73,10 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
   const onRightContentPress = useCallback(() => {
     closePicker();
-    if (isOneOnOneConversation) {
-      navigation.navigate('OneOnOneChannelDetailScreen', {
-        channel,
-      });
-    } else {
-      navigation.navigate('GroupChannelDetailsScreen', {
-        channel,
-      });
-    }
-  }, [channel, closePicker, isOneOnOneConversation, navigation]);
+    navigation.navigate('ChannelDetailsScreen', {
+      channel,
+    });
+  }, [channel, closePicker, navigation]);
 
   if (!channel || !chatClient) {
     return null;
@@ -99,12 +88,17 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
         <Pressable
+          accessibilityRole='button'
           onPress={onRightContentPress}
           style={({ pressed }) => ({
+            alignItems: 'center',
+            height: 48,
+            justifyContent: 'center',
             opacity: pressed ? 0.5 : 1,
+            width: 48,
           })}
         >
-          <ChannelAvatar channel={channel} size='xl' />
+          <ChannelAvatar channel={channel} size='lg' />
         </Pressable>
       )}
       showUnreadCountBadge

@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
+import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -67,6 +67,7 @@ import {
   setOverlayTopH,
   useIsOverlayActive,
 } from '../../state-store';
+import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
@@ -93,7 +94,19 @@ export type TouchableEmitter =
   | 'messageReplies'
   | 'reactionList';
 
-export type TextMentionTouchableHandlerAdditionalInfo = { user?: UserResponse };
+export type TextMentionTouchableHandlerAdditionalInfo = {
+  /**
+   * The typed mention entity for the pressed mention (user / channel / here /
+   * role / user_group). Always populated by the default renderText pipeline;
+   * undefined only when a custom renderer doesn't resolve a match.
+   */
+  mentionedEntity?: MentionEntity;
+  /**
+   * Back-compat: still populated when the mention is a user, so existing
+   * integrators reading `additionalInfo.user` keep working.
+   */
+  user?: UserResponse;
+};
 
 export type TextMentionTouchableHandlerPayload = {
   emitter: 'textMention';
@@ -830,8 +843,20 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     }
   }, [overlayActive, message]);
 
+  const groupKey: 'single' | 'top' | 'middle' | 'bottom' | undefined =
+    groupStyles?.[0] === 'single' ||
+    groupStyles?.[0] === 'top' ||
+    groupStyles?.[0] === 'middle' ||
+    groupStyles?.[0] === 'bottom'
+      ? groupStyles[0]
+      : undefined;
+  const isVeryLastBubble =
+    messagesContext.enableMessageGroupingByUser &&
+    channel?.state.messages[channel.state.messages.length - 1]?.id === message.id;
   const styles = useStyles({
+    groupKey,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
+    isVeryLastBubble,
   });
   const rect = rectRef.current;
   const overlayItemsAnchorRect = bubbleRect.current ?? rect;
@@ -1147,34 +1172,67 @@ export const Message = (props: MessageProps) => {
   );
 };
 
-const useStyles = ({ highlightedMessage }: { highlightedMessage?: boolean }) => {
+const useStyles = ({
+  groupKey,
+  highlightedMessage,
+  isVeryLastBubble,
+}: {
+  groupKey: 'single' | 'top' | 'middle' | 'bottom' | undefined;
+  highlightedMessage?: boolean;
+  isVeryLastBubble: boolean;
+}) => {
   const {
-    theme: {
-      messageItemView: { wrapper, targetedMessageContainer, blockedMessageContainer },
-      screenPadding,
-      semantics,
-    },
+    theme: { messageItemView, screenPadding, semantics },
   } = useTheme();
+
   return useMemo(() => {
-    return StyleSheet.create({
-      wrapper: {
-        paddingHorizontal: screenPadding,
-        ...(highlightedMessage
-          ? { backgroundColor: semantics.backgroundCoreHighlight, ...targetedMessageContainer }
-          : {}),
-        ...wrapper,
+    const groupStylesMap: Record<'single' | 'top' | 'middle' | 'bottom', ViewStyle> = {
+      single: {
+        paddingVertical: primitives.spacingXs,
+        ...messageItemView.messageGroupedSingleStyles,
       },
+      top: {
+        paddingTop: primitives.spacingXs,
+        paddingBottom: primitives.spacingXxs,
+        ...messageItemView.messageGroupedTopStyles,
+      },
+      middle: {
+        paddingBottom: primitives.spacingXxs,
+        ...messageItemView.messageGroupedMiddleStyles,
+      },
+      bottom: {
+        paddingBottom: primitives.spacingXs,
+        ...messageItemView.messageGroupedBottomStyles,
+      },
+    };
+
+    let wrapper: ViewStyle = {
+      paddingHorizontal: screenPadding,
+      ...(highlightedMessage
+        ? {
+            backgroundColor: semantics.backgroundCoreHighlight,
+            ...messageItemView.targetedMessageContainer,
+          }
+        : {}),
+      ...messageItemView.wrapper,
+    };
+    if (groupKey) {
+      wrapper = { ...wrapper, ...groupStylesMap[groupKey] };
+    }
+    if (isVeryLastBubble) {
+      wrapper = {
+        ...wrapper,
+        marginBottom: primitives.spacingSm,
+        ...messageItemView.lastMessageContainer,
+      };
+    }
+
+    return StyleSheet.create({
+      wrapper,
       blockedMessageContainer: {
         alignItems: 'center',
-        ...blockedMessageContainer,
+        ...messageItemView.blockedMessageContainer,
       },
     });
-  }, [
-    wrapper,
-    screenPadding,
-    highlightedMessage,
-    semantics,
-    targetedMessageContainer,
-    blockedMessageContainer,
-  ]);
+  }, [messageItemView, screenPadding, semantics, highlightedMessage, groupKey, isVeryLastBubble]);
 };

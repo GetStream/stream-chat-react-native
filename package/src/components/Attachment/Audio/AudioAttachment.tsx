@@ -78,6 +78,7 @@ export type AudioAttachmentProps = {
     playPauseButton?: StyleProp<ViewStyle>;
     speedSettingsButton?: StyleProp<ViewStyle>;
     durationText?: StyleProp<TextStyle>;
+    leftContainer?: StyleProp<TextStyle>;
   };
 };
 
@@ -215,7 +216,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       style={[styles.container, container, containerStyle, stylesProps?.container]}
       testID={testID}
     >
-      <View style={[styles.leftContainer, leftContainer]}>
+      <View style={[styles.leftContainer, stylesProps?.leftContainer, leftContainer]}>
         <PlayPauseButton
           isPlaying={isPlaying}
           accessibilityLabel='Play Pause Button'
@@ -341,9 +342,7 @@ const useStyles = () => {
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightTight,
       },
-      leftContainer: {
-        padding: primitives.spacingXxs,
-      },
+      leftContainer: {},
       progressControlContainer: {
         flex: 1,
       },

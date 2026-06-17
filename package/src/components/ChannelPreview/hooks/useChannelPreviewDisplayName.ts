@@ -4,6 +4,8 @@ import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useChannelName } from '../../../hooks/useChannelName';
+import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
 const getMemberName = (member: ChannelMemberResponse) =>
   member.user?.name || member.user?.id || 'Unknown User';
@@ -12,8 +14,8 @@ export const useChannelPreviewDisplayName = (channel?: Channel) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const currentUserId = client?.userID;
-  const members = channel?.state?.members;
-  const channelName = channel?.data?.name;
+  const members = useChannelMembersState(channel);
+  const channelName = useChannelName(channel);
 
   const displayName = useMemo(() => {
     if (channelName) {

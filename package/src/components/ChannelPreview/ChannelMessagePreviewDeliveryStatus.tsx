@@ -107,7 +107,7 @@ const useStyles = () => {
     theme: {
       semantics,
       channelPreview: {
-        messageDeliveryStatus: { container, text },
+        messageDeliveryStatus: { container, text, username },
       },
     },
   } = useTheme();
@@ -132,7 +132,8 @@ const useStyles = () => {
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
+        ...username,
       },
     });
-  }, [semantics, text, container]);
+  }, [semantics, text, username, container]);
 };

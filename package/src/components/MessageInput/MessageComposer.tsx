@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -52,9 +51,9 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
+import { PollModal } from '../Poll/components/PollModal';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
-import { SafeAreaViewWrapper } from '../UIComponents/SafeAreaViewWrapper';
 
 const useStyles = () => {
   const {
@@ -66,16 +65,6 @@ const useStyles = () => {
         flex: 1,
         flexShrink: 1,
         minWidth: 0,
-      },
-      pollModalWrapper: {
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: semantics.backgroundCoreElevation1,
-      },
-      pollSafeArea: {
-        flex: 1,
-        backgroundColor: semantics.backgroundCoreElevation1,
       },
       container: {
         alignItems: 'center',
@@ -129,7 +118,7 @@ const useStyles = () => {
         shadowRadius: 12,
       },
       suggestionsListContainer: {
-        backgroundColor: semantics.backgroundCoreElevation1,
+        backgroundColor: 'transparent',
         position: 'absolute',
         width: '100%',
       },
@@ -211,7 +200,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     AudioRecordingInProgress,
     AudioRecordingLockIndicator,
     AudioRecordingPreview,
-    AutoCompleteSuggestionList,
     Input,
     InputView,
     MessageComposerLeadingView,
@@ -238,7 +226,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
         inputBoxWrapper,
         inputContainer,
         inputFloatingContainer,
-        suggestionsListContainer: { container: suggestionListContainer },
         wrapper,
       },
     },
@@ -366,7 +353,12 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
-              messageInputHeightStore.setHeight(newHeight);
+              messageInputHeightStore.setHeight(
+                newHeight -
+                  (selectedPicker && !isKeyboardVisible
+                    ? attachmentPickerBottomSheetHeight - bottomInset
+                    : 0),
+              );
             }}
             style={
               messageInputFloating
@@ -448,32 +440,17 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
               <MessageComposerTrailingView />
             )}
           </View>
-          <View
-            style={[styles.suggestionsListContainer, { bottom: height }, suggestionListContainer]}
-          >
-            <AutoCompleteSuggestionList />
-          </View>
         </PortalWhileClosingView>
       </Animated.View>
 
       {showPollCreationDialog ? (
-        <View style={styles.pollModalWrapper}>
-          <Modal
-            animationType='slide'
-            onRequestClose={closePollCreationDialog}
-            visible={showPollCreationDialog}
-          >
-            <GestureHandlerRootView style={styles.pollSafeArea}>
-              <SafeAreaViewWrapper style={styles.pollSafeArea}>
-                <CreatePoll
-                  closePollCreationDialog={closePollCreationDialog}
-                  createPollOptionGap={createPollOptionGap}
-                  sendMessage={sendMessage}
-                />
-              </SafeAreaViewWrapper>
-            </GestureHandlerRootView>
-          </Modal>
-        </View>
+        <PollModal onRequestClose={closePollCreationDialog} visible={showPollCreationDialog}>
+          <CreatePoll
+            closePollCreationDialog={closePollCreationDialog}
+            createPollOptionGap={createPollOptionGap}
+            sendMessage={sendMessage}
+          />
+        </PollModal>
       ) : null}
     </MicPositionProvider>
   );

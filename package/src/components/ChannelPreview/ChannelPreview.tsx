@@ -30,19 +30,37 @@ export const ChannelPreview = (props: ChannelPreviewProps) => {
 
   const client = propClient || contextClient;
 
-  const { muted, unread, lastMessage } = useChannelPreviewData(channel, client, propForceUpdate);
+  const { muted, pinned, unread, lastMessage } = useChannelPreviewData(
+    channel,
+    client,
+    propForceUpdate,
+  );
 
   const translatedLastMessage = useTranslatedMessage(lastMessage);
 
   const message = translatedLastMessage ? translatedLastMessage : lastMessage;
 
   if (!swipeActionsEnabled) {
-    return <ChannelPreview channel={channel} muted={muted} unread={unread} lastMessage={message} />;
+    return (
+      <ChannelPreview
+        channel={channel}
+        muted={muted}
+        pinned={pinned}
+        unread={unread}
+        lastMessage={message}
+      />
+    );
   }
 
   return (
     <ChannelSwipableWrapper channel={channel} getChannelActionItems={getChannelActionItems}>
-      <ChannelPreview channel={channel} muted={muted} unread={unread} lastMessage={message} />
+      <ChannelPreview
+        channel={channel}
+        muted={muted}
+        pinned={pinned}
+        unread={unread}
+        lastMessage={message}
+      />
     </ChannelSwipableWrapper>
   );
 };

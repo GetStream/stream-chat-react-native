@@ -24,9 +24,35 @@ import { AttachmentPickerContent } from '../../components/AttachmentPicker/compo
 import { AttachmentPickerSelectionBar } from '../../components/AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { ImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { AutoCompleteSuggestionHeader } from '../../components/AutoCompleteInput/AutoCompleteSuggestionHeader';
-import { AutoCompleteSuggestionItem } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
+import {
+  AutoCompleteSuggestionItem,
+  MentionSuggestionItem,
+} from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import { InputView } from '../../components/AutoCompleteInput/InputView';
+import { ChannelDetailsContent } from '../../components/ChannelDetails/ChannelDetails';
+import {
+  ChannelAddMembers,
+  ChannelDetailsActionsSection,
+  ChannelDetailsActionItem,
+  ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
+  ChannelDetailsProfile,
+  ChannelDetailsEditButton,
+  ChannelDetailsNavHeader,
+  ChannelEditDetails,
+  ChannelEditImageSheet,
+  ChannelEditName,
+  ChannelMemberActionsSheet,
+  ChannelMemberItem,
+  ChannelMemberList,
+  FileAttachmentItem,
+  FileAttachmentList,
+  MediaItem,
+  MediaList,
+  PinnedMessageItem,
+  PinnedMessageList,
+} from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from '../../components/ChannelList/ChannelListHeaderNetworkDownIndicator';
@@ -38,6 +64,7 @@ import { ChannelLastMessagePreview } from '../../components/ChannelPreview/Chann
 import { ChannelMessagePreviewDeliveryStatus } from '../../components/ChannelPreview/ChannelMessagePreviewDeliveryStatus';
 import { ChannelPreviewMessage } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import { ChannelPreviewMutedStatus } from '../../components/ChannelPreview/ChannelPreviewMutedStatus';
+import { ChannelPreviewPinnedStatus } from '../../components/ChannelPreview/ChannelPreviewPinnedStatus';
 import { ChannelPreviewStatus } from '../../components/ChannelPreview/ChannelPreviewStatus';
 import { ChannelPreviewTitle } from '../../components/ChannelPreview/ChannelPreviewTitle';
 import { ChannelPreviewTypingIndicator } from '../../components/ChannelPreview/ChannelPreviewTypingIndicator';
@@ -180,6 +207,7 @@ const components = {
   AutoCompleteSuggestionHeader,
   AutoCompleteSuggestionItem,
   AutoCompleteSuggestionList,
+  MentionSuggestionItem,
   ChannelDetailsBottomSheet,
   CooldownTimer,
   CircularProgressIndicator,
@@ -256,6 +284,7 @@ const components = {
   ChannelPreviewMessage,
   ChannelPreviewMessageDeliveryStatus: ChannelMessagePreviewDeliveryStatus,
   ChannelPreviewMutedStatus,
+  ChannelPreviewPinnedStatus,
   ChannelPreviewStatus,
   ChannelPreviewTitle,
   ChannelPreviewTypingIndicator,
@@ -288,6 +317,29 @@ const components = {
 
   // Channel details
   ChannelDetailsHeader,
+
+  // Channel Details Screen
+  ChannelAddMembers,
+  ChannelDetailsActionsSection,
+  ChannelDetailsActionItem,
+  ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
+  ChannelDetailsProfile,
+  ChannelDetailsContent,
+  ChannelDetailsEditButton,
+  ChannelDetailsNavHeader,
+  ChannelEditDetails,
+  ChannelEditImageSheet,
+  ChannelEditName,
+  ChannelMemberActionsSheet,
+  ChannelMemberItem,
+  ChannelMemberList,
+  FileAttachmentItem,
+  FileAttachmentList,
+  MediaItem,
+  MediaList,
+  PinnedMessageItem,
+  PinnedMessageList,
 
   // Thread
   ThreadMessageComposer: MessageComposer,

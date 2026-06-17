@@ -444,6 +444,11 @@ export interface ChatSemantics {
   chatBgAttachmentIncoming: ColorValue;
   chatBgAttachmentOutgoing: ColorValue;
   chatBgIncoming: ColorValue;
+  chatBgMention: ColorValue;
+  chatBgMentionBroadcast: ColorValue;
+  chatBgMentionGroup: ColorValue;
+  chatBgMentionRole: ColorValue;
+  chatBgMentionUser: ColorValue;
   chatBgOutgoing: ColorValue;
   chatBorderIncoming: ColorValue;
   chatBorderOnChatIncoming: ColorValue;
@@ -458,6 +463,10 @@ export interface ChatSemantics {
   chatTextIncoming: ColorValue;
   chatTextLink: ColorValue;
   chatTextMention: ColorValue;
+  chatTextMentionBroadcast: ColorValue;
+  chatTextMentionGroup: ColorValue;
+  chatTextMentionRole: ColorValue;
+  chatTextMentionUser: ColorValue;
   chatTextOutgoing: ColorValue;
   chatTextReaction: ColorValue;
   chatTextRead: ColorValue;

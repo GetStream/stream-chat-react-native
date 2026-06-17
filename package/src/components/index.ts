@@ -28,6 +28,7 @@ export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
 export * from './AutoCompleteInput/AutoCompleteSuggestionItem';
 export * from './AutoCompleteInput/AutoCompleteSuggestionList';
 export * from './AutoCompleteInput/InputView';
+export * from './AutoCompleteInput/mentionItems';
 
 export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
@@ -56,6 +57,7 @@ export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/ChannelPreviewMessage';
 export * from './ChannelPreview/ChannelPreviewView';
 export * from './ChannelPreview/ChannelPreviewMutedStatus';
+export * from './ChannelPreview/ChannelPreviewPinnedStatus';
 export * from './ChannelPreview/ChannelLastMessagePreview';
 export * from './ChannelPreview/ChannelPreviewStatus';
 export * from './ChannelPreview/ChannelPreviewTitle';
@@ -179,6 +181,7 @@ export * from './Notifications';
 
 export * from './ProgressControl/ProgressControl';
 export * from './ProgressControl/WaveProgressBar';
+export * from './ChannelDetails';
 export * from './Poll';
 
 export * from './Reply/Reply';

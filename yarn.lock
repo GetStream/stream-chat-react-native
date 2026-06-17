@@ -5420,7 +5420,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/slider@npm:^5.2.0":
+"@react-native-community/slider@npm:^5.0.1":
   version: 5.2.0
   resolution: "@react-native-community/slider@npm:5.2.0"
   checksum: 10c0/58ec6a47b5aafefd98a61c79aeae05f1ab8371782eb497d9af665bf2f62a1c372da8fed6dead30e1d6c9e01bfb12bfdbafcde7890736f4f5d55502dabf2e01ad
@@ -7064,7 +7064,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.5.14":
+"@types/ws@npm:^8.18.1":
   version: 8.18.1
   resolution: "@types/ws@npm:8.18.1"
   dependencies:
@@ -7442,7 +7442,7 @@ __metadata:
     react-native-teleport: "npm:^1.0.2"
     react-native-web: "npm:^0.21.0"
     react-native-worklets: "npm:0.8.3"
-    stream-chat: "npm:^9.44.2"
+    stream-chat: "npm:^9.47.0"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:~5.9.2"
@@ -7500,6 +7500,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/c9c52697227661b68d0debaf972222d4f622aa06b185824164e153438afa7b08273432ca43ea792cadb24dada1d46f6f6bb1ef8de9956979288cc1b96bf9914e
+  languageName: node
+  linkType: hard
+
+"agent-base@npm:6":
+  version: 6.0.2
+  resolution: "agent-base@npm:6.0.2"
+  dependencies:
+    debug: "npm:4"
+  checksum: 10c0/dc4f757e40b5f3e3d674bc9beb4f1048f4ee83af189bae39be99f57bf1f48dde166a8b0a5342a84b5944ee8e6ed1e5a9d801858f4ad44764e84957122fe46261
   languageName: node
   linkType: hard
 
@@ -7919,14 +7928,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.15.1":
-  version: 1.16.0
-  resolution: "axios@npm:1.16.0"
+"axios@npm:^1.16.1":
+  version: 1.17.0
+  resolution: "axios@npm:1.17.0"
   dependencies:
     follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.5"
+    https-proxy-agent: "npm:^5.0.1"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10c0/1c91a5221b77b76072026b4cc95ecdf38f7c3e33e63423abec09a85e6e9a12279637dcc9ac2ba1fc333e0c447fb3b0f46d7965acb5d7cea02d188e9c6d425c0b
+  checksum: 10c0/c4fa19ff3a3a63bde48beec03ad816b133b9a6385cccffffe172577ab18c6a70e299280d57f12c80c867fe25df41f92cb91d3a8258708a6d2be3e9e085f92650
   languageName: node
   linkType: hard
 
@@ -11478,7 +11488,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.4, form-data@npm:^4.0.5":
+"form-data@npm:^4.0.5":
   version: 4.0.5
   resolution: "form-data@npm:4.0.5"
   dependencies:
@@ -12221,6 +12231,16 @@ __metadata:
     agent-base: "npm:^7.1.0"
     debug: "npm:^4.3.4"
   checksum: 10c0/4207b06a4580fb85dd6dff521f0abf6db517489e70863dca1a0291daa7f2d3d2d6015a57bd702af068ea5cf9f1f6ff72314f5f5b4228d299c0904135d2aef921
+  languageName: node
+  linkType: hard
+
+"https-proxy-agent@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "https-proxy-agent@npm:5.0.1"
+  dependencies:
+    agent-base: "npm:6"
+    debug: "npm:4"
+  checksum: 10c0/6dd639f03434003577c62b27cafdb864784ef19b2de430d8ae2a1d45e31c4fd60719e5637b44db1a88a046934307da7089e03d6089ec3ddacc1189d8de8897d1
   languageName: node
   linkType: hard
 
@@ -14483,7 +14503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkifyjs@npm:^4.3.2":
+"linkifyjs@npm:^4.3.2, linkifyjs@npm:^4.3.3":
   version: 4.3.3
   resolution: "linkifyjs@npm:4.3.3"
   checksum: 10c0/0eac293927f1465d13625c8c67c83c50d7fda9137c255a4a2ff5970ea4e9ba57de4846b170326e54b9e4e82be24f3705572bc50773737be9b13af5f1e4577798
@@ -17723,20 +17743,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:3.0.0, react-native-gesture-handler@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "react-native-gesture-handler@npm:3.0.0"
-  dependencies:
-    "@types/react-test-renderer": "npm:^19.1.0"
-    invariant: "npm:^2.2.4"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/abc2c02d89c7dba0a1c58a02a99f136bfedcffc1d28e879045e5cc7738a12fd2ad76c5175987cd642141cce59ea104eb2337c4595d91b56ab2f43e1563c27747
-  languageName: node
-  linkType: hard
-
-"react-native-gesture-handler@npm:^2.26.0, react-native-gesture-handler@npm:~2.31.1":
+"react-native-gesture-handler@npm:^2.26.0, react-native-gesture-handler@npm:^2.31.2, react-native-gesture-handler@npm:~2.31.1":
   version: 2.31.2
   resolution: "react-native-gesture-handler@npm:2.31.2"
   dependencies:
@@ -17751,16 +17758,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch":
+"react-native-gesture-handler@npm:^3.0.0":
   version: 3.0.0
-  resolution: "react-native-gesture-handler@patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch::version=3.0.0&hash=78c2cf"
+  resolution: "react-native-gesture-handler@npm:3.0.0"
   dependencies:
     "@types/react-test-renderer": "npm:^19.1.0"
     invariant: "npm:^2.2.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/7e7e2ac293d4174af4d7e54bcf8a0b595e6fef8108e9341b36d5fd0b0f7aca469677f592f677f739163704fb0d7c86f2b25f956ab8fe3c3c79f8ba48ea9e1f7f
+  checksum: 10c0/abc2c02d89c7dba0a1c58a02a99f136bfedcffc1d28e879045e5cc7738a12fd2ad76c5175987cd642141cce59ea104eb2337c4595d91b56ab2f43e1563c27747
   languageName: node
   linkType: hard
 
@@ -17865,26 +17872,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:^0.35.9":
-  version: 0.35.9
-  resolution: "react-native-nitro-modules@npm:0.35.9"
+"react-native-nitro-modules@npm:0.31.3":
+  version: 0.31.3
+  resolution: "react-native-nitro-modules@npm:0.31.3"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/2e5c1b3eed1d187e7c2bbbf661e6405cb69c6a20b01427ea4c8a3bfe07a4baf2efbeb170a21f8c17fb0e18f022244f4b1fe1ce69a7ec824a7a4cf72441893cf1
+  checksum: 10c0/ec37750c9ae0a1c433c307cfba78474cb1c2593f6b4780d00250755688ed049602e28fa3c4e2b9f922a815353b6ed8c74db580973e736a4d8aba4f06eed7c91b
   languageName: node
   linkType: hard
 
-"react-native-nitro-sound@npm:^0.2.15":
-  version: 0.2.15
-  resolution: "react-native-nitro-sound@npm:0.2.15"
+"react-native-nitro-sound@npm:0.2.9":
+  version: 0.2.9
+  resolution: "react-native-nitro-sound@npm:0.2.9"
   dependencies:
-    "@react-native-community/slider": "npm:^5.2.0"
+    "@react-native-community/slider": "npm:^5.0.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-    react-native-nitro-modules: ">=0.35.4"
-  checksum: 10c0/215624ccc6303475ee21ac734b40bcddb9bf8ad8996a3ea8af3c98d507280261686f8d7289a5eac56736ad33c0e20395fb843d78c5441c58f79f70086c5759fe
+    react-native-nitro-modules: "*"
+  checksum: 10c0/10fdb135ef226b0de845ae91d4cfb88fec8a55ee5350919b8005589fa08750b934c76b5ccd0265ae38e7d9aa14b28f83d156d3d3582cfef15e9b9f93873a2505
   languageName: node
   linkType: hard
 
@@ -18863,12 +18870,12 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.85.3"
     react-native-blob-util: "npm:^0.24.9"
-    react-native-gesture-handler: "patch:react-native-gesture-handler@npm%3A3.0.0#~/.yarn/patches/react-native-gesture-handler-npm-3.0.0-8eca038751.patch"
+    react-native-gesture-handler: "npm:^2.31.2"
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:^1.27.2"
-    react-native-nitro-modules: "npm:^0.35.9"
-    react-native-nitro-sound: "npm:^0.2.15"
+    react-native-nitro-modules: "npm:0.31.3"
+    react-native-nitro-sound: "npm:0.2.9"
     react-native-reanimated: "npm:4.3.1"
     react-native-safe-area-context: "npm:^5.8.0"
     react-native-screens: "npm:^4.25.2"
@@ -18877,7 +18884,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.7"
     react-native-video: "npm:^6.19.2"
     react-native-worklets: "npm:^0.8.3"
-    stream-chat: "npm:^9.44.2"
+    stream-chat: "npm:^9.47.0"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:5.9.3"
@@ -19604,7 +19611,7 @@ __metadata:
     react-native-worklets: "npm:^0.9.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^9.44.2"
+    stream-chat: "npm:^9.47.0"
     typescript: "npm:5.9.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -19676,20 +19683,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.44.2":
-  version: 9.44.2
-  resolution: "stream-chat@npm:9.44.2"
+"stream-chat@npm:^9.47.0":
+  version: 9.47.0
+  resolution: "stream-chat@npm:9.47.0"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
-    "@types/ws": "npm:^8.5.14"
-    axios: "npm:^1.15.1"
+    "@types/ws": "npm:^8.18.1"
+    axios: "npm:^1.16.1"
     base64-js: "npm:^1.5.1"
-    form-data: "npm:^4.0.4"
+    form-data: "npm:^4.0.5"
     isomorphic-ws: "npm:^5.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    linkifyjs: "npm:^4.3.2"
-    ws: "npm:^8.18.1"
-  checksum: 10c0/2657a6fdf21f54833df230fa2f8261a3ff9648ae627ca394639dd4baf27c244257bd380544d45073915b7af64943e471e021c780c90426875662925048133895
+    linkifyjs: "npm:^4.3.3"
+    ws: "npm:^8.20.1"
+  dependenciesMeta:
+    esbuild:
+      built: true
+    husky:
+      built: true
+  checksum: 10c0/6f1a84f31047d0ccaf764ee106a276d7361b1582083c762cecd0e427d37ff6b9bfc69decaa856be0ab81d42f53beea12a231bc207d73dcbf28126abc9e28d9f3
   languageName: node
   linkType: hard
 
@@ -20524,7 +20536,7 @@ __metadata:
     react-native-svg: "npm:^15.12.0"
     react-native-video: "npm:^6.16.1"
     react-native-worklets: "npm:^0.4.1"
-    stream-chat: "npm:^9.44.2"
+    stream-chat: "npm:^9.47.0"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:5.9.3"
@@ -21291,7 +21303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.12.1, ws@npm:^8.18.1":
+"ws@npm:^8.12.1":
   version: 8.20.1
   resolution: "ws@npm:8.20.1"
   peerDependencies:
@@ -21303,6 +21315,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/ce162433218399cdedeb76fd33363d4d86a7d910058d4e3c679dce08cea65d6da6b39f11baa4d7808d024cf46ed88f6a05c17611621aaad8fc5e62edacc30c5d
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.20.1":
+  version: 8.21.0
+  resolution: "ws@npm:8.21.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/ef4a243476283fc49bc7550966c4af4aa0eef56273837211e700de3b664e08604a760cdddcb5ba43c049140e74ccfec5b0ee0bb439e08c2adf9138902fdde5f9
   languageName: node
   linkType: hard
 

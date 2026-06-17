@@ -68,6 +68,19 @@ Per-category self-time delta + top function self-time deltas (sorted by `|delta|
 
 For a fair diff, capture both profiles using the **same scenario** and the **same device** in roughly the same conditions.
 
+## Android heap/codec/frame capture (memory & jank diagnostics)
+
+For perf work where the bottleneck is memory pressure, MediaCodec slot usage, or frame timing — not JS-thread CPU — use the adb-based heap dump script.
+
+```sh
+perf/android-heap-dump.sh branch
+perf/android-heap-dump.sh develop      # after switching branches + rebuild
+```
+
+The script captures `dumpsys meminfo`, `gfxinfo`, `media.codec`, and `procstats` for the SampleApp and writes the combined output to `perf/profiles/android-heap-<label>-<timestamp>.txt`. Pre-test recipe (warming the video pool, resetting frame counters) is documented in the script header.
+
+For A/B comparisons, run the same scenario on both branches and diff the `Native Heap`, `Dalvik Heap`, `TOTAL PSS`, MediaCodec instance count, and frame-time percentiles between the two output files.
+
 ## Conventions
 
 - Keep captured `.cpuprofile` files in `perf/profiles/` (gitignored).
