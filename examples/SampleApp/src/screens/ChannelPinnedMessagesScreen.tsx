@@ -1,16 +1,18 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, type RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {
+  useTheme,
+  PinnedMessageList,
+  ChannelDetailsContextProvider,
+  PinnedMessageItemProps,
+  PinnedMessageItem,
+  WithComponents,
+} from 'stream-chat-react-native';
 
-import type { RouteProp } from '@react-navigation/native';
-import { useTheme } from 'stream-chat-react-native';
-
-import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { usePaginatedPinnedMessages } from '../hooks/usePaginatedPinnedMessages';
-import { Message } from '../icons/Message';
-import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { StackNavigatorParamList } from '../types';
 
@@ -69,8 +71,30 @@ type ChannelPinnedMessagesScreenRouteProp = RouteProp<
   'ChannelPinnedMessagesScreen'
 >;
 
+type ChannelPinnedMessagesScreenNavigationProp = NativeStackNavigationProp<
+  StackNavigatorParamList,
+  'ChannelPinnedMessagesScreen'
+>;
+
 export type ChannelPinnedMessagesScreenProps = {
   route: ChannelPinnedMessagesScreenRouteProp;
+};
+
+const PinnedMessage = (props: PinnedMessageItemProps) => {
+  const navigation = useNavigation<ChannelPinnedMessagesScreenNavigationProp>();
+
+  const onPress = useCallback(() => {
+    navigation.navigate('ChannelScreen', {
+      channel: props.channel,
+      messageId: props.message.parent_id ?? props.message.id,
+    });
+  }, [props.channel, navigation, props.message.parent_id, props.message.id]);
+
+  return (
+    <Pressable onPress={onPress}>
+      <PinnedMessageItem {...props} />
+    </Pressable>
+  );
 };
 
 export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenProps> = ({
@@ -79,40 +103,14 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
   },
 }) => {
   useTheme();
-  const { white_snow } = useLegacyColors();
-  const { loading, loadMore, messages } = usePaginatedPinnedMessages(channel);
-  const insets = useSafeAreaInsets();
   return (
-    <View
-      style={[
-        styles.flex,
-        {
-          backgroundColor: white_snow,
-          paddingBottom: insets.bottom,
-        },
-      ]}
-    >
+    <View style={[styles.flex]}>
       <ScreenHeader titleText='Pinned Messages' />
-      <MessageSearchList
-        EmptySearchIndicator={EmptyListComponent}
-        loading={loading}
-        loadMore={loadMore}
-        messages={messages}
-      />
-    </View>
-  );
-};
-
-const EmptyListComponent = () => {
-  useTheme();
-  const { black, grey, grey_gainsboro } = useLegacyColors();
-  return (
-    <View style={styles.emptyContainer}>
-      <Message fill={grey_gainsboro} height={110} width={130} />
-      <Text style={[styles.noFiles, { color: black }]}>No pinned messages</Text>
-      <Text style={[styles.noFilesDetails, { color: grey }]}>
-        Long-press an important message and choose Pin to conversation.
-      </Text>
+      <ChannelDetailsContextProvider value={{ channel }}>
+        <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
+          <PinnedMessageList />
+        </WithComponents>
+      </ChannelDetailsContextProvider>
     </View>
   );
 };

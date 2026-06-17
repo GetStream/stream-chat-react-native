@@ -234,7 +234,6 @@ export type Theme = {
       body: ViewStyle;
       header: ViewStyle;
       headerTitle: TextStyle;
-      root: ViewStyle;
     };
     addMembers: {
       searchResultItem: {
@@ -249,6 +248,39 @@ export type Theme = {
       container: ViewStyle;
       nameInput: ViewStyle;
       uploadButton: ViewStyle;
+    };
+    pinnedMessageList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    pinnedMessageItem: {
+      container: ViewStyle;
+      content: ViewStyle;
+      name: TextStyle;
+      title: ViewStyle;
+    };
+    fileAttachmentList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+      sectionHeader: ViewStyle;
+      sectionHeaderText: TextStyle;
+    };
+    fileAttachmentItem: {
+      container: ViewStyle;
+    };
+    mediaList: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    mediaItem: {
+      avatar: ViewStyle;
+      container: ViewStyle;
+      thumbnail: ImageStyle;
+      videoBadge: ViewStyle;
+      videoBadgeText: TextStyle;
     };
   };
   channelListSkeleton: {
@@ -286,6 +318,24 @@ export type Theme = {
     title: ViewStyle;
   };
   userListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  pinnedMessageListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
+  fileAttachmentListSkeleton: {
     animationTime: number;
     avatar: ViewStyle;
     container: ViewStyle;
@@ -335,6 +385,11 @@ export type Theme = {
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;
+  };
+  emptyList: {
+    container: ViewStyle;
+    subtitle: TextStyle;
+    title: TextStyle;
   };
   emptySearchResult: {
     container: ViewStyle;
@@ -1286,7 +1341,6 @@ export const defaultTheme: Theme = {
       body: {},
       header: {},
       headerTitle: {},
-      root: {},
     },
     addMembers: {
       searchResultItem: {
@@ -1301,6 +1355,39 @@ export const defaultTheme: Theme = {
       container: {},
       nameInput: {},
       uploadButton: {},
+    },
+    pinnedMessageList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    pinnedMessageItem: {
+      container: {},
+      content: {},
+      name: {},
+      title: {},
+    },
+    fileAttachmentList: {
+      container: {},
+      list: {},
+      listContent: {},
+      sectionHeader: {},
+      sectionHeaderText: {},
+    },
+    fileAttachmentItem: {
+      container: {},
+    },
+    mediaList: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    mediaItem: {
+      avatar: {},
+      container: {},
+      thumbnail: {},
+      videoBadge: {},
+      videoBadgeText: {},
     },
   },
   channelListSkeleton: {
@@ -1338,6 +1425,24 @@ export const defaultTheme: Theme = {
     title: {},
   },
   userListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  pinnedMessageListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
+  fileAttachmentListSkeleton: {
     animationTime: 1000, // in milliseconds
     avatar: {},
     container: {},
@@ -1387,6 +1492,11 @@ export const defaultTheme: Theme = {
   dateHeader: {
     container: {},
     text: {},
+  },
+  emptyList: {
+    container: {},
+    subtitle: {},
+    title: {},
   },
   emptySearchResult: {
     container: {},

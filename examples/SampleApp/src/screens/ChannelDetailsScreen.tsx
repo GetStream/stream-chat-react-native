@@ -5,10 +5,12 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ChannelDetails,
+  GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
   ChannelAddMembersModal,
   ChannelAllMembersModal,
   ChannelDetailsContextProvider,
+  ChannelDetailsNavigationSectionType,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -27,6 +29,17 @@ type Props = {
   route: ChannelDetailsScreenRouteProp;
 };
 
+const navigationItems: {
+  [key in ChannelDetailsNavigationSectionType]:
+    | 'ChannelPinnedMessagesScreen'
+    | 'ChannelImagesScreen'
+    | 'ChannelFilesScreen';
+} = {
+  'pinned-messages': 'ChannelPinnedMessagesScreen',
+  'photos-and-videos': 'ChannelImagesScreen',
+  files: 'ChannelFilesScreen',
+};
+
 export const ChannelDetailsScreen: React.FC<Props> = ({
   navigation,
   route: {
@@ -34,6 +47,16 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   },
 }) => {
   const onBack = useCallback(() => navigation.goBack(), [navigation]);
+  const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
+    ({ defaultItems }) =>
+      defaultItems.map((item) => ({
+        ...item,
+        ...(navigationItems[item.section]
+          ? { onPress: () => navigation.navigate(navigationItems[item.section], { channel }) }
+          : {}),
+      })),
+    [navigation, channel],
+  );
   const popToRoot = useCallback(
     () =>
       navigation.reset({
@@ -82,6 +105,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       <ChannelDetails
         channel={channel}
         getChannelMemberActionItems={getChannelMemberActionItems}
+        getNavigationItems={getNavigationItems}
         onBack={onBack}
         onChannelDismiss={popToRoot}
         // Handler view all members modal so we can close it after navigation is triggered by our custom action

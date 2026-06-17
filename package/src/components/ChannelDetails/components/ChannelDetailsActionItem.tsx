@@ -77,7 +77,12 @@ export const ChannelDetailsActionItem = ({
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
+        pressed
+          ? {
+              backgroundColor: semantics.backgroundUtilityPressed,
+              borderRadius: primitives.radiusLg,
+            }
+          : null,
       ]}
       testID={testID}
     >

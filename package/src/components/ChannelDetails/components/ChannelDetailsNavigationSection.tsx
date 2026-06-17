@@ -1,21 +1,26 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ChannelDetailsActionItem } from './ChannelDetailsActionItem';
+import { ChannelDetailsModal } from './modal/Modal';
+import { ModalHeader } from './modal/ModalHeader';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { ChevronRight } from '../../../icons';
-import { File } from '../../../icons/file';
-import { ImageGrid } from '../../../icons/gallery';
-import { Pin } from '../../../icons/pin';
+import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
+import { ImageGallery } from '../../ImageGallery/ImageGallery';
+import {
+  type ChannelDetailsNavigationSectionType,
+  useChannelDetailsNavigationItems,
+} from '../hooks/useChannelDetailsNavigationItems';
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
 export const ChannelDetailsNavigationSection = () => {
-  const { t } = useTranslationContext();
   const {
     theme: {
       channelDetails: { sectionCard: sectionCardOverride },
@@ -23,6 +28,36 @@ export const ChannelDetailsNavigationSection = () => {
     },
   } = useTheme();
   const styles = useStyles();
+  const { FileAttachmentList, MediaList, PinnedMessageList } = useComponentsContext();
+  const items = useChannelDetailsNavigationItems();
+  const [activeSection, setActiveSection] = useState<ChannelDetailsNavigationSectionType | null>(
+    null,
+  );
+  const { overlayOpacity, overlay } = useOverlayContext();
+  const closeModal = useCallback(() => setActiveSection(null), []);
+
+  const modalContent = useMemo(() => {
+    switch (activeSection) {
+      case 'pinned-messages':
+        return <PinnedMessageList />;
+      case 'photos-and-videos':
+        return (
+          <>
+            <MediaList />
+            {overlay === 'gallery' ? <ImageGallery overlayOpacity={overlayOpacity} /> : null}
+          </>
+        );
+      case 'files':
+        return <FileAttachmentList />;
+      default:
+        return null;
+    }
+  }, [activeSection, FileAttachmentList, MediaList, PinnedMessageList, overlayOpacity, overlay]);
+
+  const activeItem = useMemo(
+    () => items.find((item) => item.section === activeSection),
+    [activeSection, items],
+  );
 
   const chevron = useMemo(
     () => (
@@ -33,33 +68,46 @@ export const ChannelDetailsNavigationSection = () => {
     [semantics.textTertiary],
   );
 
+  const closeButtonProps = useMemo(
+    () => ({ type: 'ghost' as const, LeadingIcon: ChevronLeft }),
+    [],
+  );
+
   return (
-    <View
-      style={[
-        styles.sectionCard,
-        { backgroundColor: semantics.backgroundCoreSurfaceCard },
-        sectionCardOverride,
-      ]}
-    >
-      <ChannelDetailsActionItem
-        Icon={Pin}
-        label={t('Pinned Messages')}
-        testID='channel-details-pinned-messages'
-        trailing={chevron}
-      />
-      <ChannelDetailsActionItem
-        Icon={ImageGrid}
-        label={t('Photos & Videos')}
-        testID='channel-details-photos-and-videos'
-        trailing={chevron}
-      />
-      <ChannelDetailsActionItem
-        Icon={File}
-        label={t('Files')}
-        testID='channel-details-files'
-        trailing={chevron}
-      />
-    </View>
+    <>
+      <View
+        style={[
+          styles.sectionCard,
+          { backgroundColor: semantics.backgroundCoreSurfaceCard },
+          sectionCardOverride,
+        ]}
+      >
+        {items.map((item) => (
+          <ChannelDetailsActionItem
+            Icon={item.Icon}
+            key={item.section}
+            label={item.label}
+            onPress={item.onPress ?? (() => setActiveSection(item.section))}
+            testID={`channel-details-${item.section}`}
+            trailing={chevron}
+          />
+        ))}
+      </View>
+      <ChannelDetailsModal
+        onClose={closeModal}
+        visible={activeSection !== null}
+        presentationStyle='fullScreen'
+      >
+        {activeItem ? (
+          <ModalHeader
+            onClose={closeModal}
+            title={activeItem.label}
+            additionalCloseButtonProps={closeButtonProps}
+          />
+        ) : null}
+        {modalContent}
+      </ChannelDetailsModal>
+    </>
   );
 };
 
