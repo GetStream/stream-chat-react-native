@@ -129,7 +129,12 @@ export const ChannelMemberItem = ({
         onPress={() => onPress(member)}
         style={({ pressed }) => [
           isLarge ? styles.containerLarge : styles.container,
-          pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
+          pressed
+            ? {
+                backgroundColor: semantics.backgroundUtilityPressed,
+                borderRadius: primitives.radiusLg,
+              }
+            : null,
           containerOverride,
         ]}
         testID={testID}
