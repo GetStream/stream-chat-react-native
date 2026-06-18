@@ -77,13 +77,11 @@ const applyCapabilities = (
 const renderSection = ({
   capabilities,
   channel,
-  onAddMembersPress,
   onMemberPress,
   onViewAllMembersPress,
 }: {
   channel: Channel;
   capabilities?: Partial<OwnCapabilitiesContextValue>;
-  onAddMembersPress?: () => void;
   onMemberPress?: (member: ChannelMemberResponse) => void;
   onViewAllMembersPress?: () => void;
 }) =>
@@ -112,7 +110,6 @@ const renderSection = ({
             <ChannelDetailsContextProvider
               value={{
                 channel: applyCapabilities(channel, capabilities),
-                onAddMembersPress,
                 onMemberPress,
                 onViewAllMembersPress,
               }}
@@ -209,23 +206,19 @@ describe('ChannelDetailsMemberSection', () => {
     expect(screen.queryByTestId('channel-details-member-section-add-button')).toBeNull();
   });
 
-  it('renders the preview add button and invokes onAddMembersPress when the user has the capability', () => {
+  it('renders the preview add button when the user has the capability', () => {
     previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
     const channel = buildChannel(makeMembers(3), 3);
-    const onAddMembersPress = jest.fn();
 
     renderSection({
       capabilities: { updateChannelMembers: true },
       channel,
-      onAddMembersPress,
     });
 
-    fireEvent.press(screen.getByTestId('channel-details-member-section-add-button'));
-
-    expect(onAddMembersPress).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('channel-details-member-section-add-button')).toBeTruthy();
   });
 
-  it('opens the Add-members sheet when the preview Add is pressed and no onAddMembersPress override is provided', () => {
+  it('opens the Add-members sheet when the preview Add is pressed', () => {
     previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: makeMembers(3) });
     const channel = buildChannel(makeMembers(3), 3);
 
@@ -279,7 +272,7 @@ describe('ChannelDetailsMemberSection', () => {
     expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
-  it('swaps the all-members modal for the Add-members sheet when the modal Add button is pressed', () => {
+  it('opens the Add-members sheet on top of the all-members modal when the modal Add button is pressed', () => {
     previewSpy.mockReturnValue({ hasMore: true, total: 12, visible: makeMembers(5) });
     const channel = buildChannel(makeMembers(12), 12);
 
@@ -292,7 +285,7 @@ describe('ChannelDetailsMemberSection', () => {
     fireEvent.press(screen.getByTestId('channel-details-member-list-add-button'));
 
     expect(screen.getByTestId('add-members-probe')).toBeTruthy();
-    // View-all sheet is dismissed when Add-members opens (swap, not stack).
-    expect(screen.queryByTestId('member-list-probe')).toBeNull();
+    // Add-members opens layered over the all-members list (stack, not swap).
+    expect(screen.getByTestId('member-list-probe')).toBeTruthy();
   });
 });

@@ -7,7 +7,6 @@ import {
   ChannelDetails,
   GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
-  ChannelAddMembersModal,
   ChannelAllMembersModal,
   ChannelDetailsContextProvider,
   ChannelDetailsNavigationSectionType,
@@ -65,12 +64,6 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       }),
     [navigation],
   );
-  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
-  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-  const handleAddMembersPress = useCallback(() => {
-    setAllMembersVisible(false);
-    setAddMembersVisible(true);
-  }, []);
   const [isAllMembersVisible, setAllMembersVisible] = useState(false);
   const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
   const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
@@ -112,12 +105,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
         onViewAllMembersPress={handleAllMembersPress}
       />
       <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
-        <ChannelAllMembersModal
-          onClose={handleAllMembersClose}
-          visible={isAllMembersVisible}
-          onAddMembersPress={handleAddMembersPress}
-        />
-        <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+        <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
       </ChannelDetailsContextProvider>
     </>
   );

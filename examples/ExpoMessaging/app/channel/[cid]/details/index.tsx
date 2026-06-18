@@ -3,7 +3,6 @@ import React, { useCallback, useContext, useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
 
 import {
-  ChannelAddMembersModal,
   ChannelAllMembersModal,
   ChannelDetails,
   ChannelDetailsContextProvider,
@@ -48,13 +47,6 @@ export default function ChannelDetailsScreen() {
 
   const popToRoot = useCallback(() => router.replace('/'), [router]);
 
-  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
-  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-  const handleAddMembersPress = useCallback(() => {
-    setAllMembersVisible(false);
-    setAddMembersVisible(true);
-  }, []);
-
   const [isAllMembersVisible, setAllMembersVisible] = useState(false);
   const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
   const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
@@ -85,12 +77,7 @@ export default function ChannelDetailsScreen() {
         />
       </WithComponents>
       <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
-        <ChannelAllMembersModal
-          onClose={handleAllMembersClose}
-          visible={isAllMembersVisible}
-          onAddMembersPress={handleAddMembersPress}
-        />
-        <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+        <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
       </ChannelDetailsContextProvider>
     </>
   );

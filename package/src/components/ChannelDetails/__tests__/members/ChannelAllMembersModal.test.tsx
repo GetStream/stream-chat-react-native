@@ -22,6 +22,15 @@ import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelAllMembersModal } from '../../components/members/ChannelAllMembersModal';
 import * as useChannelDetailsMembersPreviewModule from '../../hooks/useChannelDetailsMembersPreview';
 
+// Replace the heavy built-in add-members modal with a lightweight probe that reflects its
+// visibility, so tests can observe the default "open the add-members modal" behavior.
+jest.mock('../../components/members/ChannelAddMembersModal', () => ({
+  ChannelAddMembersModal: ({ visible }: { visible: boolean }) => {
+    const { Text: RNText } = require('react-native');
+    return <RNText testID='add-members-modal'>{visible ? 'visible' : 'hidden'}</RNText>;
+  },
+}));
+
 const MemberListProbe = () => <Text testID='member-list-probe'>full-member-list</Text>;
 
 const buildChannel = (
@@ -59,13 +68,11 @@ const applyCapabilities = (
 const renderModal = ({
   capabilities,
   channel,
-  onAddMembersPress = jest.fn(),
   onClose = jest.fn(),
   visible = true,
 }: {
   channel: Channel;
   capabilities?: Partial<OwnCapabilitiesContextValue>;
-  onAddMembersPress?: () => void;
   onClose?: () => void;
   visible?: boolean;
 }) =>
@@ -86,11 +93,7 @@ const renderModal = ({
               value={{ channel: applyCapabilities(channel, capabilities) }}
             >
               <WithComponents overrides={{ ChannelMemberList: MemberListProbe }}>
-                <ChannelAllMembersModal
-                  onAddMembersPress={onAddMembersPress}
-                  onClose={onClose}
-                  visible={visible}
-                />
+                <ChannelAllMembersModal onClose={onClose} visible={visible} />
               </WithComponents>
             </ChannelDetailsContextProvider>
           </ChatContext.Provider>
@@ -141,19 +144,19 @@ describe('ChannelAllMembersModal', () => {
     expect(screen.queryByTestId('channel-details-member-list-add-button')).toBeNull();
   });
 
-  it('shows the add-members button and invokes onAddMembersPress when pressed', () => {
+  it('shows the add-members button and opens the add-members modal when pressed', () => {
     previewSpy.mockReturnValue({ hasMore: true, total: 12, visible: makeMembers(5) });
     const channel = buildChannel(makeMembers(12), 12);
-    const onAddMembersPress = jest.fn();
 
     renderModal({
       capabilities: { updateChannelMembers: true },
       channel,
-      onAddMembersPress,
     });
+
+    expect(screen.getByTestId('add-members-modal')).toHaveTextContent('hidden');
 
     fireEvent.press(screen.getByTestId('channel-details-member-list-add-button'));
 
-    expect(onAddMembersPress).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('add-members-modal')).toHaveTextContent('visible');
   });
 });

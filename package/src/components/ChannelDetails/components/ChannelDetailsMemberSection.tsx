@@ -3,27 +3,21 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { ChannelAddMembersModal } from './members/ChannelAddMembersModal';
 import { ChannelAllMembersModal } from './members/ChannelAllMembersModal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 import { primitives } from '../../../theme';
-import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 /**
  * @experimental This component is experimental and is subject to change.
  */
 export const ChannelDetailsMemberSection = () => {
-  const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =
-    useChannelDetailsContext();
+  const { channel, onMemberPress, onViewAllMembersPress } = useChannelDetailsContext();
   const { t } = useTranslationContext();
-  const ownCapabilities = useChannelOwnCapabilities(channel);
-  const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
   const {
     theme: {
       channelDetails: {
@@ -38,11 +32,11 @@ export const ChannelDetailsMemberSection = () => {
       semantics,
     },
   } = useTheme();
-  const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
+  const { ChannelAddMembersButton, ChannelMemberActionsSheet, ChannelMemberItem } =
+    useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
-  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
   const handleViewAllPress = useCallback(() => {
@@ -54,17 +48,6 @@ export const ChannelDetailsMemberSection = () => {
   }, [onViewAllMembersPress]);
 
   const handleMemberListClose = useCallback(() => setMemberListVisible(false), []);
-
-  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-
-  const handleAddMembersPress = useCallback(() => {
-    if (onAddMembersPress) {
-      onAddMembersPress();
-      return;
-    }
-    setMemberListVisible(false);
-    setAddMembersVisible(true);
-  }, [onAddMembersPress]);
 
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
@@ -94,20 +77,10 @@ export const ChannelDetailsMemberSection = () => {
         >
           {t('{{count}} members', { count: total })}
         </Text>
-        {updateChannelMembers ? (
-          <View style={styles.headerAddButton}>
-            <Button
-              accessibilityLabelKey='a11y/Add members'
-              label={t('Add')}
-              onPress={handleAddMembersPress}
-              size='sm'
-              style={styles.headerAddButtonInner}
-              testID='channel-details-member-section-add-button'
-              type='outline'
-              variant='secondary'
-            />
-          </View>
-        ) : null}
+        <ChannelAddMembersButton
+          testID='channel-details-member-section-add-button'
+          variant='text'
+        />
       </View>
       <View style={styles.list}>
         {visible.map((member) => {
@@ -133,12 +106,7 @@ export const ChannelDetailsMemberSection = () => {
           </View>
         </Pressable>
       ) : null}
-      <ChannelAllMembersModal
-        onAddMembersPress={handleAddMembersPress}
-        onClose={handleMemberListClose}
-        visible={isMemberListVisible}
-      />
-      <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+      <ChannelAllMembersModal onClose={handleMemberListClose} visible={isMemberListVisible} />
       {selectedMember ? (
         <ChannelMemberActionsSheet
           member={selectedMember}
@@ -166,12 +134,6 @@ const useStyles = () =>
           justifyContent: 'space-between',
           paddingHorizontal: primitives.spacingMd,
           paddingTop: primitives.spacingXs,
-        },
-        headerAddButton: {
-          flexShrink: 0,
-        },
-        headerAddButtonInner: {
-          width: 'auto',
         },
         headerTitle: {
           flexShrink: 1,

@@ -79,10 +79,6 @@ export type ChannelDetailsProps = {
    */
   getMemberRoleLabel?: GetMemberRoleLabel;
   /**
-   * Fired when the user taps the "add members" button, by default it opens the add members bottom sheet. Only visible if the current user has the `update-channel-members` capability.
-   */
-  onAddMembersPress?: () => void;
-  /**
    * Fired when the back button is pressed on the channel details header.
    */
   onBack?: () => void;
@@ -162,7 +158,6 @@ export const ChannelDetails = ({
   getChannelMemberActionItems,
   getMemberRoleLabel,
   getNavigationItems,
-  onAddMembersPress,
   onBack,
   onChannelDismiss,
   onEditChannelPress,
@@ -179,7 +174,6 @@ export const ChannelDetails = ({
       getChannelMemberActionItems,
       getMemberRoleLabel,
       getNavigationItems,
-      onAddMembersPress,
       onBack,
       onChannelDismiss,
       onEditChannelPress,
@@ -194,7 +188,6 @@ export const ChannelDetails = ({
       getChannelMemberActionItems,
       getMemberRoleLabel,
       getNavigationItems,
-      onAddMembersPress,
       onBack,
       onChannelDismiss,
       onEditChannelPress,

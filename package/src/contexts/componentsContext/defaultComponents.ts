@@ -33,6 +33,7 @@ import { InputView } from '../../components/AutoCompleteInput/InputView';
 import { ChannelDetailsContent } from '../../components/ChannelDetails/ChannelDetails';
 import {
   ChannelAddMembers,
+  ChannelAddMembersButton,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
@@ -320,6 +321,7 @@ const components = {
 
   // Channel Details Screen
   ChannelAddMembers,
+  ChannelAddMembersButton,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,

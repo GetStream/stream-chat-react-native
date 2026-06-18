@@ -1,5 +1,6 @@
 export * from './AddMemberSearchResultItem';
 export * from './ChannelAddMembers';
+export * from './ChannelAddMembersButton';
 export * from './ChannelAddMembersModal';
 export * from './ChannelAllMembersModal';
 export * from './ChannelMemberActionsSheet';

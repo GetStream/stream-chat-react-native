@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
 import type { ChannelMemberResponse, SearchSourceState } from 'stream-chat';
@@ -14,6 +14,7 @@ import { useComponentsContext } from '../../../../contexts/componentsContext/Com
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
+import { useChannelMemberCount } from '../../../../hooks/useChannelMemberCount';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
@@ -65,13 +66,16 @@ const ChannelMemberListContent = ({
 
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
-  const initialized = useRef(false);
+  const memberCount = useChannelMemberCount(channel);
+
+  // Fetch members on mount and when the member count changes
+  // Member count changes used when add member modal is opened above member list modal
   useEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
+    if (!searchSource.state.getLatestValue().searchQuery) {
+      searchSource.resetStateAndActivate();
       searchSource.search();
     }
-  }, [searchSource]);
+  }, [memberCount, searchSource]);
 
   useEffect(() => {
     if (!error) {
