@@ -1,16 +1,15 @@
-import React, { useContext } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useContext } from 'react';
 
-import { ChannelDetailsContextProvider, MediaList } from 'stream-chat-expo';
+import { Stack } from 'expo-router';
 
-import { ScreenHeader } from '../../../../components/ScreenHeader';
+import { ChannelDetailsContextProvider, MediaList, useTheme } from 'stream-chat-expo';
+
 import { AppContext } from '../../../../context/AppContext';
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-});
-
 export default function ChannelImagesScreen() {
+  const {
+    theme: { semantics },
+  } = useTheme();
   const { channel } = useContext(AppContext);
 
   if (!channel) {
@@ -18,11 +17,11 @@ export default function ChannelImagesScreen() {
   }
 
   return (
-    <View style={styles.flex}>
-      <ScreenHeader titleText='Photos and Videos' />
+    <>
+      <Stack.Screen options={{ contentStyle: { backgroundColor: semantics.backgroundCoreApp } }} />
       <ChannelDetailsContextProvider value={{ channel }}>
         <MediaList />
       </ChannelDetailsContextProvider>
-    </View>
+    </>
   );
 }

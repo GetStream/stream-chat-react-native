@@ -1,17 +1,15 @@
-import React, { useContext } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useContext } from 'react';
+
+import { Stack } from 'expo-router';
 
 import { ChannelDetailsContextProvider, FileAttachmentList, useTheme } from 'stream-chat-expo';
 
-import { ScreenHeader } from '../../../../components/ScreenHeader';
 import { AppContext } from '../../../../context/AppContext';
 
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-});
-
 export default function ChannelFilesScreen() {
-  useTheme();
+  const {
+    theme: { semantics },
+  } = useTheme();
   const { channel } = useContext(AppContext);
 
   if (!channel) {
@@ -19,11 +17,11 @@ export default function ChannelFilesScreen() {
   }
 
   return (
-    <View style={styles.flex}>
-      <ScreenHeader titleText='Files' />
+    <>
+      <Stack.Screen options={{ contentStyle: { backgroundColor: semantics.backgroundCoreApp } }} />
       <ChannelDetailsContextProvider value={{ channel }}>
         <FileAttachmentList />
       </ChannelDetailsContextProvider>
-    </View>
+    </>
   );
 }

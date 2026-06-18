@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
 
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 import {
   ChannelAddMembersModal,
@@ -10,6 +10,7 @@ import {
   ChannelDetailsNavigationSectionType,
   GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
+  WithComponents,
 } from 'stream-chat-expo';
 
 import { AppContext } from '../../../../context/AppContext';
@@ -22,17 +23,13 @@ const navigationItems: {
   files: 'files',
 };
 
+const Header = () => {
+  return null;
+};
+
 export default function ChannelDetailsScreen() {
   const router = useRouter();
   const { channel } = useContext(AppContext);
-
-  const onBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  }, [router]);
 
   const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
     ({ defaultItems }) =>
@@ -73,14 +70,20 @@ export default function ChannelDetailsScreen() {
 
   return (
     <>
-      <ChannelDetails
-        channel={channel}
-        getChannelMemberActionItems={getChannelMemberActionItems}
-        getNavigationItems={getNavigationItems}
-        onBack={onBack}
-        onChannelDismiss={popToRoot}
-        onViewAllMembersPress={handleAllMembersPress}
+      <Stack.Screen
+        options={{
+          title: 'Channel details',
+        }}
       />
+      <WithComponents overrides={{ ChannelDetailsNavHeader: Header }}>
+        <ChannelDetails
+          channel={channel}
+          getChannelMemberActionItems={getChannelMemberActionItems}
+          getNavigationItems={getNavigationItems}
+          onChannelDismiss={popToRoot}
+          onViewAllMembersPress={handleAllMembersPress}
+        />
+      </WithComponents>
       <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
         <ChannelAllMembersModal
           onClose={handleAllMembersClose}
