@@ -15,7 +15,6 @@ import { useStableCallback } from '../../../../hooks/useStableCallback';
 import { Checkmark } from '../../../../icons/checkmark-1';
 import { useIsSelectionEmpty } from '../../../../state-store/selection-store';
 import { NotificationList } from '../../../Notifications/NotificationList';
-import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { Button } from '../../../ui/Button/Button';
 import { ChannelDetailsModal } from '../modal/Modal';
 import { ModalHeader } from '../modal/ModalHeader';
@@ -39,17 +38,14 @@ type ChannelAddMembersModalContentProps = {
  */
 export const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModalContentProps) => {
   const { channel } = useChannelDetailsContext();
-  const notificationHostId = channel?.cid ? `channel-add-members:${channel.cid}` : undefined;
 
-  if (!notificationHostId) {
+  if (!channel?.cid) {
     return null;
   }
 
   return (
     <ChannelAddMembersProvider>
-      <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-        <ChannelAddMembersModalBody onClose={onClose} />
-      </NotificationTargetProvider>
+      <ChannelAddMembersModalBody onClose={onClose} />
     </ChannelAddMembersProvider>
   );
 };

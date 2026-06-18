@@ -3,7 +3,9 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 import { UserSearchSource } from 'stream-chat';
 
 import { useChatContext } from '..';
+import { NotificationTargetProvider } from '../../components/Notifications/NotificationTargetContext';
 import { SelectionStore } from '../../state-store/selection-store';
+import { useChannelDetailsContext } from '../channelDetailsContext/channelDetailsContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -24,6 +26,7 @@ export const ChannelAddMembersContext = React.createContext(
  */
 export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknown>) => {
   const { client } = useChatContext();
+  const { channel } = useChannelDetailsContext();
   const [selectionStore] = useState(() => new SelectionStore());
   const [searchSource] = useState(() => {
     const source = new UserSearchSource(
@@ -49,9 +52,14 @@ export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknow
   });
 
   return (
-    <ChannelAddMembersContext.Provider value={{ selectionStore, searchSource }}>
-      {children}
-    </ChannelAddMembersContext.Provider>
+    <NotificationTargetProvider
+      hostId={`channel-add-members:${channel.cid}`}
+      panel='channel-details'
+    >
+      <ChannelAddMembersContext.Provider value={{ selectionStore, searchSource }}>
+        {children}
+      </ChannelAddMembersContext.Provider>
+    </NotificationTargetProvider>
   );
 };
 

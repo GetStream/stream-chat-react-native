@@ -23,7 +23,6 @@ import {
 } from '../../../state-store/edit-channel-details-store';
 import type { File } from '../../../types/types';
 import { NotificationList } from '../../Notifications/NotificationList';
-import { NotificationTargetProvider } from '../../Notifications/NotificationTargetContext';
 import { Button } from '../../ui/Button/Button';
 
 const loadingIconStyle = { margin: 0 };
@@ -127,17 +126,14 @@ export const ChannelEditDetailsModalContent = ({
   onClose,
 }: ChannelEditDetailsModalContentProps) => {
   const { channel } = useChannelDetailsContext();
-  const notificationHostId = channel?.cid ? `channel-edit-details:${channel.cid}` : undefined;
 
-  if (!notificationHostId || !channel) {
+  if (!channel?.cid) {
     return null;
   }
 
   return (
-    <ChannelEditDetailsProvider channel={channel}>
-      <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-        <ChannelEditDetailsModalBody onClose={onClose} />
-      </NotificationTargetProvider>
+    <ChannelEditDetailsProvider>
+      <ChannelEditDetailsModalBody onClose={onClose} />
     </ChannelEditDetailsProvider>
   );
 };
