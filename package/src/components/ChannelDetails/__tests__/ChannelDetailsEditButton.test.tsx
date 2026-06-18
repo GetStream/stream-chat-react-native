@@ -53,17 +53,11 @@ const Providers = ({ children }: PropsWithChildren) => (
   </ThemeProvider>
 );
 
-const renderEditButton = ({
-  channel,
-  onEditChannelPress,
-}: {
-  channel: Channel;
-  onEditChannelPress?: () => void;
-}) =>
+const renderEditButton = ({ channel }: { channel: Channel }) =>
   render(
     <Providers>
       <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
-        <ChannelDetailsContextProvider value={{ channel, onEditChannelPress }}>
+        <ChannelDetailsContextProvider value={{ channel }}>
           <ChannelDetailsEditButton />
         </ChannelDetailsContextProvider>
       </WithComponents>
@@ -106,16 +100,7 @@ describe('ChannelDetailsEditButton', () => {
     expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
   });
 
-  it('invokes onEditChannelPress when the Edit button is pressed', () => {
-    const onEditChannelPress = jest.fn();
-    renderEditButton({ channel: buildChannel(['update-channel']), onEditChannelPress });
-
-    fireEvent.press(screen.getByTestId('channel-details-edit-button'));
-
-    expect(onEditChannelPress).toHaveBeenCalledTimes(1);
-  });
-
-  it('opens the edit modal when the Edit button is pressed and onEditChannelPress is not provided', () => {
+  it('opens the edit modal when the Edit button is pressed', () => {
     renderEditButton({ channel: buildChannel(['update-channel']) });
 
     expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();

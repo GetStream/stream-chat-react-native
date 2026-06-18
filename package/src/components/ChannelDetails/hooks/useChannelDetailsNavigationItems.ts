@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Picture } from '../../../icons';
@@ -86,9 +85,12 @@ export const getChannelDetailsNavigationItems: GetChannelDetailsNavigationItems 
  *
  * @experimental This hook is experimental and is subject to change.
  */
-export const useChannelDetailsNavigationItems = (): ChannelDetailsNavigationItem[] => {
+export const useChannelDetailsNavigationItems = ({
+  getNavigationItems = getChannelDetailsNavigationItems,
+}: {
+  getNavigationItems?: GetChannelDetailsNavigationItems;
+} = {}): ChannelDetailsNavigationItem[] => {
   const { t } = useTranslationContext();
-  const { getNavigationItems = getChannelDetailsNavigationItems } = useChannelDetailsContext();
 
   const context = useMemo<ChannelDetailsNavigationItemsContext>(() => ({ t }), [t]);
 

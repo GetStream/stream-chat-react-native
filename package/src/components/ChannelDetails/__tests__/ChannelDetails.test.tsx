@@ -133,7 +133,6 @@ describe('ChannelDetails', () => {
 
   describe('context provisioning', () => {
     it('exposes channel and callbacks via ChannelDetailsContext', () => {
-      const onChannelDismiss = jest.fn();
       const onBack = jest.fn();
       let captured: ReturnType<typeof useChannelDetailsContext> | undefined;
       const ContextProbe = () => {
@@ -149,14 +148,13 @@ describe('ChannelDetails', () => {
               ChannelDetailsContent: ContextProbe,
             }}
           >
-            <ChannelDetails channel={channel} onBack={onBack} onChannelDismiss={onChannelDismiss} />
+            <ChannelDetails channel={channel} onBack={onBack} />
           </WithComponents>
         </Providers>,
       );
 
       expect(captured).toBeDefined();
       expect(captured?.channel).toBe(channel);
-      expect(captured?.onChannelDismiss).toBe(onChannelDismiss);
       expect(captured?.onBack).toBe(onBack);
     });
   });

@@ -5,11 +5,17 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ChannelDetails,
+  ChannelDetailsActionsSection,
+  ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
   GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
   ChannelAllMembersModal,
   ChannelDetailsContextProvider,
   ChannelDetailsNavigationSectionType,
+  ChannelMemberActionsSheet,
+  ChannelMemberActionsSheetProps,
+  WithComponents,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -68,6 +74,11 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
   const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
 
+  const ActionsSection = useCallback(
+    () => <ChannelDetailsActionsSection onChannelDismiss={popToRoot} />,
+    [popToRoot],
+  );
+
   const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
     ({ context, defaultItems }) => {
       // Don't offer sending a direct message to yourself.
@@ -93,19 +104,43 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
     [navigation],
   );
 
+  const NavigationSection = useCallback(
+    () => <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />,
+    [getNavigationItems],
+  );
+
+  // Handle view all members modal so we can close it after navigation is triggered by our custom action.
+  const MemberSection = useCallback(
+    () => <ChannelDetailsMemberSection onViewAllMembersPress={handleAllMembersPress} />,
+    [handleAllMembersPress],
+  );
+
+  const MemberActionsSheet = useCallback(
+    (props: ChannelMemberActionsSheetProps) => (
+      <ChannelMemberActionsSheet
+        {...props}
+        getChannelMemberActionItems={getChannelMemberActionItems}
+      />
+    ),
+    [getChannelMemberActionItems],
+  );
+
   return (
     <>
-      <ChannelDetails
-        channel={channel}
-        getChannelMemberActionItems={getChannelMemberActionItems}
-        getNavigationItems={getNavigationItems}
-        onBack={onBack}
-        onChannelDismiss={popToRoot}
-        // Handler view all members modal so we can close it after navigation is triggered by our custom action
-        onViewAllMembersPress={handleAllMembersPress}
-      />
-      <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
-        <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
+      <WithComponents
+        overrides={{
+          ChannelDetailsActionsSection: ActionsSection,
+          ChannelDetailsMemberSection: MemberSection,
+          ChannelDetailsNavigationSection: NavigationSection,
+          ChannelMemberActionsSheet: MemberActionsSheet,
+        }}
+      >
+        <ChannelDetails channel={channel} onBack={onBack} />
+      </WithComponents>
+      <ChannelDetailsContextProvider value={{ channel }}>
+        <WithComponents overrides={{ ChannelMemberActionsSheet: MemberActionsSheet }}>
+          <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
+        </WithComponents>
       </ChannelDetailsContextProvider>
     </>
   );

@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
-
-import type { GetChannelDetailsNavigationItems } from './hooks/useChannelDetailsNavigationItems';
+import type { Channel } from 'stream-chat';
 
 import {
   ChannelDetailsContextProvider,
@@ -12,101 +10,17 @@ import {
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
-import type { GetChannelMemberActionItems } from '../../hooks/actions/useChannelMemberActionItems';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { primitives } from '../../theme';
-import { GlobalFileUploadRequest } from '../../types/types';
 import { NotificationList } from '../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
-
-/**
- * Resolves the trailing role label rendered next to a member row in the channel details screen.
- *
- * Return `null` or `undefined` to render no label for the given member.
- */
-export type GetMemberRoleLabel = (params: {
-  channel: Channel;
-  member: ChannelMemberResponse;
-  t: TranslationContextValue['t'];
-}) => string | null | undefined;
 
 export type ChannelDetailsProps = {
   channel: Channel;
   /**
-   * Compress image with quality (from 0 to 1, where 1 is best quality).
-   * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
-   * while a value of 0.8 will reduce the file size by about half or less compared to a value of 1.
-   * Image picker defaults to 0.8 for iOS and 1 for Android
-   */
-  compressImageQuality?: number;
-  /**
-   * Customize the list of action items rendered in the channel details actions section.
-   *
-   * Receives the default items the SDK produces for the current channel and returns the
-   * final list to render. Use this to filter, reorder, replace, or add items.
-   *
-   * The SDK still wires `onChannelDismiss` into the resulting `leave` and `deleteChannel`
-   * items (matched by `id`) after this callback runs, so those actions continue to dismiss
-   * the screen on success regardless of how the items are customized.
-   */
-  getChannelActionItems?: GetChannelActionItems;
-  /**
-   * Customize the list of action items rendered in the per-member actions bottom sheet
-   * (the sheet that opens when a member row is tapped).
-   *
-   * Receives the default items the SDK produces for the tapped member (e.g. `muteUser`,
-   * `block`) and returns the final list to render. Use this to filter, reorder, replace,
-   * or add items — for example, to inject a "Send Direct Message" action in your app.
-   */
-  getChannelMemberActionItems?: GetChannelMemberActionItems;
-  /**
-   * Customize the navigation rows rendered in the channel details navigation section.
-   *
-   * Receives the built-in `defaultItems` (and a `context`) and returns the rows to render.
-   * Map over `defaultItems` to override a row's `onPress` (e.g. to push your own screen) or
-   * to add/remove rows. Any row whose `onPress` you leave untouched keeps its built-in
-   * behavior (opening the built-in modal), including sections added in future SDK versions.
-   */
-  getNavigationItems?: GetChannelDetailsNavigationItems;
-  /**
-   * Override the role label shown next to each member in the channel details screen.
-   *
-   * The default implementation labels members as `Owner` (channel creator),
-   * `Admin` (`user.role === 'admin'`), or `Moderator` (`channel_role === 'channel_moderator'`),
-   * with priority Owner > Admin > Moderator. Return `null` to render no label.
-   */
-  getMemberRoleLabel?: GetMemberRoleLabel;
-  /**
    * Fired when the back button is pressed on the channel details header.
    */
   onBack?: () => void;
-  /** Fired after the channel is no longer available to the current user (delete, leave, or block actions). */
-  onChannelDismiss?: () => void;
-  /**
-   * Fired when the user taps the "Edit" button in the channel details header.
-   * The button is only rendered when the current user has the `update-channel`
-   * capability. By default it opens the channel edit details modal. Not shown in direct (1:1) channels.
-   */
-  onEditChannelPress?: () => void;
-  /**
-   * Fired when the user taps a member row. Receives the tapped member.
-   *
-   * Applies both to the member preview on the channel details screen and to the full
-   * list opened via the "view all members" modal. If omitted, the default behavior is
-   * to open the per-member actions bottom sheet (mute, block, etc.).
-   */
-  onMemberPress?: (member: ChannelMemberResponse) => void;
-  /**
-   * Fired when the user taps the "view all members" button, by default it opens the members bottom sheet.
-   */
-  onViewAllMembersPress?: () => void;
-  /**
-   * Override file upload request (used to upload channel image). By default it will use Stream's CDN.
-   * @param file File object to upload
-   */
-  doFileUploadRequest?: GlobalFileUploadRequest;
 };
 
 export const ChannelDetailsContent = () => {
@@ -150,50 +64,14 @@ export const ChannelDetailsContent = () => {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetails = ({
-  channel,
-  compressImageQuality,
-  doFileUploadRequest,
-  getChannelActionItems,
-  getChannelMemberActionItems,
-  getMemberRoleLabel,
-  getNavigationItems,
-  onBack,
-  onChannelDismiss,
-  onEditChannelPress,
-  onMemberPress,
-  onViewAllMembersPress,
-}: ChannelDetailsProps) => {
+export const ChannelDetails = ({ channel, onBack }: ChannelDetailsProps) => {
   const { ChannelDetailsContent: ChannelDetailsContentOverride } = useComponentsContext();
   const value = useMemo<ChannelDetailsContextValue>(
     () => ({
       channel,
-      compressImageQuality,
-      doFileUploadRequest,
-      getChannelActionItems,
-      getChannelMemberActionItems,
-      getMemberRoleLabel,
-      getNavigationItems,
       onBack,
-      onChannelDismiss,
-      onEditChannelPress,
-      onMemberPress,
-      onViewAllMembersPress,
     }),
-    [
-      channel,
-      compressImageQuality,
-      doFileUploadRequest,
-      getChannelActionItems,
-      getChannelMemberActionItems,
-      getMemberRoleLabel,
-      getNavigationItems,
-      onBack,
-      onChannelDismiss,
-      onEditChannelPress,
-      onMemberPress,
-      onViewAllMembersPress,
-    ],
+    [channel, onBack],
   );
   const Content = ChannelDetailsContentOverride ?? ChannelDetailsContent;
   const notificationHostId = channel?.cid ? `channel-details:${channel.cid}` : undefined;

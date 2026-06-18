@@ -1,14 +1,19 @@
 import React, { useCallback, useContext, useState } from 'react';
 
+import { View } from 'react-native';
+
 import { Stack, useRouter } from 'expo-router';
 
 import {
   ChannelAllMembersModal,
   ChannelDetails,
+  ChannelDetailsActionsSection,
   ChannelDetailsContextProvider,
+  ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
   ChannelDetailsNavigationSectionType,
   GetChannelDetailsNavigationItems,
-  GetChannelMemberActionItems,
+  ChannelDetailsEditButton,
   WithComponents,
 } from 'stream-chat-expo';
 
@@ -22,7 +27,7 @@ const navigationItems: {
   files: 'files',
 };
 
-const Header = () => {
+const EmptyHeader = () => {
   return null;
 };
 
@@ -51,9 +56,31 @@ export default function ChannelDetailsScreen() {
   const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
   const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
 
-  const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
-    ({ defaultItems }) => defaultItems,
-    [],
+  const NavigationSection = useCallback(
+    () => <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />,
+    [getNavigationItems],
+  );
+
+  const MemberSection = useCallback(
+    () => <ChannelDetailsMemberSection onViewAllMembersPress={handleAllMembersPress} />,
+    [handleAllMembersPress],
+  );
+
+  const renderHeaderRight = useCallback(
+    () =>
+      channel ? (
+        <View style={{ flexGrow: 0, flexShrink: 0 }}>
+          <ChannelDetailsContextProvider value={{ channel }}>
+            <ChannelDetailsEditButton />
+          </ChannelDetailsContextProvider>
+        </View>
+      ) : null,
+    [channel],
+  );
+
+  const ActionsSection = useCallback(
+    () => <ChannelDetailsActionsSection onChannelDismiss={popToRoot} />,
+    [popToRoot],
   );
 
   if (!channel) {
@@ -65,18 +92,20 @@ export default function ChannelDetailsScreen() {
       <Stack.Screen
         options={{
           title: 'Channel details',
+          headerRight: renderHeaderRight,
         }}
       />
-      <WithComponents overrides={{ ChannelDetailsNavHeader: Header }}>
-        <ChannelDetails
-          channel={channel}
-          getChannelMemberActionItems={getChannelMemberActionItems}
-          getNavigationItems={getNavigationItems}
-          onChannelDismiss={popToRoot}
-          onViewAllMembersPress={handleAllMembersPress}
-        />
+      <WithComponents
+        overrides={{
+          ChannelDetailsActionsSection: ActionsSection,
+          ChannelDetailsMemberSection: MemberSection,
+          ChannelDetailsNavHeader: EmptyHeader,
+          ChannelDetailsNavigationSection: NavigationSection,
+        }}
+      >
+        <ChannelDetails channel={channel} />
       </WithComponents>
-      <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
+      <ChannelDetailsContextProvider value={{ channel }}>
         <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
       </ChannelDetailsContextProvider>
     </>

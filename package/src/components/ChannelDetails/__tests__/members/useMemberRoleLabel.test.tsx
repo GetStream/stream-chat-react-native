@@ -7,8 +7,10 @@ import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetai
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import type { GetMemberRoleLabel } from '../../ChannelDetails';
-import { useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
+import {
+  type GetMemberRoleLabel,
+  useMemberRoleLabel,
+} from '../../hooks/members/useMemberRoleLabel';
 
 const buildChannel = (createdById = 'creator'): Channel =>
   ({
@@ -37,12 +39,12 @@ const renderRoleLabel = (
     getMemberRoleLabel,
   }: { channel?: Channel; getMemberRoleLabel?: GetMemberRoleLabel } = {},
 ) =>
-  renderHook(() => useMemberRoleLabel(member), {
+  renderHook(() => useMemberRoleLabel(member, getMemberRoleLabel), {
     wrapper: ({ children }) => (
       <TranslationProvider
         value={{ t, tDateTimeParser: ((input: unknown) => input) as never, userLanguage: 'en' }}
       >
-        <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
+        <ChannelDetailsContextProvider value={{ channel }}>
           {children}
         </ChannelDetailsContextProvider>
       </TranslationProvider>

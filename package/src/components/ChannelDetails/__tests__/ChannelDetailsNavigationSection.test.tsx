@@ -19,6 +19,7 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
 import { ChannelDetailsNavigationSection } from '../components/ChannelDetailsNavigationSection';
+import type { GetChannelDetailsNavigationItems } from '../hooks/useChannelDetailsNavigationItems';
 
 const probeCalls: ChannelDetailsActionItemProps[] = [];
 
@@ -67,7 +68,7 @@ jest.mock('../../ImageGallery/ImageGallery', () => {
 });
 
 const renderSection = (
-  contextValue: Partial<ChannelDetailsContextValue> = {},
+  { getNavigationItems }: { getNavigationItems?: GetChannelDetailsNavigationItems } = {},
   overlay: Overlay = 'none',
 ) => {
   const overlayContextValue: OverlayContextValue = {
@@ -85,8 +86,8 @@ const renderSection = (
         }}
       >
         <OverlayContext.Provider value={overlayContextValue}>
-          <ChannelDetailsContextProvider value={contextValue as ChannelDetailsContextValue}>
-            <ChannelDetailsNavigationSection />
+          <ChannelDetailsContextProvider value={{} as ChannelDetailsContextValue}>
+            <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />
           </ChannelDetailsContextProvider>
         </OverlayContext.Provider>
       </TranslationProvider>

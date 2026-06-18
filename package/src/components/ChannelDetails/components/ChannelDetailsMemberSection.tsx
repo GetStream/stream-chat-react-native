@@ -12,11 +12,20 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { primitives } from '../../../theme';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
+export type ChannelDetailsMemberSectionProps = {
+  /**
+   * Fired when the user taps the "view all members" button. By default it opens the members bottom sheet.
+   */
+  onViewAllMembersPress?: () => void;
+};
+
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetailsMemberSection = () => {
-  const { channel, onMemberPress, onViewAllMembersPress } = useChannelDetailsContext();
+export const ChannelDetailsMemberSection = ({
+  onViewAllMembersPress,
+}: ChannelDetailsMemberSectionProps) => {
+  const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -52,14 +61,8 @@ export const ChannelDetailsMemberSection = () => {
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
   const handleMemberPress = useCallback(
-    (member: ChannelMemberResponse) => {
-      if (onMemberPress) {
-        onMemberPress(member);
-        return;
-      }
-      setSelectedMember(member);
-    },
-    [onMemberPress],
+    (member: ChannelMemberResponse) => setSelectedMember(member),
+    [],
   );
 
   return (

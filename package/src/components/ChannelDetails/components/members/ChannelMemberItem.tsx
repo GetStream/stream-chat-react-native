@@ -11,13 +11,19 @@ import { Mute } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { useUserMuteActive } from '../../../Message/hooks/useUserMuteActive';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
-import { useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
+import { GetMemberRoleLabel, useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
 import { useUserActivityStatus } from '../../hooks/useUserActivityStatus';
 
 export type ChannelMemberItemSize = 'sm' | 'lg';
 
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
+  /**
+   * Override the role label shown next to the member. Receives `{ channel, member, t }` and
+   * returns the label (or `null`/`undefined` to render none). Defaults to the built-in
+   * Owner > Admin > Moderator logic.
+   */
+  getMemberRoleLabel?: GetMemberRoleLabel;
   onPress?: (member: ChannelMemberResponse) => void;
   /**
    * Visual size of the row.
@@ -33,6 +39,7 @@ export type ChannelMemberItemProps = {
  * @experimental This component is experimental and is subject to change.
  */
 export const ChannelMemberItem = ({
+  getMemberRoleLabel,
   member,
   onPress,
   size = 'sm',
@@ -55,7 +62,7 @@ export const ChannelMemberItem = ({
   } = useTheme();
   const styles = useStyles();
   const statusLine = useUserActivityStatus(member.user);
-  const roleLabel = useMemberRoleLabel(member);
+  const roleLabel = useMemberRoleLabel(member, getMemberRoleLabel);
   const isMuted = useUserMuteActive(member.user);
 
   const user = member.user;

@@ -1,7 +1,8 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 
 import { NotificationTargetProvider } from '../../components/Notifications/NotificationTargetContext';
 import { EditChannelDetailsStore } from '../../state-store/edit-channel-details-store';
+import type { GlobalFileUploadRequest } from '../../types/types';
 import { useChannelDetailsContext } from '../channelDetailsContext/channelDetailsContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -11,6 +12,17 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  */
 export type ChannelEditDetailsContextValue = {
   store: EditChannelDetailsStore;
+  /**
+   * Compress image with quality (from 0 to 1, where 1 is best quality) applied
+   * to the channel image picked during editing.
+   */
+  compressImageQuality?: number;
+  /** Override the upload request used to upload the channel image. */
+  doFileUploadRequest?: GlobalFileUploadRequest;
+  /** Set the {@link compressImageQuality} used by the edit flow. */
+  setCompressImageQuality?: (value?: number) => void;
+  /** Set the {@link doFileUploadRequest} used by the edit flow. */
+  setDoFileUploadRequest?: (value?: GlobalFileUploadRequest) => void;
 };
 
 export const ChannelEditDetailsContext = React.createContext(
@@ -28,13 +40,35 @@ export const ChannelEditDetailsContext = React.createContext(
 export const ChannelEditDetailsProvider = ({ children }: PropsWithChildren<unknown>) => {
   const { channel } = useChannelDetailsContext();
   const [store] = useState(() => new EditChannelDetailsStore(channel));
+  const [compressImageQuality, setCompressImageQuality] = useState<number | undefined>(undefined);
+  const [doFileUploadRequest, _setDoFileUploadRequest] = useState<
+    GlobalFileUploadRequest | undefined
+  >(undefined);
+
+  // Wrap the function setter so callers can pass the upload function directly
+  // without React interpreting it as a state updater.
+  const setDoFileUploadRequest = useCallback(
+    (value?: GlobalFileUploadRequest) => _setDoFileUploadRequest(() => value),
+    [],
+  );
+
+  const value = useMemo(
+    () => ({
+      compressImageQuality,
+      doFileUploadRequest,
+      setCompressImageQuality,
+      setDoFileUploadRequest,
+      store,
+    }),
+    [compressImageQuality, doFileUploadRequest, setDoFileUploadRequest, store],
+  );
 
   return (
     <NotificationTargetProvider
       hostId={`channel-edit-details:${channel.cid}`}
       panel='channel-details'
     >
-      <ChannelEditDetailsContext.Provider value={{ store }}>
+      <ChannelEditDetailsContext.Provider value={value}>
         {children}
       </ChannelEditDetailsContext.Provider>
     </NotificationTargetProvider>

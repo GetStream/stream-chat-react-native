@@ -54,7 +54,6 @@ const ChannelMemberListContent = ({
       channelDetails: { memberList },
     },
   } = useTheme();
-  const { onMemberPress } = useChannelDetailsContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { addNotification } = useNotificationApi();
 
@@ -95,14 +94,8 @@ const ChannelMemberListContent = ({
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
   const handleMemberPress = useCallback(
-    (member: ChannelMemberResponse) => {
-      if (onMemberPress) {
-        onMemberPress(member);
-        return;
-      }
-      setSelectedMember(member);
-    },
-    [onMemberPress],
+    (member: ChannelMemberResponse) => setSelectedMember(member),
+    [],
   );
 
   const renderItem = useCallback(

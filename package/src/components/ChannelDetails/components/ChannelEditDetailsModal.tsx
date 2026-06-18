@@ -40,8 +40,8 @@ type ChannelEditDetailsModalContentProps = {
 };
 
 const ChannelEditDetailsModalBody = ({ onClose }: ChannelEditDetailsModalContentProps) => {
-  const { channel, doFileUploadRequest } = useChannelDetailsContext();
-  const { store } = useChannelEditDetailsContext();
+  const { channel } = useChannelDetailsContext();
+  const { doFileUploadRequest, store } = useChannelEditDetailsContext();
   const { updateImage, updateName } = useChannelActions(channel);
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();

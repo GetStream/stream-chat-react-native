@@ -77,12 +77,10 @@ const applyCapabilities = (
 const renderSection = ({
   capabilities,
   channel,
-  onMemberPress,
   onViewAllMembersPress,
 }: {
   channel: Channel;
   capabilities?: Partial<OwnCapabilitiesContextValue>;
-  onMemberPress?: (member: ChannelMemberResponse) => void;
   onViewAllMembersPress?: () => void;
 }) =>
   render(
@@ -110,8 +108,6 @@ const renderSection = ({
             <ChannelDetailsContextProvider
               value={{
                 channel: applyCapabilities(channel, capabilities),
-                onMemberPress,
-                onViewAllMembersPress,
               }}
             >
               <WithComponents
@@ -122,7 +118,7 @@ const renderSection = ({
                   ChannelMemberList: MemberListProbe,
                 }}
               >
-                <ChannelDetailsMemberSection />
+                <ChannelDetailsMemberSection onViewAllMembersPress={onViewAllMembersPress} />
               </WithComponents>
             </ChannelDetailsContextProvider>
           </ChatContext.Provider>
@@ -232,7 +228,7 @@ describe('ChannelDetailsMemberSection', () => {
     expect(screen.getByTestId('add-members-probe')).toBeTruthy();
   });
 
-  it('opens the per-member actions sheet when a member row is pressed and no onMemberPress override is provided', () => {
+  it('opens the per-member actions sheet when a member row is pressed', () => {
     const members = makeMembers(3);
     previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: members });
     const channel = buildChannel(members, 3);
@@ -250,26 +246,6 @@ describe('ChannelDetailsMemberSection', () => {
 
     expect(screen.getByTestId('member-actions-sheet-probe')).toBeTruthy();
     expect(screen.getByTestId('member-actions-sheet-probe').props.children).toBe('u-0');
-  });
-
-  it('calls onMemberPress instead of opening the per-member actions sheet when provided', () => {
-    const members = makeMembers(3);
-    previewSpy.mockReturnValue({ hasMore: false, total: 3, visible: members });
-    const channel = buildChannel(members, 3);
-    const onMemberPress = jest.fn();
-
-    renderSection({ channel, onMemberPress });
-
-    const lastCallForSecondMember = [...memberItemProbeCalls]
-      .reverse()
-      .find((call) => call.member.user?.id === 'u-1');
-    act(() => {
-      lastCallForSecondMember?.onPress?.(lastCallForSecondMember.member);
-    });
-
-    expect(onMemberPress).toHaveBeenCalledTimes(1);
-    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('u-1');
-    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
   it('opens the Add-members sheet on top of the all-members modal when the modal Add button is pressed', () => {

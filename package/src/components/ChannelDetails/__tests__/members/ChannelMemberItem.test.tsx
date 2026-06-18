@@ -12,8 +12,8 @@ import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import type { GetMemberRoleLabel } from '../../ChannelDetails';
 import { ChannelMemberItem } from '../../components/members/ChannelMemberItem';
+import type { GetMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
 
 Dayjs.extend(relativeTime);
 
@@ -70,8 +70,8 @@ const renderRow = ({
             } as never
           }
         >
-          <ChannelDetailsContextProvider value={{ channel, getMemberRoleLabel }}>
-            <ChannelMemberItem {...props} />
+          <ChannelDetailsContextProvider value={{ channel }}>
+            <ChannelMemberItem getMemberRoleLabel={getMemberRoleLabel} {...props} />
           </ChannelDetailsContextProvider>
         </ChatContext.Provider>
       </TranslationProvider>

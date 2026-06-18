@@ -155,7 +155,6 @@ const tree = (
   searchSource: FakeSearchSource,
   props: {
     additionalFlatListProps?: object;
-    onMemberPress?: (member: ChannelMemberResponse) => void;
   } = {},
 ) => {
   mockCurrentSearchSource = searchSource;
@@ -172,7 +171,6 @@ const tree = (
           value={
             {
               channel: mockChannel,
-              onMemberPress: props.onMemberPress,
             } as unknown as ChannelDetailsContextValue
           }
         >
@@ -307,7 +305,7 @@ describe('ChannelMemberList', () => {
     expect(screen.queryByTestId('channel-member-list')).toBeNull();
   });
 
-  it('opens the per-member actions sheet on press when no onMemberPress override is provided, and closes it', () => {
+  it('opens the per-member actions sheet on press, and closes it', () => {
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
     render(tree(makeSearchSource({ items: [bob] })));
 
@@ -317,18 +315,6 @@ describe('ChannelMemberList', () => {
     expect(screen.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
 
     act(() => mockSheetProbe[mockSheetProbe.length - 1]?.onClose?.());
-    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
-  });
-
-  it('calls onMemberPress instead of opening the sheet when an override is provided', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const onMemberPress = jest.fn();
-    render(tree(makeSearchSource({ items: [alice] }), { onMemberPress }));
-
-    fireEvent.press(screen.getByTestId('member-alice'));
-
-    expect(onMemberPress).toHaveBeenCalledTimes(1);
-    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');
     expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 

@@ -28,7 +28,6 @@ const mockContext = (
 ) => {
   const value: channelDetailsContextModule.ChannelDetailsContextValue = {
     channel,
-    onChannelDismiss: jest.fn(),
     ...overrides,
   };
   jest.spyOn(channelDetailsContextModule, 'useChannelDetailsContext').mockReturnValue(value);
@@ -58,12 +57,12 @@ describe('useChannelDetailsActionItems', () => {
     });
   });
 
-  it('forwards the getChannelActionItems prop from context unchanged', () => {
+  it('forwards the getChannelActionItems argument unchanged', () => {
     const getChannelActionItems: GetChannelActionItems = ({ defaultItems }) => defaultItems;
-    mockContext({ getChannelActionItems });
+    mockContext();
     const spy = mockUseChannelActionItems([]);
 
-    renderHook(() => useChannelDetailsActionItems());
+    renderHook(() => useChannelDetailsActionItems({ getChannelActionItems }));
 
     expect(spy).toHaveBeenCalledWith({ channel, getChannelActionItems, surface: 'details' });
   });
@@ -88,7 +87,8 @@ describe('useChannelDetailsActionItems', () => {
   ])(
     'wraps the $id action to call onChannelDismiss after the original action resolves',
     async ({ id, label }) => {
-      const { onChannelDismiss } = mockContext();
+      mockContext();
+      const onChannelDismiss = jest.fn();
 
       const callOrder: string[] = [];
       let resolveAction: (() => void) | undefined;
@@ -110,7 +110,7 @@ describe('useChannelDetailsActionItems', () => {
       const item = buildItem({ action: originalAction, id, label, type: 'destructive' });
       mockUseChannelActionItems([item]);
 
-      const { result } = renderHook(() => useChannelDetailsActionItems());
+      const { result } = renderHook(() => useChannelDetailsActionItems({ onChannelDismiss }));
       const [wrapped] = result.current;
 
       expect(wrapped).not.toBe(item);
@@ -132,11 +132,12 @@ describe('useChannelDetailsActionItems', () => {
   );
 
   it('composes a caller-supplied onSuccess with onChannelDismiss and passes other options through', () => {
-    const { onChannelDismiss } = mockContext();
+    mockContext();
+    const onChannelDismiss = jest.fn();
     const originalLeave = jest.fn();
     mockUseChannelActionItems([buildItem({ action: originalLeave, id: 'leave' })]);
 
-    const { result } = renderHook(() => useChannelDetailsActionItems());
+    const { result } = renderHook(() => useChannelDetailsActionItems({ onChannelDismiss }));
     const callerOnSuccess = jest.fn();
     const callerOnFailure = jest.fn();
     result.current[0].action({
@@ -161,7 +162,7 @@ describe('useChannelDetailsActionItems', () => {
   it.each([{ id: 'leave' }, { id: 'deleteChannel' }])(
     'does not throw when onChannelDismiss is undefined on the $id path',
     async ({ id }) => {
-      mockContext({ onChannelDismiss: undefined });
+      mockContext();
       const originalAction = jest.fn().mockResolvedValue(undefined);
       mockUseChannelActionItems([buildItem({ action: originalAction, id })]);
 

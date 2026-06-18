@@ -12,20 +12,14 @@ import { Button } from '../../ui/Button/Button';
  * @experimental This component is experimental and is subject to change.
  */
 export const ChannelDetailsEditButton = () => {
-  const { channel, onEditChannelPress } = useChannelDetailsContext();
+  const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const ownCapabilities = useChannelOwnCapabilities(channel);
   const canUpdateChannel = ownCapabilities?.includes('update-channel') ?? false;
   const isDirect = useIsDirectChat(channel);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
-  const handleEditPress = useCallback(() => {
-    if (onEditChannelPress) {
-      onEditChannelPress();
-      return;
-    }
-    setEditModalVisible(true);
-  }, [onEditChannelPress]);
+  const handleEditPress = useCallback(() => setEditModalVisible(true), []);
 
   const handleEditModalClose = useCallback(() => setEditModalVisible(false), []);
 

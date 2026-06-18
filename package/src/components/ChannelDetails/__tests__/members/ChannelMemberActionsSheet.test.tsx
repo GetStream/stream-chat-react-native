@@ -168,9 +168,14 @@ describe('ChannelMemberActionsSheet', () => {
               userLanguage: 'en',
             }}
           >
-            <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
+            <ChannelDetailsContextProvider value={{ channel }}>
               <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
-                <ChannelMemberActionsSheet member={member} onClose={jest.fn()} visible />
+                <ChannelMemberActionsSheet
+                  getChannelMemberActionItems={getChannelMemberActionItems}
+                  member={member}
+                  onClose={jest.fn()}
+                  visible
+                />
               </WithComponents>
             </ChannelDetailsContextProvider>
           </TranslationProvider>
