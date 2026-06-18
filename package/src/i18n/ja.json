@@ -463,5 +463,7 @@
   "They won't be able to message or call you. You can unblock them later.": "メッセージや通話ができなくなります。あとでブロックを解除することもできます。",
   "Leave": "退出",
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "{{ name }} からのメッセージが届かなくなります。いつでも再参加できます。",
-  "group": "グループ"
+  "group": "グループ",
+  "No members found": "メンバーが見つかりません",
+  "a11y/Search members": "メンバーを検索"
 }

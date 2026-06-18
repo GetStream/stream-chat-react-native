@@ -463,5 +463,7 @@
   "They won't be able to message or call you. You can unblock them later.": "No podrá enviarte mensajes ni llamarte. Puedes desbloquearlo más tarde.",
   "Leave": "Salir",
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Dejarás de recibir mensajes de {{ name }}. Puedes volver a unirte cuando quieras.",
-  "group": "el grupo"
+  "group": "el grupo",
+  "No members found": "No se encontraron miembros",
+  "a11y/Search members": "Buscar miembros"
 }

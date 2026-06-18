@@ -1,15 +1,36 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, type FlatListProps } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { ChannelMemberResponse } from 'stream-chat';
+import type { ChannelMemberResponse, SearchSourceState } from 'stream-chat';
 
 import { MemberListLoadingSkeleton } from './MemberListLoadingSkeleton';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import {
+  ChannelMemberListProvider,
+  useChannelMemberListContext,
+} from '../../../../contexts/channelMemberListContext/ChannelMemberListContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
-import { useChannelAllMembers } from '../../hooks/members/useChannelAllMembers';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
+import { useStateStore } from '../../../../hooks/useStateStore';
+import { primitives } from '../../../../theme';
+import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
+import { NotificationList } from '../../../Notifications/NotificationList';
+import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
+import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
+import { SearchInput, SearchInputProps } from '../../../UIComponents/SearchInput';
 
 const keyExtractor = (member: ChannelMemberResponse) => member.user?.id ?? member.user_id ?? '';
+
+const listStateSelector = (state: SearchSourceState<ChannelMemberResponse>) => ({
+  error: state.lastQueryError,
+  hasNext: state.hasNext,
+  loading: state.isLoading,
+  members: state.items,
+  searchQuery: state.searchQuery,
+});
 
 export type ChannelMemberListProps = {
   /**
@@ -19,17 +40,53 @@ export type ChannelMemberListProps = {
    * See https://reactnative.dev/docs/flatlist#props for the full list.
    */
   additionalFlatListProps?: Partial<FlatListProps<ChannelMemberResponse>>;
+  searchInputProps?: SearchInputProps;
 };
 
-/**
- * Lists all channel members.
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberListProps = {}) => {
-  const { channel, onMemberPress } = useChannelDetailsContext();
+const ChannelMemberListContent = ({
+  additionalFlatListProps,
+  searchInputProps,
+}: ChannelMemberListProps) => {
+  const { t } = useTranslationContext();
+  const {
+    theme: {
+      channelDetails: { memberList },
+    },
+  } = useTheme();
+  const { onMemberPress } = useChannelDetailsContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
-  const { hasMore, loading, loadMore, results } = useChannelAllMembers({ channel });
+  const { addNotification } = useNotificationApi();
+
+  const { channel, searchSource } = useChannelMemberListContext();
+  const { error, hasNext, loading, members, searchQuery } = useStateStore(
+    searchSource.state,
+    listStateSelector,
+  );
+
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
+
+  const initialized = useRef(false);
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      searchSource.search();
+    }
+  }, [searchSource]);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+    addNotification({
+      message: t('Failed to load members'),
+      options: {
+        ...getNotificationErrorOptions(error),
+        severity: 'error',
+        type: 'api:channel:query-members:failed',
+      },
+      origin: { context: { channel }, emitter: 'ChannelMemberList' },
+    });
+  }, [error, addNotification, channel, t]);
 
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
@@ -51,24 +108,46 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
     [ChannelMemberItem, handleMemberPress],
   );
 
-  const ListFooterComponent = useMemo(
-    () => (loading && results.length > 0 ? <ActivityIndicator /> : null),
-    [loading, results.length],
-  );
+  const loadMore = useCallback(() => {
+    // hasNext is true by default, !!members prevents calling search on initial load
+    if (hasNext && !!members) {
+      searchSource.search();
+    }
+  }, [hasNext, members, searchSource]);
 
-  if (loading && results.length === 0) {
-    return <MemberListLoadingSkeleton />;
-  }
+  const emptyState =
+    loading && !members ? (
+      <MemberListLoadingSkeleton />
+    ) : (
+      <EmptySearchResult label={t('No members found')} />
+    );
 
   return (
-    <>
+    <View style={[styles.container, memberList.container]}>
+      <SearchInput
+        accessibilityLabel={t('a11y/Search members')}
+        onChangeText={(text) => {
+          searchSource.state.partialNext({ searchQuery: text });
+          searchSource.search(text);
+        }}
+        value={searchQuery}
+        {...searchInputProps}
+      />
       <FlatList
-        data={results}
+        contentContainerStyle={[styles.listContent, memberList.listContent]}
+        data={members}
+        keyboardDismissMode='interactive'
+        keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListFooterComponent={ListFooterComponent}
-        onEndReached={hasMore ? loadMore : undefined}
+        ListEmptyComponent={emptyState}
+        ListFooterComponent={
+          loading && members && members.length > 0 ? <ActivityIndicator /> : null
+        }
+        onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}
+        style={[styles.list, memberList.list]}
+        testID='channel-member-list'
         {...additionalFlatListProps}
       />
       {selectedMember ? (
@@ -78,6 +157,41 @@ export const ChannelMemberList = ({ additionalFlatListProps }: ChannelMemberList
           visible
         />
       ) : null}
-    </>
+      <NotificationList />
+    </View>
   );
 };
+
+/**
+ * Lists all channel members with the ability to search them.
+ * @experimental This component is experimental and is subject to change.
+ */
+export const ChannelMemberList = (props: ChannelMemberListProps = {}) => {
+  const { channel } = useChannelDetailsContext();
+  const notificationHostId = channel?.cid ? `channel-member-list:${channel.cid}` : undefined;
+
+  if (!notificationHostId) {
+    return null;
+  }
+
+  return (
+    <ChannelMemberListProvider channel={channel}>
+      <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+        <ChannelMemberListContent {...props} />
+      </NotificationTargetProvider>
+    </ChannelMemberListProvider>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  list: {
+    flex: 1,
+  },
+  listContent: {
+    flexGrow: 1,
+    paddingBottom: primitives.spacing3xl,
+  },
+});

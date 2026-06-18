@@ -463,5 +463,7 @@
   "They won't be able to message or call you. You can unblock them later.": "Он не сможет писать вам и звонить. Вы сможете снять блокировку позже.",
   "Leave": "Покинуть",
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Вы перестанете получать сообщения от {{ name }}. Вы можете присоединиться снова в любое время.",
-  "group": "группы"
+  "group": "группы",
+  "No members found": "Участники не найдены",
+  "a11y/Search members": "Поиск участников"
 }

@@ -69,7 +69,7 @@ const useStyles = () => {
           alignItems: 'center',
           flexDirection: 'row',
           gap: primitives.spacingSm,
-          paddingHorizontal: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
           paddingVertical: primitives.spacingMd,
         },
         content: {
