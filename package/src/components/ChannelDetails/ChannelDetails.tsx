@@ -1,12 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import type { Channel } from 'stream-chat';
-
-import {
-  ChannelDetailsContextProvider,
-  type ChannelDetailsContextValue,
-} from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -16,14 +10,13 @@ import { NotificationList } from '../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type ChannelDetailsProps = {
-  channel: Channel;
   /**
    * Fired when the back button is pressed on the channel details header.
    */
   onBack?: () => void;
 };
 
-export const ChannelDetailsContent = () => {
+export const ChannelDetailsContent = ({ onBack }: Pick<ChannelDetailsProps, 'onBack'>) => {
   const { channel } = useChannelDetailsContext();
   const {
     theme: {
@@ -50,7 +43,7 @@ export const ChannelDetailsContent = () => {
         containerOverride,
       ]}
     >
-      <ChannelDetailsNavHeader action={<ChannelDetailsEditButton />} />
+      <ChannelDetailsNavHeader action={<ChannelDetailsEditButton />} onBack={onBack} />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>
         <ChannelDetailsProfile />
         <ChannelDetailsNavigationSection />
@@ -64,29 +57,19 @@ export const ChannelDetailsContent = () => {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetails = ({ channel, onBack }: ChannelDetailsProps) => {
+export const ChannelDetails = ({ onBack }: ChannelDetailsProps) => {
   const { ChannelDetailsContent: ChannelDetailsContentOverride } = useComponentsContext();
-  const value = useMemo<ChannelDetailsContextValue>(
-    () => ({
-      channel,
-      onBack,
-    }),
-    [channel, onBack],
-  );
+  const { channel } = useChannelDetailsContext();
   const Content = ChannelDetailsContentOverride ?? ChannelDetailsContent;
   const notificationHostId = channel?.cid ? `channel-details:${channel.cid}` : undefined;
 
-  return (
-    <ChannelDetailsContextProvider value={value}>
-      {notificationHostId ? (
-        <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-          <Content />
-          <NotificationList />
-        </NotificationTargetProvider>
-      ) : (
-        <Content />
-      )}
-    </ChannelDetailsContextProvider>
+  return notificationHostId ? (
+    <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
+      <Content onBack={onBack} />
+      <NotificationList />
+    </NotificationTargetProvider>
+  ) : (
+    <Content onBack={onBack} />
   );
 };
 

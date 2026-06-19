@@ -95,18 +95,18 @@ export default function ChannelDetailsScreen() {
           headerRight: renderHeaderRight,
         }}
       />
-      <WithComponents
-        overrides={{
-          ChannelDetailsActionsSection: ActionsSection,
-          ChannelDetailsMemberSection: MemberSection,
-          ChannelDetailsNavHeader: EmptyHeader,
-          ChannelDetailsNavigationSection: NavigationSection,
-        }}
-      >
-        <ChannelDetails channel={channel} />
-      </WithComponents>
       <ChannelDetailsContextProvider value={{ channel }}>
-        <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
+        <WithComponents
+          overrides={{
+            ChannelDetailsActionsSection: ActionsSection,
+            ChannelDetailsMemberSection: MemberSection,
+            ChannelDetailsNavHeader: EmptyHeader,
+            ChannelDetailsNavigationSection: NavigationSection,
+          }}
+        >
+          <ChannelDetails />
+          <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
+        </WithComponents>
       </ChannelDetailsContextProvider>
     </>
   );

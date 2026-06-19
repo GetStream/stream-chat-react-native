@@ -5,7 +5,10 @@ import { render, screen } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
 import type { Channel } from 'stream-chat';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import {
+  ChannelDetailsContextProvider,
+  useChannelDetailsContext,
+} from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -64,9 +67,11 @@ const buildChannel = (capabilities: string[] = []) =>
 const renderContent = () =>
   render(
     <Providers>
-      <WithComponents overrides={SECTION_OVERRIDES}>
-        <ChannelDetails channel={channel} />
-      </WithComponents>
+      <ChannelDetailsContextProvider value={{ channel }}>
+        <WithComponents overrides={SECTION_OVERRIDES}>
+          <ChannelDetails />
+        </WithComponents>
+      </ChannelDetailsContextProvider>
     </Providers>,
   );
 
@@ -108,16 +113,18 @@ describe('ChannelDetailsContent', () => {
       useIsDirectChatSpy.mockReturnValue(false);
       render(
         <Providers>
-          <WithComponents
-            overrides={{
-              ChannelDetailsActionsSection: ActionsProbe,
-              ChannelDetailsMemberSection: MemberProbe,
-              ChannelDetailsNavigationSection: NavigationProbe,
-              ChannelDetailsProfile: ProfileProbe,
-            }}
-          >
-            <ChannelDetails channel={buildChannel(['update-channel'])} />
-          </WithComponents>
+          <ChannelDetailsContextProvider value={{ channel: buildChannel(['update-channel']) }}>
+            <WithComponents
+              overrides={{
+                ChannelDetailsActionsSection: ActionsProbe,
+                ChannelDetailsMemberSection: MemberProbe,
+                ChannelDetailsNavigationSection: NavigationProbe,
+                ChannelDetailsProfile: ProfileProbe,
+              }}
+            >
+              <ChannelDetails />
+            </WithComponents>
+          </ChannelDetailsContextProvider>
         </Providers>,
       );
 
@@ -132,30 +139,34 @@ describe('ChannelDetails', () => {
   });
 
   describe('context provisioning', () => {
-    it('exposes channel and callbacks via ChannelDetailsContext', () => {
+    it('exposes the channel via ChannelDetailsContext and forwards onBack to the content', () => {
       const onBack = jest.fn();
       let captured: ReturnType<typeof useChannelDetailsContext> | undefined;
-      const ContextProbe = () => {
+      let capturedOnBack: (() => void) | undefined;
+      const ContextProbe = ({ onBack: onBackProp }: { onBack?: () => void }) => {
         captured = useChannelDetailsContext();
+        capturedOnBack = onBackProp;
         return null;
       };
 
       render(
         <Providers>
-          <WithComponents
-            overrides={{
-              ...SECTION_OVERRIDES,
-              ChannelDetailsContent: ContextProbe,
-            }}
-          >
-            <ChannelDetails channel={channel} onBack={onBack} />
-          </WithComponents>
+          <ChannelDetailsContextProvider value={{ channel }}>
+            <WithComponents
+              overrides={{
+                ...SECTION_OVERRIDES,
+                ChannelDetailsContent: ContextProbe,
+              }}
+            >
+              <ChannelDetails onBack={onBack} />
+            </WithComponents>
+          </ChannelDetailsContextProvider>
         </Providers>,
       );
 
       expect(captured).toBeDefined();
       expect(captured?.channel).toBe(channel);
-      expect(captured?.onBack).toBe(onBack);
+      expect(capturedOnBack).toBe(onBack);
     });
   });
 
@@ -164,14 +175,16 @@ describe('ChannelDetails', () => {
       const Override = () => <Text testID='custom-content'>CUSTOM</Text>;
       render(
         <Providers>
-          <WithComponents
-            overrides={{
-              ...SECTION_OVERRIDES,
-              ChannelDetailsContent: Override,
-            }}
-          >
-            <ChannelDetails channel={channel} />
-          </WithComponents>
+          <ChannelDetailsContextProvider value={{ channel }}>
+            <WithComponents
+              overrides={{
+                ...SECTION_OVERRIDES,
+                ChannelDetailsContent: Override,
+              }}
+            >
+              <ChannelDetails />
+            </WithComponents>
+          </ChannelDetailsContextProvider>
         </Providers>,
       );
 
@@ -189,9 +202,11 @@ describe('ChannelDetails', () => {
       // wasn't swapped out — the section probes from SECTION_OVERRIDES should appear.
       render(
         <Providers>
-          <WithComponents overrides={SECTION_OVERRIDES}>
-            <ChannelDetails channel={channel} />
-          </WithComponents>
+          <ChannelDetailsContextProvider value={{ channel }}>
+            <WithComponents overrides={SECTION_OVERRIDES}>
+              <ChannelDetails />
+            </WithComponents>
+          </ChannelDetailsContextProvider>
         </Providers>,
       );
       expect(screen.getByTestId('probe-header')).toBeTruthy();

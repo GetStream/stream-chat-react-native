@@ -14,6 +14,8 @@ import { Button } from '../../ui/Button/Button';
 export type ChannelDetailsNavHeaderProps = {
   /** Content rendered on the trailing side of the header (e.g. the edit button). */
   action?: React.ReactNode;
+  /** Fired when the back button is pressed. The back button only renders when provided. */
+  onBack?: () => void;
   /** Override the auto-resolved screen title (1:1 → "Contact Info", group → "Group Info"). */
   title?: string;
 };
@@ -21,8 +23,12 @@ export type ChannelDetailsNavHeaderProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetailsNavHeader = ({ action, title }: ChannelDetailsNavHeaderProps) => {
-  const { channel, onBack } = useChannelDetailsContext();
+export const ChannelDetailsNavHeader = ({
+  action,
+  onBack,
+  title,
+}: ChannelDetailsNavHeaderProps) => {
+  const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const {
     theme: {

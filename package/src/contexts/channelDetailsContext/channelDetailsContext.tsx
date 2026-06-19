@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { ChannelDetailsProps } from '../../components';
+import type { Channel } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -8,7 +8,9 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 /**
  * @experimental This API is experimental and is subject to change.
  */
-export type ChannelDetailsContextValue = ChannelDetailsProps;
+export type ChannelDetailsContextValue = {
+  channel: Channel;
+};
 export const ChannelDetailsContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelDetailsContextValue,
 );

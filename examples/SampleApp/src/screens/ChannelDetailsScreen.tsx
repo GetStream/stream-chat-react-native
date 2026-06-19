@@ -16,6 +16,7 @@ import {
   ChannelMemberActionsSheet,
   ChannelMemberActionsSheetProps,
   WithComponents,
+  ChannelDetailsActionsSectionProps,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -75,7 +76,9 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
 
   const ActionsSection = useCallback(
-    () => <ChannelDetailsActionsSection onChannelDismiss={popToRoot} />,
+    (props: ChannelDetailsActionsSectionProps) => (
+      <ChannelDetailsActionsSection {...props} onChannelDismiss={popToRoot} />
+    ),
     [popToRoot],
   );
 
@@ -126,7 +129,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   );
 
   return (
-    <>
+    <ChannelDetailsContextProvider value={{ channel }}>
       <WithComponents
         overrides={{
           ChannelDetailsActionsSection: ActionsSection,
@@ -135,13 +138,9 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
           ChannelMemberActionsSheet: MemberActionsSheet,
         }}
       >
-        <ChannelDetails channel={channel} onBack={onBack} />
+        <ChannelDetails onBack={onBack} />
+        <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
       </WithComponents>
-      <ChannelDetailsContextProvider value={{ channel }}>
-        <WithComponents overrides={{ ChannelMemberActionsSheet: MemberActionsSheet }}>
-          <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
-        </WithComponents>
-      </ChannelDetailsContextProvider>
-    </>
+    </ChannelDetailsContextProvider>
   );
 };
