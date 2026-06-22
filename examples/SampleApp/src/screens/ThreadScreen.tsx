@@ -145,7 +145,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: white }]}>
+    <View
+      collapsable={false}
+      onAccessibilityEscape={() => navigation.goBack()}
+      style={[styles.container, { backgroundColor: white }]}
+    >
       <Channel
         audioRecordingEnabled={true}
         channel={channel}

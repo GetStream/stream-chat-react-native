@@ -262,7 +262,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
+    <View
+      collapsable={false}
+      onAccessibilityEscape={() => navigation.goBack()}
+      style={[styles.flex, { backgroundColor: 'transparent' }]}
+    >
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
