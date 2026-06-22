@@ -207,6 +207,7 @@ export type Theme = {
       trailingValue: TextStyle;
     };
     memberSection: {
+      addButtonWrapper: ViewStyle;
       confirmButton: ViewStyle;
       footer: ViewStyle;
       header: ViewStyle;
@@ -1322,6 +1323,7 @@ export const defaultTheme: Theme = {
       trailingValue: {},
     },
     memberSection: {
+      addButtonWrapper: {},
       confirmButton: {},
       footer: {},
       header: {},

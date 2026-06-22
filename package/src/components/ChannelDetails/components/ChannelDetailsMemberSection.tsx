@@ -35,6 +35,7 @@ export const ChannelDetailsMemberSection = ({
           header: headerOverride,
           headerTitle: headerTitleOverride,
           viewAllLabel: viewAllLabelOverride,
+          addButtonWrapper: addButtonWrapperOverride,
         },
         sectionCard: sectionCardOverride,
       },
@@ -80,11 +81,13 @@ export const ChannelDetailsMemberSection = ({
         >
           {t('{{count}} members', { count: total })}
         </Text>
-        <ChannelAddMembersButton
-          style={{ flexShrink: 0, width: 'auto' }}
-          testID='channel-details-member-section-add-button'
-          variant='text'
-        />
+        <View style={[styles.addButtonWrapper, addButtonWrapperOverride]}>
+          <ChannelAddMembersButton
+            style={{ flexShrink: 0, width: 'auto' }}
+            testID='channel-details-member-section-add-button'
+            variant='text'
+          />
+        </View>
       </View>
       <View style={styles.list}>
         {visible.map((member) => {
@@ -164,6 +167,12 @@ const useStyles = () =>
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
+        },
+        addButtonWrapper: {
+          height: 48,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
       }),
     [],
