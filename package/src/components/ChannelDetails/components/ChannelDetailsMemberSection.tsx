@@ -81,6 +81,7 @@ export const ChannelDetailsMemberSection = ({
           {t('{{count}} members', { count: total })}
         </Text>
         <ChannelAddMembersButton
+          style={{ flexShrink: 0, width: 'auto' }}
           testID='channel-details-member-section-add-button'
           variant='text'
         />

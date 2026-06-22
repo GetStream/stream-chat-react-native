@@ -1,6 +1,9 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
+
+type ReactTestInstance = ReturnType<typeof screen.getByTestId>;
 import type { Channel } from 'stream-chat';
 
 import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
@@ -41,13 +44,29 @@ const buildChannel = (overrides?: Partial<OwnCapabilitiesContextValue>): Channel
 
 const TEST_ID = 'channel-details-add-members-button';
 
+// Walks up the rendered tree to confirm some host ancestor received `width: 'auto'`
+// (the forwarded style overriding the Button's default `width: '100%'`).
+const hasAncestorWithStyle = (instance: ReactTestInstance | null): boolean => {
+  for (let node = instance; node; node = node.parent) {
+    if (typeof node.type === 'string') {
+      const flattened = StyleSheet.flatten(node.props.style) ?? {};
+      if (flattened.width === 'auto') {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 const renderButton = ({
   capabilities,
   onPress,
+  style,
   variant,
 }: {
   capabilities?: Partial<OwnCapabilitiesContextValue>;
   onPress?: () => void;
+  style?: React.ComponentProps<typeof ChannelAddMembersButton>['style'];
   variant?: 'icon' | 'text';
 } = {}) =>
   render(
@@ -61,7 +80,12 @@ const renderButton = ({
           }}
         >
           <ChannelDetailsContextProvider value={{ channel: buildChannel(capabilities) }}>
-            <ChannelAddMembersButton onPress={onPress} testID={TEST_ID} variant={variant} />
+            <ChannelAddMembersButton
+              onPress={onPress}
+              style={style}
+              testID={TEST_ID}
+              variant={variant}
+            />
           </ChannelDetailsContextProvider>
         </TranslationProvider>
       </AccessibilityProvider>
@@ -95,6 +119,21 @@ describe('ChannelAddMembersButton', () => {
 
     expect(screen.getByText('Add')).toBeTruthy();
   });
+
+  it.each(['text', 'icon'] as const)(
+    'forwards the style prop to the underlying Button (%s variant)',
+    (variant) => {
+      renderButton({
+        capabilities: { updateChannelMembers: true },
+        style: { width: 'auto' },
+        variant,
+      });
+
+      // The style lands on the Button's outer wrapper View, a host ancestor of the
+      // testID-carrying Pressable. Search ancestors for the one that received it.
+      expect(hasAncestorWithStyle(screen.getByTestId(TEST_ID))).toBe(true);
+    },
+  );
 
   it('invokes the onPress override and does not open the modal', () => {
     const onPress = jest.fn();

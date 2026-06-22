@@ -4,15 +4,15 @@ import { ChannelAddMembersModal } from './ChannelAddMembersModal';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { useChannelOwnCapabilities } from '../../../../hooks/useChannelOwnCapabilities';
 import { UserAdd } from '../../../../icons/user-add';
-import { Button } from '../../../ui/Button/Button';
-
-const textVariantStyle = { flexShrink: 0, width: 'auto' as const };
+import { Button, ButtonProps } from '../../../ui/Button/Button';
+import { useIsAddMemberButtonVisible } from '../../hooks/useIsAddMemberButtonVisible';
 
 export type ChannelAddMembersButtonProps = {
   /** Override the default behavior, which opens the Add-members modal. */
   onPress?: () => void;
+  /** Style forwarded to the underlying Button. */
+  style?: ButtonProps['style'];
   testID?: string;
   variant?: 'icon' | 'text';
 };
@@ -22,13 +22,13 @@ export type ChannelAddMembersButtonProps = {
  */
 export const ChannelAddMembersButton = ({
   onPress,
+  style,
   testID,
   variant = 'text',
 }: ChannelAddMembersButtonProps) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
-  const ownCapabilities = useChannelOwnCapabilities(channel);
-  const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
+  const isVisible = useIsAddMemberButtonVisible(channel);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
 
   // The built-in modal is only used by the default press behavior. When a custom handler
@@ -45,7 +45,7 @@ export const ChannelAddMembersButton = ({
 
   const handleClose = useCallback(() => setAddMembersVisible(false), []);
 
-  if (!updateChannelMembers) {
+  if (!isVisible) {
     return null;
   }
 
@@ -58,6 +58,7 @@ export const ChannelAddMembersButton = ({
           LeadingIcon={UserAdd}
           onPress={handlePress}
           size='md'
+          style={style}
           testID={testID}
           type='outline'
           variant='secondary'
@@ -68,7 +69,7 @@ export const ChannelAddMembersButton = ({
           label={t('Add')}
           onPress={handlePress}
           size='sm'
-          style={textVariantStyle}
+          style={style}
           testID={testID}
           type='outline'
           variant='secondary'

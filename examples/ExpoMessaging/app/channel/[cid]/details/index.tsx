@@ -1,7 +1,5 @@
 import React, { useCallback, useContext, useState } from 'react';
 
-import { View } from 'react-native';
-
 import { Stack, useRouter } from 'expo-router';
 
 import {
@@ -14,6 +12,7 @@ import {
   ChannelDetailsNavigationSectionType,
   GetChannelDetailsNavigationItems,
   ChannelDetailsEditButton,
+  useIsEditButtonVisible,
   WithComponents,
 } from 'stream-chat-expo';
 
@@ -34,6 +33,7 @@ const EmptyHeader = () => {
 export default function ChannelDetailsScreen() {
   const router = useRouter();
   const { channel } = useContext(AppContext);
+  const isEditButtonVisible = useIsEditButtonVisible(channel);
 
   const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
     ({ defaultItems }) =>
@@ -69,11 +69,9 @@ export default function ChannelDetailsScreen() {
   const renderHeaderRight = useCallback(
     () =>
       channel ? (
-        <View style={{ flexGrow: 0, flexShrink: 0 }}>
-          <ChannelDetailsContextProvider value={{ channel }}>
-            <ChannelDetailsEditButton />
-          </ChannelDetailsContextProvider>
-        </View>
+        <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsEditButton style={{ flexShrink: 0, width: 'auto' }} />
+        </ChannelDetailsContextProvider>
       ) : null,
     [channel],
   );
@@ -92,7 +90,7 @@ export default function ChannelDetailsScreen() {
       <Stack.Screen
         options={{
           title: 'Channel details',
-          headerRight: renderHeaderRight,
+          headerRight: isEditButtonVisible ? renderHeaderRight : undefined,
         }}
       />
       <ChannelDetailsContextProvider value={{ channel }}>

@@ -1,7 +1,9 @@
 import React, { PropsWithChildren } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
+
+type ReactTestInstance = ReturnType<typeof screen.getByTestId>;
 import { NotificationManager } from 'stream-chat';
 import type { Channel } from 'stream-chat';
 
@@ -14,10 +16,27 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
-import { ChannelDetailsEditButton } from '../components/ChannelDetailsEditButton';
+import {
+  ChannelDetailsEditButton,
+  ChannelDetailsEditButtonProps,
+} from '../components/ChannelDetailsEditButton';
 
 jest.mock('../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
+
+// Walks up the rendered tree to confirm some host ancestor received `width: 'auto'`
+// (the forwarded style overriding the Button's default `width: '100%'`).
+const hasAncestorWithStyle = (instance: ReactTestInstance | null): boolean => {
+  for (let node = instance; node; node = node.parent) {
+    if (typeof node.type === 'string') {
+      const flattened = StyleSheet.flatten(node.props.style) ?? {};
+      if (flattened.width === 'auto') {
+        return true;
+      }
+    }
+  }
+  return false;
+};
 
 const EditDetailsProbe = () => (
   <View testID='channel-edit-details-probe'>
@@ -53,12 +72,18 @@ const Providers = ({ children }: PropsWithChildren) => (
   </ThemeProvider>
 );
 
-const renderEditButton = ({ channel }: { channel: Channel }) =>
+const renderEditButton = ({
+  channel,
+  style,
+}: {
+  channel: Channel;
+  style?: ChannelDetailsEditButtonProps['style'];
+}) =>
   render(
     <Providers>
       <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
         <ChannelDetailsContextProvider value={{ channel }}>
-          <ChannelDetailsEditButton />
+          <ChannelDetailsEditButton style={style} />
         </ChannelDetailsContextProvider>
       </WithComponents>
     </Providers>,
@@ -98,6 +123,17 @@ describe('ChannelDetailsEditButton', () => {
     renderEditButton({ channel: buildChannel(['update-channel']) });
 
     expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
+  });
+
+  it('forwards the style prop to the underlying Button', () => {
+    renderEditButton({
+      channel: buildChannel(['update-channel']),
+      style: { width: 'auto' },
+    });
+
+    // The style lands on the Button's outer wrapper View, a host ancestor of the
+    // testID-carrying Pressable. Search ancestors for the one that received it.
+    expect(hasAncestorWithStyle(screen.getByTestId('channel-details-edit-button'))).toBe(true);
   });
 
   it('opens the edit modal when the Edit button is pressed', () => {

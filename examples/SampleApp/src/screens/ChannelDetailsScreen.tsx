@@ -14,7 +14,6 @@ import {
   ChannelDetailsContextProvider,
   ChannelDetailsNavigationSectionType,
   ChannelMemberActionsSheet,
-  ChannelMemberActionsSheetProps,
   WithComponents,
   ChannelDetailsActionsSectionProps,
 } from 'stream-chat-react-native';
@@ -108,18 +107,22 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   );
 
   const NavigationSection = useCallback(
-    () => <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />,
+    (props: Parameters<typeof ChannelDetailsNavigationSection>[0]) => (
+      <ChannelDetailsNavigationSection {...props} getNavigationItems={getNavigationItems} />
+    ),
     [getNavigationItems],
   );
 
   // Handle view all members modal so we can close it after navigation is triggered by our custom action.
   const MemberSection = useCallback(
-    () => <ChannelDetailsMemberSection onViewAllMembersPress={handleAllMembersPress} />,
+    (props: Parameters<typeof ChannelDetailsMemberSection>[0]) => (
+      <ChannelDetailsMemberSection {...props} onViewAllMembersPress={handleAllMembersPress} />
+    ),
     [handleAllMembersPress],
   );
 
   const MemberActionsSheet = useCallback(
-    (props: ChannelMemberActionsSheetProps) => (
+    (props: Parameters<typeof ChannelMemberActionsSheet>[0]) => (
       <ChannelMemberActionsSheet
         {...props}
         getChannelMemberActionItems={getChannelMemberActionItems}
