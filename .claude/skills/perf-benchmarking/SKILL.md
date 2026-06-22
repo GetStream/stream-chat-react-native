@@ -11,12 +11,21 @@ Prerequisites for almost everything below:
 - Metro running: `yarn workspace sampleapp start` (the device pulls the JS bundle from it; **Metro bundles the SDK from `src`** via the `react-native` package.json field, so editing `package/src/**` hot-reloads on relaunch — no `yarn build` needed).
 - A device/emulator connected: `adb devices` shows one. The SampleApp package is `io.getstream.reactnative.sampleapp`.
 
+## What we're measuring for
+
+The question is always: **is this change a net positive for performance, and by how much?** There are two axes, and **either one improving (without regressing the other) is a win worth shipping**:
+
+- **Lighter** — less work per message / per action: fewer native calls, fewer listeners, fewer renders, less JS-thread time. A genuine win **even if render latency is unchanged**.
+- **Faster** — the render / draw itself takes less time.
+
+Good-practice bar for this SDK: **if messages (or the action under test) end up lighter and/or render faster, that's a win.** Always quantify the delta (counts and/or ms) and state the direction — net positive / neutral / regression. Report both axes honestly: don't dress a lightness win up as "faster" (rule 4), but don't *undersell* a lightness win either — it counts.
+
 ## Non-negotiable rules
 
 1. **Measure on a real device, never Node/Jest.** The RN jest preset mocks `AccessibilityInfo` and native modules, so a micro-benchmark of any native-touching code is meaningless. Proven the hard way: a Node bench said ~6µs/call; the device said ~86µs — **14× off** — purely because Jest mocked the native call to ~free.
 2. **Prefer deterministic counts over timing.** Counting native calls / listeners / renders is reproducible and trustworthy. Wall-clock timing is noisy; a *single* timing sample proves nothing. If you report timing, take ≥5 runs, give median + spread, and label it debug-build.
 3. **Count version-agnostically — instrument the native API, not one call site.** Wrap e.g. `AccessibilityInfo.isScreenReaderEnabled` once at app startup and count *every* caller. Instrumenting a single hook undercounts and hides that a **dependency** may dominate. Real example: after centralizing our hook, the SDK made 1 call — but the app still made ~30, because RNGH `Pressable` independently queries it per instance.
-4. **"Lighter" ≠ "Faster."** Removing work from a `useEffect` (off the render/draw path) reduces JS-thread load but does **not** lower render latency. Always say which one you measured. Never claim "renders faster" from effect-phase work.
+4. **Report "lighter" and "faster" as distinct wins — don't conflate them.** Removing work from a `useEffect` (off the render/draw path) is a real win even though it doesn't lower draw latency. Both axes count (see "What we're measuring for"); just never claim "renders faster" from effect-phase work — name the axis that improved and quantify it.
 5. **Match the instrument to the change size.**
    - Structural per-call / per-render change → **counting** (Pattern 1).
    - Big JS-thread cost change → **Hermes CPU profile** (Pattern 2).
@@ -104,18 +113,21 @@ node perf/analyze-cpuprofile.js --diff perf/profiles/baseline.cpuprofile perf/pr
 
 Heed rule 5: if the change is sub-noise, the diff will show **nothing real** (only line-shift phantom deltas) — that's expected, not a failure; fall back to Pattern 1.
 
-### 3) Driving the device (deterministic)
+### 3) Driving the device — scenarios on `scenario-lib.sh`
 
+Scenarios are **thin scripts on top of `perf/scenario-lib.sh`**, which provides device-driving verbs so each scenario stays declarative and waits on real mount signals (never `sleep`). Verbs:
+`relaunch` · `wait_for <testid> [secs]` · `tap_testid <id>` · `tap_until <tap_id> <expect_id> [tries]` (tap + retry until the next screen's testID appears — taps occasionally don't register) · `swipe_up/down/left/right [ms]` · `scroll [n] [ms]` · `count_testid <prefix>` (uses `grep -o | wc -l`, never `grep -c`).
+
+The channel scenario (`perf/drive-channel-scenario.sh`) is the reference shape:
 ```bash
-PKG=io.getstream.reactnative.sampleapp
-# known state: cold relaunch -> channel list
-adb shell am force-stop "$PKG"; adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
-# dump + parse the view tree (single line of XML!)
-adb shell uiautomator dump /sdcard/ui.xml && adb pull /sdcard/ui.xml /tmp/ui.xml
+source "$(dirname "$0")/scenario-lib.sh"
+wait_for channel-preview-button 30 || exit 1
+tap_until channel-preview-button message-flat-list || exit 1   # navigate (retries the tap)
+echo "MOUNTED"; scroll "${1:-10}"
+echo "rows=$(count_testid message-list-item-)"
 ```
-Use `perf/drive-channel-scenario.sh` — it already: waits for `channel-preview-button`, taps the first row's bounds center, waits for `message-flat-list` (mount), then `adb shell input swipe 540 700 540 1600 250` per scroll. testIDs available: `channel-list-view`, `channel-preview-button`, `message-flat-list`, `message-list-item-<uuid>`.
 
-Pick a channel with **many messages** (the "Heya!" preview in the list is just the last message — the channel still has full history). Count visible rows with `grep -oE 'resource-id="message-list-item-[^"]+"' /tmp/ui.xml | wc -l` (NOT `grep -c`).
+**Adding a new scenario (gallery, threads, reactions, …):** copy `perf/scenario-template.sh` → `perf/drive-<name>-scenario.sh`, discover the start/target testIDs by dumping the tree (`adb shell uiautomator dump /sdcard/ui.xml && adb pull /sdcard/ui.xml /tmp/ui.xml; grep -oE 'resource-id="[^"]+"' /tmp/ui.xml | sort -u`), then express the flow with the verbs. Always use `tap_until <x> <next-screen-testid>` for navigation and `wait_for` before interacting. Known testIDs so far: `channel-list-view`, `channel-preview-button`, `message-flat-list`, `message-list-item-<uuid>`. Pick a channel/state with **enough content** (a list preview like "Heya!" is just the last message — the channel still has full history).
 
 ### 4) A/B around a committed change (git-hands-off-safe)
 
@@ -171,7 +183,7 @@ The `[SR_STACK]` traces revealed the residual ~30 wasn't ours: 1 call = our prov
 - `perf/README.md` — canonical capture/analyze/desymbolicate/heap docs.
 - `perf/capture-hermes-profile.js`, `perf/capture-server.js` — Hermes CPU capture (the `ws`+`Origin` clients).
 - `perf/analyze-cpuprofile.js` (`--inside`/`--diff`/`--grep`), `perf/analyze-react-profile.js`, `perf/desymbolicate-cpuprofile.js`.
-- `perf/drive-channel-scenario.sh` — testID-driven scenario. `perf/android-heap-dump.sh` — memory/jank.
+- `perf/scenario-lib.sh` — device-driving verbs (source it). `perf/scenario-template.sh` — stub for a new scenario. `perf/drive-channel-scenario.sh` — reference scenario. `perf/android-heap-dump.sh` — memory/jank.
 - `.claude/skills/accessibility/SKILL.md` — the project-skill format this mirrors.
 
 ## iOS footnote (not yet validated)
