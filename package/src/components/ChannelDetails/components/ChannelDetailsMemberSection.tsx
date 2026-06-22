@@ -148,6 +148,7 @@ const useStyles = () =>
         },
         list: {
           paddingBottom: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingXxs,
         },
         sectionCard: {
           borderRadius: primitives.radiusLg,

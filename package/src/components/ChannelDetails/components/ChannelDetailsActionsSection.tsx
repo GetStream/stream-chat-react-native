@@ -195,6 +195,7 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
           paddingVertical: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingXxs,
         },
       }),
     [],

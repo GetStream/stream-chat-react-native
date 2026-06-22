@@ -178,7 +178,7 @@ const useStyles = () => {
           flexDirection: 'row',
           gap: primitives.spacingSm,
           minHeight: 48,
-          paddingHorizontal: primitives.spacingMd,
+          paddingHorizontal: primitives.spacingSm,
           paddingVertical: primitives.spacingXs,
         },
         containerLarge: {
