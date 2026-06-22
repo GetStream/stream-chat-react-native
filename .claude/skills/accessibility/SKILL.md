@@ -210,6 +210,36 @@ Use for transient surfaces that appear and disappear repeatedly within a session
 
 Live example: `Reply.tsx` — fires when a reply preview shows in the composer.
 
+### 11) Screen-reader focus on screen entry — `useSetAccessibilityFocus` / `useScreenReaderMountFocus`
+
+```tsx
+// imperative primitive — moves the SR cursor onto a ref/node. NEVER .focus(): no keyboard,
+// no first responder. The user still double-taps to act on whatever is focused.
+const setAccessibilityFocus = useSetAccessibilityFocus();
+setAccessibilityFocus(someRef);   // SR-gated, rAF-deferred; reads .current at call time
+
+// declarative on-mount wrapper (MessageComposer uses it on inputBoxRef)
+useScreenReaderMountFocus(someRef);
+```
+
+Use to land the SR cursor on the place the user came to act (e.g. the composer) when a message view is entered, instead of an arbitrary focus stop. No-op unless a screen reader is running.
+
+**Navigation timing is platform-split, and the SDK stays navigation-agnostic:**
+- **Android forward-nav** honors a focus set on **mount** → `useScreenReaderMountFocus` (used internally by `MessageComposer`).
+- **iOS forward-nav, and back-nav on both platforms,** need the focus set **after the screen transition finishes** — firing mid-transition loses a race with the OS's own screen-entry focus pass. That's navigation-specific, so the **integrator** wires it (React Navigation `transitionEnd` → `setAccessibilityFocus`). SampleApp reference: `useScreenReaderComposerFocusEffect`.
+
+Get the composer node via the already-public `<Channel setInputRef={...}>`; pass a **stable** `setInputRef` (an inline arrow re-fires the ref every parent render).
+
+Live: `MessageComposer.tsx` (`useScreenReaderMountFocus(inputBoxRef)`); SampleApp `useScreenReaderComposerFocusEffect.tsx`.
+
+### 12) Reachable header + the `onAccessibilityEscape` New-Architecture gotcha
+
+When initial focus moves off the header, keep it reachable via standard gestures:
+- **Mark the header title `accessibilityRole='header'`** → reachable via iOS VoiceOver Headings rotor / jump-to-top (4-finger tap top) and Android TalkBack **Headings reading control → swipe up**. Android has **no** bare-swipe "jump to first element" like iOS — reaching the header is reading-control-dependent. Custom `accessibilityActions` are **per-node and do NOT bubble**, and the Android system Back gesture can't be repurposed to focus (breaks go-back; `BackHandler` can't isolate TalkBack from a normal back).
+- **iOS back-scrub** → `onAccessibilityEscape={() => navigation.goBack()}` on the screen-root view; Android's system Back already pops via the navigation lib.
+
+**⚠️ `onAccessibilityEscape` is INERT on a layout-only `View` under the New Architecture (Fabric).** The VoiceOver scrub just "bonks." Fabric flattens the view to **no backing `UIView`** — `onAccessibilityEscape` is a standalone prop (not in `events.bits`, not a `formsView` trigger in `ViewShadowNode`), and `backgroundColor:'transparent'` isn't a "meaningful" color, so nothing forces a view. **Fix: `collapsable={false}`** on the hosting view (it's the first `formsStackingContext` term). Applies to any native-only a11y handler under Fabric.
+
 ## Anti-patterns to avoid
 
 - **Hardcoded English `accessibilityLabel`** strings inside component code. For SDK `Button`, use `accessibilityLabelKey='a11y/...'`; otherwise use `useA11yLabel('a11y/...')` or `t('a11y/...')`.
@@ -219,6 +249,11 @@ Live example: `Reply.tsx` — fires when a reply preview shows in the composer.
 - **Using live regions to force-announce static modal text** — fix the dialog semantics instead (`useResolvedModalAccessibilityProps` + correct `accessibilityRole='alert'`).
 - **Auto-focusing the suggestions/listbox of a typeahead on appear** — anti-pattern for combobox-style UI. Each keystroke that produces new suggestions would re-steal focus from the active `TextInput`, breaking continuous typing. ARIA combobox spec specifically forbids this; iOS VoiceOver and Android TalkBack have the same constraint. Announce on show via `useAnnounceOnShow` instead and rely on standard screen-reader navigation gestures (swipe) for the user to reach the list when they want.
 - **Mutating `AccessibilityInfo` polyfill state in tests without restoring** — use the mock-builder helpers in `package/src/mock-builders/accessibility/` (or jest.mock the module) and reset between tests.
+- **`onAccessibilityEscape` (or other native-only a11y handlers) on a flattened View under the New Architecture** — Fabric drops the backing view and the handler never fires (VoiceOver bonks). Add `collapsable={false}` (or a view-forming prop).
+- **Repurposing the Android system Back gesture to move focus** — `BackHandler` can't distinguish TalkBack's back-gesture from a normal back, and consuming it breaks go-back for everyone.
+- **Expecting a bare swipe-up to reach a header on Android** — TalkBack only jumps to headings/controls when the reading control is set to that granularity; there's no iOS-style "jump to first element" gesture.
+- **Passing an unstable `setInputRef` (inline arrow) to `<Channel>`** — re-fires the ref callback on every parent render (detach→null→reattach); wrap it in a stable `useCallback`.
+- **Using `.focus()` to move screen-reader focus** — that activates the input (opens the keyboard / makes it first responder). To only move the SR cursor, use `useSetAccessibilityFocus` (`AccessibilityInfo.setAccessibilityFocus`), not `inputBoxRef.focus()`.
 
 ## Testing requirements per change
 
@@ -241,6 +276,7 @@ Recommended for non-trivial changes:
 - [ ] Set `accessibilityState` for stateful widgets (`disabled`, `selected`, `checked`, `busy`, `expanded`)
 - [ ] Decorative visuals hidden from AT (`accessibilityElementsHidden` / `importantForAccessibility='no-hide-descendants'`)
 - [ ] Modal surfaces use `useResolvedModalAccessibilityProps`
+- [ ] Native-only a11y handlers (`onAccessibilityEscape`, etc.) sit on a non-flattened view (`collapsable={false}` under the New Architecture)
 - [ ] New behavior (announcers, listeners) gated on `useAccessibilityContext().enabled`
 - [ ] Tested with `<OverlayProvider accessibility={{ enabled: true, forceScreenReaderMode: true }}>` and `enabled: false`
 - [ ] Verified `yarn lint` passes (`validate-translations` enforces non-empty `a11y/*` keys)
@@ -257,6 +293,9 @@ Recommended for non-trivial changes:
 - `package/src/a11y/hooks/useAnnounceOnShow.ts` — announce on `visible: false → true` transitions, resets on hide (no dedup).
 - `package/src/a11y/hooks/useResolvedModalAccessibilityProps.ts` — modal a11y props.
 - `package/src/a11y/hooks/useAnnounceOnShow.ts` — announce-on-visible helper for transient surfaces.
+- `package/src/a11y/hooks/useSetAccessibilityFocus.ts` — imperative "move the SR cursor onto a ref/node" primitive (never `.focus()`); SR-gated, rAF-deferred.
+- `package/src/a11y/hooks/useScreenReaderMountFocus.ts` — focus-a-ref-on-mount wrapper (composer uses it on `inputBoxRef`); the Android forward-nav path.
+- `examples/SampleApp/src/utils/useScreenReaderComposerFocusEffect.tsx` — integration reference: React Navigation `transitionEnd` → `setAccessibilityFocus`, stable `setInputRef`, and `onAccessibilityEscape` + `collapsable={false}` on the screen root.
 - `package/src/components/ui/Avatar/Avatar.tsx` — example of `name` + `useA11yLabel` usage.
 - `package/src/components/UIComponents/BottomSheetModal.tsx` — example of `useResolvedModalAccessibilityProps` and `useAnnounceOnShow`.
 - `package/src/components/AITypingIndicatorView/AITypingIndicatorView.tsx` — example of `useAnnounceOnStateChange`.
