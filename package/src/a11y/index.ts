@@ -1,5 +1,7 @@
 export * from './a11yUtils';
 export * from './hooks/useScreenReaderEnabled';
+export * from './hooks/useSetAccessibilityFocus';
+export * from './hooks/useScreenReaderMountFocus';
 export * from './hooks/useAccessibilityServiceEnabled';
 export * from './hooks/useReducedMotionPreference';
 export * from './hooks/useResolvedModalAccessibilityProps';

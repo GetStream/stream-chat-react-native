@@ -35,6 +35,7 @@ import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { useScreenReaderComposerFocusEffect } from '../utils/useScreenReaderComposerFocusEffect.tsx';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
@@ -155,6 +156,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     setSelectedThread(undefined);
   });
 
+  const { setInputRef } = useScreenReaderComposerFocusEffect();
+
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
   ) => {
@@ -263,6 +266,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
+        setInputRef={setInputRef}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         initialScrollToFirstUnreadMessage
