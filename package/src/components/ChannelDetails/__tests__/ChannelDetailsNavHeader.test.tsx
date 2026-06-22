@@ -59,7 +59,7 @@ const renderHeader = ({
 }) =>
   render(
     <Providers>
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <ChannelDetailsNavHeader action={action} onBack={onBack} />
       </ChannelDetailsContextProvider>
     </Providers>,
@@ -100,7 +100,7 @@ describe('ChannelDetailsNavHeader', () => {
 
     rerender(
       <Providers>
-        <ChannelDetailsContextProvider value={{ channel: buildChannel([]) }}>
+        <ChannelDetailsContextProvider channel={buildChannel([])}>
           <ChannelDetailsNavHeader onBack={jest.fn()} />
         </ChannelDetailsContextProvider>
       </Providers>,

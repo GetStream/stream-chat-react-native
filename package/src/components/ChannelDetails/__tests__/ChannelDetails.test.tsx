@@ -67,7 +67,7 @@ const buildChannel = (capabilities: string[] = []) =>
 const renderContent = () =>
   render(
     <Providers>
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <WithComponents overrides={SECTION_OVERRIDES}>
           <ChannelDetails />
         </WithComponents>
@@ -113,7 +113,7 @@ describe('ChannelDetailsContent', () => {
       useIsDirectChatSpy.mockReturnValue(false);
       render(
         <Providers>
-          <ChannelDetailsContextProvider value={{ channel: buildChannel(['update-channel']) }}>
+          <ChannelDetailsContextProvider channel={buildChannel(['update-channel'])}>
             <WithComponents
               overrides={{
                 ChannelDetailsActionsSection: ActionsProbe,
@@ -151,7 +151,7 @@ describe('ChannelDetails', () => {
 
       render(
         <Providers>
-          <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsContextProvider channel={channel}>
             <WithComponents
               overrides={{
                 ...SECTION_OVERRIDES,
@@ -175,7 +175,7 @@ describe('ChannelDetails', () => {
       const Override = () => <Text testID='custom-content'>CUSTOM</Text>;
       render(
         <Providers>
-          <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsContextProvider channel={channel}>
             <WithComponents
               overrides={{
                 ...SECTION_OVERRIDES,
@@ -202,7 +202,7 @@ describe('ChannelDetails', () => {
       // wasn't swapped out — the section probes from SECTION_OVERRIDES should appear.
       render(
         <Providers>
-          <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsContextProvider channel={channel}>
             <WithComponents overrides={SECTION_OVERRIDES}>
               <ChannelDetails />
             </WithComponents>

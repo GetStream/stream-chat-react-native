@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext } from 'react';
+import React, { PropsWithChildren, useContext, useMemo } from 'react';
 
 import type { Channel } from 'stream-chat';
 
@@ -19,15 +19,15 @@ export const ChannelDetailsContext = React.createContext(
  * @experimental This API is experimental and is subject to change.
  */
 export const ChannelDetailsContextProvider = ({
+  channel,
   children,
-  value,
 }: PropsWithChildren<{
-  value: ChannelDetailsContextValue;
-}>) => (
-  <ChannelDetailsContext.Provider value={value as unknown as ChannelDetailsContextValue}>
-    {children}
-  </ChannelDetailsContext.Provider>
-);
+  channel: Channel;
+}>) => {
+  const value = useMemo(() => ({ channel }), [channel]);
+
+  return <ChannelDetailsContext.Provider value={value}>{children}</ChannelDetailsContext.Provider>;
+};
 
 /**
  * @experimental This API is experimental and is subject to change.

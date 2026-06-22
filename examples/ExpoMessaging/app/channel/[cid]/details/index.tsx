@@ -69,7 +69,7 @@ export default function ChannelDetailsScreen() {
   const renderHeaderRight = useCallback(
     () =>
       channel ? (
-        <ChannelDetailsContextProvider value={{ channel }}>
+        <ChannelDetailsContextProvider channel={channel}>
           <ChannelDetailsEditButton style={{ flexShrink: 0, width: 'auto' }} />
         </ChannelDetailsContextProvider>
       ) : null,
@@ -93,7 +93,7 @@ export default function ChannelDetailsScreen() {
           headerRight: isEditButtonVisible ? renderHeaderRight : undefined,
         }}
       />
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <WithComponents
           overrides={{
             ChannelDetailsActionsSection: ActionsSection,

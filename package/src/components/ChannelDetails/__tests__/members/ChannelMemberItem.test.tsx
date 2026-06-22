@@ -70,7 +70,7 @@ const renderRow = ({
             } as never
           }
         >
-          <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsContextProvider channel={channel}>
             <ChannelMemberItem getMemberRoleLabel={getMemberRoleLabel} {...props} />
           </ChannelDetailsContextProvider>
         </ChatContext.Provider>

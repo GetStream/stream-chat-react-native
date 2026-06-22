@@ -100,9 +100,7 @@ const renderModal = ({
           <ChatContext.Provider
             value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
           >
-            <ChannelDetailsContextProvider
-              value={{ channel: applyCapabilities(channel, capabilities) }}
-            >
+            <ChannelDetailsContextProvider channel={applyCapabilities(channel, capabilities)}>
               <WithComponents overrides={{ ChannelAddMembers: AddMembersProbe }}>
                 <ChannelAddMembersModal onClose={onClose} visible={visible} />
               </WithComponents>

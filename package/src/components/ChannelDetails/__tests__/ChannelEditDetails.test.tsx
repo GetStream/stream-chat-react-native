@@ -80,7 +80,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
             { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
           }
         >
-          <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsContextProvider channel={channel}>
             <ChannelEditDetailsContext.Provider value={{ store }}>
               <WithComponents overrides={{ ChannelEditImageSheet: SheetProbe }}>
                 <ChannelEditDetails />
@@ -128,7 +128,7 @@ describe('ChannelEditDetails', () => {
               { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
             }
           >
-            <ChannelDetailsContextProvider value={{ channel: buildChannel() }}>
+            <ChannelDetailsContextProvider channel={buildChannel()}>
               <ChannelEditDetailsContext.Provider
                 value={{ store: new EditChannelDetailsStore(buildChannel()) }}
               >

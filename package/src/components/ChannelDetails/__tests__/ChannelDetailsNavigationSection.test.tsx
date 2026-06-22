@@ -86,7 +86,9 @@ const renderSection = (
         }}
       >
         <OverlayContext.Provider value={overlayContextValue}>
-          <ChannelDetailsContextProvider value={{} as ChannelDetailsContextValue}>
+          <ChannelDetailsContextProvider
+            channel={undefined as unknown as ChannelDetailsContextValue['channel']}
+          >
             <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />
           </ChannelDetailsContextProvider>
         </OverlayContext.Provider>

@@ -168,11 +168,7 @@ const tree = (
         }}
       >
         <ChannelDetailsContextProvider
-          value={
-            {
-              channel: mockChannel,
-            } as unknown as ChannelDetailsContextValue
-          }
+          channel={mockChannel as unknown as ChannelDetailsContextValue['channel']}
         >
           <WithComponents
             overrides={{

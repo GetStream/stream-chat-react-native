@@ -132,7 +132,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   );
 
   return (
-    <ChannelDetailsContextProvider value={{ channel }}>
+    <ChannelDetailsContextProvider channel={channel}>
       <WithComponents
         overrides={{
           ChannelDetailsActionsSection: ActionsSection,

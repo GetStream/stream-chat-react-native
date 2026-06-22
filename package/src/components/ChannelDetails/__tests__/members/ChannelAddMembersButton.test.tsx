@@ -79,7 +79,7 @@ const renderButton = ({
             userLanguage: 'en',
           }}
         >
-          <ChannelDetailsContextProvider value={{ channel: buildChannel(capabilities) }}>
+          <ChannelDetailsContextProvider channel={buildChannel(capabilities)}>
             <ChannelAddMembersButton
               onPress={onPress}
               style={style}

@@ -82,7 +82,7 @@ const renderEditButton = ({
   render(
     <Providers>
       <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
-        <ChannelDetailsContextProvider value={{ channel }}>
+        <ChannelDetailsContextProvider channel={channel}>
           <ChannelDetailsEditButton style={style} />
         </ChannelDetailsContextProvider>
       </WithComponents>

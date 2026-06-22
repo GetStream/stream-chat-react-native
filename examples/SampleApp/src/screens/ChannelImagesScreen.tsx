@@ -26,7 +26,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   return (
     <View style={[styles.flex]}>
       <ScreenHeader titleText='Photos and Videos' />
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <MediaList />
       </ChannelDetailsContextProvider>
     </View>

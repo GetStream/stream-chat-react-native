@@ -105,11 +105,7 @@ const renderSection = ({
               } as never
             }
           >
-            <ChannelDetailsContextProvider
-              value={{
-                channel: applyCapabilities(channel, capabilities),
-              }}
-            >
+            <ChannelDetailsContextProvider channel={applyCapabilities(channel, capabilities)}>
               <WithComponents
                 overrides={{
                   ChannelAddMembers: AddMembersProbe,

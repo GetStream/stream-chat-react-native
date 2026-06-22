@@ -44,9 +44,7 @@ const renderRoleLabel = (
       <TranslationProvider
         value={{ t, tDateTimeParser: ((input: unknown) => input) as never, userLanguage: 'en' }}
       >
-        <ChannelDetailsContextProvider value={{ channel }}>
-          {children}
-        </ChannelDetailsContextProvider>
+        <ChannelDetailsContextProvider channel={channel}>{children}</ChannelDetailsContextProvider>
       </TranslationProvider>
     ),
   });

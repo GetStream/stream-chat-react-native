@@ -48,7 +48,7 @@ export default function ChannelPinnedMessagesScreen() {
   return (
     <>
       <Stack.Screen options={{ contentStyle: { backgroundColor: semantics.backgroundCoreApp } }} />
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
           <PinnedMessageList />
         </WithComponents>
