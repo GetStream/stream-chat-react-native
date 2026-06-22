@@ -20,9 +20,9 @@ UIXML=/tmp/scenario-ui.xml
 dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1 && adb pull /sdcard/ui.xml "$UIXML" >/dev/null 2>&1; }
 has() { grep -q "$1" "$UIXML"; }
 
-echo "waiting for channel list..."
-for _ in $(seq 1 20); do dump; has 'resource-id="channel-list-view"' && break; sleep 1; done
-has 'resource-id="channel-list-view"' || { echo "ERR: channel list never appeared"; exit 1; }
+echo "waiting for channel rows to render..."
+for _ in $(seq 1 30); do dump; has 'resource-id="channel-preview-button"' && break; sleep 1; done
+has 'resource-id="channel-preview-button"' || { echo "ERR: channel rows never appeared"; exit 1; }
 
 BOX=$(grep -oE 'resource-id="channel-preview-button"[^>]*bounds="\[[0-9]+,[0-9]+\]\[[0-9]+,[0-9]+\]"' "$UIXML" \
   | grep -oE '\[[0-9]+,[0-9]+\]\[[0-9]+,[0-9]+\]' | head -1)
