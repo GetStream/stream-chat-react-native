@@ -1,4 +1,6 @@
 export * from './in-app-notifications-store';
+export * from './edit-channel-details-store';
+export * from './selection-store';
 export * from './audio-player';
 export * from './audio-player-pool';
 export * from './video-player';

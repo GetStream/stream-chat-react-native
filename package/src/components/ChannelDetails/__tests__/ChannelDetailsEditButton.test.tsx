@@ -74,16 +74,18 @@ const Providers = ({ children }: PropsWithChildren) => (
 
 const renderEditButton = ({
   channel,
+  onPress,
   style,
 }: {
   channel: Channel;
+  onPress?: () => void;
   style?: ChannelDetailsEditButtonProps['style'];
 }) =>
   render(
     <Providers>
       <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
         <ChannelDetailsContextProvider channel={channel}>
-          <ChannelDetailsEditButton style={style} />
+          <ChannelDetailsEditButton onPress={onPress} style={style} />
         </ChannelDetailsContextProvider>
       </WithComponents>
     </Providers>,
@@ -144,5 +146,22 @@ describe('ChannelDetailsEditButton', () => {
     fireEvent.press(screen.getByTestId('channel-details-edit-button'));
 
     expect(screen.getByTestId('channel-edit-details-probe')).toBeTruthy();
+  });
+
+  it('invokes the onPress override and does not open the modal', () => {
+    const onPress = jest.fn();
+
+    renderEditButton({ channel: buildChannel(['update-channel']), onPress });
+
+    fireEvent.press(screen.getByTestId('channel-details-edit-button'));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();
+  });
+
+  it('does not mount the built-in modal when a custom onPress is provided', () => {
+    renderEditButton({ channel: buildChannel(['update-channel']), onPress: jest.fn() });
+
+    expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();
   });
 });

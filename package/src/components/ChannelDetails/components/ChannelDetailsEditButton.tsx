@@ -8,6 +8,8 @@ import { Button, ButtonProps } from '../../ui/Button/Button';
 import { useIsEditButtonVisible } from '../hooks/useIsEditButtonVisible';
 
 export type ChannelDetailsEditButtonProps = {
+  /** Override the default behavior, which opens the Edit modal. */
+  onPress?: () => void;
   /** Style forwarded to the underlying Button. */
   style?: ButtonProps['style'];
 };
@@ -15,13 +17,27 @@ export type ChannelDetailsEditButtonProps = {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelDetailsEditButton = ({ style }: ChannelDetailsEditButtonProps = {}) => {
+export const ChannelDetailsEditButton = ({
+  onPress,
+  style,
+}: ChannelDetailsEditButtonProps = {}) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
   const isVisible = useIsEditButtonVisible(channel);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
-  const handleEditPress = useCallback(() => setEditModalVisible(true), []);
+  // The built-in modal is only used by the default press behavior. When a custom handler
+  // (onPress prop) is provided, the consumer owns the navigation/modal, so we must not render
+  // the built-in one.
+  const usesDefaultModal = !onPress;
+
+  const handleEditPress = useCallback(() => {
+    if (onPress) {
+      onPress();
+      return;
+    }
+    setEditModalVisible(true);
+  }, [onPress]);
 
   const handleEditModalClose = useCallback(() => setEditModalVisible(false), []);
 
@@ -41,7 +57,9 @@ export const ChannelDetailsEditButton = ({ style }: ChannelDetailsEditButtonProp
         type='outline'
         variant='secondary'
       />
-      <ChannelEditDetailsModal onClose={handleEditModalClose} visible={editModalVisible} />
+      {usesDefaultModal ? (
+        <ChannelEditDetailsModal onClose={handleEditModalClose} visible={editModalVisible} />
+      ) : null}
     </>
   );
 };
