@@ -81,7 +81,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
           }
         >
           <ChannelDetailsContextProvider channel={channel}>
-            <ChannelEditDetailsContext.Provider value={{ store }}>
+            <ChannelEditDetailsContext.Provider value={{ store, submit: jest.fn() }}>
               <WithComponents overrides={{ ChannelEditImageSheet: SheetProbe }}>
                 <ChannelEditDetails />
               </WithComponents>
@@ -130,7 +130,7 @@ describe('ChannelEditDetails', () => {
           >
             <ChannelDetailsContextProvider channel={buildChannel()}>
               <ChannelEditDetailsContext.Provider
-                value={{ store: new EditChannelDetailsStore(buildChannel()) }}
+                value={{ store: new EditChannelDetailsStore(buildChannel()), submit: jest.fn() }}
               >
                 <WithComponents
                   overrides={{ ChannelEditImageSheet: SheetProbe, ChannelEditName: NameProbe }}

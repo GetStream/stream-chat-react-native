@@ -87,6 +87,10 @@ const selectIsImageDirty = (state: EditChannelDetailsState) => ({
   isImageDirty: isImageDirty(state),
 });
 
+const selectIsFormDirty = (state: EditChannelDetailsState) => ({
+  isFormDirty: isNameDirty(state) || isImageDirty(state),
+});
+
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the name
  * input has unsaved changes.
@@ -104,3 +108,12 @@ export const useIsNameDirty = (store: EditChannelDetailsStore) =>
  */
 export const useIsImageDirty = (store: EditChannelDetailsStore) =>
   useStateStore(store.state, selectIsImageDirty).isImageDirty;
+
+/**
+ * Subscribes to an {@link EditChannelDetailsStore} and returns whether the form
+ * has any unsaved changes (name or image).
+ *
+ * @experimental This API is experimental and is subject to change.
+ */
+export const useIsFormDirty = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectIsFormDirty).isFormDirty;

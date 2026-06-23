@@ -97,7 +97,7 @@ const renderSheet = ({
           userLanguage: 'en',
         }}
       >
-        <ChannelEditDetailsContext.Provider value={{ store }}>
+        <ChannelEditDetailsContext.Provider value={{ store, submit: jest.fn() }}>
           <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
             <ChannelEditImageSheet onClose={onClose} visible={visible} />
           </WithComponents>

@@ -1,9 +1,11 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import { UserSearchSource } from 'stream-chat';
 
 import { useChatContext } from '..';
 import { NotificationTargetProvider } from '../../components/Notifications/NotificationTargetContext';
+import { useChannelActions } from '../../hooks/actions/useChannelActions';
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { SelectionStore } from '../../state-store/selection-store';
 import { useChannelDetailsContext } from '../channelDetailsContext/channelDetailsContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -15,6 +17,11 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type ChannelAddMembersContextValue = {
   selectionStore: SelectionStore;
   searchSource: UserSearchSource;
+  /**
+   * Adds the currently selected members to the channel. Resolves on success and
+   * rejects if the request fails.
+   */
+  submit: () => Promise<void>;
 };
 
 export const ChannelAddMembersContext = React.createContext(
@@ -22,11 +29,14 @@ export const ChannelAddMembersContext = React.createContext(
 );
 
 /**
- * @experimental This API is experimental and is subject to change.
+ * Builds the {@link ChannelAddMembersContextValue}. Rendered inside the
+ * {@link NotificationTargetProvider} so that notifications emitted by `submit`
+ * (via {@link useChannelActions}) resolve to the add-members host.
  */
-export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknown>) => {
+const ChannelAddMembersContextProviderInner = ({ children }: PropsWithChildren<unknown>) => {
   const { client } = useChatContext();
   const { channel } = useChannelDetailsContext();
+  const { addMembers } = useChannelActions(channel);
   const [selectionStore] = useState(() => new SelectionStore());
   const [searchSource] = useState(() => {
     const source = new UserSearchSource(
@@ -51,14 +61,43 @@ export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknow
     return source;
   });
 
+  const submit = useStableCallback(async () => {
+    const ids = Array.from(selectionStore.state.getLatestValue().selectedIds);
+    let failed = false;
+    let firstError: unknown;
+    await addMembers(ids, {
+      onFailure: (error) => {
+        failed = true;
+        firstError = error;
+      },
+    });
+    if (failed) {
+      throw firstError;
+    }
+  });
+
+  const value = useMemo(
+    () => ({ selectionStore, searchSource, submit }),
+    [selectionStore, searchSource, submit],
+  );
+
+  return (
+    <ChannelAddMembersContext.Provider value={value}>{children}</ChannelAddMembersContext.Provider>
+  );
+};
+
+/**
+ * @experimental This API is experimental and is subject to change.
+ */
+export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknown>) => {
+  const { channel } = useChannelDetailsContext();
+
   return (
     <NotificationTargetProvider
       hostId={`channel-add-members:${channel.cid}`}
       panel='channel-details'
     >
-      <ChannelAddMembersContext.Provider value={{ selectionStore, searchSource }}>
-        {children}
-      </ChannelAddMembersContext.Provider>
+      <ChannelAddMembersContextProviderInner>{children}</ChannelAddMembersContextProviderInner>
     </NotificationTargetProvider>
   );
 };

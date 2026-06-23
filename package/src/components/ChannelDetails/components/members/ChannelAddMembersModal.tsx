@@ -10,7 +10,6 @@ import { useChannelDetailsContext } from '../../../../contexts/channelDetailsCon
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
 import { useStableCallback } from '../../../../hooks/useStableCallback';
 import { Checkmark } from '../../../../icons/checkmark-1';
 import { useIsSelectionEmpty } from '../../../../state-store/selection-store';
@@ -51,10 +50,8 @@ export const ChannelAddMembersModalContent = ({ onClose }: ChannelAddMembersModa
 };
 
 const ChannelAddMembersModalBody = ({ onClose }: ChannelAddMembersModalContentProps) => {
-  const { channel } = useChannelDetailsContext();
-  const { addMembers } = useChannelActions(channel);
   const { ChannelAddMembers } = useComponentsContext();
-  const { selectionStore } = useChannelAddMembersContext();
+  const { selectionStore, submit } = useChannelAddMembersContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -74,12 +71,10 @@ const ChannelAddMembersModalBody = ({ onClose }: ChannelAddMembersModalContentPr
   const handleConfirm = useStableCallback(async () => {
     setAddingMembers(true);
     try {
-      const ids = Array.from(selectionStore.state.getLatestValue().selectedIds);
-      await addMembers(ids, {
-        onSuccess: () => {
-          onClose();
-        },
-      });
+      await submit();
+      onClose();
+    } catch {
+      // failure notification already surfaced by the channel action
     } finally {
       setAddingMembers(false);
     }

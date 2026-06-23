@@ -88,9 +88,7 @@ describe('ChannelEditDetailsModal', () => {
   let updateNameSpy: jest.Mock;
 
   beforeEach(() => {
-    updateNameSpy = jest.fn(async (_name: string, options?: { onSuccess?: () => unknown }) => {
-      await options?.onSuccess?.();
-    });
+    updateNameSpy = jest.fn().mockResolvedValue(undefined);
     mockedUseChannelActions.mockReturnValue({
       updateName: updateNameSpy,
     } as unknown as ReturnType<typeof useChannelActions>);
@@ -151,7 +149,7 @@ describe('ChannelEditDetailsModal', () => {
 
     expect(updateNameSpy).toHaveBeenCalledWith(
       '  Renamed  ',
-      expect.objectContaining({ onSuccess: expect.any(Function) }),
+      expect.objectContaining({ onFailure: expect.any(Function) }),
     );
   });
 
@@ -167,11 +165,11 @@ describe('ChannelEditDetailsModal', () => {
 
     expect(updateNameSpy).toHaveBeenCalledWith(
       '',
-      expect.objectContaining({ onSuccess: expect.any(Function) }),
+      expect.objectContaining({ onFailure: expect.any(Function) }),
     );
   });
 
-  it('closes the modal after updateName invokes onSuccess', async () => {
+  it('closes the modal after updateName succeeds', async () => {
     const onClose = jest.fn();
     renderModal({ channel: buildChannel({ name: 'Original' }), onClose });
 
@@ -185,8 +183,12 @@ describe('ChannelEditDetailsModal', () => {
     await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
   });
 
-  it('keeps the modal open and re-enables confirm when updateName does not invoke onSuccess', async () => {
-    updateNameSpy.mockResolvedValueOnce(undefined);
+  it('keeps the modal open and re-enables confirm when updateName invokes onFailure', async () => {
+    updateNameSpy.mockImplementationOnce(
+      async (_name: string, options?: { onFailure?: (error: unknown) => unknown }) => {
+        await options?.onFailure?.(new Error('failed'));
+      },
+    );
     const onClose = jest.fn();
     renderModal({ channel: buildChannel({ name: 'Original' }), onClose });
 

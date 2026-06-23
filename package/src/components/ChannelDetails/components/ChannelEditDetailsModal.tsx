@@ -12,16 +12,9 @@ import {
 } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
-import {
-  isImageDirty,
-  isNameDirty,
-  useIsImageDirty,
-  useIsNameDirty,
-} from '../../../state-store/edit-channel-details-store';
-import type { File } from '../../../types/types';
+import { useIsFormDirty } from '../../../state-store/edit-channel-details-store';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { Button } from '../../ui/Button/Button';
 
@@ -40,54 +33,22 @@ type ChannelEditDetailsModalContentProps = {
 };
 
 const ChannelEditDetailsModalBody = ({ onClose }: ChannelEditDetailsModalContentProps) => {
-  const { channel } = useChannelDetailsContext();
-  const { doFileUploadRequest, store } = useChannelEditDetailsContext();
-  const { updateImage, updateName } = useChannelActions(channel);
+  const { store, submit } = useChannelEditDetailsContext();
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();
   const [saving, setSaving] = useState(false);
-  const nameDirty = useIsNameDirty(store);
-  const imageDirty = useIsImageDirty(store);
-  const confirmEnabled = (nameDirty || imageDirty) && !saving;
+  const formDirty = useIsFormDirty(store);
+  const confirmEnabled = formDirty && !saving;
 
   const handleConfirm = useStableCallback(async () => {
     if (!confirmEnabled) return;
     Keyboard.dismiss();
     setSaving(true);
     try {
-      const state = store.state.getLatestValue();
-      const { currentName, updatedImage } = state;
-      const nameDirty = isNameDirty(state);
-      const imageDirty = isImageDirty(state);
-      let nameOk = true;
-      let imageOk = true;
-      const tasks: Promise<void>[] = [];
-      if (nameDirty) {
-        nameOk = false;
-        tasks.push(
-          updateName(currentName, {
-            onSuccess: () => {
-              nameOk = true;
-            },
-          }),
-        );
-      }
-      if (imageDirty) {
-        imageOk = false;
-        tasks.push(
-          updateImage(
-            updatedImage as File | null,
-            {
-              onSuccess: () => {
-                imageOk = true;
-              },
-            },
-            doFileUploadRequest,
-          ),
-        );
-      }
-      await Promise.all(tasks);
-      if (nameOk && imageOk) onClose();
+      await submit();
+      onClose();
+    } catch {
+      // failure notification already surfaced by the channel action
     } finally {
       setSaving(false);
     }

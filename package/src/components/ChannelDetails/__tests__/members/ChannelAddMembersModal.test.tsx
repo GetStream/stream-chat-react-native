@@ -120,9 +120,7 @@ describe('ChannelAddMembersModal', () => {
   let addMembersSpy: jest.Mock;
 
   beforeEach(() => {
-    addMembersSpy = jest.fn(async (_ids: string[], options?: { onSuccess?: () => unknown }) => {
-      await options?.onSuccess?.();
-    });
+    addMembersSpy = jest.fn().mockResolvedValue(undefined);
     mockedUseChannelActions.mockReturnValue({
       addMembers: addMembersSpy,
     } as unknown as ReturnType<typeof useChannelActions>);
@@ -167,7 +165,7 @@ describe('ChannelAddMembersModal', () => {
 
     expect(addMembersSpy).toHaveBeenCalledWith(
       ['picked-1'],
-      expect.objectContaining({ onSuccess: expect.any(Function) }),
+      expect.objectContaining({ onFailure: expect.any(Function) }),
     );
     expect(channel.addMembers).not.toHaveBeenCalled();
     await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
@@ -183,9 +181,13 @@ describe('ChannelAddMembersModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps the sheet open and re-enables confirm when addMembers does not invoke onSuccess', async () => {
+  it('keeps the sheet open and re-enables confirm when addMembers invokes onFailure', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-    addMembersSpy.mockResolvedValueOnce(undefined);
+    addMembersSpy.mockImplementationOnce(
+      async (_ids: string[], options?: { onFailure?: (error: unknown) => unknown }) => {
+        await options?.onFailure?.(new Error('failed'));
+      },
+    );
     const channel = buildChannel(makeMembers(3), 3);
     const onClose = jest.fn();
 
@@ -201,7 +203,7 @@ describe('ChannelAddMembersModal', () => {
 
     expect(addMembersSpy).toHaveBeenCalledWith(
       ['picked-1'],
-      expect.objectContaining({ onSuccess: expect.any(Function) }),
+      expect.objectContaining({ onFailure: expect.any(Function) }),
     );
     expect(onClose).not.toHaveBeenCalled();
     expect(screen.getByTestId('add-members-probe')).toBeTruthy();

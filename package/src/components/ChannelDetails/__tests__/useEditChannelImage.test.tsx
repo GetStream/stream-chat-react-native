@@ -31,7 +31,11 @@ const wrap = ({ compressImageQuality }: { compressImageQuality?: number }) => {
       }}
     >
       <ChannelEditDetailsContext.Provider
-        value={{ compressImageQuality, store: new EditChannelDetailsStore(buildChannel()) }}
+        value={{
+          compressImageQuality,
+          store: new EditChannelDetailsStore(buildChannel()),
+          submit: jest.fn(),
+        }}
       >
         {children}
       </ChannelEditDetailsContext.Provider>

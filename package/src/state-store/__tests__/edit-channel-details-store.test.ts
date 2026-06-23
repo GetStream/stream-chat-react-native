@@ -7,6 +7,7 @@ import { getTestClientWithUser } from '../../mock-builders/mock';
 import type { File } from '../../types/types';
 import {
   EditChannelDetailsStore,
+  useIsFormDirty,
   useIsImageDirty,
   useIsNameDirty,
 } from '../edit-channel-details-store';
@@ -200,6 +201,60 @@ describe('EditChannelDetailsStore', () => {
         act(() => store.setUpdatedImage(file));
         expect(result.current).toBe(true);
       });
+    });
+  });
+
+  describe('useIsFormDirty', () => {
+    it('is false initially', async () => {
+      const channel = await createChannel({ image: 'http://img/original.png', name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useIsFormDirty(store));
+      expect(result.current).toBe(false);
+    });
+
+    it('is dirty when the name changes and clean again when reverted', async () => {
+      const channel = await createChannel({ name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useIsFormDirty(store));
+
+      act(() => store.setCurrentName('Renamed'));
+      expect(result.current).toBe(true);
+
+      act(() => store.setCurrentName('Original'));
+      expect(result.current).toBe(false);
+    });
+
+    it('is dirty when a new image is picked', async () => {
+      const channel = await createChannel({ name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useIsFormDirty(store));
+
+      act(() => store.setUpdatedImage(file));
+      expect(result.current).toBe(true);
+    });
+
+    it('stays dirty while either field is dirty', async () => {
+      const channel = await createChannel({ name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useIsFormDirty(store));
+
+      act(() => {
+        store.setCurrentName('Renamed');
+        store.setUpdatedImage(file);
+      });
+      expect(result.current).toBe(true);
+
+      // Revert the name; image is still dirty, so the form stays dirty.
+      act(() => store.setCurrentName('Original'));
+      expect(result.current).toBe(true);
+
+      // Revert the image too; now the form is clean.
+      act(() => store.setUpdatedImage(undefined));
+      expect(result.current).toBe(false);
     });
   });
 });
