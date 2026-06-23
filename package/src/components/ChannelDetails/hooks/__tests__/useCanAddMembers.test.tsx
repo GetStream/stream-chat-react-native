@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { useChannelOwnCapabilities } from '../../../../hooks/useChannelOwnCapabilities';
-import { useIsAddMemberButtonVisible } from '../useIsAddMemberButtonVisible';
+import { useCanAddMembers } from '../useCanAddMembers';
 
 jest.mock('../../../../hooks/useChannelOwnCapabilities');
 
@@ -12,7 +12,7 @@ const mockedUseChannelOwnCapabilities = useChannelOwnCapabilities as jest.Mocked
 
 const channel = {} as Channel;
 
-describe('useIsAddMemberButtonVisible', () => {
+describe('useCanAddMembers', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -20,7 +20,7 @@ describe('useIsAddMemberButtonVisible', () => {
   it('returns true when the user can update channel members', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue(['update-channel-members']);
 
-    const { result } = renderHook(() => useIsAddMemberButtonVisible(channel));
+    const { result } = renderHook(() => useCanAddMembers(channel));
 
     expect(result.current).toBe(true);
   });
@@ -28,7 +28,7 @@ describe('useIsAddMemberButtonVisible', () => {
   it('returns false when the update-channel-members capability is missing', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue([]);
 
-    const { result } = renderHook(() => useIsAddMemberButtonVisible(channel));
+    const { result } = renderHook(() => useCanAddMembers(channel));
 
     expect(result.current).toBe(false);
   });
@@ -36,7 +36,7 @@ describe('useIsAddMemberButtonVisible', () => {
   it('returns false when there is no channel', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue(undefined);
 
-    const { result } = renderHook(() => useIsAddMemberButtonVisible());
+    const { result } = renderHook(() => useCanAddMembers());
 
     expect(result.current).toBe(false);
   });

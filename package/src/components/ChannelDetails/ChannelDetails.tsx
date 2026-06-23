@@ -43,7 +43,10 @@ export const ChannelDetailsContent = ({ onBack }: Pick<ChannelDetailsProps, 'onB
         containerOverride,
       ]}
     >
-      <ChannelDetailsNavHeader action={<ChannelDetailsEditButton />} onBack={onBack} />
+      <ChannelDetailsNavHeader
+        action={isDirect ? undefined : <ChannelDetailsEditButton />}
+        onBack={onBack}
+      />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>
         <ChannelDetailsProfile />
         <ChannelDetailsNavigationSection />

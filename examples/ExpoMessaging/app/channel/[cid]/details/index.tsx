@@ -12,7 +12,8 @@ import {
   ChannelDetailsNavigationSectionType,
   GetChannelDetailsNavigationItems,
   ChannelDetailsEditButton,
-  useIsEditButtonVisible,
+  useCanEdit,
+  useIsDirectChat,
   WithComponents,
 } from 'stream-chat-expo';
 
@@ -33,7 +34,9 @@ const EmptyHeader = () => {
 export default function ChannelDetailsScreen() {
   const router = useRouter();
   const { channel } = useContext(AppContext);
-  const isEditButtonVisible = useIsEditButtonVisible(channel);
+  const canEdit = useCanEdit(channel);
+  const isDirect = useIsDirectChat(channel);
+  const isEditButtonVisible = canEdit && !isDirect;
 
   const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
     ({ defaultItems }) =>

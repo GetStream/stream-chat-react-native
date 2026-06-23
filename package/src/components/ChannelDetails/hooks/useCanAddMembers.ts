@@ -3,8 +3,7 @@ import type { Channel } from 'stream-chat';
 import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 
 /**
- * Whether the channel-details add-member button should be visible: the current user can update
- * the channel members.
+ * Whether the current user can add members to the channel.
  */
-export const useIsAddMemberButtonVisible = (channel?: Channel) =>
+export const useCanAddMembers = (channel?: Channel) =>
   useChannelOwnCapabilities(channel)?.includes('update-channel-members') ?? false;

@@ -5,7 +5,7 @@ import { ChannelEditDetailsModal } from './ChannelEditDetailsModal';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Button, ButtonProps } from '../../ui/Button/Button';
-import { useIsEditButtonVisible } from '../hooks/useIsEditButtonVisible';
+import { useCanEdit } from '../hooks/useCanEdit';
 
 export type ChannelDetailsEditButtonProps = {
   /** Override the default behavior, which opens the Edit modal. */
@@ -23,7 +23,7 @@ export const ChannelDetailsEditButton = ({
 }: ChannelDetailsEditButtonProps = {}) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
-  const isVisible = useIsEditButtonVisible(channel);
+  const isVisible = useCanEdit(channel);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
   // The built-in modal is only used by the default press behavior. When a custom handler
