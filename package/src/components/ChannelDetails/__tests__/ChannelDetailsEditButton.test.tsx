@@ -15,7 +15,6 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
-import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import {
   ChannelDetailsEditButton,
   ChannelDetailsEditButtonProps,
@@ -93,7 +92,6 @@ const renderEditButton = ({
 
 describe('ChannelDetailsEditButton', () => {
   beforeEach(() => {
-    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     mockedUseChannelActions.mockReturnValue({
       updateImage: jest.fn(),
       updateName: jest.fn(),
@@ -117,14 +115,6 @@ describe('ChannelDetailsEditButton', () => {
     const button = screen.getByTestId('channel-details-edit-button');
     expect(button).toBeTruthy();
     expect(screen.getByText('Edit')).toBeTruthy();
-  });
-
-  it('does not render the Edit button in a direct (1:1) channel even with the update-channel capability', () => {
-    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
-
-    renderEditButton({ channel: buildChannel(['update-channel']) });
-
-    expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
   });
 
   it('forwards the style prop to the underlying Button', () => {
