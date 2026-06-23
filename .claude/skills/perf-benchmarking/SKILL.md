@@ -8,6 +8,7 @@ description: Measure React Native performance on-device for stream-chat-react-na
 How to measure SDK performance for real, against the **SampleApp running on a physical Android device**, using the committed `perf/` toolkit. This skill exists because the methodology is full of traps that produce confidently-wrong numbers; follow the rules and recipes here instead of improvising.
 
 Prerequisites for almost everything below:
+- **The installed app is a DEBUG build wired to Metro — check this FIRST, before anything else.** A release build embeds the JS bundle in the APK and ignores Metro entirely, so none of your `src` edits or throwaway instrumentation ever run, AND the Hermes inspector is disabled so CPU profiling can't attach. Symptoms are silent and misleading: the app runs fine, navigation works, but every marker you add stays absent and you waste an hour chasing phantom "stale bundle" / "adb reverse" causes (this happened). Verify with one command — `adb shell run-as io.getstream.reactnative.sampleapp ls >/dev/null 2>&1 && echo DEBUG || echo "RELEASE — rebuild"` (a release build reports "package not debuggable"); or check the flags: `adb shell dumpsys package io.getstream.reactnative.sampleapp | grep flags=` should include `DEBUGGABLE`. If it's release, install debug first: `yarn workspace sampleapp android` (builds, installs over the release app, sets up `adb reverse`). Confirm the device→Metro reverse exists: `adb reverse --list` should show `tcp:8081`.
 - Metro running: `yarn workspace sampleapp start` (the device pulls the JS bundle from it; **Metro bundles the SDK from `src`** via the `react-native` package.json field, so editing `package/src/**` hot-reloads on relaunch — no `yarn build` needed).
 - A device/emulator connected: `adb devices` shows one. The SampleApp package is `io.getstream.reactnative.sampleapp`.
 
@@ -32,7 +33,7 @@ Good-practice bar for this SDK: **if messages (or the action under test) end up 
    - "What component re-renders too much / too often" → **React DevTools profile** (`analyze-react-profile.js`).
    - Memory / jank / dropped frames → **`android-heap-dump.sh`**.
    - A CPU-profile **`--diff` is blind to sub-noise changes** and is polluted by line-number-shift phantom deltas when you diff across a code edit. Do not use it to "prove" a tiny change.
-6. **A/B fairly.** Same scenario, same instrumentation, same device, same channel (with enough messages), same swipe count. Only the code under test differs.
+6. **A/B fairly — same data, same path, multiple runs.** Same scenario, instrumentation, device, channel (with enough messages), and swipe count; only the code under test differs. Crucially, **both builds must traverse the *identical content*** — the same images, the same messages, the same items in the same order. Content-dependent costs (image decode, layout, text shaping) otherwise confound the result, and the **tail percentiles (95th/99th) are dominated by the single heaviest item traversed** — so a different start position or swipe path makes them meaningless (this bit us once: two gallery runs opened on different images, and the 99th moved 50ms purely from decoding a bigger bitmap, not from the code). Pin the start (e.g. force a fixed gallery index via throwaway instrumentation) and drive a fixed path so each run does identical work. And **run each side ≥3× and report the spread** — a single run per side cannot separate a real delta from run-to-run noise, especially at the tail; a difference inside the runs' spread is not a result.
 7. **Drive the device on real mount signals, not `sleep`.** Android *debug* navigation is slow and variable. Wait on testIDs (`channel-preview-button` → `message-flat-list`), never a fixed sleep after a tap — or your swipes land on the list / a half-mounted screen.
 8. **Respect git-hands-off.** To A/B a committed change, produce the baseline by editing the file back locally (or `git stash` if it's uncommitted), measure, then restore by re-writing the committed version. **Never** `git commit`, `git revert`, or rewrite history to benchmark.
 
@@ -116,7 +117,11 @@ Heed rule 5: if the change is sub-noise, the diff will show **nothing real** (on
 ### 3) Driving the device — scenarios on `scenario-lib.sh`
 
 Scenarios are **thin scripts on top of `perf/scenario-lib.sh`**, which provides device-driving verbs so each scenario stays declarative and waits on real mount signals (never `sleep`). Verbs:
-`relaunch` · `wait_for <testid> [secs]` · `tap_testid <id>` · `tap_until <tap_id> <expect_id> [tries]` (tap + retry until the next screen's testID appears — taps occasionally don't register) · `swipe_up/down/left/right [ms]` · `scroll [n] [ms]` · `count_testid <prefix>` (uses `grep -o | wc -l`, never `grep -c`).
+`relaunch` · `wait_for <testid> [secs]` · `tap_testid <id>` · `tap_until <tap_id> <expect_id> [tries]` (tap + retry until the next screen's testID appears — taps occasionally don't register) · `tap_text <substr>` / `tap_text_until <substr> <expect_id>` (tap a node by its visible text — e.g. open a channel by display name) · `tap_header_action [ymax]` / `tap_header_until <expect_id>` (tap the right-most header action when RN flattens its testID away) · `swipe_up/down/left/right [ms]` · `scroll [n] [ms]` · `scroll_down [n] [ms] [settle]` · `count_testid <prefix>` (uses `grep -o | wc -l`, never `grep -c`) · `wait_for_log <pattern> [secs]` (poll logcat for states the view tree can't see).
+
+**Pagination direction depends on whether the list is inverted.** To load more rows you must scroll toward the list's *growing* end and trigger its `onEndReached`. The **message list is inverted** (newest at bottom, older above) — paginate by scrolling **up** (`scroll`, the lib's `swipe_up`). The **Photos & Videos media grid is a normal list** (newest first, older below) — paginate by scrolling **down** (`scroll_down`, the lib's `swipe_down`). Use the wrong direction and you scroll against the anchored edge: nothing loads, the loaded set looks capped, and every "scaling" run silently measures the **same N** (this happened — preload depths 4/12/25 all yielded 44 assets until the grid was scrolled *down*, which grew it to 165).
+
+**Driving the lib inline runs under zsh, which breaks it.** The scenario scripts have a `#!/usr/bin/env bash` shebang, so `bash perf/drive-*.sh` is fine. But `source perf/scenario-lib.sh` from an interactive tool shell runs under **zsh**, where `"$id[^\"]*"` inside `tap_testid`'s grep is parsed as an array subscript (`bad math expression: operand expected at \`^"'`). Always drive via `bash perf/drive-<name>-scenario.sh …`, never by sourcing the lib into zsh.
 
 The channel scenario (`perf/drive-channel-scenario.sh`) is the reference shape:
 ```bash
@@ -139,14 +144,18 @@ echo "rows=$(count_testid message-list-item-)"
 
 ## Anti-patterns to avoid (each = a real mistake made; do the fix)
 
+- **Measuring against a release build without checking** → src edits + instrumentation silently never run, the Hermes inspector won't attach, and the failure looks exactly like a stale bundle or a missing `adb reverse` (an hour lost chasing both). → `adb shell run-as <pkg> ls` (or check `dumpsys package … flags=` for `DEBUGGABLE`) as step zero; install debug with `yarn workspace sampleapp android` if needed.
 - **Node/Jest microbench of native-touching code** → mocked to ~free, ~14× wrong. → Measure on device.
 - **Instrumenting one call site** → undercount; misses dependency callers. → Wrap the native API (Pattern 1a).
 - **CPU-profile `--diff` for a tiny / cross-edit change** → phantom line-shift deltas dominate, real signal is sub-noise. → Use counting (Pattern 1).
 - **`grep -c` on `uiautomator` XML** → the dump is one line, so it returns 1 regardless. → `grep -oE '…' | wc -l`.
 - **`uiautomator dump` mid-scroll-animation** → returns a partial/sparse tree (looked like "1 row" when there were 15). → Dump after the list settles.
+- **Paginating the wrong direction for the list's inversion** → scroll against the anchored edge, nothing loads, the loaded set looks capped and every "scaling" run measures the same N. → Inverted list (message list) paginates by scrolling **up** (`scroll`); normal list (media grid) paginates by scrolling **down** (`scroll_down`).
+- **Sourcing `scenario-lib.sh` into the tool's zsh shell** → `tap_testid`'s `"$id[^\"]*"` is read as a zsh array subscript → `bad math expression`. → Drive via `bash perf/drive-*.sh`, never `source` into zsh.
 - **Fixed `sleep` after a tap, then swipe** → debug nav is slow; swipes hit the list / half-mounted screen. → Wait on `message-flat-list` (Pattern 3).
 - **Reading cold first-mount numbers** → dominated by startup/JIT/module-init (~2500ms "mount" is mostly not your code). → Use warm re-opens; never quote the cold mount as the row cost.
 - **Claiming "faster"/"slower" from one render sample** → it's within noise. → Lead with the deterministic count; only call timing differences real with N runs + non-overlapping spreads.
+- **A/B runs that traverse different content** (different images/messages, or a different start index / swipe path between baseline and after) → content-dependent cost (image decode, layout, text shaping) confounds the delta, and the 95th/99th are set by the single heaviest item traversed, so wins *and* losses are noise. → Pin the start (force a fixed index via throwaway instrumentation) and drive an identical path so both builds do byte-identical work; run each side ≥3× and compare spreads, not single numbers.
 
 ## Environment gotchas
 
@@ -167,7 +176,8 @@ The `[SR_STACK]` traces revealed the residual ~30 wasn't ours: 1 call = our prov
 
 ## Execution checklist
 
-- [ ] Metro running, exactly one device connected (`adb devices`).
+- [ ] **DEBUG build installed** (`adb shell run-as <pkg> ls` succeeds), not release — checked BEFORE measuring.
+- [ ] Metro running, exactly one device connected (`adb devices`); `adb reverse --list` shows `tcp:8081`.
 - [ ] Picked the right **instrument** for the change (rule 5).
 - [ ] Chose a channel with enough messages; drove it on testIDs, not sleeps.
 - [ ] Instrumented the **native API** (counts every caller), not a single call site.
