@@ -6,6 +6,8 @@ export * from './useChannelName';
 export * from './useChannelImage';
 export * from './useChannelMembershipState';
 export * from './useChannelOwnCapabilities';
+export * from './useCanEdit';
+export * from './useCanAddMembers';
 export * from './useChannelMuteActive';
 export * from './useIsDirectChat';
 export * from './useIsChannelMember';

@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { useChannelOwnCapabilities } from '../../../../hooks/useChannelOwnCapabilities';
 import { useCanEdit } from '../useCanEdit';
+import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 
-jest.mock('../../../../hooks/useChannelOwnCapabilities');
+jest.mock('../useChannelOwnCapabilities');
 
 const mockedUseChannelOwnCapabilities = useChannelOwnCapabilities as jest.MockedFunction<
   typeof useChannelOwnCapabilities

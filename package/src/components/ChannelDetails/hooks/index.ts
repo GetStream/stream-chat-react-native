@@ -3,8 +3,6 @@ export * from './useChannelDetailsNavigationItems';
 export * from './useChannelDetailsMemberStatusText';
 export * from './useChannelDetailsMembersPreview';
 export * from './useEditChannelImage';
-export * from './useCanEdit';
-export * from './useCanAddMembers';
 export * from './useFileAttachmentListSections';
 export * from './useMediaList';
 export * from './useUserActivityStatus';

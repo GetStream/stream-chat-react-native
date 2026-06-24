@@ -1,6 +1,6 @@
 import type { Channel } from 'stream-chat';
 
-import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
+import { useChannelOwnCapabilities } from './useChannelOwnCapabilities';
 
 /**
  * Whether the current user can add members to the channel.

@@ -4,9 +4,9 @@ import { ChannelAddMembersModal } from './ChannelAddMembersModal';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useCanAddMembers } from '../../../../hooks/useCanAddMembers';
 import { UserAdd } from '../../../../icons/user-add';
 import { Button, ButtonProps } from '../../../ui/Button/Button';
-import { useCanAddMembers } from '../../hooks/useCanAddMembers';
 
 export type ChannelAddMembersButtonProps = {
   /** Override the default behavior, which opens the Add-members modal. */

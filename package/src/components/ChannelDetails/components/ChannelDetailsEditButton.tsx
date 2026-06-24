@@ -4,8 +4,8 @@ import { ChannelEditDetailsModal } from './ChannelEditDetailsModal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useCanEdit } from '../../../hooks/useCanEdit';
 import { Button, ButtonProps } from '../../ui/Button/Button';
-import { useCanEdit } from '../hooks/useCanEdit';
 
 export type ChannelDetailsEditButtonProps = {
   /** Override the default behavior, which opens the Edit modal. */
