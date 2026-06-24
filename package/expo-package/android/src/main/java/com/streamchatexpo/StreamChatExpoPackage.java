@@ -7,8 +7,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
+import com.streamchatreactnative.StreamMessageListViewManager;
 import com.streamchatreactnative.StreamShimmerViewManager;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,10 @@ public class StreamChatExpoPackage extends TurboReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.<ViewManager>singletonList(new StreamShimmerViewManager());
+    return Arrays.<ViewManager>asList(
+            new StreamShimmerViewManager(),
+            new StreamMessageListViewManager()
+    );
   }
 
   @Nullable

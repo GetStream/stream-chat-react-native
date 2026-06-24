@@ -320,6 +320,17 @@ export type NativeShimmerViewProps = ViewProps & {
   gradientColor?: ColorValue;
 };
 
+export type NativeMessageListViewProps = ViewProps & {
+  inverted?: boolean;
+  onStreamScroll?: (event: {
+    nativeEvent: {
+      contentOffset: { x: number; y: number };
+      contentSize: { height: number; width: number };
+      layoutMeasurement: { height: number; width: number };
+    };
+  }) => void;
+};
+
 type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
@@ -340,6 +351,7 @@ type Handlers = {
   setClipboardString?: SetClipboardString;
   shareImage?: ShareImage;
   Sound?: SoundType;
+  NativeMessageListView?: React.ComponentType<NativeMessageListViewProps>;
   NativeShimmerView?: React.ComponentType<NativeShimmerViewProps>;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
@@ -348,7 +360,7 @@ type Handlers = {
 
 export const NativeHandlers: Pick<
   Handlers,
-  'Audio' | 'FlatList' | 'NativeShimmerView' | 'Video' | 'Sound'
+  'Audio' | 'FlatList' | 'NativeMessageListView' | 'NativeShimmerView' | 'Video' | 'Sound'
 > &
   Required<
     Pick<
@@ -386,6 +398,7 @@ export const NativeHandlers: Pick<
   setClipboardString: fail,
   shareImage: fail,
   Sound: undefined,
+  NativeMessageListView: undefined,
   NativeShimmerView: undefined,
   takePhoto: fail,
   triggerHaptic: fail,
@@ -458,6 +471,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.Sound) {
     NativeHandlers.Sound = handlers.Sound;
+  }
+
+  if (handlers.NativeMessageListView !== undefined) {
+    NativeHandlers.NativeMessageListView = handlers.NativeMessageListView;
   }
 
   if (handlers.NativeShimmerView !== undefined) {
