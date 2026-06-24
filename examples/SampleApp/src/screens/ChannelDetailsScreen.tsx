@@ -1,21 +1,20 @@
 import React, { useCallback, useState } from 'react';
 
-import type { RouteProp } from '@react-navigation/native';
+import { useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ChannelDetails,
   ChannelDetailsActionsSection,
-  ChannelDetailsMemberSection,
   ChannelDetailsNavigationSection,
   GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
-  ChannelAllMembersModal,
   ChannelDetailsContextProvider,
   ChannelDetailsNavigationSectionType,
   ChannelMemberActionsSheet,
   WithComponents,
   ChannelDetailsActionsSectionProps,
+  useChannelDetailsContext,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -45,12 +44,10 @@ const navigationItems: {
   files: 'ChannelFilesScreen',
 };
 
-export const ChannelDetailsScreen: React.FC<Props> = ({
-  navigation,
-  route: {
-    params: { channel },
-  },
-}) => {
+const ChannelDetailsScreenInner = () => {
+  const navigation = useNavigation<ChannelDetailsScreenNavigationProp>();
+  const { channel, closeModals } = useChannelDetailsContext();
+
   const onBack = useCallback(() => navigation.goBack(), [navigation]);
   const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
     ({ defaultItems }) =>
@@ -70,9 +67,6 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       }),
     [navigation],
   );
-  const [isAllMembersVisible, setAllMembersVisible] = useState(false);
-  const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
-  const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
 
   const ActionsSection = useCallback(
     (props: ChannelDetailsActionsSectionProps) => (
@@ -91,7 +85,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       return [
         {
           action: () => {
-            setAllMembersVisible(false);
+            closeModals();
             navigation.navigate('NewDirectMessagingScreen', { initialUser: user });
             return Promise.resolve();
           },
@@ -103,7 +97,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
         ...defaultItems,
       ];
     },
-    [navigation],
+    [navigation, closeModals],
   );
 
   const NavigationSection = useCallback(
@@ -111,14 +105,6 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       <ChannelDetailsNavigationSection {...props} getNavigationItems={getNavigationItems} />
     ),
     [getNavigationItems],
-  );
-
-  // Handle view all members modal so we can close it after navigation is triggered by our custom action.
-  const MemberSection = useCallback(
-    (props: Parameters<typeof ChannelDetailsMemberSection>[0]) => (
-      <ChannelDetailsMemberSection {...props} onViewAllMembersPress={handleAllMembersPress} />
-    ),
-    [handleAllMembersPress],
   );
 
   const MemberActionsSheet = useCallback(
@@ -132,18 +118,26 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
   );
 
   return (
+    <WithComponents
+      overrides={{
+        ChannelDetailsActionsSection: ActionsSection,
+        ChannelDetailsNavigationSection: NavigationSection,
+        ChannelMemberActionsSheet: MemberActionsSheet,
+      }}
+    >
+      <ChannelDetails onBack={onBack} />
+    </WithComponents>
+  );
+};
+
+export const ChannelDetailsScreen: React.FC<Props> = ({
+  route: {
+    params: { channel },
+  },
+}) => {
+  return (
     <ChannelDetailsContextProvider channel={channel}>
-      <WithComponents
-        overrides={{
-          ChannelDetailsActionsSection: ActionsSection,
-          ChannelDetailsMemberSection: MemberSection,
-          ChannelDetailsNavigationSection: NavigationSection,
-          ChannelMemberActionsSheet: MemberActionsSheet,
-        }}
-      >
-        <ChannelDetails onBack={onBack} />
-        <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
-      </WithComponents>
+      <ChannelDetailsScreenInner />
     </ChannelDetailsContextProvider>
   );
 };

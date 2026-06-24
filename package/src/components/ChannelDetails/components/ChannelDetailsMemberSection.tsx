@@ -3,7 +3,8 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { ChannelAllMembersModal } from './members/ChannelAllMembersModal';
+import { ChannelDetailsModal } from './modal/Modal';
+import { ModalHeader } from './modal/ModalHeader';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -42,8 +43,12 @@ export const ChannelDetailsMemberSection = ({
       semantics,
     },
   } = useTheme();
-  const { ChannelAddMembersButton, ChannelMemberActionsSheet, ChannelMemberItem } =
-    useComponentsContext();
+  const {
+    ChannelAddMembersButton,
+    ChannelMemberActionsSheet,
+    ChannelMemberItem,
+    ChannelMemberList,
+  } = useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
@@ -113,7 +118,21 @@ export const ChannelDetailsMemberSection = ({
           </View>
         </Pressable>
       ) : null}
-      <ChannelAllMembersModal onClose={handleMemberListClose} visible={isMemberListVisible} />
+      {onViewAllMembersPress ? null : (
+        <ChannelDetailsModal onClose={handleMemberListClose} visible={isMemberListVisible}>
+          <ModalHeader
+            onClose={handleMemberListClose}
+            rightAction={
+              <ChannelAddMembersButton
+                testID='channel-details-member-list-add-button'
+                variant='icon'
+              />
+            }
+            title={t('{{count}} members', { count: total })}
+          />
+          <ChannelMemberList />
+        </ChannelDetailsModal>
+      )}
       {selectedMember ? (
         <ChannelMemberActionsSheet
           member={selectedMember}
