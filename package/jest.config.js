@@ -2,6 +2,8 @@
 
 module.exports = {
   globalSetup: './jest-global-setup.js',
+  // cap worker count on CI
+  ...(process.env.CI ? { maxWorkers: 2 } : {}),
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },

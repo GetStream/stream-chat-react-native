@@ -61,7 +61,7 @@ jobs:
 
   build_and_deploy_android_firebase:
     name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
-    runs-on: ubuntu-latest
+    runs-on: public
     strategy:
       matrix:
         node-version: [24.x]
@@ -73,8 +73,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
           cache-dependency-path: 'yarn.lock'
-      - name: Install Linux build tools
-        run: sudo apt-get update && sudo apt-get install -y build-essential
       - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
