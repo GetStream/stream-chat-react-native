@@ -23,8 +23,9 @@ export const ChannelMemberListContext = React.createContext(
 export const ChannelMemberListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
-  const [searchSource] = useState(() => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: ChannelMemberSearchSource }>) => {
+  const [defaultSearchSource] = useState(() => {
     const source = new ChannelMemberSearchSource(
       channel,
       {
@@ -46,6 +47,7 @@ export const ChannelMemberListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
     <ChannelMemberListContext.Provider value={{ channel, searchSource }}>

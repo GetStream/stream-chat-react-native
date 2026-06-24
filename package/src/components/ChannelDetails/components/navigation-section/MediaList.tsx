@@ -8,7 +8,12 @@ import {
   View,
 } from 'react-native';
 
-import { formatMessage, type MessageResponse, type SearchSourceState } from 'stream-chat';
+import {
+  formatMessage,
+  type MessageResponse,
+  type MessageSearchSource,
+  type SearchSourceState,
+} from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
@@ -48,6 +53,12 @@ export type MediaListProps = {
    * See https://reactnative.dev/docs/flatlist#props for the full list.
    */
   additionalFlatListProps?: Partial<FlatListProps<MediaTile>>;
+  /**
+   * A custom `MessageSearchSource` used to query and paginate the media grid.
+   * Overrides the source the provider creates by default (pre-configured to
+   * fetch image/video attachments, newest first).
+   */
+  searchSource?: MessageSearchSource;
 };
 
 const keyExtractor = (item: MediaTile, index: number) => `${item.message.id}-${index}`;
@@ -204,7 +215,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const MediaList = (props: MediaListProps) => {
+export const MediaList = ({ searchSource, ...props }: MediaListProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `media-list:${channel.cid}` : undefined;
 
@@ -213,7 +224,7 @@ export const MediaList = (props: MediaListProps) => {
   }
 
   return (
-    <ChannelMediaListProvider channel={channel}>
+    <ChannelMediaListProvider channel={channel} searchSource={searchSource}>
       <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
         <MediaListContent {...props} />
       </NotificationTargetProvider>

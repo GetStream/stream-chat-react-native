@@ -24,9 +24,10 @@ export const ChannelMediaListContext = React.createContext(
 export const ChannelMediaListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: MessageSearchSource }>) => {
   const { client } = useChatContext();
-  const [searchSource] = useState(() => {
+  const [defaultSearchSource] = useState(() => {
     const source = new MessageSearchSource(client, {
       allowEmptySearchString: true,
       pageSize: 25,
@@ -42,6 +43,7 @@ export const ChannelMediaListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
     <ChannelMediaListContext.Provider value={{ channel, searchSource }}>

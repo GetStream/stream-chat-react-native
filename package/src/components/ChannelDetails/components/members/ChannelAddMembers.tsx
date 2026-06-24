@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { SearchSourceState, UserResponse } from 'stream-chat';
+import type { SearchSourceState, UserResponse, UserSearchSource } from 'stream-chat';
 
 import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 import { UserListLoadingSkeleton } from './UserListLoadingSkeleton';
@@ -25,6 +25,12 @@ export type ChannelAddMembersProps = {
    * See https://reactnative.dev/docs/flatlist#props for the full list.
    */
   additionalFlatListProps?: Partial<FlatListProps<UserResponse>>;
+  /**
+   * A custom `UserSearchSource` used to query and paginate the users to add.
+   * Overrides the source the provider creates by default (pre-configured to
+   * autocomplete by `name`).
+   */
+  searchSource?: UserSearchSource;
 };
 
 const keyExtractor = (user: UserResponse) => user.id;
@@ -41,7 +47,10 @@ const listStateSelector = (state: SearchSourceState<UserResponse>) => {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembersProps) => {
+export const ChannelAddMembers = ({
+  additionalFlatListProps,
+  searchSource: searchSourceProp,
+}: ChannelAddMembersProps) => {
   const { t } = useTranslationContext();
   const styles = useStyles();
   const {
@@ -53,8 +62,14 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
   const { channel } = useChannelDetailsContext();
   const { addNotification } = useNotificationApi();
 
-  const { searchSource, selectionStore } = useChannelAddMembersContext();
+  const { searchSource, selectionStore, setSearchSource } = useChannelAddMembersContext();
   const { users, loading, hasNext, error } = useStateStore(searchSource.state, listStateSelector);
+
+  // Push the prop into the context so the search reads a single source of truth.
+  // Only sync when provided to avoid clobbering the provider's default source.
+  useEffect(() => {
+    if (searchSourceProp) setSearchSource?.(searchSourceProp);
+  }, [searchSourceProp, setSearchSource]);
 
   const initialized = useRef(false);
   useEffect(() => {

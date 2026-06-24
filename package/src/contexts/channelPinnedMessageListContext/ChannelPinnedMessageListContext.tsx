@@ -24,9 +24,10 @@ export const ChannelPinnedMessageListContext = React.createContext(
 export const ChannelPinnedMessageListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: MessageSearchSource }>) => {
   const { client } = useChatContext();
-  const [searchSource] = useState(() => {
+  const [defaultSearchSource] = useState(() => {
     const source = new MessageSearchSource(
       client,
       { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
@@ -46,6 +47,7 @@ export const ChannelPinnedMessageListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
     <ChannelPinnedMessageListContext.Provider value={{ channel, searchSource }}>

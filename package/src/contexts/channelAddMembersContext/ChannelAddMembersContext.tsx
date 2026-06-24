@@ -22,6 +22,8 @@ export type ChannelAddMembersContextValue = {
    * rejects if the request fails.
    */
   submit: () => Promise<void>;
+  /** Set the {@link searchSource} used to query and paginate users to add. */
+  setSearchSource?: (value: UserSearchSource) => void;
 };
 
 export const ChannelAddMembersContext = React.createContext(
@@ -38,7 +40,7 @@ const ChannelAddMembersContextProviderInner = ({ children }: PropsWithChildren<u
   const { channel } = useChannelDetailsContext();
   const { addMembers } = useChannelActions(channel);
   const [selectionStore] = useState(() => new SelectionStore());
-  const [searchSource] = useState(() => {
+  const [searchSource, setSearchSource] = useState(() => {
     const source = new UserSearchSource(
       client,
       { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
@@ -77,8 +79,8 @@ const ChannelAddMembersContextProviderInner = ({ children }: PropsWithChildren<u
   });
 
   const value = useMemo(
-    () => ({ selectionStore, searchSource, submit }),
-    [selectionStore, searchSource, submit],
+    () => ({ selectionStore, searchSource, setSearchSource, submit }),
+    [selectionStore, searchSource, setSearchSource, submit],
   );
 
   return (

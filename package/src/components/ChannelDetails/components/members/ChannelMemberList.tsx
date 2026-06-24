@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { ChannelMemberResponse, SearchSourceState } from 'stream-chat';
+import type {
+  ChannelMemberResponse,
+  ChannelMemberSearchSource,
+  SearchSourceState,
+} from 'stream-chat';
 
 import { MemberListLoadingSkeleton } from './MemberListLoadingSkeleton';
 
@@ -42,6 +46,12 @@ export type ChannelMemberListProps = {
    */
   additionalFlatListProps?: Partial<FlatListProps<ChannelMemberResponse>>;
   searchInputProps?: SearchInputProps;
+  /**
+   * A custom `ChannelMemberSearchSource` used to query and paginate the member
+   * list. Overrides the source the provider creates by default (pre-configured
+   * to autocomplete by `name`).
+   */
+  searchSource?: ChannelMemberSearchSource;
 };
 
 const ChannelMemberListContent = ({
@@ -163,7 +173,7 @@ const ChannelMemberListContent = ({
  * Lists all channel members with the ability to search them.
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelMemberList = (props: ChannelMemberListProps = {}) => {
+export const ChannelMemberList = ({ searchSource, ...props }: ChannelMemberListProps = {}) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `channel-member-list:${channel.cid}` : undefined;
 
@@ -172,7 +182,7 @@ export const ChannelMemberList = (props: ChannelMemberListProps = {}) => {
   }
 
   return (
-    <ChannelMemberListProvider channel={channel}>
+    <ChannelMemberListProvider channel={channel} searchSource={searchSource}>
       <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
         <ChannelMemberListContent {...props} />
       </NotificationTargetProvider>
