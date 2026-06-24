@@ -81,7 +81,6 @@ jest.mock(
       return children;
     },
     useChannelFileAttachmentListContext: () => ({
-      channel: mockChannel,
       searchSource: mockCurrentSearchSource,
     }),
   }),

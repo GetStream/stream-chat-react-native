@@ -74,7 +74,6 @@ jest.mock(
       return children;
     },
     useChannelPinnedMessageListContext: () => ({
-      channel: mockChannel,
       searchSource: mockCurrentSearchSource,
     }),
   }),

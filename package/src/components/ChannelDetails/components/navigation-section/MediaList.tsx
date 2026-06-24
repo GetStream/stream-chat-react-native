@@ -83,7 +83,8 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
 
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelMediaListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelMediaListContext();
   const { imageGalleryStateStore } = useImageGalleryContext();
   const { setOverlay } = useOverlayContext();
   const { error, hasNext, loading, messages } = useStateStore(

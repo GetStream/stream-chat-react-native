@@ -67,7 +67,8 @@ const ChannelMemberListContent = ({
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelMemberListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelMemberListContext();
   const { error, hasNext, loading, members, searchQuery } = useStateStore(
     searchSource.state,
     listStateSelector,

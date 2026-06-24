@@ -9,7 +9,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  * @experimental This API is experimental and is subject to change.
  */
 export type ChannelMemberListContextValue = {
-  channel: Channel;
   searchSource: ChannelMemberSearchSource;
 };
 
@@ -50,7 +49,7 @@ export const ChannelMemberListProvider = ({
   const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelMemberListContext.Provider value={{ channel, searchSource }}>
+    <ChannelMemberListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelMemberListContext.Provider>
   );

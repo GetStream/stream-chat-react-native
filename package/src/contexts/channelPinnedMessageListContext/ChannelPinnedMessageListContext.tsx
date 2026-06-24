@@ -10,7 +10,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  * @experimental This API is experimental and is subject to change.
  */
 export type ChannelPinnedMessageListContextValue = {
-  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -50,7 +49,7 @@ export const ChannelPinnedMessageListProvider = ({
   const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelPinnedMessageListContext.Provider value={{ channel, searchSource }}>
+    <ChannelPinnedMessageListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelPinnedMessageListContext.Provider>
   );

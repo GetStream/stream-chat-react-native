@@ -71,7 +71,8 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
 
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelFileAttachmentListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelFileAttachmentListContext();
   const { error, hasNext, loading, messages } = useStateStore(
     searchSource.state,
     listStateSelector,

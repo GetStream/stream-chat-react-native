@@ -66,7 +66,8 @@ const PinnedMessageListContent = ({
 
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelPinnedMessageListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelPinnedMessageListContext();
   const { error, hasNext, loading, messages, searchQuery } = useStateStore(
     searchSource.state,
     listStateSelector,

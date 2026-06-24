@@ -10,7 +10,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  * @experimental This API is experimental and is subject to change.
  */
 export type ChannelMediaListContextValue = {
-  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -46,7 +45,7 @@ export const ChannelMediaListProvider = ({
   const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelMediaListContext.Provider value={{ channel, searchSource }}>
+    <ChannelMediaListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelMediaListContext.Provider>
   );

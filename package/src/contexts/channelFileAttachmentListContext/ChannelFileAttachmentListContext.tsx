@@ -10,7 +10,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  * @experimental This API is experimental and is subject to change.
  */
 export type ChannelFileAttachmentListContextValue = {
-  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -45,7 +44,7 @@ export const ChannelFileAttachmentListProvider = ({
   const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelFileAttachmentListContext.Provider value={{ channel, searchSource }}>
+    <ChannelFileAttachmentListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelFileAttachmentListContext.Provider>
   );

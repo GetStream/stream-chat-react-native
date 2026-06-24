@@ -105,7 +105,7 @@ jest.mock('../../../../../contexts/channelMediaListContext/ChannelMediaListConte
       mockProviderProbe.push({ channel: providedChannel });
       return ReactLib.createElement(
         actual.ChannelMediaListContext.Provider,
-        { value: { channel: mockChannel, searchSource: mockCurrentSearchSource } },
+        { value: { searchSource: mockCurrentSearchSource } },
         children,
       );
     },

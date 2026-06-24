@@ -72,7 +72,6 @@ jest.mock('../../../../contexts/channelMemberListContext/ChannelMemberListContex
     return children;
   },
   useChannelMemberListContext: () => ({
-    channel: mockChannel,
     searchSource: mockCurrentSearchSource,
   }),
 }));
