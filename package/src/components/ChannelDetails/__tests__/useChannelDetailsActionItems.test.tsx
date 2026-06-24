@@ -7,6 +7,7 @@ import type {
   GetChannelActionItems,
 } from '../../../hooks/actions/useChannelActionItems';
 import * as useChannelActionItemsModule from '../../../hooks/actions/useChannelActionItems';
+import { SignalStore } from '../../../state-store/signal-store';
 import { useChannelDetailsActionItems } from '../hooks/useChannelDetailsActionItems';
 
 const NoopIcon = () => null;
@@ -28,6 +29,8 @@ const mockContext = (
 ) => {
   const value: channelDetailsContextModule.ChannelDetailsContextValue = {
     channel,
+    closeModals: jest.fn(),
+    signalStore: new SignalStore(),
     ...overrides,
   };
   jest.spyOn(channelDetailsContextModule, 'useChannelDetailsContext').mockReturnValue(value);

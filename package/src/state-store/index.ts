@@ -7,3 +7,4 @@ export * from './video-player';
 export * from './video-player-pool';
 export * from './image-gallery-state-store';
 export * from './message-overlay-store';
+export * from './signal-store';

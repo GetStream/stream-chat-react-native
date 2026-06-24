@@ -1,7 +1,8 @@
-import React, { PropsWithChildren, useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { Channel } from 'stream-chat';
 
+import { SignalStore } from '../../state-store/signal-store';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
@@ -10,6 +11,11 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
  */
 export type ChannelDetailsContextValue = {
   channel: Channel;
+  /**
+   * Signals all ChannelDetails modals to close themselves.
+   */
+  closeModals: () => void;
+  signalStore: SignalStore;
 };
 export const ChannelDetailsContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelDetailsContextValue,
@@ -24,7 +30,13 @@ export const ChannelDetailsContextProvider = ({
 }: PropsWithChildren<{
   channel: Channel;
 }>) => {
-  const value = useMemo(() => ({ channel }), [channel]);
+  const [signalStore] = useState(() => new SignalStore());
+  const closeModals = useCallback(() => signalStore.signal(), [signalStore]);
+
+  const value = useMemo(
+    () => ({ channel, closeModals, signalStore }),
+    [channel, closeModals, signalStore],
+  );
 
   return <ChannelDetailsContext.Provider value={value}>{children}</ChannelDetailsContext.Provider>;
 };
