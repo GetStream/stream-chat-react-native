@@ -5,5 +5,5 @@ import { useChannelOwnCapabilities } from './useChannelOwnCapabilities';
 /**
  * Whether the current user can add members to the channel.
  */
-export const useCanAddMembers = (channel?: Channel) =>
+export const useCanAddMembersToChannel = (channel?: Channel) =>
   useChannelOwnCapabilities(channel)?.includes('update-channel-members') ?? false;

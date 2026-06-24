@@ -4,7 +4,7 @@ import { ChannelAddMembersModal } from './ChannelAddMembersModal';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { useCanAddMembers } from '../../../../hooks/useCanAddMembers';
+import { useCanAddMembersToChannel } from '../../../../hooks/useCanAddMembersToChannel';
 import { UserAdd } from '../../../../icons/user-add';
 import { Button, ButtonProps } from '../../../ui/Button/Button';
 
@@ -28,7 +28,7 @@ export const ChannelAddMembersButton = ({
 }: ChannelAddMembersButtonProps) => {
   const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
-  const isVisible = useCanAddMembers(channel);
+  const isVisible = useCanAddMembersToChannel(channel);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
 
   // The built-in modal is only used by the default press behavior. When a custom handler

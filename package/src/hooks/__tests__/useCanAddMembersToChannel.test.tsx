@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { useCanAddMembers } from '../useCanAddMembers';
+import { useCanAddMembersToChannel } from '../useCanAddMembersToChannel';
 import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 
 jest.mock('../useChannelOwnCapabilities');
@@ -12,7 +12,7 @@ const mockedUseChannelOwnCapabilities = useChannelOwnCapabilities as jest.Mocked
 
 const channel = {} as Channel;
 
-describe('useCanAddMembers', () => {
+describe('useCanAddMembersToChannel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -20,7 +20,7 @@ describe('useCanAddMembers', () => {
   it('returns true when the user can update channel members', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue(['update-channel-members']);
 
-    const { result } = renderHook(() => useCanAddMembers(channel));
+    const { result } = renderHook(() => useCanAddMembersToChannel(channel));
 
     expect(result.current).toBe(true);
   });
@@ -28,7 +28,7 @@ describe('useCanAddMembers', () => {
   it('returns false when the update-channel-members capability is missing', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue([]);
 
-    const { result } = renderHook(() => useCanAddMembers(channel));
+    const { result } = renderHook(() => useCanAddMembersToChannel(channel));
 
     expect(result.current).toBe(false);
   });
@@ -36,7 +36,7 @@ describe('useCanAddMembers', () => {
   it('returns false when there is no channel', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue(undefined);
 
-    const { result } = renderHook(() => useCanAddMembers());
+    const { result } = renderHook(() => useCanAddMembersToChannel());
 
     expect(result.current).toBe(false);
   });

@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { useCanEdit } from '../useCanEdit';
+import { useCanEditChannel } from '../useCanEditChannel';
 import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 
 jest.mock('../useChannelOwnCapabilities');
@@ -12,7 +12,7 @@ const mockedUseChannelOwnCapabilities = useChannelOwnCapabilities as jest.Mocked
 
 const channel = {} as Channel;
 
-describe('useCanEdit', () => {
+describe('useCanEditChannel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -20,7 +20,7 @@ describe('useCanEdit', () => {
   it('returns true when the user can update the channel', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue(['update-channel']);
 
-    const { result } = renderHook(() => useCanEdit(channel));
+    const { result } = renderHook(() => useCanEditChannel(channel));
 
     expect(result.current).toBe(true);
   });
@@ -28,7 +28,7 @@ describe('useCanEdit', () => {
   it('returns false when the update-channel capability is missing', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue([]);
 
-    const { result } = renderHook(() => useCanEdit(channel));
+    const { result } = renderHook(() => useCanEditChannel(channel));
 
     expect(result.current).toBe(false);
   });
@@ -36,7 +36,7 @@ describe('useCanEdit', () => {
   it('returns false when there is no channel', () => {
     mockedUseChannelOwnCapabilities.mockReturnValue(undefined);
 
-    const { result } = renderHook(() => useCanEdit());
+    const { result } = renderHook(() => useCanEditChannel());
 
     expect(result.current).toBe(false);
   });
