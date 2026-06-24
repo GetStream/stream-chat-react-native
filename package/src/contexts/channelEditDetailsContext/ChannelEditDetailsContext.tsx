@@ -5,8 +5,8 @@ import { useChannelActions } from '../../hooks/actions/useChannelActions';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import {
   EditChannelDetailsStore,
-  isImageDirty,
-  isNameDirty,
+  isImageEdited,
+  isNameEdited,
 } from '../../state-store/edit-channel-details-store';
 import type { File, GlobalFileUploadRequest } from '../../types/types';
 import { useChannelDetailsContext } from '../channelDetailsContext/channelDetailsContext';
@@ -19,7 +19,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type ChannelEditDetailsContextValue = {
   store: EditChannelDetailsStore;
   /**
-   * Saves the dirty channel details (name and/or image). Resolves once every
+   * Saves the edited channel details (name and/or image). Resolves once every
    * update succeeds and rejects if any of them fail.
    */
   submit: () => Promise<void>;
@@ -67,10 +67,10 @@ const ChannelEditDetailsContextProviderInner = ({ children }: PropsWithChildren<
     const errors: unknown[] = [];
     const onFailure = (error: unknown) => errors.push(error);
     const tasks: Promise<void>[] = [];
-    if (isNameDirty(state)) {
+    if (isNameEdited(state)) {
       tasks.push(updateName(currentName, { onFailure }));
     }
-    if (isImageDirty(state)) {
+    if (isImageEdited(state)) {
       tasks.push(updateImage(updatedImage as File | null, { onFailure }, doFileUploadRequest));
     }
     await Promise.all(tasks);

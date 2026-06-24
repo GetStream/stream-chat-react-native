@@ -68,27 +68,27 @@ export class EditChannelDetailsStore {
 }
 
 /** Whether the name input differs from the channel's initial name. */
-export const isNameDirty = (state: EditChannelDetailsState) =>
+export const isNameEdited = (state: EditChannelDetailsState) =>
   state.currentName !== state.initialName;
 
 /**
- * Whether the image has unsaved changes. The image is dirty once touched
+ * Whether the image has unsaved changes. The image is edited once touched
  * (`updatedImage !== undefined`), except when both the initial and updated
  * image are falsy (no image before, none now).
  */
-export const isImageDirty = (state: EditChannelDetailsState) =>
+export const isImageEdited = (state: EditChannelDetailsState) =>
   !(state.updatedImage === undefined || (!state.updatedImage && !state.initialImage));
 
-const selectIsNameDirty = (state: EditChannelDetailsState) => ({
-  isNameDirty: isNameDirty(state),
+const selectIsNameEdited = (state: EditChannelDetailsState) => ({
+  isNameEdited: isNameEdited(state),
 });
 
-const selectIsImageDirty = (state: EditChannelDetailsState) => ({
-  isImageDirty: isImageDirty(state),
+const selectIsImageEdited = (state: EditChannelDetailsState) => ({
+  isImageEdited: isImageEdited(state),
 });
 
-const selectIsFormDirty = (state: EditChannelDetailsState) => ({
-  isFormDirty: isNameDirty(state) || isImageDirty(state),
+const selectAreChannelDetailsEdited = (state: EditChannelDetailsState) => ({
+  areChannelDetailsEdited: isNameEdited(state) || isImageEdited(state),
 });
 
 /**
@@ -97,8 +97,8 @@ const selectIsFormDirty = (state: EditChannelDetailsState) => ({
  *
  * @experimental This API is experimental and is subject to change.
  */
-export const useIsNameDirty = (store: EditChannelDetailsStore) =>
-  useStateStore(store.state, selectIsNameDirty).isNameDirty;
+export const useIsNameEdited = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectIsNameEdited).isNameEdited;
 
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the image
@@ -106,8 +106,8 @@ export const useIsNameDirty = (store: EditChannelDetailsStore) =>
  *
  * @experimental This API is experimental and is subject to change.
  */
-export const useIsImageDirty = (store: EditChannelDetailsStore) =>
-  useStateStore(store.state, selectIsImageDirty).isImageDirty;
+export const useIsImageEdited = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectIsImageEdited).isImageEdited;
 
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the form
@@ -115,5 +115,5 @@ export const useIsImageDirty = (store: EditChannelDetailsStore) =>
  *
  * @experimental This API is experimental and is subject to change.
  */
-export const useIsFormDirty = (store: EditChannelDetailsStore) =>
-  useStateStore(store.state, selectIsFormDirty).isFormDirty;
+export const useAreChannelDetailsEdited = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectAreChannelDetailsEdited).areChannelDetailsEdited;

@@ -14,7 +14,7 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { Checkmark } from '../../../icons/checkmark-1';
-import { useIsFormDirty } from '../../../state-store/edit-channel-details-store';
+import { useAreChannelDetailsEdited } from '../../../state-store/edit-channel-details-store';
 import { NotificationList } from '../../Notifications/NotificationList';
 import { Button } from '../../ui/Button/Button';
 
@@ -37,8 +37,8 @@ const ChannelEditDetailsModalBody = ({ onClose }: ChannelEditDetailsModalContent
   const { ChannelEditDetails } = useComponentsContext();
   const { t } = useTranslationContext();
   const [saving, setSaving] = useState(false);
-  const formDirty = useIsFormDirty(store);
-  const confirmEnabled = formDirty && !saving;
+  const channelDetailsEdited = useAreChannelDetailsEdited(store);
+  const confirmEnabled = channelDetailsEdited && !saving;
 
   const handleConfirm = useStableCallback(async () => {
     if (!confirmEnabled) return;
