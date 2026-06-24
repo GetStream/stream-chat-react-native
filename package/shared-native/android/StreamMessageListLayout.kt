@@ -85,7 +85,14 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
         tracker.computeCurrentVelocity(1000, maxFlingVelocity.toFloat())
         val velocityY = -tracker.yVelocity.toInt()
         if (abs(velocityY) > minFlingVelocity) {
-          scroller.fling(0, scrollY, 0, velocityY, 0, 0, 0, maxScrollY())
+          // maxY is intentionally unbounded. maxScrollY() is UNDERESTIMATED while the rows below
+          // are unmeasured (they fall back to the height estimate), so binding the fling to it made
+          // OverScroller truncate the deceleration curve to land on that short max — a fast downward
+          // fling got "cut" mid-velocity. Letting it decelerate by pure physics and clamping each
+          // frame in computeScroll() to the LIVE maxScrollY() (which grows as those rows mount and
+          // measure) lets the fling ride the revealed content to the true bottom. Upward stays exact
+          // because minY = 0.
+          scroller.fling(0, scrollY, 0, velocityY, 0, 0, 0, Int.MAX_VALUE)
           postInvalidateOnAnimation()
         }
         recycleVelocityTracker()
@@ -101,6 +108,8 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
 
   override fun computeScroll() {
     if (scroller.computeScrollOffset()) {
+      // Clamp to the LIVE maxScrollY() every frame: the fling target is unbounded (see ACTION_UP),
+      // so this is what keeps it inside the content as rows below mount and the range grows.
       scrollTo(0, scroller.currY.coerceIn(0, maxScrollY()))
       postInvalidateOnAnimation()
     }

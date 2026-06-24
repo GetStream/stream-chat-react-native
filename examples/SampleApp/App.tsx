@@ -49,6 +49,7 @@ import { ChannelScreen } from './src/screens/ChannelScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
 import { MapScreen } from './src/screens/MapScreen';
+import { NativeListSpikeScreen } from './src/screens/NativeListSpikeScreen';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
@@ -446,4 +447,8 @@ const HomeScreen = () => {
   );
 };
 
-export default App;
+// TEMP(native-list-spike): set to true to boot directly into the native list scroll spike (R1 gate).
+const NATIVE_LIST_SPIKE = true;
+const NativeListSpikeApp = () => <NativeListSpikeScreen />;
+
+export default NATIVE_LIST_SPIKE ? NativeListSpikeApp : App;
