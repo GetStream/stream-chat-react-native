@@ -73,8 +73,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
           cache-dependency-path: 'yarn.lock'
-      - name: Install Linux build tools
-        run: apt-get update && apt-get install -y build-essential
       - uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
