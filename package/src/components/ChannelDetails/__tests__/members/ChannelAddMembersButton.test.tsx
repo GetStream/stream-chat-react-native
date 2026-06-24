@@ -18,11 +18,11 @@ import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { ChannelAddMembersButton } from '../../components/members/ChannelAddMembersButton';
 
-// Replace the heavy built-in modal with a lightweight probe that renders regardless of
-// `visible`, so tests can distinguish "modal mounted" from "modal not mounted" and observe
-// its open/closed state.
-jest.mock('../../components/members/ChannelAddMembersModal', () => ({
-  ChannelAddMembersModal: ({ visible }: { visible: boolean }) => {
+// Replace the modal wrapper with a lightweight probe that renders regardless of `visible`
+// (and ignores its children, so the real add-members form never mounts). This lets tests
+// distinguish "modal mounted" from "modal not mounted" and observe its open/closed state.
+jest.mock('../../components/modal/Modal', () => ({
+  ChannelDetailsModal: ({ visible }: { visible: boolean }) => {
     const { Text: RNText } = require('react-native');
     return <RNText testID='add-members-modal'>{visible ? 'visible' : 'hidden'}</RNText>;
   },

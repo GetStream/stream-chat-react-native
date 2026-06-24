@@ -82,7 +82,7 @@ const renderEditButton = ({
 }) =>
   render(
     <Providers>
-      <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
+      <WithComponents overrides={{ ChannelEditDetailsFormContent: EditDetailsProbe }}>
         <ChannelDetailsContextProvider channel={channel}>
           <ChannelDetailsEditButton onPress={onPress} style={style} />
         </ChannelDetailsContextProvider>

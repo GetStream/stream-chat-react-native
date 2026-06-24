@@ -108,7 +108,7 @@ const renderSection = ({
             <ChannelDetailsContextProvider channel={applyCapabilities(channel, capabilities)}>
               <WithComponents
                 overrides={{
-                  ChannelAddMembers: AddMembersProbe,
+                  ChannelAddMembersFormContent: AddMembersProbe,
                   ChannelMemberActionsSheet: MemberActionsSheetProbe,
                   ChannelMemberItem: MemberItemProbe,
                   ChannelMemberList: MemberListProbe,

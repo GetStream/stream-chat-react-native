@@ -17,7 +17,7 @@ import { TranslationProvider } from '../../../contexts/translationContext/Transl
 import { generateFileReference } from '../../../mock-builders/attachments';
 import { NativeHandlers } from '../../../native';
 import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
-import { ChannelEditDetails } from '../components/ChannelEditDetails';
+import { ChannelEditDetailsFormContent } from '../components/ChannelEditDetailsFormContent';
 import type { ChannelEditImageSheetProps } from '../components/ChannelEditImageSheet';
 
 type SheetProbeRecord = ChannelEditImageSheetProps;
@@ -83,7 +83,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
           <ChannelDetailsContextProvider channel={channel}>
             <ChannelEditDetailsContext.Provider value={{ store, submit: jest.fn() }}>
               <WithComponents overrides={{ ChannelEditImageSheet: SheetProbe }}>
-                <ChannelEditDetails />
+                <ChannelEditDetailsFormContent />
               </WithComponents>
             </ChannelEditDetailsContext.Provider>
           </ChannelDetailsContextProvider>
@@ -96,7 +96,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
 
 const latestSheetProps = () => sheetCalls[sheetCalls.length - 1];
 
-describe('ChannelEditDetails', () => {
+describe('ChannelEditDetailsFormContent', () => {
   beforeEach(() => {
     sheetCalls.length = 0;
   });
@@ -135,7 +135,7 @@ describe('ChannelEditDetails', () => {
                 <WithComponents
                   overrides={{ ChannelEditImageSheet: SheetProbe, ChannelEditName: NameProbe }}
                 >
-                  <ChannelEditDetails />
+                  <ChannelEditDetailsFormContent />
                 </WithComponents>
               </ChannelEditDetailsContext.Provider>
             </ChannelDetailsContextProvider>

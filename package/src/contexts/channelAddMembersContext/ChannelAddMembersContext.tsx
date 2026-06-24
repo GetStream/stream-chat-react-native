@@ -22,9 +22,21 @@ export type ChannelAddMembersContextValue = {
    * rejects if the request fails.
    */
   submit: () => Promise<void>;
-  /** Set the {@link searchSource} used to query and paginate users to add. */
-  setSearchSource?: (value: UserSearchSource) => void;
 };
+
+/**
+ * Props for the {@link ChannelAddMembersProvider} that seed the add-members
+ * configuration into the context.
+ */
+export type ChannelAddMembersProviderProps = PropsWithChildren<{
+  /**
+   * A custom `UserSearchSource` used to query and paginate the users to add.
+   * Overrides the source the provider creates by default (pre-configured to
+   * autocomplete by `name`). The provider uses it as-is, so the consumer owns
+   * its activation/sorting.
+   */
+  searchSource?: UserSearchSource;
+}>;
 
 export const ChannelAddMembersContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelAddMembersContextValue,
@@ -35,12 +47,19 @@ export const ChannelAddMembersContext = React.createContext(
  * {@link NotificationTargetProvider} so that notifications emitted by `submit`
  * (via {@link useChannelActions}) resolve to the add-members host.
  */
-const ChannelAddMembersContextProviderInner = ({ children }: PropsWithChildren<unknown>) => {
+const ChannelAddMembersContextProviderInner = ({
+  children,
+  searchSource: searchSourceProp,
+}: ChannelAddMembersProviderProps) => {
   const { client } = useChatContext();
   const { channel } = useChannelDetailsContext();
   const { addMembers } = useChannelActions(channel);
   const [selectionStore] = useState(() => new SelectionStore());
-  const [searchSource, setSearchSource] = useState(() => {
+  const [searchSource] = useState(() => {
+    // A custom source is used as-is; the consumer owns its activation/sorting.
+    if (searchSourceProp) {
+      return searchSourceProp;
+    }
     const source = new UserSearchSource(
       client,
       { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
@@ -79,8 +98,8 @@ const ChannelAddMembersContextProviderInner = ({ children }: PropsWithChildren<u
   });
 
   const value = useMemo(
-    () => ({ selectionStore, searchSource, setSearchSource, submit }),
-    [selectionStore, searchSource, setSearchSource, submit],
+    () => ({ selectionStore, searchSource, submit }),
+    [selectionStore, searchSource, submit],
   );
 
   return (
@@ -91,7 +110,10 @@ const ChannelAddMembersContextProviderInner = ({ children }: PropsWithChildren<u
 /**
  * @experimental This API is experimental and is subject to change.
  */
-export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknown>) => {
+export const ChannelAddMembersProvider = ({
+  children,
+  searchSource,
+}: ChannelAddMembersProviderProps) => {
   const { channel } = useChannelDetailsContext();
 
   return (
@@ -99,7 +121,9 @@ export const ChannelAddMembersProvider = ({ children }: PropsWithChildren<unknow
       hostId={`channel-add-members:${channel.cid}`}
       panel='channel-details'
     >
-      <ChannelAddMembersContextProviderInner>{children}</ChannelAddMembersContextProviderInner>
+      <ChannelAddMembersContextProviderInner searchSource={searchSource}>
+        {children}
+      </ChannelAddMembersContextProviderInner>
     </NotificationTargetProvider>
   );
 };

@@ -9,7 +9,6 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStateStore } from '../../../hooks/useStateStore';
 import type { EditChannelDetailsState } from '../../../state-store/edit-channel-details-store';
 import { primitives } from '../../../theme';
-import type { GlobalFileUploadRequest } from '../../../types/types';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
 import { Button } from '../../ui/Button/Button';
 import { useEditChannelImage } from '../hooks/useEditChannelImage';
@@ -19,29 +18,12 @@ const selector = (state: EditChannelDetailsState) => ({
   updatedImage: state.updatedImage,
 });
 
-export type ChannelEditDetailsProps = {
-  /**
-   * Compress image with quality (from 0 to 1, where 1 is best quality) applied
-   * to the channel image picked during editing. Overrides the value resolved
-   * from `ChannelDetailsContext`.
-   */
-  compressImageQuality?: number;
-  /**
-   * Override the upload request used to upload the channel image. Overrides the
-   * value resolved from `ChannelDetailsContext`.
-   */
-  doFileUploadRequest?: GlobalFileUploadRequest;
-};
-
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelEditDetails = ({
-  compressImageQuality,
-  doFileUploadRequest,
-}: ChannelEditDetailsProps) => {
+export const ChannelEditDetailsFormContent = () => {
   const { channel } = useChannelDetailsContext();
-  const { setCompressImageQuality, setDoFileUploadRequest, store } = useChannelEditDetailsContext();
+  const { store } = useChannelEditDetailsContext();
   const { ChannelEditImageSheet, ChannelEditName } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
@@ -64,17 +46,6 @@ export const ChannelEditDetails = ({
 
   const openSheet = useCallback(() => setSheetVisible(true), []);
   const closeSheet = useCallback(() => setSheetVisible(false), []);
-
-  // Push the props into the context so the edit flow (image picker, save
-  // handler) reads a single source of truth. Only sync when defined to avoid
-  // clobbering the value the provider seeded from `ChannelDetailsContext`.
-  useEffect(() => {
-    if (compressImageQuality !== undefined) setCompressImageQuality?.(compressImageQuality);
-  }, [compressImageQuality, setCompressImageQuality]);
-
-  useEffect(() => {
-    if (doFileUploadRequest) setDoFileUploadRequest?.(doFileUploadRequest);
-  }, [doFileUploadRequest, setDoFileUploadRequest]);
 
   useEffect(() => {
     if (sheetVisible || !pendingAction) return;

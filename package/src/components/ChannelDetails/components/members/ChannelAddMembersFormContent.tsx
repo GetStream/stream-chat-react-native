@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { SearchSourceState, UserResponse, UserSearchSource } from 'stream-chat';
+import type { SearchSourceState, UserResponse } from 'stream-chat';
 
 import { AddMemberSearchResultItem } from './AddMemberSearchResultItem';
 import { UserListLoadingSkeleton } from './UserListLoadingSkeleton';
@@ -17,7 +17,7 @@ import { useNotificationApi } from '../../../Notifications/hooks/useNotification
 import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../../UIComponents/SearchInput';
 
-export type ChannelAddMembersProps = {
+export type ChannelAddMembersFormContentProps = {
   /**
    * Besides the existing default behavior of the user list, you can attach
    * additional props to the underlying React Native FlatList.
@@ -25,12 +25,6 @@ export type ChannelAddMembersProps = {
    * See https://reactnative.dev/docs/flatlist#props for the full list.
    */
   additionalFlatListProps?: Partial<FlatListProps<UserResponse>>;
-  /**
-   * A custom `UserSearchSource` used to query and paginate the users to add.
-   * Overrides the source the provider creates by default (pre-configured to
-   * autocomplete by `name`).
-   */
-  searchSource?: UserSearchSource;
 };
 
 const keyExtractor = (user: UserResponse) => user.id;
@@ -47,10 +41,9 @@ const listStateSelector = (state: SearchSourceState<UserResponse>) => {
 /**
  * @experimental This component is experimental and is subject to change.
  */
-export const ChannelAddMembers = ({
+export const ChannelAddMembersFormContent = ({
   additionalFlatListProps,
-  searchSource: searchSourceProp,
-}: ChannelAddMembersProps) => {
+}: ChannelAddMembersFormContentProps) => {
   const { t } = useTranslationContext();
   const styles = useStyles();
   const {
@@ -62,14 +55,8 @@ export const ChannelAddMembers = ({
   const { channel } = useChannelDetailsContext();
   const { addNotification } = useNotificationApi();
 
-  const { searchSource, selectionStore, setSearchSource } = useChannelAddMembersContext();
+  const { searchSource, selectionStore } = useChannelAddMembersContext();
   const { users, loading, hasNext, error } = useStateStore(searchSource.state, listStateSelector);
-
-  // Push the prop into the context so the search reads a single source of truth.
-  // Only sync when provided to avoid clobbering the provider's default source.
-  useEffect(() => {
-    if (searchSourceProp) setSearchSource?.(searchSourceProp);
-  }, [searchSourceProp, setSearchSource]);
 
   const initialized = useRef(false);
   useEffect(() => {

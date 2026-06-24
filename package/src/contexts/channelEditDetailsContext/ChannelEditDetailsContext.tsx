@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 
 import { NotificationTargetProvider } from '../../components/Notifications/NotificationTargetContext';
 import { useChannelActions } from '../../hooks/actions/useChannelActions';
@@ -30,11 +30,21 @@ export type ChannelEditDetailsContextValue = {
   compressImageQuality?: number;
   /** Override the upload request used to upload the channel image. */
   doFileUploadRequest?: GlobalFileUploadRequest;
-  /** Set the {@link compressImageQuality} used by the edit flow. */
-  setCompressImageQuality?: (value?: number) => void;
-  /** Set the {@link doFileUploadRequest} used by the edit flow. */
-  setDoFileUploadRequest?: (value?: GlobalFileUploadRequest) => void;
 };
+
+/**
+ * Props for the {@link ChannelEditDetailsProvider} that seed the edit flow
+ * configuration into the context.
+ */
+export type ChannelEditDetailsProviderProps = PropsWithChildren<{
+  /**
+   * Compress image with quality (from 0 to 1, where 1 is best quality) applied
+   * to the channel image picked during editing.
+   */
+  compressImageQuality?: number;
+  /** Override the upload request used to upload the channel image. */
+  doFileUploadRequest?: GlobalFileUploadRequest;
+}>;
 
 export const ChannelEditDetailsContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelEditDetailsContextValue,
@@ -45,21 +55,14 @@ export const ChannelEditDetailsContext = React.createContext(
  * {@link NotificationTargetProvider} so that notifications emitted by `submit`
  * (via {@link useChannelActions}) resolve to the channel edit details host.
  */
-const ChannelEditDetailsContextProviderInner = ({ children }: PropsWithChildren<unknown>) => {
+const ChannelEditDetailsContextProviderInner = ({
+  children,
+  compressImageQuality,
+  doFileUploadRequest,
+}: ChannelEditDetailsProviderProps) => {
   const { channel } = useChannelDetailsContext();
   const { updateImage, updateName } = useChannelActions(channel);
   const [store] = useState(() => new EditChannelDetailsStore(channel));
-  const [compressImageQuality, setCompressImageQuality] = useState<number | undefined>(undefined);
-  const [doFileUploadRequest, _setDoFileUploadRequest] = useState<
-    GlobalFileUploadRequest | undefined
-  >(undefined);
-
-  // Wrap the function setter so callers can pass the upload function directly
-  // without React interpreting it as a state updater.
-  const setDoFileUploadRequest = useCallback(
-    (value?: GlobalFileUploadRequest) => _setDoFileUploadRequest(() => value),
-    [],
-  );
 
   const submit = useStableCallback(async () => {
     const state = store.state.getLatestValue();
@@ -83,12 +86,10 @@ const ChannelEditDetailsContextProviderInner = ({ children }: PropsWithChildren<
     () => ({
       compressImageQuality,
       doFileUploadRequest,
-      setCompressImageQuality,
-      setDoFileUploadRequest,
       store,
       submit,
     }),
-    [compressImageQuality, doFileUploadRequest, setDoFileUploadRequest, store, submit],
+    [compressImageQuality, doFileUploadRequest, store, submit],
   );
 
   return (
@@ -106,7 +107,11 @@ const ChannelEditDetailsContextProviderInner = ({ children }: PropsWithChildren<
  *
  * @experimental This API is experimental and is subject to change.
  */
-export const ChannelEditDetailsProvider = ({ children }: PropsWithChildren<unknown>) => {
+export const ChannelEditDetailsProvider = ({
+  children,
+  compressImageQuality,
+  doFileUploadRequest,
+}: ChannelEditDetailsProviderProps) => {
   const { channel } = useChannelDetailsContext();
 
   return (
@@ -114,7 +119,12 @@ export const ChannelEditDetailsProvider = ({ children }: PropsWithChildren<unkno
       hostId={`channel-edit-details:${channel.cid}`}
       panel='channel-details'
     >
-      <ChannelEditDetailsContextProviderInner>{children}</ChannelEditDetailsContextProviderInner>
+      <ChannelEditDetailsContextProviderInner
+        compressImageQuality={compressImageQuality}
+        doFileUploadRequest={doFileUploadRequest}
+      >
+        {children}
+      </ChannelEditDetailsContextProviderInner>
     </NotificationTargetProvider>
   );
 };

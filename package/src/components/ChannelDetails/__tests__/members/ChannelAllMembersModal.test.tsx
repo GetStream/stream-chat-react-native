@@ -22,12 +22,13 @@ import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelAllMembersModal } from '../../components/members/ChannelAllMembersModal';
 import * as useChannelDetailsMembersPreviewModule from '../../hooks/useChannelDetailsMembersPreview';
 
-// Replace the heavy built-in add-members modal with a lightweight probe that reflects its
-// visibility, so tests can observe the default "open the add-members modal" behavior.
-jest.mock('../../components/members/ChannelAddMembersModal', () => ({
-  ChannelAddMembersModal: ({ visible }: { visible: boolean }) => {
+// Replace the heavy add-members form with a lightweight probe. The add-members button inlines
+// it inside a ChannelDetailsModal, whose RN Modal mock renders nothing while hidden — so the
+// probe's presence reflects the default "open the add-members modal" behavior.
+jest.mock('../../components/members/ChannelAddMembersForm', () => ({
+  ChannelAddMembersForm: () => {
     const { Text: RNText } = require('react-native');
-    return <RNText testID='add-members-modal'>{visible ? 'visible' : 'hidden'}</RNText>;
+    return <RNText testID='add-members-form'>add-members-form</RNText>;
   },
 }));
 
@@ -151,10 +152,10 @@ describe('ChannelAllMembersModal', () => {
       channel,
     });
 
-    expect(screen.getByTestId('add-members-modal')).toHaveTextContent('hidden');
+    expect(screen.queryByTestId('add-members-form')).toBeNull();
 
     fireEvent.press(screen.getByTestId('channel-details-member-list-add-button'));
 
-    expect(screen.getByTestId('add-members-modal')).toHaveTextContent('visible');
+    expect(screen.getByTestId('add-members-form')).toBeTruthy();
   });
 });

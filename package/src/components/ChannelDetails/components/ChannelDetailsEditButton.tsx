@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
 
-import { ChannelEditDetailsModal } from './ChannelEditDetailsModal';
+import { ChannelDetailsModal } from './modal/Modal';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useCanEditChannel } from '../../../hooks/useCanEditChannel';
 import { Button, ButtonProps } from '../../ui/Button/Button';
@@ -22,6 +23,7 @@ export const ChannelDetailsEditButton = ({
   style,
 }: ChannelDetailsEditButtonProps = {}) => {
   const { channel } = useChannelDetailsContext();
+  const { ChannelEditDetailsForm } = useComponentsContext();
   const { t } = useTranslationContext();
   const isVisible = useCanEditChannel(channel);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -58,7 +60,9 @@ export const ChannelDetailsEditButton = ({
         variant='secondary'
       />
       {usesDefaultModal ? (
-        <ChannelEditDetailsModal onClose={handleEditModalClose} visible={editModalVisible} />
+        <ChannelDetailsModal onClose={handleEditModalClose} visible={editModalVisible}>
+          <ChannelEditDetailsForm onClose={handleEditModalClose} />
+        </ChannelDetailsModal>
       ) : null}
     </>
   );

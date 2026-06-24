@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 
-import { ChannelAddMembersModal } from './ChannelAddMembersModal';
-
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useCanAddMembersToChannel } from '../../../../hooks/useCanAddMembersToChannel';
 import { UserAdd } from '../../../../icons/user-add';
 import { Button, ButtonProps } from '../../../ui/Button/Button';
+import { ChannelDetailsModal } from '../modal/Modal';
 
 export type ChannelAddMembersButtonProps = {
   /** Override the default behavior, which opens the Add-members modal. */
@@ -27,6 +27,7 @@ export const ChannelAddMembersButton = ({
   variant = 'text',
 }: ChannelAddMembersButtonProps) => {
   const { channel } = useChannelDetailsContext();
+  const { ChannelAddMembersForm } = useComponentsContext();
   const { t } = useTranslationContext();
   const isVisible = useCanAddMembersToChannel(channel);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
@@ -76,7 +77,9 @@ export const ChannelAddMembersButton = ({
         />
       )}
       {usesDefaultModal ? (
-        <ChannelAddMembersModal onClose={handleClose} visible={isAddMembersVisible} />
+        <ChannelDetailsModal onClose={handleClose} visible={isAddMembersVisible}>
+          <ChannelAddMembersForm onClose={handleClose} />
+        </ChannelDetailsModal>
       ) : null}
     </>
   );
