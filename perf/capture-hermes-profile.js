@@ -29,6 +29,27 @@ const http = require('http');
 const path = require('path');
 const readline = require('readline');
 
+// Node's built-in (undici) WebSocket mishandles the Metro/Fusebox inspector
+// handshake (close 1006 + a TypeError in undici). The `ws` package handles it
+// and exposes the same addEventListener API. Prefer it; fall back to global.
+function resolveWebSocket() {
+  const candidates = [
+    'ws',
+    path.join(__dirname, '..', 'package', 'node_modules', 'ws'),
+    path.join(__dirname, '..', 'node_modules', 'ws'),
+    path.join(__dirname, '..', 'examples', 'SampleApp', 'node_modules', 'ws'),
+  ];
+  for (const c of candidates) {
+    try {
+      return require(c);
+    } catch {
+      /* try next */
+    }
+  }
+  return typeof WebSocket !== 'undefined' ? WebSocket : null;
+}
+const WS = resolveWebSocket();
+
 const OUT =
   process.argv[2] ||
   path.join(
@@ -107,14 +128,15 @@ async function main() {
   console.log(`Found target: ${target.title || '(no title)'} — ${target.deviceName || ''}`);
   console.log(`Connecting: ${target.webSocketDebuggerUrl}`);
 
-  // Node 22+ has global WebSocket; older Node would need `ws`.
-  if (typeof WebSocket === 'undefined') {
-    console.error(
-      'Global WebSocket is not available — you are on Node < 22. Either upgrade Node or `yarn add -D ws` and let me know.',
-    );
+  if (!WS) {
+    console.error('No WebSocket implementation available (no global WebSocket, no `ws` package).');
     process.exit(1);
   }
-  const ws = new WebSocket(target.webSocketDebuggerUrl);
+  // RN 0.76+ Fusebox inspector proxy rejects WS upgrades whose Origin doesn't
+  // match the Metro host (a CSRF guard) — 401 without this header.
+  const ws = new WS(target.webSocketDebuggerUrl, {
+    headers: { Origin: `http://${METRO_HOST}:${METRO_PORT}` },
+  });
 
   let msgId = 0;
   const pending = new Map();

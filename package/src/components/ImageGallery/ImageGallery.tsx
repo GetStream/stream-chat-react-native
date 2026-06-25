@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AccessibilityInfo, ImageStyle, Platform, StyleSheet, ViewStyle } from 'react-native';
+import { AccessibilityInfo, ImageStyle, Platform, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -78,6 +79,109 @@ type ImageGalleryWithContextProps = Pick<
     ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
     ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
   };
+
+/**
+ * Number of slides mounted on each side of the current one. Kept one wider
+ * than AnimatedGalleryImage's +-3 load window so an edge slide is already
+ * mounted (as the empty placeholder) before it ever needs to load its
+ * image - paging never reveals an unmounted slot.
+ */
+const PAGER_WINDOW_RADIUS = 4;
+
+const galleryPagerSelector = (state: ImageGalleryState) => ({
+  assets: state.assets,
+  currentIndex: state.currentIndex,
+});
+
+type GalleryPagerProps = {
+  fullWindowHeight: number;
+  fullWindowWidth: number;
+  offsetScale: SharedValue<number>;
+  scale: SharedValue<number>;
+  slide?: ImageStyle;
+  translateX: SharedValue<number>;
+  translateY: SharedValue<number>;
+};
+
+/**
+ * Windowed pager body. Subscribes to `currentIndex` itself (rather than the
+ * parent doing so) so a page change rerenders only this small slide list and
+ * never the parent - keeping the gesture objects/`GestureDetector` stable.
+ *
+ * Only the slides within +-{@link PAGER_WINDOW_RADIUS} of the current index are
+ * mounted; a single leading spacer occupies the flex width of all preceding
+ * slides so the rendered ones keep their exact natural positions. The slide
+ * transforms in `useAnimatedGalleryStyle` are a pure function of each slide's
+ * `index` and that natural flex position, so windowing the mount leaves every
+ * slide pixelidentical while dropping the mounted component/view count to O(window)
+ * instead of it being O(N). This way, less React fibers are reconciled and less
+ * shadow nodes are rendered as well.
+ */
+const GalleryPager = (props: GalleryPagerProps) => {
+  const { fullWindowHeight, fullWindowWidth, offsetScale, scale, slide, translateX, translateY } =
+    props;
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { assets, currentIndex } = useStateStore(
+    imageGalleryStateStore.state,
+    galleryPagerSelector,
+  );
+
+  const slideStyle = {
+    height: fullWindowHeight * 8,
+    marginRight: MARGIN,
+    width: fullWindowWidth * 8,
+  };
+
+  const lo = Math.max(0, currentIndex - PAGER_WINDOW_RADIUS);
+  const hi = Math.min(assets.length - 1, currentIndex + PAGER_WINDOW_RADIUS);
+
+  const slides: React.ReactNode[] = [];
+  for (let i = lo; i <= hi; i++) {
+    const photo = assets[i];
+    slides.push(
+      photo.type === FileTypes.Video ? (
+        <AnimatedGalleryVideo
+          attachmentId={photo.id}
+          index={i}
+          key={photo.id}
+          offsetScale={offsetScale}
+          photo={photo}
+          scale={scale}
+          screenHeight={fullWindowHeight}
+          style={[slideStyle, slide]}
+          translateX={translateX}
+          translateY={translateY}
+        />
+      ) : (
+        <AnimatedGalleryImage
+          accessibilityLabel={'Image Item'}
+          index={i}
+          key={photo.id}
+          offsetScale={offsetScale}
+          photo={photo}
+          scale={scale}
+          screenHeight={fullWindowHeight}
+          screenWidth={fullWindowWidth}
+          style={[slideStyle, slide]}
+          translateX={translateX}
+          translateY={translateY}
+        />
+      ),
+    );
+  }
+
+  return (
+    <>
+      {lo > 0 ? (
+        <View
+          key='gallery-pager-leading-spacer'
+          style={{ width: lo * (fullWindowWidth * 8 + MARGIN) }}
+        />
+      ) : null}
+      {slides}
+    </>
+  );
+};
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
@@ -292,50 +396,15 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
             testID='image-gallery-pager'
             style={[styles.animatedContainer, pagerStyle, pager]}
           >
-            {assets.map((photo, i) =>
-              photo.type === FileTypes.Video ? (
-                <AnimatedGalleryVideo
-                  attachmentId={photo.id}
-                  index={i}
-                  key={photo.id}
-                  offsetScale={offsetScale}
-                  photo={photo}
-                  scale={scale}
-                  screenHeight={fullWindowHeight}
-                  style={[
-                    {
-                      height: fullWindowHeight * 8,
-                      marginRight: MARGIN,
-                      width: fullWindowWidth * 8,
-                    },
-                    slide,
-                  ]}
-                  translateX={translateX}
-                  translateY={translateY}
-                />
-              ) : (
-                <AnimatedGalleryImage
-                  accessibilityLabel={'Image Item'}
-                  index={i}
-                  key={photo.id}
-                  offsetScale={offsetScale}
-                  photo={photo}
-                  scale={scale}
-                  screenHeight={fullWindowHeight}
-                  screenWidth={fullWindowWidth}
-                  style={[
-                    {
-                      height: fullWindowHeight * 8,
-                      marginRight: MARGIN,
-                      width: fullWindowWidth * 8,
-                    },
-                    slide,
-                  ]}
-                  translateX={translateX}
-                  translateY={translateY}
-                />
-              ),
-            )}
+            <GalleryPager
+              fullWindowHeight={fullWindowHeight}
+              fullWindowWidth={fullWindowWidth}
+              offsetScale={offsetScale}
+              scale={scale}
+              slide={slide}
+              translateX={translateX}
+              translateY={translateY}
+            />
           </Animated.View>
         </Animated.View>
       </GestureDetector>
