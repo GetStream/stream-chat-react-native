@@ -217,8 +217,18 @@ export type Theme = {
     memberItem: {
       container: ViewStyle;
       name: TextStyle;
-      role: TextStyle;
       status: TextStyle;
+    };
+    roleList: {
+      container: ViewStyle;
+    };
+    roleItem: {
+      container: ViewStyle;
+      ownerBackgroundColor: string;
+      ownerColor: string;
+      roleBackgroundColor: string;
+      roleColor: string;
+      text: TextStyle;
     };
     memberList: {
       container: ViewStyle;
@@ -1333,8 +1343,18 @@ export const defaultTheme: Theme = {
     memberItem: {
       container: {},
       name: {},
-      role: {},
       status: {},
+    },
+    roleList: {
+      container: {},
+    },
+    roleItem: {
+      container: {},
+      ownerBackgroundColor: '',
+      ownerColor: '',
+      roleBackgroundColor: '',
+      roleColor: '',
+      text: {},
     },
     memberList: {
       container: {},

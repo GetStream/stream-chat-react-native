@@ -5,13 +5,14 @@ import type { ChannelMemberResponse } from 'stream-chat';
 
 import { composeAccessibilityLabel } from '../../../../a11y/a11yUtils';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { Mute } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { useUserMuteActive } from '../../../Message/hooks/useUserMuteActive';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
-import { GetMemberRoleLabel, useMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
+import { GetMemberRoles, useMemberRoles } from '../../hooks/members/useMemberRoles';
 import { useUserActivityStatus } from '../../hooks/useUserActivityStatus';
 
 export type ChannelMemberItemSize = 'sm' | 'lg';
@@ -19,11 +20,11 @@ export type ChannelMemberItemSize = 'sm' | 'lg';
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
   /**
-   * Override the role label shown next to the member. Receives `{ channel, member, t }` and
-   * returns the label (or `null`/`undefined` to render none). Defaults to the built-in
-   * Owner > Admin > Moderator logic.
+   * Override the roles shown next to the member. Receives `{ channel, defaultRoleLabels, member, t }`
+   * and returns an array of `{ key, label }` (or an empty array to render none). Defaults to the
+   * built-in Owner / Admin / Moderator logic, returning every role that applies.
    */
-  getMemberRoleLabel?: GetMemberRoleLabel;
+  getMemberRoles?: GetMemberRoles;
   onPress?: (member: ChannelMemberResponse) => void;
   /**
    * Visual size of the row.
@@ -39,7 +40,7 @@ export type ChannelMemberItemProps = {
  * @experimental This component is experimental and is subject to change.
  */
 export const ChannelMemberItem = ({
-  getMemberRoleLabel,
+  getMemberRoles,
   member,
   onPress,
   size = 'sm',
@@ -47,22 +48,18 @@ export const ChannelMemberItem = ({
 }: ChannelMemberItemProps) => {
   const { t } = useTranslationContext();
   const { client } = useChatContext();
+  const { RoleList } = useComponentsContext();
   const {
     theme: {
       channelDetails: {
-        memberItem: {
-          container: containerOverride,
-          name: nameOverride,
-          role: roleOverride,
-          status: statusOverride,
-        },
+        memberItem: { container: containerOverride, name: nameOverride, status: statusOverride },
       },
       semantics,
     },
   } = useTheme();
   const styles = useStyles();
   const statusLine = useUserActivityStatus(member.user);
-  const roleLabel = useMemberRoleLabel(member, getMemberRoleLabel);
+  const roles = useMemberRoles(member, getMemberRoles);
   const isMuted = useUserMuteActive(member.user);
 
   const user = member.user;
@@ -73,7 +70,7 @@ export const ChannelMemberItem = ({
   const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
   const accessibilityLabel = composeAccessibilityLabel(
     displayName,
-    roleLabel,
+    roles.map((role) => role.label).join(', ') || undefined,
     isMuted ? t('Muted') : undefined,
     statusLine,
   );
@@ -105,7 +102,7 @@ export const ChannelMemberItem = ({
           </Text>
         ) : null}
       </View>
-      {isMuted || roleLabel ? (
+      {isMuted || roles.length > 0 ? (
         <View style={styles.trailing}>
           {isMuted ? (
             <Mute
@@ -115,14 +112,7 @@ export const ChannelMemberItem = ({
               width={16}
             />
           ) : null}
-          {roleLabel ? (
-            <Text
-              numberOfLines={1}
-              style={[styles.role, { color: semantics.textTertiary }, roleOverride]}
-            >
-              {roleLabel}
-            </Text>
-          ) : null}
+          <RoleList roles={roles} />
         </View>
       ) : null}
     </>
@@ -197,13 +187,6 @@ const useStyles = () => {
         nameLarge: {
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
-          lineHeight: primitives.typographyLineHeightNormal,
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
-        },
-        role: {
-          flexShrink: 0,
-          fontSize: primitives.typographyFontSizeSm,
-          fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightNormal,
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },

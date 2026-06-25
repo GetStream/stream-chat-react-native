@@ -13,3 +13,4 @@ export * from './ChannelEditName';
 export * from './ChannelDetailsEditButton';
 export * from './members';
 export * from './navigation-section';
+export * from './roles';

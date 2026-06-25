@@ -13,7 +13,7 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelMemberItem } from '../../components/members/ChannelMemberItem';
-import type { GetMemberRoleLabel } from '../../hooks/members/useMemberRoleLabel';
+import type { GetMemberRoles } from '../../hooks/members/useMemberRoles';
 
 Dayjs.extend(relativeTime);
 
@@ -36,13 +36,13 @@ const defaultChannel = {
 const renderRow = ({
   channel = defaultChannel,
   currentUserId,
-  getMemberRoleLabel,
+  getMemberRoles,
   mutedUsers = [],
   ...props
 }: React.ComponentProps<typeof ChannelMemberItem> & {
   channel?: Channel;
   currentUserId?: string;
-  getMemberRoleLabel?: GetMemberRoleLabel;
+  getMemberRoles?: GetMemberRoles;
   mutedUsers?: Array<{ target: { id: string }; user: { id: string } }>;
 }) =>
   render(
@@ -71,7 +71,7 @@ const renderRow = ({
           }
         >
           <ChannelDetailsContextProvider channel={channel}>
-            <ChannelMemberItem getMemberRoleLabel={getMemberRoleLabel} {...props} />
+            <ChannelMemberItem getMemberRoles={getMemberRoles} {...props} />
           </ChannelDetailsContextProvider>
         </ChatContext.Provider>
       </TranslationProvider>
@@ -96,7 +96,7 @@ describe('ChannelMemberItem accessibility', () => {
 
   it('includes the role label in the accessible label between name and status', () => {
     renderRow({
-      getMemberRoleLabel: () => 'Admin',
+      getMemberRoles: () => [{ key: 'admin', label: 'Admin' }],
       member: memberFor(),
     });
     expect(screen.getByLabelText('Alice, Admin, Offline')).toBeTruthy();
@@ -131,7 +131,7 @@ describe('ChannelMemberItem muted indicator', () => {
 describe('ChannelMemberItem large variant', () => {
   it('renders the role label in the large profile header', () => {
     renderRow({
-      getMemberRoleLabel: () => 'Admin',
+      getMemberRoles: () => [{ key: 'admin', label: 'Admin' }],
       member: memberFor(),
       size: 'lg',
     });
@@ -162,17 +162,17 @@ describe('ChannelMemberItem activity status', () => {
 });
 
 describe('ChannelMemberItem role label rendering', () => {
-  it('renders the role label string returned by useMemberRoleLabel', () => {
+  it('renders a badge for each role returned by useMemberRoles', () => {
     renderRow({
-      getMemberRoleLabel: () => 'Admin',
+      getMemberRoles: () => [{ key: 'admin', label: 'Admin' }],
       member: memberFor(),
     });
     expect(screen.getByText('Admin')).toBeTruthy();
   });
 
-  it('renders no role label when the hook returns null', () => {
+  it('renders no role badges when the hook returns an empty array', () => {
     renderRow({
-      getMemberRoleLabel: () => null,
+      getMemberRoles: () => [],
       member: memberFor(),
     });
     expect(screen.queryByText('Admin')).toBeNull();

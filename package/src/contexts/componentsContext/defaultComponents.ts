@@ -57,6 +57,8 @@ import {
   MediaList,
   PinnedMessageItem,
   PinnedMessageList,
+  RoleItem,
+  RoleList,
 } from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -344,6 +346,8 @@ const components = {
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
+  RoleItem,
+  RoleList,
   FileAttachmentItem,
   FileAttachmentList,
   MediaItem,
