@@ -36,7 +36,6 @@ export type GetMemberRoles = (params: {
  *
  * Returns every applicable role in the order Owner > Admin > Moderator. When a member matches
  * none of the rules (and no custom `getMemberRoles` is provided), returns an empty array.
- * @experimental This hook is experimental and is subject to change.
  */
 export const useMemberRoles = (
   member: ChannelMemberResponse,

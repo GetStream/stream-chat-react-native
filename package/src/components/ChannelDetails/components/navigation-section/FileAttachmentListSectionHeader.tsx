@@ -9,9 +9,6 @@ export type FileAttachmentListSectionHeaderProps = {
   title: string;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const FileAttachmentListSectionHeader = ({
   title,
 }: FileAttachmentListSectionHeaderProps) => {

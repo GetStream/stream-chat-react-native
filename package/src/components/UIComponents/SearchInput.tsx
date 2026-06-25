@@ -13,9 +13,6 @@ import { Input, InputProps } from '../ui/Input/Input';
 
 export type SearchInputProps = Partial<InputProps>;
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   const { t } = useTranslationContext();
   const {

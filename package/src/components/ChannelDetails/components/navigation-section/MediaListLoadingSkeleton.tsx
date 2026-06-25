@@ -12,8 +12,6 @@ const ANIMATION_TIME = 1000;
 
 /**
  * Grid of shimmering placeholder tiles shown while the media list is loading.
- *
- * @experimental This component is experimental and is subject to change.
  */
 export const MediaListLoadingSkeleton = () => {
   const {

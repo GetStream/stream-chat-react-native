@@ -20,9 +20,6 @@ export type ChannelDetailsMemberSectionProps = {
   onViewAllMembersPress?: () => void;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetailsMemberSection = ({
   onViewAllMembersPress,
 }: ChannelDetailsMemberSectionProps) => {

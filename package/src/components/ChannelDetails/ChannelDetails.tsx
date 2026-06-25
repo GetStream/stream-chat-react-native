@@ -57,9 +57,6 @@ export const ChannelDetailsContent = ({ onBack }: Pick<ChannelDetailsProps, 'onB
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetails = ({ onBack }: ChannelDetailsProps) => {
   const { ChannelDetailsContent: ChannelDetailsContentOverride } = useComponentsContext();
   const { channel } = useChannelDetailsContext();

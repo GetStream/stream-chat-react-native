@@ -17,9 +17,6 @@ export type ChannelAddMembersButtonProps = {
   variant?: 'icon' | 'text';
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelAddMembersButton = ({
   onPress,
   style,

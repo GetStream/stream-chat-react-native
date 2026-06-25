@@ -89,9 +89,6 @@ const ChannelMemberActionsSheetInner = ({
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelMemberActionsSheet = ({
   getChannelMemberActionItems,
   member,

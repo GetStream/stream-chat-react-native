@@ -12,8 +12,6 @@ import type { IconProps } from '../../../icons/utils/base';
  * Identifies a navigation row. The literals are the built-in sections rendered by default;
  * consumers can also add their own rows with arbitrary section identifiers via `getNavigationItems`,
  * so any string is allowed.
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type ChannelDetailsNavigationSectionType =
   | 'pinned-messages'
@@ -23,8 +21,6 @@ export type ChannelDetailsNavigationSectionType =
 
 /**
  * A single row in the channel details navigation section.
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type ChannelDetailsNavigationItem = {
   /** Icon rendered at the start of the row and reused in the built-in modal header. */
@@ -65,8 +61,6 @@ export type ChannelDetailsNavigationItemsContext = {
  * `defaultItems` to set a row's `onPress` (e.g. to push your own screen), or add/remove rows. Any
  * row whose `onPress` you leave unset keeps its built-in behavior (opening the built-in modal) —
  * including sections added in future SDK versions.
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type GetChannelDetailsNavigationItems = (params: {
   context: ChannelDetailsNavigationItemsContext;
@@ -82,8 +76,6 @@ export const getChannelDetailsNavigationItems: GetChannelDetailsNavigationItems 
  * plain array — the section component owns the built-in modal and supplies the default open-modal
  * behavior for any row without a custom `onPress`. Customize the rows by passing `getNavigationItems`
  * to `ChannelDetails` (see {@link GetChannelDetailsNavigationItems}).
- *
- * @experimental This hook is experimental and is subject to change.
  */
 export const useChannelDetailsNavigationItems = ({
   getNavigationItems = getChannelDetailsNavigationItems,

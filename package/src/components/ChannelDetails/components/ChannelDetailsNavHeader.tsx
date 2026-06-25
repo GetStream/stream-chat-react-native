@@ -20,9 +20,6 @@ export type ChannelDetailsNavHeaderProps = {
   title?: string;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetailsNavHeader = ({
   action,
   onBack,

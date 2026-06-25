@@ -14,9 +14,6 @@ type ChannelDetailsModalProps = {
   presentationStyle?: 'pageSheet' | 'formSheet' | 'fullScreen';
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetailsModal = ({
   children,
   onClose,

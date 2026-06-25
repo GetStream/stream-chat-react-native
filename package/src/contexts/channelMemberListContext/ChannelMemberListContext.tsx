@@ -5,9 +5,6 @@ import { Channel, ChannelMemberSearchSource } from 'stream-chat';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelMemberListContextValue = {
   searchSource: ChannelMemberSearchSource;
 };
@@ -16,9 +13,6 @@ export const ChannelMemberListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelMemberListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelMemberListProvider = ({
   channel,
   children,
@@ -55,9 +49,6 @@ export const ChannelMemberListProvider = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelMemberListContext = () => {
   const contextValue = useContext(
     ChannelMemberListContext,

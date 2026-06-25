@@ -172,7 +172,6 @@ const ChannelMemberListContent = ({
 
 /**
  * Lists all channel members with the ability to search them.
- * @experimental This component is experimental and is subject to change.
  */
 export const ChannelMemberList = ({ searchSource, ...props }: ChannelMemberListProps = {}) => {
   const { channel } = useChannelDetailsContext();

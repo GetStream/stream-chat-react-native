@@ -213,9 +213,6 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const MediaList = ({ searchSource, ...props }: MediaListProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `media-list:${channel.cid}` : undefined;

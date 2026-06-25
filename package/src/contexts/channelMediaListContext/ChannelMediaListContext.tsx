@@ -6,9 +6,6 @@ import { useChatContext } from '..';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelMediaListContextValue = {
   searchSource: MessageSearchSource;
 };
@@ -17,9 +14,6 @@ export const ChannelMediaListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelMediaListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelMediaListProvider = ({
   channel,
   children,
@@ -51,9 +45,6 @@ export const ChannelMediaListProvider = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelMediaListContext = () => {
   const contextValue = useContext(
     ChannelMediaListContext,

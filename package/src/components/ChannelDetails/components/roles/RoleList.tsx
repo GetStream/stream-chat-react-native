@@ -13,8 +13,6 @@ export type RoleListProps = {
 /**
  * Renders the horizontal list of role badges shown next to a member row. Each badge is
  * rendered by the overridable `RoleItem` component. Returns `null` when there are no roles.
- *
- * @experimental This component is experimental and is subject to change.
  */
 export const RoleList = ({ roles }: RoleListProps) => {
   const { RoleItem } = useComponentsContext();

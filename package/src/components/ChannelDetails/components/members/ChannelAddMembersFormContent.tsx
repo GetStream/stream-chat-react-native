@@ -38,9 +38,6 @@ const listStateSelector = (state: SearchSourceState<UserResponse>) => {
   };
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelAddMembersFormContent = ({
   additionalFlatListProps,
 }: ChannelAddMembersFormContentProps) => {

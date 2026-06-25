@@ -32,7 +32,6 @@ export type UseEditChannelImageResult = {
  * `File` and decides what to do with it.
  *
  * Reads `compressImageQuality` from `ChannelEditDetailsContext`.
- * @experimental This hook is experimental and is subject to change.
  */
 export const useEditChannelImage = (): UseEditChannelImageResult => {
   const { compressImageQuality } = useChannelEditDetailsContext();

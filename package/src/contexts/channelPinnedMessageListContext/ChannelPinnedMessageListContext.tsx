@@ -6,9 +6,6 @@ import { useChatContext } from '..';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelPinnedMessageListContextValue = {
   searchSource: MessageSearchSource;
 };
@@ -17,9 +14,6 @@ export const ChannelPinnedMessageListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelPinnedMessageListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelPinnedMessageListProvider = ({
   channel,
   children,
@@ -55,9 +49,6 @@ export const ChannelPinnedMessageListProvider = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelPinnedMessageListContext = () => {
   const contextValue = useContext(
     ChannelPinnedMessageListContext,

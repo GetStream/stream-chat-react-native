@@ -15,9 +15,6 @@ export type ChannelDetailsEditButtonProps = {
   style?: ButtonProps['style'];
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetailsEditButton = ({
   onPress,
   style,

@@ -21,9 +21,6 @@ export type ChannelEditDetailsFormHeaderProps = {
   onClose: () => void;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsFormHeaderProps) => {
   const { store, submit } = useChannelEditDetailsContext();
   const { t } = useTranslationContext();

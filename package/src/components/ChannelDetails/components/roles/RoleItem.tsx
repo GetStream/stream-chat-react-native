@@ -17,8 +17,6 @@ export type RoleItemProps = {
 /**
  * Renders a single role badge (pill) next to a member row. `owner` roles use the accent
  * (blue) palette; every other role uses the neutral (grey) palette.
- *
- * @experimental This component is experimental and is subject to change.
  */
 export const RoleItem = ({ role, textStyle, viewStyle }: RoleItemProps) => {
   const {

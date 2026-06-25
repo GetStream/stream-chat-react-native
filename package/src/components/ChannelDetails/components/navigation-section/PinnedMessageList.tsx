@@ -165,9 +165,6 @@ const PinnedMessageListContent = ({
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const PinnedMessageList = ({ searchSource, ...props }: PinnedMessageListProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `pinned-message-list:${channel.cid}` : undefined;

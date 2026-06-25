@@ -21,9 +21,6 @@ export type ChannelAddMembersFormHeaderProps = {
   onClose: () => void;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelAddMembersFormHeader = ({ onClose }: ChannelAddMembersFormHeaderProps) => {
   const { selectionStore, submit } = useChannelAddMembersContext();
   const { t } = useTranslationContext();

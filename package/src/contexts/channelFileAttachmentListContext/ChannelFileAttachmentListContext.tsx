@@ -6,9 +6,6 @@ import { useChatContext } from '..';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelFileAttachmentListContextValue = {
   searchSource: MessageSearchSource;
 };
@@ -17,9 +14,6 @@ export const ChannelFileAttachmentListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelFileAttachmentListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelFileAttachmentListProvider = ({
   channel,
   children,
@@ -50,9 +44,6 @@ export const ChannelFileAttachmentListProvider = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelFileAttachmentListContext = () => {
   const contextValue = useContext(
     ChannelFileAttachmentListContext,

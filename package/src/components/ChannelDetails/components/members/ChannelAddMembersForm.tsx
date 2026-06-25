@@ -22,8 +22,6 @@ export type ChannelAddMembersFormProps = {
  * Renders the add-members form: a header with a confirm action, the user search
  * list, and the notification list. Mount it wherever the add-members UI should
  * appear (e.g. inside a modal or a navigation screen).
- *
- * @experimental This component is experimental and is subject to change.
  */
 export const ChannelAddMembersForm = ({ onClose, searchSource }: ChannelAddMembersFormProps) => {
   const { channel } = useChannelDetailsContext();

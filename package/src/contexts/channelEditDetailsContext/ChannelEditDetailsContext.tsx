@@ -13,9 +13,6 @@ import { useChannelDetailsContext } from '../channelDetailsContext/channelDetail
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelEditDetailsContextValue = {
   store: EditChannelDetailsStore;
   /**
@@ -104,8 +101,6 @@ const ChannelEditDetailsContextProviderInner = ({
  * channel in the {@link ChannelDetailsContext}. Mount this once per edit session — the store captures the
  * channel's name/image at construction and does not track later WebSocket
  * updates, so an inbound `channel.updated` does not clobber in-progress edits.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export const ChannelEditDetailsProvider = ({
   children,
@@ -129,9 +124,6 @@ export const ChannelEditDetailsProvider = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelEditDetailsContext = () => {
   const contextValue = useContext(
     ChannelEditDetailsContext,

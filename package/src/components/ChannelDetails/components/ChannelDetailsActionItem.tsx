@@ -14,9 +14,6 @@ export type ChannelDetailsActionItemProps = {
   trailing?: React.ReactNode;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetailsActionItem = ({
   Icon,
   destructive = false,

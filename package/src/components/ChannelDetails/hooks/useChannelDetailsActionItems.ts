@@ -7,9 +7,6 @@ import {
   useChannelActionItems,
 } from '../../../hooks/actions/useChannelActionItems';
 
-/**
- * @experimental This hook is experimental and is subject to change.
- */
 export const useChannelDetailsActionItems = ({
   getChannelActionItems,
   onChannelDismiss,

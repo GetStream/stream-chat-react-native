@@ -29,8 +29,6 @@ export type EditChannelDetailsState = {
  * events, so an inbound `channel.updated` does not clobber the user's
  * in-progress edits. Leaf components can subscribe to narrow slices via
  * {@link useStateStore}.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export class EditChannelDetailsStore {
   public state: StateStore<EditChannelDetailsState>;
@@ -94,8 +92,6 @@ const selectAreChannelDetailsEdited = (state: EditChannelDetailsState) => ({
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the name
  * input has unsaved changes.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export const useIsNameEdited = (store: EditChannelDetailsStore) =>
   useStateStore(store.state, selectIsNameEdited).isNameEdited;
@@ -103,8 +99,6 @@ export const useIsNameEdited = (store: EditChannelDetailsStore) =>
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the image
  * has unsaved changes.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export const useIsImageEdited = (store: EditChannelDetailsStore) =>
   useStateStore(store.state, selectIsImageEdited).isImageEdited;
@@ -112,8 +106,6 @@ export const useIsImageEdited = (store: EditChannelDetailsStore) =>
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the form
  * has any unsaved changes (name or image).
- *
- * @experimental This API is experimental and is subject to change.
  */
 export const useAreChannelDetailsEdited = (store: EditChannelDetailsStore) =>
   useStateStore(store.state, selectAreChannelDetailsEdited).areChannelDetailsEdited;

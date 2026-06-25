@@ -171,9 +171,6 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const FileAttachmentList = ({ searchSource, ...props }: FileAttachmentListProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `file-attachment-list:${channel.cid}` : undefined;

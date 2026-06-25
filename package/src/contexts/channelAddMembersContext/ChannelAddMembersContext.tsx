@@ -11,9 +11,6 @@ import { useChannelDetailsContext } from '../channelDetailsContext/channelDetail
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelAddMembersContextValue = {
   selectionStore: SelectionStore;
   searchSource: UserSearchSource;
@@ -107,9 +104,6 @@ const ChannelAddMembersContextProviderInner = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelAddMembersProvider = ({
   children,
   searchSource,
@@ -128,9 +122,6 @@ export const ChannelAddMembersProvider = ({
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelAddMembersContext = () => {
   const contextValue = useContext(
     ChannelAddMembersContext,

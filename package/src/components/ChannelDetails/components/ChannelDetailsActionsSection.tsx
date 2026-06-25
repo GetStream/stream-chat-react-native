@@ -120,9 +120,6 @@ export type ChannelDetailsActionsSectionProps = {
   onChannelDismiss?: () => void;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelDetailsActionsSection = ({
   getChannelActionItems,
   onChannelDismiss,

@@ -22,8 +22,6 @@ export type ChannelEditDetailsFormProps = {
  * Renders the channel edit details form: a header with a confirm action, the
  * editable fields, and the notification list. Wrap-free — mount it wherever the
  * edit UI should appear (e.g. inside a modal or a navigation screen).
- *
- * @experimental This component is experimental and is subject to change.
  */
 export const ChannelEditDetailsForm = ({
   compressImageQuality,

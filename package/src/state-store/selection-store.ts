@@ -18,8 +18,6 @@ const createInitialState = <T>(): SelectionState<T> => ({
  * subscribe to narrow slices via `useStateStore`. The id type defaults to
  * `string` (e.g. user ids in the "add members to channel" flow) but can be
  * specialised for any other selectable entity.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export class SelectionStore<T = string> {
   public state = new StateStore<SelectionState<T>>(createInitialState<T>());
@@ -70,8 +68,6 @@ const selectIsSelectionEmpty = <T>(state: SelectionState<T>) => ({
 /**
  * Subscribes to a {@link SelectionStore} and returns whether the selection is
  * currently empty.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export const useIsSelectionEmpty = <T>(store: SelectionStore<T>) =>
   useStateStore(store.state, selectIsSelectionEmpty).isSelectionEmpty;
@@ -79,8 +75,6 @@ export const useIsSelectionEmpty = <T>(store: SelectionStore<T>) =>
 /**
  * Subscribes to a {@link SelectionStore} and returns whether the given id is
  * currently selected.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export const useIsSelected = <T>(store: SelectionStore<T>, id: T) => {
   const selector = useCallback(
