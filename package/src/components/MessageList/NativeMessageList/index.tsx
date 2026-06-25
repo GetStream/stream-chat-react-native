@@ -3,6 +3,10 @@ import { LayoutChangeEvent, View } from 'react-native';
 
 import { NativeHandlers, NativeMessageListViewProps } from '../../../native';
 
+/** Distance (dp) from the bottom within which the list counts as pinned — matches the native
+ *  stickThresholdPx so JS and native agree on "stuck". */
+const BOTTOM_STICK_THRESHOLD = 120;
+
 type RenderItemInfo<T> = { index: number; item: T };
 
 export type NativeMessageListProps<T> = {
@@ -46,6 +50,9 @@ export function NativeMessageList<T>({
   const scrollYRef = useRef(0);
   const anchorRef = useRef(Number.NEGATIVE_INFINITY);
   const didInitBottom = useRef(false);
+  // Whether the list is pinned to the bottom (mirrors native stick-to-bottom), tracked from scroll
+  // events so the synchronous render right after a prepend/append still knows to keep the tail mounted.
+  const atBottomRef = useRef(true);
   const [version, setVersion] = useState(0);
   const [range, setRange] = useState({ end: 0, start: 0 });
 
@@ -96,9 +103,11 @@ export function NativeMessageList<T>({
 
   const onStreamScroll = useCallback<NonNullable<NativeMessageListViewProps['onStreamScroll']>>(
     (event) => {
-      const { contentOffset, layoutMeasurement } = event.nativeEvent;
+      const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
       viewportRef.current = layoutMeasurement.height;
       scrollYRef.current = contentOffset.y;
+      atBottomRef.current =
+        contentOffset.y >= contentSize.height - layoutMeasurement.height - BOTTOM_STICK_THRESHOLD;
       if (Math.abs(contentOffset.y - anchorRef.current) > renderAhead / 2) {
         anchorRef.current = contentOffset.y;
         recompute(contentOffset.y);
@@ -138,8 +147,15 @@ export function NativeMessageList<T>({
     return <View style={style} />;
   }
 
-  const start = Math.max(0, Math.min(range.start, count - 1));
-  const end = Math.min(range.end, count - 1);
+  let start = Math.max(0, Math.min(range.start, count - 1));
+  let end = Math.min(range.end, count - 1);
+  // Pinned to the bottom: keep the newest rows mounted on the synchronous render after a prepend/append.
+  // The reactive window range lags the shifted indices by a scroll-event round-trip, so without this the
+  // stuck viewport sits over the not-yet-mounted tail for a frame → whole-list black flicker.
+  if (atBottomRef.current && count > 0) {
+    end = count - 1;
+    start = Math.max(0, indexForOffset(total - viewportRef.current - renderAhead));
+  }
   const cells: React.ReactNode[] = [];
   for (let i = start; i <= end && i < count; i++) {
     const item = data[i];

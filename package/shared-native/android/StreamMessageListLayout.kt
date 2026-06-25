@@ -34,6 +34,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
 
   private var velocityTracker: VelocityTracker? = null
   private var lastTouchY = 0f
+  private var lastFlingY = 0
   private var isDragging = false
   private var stickToBottom = true
   private val stickThresholdPx = PixelUtil.toPixelFromDIP(120f)
@@ -50,7 +51,15 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   // Fires after every layout pass — the only point where a shifted cell's new top is readable (Fabric
   // doesn't route child layouts through this view's onLayout). Drives the MVCP anchor adjust.
   private val globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-    if (!stickToBottom) applyAnchorAdjust()
+    // A prepend / above-fold change moves the anchor → hold the visible position. Stick to the bottom
+    // only when the anchor did NOT move (content appended below the fold) and we're near the bottom.
+    if (!applyAnchorAdjust() && stickToBottom) maintainBottomIfStuck()
+    // Re-pick the anchor — but only when scrolled up. Window churn (a measurement re-window between a
+    // scroll and a prepend) can recycle the cached anchor; pickAnchor otherwise ran only during scrolling,
+    // so a recycled anchor stayed null forever and later prepends had nothing to compensate against
+    // (#4-part-2). Gated on !stickToBottom because at the bottom the anchor must stay null so the stick
+    // owns the position — an active anchor there holds against measurement settles and drifts off-bottom.
+    if (!stickToBottom) pickAnchor()
   }
 
   init {
@@ -74,7 +83,8 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
     val px = max(0, PixelUtil.toPixelFromDIP(dp.toFloat()).toInt())
     if (px == contentHeightPx) return
     contentHeightPx = px
-    maintainBottomIfStuck()
+    // Stick / anchor adjust runs post-layout in the listener, which can tell a prepend (anchor moved →
+    // hold) from an append (anchor didn't → stick). Sticking here (pre-layout) snapped on prepends too.
   }
 
   private fun maxScrollY(): Int = max(0, contentHeightPx - height)
@@ -118,17 +128,21 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
 
   /** If the anchor cell moved (offsets shifted from a prepend or an above-fold height settle), shift
    *  scrollY by the same delta so the visible content stays put — our maintainVisibleContentPosition. */
-  private fun applyAnchorAdjust() {
-    val a = anchorChild ?: return
+  /** Returns true if it adjusted the scroll — i.e. the anchor moved, meaning content shifted above the
+   *  fold (a prepend / above-fold height change). False means nothing moved above the fold. */
+  private fun applyAnchorAdjust(): Boolean {
+    val a = anchorChild ?: return false
     if (a.parent !== this) {
       anchorChild = null
-      return
+      return false
     }
     val delta = a.top - anchorTop
     if (delta != 0) {
       scrollTo(0, (scrollY + delta).coerceIn(0, maxScrollY()))
       anchorTop = a.top
+      return true
     }
+    return false
   }
 
   // --- scroll engine ---
@@ -172,6 +186,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
           // computeScroll() to the live maxScrollY() (binding it directly truncated fast downward
           // flings mid-curve). Upward stays exact via minY = 0.
           scroller.fling(0, scrollY, 0, velocityY, 0, 0, 0, Int.MAX_VALUE)
+          lastFlingY = scrollY
           postInvalidateOnAnimation()
         }
         recycleVelocityTracker()
@@ -187,7 +202,12 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
 
   override fun computeScroll() {
     if (scroller.computeScrollOffset()) {
-      scrollTo(0, scroller.currY.coerceIn(0, maxScrollY()))
+      // Apply the fling's per-frame DELTA to the live scrollY, not the absolute scroller.currY. A prepend's
+      // anchor/stick compensation runs between fling frames; writing the absolute position would overwrite
+      // it every frame, so the position drifts (and the window freezes) while content is inserted mid-fling.
+      val flingDelta = scroller.currY - lastFlingY
+      lastFlingY = scroller.currY
+      scrollTo(0, (scrollY + flingDelta).coerceIn(0, maxScrollY()))
       pickAnchor()
       postInvalidateOnAnimation()
     }
