@@ -69,6 +69,11 @@ const extraNodeModules = uniqueModules.reduce((acc, item) => {
   acc[item.packageName] = item.modulePath;
   return acc;
 }, {});
+// Point `stream-chat` at the local checkout that is portal-linked via the root package.json
+// `resolutions`. We set it after the reduce (rather than seeding the reduce's initial value)
+// because stream-chat is a direct dependency of this app, so `uniqueModules` would otherwise
+// overwrite the seed.
+extraNodeModules['stream-chat'] = '/Users/isekovanic/Projects/stream-chat-js';
 
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;
@@ -76,6 +81,6 @@ config.resolver.extraNodeModules = extraNodeModules;
 config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
 
 // add the package dir for metro to access the package folder
-config.watchFolders = [packageDirPath];
+config.watchFolders = [packageDirPath, '/Users/isekovanic/Projects/stream-chat-js'];
 
 module.exports = config;
