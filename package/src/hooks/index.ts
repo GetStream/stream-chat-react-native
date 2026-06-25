@@ -11,6 +11,7 @@ export * from './useCanAddMembersToChannel';
 export * from './useChannelMuteActive';
 export * from './useIsDirectChat';
 export * from './useIsChannelMember';
+export * from './useSelectedChannelState';
 export * from './useStreami18n';
 export * from './useViewport';
 export * from './useScreenDimensions';
