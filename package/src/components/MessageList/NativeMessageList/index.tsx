@@ -23,8 +23,7 @@ export type NativeMessageListProps<T> = {
  * its prefix-sum offset (so Fabric owns the layout metrics and draws/clips correctly) over a
  * full-height spacer; the native `StreamMessageListView` owns only scrolling + emitting scroll
  * offsets via `onStreamScroll`. Cells measure themselves (onLayout) to correct the offset model.
- * (Native offset-mirror positioning was tried and abandoned — natively-set child.layout doesn't
- * compose with Fabric's draw path.) Falls back to a plain `<View>` when the native host is absent.
+ * Falls back to a plain `<View>` when the native host is absent.
  */
 export function NativeMessageList<T>({
   data,
@@ -37,14 +36,11 @@ export function NativeMessageList<T>({
   const Host = NativeHandlers.NativeMessageListView;
   const count = data.length;
 
-  const heightsRef = useRef<number[]>([]);
-  if (heightsRef.current.length !== count) {
-    const next = heightsRef.current.slice(0, count);
-    for (let i = next.length; i < count; i++) {
-      next[i] = estimateItemHeight;
-    }
-    heightsRef.current = next;
-  }
+  // Height cache keyed by item ID, NOT array index. An index cache misaligns on prepend: every row
+  // shifts to a new index, but the cached heights stay at the old indices → wrong offsets → the whole
+  // list lays out wrong then snaps as cells re-measure (the flicker). Keying by id survives reorders.
+  const heightsRef = useRef<Map<string, number>>(new Map());
+  const keyAt = (i: number): string => (keyExtractor ? keyExtractor(data[i], i) : String(i));
 
   const viewportRef = useRef(0);
   const scrollYRef = useRef(0);
@@ -58,11 +54,11 @@ export function NativeMessageList<T>({
     const offs = new Array<number>(count + 1);
     offs[0] = 0;
     for (let i = 0; i < count; i++) {
-      offs[i + 1] = offs[i] + (heights[i] || estimateItemHeight);
+      offs[i + 1] = offs[i] + (heights.get(keyAt(i)) ?? estimateItemHeight);
     }
     return { offsets: offs, total: offs[count] };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [count, estimateItemHeight, version]);
+  }, [count, data, estimateItemHeight, version]);
 
   const totalRef = useRef(0);
   totalRef.current = total;
@@ -126,9 +122,9 @@ export function NativeMessageList<T>({
     [recompute],
   );
 
-  const onCellLayout = useCallback((index: number, height: number) => {
-    if (height > 0 && Math.abs((heightsRef.current[index] ?? 0) - height) > 0.5) {
-      heightsRef.current[index] = height;
+  const onCellLayout = useCallback((key: string, height: number) => {
+    if (height > 0 && Math.abs((heightsRef.current.get(key) ?? 0) - height) > 0.5) {
+      heightsRef.current.set(key, height);
       setVersion((v) => v + 1);
     }
   }, []);
@@ -147,10 +143,11 @@ export function NativeMessageList<T>({
   const cells: React.ReactNode[] = [];
   for (let i = start; i <= end && i < count; i++) {
     const item = data[i];
+    const cacheKey = keyAt(i);
     cells.push(
       <NativeMessageCell
-        index={i}
-        key={keyExtractor ? keyExtractor(item, i) : i}
+        cacheKey={cacheKey}
+        key={cacheKey}
         onCellLayout={onCellLayout}
         top={offsets[i]}
       >
@@ -168,21 +165,21 @@ export function NativeMessageList<T>({
 }
 
 type NativeMessageCellProps = {
+  cacheKey: string;
   children: React.ReactNode;
-  index: number;
-  onCellLayout: (index: number, height: number) => void;
+  onCellLayout: (key: string, height: number) => void;
   top: number;
 };
 
 const NativeMessageCell = React.memo(function NativeMessageCell({
+  cacheKey,
   children,
-  index,
   onCellLayout,
   top,
 }: NativeMessageCellProps) {
   const handleLayout = useCallback(
-    (event: LayoutChangeEvent) => onCellLayout(index, event.nativeEvent.layout.height),
-    [index, onCellLayout],
+    (event: LayoutChangeEvent) => onCellLayout(cacheKey, event.nativeEvent.layout.height),
+    [cacheKey, onCellLayout],
   );
   return (
     <View

@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.VelocityTracker
+import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewTreeObserver
 import android.widget.OverScroller
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.PixelUtil
@@ -40,9 +42,30 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
    *  which reads stale right after a transaction and oscillates during windowing churn. */
   private var contentHeightPx = 0
 
+  // MVCP anchor: topmost visible cell + its content-top, so a prepend / above-fold height change can
+  // be compensated (shift scrollY by the same delta) to keep the visible content from jumping.
+  private var anchorChild: View? = null
+  private var anchorTop = 0
+
+  // Fires after every layout pass — the only point where a shifted cell's new top is readable (Fabric
+  // doesn't route child layouts through this view's onLayout). Drives the MVCP anchor adjust.
+  private val globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+    if (!stickToBottom) applyAnchorAdjust()
+  }
+
   init {
     clipChildren = true
     isVerticalScrollBarEnabled = true
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+  }
+
+  override fun onDetachedFromWindow() {
+    viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
+    super.onDetachedFromWindow()
   }
 
   // --- content height + bottom anchoring (stick-to-bottom: newest content stays visible) ---
@@ -76,6 +99,38 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
     maintainBottomIfStuck()
   }
 
+  /** Record the topmost visible cell as the MVCP anchor (skipping the full-height spacer). Called as
+   *  the user scrolls, so a later prepend / above-fold height change can be compensated against it. */
+  private fun pickAnchor() {
+    var best: View? = null
+    var bestTop = Int.MAX_VALUE
+    for (i in 0 until childCount) {
+      val c = getChildAt(i)
+      if (c.height >= height) continue // the spacer is taller than the viewport
+      if (c.bottom > scrollY && c.top < bestTop) {
+        best = c
+        bestTop = c.top
+      }
+    }
+    anchorChild = best
+    anchorTop = best?.top ?: 0
+  }
+
+  /** If the anchor cell moved (offsets shifted from a prepend or an above-fold height settle), shift
+   *  scrollY by the same delta so the visible content stays put — our maintainVisibleContentPosition. */
+  private fun applyAnchorAdjust() {
+    val a = anchorChild ?: return
+    if (a.parent !== this) {
+      anchorChild = null
+      return
+    }
+    val delta = a.top - anchorTop
+    if (delta != 0) {
+      scrollTo(0, (scrollY + delta).coerceIn(0, maxScrollY()))
+      anchorTop = a.top
+    }
+  }
+
   // --- scroll engine ---
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -107,6 +162,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
         val dy = (lastTouchY - ev.y).toInt()
         lastTouchY = ev.y
         scrollTo(0, (scrollY + dy).coerceIn(0, maxScrollY()))
+        pickAnchor()
       }
       MotionEvent.ACTION_UP -> {
         tracker.computeCurrentVelocity(1000, maxFlingVelocity.toFloat())
@@ -132,6 +188,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   override fun computeScroll() {
     if (scroller.computeScrollOffset()) {
       scrollTo(0, scroller.currY.coerceIn(0, maxScrollY()))
+      pickAnchor()
       postInvalidateOnAnimation()
     }
   }
