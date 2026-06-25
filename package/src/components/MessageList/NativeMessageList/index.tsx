@@ -23,11 +23,14 @@ export type NativeMessageListProps<T> = {
 /**
  * Custom native recycled list host (Android, New Arch only).
  *
- * JS owns variable-height windowing AND positioning: each mounted cell is absolutely positioned at
- * its prefix-sum offset (so Fabric owns the layout metrics and draws/clips correctly) over a
- * full-height spacer; the native `StreamMessageListView` owns only scrolling + emitting scroll
- * offsets via `onStreamScroll`. Cells measure themselves (onLayout) to correct the offset model.
- * Falls back to a plain `<View>` when the native host is absent.
+ * JS owns variable-height windowing AND positioning; the native `StreamMessageListView` owns only
+ * scrolling + emitting scroll offsets via `onStreamScroll`.
+ *
+ * Recycling (the perf core): the visible window maps onto a grow-only pool of cells keyed by **slot**
+ * (a stable 0..N-1 identity), NOT by item id. As the window slides, a slot is *reassigned* to a new
+ * data index — React re-renders the same cell instance with new props instead of unmounting one cell
+ * and mounting another. So a row's (potentially heavy) view tree is built once and reused; only its
+ * data rebinds. This is the difference between this and FlatList's mount/unmount-per-row model.
  */
 export function NativeMessageList<T>({
   data,
@@ -56,6 +59,12 @@ export function NativeMessageList<T>({
   // Head item + count from the last render, used to detect a front-prepend and follow it synchronously.
   const prevFirstKeyRef = useRef<string | null>(null);
   const prevCountRef = useRef(0);
+
+  // Recycle pool. slotToIndexRef.current[s] = the data index slot s currently renders (-1 = free).
+  // Grow-only (never shrinks → no remount churn). Cells are keyed by slot, so React keeps the
+  // instance and just rebinds props as the window slides.
+  const slotToIndexRef = useRef<number[]>([]);
+
   const [version, setVersion] = useState(0);
   const [range, setRange] = useState({ end: 0, start: 0 });
 
@@ -146,11 +155,13 @@ export function NativeMessageList<T>({
     recompute(scrollYRef.current);
   }, [recompute, version]);
 
-  // Front-prepend, scrolled up: native anchors the scroll by the inserted height, but the JS window would
-  // only catch up after a scroll-event round-trip → the trailing edge is unmounted for a frame (#1, the
-  // bottom-clipped row flicker). Detect the prepend and shift scrollYRef + re-window in the SAME commit
-  // (useLayoutEffect = before paint), so the window already covers the anchored viewport. At the bottom
-  // the force-tail owns the window, so this only matters when scrolled up.
+  // Front-prepend, scrolled up: native anchors the scroll by the inserted height, but the JS window
+  // would only catch up after a scroll-event round-trip → trailing-edge blank for a frame (#1). Detect
+  // the prepend and, in the SAME commit (useLayoutEffect = before paint): (a) shift scrollYRef by the
+  // inserted height, and (b) shift every pool slot's index by the prepended count so each slot keeps
+  // rendering the SAME item (indices moved, items didn't). Keeping item↔slot stable is what preserves
+  // both the visible position and the native MVCP View-anchor (the anchor cell still shows the anchor
+  // item — recycling would otherwise break it, since slots aren't keyed by item).
   useLayoutEffect(() => {
     const firstKey = count > 0 ? keyAt(0) : null;
     if (
@@ -167,6 +178,12 @@ export function NativeMessageList<T>({
         }
       }
       if (prepended > 0) {
+        const slots = slotToIndexRef.current;
+        for (let s = 0; s < slots.length; s++) {
+          if (slots[s] >= 0) {
+            slots[s] += prepended;
+          }
+        }
         scrollYRef.current += offsets[prepended];
         recompute(scrollYRef.current);
       }
@@ -189,19 +206,57 @@ export function NativeMessageList<T>({
     end = count - 1;
     start = Math.max(0, indexForOffset(total - viewportRef.current - renderAhead));
   }
+
+  // Reconcile the recycle pool to the window [start, end]: free slots that fell out of the window,
+  // then assign each now-visible index without a slot to a freed one (the reused cell). Idempotent, so
+  // a StrictMode double-render is a no-op. Grows the pool when the window needs more cells than exist.
+  const slots = slotToIndexRef.current;
+  if (count > 0) {
+    const covered = new Set<number>();
+    for (let s = 0; s < slots.length; s++) {
+      const idx = slots[s];
+      if (idx >= start && idx <= end && idx < count) {
+        covered.add(idx);
+      } else {
+        slots[s] = -1;
+      }
+    }
+    const need = end - start + 1;
+    while (slots.length < need) {
+      slots.push(-1);
+    }
+    let scan = 0;
+    for (let i = start; i <= end; i++) {
+      if (!covered.has(i)) {
+        while (scan < slots.length && slots[scan] !== -1) {
+          scan++;
+        }
+        if (scan < slots.length) {
+          slots[scan] = i;
+        }
+      }
+    }
+  } else {
+    for (let s = 0; s < slots.length; s++) {
+      slots[s] = -1;
+    }
+  }
+
   const cells: React.ReactNode[] = [];
-  for (let i = start; i <= end && i < count; i++) {
-    const item = data[i];
-    const cacheKey = keyAt(i);
+  for (let s = 0; s < slots.length; s++) {
+    const idx = slots[s];
+    const active = idx >= 0 && idx < count;
     cells.push(
-      <NativeMessageCell
-        cacheKey={cacheKey}
-        key={cacheKey}
+      <RecycledCell
+        active={active}
+        cacheKey={active ? keyAt(idx) : ''}
+        index={active ? idx : -1}
+        item={active ? data[idx] : undefined}
+        key={s}
         onCellLayout={onCellLayout}
-        top={offsets[i]}
-      >
-        {renderItem({ index: i, item })}
-      </NativeMessageCell>,
+        renderItem={renderItem as (info: RenderItemInfo<unknown>) => React.ReactNode}
+        top={active ? offsets[idx] : 0}
+      />,
     );
   }
 
@@ -213,30 +268,46 @@ export function NativeMessageList<T>({
   );
 }
 
-type NativeMessageCellProps = {
+type RecycledCellProps = {
+  active: boolean;
   cacheKey: string;
-  children: React.ReactNode;
+  index: number;
+  item: unknown;
   onCellLayout: (key: string, height: number) => void;
+  renderItem: (info: RenderItemInfo<unknown>) => React.ReactNode;
   top: number;
 };
 
-const NativeMessageCell = React.memo(function NativeMessageCell({
+// A pool slot. Memoized: when its slot isn't reassigned (same index/top/item), it bails out of
+// re-rendering entirely; when it IS reassigned, it re-renders with the new item — reusing the
+// existing view tree (the recycle win). Renders null while free, keeping the slot's identity stable.
+const RecycledCell = React.memo(function RecycledCell({
+  active,
   cacheKey,
-  children,
+  index,
+  item,
   onCellLayout,
+  renderItem,
   top,
-}: NativeMessageCellProps) {
+}: RecycledCellProps) {
   const handleLayout = useCallback(
-    (event: LayoutChangeEvent) => onCellLayout(cacheKey, event.nativeEvent.layout.height),
-    [cacheKey, onCellLayout],
+    (event: LayoutChangeEvent) => {
+      if (active) {
+        onCellLayout(cacheKey, event.nativeEvent.layout.height);
+      }
+    },
+    [active, cacheKey, onCellLayout],
   );
+  if (!active) {
+    return null;
+  }
   return (
     <View
       collapsable={false}
       onLayout={handleLayout}
       style={{ left: 0, position: 'absolute', right: 0, top }}
     >
-      {children}
+      {renderItem({ index, item })}
     </View>
   );
 });
