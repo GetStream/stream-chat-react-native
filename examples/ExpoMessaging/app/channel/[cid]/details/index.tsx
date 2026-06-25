@@ -1,13 +1,11 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext } from 'react';
 
 import { Stack, useRouter } from 'expo-router';
 
 import {
-  ChannelAllMembersModal,
   ChannelDetails,
   ChannelDetailsActionsSection,
   ChannelDetailsContextProvider,
-  ChannelDetailsMemberSection,
   ChannelDetailsNavigationSection,
   ChannelDetailsNavigationSectionType,
   GetChannelDetailsNavigationItems,
@@ -55,18 +53,9 @@ export default function ChannelDetailsScreen() {
 
   const popToRoot = useCallback(() => router.replace('/'), [router]);
 
-  const [isAllMembersVisible, setAllMembersVisible] = useState(false);
-  const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
-  const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
-
   const NavigationSection = useCallback(
     () => <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />,
     [getNavigationItems],
-  );
-
-  const MemberSection = useCallback(
-    () => <ChannelDetailsMemberSection onViewAllMembersPress={handleAllMembersPress} />,
-    [handleAllMembersPress],
   );
 
   const renderHeaderRight = useCallback(
@@ -100,13 +89,11 @@ export default function ChannelDetailsScreen() {
         <WithComponents
           overrides={{
             ChannelDetailsActionsSection: ActionsSection,
-            ChannelDetailsMemberSection: MemberSection,
             ChannelDetailsNavHeader: EmptyHeader,
             ChannelDetailsNavigationSection: NavigationSection,
           }}
         >
           <ChannelDetails />
-          <ChannelAllMembersModal onClose={handleAllMembersClose} visible={isAllMembersVisible} />
         </WithComponents>
       </ChannelDetailsContextProvider>
     </>
