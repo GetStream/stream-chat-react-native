@@ -36,8 +36,8 @@ const sizes = {
     height: 48,
   },
   lg: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
   },
 };
 
