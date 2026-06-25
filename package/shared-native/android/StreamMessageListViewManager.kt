@@ -27,6 +27,10 @@ class StreamMessageListViewManager : ViewGroupManager<StreamMessageListLayout>()
     // TODO: bottom-anchored layout. No-op for now.
   }
 
+  override fun setContentHeight(view: StreamMessageListLayout, value: Double) {
+    view.setContentHeightDip(value)
+  }
+
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =
     mapOf(
       StreamMessageListScrollEvent.EVENT_NAME to mapOf("registrationName" to "onStreamScroll"),

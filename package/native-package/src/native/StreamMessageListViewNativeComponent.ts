@@ -15,6 +15,8 @@ export type StreamMessageListScrollEvent = Readonly<{
 
 export interface NativeProps extends ViewProps {
   inverted?: WithDefault<boolean, false>;
+  /** Total scrollable content height (dp), pushed from the JS height model — the native scroll range. */
+  contentHeight?: Double;
   onStreamScroll?: DirectEventHandler<StreamMessageListScrollEvent>;
 }
 

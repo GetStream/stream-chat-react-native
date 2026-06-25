@@ -321,6 +321,7 @@ export type NativeShimmerViewProps = ViewProps & {
 };
 
 export type NativeMessageListViewProps = ViewProps & {
+  contentHeight?: number;
   inverted?: boolean;
   onStreamScroll?: (event: {
     nativeEvent: {

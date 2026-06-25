@@ -1,6 +1,7 @@
 package com.streamchatreactnative
 
 import android.content.Context
+import android.graphics.Canvas
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
@@ -17,10 +18,10 @@ import kotlin.math.max
  * Arch only).
  *
  * A [ReactViewGroup] with a self-contained vertical scroller ([OverScroller] + [VelocityTracker]):
- * it handles touch drag + fling, scrolls its Fabric-mounted children, and emits an RN-shaped scroll
- * event (`onStreamScroll`) so the JS layer can drive pagination / viewability / windowing. It owns
- * ONLY scrolling — children are laid out and drawn by Fabric. The scroll range is the furthest child
- * bottom (the JS full-height spacer drives it).
+ * touch drag + fling, scrolls its Fabric-mounted children, emits an RN-shaped scroll event
+ * (`onStreamScroll`), and keeps the newest content pinned to the bottom (stick-to-bottom). The
+ * scrollable content height is pushed from JS (`contentHeight`) — the JS layer owns the height model;
+ * reading it from the spacer child's layout is unstable during windowing churn (it oscillates).
  */
 class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   private val scroller = OverScroller(context)
@@ -32,22 +33,48 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   private var velocityTracker: VelocityTracker? = null
   private var lastTouchY = 0f
   private var isDragging = false
+  private var stickToBottom = true
+  private val stickThresholdPx = PixelUtil.toPixelFromDIP(120f)
+
+  /** Authoritative content height (px), pushed from JS. Decoupled from the spacer child's layout,
+   *  which reads stale right after a transaction and oscillates during windowing churn. */
+  private var contentHeightPx = 0
 
   init {
     clipChildren = true
     isVerticalScrollBarEnabled = true
   }
 
-  /** Scrollable content height = furthest child bottom (the JS full-height spacer drives this). */
-  private fun contentHeight(): Int {
-    var bottom = 0
-    for (i in 0 until childCount) {
-      bottom = max(bottom, getChildAt(i).bottom)
-    }
-    return bottom
+  // --- content height + bottom anchoring (stick-to-bottom: newest content stays visible) ---
+
+  fun setContentHeightDip(dp: Double) {
+    val px = max(0, PixelUtil.toPixelFromDIP(dp.toFloat()).toInt())
+    if (px == contentHeightPx) return
+    contentHeightPx = px
+    maintainBottomIfStuck()
   }
 
-  private fun maxScrollY(): Int = max(0, contentHeight() - height)
+  private fun maxScrollY(): Int = max(0, contentHeightPx - height)
+
+  /** Pin to the bottom while stuck. Driven by content-height pushes from JS and by size changes, so
+   *  the newest content stays visible as the list grows or the viewport shrinks (e.g. keyboard). */
+  internal fun maintainBottomIfStuck() {
+    if (!stickToBottom) return
+    val target = maxScrollY()
+    if (scrollY != target) scrollTo(0, target)
+  }
+
+  /** Re-evaluate stick mode: stuck when at (or within a threshold of) the bottom. Scrolling up
+   *  releases it; scrolling back to the bottom re-engages it. */
+  private fun refreshStickToBottom() {
+    val maxY = maxScrollY()
+    stickToBottom = maxY <= 0 || scrollY >= maxY - stickThresholdPx
+  }
+
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    maintainBottomIfStuck()
+  }
 
   // --- scroll engine ---
 
@@ -85,13 +112,9 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
         tracker.computeCurrentVelocity(1000, maxFlingVelocity.toFloat())
         val velocityY = -tracker.yVelocity.toInt()
         if (abs(velocityY) > minFlingVelocity) {
-          // maxY is intentionally unbounded. maxScrollY() is UNDERESTIMATED while the rows below
-          // are unmeasured (they fall back to the height estimate), so binding the fling to it made
-          // OverScroller truncate the deceleration curve to land on that short max — a fast downward
-          // fling got "cut" mid-velocity. Letting it decelerate by pure physics and clamping each
-          // frame in computeScroll() to the LIVE maxScrollY() (which grows as those rows mount and
-          // measure) lets the fling ride the revealed content to the true bottom. Upward stays exact
-          // because minY = 0.
+          // maxY unbounded: let the fling decelerate by physics and clamp each frame in
+          // computeScroll() to the live maxScrollY() (binding it directly truncated fast downward
+          // flings mid-curve). Upward stays exact via minY = 0.
           scroller.fling(0, scrollY, 0, velocityY, 0, 0, 0, Int.MAX_VALUE)
           postInvalidateOnAnimation()
         }
@@ -108,15 +131,23 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
 
   override fun computeScroll() {
     if (scroller.computeScrollOffset()) {
-      // Clamp to the LIVE maxScrollY() every frame: the fling target is unbounded (see ACTION_UP),
-      // so this is what keeps it inside the content as rows below mount and the range grows.
       scrollTo(0, scroller.currY.coerceIn(0, maxScrollY()))
       postInvalidateOnAnimation()
     }
   }
 
+  override fun dispatchDraw(canvas: Canvas) {
+    // clipChildren isn't honored during our custom scrollTo, so absolutely-positioned cells draw over
+    // the header/footer (and clip raggedly at the top edge). Force-clip to the visible viewport: in
+    // dispatchDraw the scroll is already applied, so the window in content coords is
+    // [scrollX, scrollY] .. [scrollX + width, scrollY + height].
+    canvas.clipRect(scrollX, scrollY, scrollX + width, scrollY + height)
+    super.dispatchDraw(canvas)
+  }
+
   override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) {
     super.onScrollChanged(l, t, oldl, oldt)
+    refreshStickToBottom()
     emitScrollEvent()
   }
 
@@ -135,7 +166,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
         UIManagerHelper.getSurfaceId(this),
         id,
         PixelUtil.toDIPFromPixel(scrollY.toFloat()).toDouble(),
-        PixelUtil.toDIPFromPixel(contentHeight().toFloat()).toDouble(),
+        PixelUtil.toDIPFromPixel(contentHeightPx.toFloat()).toDouble(),
         PixelUtil.toDIPFromPixel(height.toFloat()).toDouble(),
       ),
     )

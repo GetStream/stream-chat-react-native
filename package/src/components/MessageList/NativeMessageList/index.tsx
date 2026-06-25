@@ -49,6 +49,7 @@ export function NativeMessageList<T>({
   const viewportRef = useRef(0);
   const scrollYRef = useRef(0);
   const anchorRef = useRef(Number.NEGATIVE_INFINITY);
+  const didInitBottom = useRef(false);
   const [version, setVersion] = useState(0);
   const [range, setRange] = useState({ end: 0, start: 0 });
 
@@ -62,6 +63,9 @@ export function NativeMessageList<T>({
     return { offsets: offs, total: offs[count] };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, estimateItemHeight, version]);
+
+  const totalRef = useRef(0);
+  totalRef.current = total;
 
   const indexForOffset = useCallback(
     (y: number) => {
@@ -109,7 +113,14 @@ export function NativeMessageList<T>({
 
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
-      viewportRef.current = event.nativeEvent.layout.height;
+      const viewport = event.nativeEvent.layout.height;
+      viewportRef.current = viewport;
+      // Open anchored at the bottom (newest content): seed the JS window to the last screenful so the
+      // first render shows the bottom rows; native's stick-to-bottom pins the scroll position to match.
+      if (!didInitBottom.current && totalRef.current > viewport) {
+        scrollYRef.current = totalRef.current - viewport;
+        didInitBottom.current = true;
+      }
       recompute(scrollYRef.current);
     },
     [recompute],
@@ -149,7 +160,7 @@ export function NativeMessageList<T>({
   }
 
   return (
-    <Host onLayout={onLayout} onStreamScroll={onStreamScroll} style={style}>
+    <Host contentHeight={total} onLayout={onLayout} onStreamScroll={onStreamScroll} style={style}>
       <View style={{ height: total }} />
       {cells}
     </Host>
