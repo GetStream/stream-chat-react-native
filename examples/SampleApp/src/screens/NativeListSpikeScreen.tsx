@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
-import { NativeMessageList } from 'stream-chat-react-native';
+import { NativeMessageList, type NativeMessageListRef } from 'stream-chat-react-native';
 
 const INITIAL = 1000;
 // Variable row heights to exercise the measurement + offset path (60..210, cycling).
@@ -106,6 +106,7 @@ export const NativeListSpikeScreen = () => {
   const [heavy, setHeavy] = useState(false);
   const flatListRef = useRef<FlatList<number>>(null);
   const didScrollEnd = useRef(false);
+  const listRef = useRef<NativeMessageListRef>(null);
 
   const addOne = useCallback(() => {
     setData((prev) => [...prev, nextId.current++]);
@@ -168,7 +169,7 @@ export const NativeListSpikeScreen = () => {
             <Text style={styles.btnLabel}>{heavy ? 'Heavy' : 'Light'}</Text>
           </Pressable>
         </View>
-        <View style={{ flexDirection: 'row', gap: 6 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           <Pressable onPress={prependOlder} style={styles.btn}>
             <Text style={styles.btnLabel}>Older</Text>
           </Pressable>
@@ -178,6 +179,18 @@ export const NativeListSpikeScreen = () => {
           <Pressable onPress={addBurst} style={styles.btn}>
             <Text style={styles.btnLabel}>Burst</Text>
           </Pressable>
+          <Pressable
+            onPress={() => listRef.current?.scrollToOffset({ animated: true, offset: 0 })}
+            style={[styles.btn, { backgroundColor: '#6b46c1' }]}
+          >
+            <Text style={styles.btnLabel}>Top</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => listRef.current?.scrollToEnd({ animated: true })}
+            style={[styles.btn, { backgroundColor: '#6b46c1' }]}
+          >
+            <Text style={styles.btnLabel}>Bottom</Text>
+          </Pressable>
         </View>
       </View>
       {useNative ? (
@@ -185,6 +198,7 @@ export const NativeListSpikeScreen = () => {
           data={data}
           estimateItemHeight={120}
           keyExtractor={(item) => String(item)}
+          ref={listRef}
           renderAhead={2000}
           renderItem={renderRow}
           style={{ flex: 1 }}

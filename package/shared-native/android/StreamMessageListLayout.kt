@@ -97,6 +97,21 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
     if (scrollY != target) scrollTo(0, target)
   }
 
+  /** Imperative scroll to a content offset (dp), clamped to the scroll range. Animated reuses the
+   *  OverScroller so it shares computeScroll's incremental path. Backs the JS ref's scrollToOffset /
+   *  scrollToEnd / scrollToIndex — JS owns the height model and converts index/end into an offset. */
+  fun scrollToOffsetDip(dp: Double, animated: Boolean) {
+    val target = PixelUtil.toPixelFromDIP(dp.toFloat()).toInt().coerceIn(0, maxScrollY())
+    if (animated) {
+      if (!scroller.isFinished) scroller.abortAnimation()
+      lastFlingY = scrollY
+      scroller.startScroll(0, scrollY, 0, target - scrollY)
+      postInvalidateOnAnimation()
+    } else {
+      scrollTo(0, target)
+    }
+  }
+
   /** Re-evaluate stick mode: stuck when at (or within a threshold of) the bottom. Scrolling up
    *  releases it; scrolling back to the bottom re-engages it. */
   private fun refreshStickToBottom() {

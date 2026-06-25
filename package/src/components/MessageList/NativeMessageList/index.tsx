@@ -1,5 +1,13 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { LayoutChangeEvent, View } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { HostComponent, LayoutChangeEvent, View } from 'react-native';
 
 import { NativeHandlers, NativeMessageListViewProps } from '../../../native';
 
@@ -32,14 +40,28 @@ export type NativeMessageListProps<T> = {
  * and mounting another. So a row's (potentially heavy) view tree is built once and reused; only its
  * data rebinds. This is the difference between this and FlatList's mount/unmount-per-row model.
  */
-export function NativeMessageList<T>({
-  data,
-  estimateItemHeight,
-  keyExtractor,
-  renderAhead = 2000,
-  renderItem,
-  style,
-}: NativeMessageListProps<T>) {
+/** Imperative surface exposed via ref — FlatList-shaped, so it drops into MessageList's existing
+ *  scroll-to-bottom / jump-to-message paths. All three scrolls dispatch the single native command. */
+export type NativeMessageListRef = {
+  /** Scroll to the newest content (bottom). */
+  scrollToEnd: (params?: { animated?: boolean }) => void;
+  /** Scroll so the row at `index` reaches `viewPosition` (0 = top … 1 = bottom) of the viewport. */
+  scrollToIndex: (params: { animated?: boolean; index: number; viewPosition?: number }) => void;
+  /** Scroll to a content offset (dp). */
+  scrollToOffset: (params: { animated?: boolean; offset: number }) => void;
+};
+
+function NativeMessageListComponent<T>(
+  {
+    data,
+    estimateItemHeight,
+    keyExtractor,
+    renderAhead = 2000,
+    renderItem,
+    style,
+  }: NativeMessageListProps<T>,
+  ref: React.ForwardedRef<NativeMessageListRef>,
+) {
   const Host = NativeHandlers.NativeMessageListView;
   const count = data.length;
 
@@ -64,6 +86,7 @@ export function NativeMessageList<T>({
   // Grow-only (never shrinks → no remount churn). Cells are keyed by slot, so React keeps the
   // instance and just rebinds props as the window slides.
   const slotToIndexRef = useRef<number[]>([]);
+  const hostRef = useRef<React.ElementRef<HostComponent<NativeMessageListViewProps>> | null>(null);
 
   const [version, setVersion] = useState(0);
   const [range, setRange] = useState({ end: 0, start: 0 });
@@ -81,6 +104,8 @@ export function NativeMessageList<T>({
 
   const totalRef = useRef(0);
   totalRef.current = total;
+  const offsetsRef = useRef(offsets);
+  offsetsRef.current = offsets;
 
   const indexForOffset = useCallback(
     (y: number) => {
@@ -193,6 +218,47 @@ export function NativeMessageList<T>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, offsets, recompute]);
 
+  // Imperative ref (FlatList-shaped). Every scroll computes a target offset from the JS height model
+  // and dispatches the single native `scrollToOffset` command (offsets read from refs so the handle
+  // stays correct without re-creating every render).
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToEnd: ({ animated = true }: { animated?: boolean } = {}) => {
+        const cmds = NativeHandlers.NativeMessageListViewCommands;
+        if (cmds && hostRef.current) {
+          cmds.scrollToOffset(hostRef.current, totalRef.current, animated);
+        }
+      },
+      scrollToIndex: ({
+        animated = true,
+        index,
+        viewPosition = 0,
+      }: {
+        animated?: boolean;
+        index: number;
+        viewPosition?: number;
+      }) => {
+        const cmds = NativeHandlers.NativeMessageListViewCommands;
+        if (!cmds || !hostRef.current || !count) {
+          return;
+        }
+        const i = Math.max(0, Math.min(index, count - 1));
+        const key = keyExtractor ? keyExtractor(data[i], i) : String(i);
+        const h = heightsRef.current.get(key) ?? estimateItemHeight;
+        const target = offsetsRef.current[i] - viewPosition * ((viewportRef.current || 0) - h);
+        cmds.scrollToOffset(hostRef.current, target, animated);
+      },
+      scrollToOffset: ({ animated = true, offset }: { animated?: boolean; offset: number }) => {
+        const cmds = NativeHandlers.NativeMessageListViewCommands;
+        if (cmds && hostRef.current) {
+          cmds.scrollToOffset(hostRef.current, offset, animated);
+        }
+      },
+    }),
+    [count, data, estimateItemHeight, keyExtractor],
+  );
+
   if (!Host) {
     return <View style={style} />;
   }
@@ -261,12 +327,23 @@ export function NativeMessageList<T>({
   }
 
   return (
-    <Host contentHeight={total} onLayout={onLayout} onStreamScroll={onStreamScroll} style={style}>
+    <Host
+      contentHeight={total}
+      onLayout={onLayout}
+      onStreamScroll={onStreamScroll}
+      ref={hostRef}
+      style={style}
+    >
       <View style={{ height: total }} />
       {cells}
     </Host>
   );
 }
+
+// forwardRef wrapper, cast to keep the generic <T> at the call site (forwardRef erases it).
+export const NativeMessageList = React.forwardRef(NativeMessageListComponent) as <T>(
+  props: NativeMessageListProps<T> & { ref?: React.Ref<NativeMessageListRef> },
+) => React.ReactElement | null;
 
 type RecycledCellProps = {
   active: boolean;

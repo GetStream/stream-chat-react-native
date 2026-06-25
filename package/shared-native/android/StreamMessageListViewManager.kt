@@ -1,5 +1,6 @@
 package com.streamchatreactnative
 
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
@@ -29,6 +30,18 @@ class StreamMessageListViewManager : ViewGroupManager<StreamMessageListLayout>()
 
   override fun setContentHeight(view: StreamMessageListLayout, value: Double) {
     view.setContentHeightDip(value)
+  }
+
+  // --- imperative commands (net-new: no codegenNativeCommands precedent in this repo) ---
+  // The codegen delegate parses the args and dispatches to scrollToOffset(); we just route
+  // receiveCommand into it (the base ViewManager.receiveCommand is a no-op otherwise).
+
+  override fun scrollToOffset(view: StreamMessageListLayout, offset: Double, animated: Boolean) {
+    view.scrollToOffsetDip(offset, animated)
+  }
+
+  override fun receiveCommand(view: StreamMessageListLayout, commandId: String, args: ReadableArray?) {
+    delegate.receiveCommand(view, commandId, args)
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> =

@@ -2,6 +2,7 @@ import type React from 'react';
 import {
   ColorValue,
   FlatList as DefaultFlatList,
+  HostComponent,
   StyleProp,
   ViewProps,
   ViewStyle,
@@ -332,6 +333,16 @@ export type NativeMessageListViewProps = ViewProps & {
   }) => void;
 };
 
+/** Imperative commands for the native message list (net-new codegen commands). JS computes target
+ *  offsets from its height model and dispatches scrollToOffset; scrollToEnd/scrollToIndex ride on it. */
+export type NativeMessageListViewCommandsType = {
+  scrollToOffset: (
+    viewRef: React.ElementRef<HostComponent<NativeMessageListViewProps>>,
+    offset: number,
+    animated: boolean,
+  ) => void;
+};
+
 type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
@@ -352,7 +363,8 @@ type Handlers = {
   setClipboardString?: SetClipboardString;
   shareImage?: ShareImage;
   Sound?: SoundType;
-  NativeMessageListView?: React.ComponentType<NativeMessageListViewProps>;
+  NativeMessageListView?: HostComponent<NativeMessageListViewProps>;
+  NativeMessageListViewCommands?: NativeMessageListViewCommandsType;
   NativeShimmerView?: React.ComponentType<NativeShimmerViewProps>;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
@@ -361,7 +373,13 @@ type Handlers = {
 
 export const NativeHandlers: Pick<
   Handlers,
-  'Audio' | 'FlatList' | 'NativeMessageListView' | 'NativeShimmerView' | 'Video' | 'Sound'
+  | 'Audio'
+  | 'FlatList'
+  | 'NativeMessageListView'
+  | 'NativeMessageListViewCommands'
+  | 'NativeShimmerView'
+  | 'Video'
+  | 'Sound'
 > &
   Required<
     Pick<
@@ -400,6 +418,7 @@ export const NativeHandlers: Pick<
   shareImage: fail,
   Sound: undefined,
   NativeMessageListView: undefined,
+  NativeMessageListViewCommands: undefined,
   NativeShimmerView: undefined,
   takePhoto: fail,
   triggerHaptic: fail,
@@ -476,6 +495,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.NativeMessageListView !== undefined) {
     NativeHandlers.NativeMessageListView = handlers.NativeMessageListView;
+  }
+
+  if (handlers.NativeMessageListViewCommands !== undefined) {
+    NativeHandlers.NativeMessageListViewCommands = handlers.NativeMessageListViewCommands;
   }
 
   if (handlers.NativeShimmerView !== undefined) {
