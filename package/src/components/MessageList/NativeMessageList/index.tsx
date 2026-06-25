@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, View } from 'react-native';
 
 import { NativeHandlers, NativeMessageListViewProps } from '../../../native';
@@ -53,6 +53,9 @@ export function NativeMessageList<T>({
   // Whether the list is pinned to the bottom (mirrors native stick-to-bottom), tracked from scroll
   // events so the synchronous render right after a prepend/append still knows to keep the tail mounted.
   const atBottomRef = useRef(true);
+  // Head item + count from the last render, used to detect a front-prepend and follow it synchronously.
+  const prevFirstKeyRef = useRef<string | null>(null);
+  const prevCountRef = useRef(0);
   const [version, setVersion] = useState(0);
   const [range, setRange] = useState({ end: 0, start: 0 });
 
@@ -142,6 +145,36 @@ export function NativeMessageList<T>({
   useEffect(() => {
     recompute(scrollYRef.current);
   }, [recompute, version]);
+
+  // Front-prepend, scrolled up: native anchors the scroll by the inserted height, but the JS window would
+  // only catch up after a scroll-event round-trip → the trailing edge is unmounted for a frame (#1, the
+  // bottom-clipped row flicker). Detect the prepend and shift scrollYRef + re-window in the SAME commit
+  // (useLayoutEffect = before paint), so the window already covers the anchored viewport. At the bottom
+  // the force-tail owns the window, so this only matters when scrolled up.
+  useLayoutEffect(() => {
+    const firstKey = count > 0 ? keyAt(0) : null;
+    if (
+      prevFirstKeyRef.current !== null &&
+      firstKey !== prevFirstKeyRef.current &&
+      count > prevCountRef.current
+    ) {
+      const added = count - prevCountRef.current;
+      let prepended = 0;
+      for (let i = 1; i <= added && i < count; i++) {
+        if (keyAt(i) === prevFirstKeyRef.current) {
+          prepended = i;
+          break;
+        }
+      }
+      if (prepended > 0) {
+        scrollYRef.current += offsets[prepended];
+        recompute(scrollYRef.current);
+      }
+    }
+    prevFirstKeyRef.current = firstKey;
+    prevCountRef.current = count;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count, offsets, recompute]);
 
   if (!Host) {
     return <View style={style} />;
