@@ -662,7 +662,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     // Read-events-disabled channels (e.g. livestreams) still surface the unread notification when the
     // client opted into a local unread count, so the gate accepts either source.
-    const unreadNotificationSupported = readEvents || client.options.enableLocalUnreadCount;
+    const unreadNotificationSupported = readEvents || client.options.isLocalUnreadCountEnabled;
 
     if (
       !viewableItems.length ||

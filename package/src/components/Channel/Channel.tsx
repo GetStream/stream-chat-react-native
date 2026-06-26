@@ -828,7 +828,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // client opted into a local unread count, reset it locally instead so the user's "caught up"
       // state is reflected without a server round-trip.
       if (!clientChannelConfig?.read_events) {
-        if (client.options.enableLocalUnreadCount) {
+        if (client.options.isLocalUnreadCountEnabled) {
           channel.markReadLocally();
           if (updateChannelUnreadState) {
             setChannelUnreadState({ last_read: new Date(), unread_messages: 0 });

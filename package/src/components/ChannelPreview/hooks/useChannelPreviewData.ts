@@ -111,7 +111,7 @@ export const useChannelPreviewData = (
     };
     const readSubscription = client.on('message.read', handleReadEvent);
     // `message.local_read` is the client-only equivalent emitted by `channel.markReadLocally()` when
-    // read events are disabled (e.g. livestreams with `enableLocalUnreadCount`).
+    // read events are disabled (e.g. livestreams with `isLocalUnreadCountEnabled`).
     const localReadSubscription = client.on('message.local_read', handleReadEvent);
     return () => {
       readSubscription.unsubscribe();
