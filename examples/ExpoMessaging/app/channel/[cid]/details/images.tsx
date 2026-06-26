@@ -19,7 +19,7 @@ export default function ChannelImagesScreen() {
   return (
     <>
       <Stack.Screen options={{ contentStyle: { backgroundColor: semantics.backgroundCoreApp } }} />
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <MediaList />
       </ChannelDetailsContextProvider>
     </>

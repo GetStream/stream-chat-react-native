@@ -8,6 +8,7 @@ import { useComponentsContext } from '../../../../contexts/componentsContext/Com
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import {
   ChannelMemberActionItem,
+  GetChannelMemberActionItems,
   useChannelMemberActionItems,
 } from '../../../../hooks/actions/useChannelMemberActionItems';
 import { BottomSheetModal } from '../../../UIComponents/BottomSheetModal';
@@ -17,15 +18,24 @@ export type ChannelMemberActionsSheetProps = {
   member: ChannelMemberResponse;
   onClose: () => void;
   visible: boolean;
+  /**
+   * Customize the list of action items rendered in the per-member actions bottom sheet.
+   *
+   * Receives the default items the SDK produces for the tapped member (e.g. `muteUser`,
+   * `block`) and returns the final list to render. Use this to filter, reorder, replace,
+   * or add items — for example, to inject a "Send Direct Message" action in your app.
+   */
+  getChannelMemberActionItems?: GetChannelMemberActionItems;
 };
 
 const keyExtractor = (item: ChannelMemberActionItem) => item.id;
 
 const ChannelMemberActionsSheetInner = ({
+  getChannelMemberActionItems,
   member,
   onClose,
 }: Omit<ChannelMemberActionsSheetProps, 'visible'>) => {
-  const { channel, getChannelMemberActionItems } = useChannelDetailsContext();
+  const { channel } = useChannelDetailsContext();
   const { ChannelDetailsActionItem, ChannelMemberItem } = useComponentsContext();
   const {
     theme: {
@@ -79,16 +89,18 @@ const ChannelMemberActionsSheetInner = ({
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelMemberActionsSheet = ({
+  getChannelMemberActionItems,
   member,
   onClose,
   visible,
 }: ChannelMemberActionsSheetProps) => (
   <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
-    <ChannelMemberActionsSheetInner member={member} onClose={onClose} />
+    <ChannelMemberActionsSheetInner
+      getChannelMemberActionItems={getChannelMemberActionItems}
+      member={member}
+      onClose={onClose}
+    />
   </BottomSheetModal>
 );
 

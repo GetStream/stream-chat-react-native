@@ -46,7 +46,7 @@ const renderProfile = ({ channel = buildChannel() }: { channel?: Channel } = {})
         }}
       >
         <ChatProvider value={{ client: { userID: OWN_USER_ID } } as never}>
-          <ChannelDetailsContextProvider value={{ channel }}>
+          <ChannelDetailsContextProvider channel={channel}>
             <ChannelDetailsProfile />
           </ChannelDetailsContextProvider>
         </ChatProvider>

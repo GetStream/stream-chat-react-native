@@ -7,8 +7,9 @@ import { getTestClientWithUser } from '../../mock-builders/mock';
 import type { File } from '../../types/types';
 import {
   EditChannelDetailsStore,
-  useIsImageDirty,
-  useIsNameDirty,
+  useAreChannelDetailsEdited,
+  useIsImageEdited,
+  useIsNameEdited,
 } from '../edit-channel-details-store';
 
 const file: File = {
@@ -98,12 +99,12 @@ describe('EditChannelDetailsStore', () => {
     });
   });
 
-  describe('useIsNameDirty', () => {
+  describe('useIsNameEdited', () => {
     it('is false initially', async () => {
       const channel = await createChannel({ name: 'Original' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsNameDirty(store));
+      const { result } = renderHook(() => useIsNameEdited(store));
       expect(result.current).toBe(false);
     });
 
@@ -111,7 +112,7 @@ describe('EditChannelDetailsStore', () => {
       const channel = await createChannel({ name: 'Original' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsNameDirty(store));
+      const { result } = renderHook(() => useIsNameEdited(store));
       expect(result.current).toBe(false);
 
       act(() => store.setCurrentName('Renamed'));
@@ -121,11 +122,11 @@ describe('EditChannelDetailsStore', () => {
       expect(result.current).toBe(false);
     });
 
-    it('treats untrimmed whitespace as dirty', async () => {
+    it('treats untrimmed whitespace as edited', async () => {
       const channel = await createChannel({ name: 'Original' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsNameDirty(store));
+      const { result } = renderHook(() => useIsNameEdited(store));
 
       act(() => store.setCurrentName('Original '));
       expect(result.current).toBe(true);
@@ -135,27 +136,27 @@ describe('EditChannelDetailsStore', () => {
       const channel = await createChannel({ name: 'Original' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsNameDirty(store));
+      const { result } = renderHook(() => useIsNameEdited(store));
 
       act(() => store.setUpdatedImage(file));
       expect(result.current).toBe(false);
     });
   });
 
-  describe('useIsImageDirty', () => {
+  describe('useIsImageEdited', () => {
     it('is false initially', async () => {
       const channel = await createChannel({ image: 'http://img/original.png' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsImageDirty(store));
+      const { result } = renderHook(() => useIsImageEdited(store));
       expect(result.current).toBe(false);
     });
 
-    it('is dirty after a new image is picked', async () => {
+    it('is edited after a new image is picked', async () => {
       const channel = await createChannel({ name: 'Original' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsImageDirty(store));
+      const { result } = renderHook(() => useIsImageEdited(store));
 
       act(() => store.setUpdatedImage(file));
       expect(result.current).toBe(true);
@@ -165,18 +166,18 @@ describe('EditChannelDetailsStore', () => {
       const channel = await createChannel({ name: 'Original' });
       const store = new EditChannelDetailsStore(channel);
 
-      const { result } = renderHook(() => useIsImageDirty(store));
+      const { result } = renderHook(() => useIsImageEdited(store));
 
       act(() => store.setCurrentName('Renamed'));
       expect(result.current).toBe(false);
     });
 
     describe('with an initial image', () => {
-      it('is dirty on reset and clean again when untouched', async () => {
+      it('is edited on reset and clean again when untouched', async () => {
         const channel = await createChannel({ image: 'http://img/original.png' });
         const store = new EditChannelDetailsStore(channel);
 
-        const { result } = renderHook(() => useIsImageDirty(store));
+        const { result } = renderHook(() => useIsImageEdited(store));
         expect(result.current).toBe(false);
 
         act(() => store.setUpdatedImage(null));
@@ -188,11 +189,11 @@ describe('EditChannelDetailsStore', () => {
     });
 
     describe('without an initial image', () => {
-      it('is not dirty on reset but is dirty when a file is picked', async () => {
+      it('is not edited on reset but is edited when a file is picked', async () => {
         const channel = await createChannel();
         const store = new EditChannelDetailsStore(channel);
 
-        const { result } = renderHook(() => useIsImageDirty(store));
+        const { result } = renderHook(() => useIsImageEdited(store));
 
         act(() => store.setUpdatedImage(null));
         expect(result.current).toBe(false);
@@ -200,6 +201,60 @@ describe('EditChannelDetailsStore', () => {
         act(() => store.setUpdatedImage(file));
         expect(result.current).toBe(true);
       });
+    });
+  });
+
+  describe('useAreChannelDetailsEdited', () => {
+    it('is false initially', async () => {
+      const channel = await createChannel({ image: 'http://img/original.png', name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useAreChannelDetailsEdited(store));
+      expect(result.current).toBe(false);
+    });
+
+    it('is edited when the name changes and clean again when reverted', async () => {
+      const channel = await createChannel({ name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useAreChannelDetailsEdited(store));
+
+      act(() => store.setCurrentName('Renamed'));
+      expect(result.current).toBe(true);
+
+      act(() => store.setCurrentName('Original'));
+      expect(result.current).toBe(false);
+    });
+
+    it('is edited when a new image is picked', async () => {
+      const channel = await createChannel({ name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useAreChannelDetailsEdited(store));
+
+      act(() => store.setUpdatedImage(file));
+      expect(result.current).toBe(true);
+    });
+
+    it('stays edited while either field is edited', async () => {
+      const channel = await createChannel({ name: 'Original' });
+      const store = new EditChannelDetailsStore(channel);
+
+      const { result } = renderHook(() => useAreChannelDetailsEdited(store));
+
+      act(() => {
+        store.setCurrentName('Renamed');
+        store.setUpdatedImage(file);
+      });
+      expect(result.current).toBe(true);
+
+      // Revert the name; image is still edited, so the form stays edited.
+      act(() => store.setCurrentName('Original'));
+      expect(result.current).toBe(true);
+
+      // Revert the image too; now the form is clean.
+      act(() => store.setUpdatedImage(undefined));
+      expect(result.current).toBe(false);
     });
   });
 });

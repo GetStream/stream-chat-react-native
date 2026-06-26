@@ -1,7 +1,9 @@
 import React, { PropsWithChildren } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
+
+type ReactTestInstance = ReturnType<typeof screen.getByTestId>;
 import { NotificationManager } from 'stream-chat';
 import type { Channel } from 'stream-chat';
 
@@ -13,11 +15,27 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
-import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
-import { ChannelDetailsEditButton } from '../components/ChannelDetailsEditButton';
+import {
+  ChannelDetailsEditButton,
+  ChannelDetailsEditButtonProps,
+} from '../components/ChannelDetailsEditButton';
 
 jest.mock('../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
+
+// Walks up the rendered tree to confirm some host ancestor received `width: 'auto'`
+// (the forwarded style overriding the Button's default `width: '100%'`).
+const hasAncestorWithStyle = (instance: ReactTestInstance | null): boolean => {
+  for (let node = instance; node; node = node.parent) {
+    if (typeof node.type === 'string') {
+      const flattened = StyleSheet.flatten(node.props.style) ?? {};
+      if (flattened.width === 'auto') {
+        return true;
+      }
+    }
+  }
+  return false;
+};
 
 const EditDetailsProbe = () => (
   <View testID='channel-edit-details-probe'>
@@ -55,16 +73,18 @@ const Providers = ({ children }: PropsWithChildren) => (
 
 const renderEditButton = ({
   channel,
-  onEditChannelPress,
+  onPress,
+  style,
 }: {
   channel: Channel;
-  onEditChannelPress?: () => void;
+  onPress?: () => void;
+  style?: ChannelDetailsEditButtonProps['style'];
 }) =>
   render(
     <Providers>
-      <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
-        <ChannelDetailsContextProvider value={{ channel, onEditChannelPress }}>
-          <ChannelDetailsEditButton />
+      <WithComponents overrides={{ ChannelEditDetailsFormContent: EditDetailsProbe }}>
+        <ChannelDetailsContextProvider channel={channel}>
+          <ChannelDetailsEditButton onPress={onPress} style={style} />
         </ChannelDetailsContextProvider>
       </WithComponents>
     </Providers>,
@@ -72,7 +92,6 @@ const renderEditButton = ({
 
 describe('ChannelDetailsEditButton', () => {
   beforeEach(() => {
-    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     mockedUseChannelActions.mockReturnValue({
       updateImage: jest.fn(),
       updateName: jest.fn(),
@@ -98,24 +117,18 @@ describe('ChannelDetailsEditButton', () => {
     expect(screen.getByText('Edit')).toBeTruthy();
   });
 
-  it('does not render the Edit button in a direct (1:1) channel even with the update-channel capability', () => {
-    jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
+  it('forwards the style prop to the underlying Button', () => {
+    renderEditButton({
+      channel: buildChannel(['update-channel']),
+      style: { width: 'auto' },
+    });
 
-    renderEditButton({ channel: buildChannel(['update-channel']) });
-
-    expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
+    // The style lands on the Button's outer wrapper View, a host ancestor of the
+    // testID-carrying Pressable. Search ancestors for the one that received it.
+    expect(hasAncestorWithStyle(screen.getByTestId('channel-details-edit-button'))).toBe(true);
   });
 
-  it('invokes onEditChannelPress when the Edit button is pressed', () => {
-    const onEditChannelPress = jest.fn();
-    renderEditButton({ channel: buildChannel(['update-channel']), onEditChannelPress });
-
-    fireEvent.press(screen.getByTestId('channel-details-edit-button'));
-
-    expect(onEditChannelPress).toHaveBeenCalledTimes(1);
-  });
-
-  it('opens the edit modal when the Edit button is pressed and onEditChannelPress is not provided', () => {
+  it('opens the edit modal when the Edit button is pressed', () => {
     renderEditButton({ channel: buildChannel(['update-channel']) });
 
     expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();
@@ -123,5 +136,22 @@ describe('ChannelDetailsEditButton', () => {
     fireEvent.press(screen.getByTestId('channel-details-edit-button'));
 
     expect(screen.getByTestId('channel-edit-details-probe')).toBeTruthy();
+  });
+
+  it('invokes the onPress override and does not open the modal', () => {
+    const onPress = jest.fn();
+
+    renderEditButton({ channel: buildChannel(['update-channel']), onPress });
+
+    fireEvent.press(screen.getByTestId('channel-details-edit-button'));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();
+  });
+
+  it('does not mount the built-in modal when a custom onPress is provided', () => {
+    renderEditButton({ channel: buildChannel(['update-channel']), onPress: jest.fn() });
+
+    expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();
   });
 });

@@ -1,1 +1,1 @@
-export * from './useMemberRoleLabel';
+export * from './useMemberRoles';

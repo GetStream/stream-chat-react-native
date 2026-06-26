@@ -16,9 +16,6 @@ export type PinnedMessageItemProps = {
   message: MessageResponse;
 } & { formatMessageDate?: ChannelPreviewStatusProps['formatLatestMessageDate'] };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const PinnedMessageItem = (props: PinnedMessageItemProps) => {
   const { channel, message, formatMessageDate } = props;
   const {

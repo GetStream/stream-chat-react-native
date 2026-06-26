@@ -14,8 +14,6 @@ import { getDateString } from '../../../utils/i18n/getDateString';
 /**
  * A single file/audio attachment paired with the message it belongs to. The file attachment list
  * renders one row per attachment, so a message with multiple file attachments yields multiple rows.
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type FileAttachmentTile = { attachment: Attachment; message: MessageResponse };
 
@@ -42,7 +40,6 @@ const getFileAttachments = (message: MessageResponse): Attachment[] =>
  * pipeline used by message timestamps (see `useUserActivityStatus`), so the format
  * follows the configured locale and can be customized via the
  * `timestamp/FileAttachmentListSection` translation key.
- * @experimental This hook is experimental and is subject to change.
  */
 export const useFileAttachmentListSections = (
   messages?: MessageResponse[],

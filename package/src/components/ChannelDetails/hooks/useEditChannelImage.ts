@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 
-import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { NativeHandlers } from '../../../native';
 import type { File } from '../../../types/types';
@@ -31,11 +31,10 @@ export type UseEditChannelImageResult = {
  * hook intentionally does NOT upload the picked file; the consumer receives a
  * `File` and decides what to do with it.
  *
- * Reads `compressImageQuality` from `ChannelDetailsContext`.
- * @experimental This hook is experimental and is subject to change.
+ * Reads `compressImageQuality` from `ChannelEditDetailsContext`.
  */
 export const useEditChannelImage = (): UseEditChannelImageResult => {
-  const { compressImageQuality } = useChannelDetailsContext();
+  const { compressImageQuality } = useChannelEditDetailsContext();
   const { t } = useTranslationContext();
 
   const takePhoto = useCallback(async (): Promise<File | undefined> => {

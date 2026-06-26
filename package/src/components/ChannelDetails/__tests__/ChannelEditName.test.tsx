@@ -37,7 +37,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
             { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
           }
         >
-          <ChannelEditDetailsContext.Provider value={{ store }}>
+          <ChannelEditDetailsContext.Provider value={{ store, submit: jest.fn() }}>
             <ChannelEditName />
           </ChannelEditDetailsContext.Provider>
         </ChatContext.Provider>
