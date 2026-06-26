@@ -20,7 +20,7 @@ import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
-import { NativeMessageList } from './NativeMessageList';
+import { NativeMessageList, NativeMessageListRef } from './NativeMessageList';
 
 import {
   AttachmentPickerContextValue,
@@ -1024,9 +1024,13 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     bumpOverlayLayoutRevision(closeCorrectionDeltaY);
 
     const changedBy = currentListHeightRef.current - height;
-    flashListRef.current?.getNativeScrollRef()?.setNativeProps({
-      contentOffset: { x: 0, y: flashListRef.current?.getAbsoluteLastScrollOffset() + changedBy },
-    });
+    // The native list anchors itself on viewport resize (StreamMessageListLayout.onSizeChanged); only
+    // the FlashList path needs this manual scroll correction.
+    if (!nativeList) {
+      flashListRef.current?.getNativeScrollRef()?.setNativeProps({
+        contentOffset: { x: 0, y: flashListRef.current?.getAbsoluteLastScrollOffset() + changedBy },
+      });
+    }
     currentListHeightRef.current = height;
   });
 
@@ -1080,6 +1084,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
               data={processedMessageList}
               estimateItemHeight={80}
               keyExtractor={keyExtractor}
+              onMomentumScrollEnd={onUserScrollEvent}
+              onScroll={handleScroll}
+              ref={refCallback as unknown as React.Ref<NativeMessageListRef>}
               renderItem={renderItem}
               style={flatListStyle}
             />

@@ -7,7 +7,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { HostComponent, LayoutChangeEvent, View } from 'react-native';
+import {
+  HostComponent,
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollViewProps,
+  View,
+} from 'react-native';
 
 import { NativeHandlers, NativeMessageListViewProps } from '../../../native';
 
@@ -25,6 +32,11 @@ export type NativeMessageListProps<T> = {
   keyExtractor?: (item: T, index: number) => string;
   /** Render-ahead buffer (dp) kept mounted above + below the viewport — the "view distance" knob. */
   renderAhead?: number;
+  /** ScrollView-shaped scroll callback, fired per frame — drives the scroll-to-bottom button. */
+  onScroll?: ScrollViewProps['onScroll'];
+  /** Same shape, fired once when scrolling settles (debounced) — drives pagination (load older/newer)
+   *  without running the check per frame. */
+  onMomentumScrollEnd?: ScrollViewProps['onScroll'];
   style?: NativeMessageListViewProps['style'];
 };
 
@@ -56,6 +68,8 @@ function NativeMessageListComponent<T>(
     data,
     estimateItemHeight,
     keyExtractor,
+    onMomentumScrollEnd,
+    onScroll,
     renderAhead = 2000,
     renderItem,
     style,
@@ -87,6 +101,15 @@ function NativeMessageListComponent<T>(
   // instance and just rebinds props as the window slides.
   const slotToIndexRef = useRef<number[]>([]);
   const hostRef = useRef<React.ElementRef<HostComponent<NativeMessageListViewProps>> | null>(null);
+  // Debounce for the pagination signal: each scroll frame resets this; ~150ms after the last scroll the
+  // list has settled and we fire onMomentumScrollEnd once — so the load-older/newer check never runs
+  // per frame (matches FlashList's onMomentumScrollEnd cadence).
+  const momentumTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastScrollMetricsRef = useRef({
+    contentOffset: { x: 0, y: 0 },
+    contentSize: { height: 0, width: 0 },
+    layoutMeasurement: { height: 0, width: 0 },
+  });
 
   const [version, setVersion] = useState(0);
   const [range, setRange] = useState({ end: 0, start: 0 });
@@ -146,22 +169,30 @@ function NativeMessageListComponent<T>(
       atBottomRef.current =
         contentOffset.y >= contentSize.height - layoutMeasurement.height - BOTTOM_STICK_THRESHOLD;
 
-      console.log(
-        '[NML5] scroll y',
-        Math.round(contentOffset.y),
-        'contentH',
-        Math.round(contentSize.height),
-        'vp',
-        Math.round(layoutMeasurement.height),
-        'atBottom',
-        atBottomRef.current,
-      );
+      // Bridge to MessageList's FlatList-shaped handlers (identical event shape). onScroll runs per
+      // frame (scroll-to-bottom button visibility); pagination is debounced to scroll-settle via
+      // onMomentumScrollEnd so the load-older/newer check is never per-frame.
+      onScroll?.(event as unknown as NativeSyntheticEvent<NativeScrollEvent>);
+      // TODO(after #4 resize): make this a real NATIVE momentum-end event. The OverScroller engine
+      // knows precisely when momentum ends (computeScroll → scroller.isFinished, + ACTION_UP with no
+      // fling) — emit it from StreamMessageListLayout and drop this JS debounce, which is only an
+      // approximation. Native should own scroll signals; this is here for expedience.
+      lastScrollMetricsRef.current = { contentOffset, contentSize, layoutMeasurement };
+      if (momentumTimerRef.current) {
+        clearTimeout(momentumTimerRef.current);
+      }
+      momentumTimerRef.current = setTimeout(() => {
+        onMomentumScrollEnd?.({
+          nativeEvent: lastScrollMetricsRef.current,
+        } as unknown as NativeSyntheticEvent<NativeScrollEvent>);
+      }, 150);
+
       if (Math.abs(contentOffset.y - anchorRef.current) > renderAhead / 2) {
         anchorRef.current = contentOffset.y;
         recompute(contentOffset.y);
       }
     },
-    [recompute, renderAhead],
+    [onMomentumScrollEnd, onScroll, recompute, renderAhead],
   );
 
   const onLayout = useCallback(
@@ -175,16 +206,6 @@ function NativeMessageListComponent<T>(
         didInitBottom.current = true;
       }
 
-      console.log(
-        '[NML5] layout vp',
-        Math.round(viewport),
-        'total',
-        Math.round(totalRef.current),
-        'didInit',
-        didInitBottom.current,
-        'seedY',
-        Math.round(scrollYRef.current),
-      );
       recompute(scrollYRef.current);
     },
     [recompute],
@@ -201,6 +222,16 @@ function NativeMessageListComponent<T>(
   useEffect(() => {
     recompute(scrollYRef.current);
   }, [recompute, version]);
+
+  // Clear the pagination debounce timer on unmount.
+  useEffect(
+    () => () => {
+      if (momentumTimerRef.current) {
+        clearTimeout(momentumTimerRef.current);
+      }
+    },
+    [],
+  );
 
   // Front-prepend, scrolled up: native anchors the scroll by the inserted height, but the JS window
   // would only catch up after a scroll-event round-trip → trailing-edge blank for a frame (#1). Detect
@@ -294,21 +325,6 @@ function NativeMessageListComponent<T>(
     end = count - 1;
     start = Math.max(0, indexForOffset(total - viewportRef.current - renderAhead));
   }
-
-  console.log(
-    '[NML5] render rows',
-    start,
-    '-',
-    end,
-    'of',
-    count,
-    'atBottom',
-    atBottomRef.current,
-    'total',
-    Math.round(total),
-    'cellTopStart',
-    Math.round(offsets[start] ?? 0),
-  );
 
   // Reconcile the recycle pool to the window [start, end]: free slots that fell out of the window,
   // then assign each now-visible index without a slot to a freed one (the reused cell). Idempotent, so
