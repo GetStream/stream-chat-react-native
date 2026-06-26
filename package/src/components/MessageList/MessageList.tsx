@@ -550,9 +550,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       (item) => item.item.message.id === lastReadMessageId,
     );
 
+    // Read-events-disabled channels (e.g. livestreams) still surface the unread notification when the
+    // client opted into a local unread count, so the gate accepts either source.
+    const unreadNotificationSupported = readEvents || client.options.enableLocalUnreadCount;
+
     if (
       !viewableItems.length ||
-      !readEvents ||
+      !unreadNotificationSupported ||
       lastReadMessageVisible ||
       attachmentPickerStore.state.getLatestValue().selectedPicker === 'images'
     ) {
