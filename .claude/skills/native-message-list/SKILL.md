@@ -13,6 +13,8 @@ A long-term effort: a first-party **native Android recycled list** for the SDK's
 - **Architecture, hard-won findings, dev gotchas, commit log:** memory `[[native-recycled-list]]`
 - **Chronological build journal (how/why + meta-lessons):** memory `[[native-recycled-list-log]]`
 - **Scroll/MVCP fixes — per fix: what / regression-test / why-NOT-to-revert:** memory `[[native-list-scroll-mvcp-fixes]]` — *check before touching the scroll engine or the JS window.*
+- **Fabric-coordinate (C++ ShadowNode) fix — why overlay/hit-test were wrong + the as-built recipe:** memory `[[native-list-fabric-coordinate-fix]]` — *read before touching the C++ / State / `getContentOriginOffset`.*
+- **Parity bridge — how native `onStreamScroll` reuses MessageFlashList's button/pagination/resize:** memory `[[native-list-parity-bridge]]`.
 - Standing rule: keep those memories current after each commit (`[[feedback-update-native-list-memory]]`).
 
 ## The code
@@ -25,8 +27,13 @@ A long-term effort: a first-party **native Android recycled list** for the SDK's
 
 ## Current state — UPDATE this on each commit
 
-- Branch `chore/legendlist-poc-2`. **M1 (prove the engine) is essentially done:** native fling scroll, JS recycle/windowing, absolute positioning, our MVCP — prepend holds position, stick-to-bottom works, and the whole scroll/MVCP **flicker class is fixed** (see `[[native-list-scroll-mvcp-fixes]]`).
-- **Next:** **#8** imperative commands + ref bridge (`scrollToIndex` / `scrollToOffset` / `scrollToEnd` / `setNativeProps`; net-new `codegenNativeCommands` / `receiveCommand` — *no repo precedent, prove the round-trip in isolation*) → **#9** integrate behind an `enableNativeMessageList` flag + on-device perf proof vs FlatList on a real channel. Then **M2** parity (real onScroll/viewability/pagination), **M3** canvas skeletons (kill blank on fling), **M4** robustness + flag rollout.
+- Branch `chore/legendlist-poc-2`. **M1 done** (native fling scroll, JS recycle/windowing, absolute positioning, our MVCP — flicker class fixed) and **#8 imperative commands done** (one `scrollToOffset` codegen command; ref exposes `scrollToOffset`/`scrollToEnd`/`scrollToIndex`). A **stable slot-keyed recycle pool** landed (reuses cell trees; A/B-beats-FlatList on allocation-heavy rows). See `[[native-recycled-list]]`.
+- **#9 (real-channel integration) is well underway — the list now runs on a REAL channel** (wired through `MessageFlashList`'s `nativeList` prop; forced via SampleApp `ChannelScreen` scaffolding) and **all the reported real-channel bugs are fixed + device-verified** (channel "Albina"):
+  - **#2 overlay-from-bottom + #1 hit-test** — the **C++ Fabric-coordinate fix LANDED** (custom ShadowNode overrides `getContentOriginOffset` to read a `contentOffset` State that Kotlin idle-pushes). `[[native-list-fabric-coordinate-fix]]`.
+  - **scroll-to-bottom button + #3 pagination** — the **JS parity bridge LANDED** (native `onStreamScroll` fanned into MessageFlashList's existing handlers). `[[native-list-parity-bridge]]`.
+  - **#4 resize-while-scrolled-up** — fixed natively in `onSizeChanged`; **#5 blank-on-open** — fixed via `setContentHeightDip` re-pin.
+  - All debug logs removed, clean build deployed. **Everything is UNCOMMITTED — the user commits.**
+- **Next / deferred:** (1) make `onMomentumScrollEnd` a REAL native OverScroller event (drop the JS 150ms debounce); (2) restore + clean the SampleApp scaffolding (forced-native ChannelScreen + App.tsx toggle) before a real PR; (3) add the `#if REACT_NATIVE_MINOR_VERSION < 80` template-arity guard for 0.76–0.79; (4) factor the C++ from `native-package` into `shared-native/` + expo-package; then finish #9 (clean `enableNativeMessageList` flag + perf A/B vs FlatList/FlashList on real rows). Then **M2** parity, **M3** skeletons, **M4** robustness + rollout.
 - **Deferred / known:** #4-Part-2 first-prepend break (spike-only — real chat paginates near the *top*, never 1–2 rows from the bottom).
 
 ## How to work on it
