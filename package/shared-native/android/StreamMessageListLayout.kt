@@ -147,8 +147,16 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
-    Log.d("NML5", "sizeChanged h=$h contentHpx=$contentHeightPx scrollY=$scrollY stick=$stickToBottom")
-    maintainBottomIfStuck()
+    Log.d("NML5", "sizeChanged h=$h oldh=$oldh contentHpx=$contentHeightPx scrollY=$scrollY stick=$stickToBottom")
+    if (oldh > 0 && h != oldh && !stickToBottom) {
+      // Resize while scrolled up (keyboard / attachment picker): the viewport changed but scrollY
+      // didn't follow, so the content slid out from under the user. Shift scrollY by the height delta
+      // so the bottom of the visible content stays anchored — the scroll moves WITH the resize (#4).
+      // At the bottom we're stuck, so maintainBottomIfStuck handles it (the only case that worked before).
+      scrollTo(0, (scrollY + (oldh - h)).coerceIn(0, maxScrollY()))
+    } else {
+      maintainBottomIfStuck()
+    }
   }
 
   /** Record the topmost visible cell as the MVCP anchor (skipping the full-height spacer). Called as
