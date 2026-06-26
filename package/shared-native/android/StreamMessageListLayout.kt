@@ -2,7 +2,6 @@ package com.streamchatreactnative
 
 import android.content.Context
 import android.graphics.Canvas
-import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
@@ -99,7 +98,6 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   fun setContentHeightDip(dp: Double) {
     val px = max(0, PixelUtil.toPixelFromDIP(dp.toFloat()).toInt())
     if (px == contentHeightPx) return
-    Log.d("NML5", "setContentH px=$px was=$contentHeightPx scrollY=$scrollY h=$height maxYnew=${max(0, px - height)} stick=$stickToBottom")
     contentHeightPx = px
     // Stick / anchor adjust runs post-layout in the listener, which can tell a prepend (anchor moved →
     // hold) from an append (anchor didn't → stick). Sticking here (pre-layout) snapped on prepends too.
@@ -116,7 +114,6 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   /** Pin to the bottom while stuck. Driven by content-height pushes from JS and by size changes, so
    *  the newest content stays visible as the list grows or the viewport shrinks (e.g. keyboard). */
   internal fun maintainBottomIfStuck() {
-    Log.d("NML5", "maintain stick=$stickToBottom target=${maxScrollY()} scrollY=$scrollY h=$height contentHpx=$contentHeightPx")
     if (!stickToBottom) return
     val target = maxScrollY()
     if (scrollY != target) scrollTo(0, target)
@@ -142,12 +139,10 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   private fun refreshStickToBottom() {
     val maxY = maxScrollY()
     stickToBottom = maxY <= 0 || scrollY >= maxY - stickThresholdPx
-    Log.d("NML5", "refreshStick scrollY=$scrollY maxY=$maxY -> stick=$stickToBottom")
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
-    Log.d("NML5", "sizeChanged h=$h oldh=$oldh contentHpx=$contentHeightPx scrollY=$scrollY stick=$stickToBottom")
     if (oldh > 0 && h != oldh && !stickToBottom) {
       // Resize while scrolled up (keyboard / attachment picker): the viewport changed but scrollY
       // didn't follow, so the content slid out from under the user. Shift scrollY by the height delta
@@ -202,7 +197,6 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
       MotionEvent.ACTION_DOWN -> {
         lastTouchY = ev.y
         isDragging = false
-        Log.d("NML1", "DOWN y=${ev.y.toInt()} slop=$touchSlop")
         if (!scroller.isFinished) scroller.abortAnimation()
       }
       MotionEvent.ACTION_MOVE -> {
@@ -211,7 +205,6 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
           isDragging = true
           hasUserScrolled = true
           lastTouchY = ev.y
-          Log.d("NML1", "CLAIMED drag dy=${dy.toInt()} slop=$touchSlop (steals child gesture)")
         }
       }
     }
