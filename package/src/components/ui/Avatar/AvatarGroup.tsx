@@ -28,16 +28,16 @@ export type AvatarGroupProps = {
 // Sizes accounts for the border width as well
 const sizes = {
   '2xl': {
-    width: 64,
-    height: 64,
+    width: 80,
+    height: 80,
   },
   xl: {
     width: 48,
     height: 48,
   },
   lg: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
   },
 };
 
@@ -165,7 +165,7 @@ export type UserAvatarGroupProps = Pick<AvatarGroupProps, 'size'> & {
 };
 
 const userAvatarSize: Record<UserAvatarGroupProps['size'], UserAvatarProps['size']> = {
-  '2xl': 'lg',
+  '2xl': 'xl',
   xl: 'md',
   lg: 'sm',
 };

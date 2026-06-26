@@ -26,6 +26,7 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { useScreenReaderComposerFocusEffect } from '../utils/useScreenReaderComposerFocusEffect.tsx';
 
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 
@@ -82,6 +83,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   const { t } = useTranslationContext();
   const { setThread } = useStreamChatContext();
   const { messageInputFloating, messageListImplementation } = useAppContext();
+
+  const { setInputRef } = useScreenReaderComposerFocusEffect();
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
@@ -142,10 +145,15 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: white }]}>
+    <View
+      collapsable={false}
+      onAccessibilityEscape={() => navigation.goBack()}
+      style={[styles.container, { backgroundColor: white }]}
+    >
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
+        setInputRef={setInputRef}
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}

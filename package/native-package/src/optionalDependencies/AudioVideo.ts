@@ -14,12 +14,19 @@ let AudioVideoComponent:
       };
       style: StyleProp<ViewStyle>;
       audioOnly?: boolean;
+      bufferConfig?: {
+        bufferForPlaybackAfterRebufferMs?: number;
+        bufferForPlaybackMs?: number;
+        maxBufferMs?: number;
+        minBufferMs?: number;
+      };
       ignoreSilentSwitch?: 'ignore' | 'obey';
       repeat?: boolean;
       resizeMode?: string;
       rate?: number;
     }>
   | undefined;
+
 try {
   const videoPackage = require('react-native-video');
   AudioVideoComponent = videoPackage.default;

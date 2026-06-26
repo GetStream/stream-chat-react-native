@@ -46,6 +46,7 @@ export * from './refresh';
 export { PollThumbnail } from './poll';
 export * from './notification';
 export { FilePickerIcon } from './file';
+export * from './folder';
 export * from './command';
 export * from './bell';
 export * from './save';

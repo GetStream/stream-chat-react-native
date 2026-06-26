@@ -1,16 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
+  ChannelAvatar,
   MessageComposer,
-  useChatContext,
-  ThreadContextValue,
   MessageList,
+  ThreadContextValue,
+  useChannelPreviewDisplayName,
+  useChatContext,
 } from 'stream-chat-expo';
 
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
@@ -22,6 +24,7 @@ export default function ChannelScreen() {
   const params = useLocalSearchParams();
   const navigateThroughPushNotification = params.push_notification as string;
   const channelId = params.cid as string;
+  const messageId = params.messageId as string | undefined;
   const [channelFromParams, setChannelFromParams] = useState<StreamChatChannel | undefined>(
     undefined,
   );
@@ -42,6 +45,12 @@ export default function ChannelScreen() {
   const headerHeight = useHeaderHeight();
 
   const channel = channelFromParams || channelContext;
+  const displayName = useChannelPreviewDisplayName(channel);
+
+  const onOpenDetails = useCallback(() => {
+    if (!channel?.cid) return;
+    router.push(`/channel/${channel.cid}/details`);
+  }, [channel?.cid, router]);
 
   if (!channel) {
     return <AuthProgressLoader />;
@@ -57,7 +66,7 @@ export default function ChannelScreen() {
       const params = Object.entries(shared_location)
         .map(([key, value]) => `${key}=${value}`)
         .join('&');
-      router.push(`/map/${message.id}?${params}`);
+      router.push(`/map/${message?.id}?${params}`);
     }
     defaultHandler?.();
   };
@@ -69,7 +78,27 @@ export default function ChannelScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen
-        options={{ title: 'Channel Screen', contentStyle: { backgroundColor: 'white' } }}
+        options={{
+          title: displayName || 'Channel',
+          contentStyle: { backgroundColor: 'white' },
+          // eslint-disable-next-line react/no-unstable-nested-components
+          headerRight: () => (
+            <Pressable
+              accessibilityLabel='Channel details'
+              accessibilityRole='button'
+              onPress={onOpenDetails}
+              style={({ pressed }) => ({
+                alignItems: 'center',
+                height: 40,
+                justifyContent: 'center',
+                opacity: pressed ? 0.5 : 1,
+                width: 40,
+              })}
+            >
+              <ChannelAvatar channel={channel} size='lg' />
+            </Pressable>
+          ),
+        }}
       />
       <Channel
         audioRecordingEnabled={true}
@@ -78,6 +107,7 @@ export default function ChannelScreen() {
         keyboardVerticalOffset={headerHeight}
         topInset={headerHeight}
         thread={thread}
+        messageId={messageId}
       >
         <MessageList
           onThreadSelect={(thread: ThreadContextValue['thread']) => {

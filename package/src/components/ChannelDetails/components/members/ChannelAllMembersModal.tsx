@@ -6,8 +6,6 @@ import { useTranslationContext } from '../../../../contexts/translationContext/T
 import { useChannelMemberCount } from '../../../../hooks';
 import { useChannelOwnCapabilities } from '../../../../hooks/useChannelOwnCapabilities';
 import { UserAdd } from '../../../../icons/user-add';
-import { NotificationList } from '../../../Notifications/NotificationList';
-import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { Button } from '../../../ui/Button/Button';
 import { ChannelDetailsModal } from '../modal/Modal';
 import { ModalHeader } from '../modal/ModalHeader';
@@ -20,7 +18,10 @@ export type ChannelAllMembersModalProps = {
 
 type ChannelAllMembersModalContentProps = Omit<ChannelAllMembersModalProps, 'visible'>;
 
-const ChannelAllMembersModalBody = ({
+/**
+ * @experimental This component is experimental and is subject to change.
+ */
+export const ChannelAllMembersModalContent = ({
   onAddMembersPress,
   onClose,
 }: ChannelAllMembersModalContentProps) => {
@@ -52,29 +53,7 @@ const ChannelAllMembersModalBody = ({
         title={t('{{count}} members', { count: total })}
       />
       <ChannelMemberList />
-      <NotificationList />
     </>
-  );
-};
-
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelAllMembersModalContent = ({
-  onAddMembersPress,
-  onClose,
-}: ChannelAllMembersModalContentProps) => {
-  const { channel } = useChannelDetailsContext();
-  const notificationHostId = channel?.cid ? `channel-member-list:${channel.cid}` : undefined;
-
-  if (!notificationHostId) {
-    return null;
-  }
-
-  return (
-    <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
-      <ChannelAllMembersModalBody onAddMembersPress={onAddMembersPress} onClose={onClose} />
-    </NotificationTargetProvider>
   );
 };
 

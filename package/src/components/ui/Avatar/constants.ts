@@ -7,8 +7,8 @@ import { OnlineIndicatorProps } from '../Badge';
 
 const avatarSizes = {
   '2xl': {
-    height: 64,
-    width: 64,
+    height: 80,
+    width: 80,
   },
   xl: {
     height: 48,

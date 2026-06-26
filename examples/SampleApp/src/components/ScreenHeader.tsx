@@ -168,6 +168,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
             ) : (
               !!titleText && (
                 <Text
+                  accessibilityRole='header'
                   style={[
                     styles.title,
                     {

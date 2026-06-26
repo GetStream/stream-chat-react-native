@@ -1,27 +1,22 @@
 import React, { PropsWithChildren } from 'react';
 import { Text, View } from 'react-native';
 
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 import { NotificationManager } from 'stream-chat';
 import type { Channel } from 'stream-chat';
 
 import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ChatContext } from '../../../contexts/chatContext/ChatContext';
-import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelActions } from '../../../hooks/actions/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
 import { ChannelDetailsNavHeader } from '../components/ChannelDetailsNavHeader';
 
-jest.mock('../../../hooks/actions/useChannelActions');
-const mockedUseChannelActions = jest.mocked(useChannelActions);
-
-const EditDetailsProbe = () => (
-  <View testID='channel-edit-details-probe'>
-    <Text>edit-details</Text>
+const ActionProbe = () => (
+  <View testID='channel-details-action-probe'>
+    <Text>action</Text>
   </View>
 );
 
@@ -54,77 +49,49 @@ const Providers = ({ children }: PropsWithChildren) => (
 );
 
 const renderHeader = ({
+  action,
   channel,
   onBack,
-  onEditChannelPress,
 }: {
+  action?: React.ReactNode;
   channel: Channel;
   onBack?: () => void;
-  onEditChannelPress?: () => void;
 }) =>
   render(
     <Providers>
-      <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
-        <ChannelDetailsContextProvider value={{ channel, onBack, onEditChannelPress }}>
-          <ChannelDetailsNavHeader />
-        </ChannelDetailsContextProvider>
-      </WithComponents>
+      <ChannelDetailsContextProvider value={{ channel, onBack }}>
+        <ChannelDetailsNavHeader action={action} />
+      </ChannelDetailsContextProvider>
     </Providers>,
   );
 
 describe('ChannelDetailsNavHeader', () => {
   beforeEach(() => {
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
-    mockedUseChannelActions.mockReturnValue({
-      updateImage: jest.fn(),
-      updateName: jest.fn(),
-    } as unknown as ReturnType<typeof useChannelActions>);
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
-    mockedUseChannelActions.mockReset();
   });
 
-  it('does not render the Edit button when the user lacks the update-channel capability', () => {
+  it('renders the action node passed via the action slot', () => {
+    renderHeader({ action: <ActionProbe />, channel: buildChannel([]) });
+
+    expect(screen.getByTestId('channel-details-action-probe')).toBeTruthy();
+  });
+
+  it('resolves the group info title for a non-direct channel', () => {
     renderHeader({ channel: buildChannel([]) });
 
-    expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
+    expect(screen.getByText('Group Info')).toBeTruthy();
   });
 
-  it('renders the Edit button when the user has the update-channel capability', () => {
-    renderHeader({ channel: buildChannel(['update-channel']) });
-
-    const button = screen.getByTestId('channel-details-edit-button');
-    expect(button).toBeTruthy();
-    expect(screen.getByText('Edit')).toBeTruthy();
-  });
-
-  it('does not render the Edit button in a direct (1:1) channel even with the update-channel capability', () => {
+  it('resolves the contact info title for a direct (1:1) channel', () => {
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(true);
 
-    renderHeader({ channel: buildChannel(['update-channel']) });
+    renderHeader({ channel: buildChannel([]) });
 
-    expect(screen.queryByTestId('channel-details-edit-button')).toBeNull();
-  });
-
-  it('invokes onEditChannelPress when the Edit button is pressed', () => {
-    const onEditChannelPress = jest.fn();
-    renderHeader({ channel: buildChannel(['update-channel']), onEditChannelPress });
-
-    fireEvent.press(screen.getByTestId('channel-details-edit-button'));
-
-    expect(onEditChannelPress).toHaveBeenCalledTimes(1);
-  });
-
-  it('opens the edit modal when the Edit button is pressed and onEditChannelPress is not provided', () => {
-    renderHeader({ channel: buildChannel(['update-channel']) });
-
-    expect(screen.queryByTestId('channel-edit-details-probe')).toBeNull();
-
-    fireEvent.press(screen.getByTestId('channel-details-edit-button'));
-
-    expect(screen.getByTestId('channel-edit-details-probe')).toBeTruthy();
+    expect(screen.getByText('Contact Info')).toBeTruthy();
   });
 
   it('renders the back button only when onBack is provided', () => {
@@ -133,11 +100,9 @@ describe('ChannelDetailsNavHeader', () => {
 
     rerender(
       <Providers>
-        <WithComponents overrides={{ ChannelEditDetails: EditDetailsProbe }}>
-          <ChannelDetailsContextProvider value={{ channel: buildChannel([]), onBack: jest.fn() }}>
-            <ChannelDetailsNavHeader />
-          </ChannelDetailsContextProvider>
-        </WithComponents>
+        <ChannelDetailsContextProvider value={{ channel: buildChannel([]), onBack: jest.fn() }}>
+          <ChannelDetailsNavHeader />
+        </ChannelDetailsContextProvider>
       </Providers>,
     );
 

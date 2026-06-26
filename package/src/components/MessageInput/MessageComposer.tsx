@@ -16,6 +16,8 @@ import { MicPositionProvider } from './contexts/MicPositionContext';
 
 import { audioRecorderSelector } from './utils/audioRecorderSelectors';
 
+import { useScreenReaderMountFocus } from '../../a11y';
+
 import {
   ChatContextValue,
   useAttachmentPickerContext,
@@ -286,6 +288,9 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
     return result;
   };
+
+  // immediately focus the screen reader to the input on mount if a11y is enabled.
+  useScreenReaderMountFocus(inputBoxRef);
 
   const isFocused = inputBoxRef.current?.isFocused();
 

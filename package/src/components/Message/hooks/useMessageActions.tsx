@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Alert } from 'react-native';
 
 import { LocalMessage } from 'stream-chat';
 
@@ -244,18 +245,41 @@ export const useMessageActions = ({
     onOpenThread();
   });
 
+  const isMuted = useUserMuteActive(message.user);
+  const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(
+    message.user?.id ?? '',
+  );
+
   const onBlockUser = useStableCallback(() => {
     if (handleBlockUser) {
       handleBlockUser(message.user);
     }
 
-    handleToggleBlockUser(message.user);
-  });
+    if (isBlocked) {
+      handleToggleBlockUser(message.user);
+      return;
+    }
 
-  const isMuted = useUserMuteActive(message.user);
-  const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(
-    message.user?.id ?? '',
-  );
+    const name = message.user?.name || message.user?.id || '';
+
+    Alert.alert(
+      t('Block {{ name }}', { name }),
+      t("They won't be able to message or call you. You can unblock them later."),
+      [
+        {
+          style: 'cancel',
+          text: t('Cancel'),
+        },
+        {
+          onPress: () => {
+            handleToggleBlockUser(message.user);
+          },
+          style: 'destructive',
+          text: t('Block'),
+        },
+      ],
+    );
+  });
 
   return useMemo(() => {
     const handleReaction =

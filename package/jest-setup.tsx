@@ -55,6 +55,10 @@ jest.mock('react-native-reanimated', () => {
     isSharedValue: (value: unknown): boolean =>
       typeof value === 'object' && value !== null && 'value' in value,
     isWorkletFunction: () => false,
+    // Reanimated's official mock implements makeMutable as an identity function
+    // (returns the raw init value instead of a { value } wrapper), which breaks
+    // any test that reads `.value` on a SharedValue. Replace with a real wrapper.
+    makeMutable: <T,>(init: T) => ({ value: init }),
     NativeEventsManager: class {
       attachEvents() {}
       detachEvents() {}

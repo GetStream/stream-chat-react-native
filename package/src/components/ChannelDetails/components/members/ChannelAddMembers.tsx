@@ -8,6 +8,7 @@ import { UserListLoadingSkeleton } from './UserListLoadingSkeleton';
 
 import { useChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
@@ -43,6 +44,11 @@ const listStateSelector = (state: SearchSourceState<UserResponse>) => {
 export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembersProps) => {
   const { t } = useTranslationContext();
   const styles = useStyles();
+  const {
+    theme: {
+      channelDetails: { addMembers },
+    },
+  } = useTheme();
 
   const { channel } = useChannelDetailsContext();
   const { addNotification } = useNotificationApi();
@@ -103,14 +109,14 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
   const loadingMoreIndicator = <>{loading && users && users.length > 0 && <ActivityIndicator />}</>;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, addMembers.container]}>
       <SearchInput
         accessibilityLabel={t('a11y/Search users to add')}
         onChangeText={(text) => searchSource.search(text)}
       />
 
       <FlatList
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, addMembers.listContent]}
         data={users}
         keyboardDismissMode='interactive'
         keyboardShouldPersistTaps='handled'
@@ -120,7 +126,7 @@ export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembers
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}
-        style={styles.list}
+        style={[styles.list, addMembers.list]}
         testID='channel-add-members-list'
         {...additionalFlatListProps}
       />
@@ -140,7 +146,7 @@ const useStyles = () => {
         },
         listContent: {
           flexGrow: 1,
-          paddingBottom: primitives.spacingXl,
+          paddingBottom: primitives.spacing3xl,
         },
       }),
     [],

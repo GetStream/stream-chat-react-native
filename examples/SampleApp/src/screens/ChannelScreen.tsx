@@ -36,6 +36,7 @@ import type { StreamThemeWithColors } from '../theme/AppTheme';
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
+import { useScreenReaderComposerFocusEffect } from '../utils/useScreenReaderComposerFocusEffect.tsx';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
 
 export type ChannelScreenNavigationProp = NativeStackNavigationProp<
@@ -156,6 +157,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     setSelectedThread(undefined);
   });
 
+  const { setInputRef } = useScreenReaderComposerFocusEffect();
+
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,
   ) => {
@@ -260,10 +263,15 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   }
 
   return (
-    <View style={[styles.flex, { backgroundColor: 'transparent' }]}>
+    <View
+      collapsable={false}
+      onAccessibilityEscape={() => navigation.goBack()}
+      style={[styles.flex, { backgroundColor: 'transparent' }]}
+    >
       <Channel
         audioRecordingEnabled={true}
         channel={channel}
+        setInputRef={setInputRef}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         initialScrollToFirstUnreadMessage

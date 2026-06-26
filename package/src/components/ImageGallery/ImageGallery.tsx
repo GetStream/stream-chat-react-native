@@ -1,16 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  AccessibilityInfo,
-  Image,
-  ImageStyle,
-  Platform,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AccessibilityInfo, ImageStyle, Platform, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Animated, {
   Easing,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -20,15 +14,16 @@ import Animated, {
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
+import { ImageGalleryA11yProbe } from './components/ImageGalleryA11yProbe';
 import type {
   ImageGalleryFooterProps,
   ImageGalleryGridProps,
   ImageGalleryHeaderProps,
 } from './components/types';
 
+import { useCurrentImageHeight } from './hooks/useCurrentImageHeight';
 import { useImageGalleryGestures } from './hooks/useImageGalleryGestures';
 
-import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
@@ -73,7 +68,6 @@ export enum IsSwiping {
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   assets: state.assets,
-  currentIndex: state.currentIndex,
 });
 
 type ImageGalleryWithContextProps = Pick<
@@ -85,6 +79,109 @@ type ImageGalleryWithContextProps = Pick<
     ImageGalleryFooter?: React.ComponentType<ImageGalleryFooterProps>;
     ImageGalleryGrid?: React.ComponentType<ImageGalleryGridProps>;
   };
+
+/**
+ * Number of slides mounted on each side of the current one. Kept one wider
+ * than AnimatedGalleryImage's +-3 load window so an edge slide is already
+ * mounted (as the empty placeholder) before it ever needs to load its
+ * image - paging never reveals an unmounted slot.
+ */
+const PAGER_WINDOW_RADIUS = 4;
+
+const galleryPagerSelector = (state: ImageGalleryState) => ({
+  assets: state.assets,
+  currentIndex: state.currentIndex,
+});
+
+type GalleryPagerProps = {
+  fullWindowHeight: number;
+  fullWindowWidth: number;
+  offsetScale: SharedValue<number>;
+  scale: SharedValue<number>;
+  slide?: ImageStyle;
+  translateX: SharedValue<number>;
+  translateY: SharedValue<number>;
+};
+
+/**
+ * Windowed pager body. Subscribes to `currentIndex` itself (rather than the
+ * parent doing so) so a page change rerenders only this small slide list and
+ * never the parent - keeping the gesture objects/`GestureDetector` stable.
+ *
+ * Only the slides within +-{@link PAGER_WINDOW_RADIUS} of the current index are
+ * mounted; a single leading spacer occupies the flex width of all preceding
+ * slides so the rendered ones keep their exact natural positions. The slide
+ * transforms in `useAnimatedGalleryStyle` are a pure function of each slide's
+ * `index` and that natural flex position, so windowing the mount leaves every
+ * slide pixelidentical while dropping the mounted component/view count to O(window)
+ * instead of it being O(N). This way, less React fibers are reconciled and less
+ * shadow nodes are rendered as well.
+ */
+const GalleryPager = (props: GalleryPagerProps) => {
+  const { fullWindowHeight, fullWindowWidth, offsetScale, scale, slide, translateX, translateY } =
+    props;
+  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { assets, currentIndex } = useStateStore(
+    imageGalleryStateStore.state,
+    galleryPagerSelector,
+  );
+
+  const slideStyle = {
+    height: fullWindowHeight * 8,
+    marginRight: MARGIN,
+    width: fullWindowWidth * 8,
+  };
+
+  const lo = Math.max(0, currentIndex - PAGER_WINDOW_RADIUS);
+  const hi = Math.min(assets.length - 1, currentIndex + PAGER_WINDOW_RADIUS);
+
+  const slides: React.ReactNode[] = [];
+  for (let i = lo; i <= hi; i++) {
+    const photo = assets[i];
+    slides.push(
+      photo.type === FileTypes.Video ? (
+        <AnimatedGalleryVideo
+          attachmentId={photo.id}
+          index={i}
+          key={photo.id}
+          offsetScale={offsetScale}
+          photo={photo}
+          scale={scale}
+          screenHeight={fullWindowHeight}
+          style={[slideStyle, slide]}
+          translateX={translateX}
+          translateY={translateY}
+        />
+      ) : (
+        <AnimatedGalleryImage
+          accessibilityLabel={'Image Item'}
+          index={i}
+          key={photo.id}
+          offsetScale={offsetScale}
+          photo={photo}
+          scale={scale}
+          screenHeight={fullWindowHeight}
+          screenWidth={fullWindowWidth}
+          style={[slideStyle, slide]}
+          translateX={translateX}
+          translateY={translateY}
+        />
+      ),
+    );
+  }
+
+  return (
+    <>
+      {lo > 0 ? (
+        <View
+          key='gallery-pager-leading-spacer'
+          style={{ width: lo * (fullWindowWidth * 8 + MARGIN) }}
+        />
+      ) : null}
+      {slides}
+    </>
+  );
+};
 
 export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => {
   const {
@@ -102,12 +199,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     },
   } = useTheme();
   const { imageGalleryStateStore } = useImageGalleryContext();
-  const { assets, currentIndex } = useStateStore(
-    imageGalleryStateStore.state,
-    imageGallerySelector,
-  );
-  const { videoPlayerPool } = imageGalleryStateStore;
-
+  const { assets } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { vh, vw } = useViewport();
 
   const fullWindowHeight = vh(100);
@@ -139,9 +231,17 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   }, [showScreen]);
 
   /**
-   * Image height from URL or default to full screen height
+   * Image height for the currently selected asset. SharedValue so worklet
+   * consumers (gesture math, header/footer opacity) read it directly on the
+   * UI thread so updating it doesn't trigger a parent rerender. The hook
+   * owns the value and updates it via a store subscription.
    */
-  const [currentImageHeight, setCurrentImageHeight] = useState<number>(fullWindowHeight);
+  const currentImageHeight = useCurrentImageHeight({
+    assets,
+    fullWindowHeight,
+    fullWindowWidth,
+    imageGalleryStateStore,
+  });
 
   /**
    * Header visible value for animating in out
@@ -155,52 +255,19 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   const translateY = useSharedValue(0);
   const offsetScale = useSharedValue(1);
   const scale = useSharedValue(1);
-  const translationX = useSharedValue(-(fullWindowWidth + MARGIN) * currentIndex);
+  const translationX = useSharedValue(
+    -(fullWindowWidth + MARGIN) * imageGalleryStateStore.state.getLatestValue().currentIndex,
+  );
+
+  const currentIndexShared = imageGalleryStateStore.currentIndexShared;
 
   useAnimatedReaction(
-    () => currentIndex,
+    () => currentIndexShared.value,
     (index) => {
       translationX.value = -(fullWindowWidth + MARGIN) * index;
     },
-    [currentIndex, fullWindowWidth],
+    [fullWindowWidth],
   );
-
-  /**
-   * Image heights are not provided and therefore need to be calculated.
-   * We start by allowing the image to be the full height then reduce it
-   * to the proper scaled height based on the width being restricted to the
-   * screen width when the dimensions are received.
-   */
-  useEffect(() => {
-    let currentImageHeight = fullWindowHeight;
-    const photo = assets[currentIndex];
-    const height = photo?.original_height;
-    const width = photo?.original_width;
-
-    if (height && width) {
-      const imageHeight = Math.floor(height * (fullWindowWidth / width));
-      currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-    } else if (photo?.uri) {
-      if (photo.type === FileTypes.Image) {
-        Image.getSize(photo.uri, (width, height) => {
-          const imageHeight = Math.floor(height * (fullWindowWidth / width));
-          currentImageHeight = imageHeight > fullWindowHeight ? fullWindowHeight : imageHeight;
-        });
-      }
-    }
-
-    setCurrentImageHeight(currentImageHeight);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex]);
-
-  // If you change the current index, pause the active video player.
-  useEffect(() => {
-    const activePlayer = videoPlayerPool.getActivePlayer();
-
-    if (activePlayer) {
-      activePlayer.pause();
-    }
-  }, [currentIndex, videoPlayerPool]);
 
   const { doubleTap, pan, pinch, singleTap } = useImageGalleryGestures({
     currentImageHeight,
@@ -219,20 +286,21 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
 
   /**
    * If the header is visible we scale down the opacity of it as the
-   * image is swiped downward
+   * image is swiped downward. Reads currentImageHeight from a SharedValue so
+   * the worklet doesn't need to be re-registered when the image dimensions
+   * change between slides.
    */
-  const headerFooterOpacity = useDerivedValue(
-    () =>
-      currentImageHeight * scale.value < fullWindowHeight && translateY.value > 0
-        ? 1 - translateY.value / quarterScreenHeight
-        : currentImageHeight * scale.value > fullWindowHeight &&
-            translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
-          ? 1 -
-            (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
-              quarterScreenHeight
-          : 1,
-    [currentImageHeight],
-  );
+  const headerFooterOpacity = useDerivedValue(() => {
+    const imageHeight = currentImageHeight.value;
+    return imageHeight * scale.value < fullWindowHeight && translateY.value > 0
+      ? 1 - translateY.value / quarterScreenHeight
+      : imageHeight * scale.value > fullWindowHeight &&
+          translateY.value > (imageHeight / 2) * scale.value - halfScreenHeight
+        ? 1 -
+          (translateY.value - ((imageHeight / 2) * scale.value - halfScreenHeight)) /
+            quarterScreenHeight
+        : 1;
+  }, []);
 
   /**
    * This transition and scaleX reverse lets use scroll right
@@ -290,45 +358,6 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   };
 
   const { enabled: isAccessibilityEnabled } = useAccessibilityContext();
-  const assetsCount = assets.length;
-  const isAdjustable = isAccessibilityEnabled;
-  const accessibilityValueParams = useMemo(
-    () => ({ count: assetsCount, position: currentIndex + 1 }),
-    [currentIndex, assetsCount],
-  );
-  const accessibilityValueText = useA11yLabel(
-    'a11y/{{position}} of {{count}}',
-    accessibilityValueParams,
-  );
-  const accessibilityValue = useMemo(
-    () => (accessibilityValueText ? { text: accessibilityValueText } : undefined),
-    [accessibilityValueText],
-  );
-  const adjustableActions = useMemo(
-    () =>
-      isAdjustable ? [{ name: 'increment' as const }, { name: 'decrement' as const }] : undefined,
-    [isAdjustable],
-  );
-
-  const onAccessibilityAction = useCallback(
-    (event: { nativeEvent: { actionName: string } }) => {
-      if (!isAccessibilityEnabled) return;
-      const latest = imageGalleryStateStore.state.getLatestValue();
-      const latestCount = latest.assets.length;
-      const latestIndex = latest.currentIndex;
-      if (latestCount <= 1) return;
-      if (event.nativeEvent.actionName === 'increment') {
-        if (latestIndex < latestCount - 1) {
-          imageGalleryStateStore.currentIndex = latestIndex + 1;
-        }
-      } else if (event.nativeEvent.actionName === 'decrement') {
-        if (latestIndex > 0) {
-          imageGalleryStateStore.currentIndex = latestIndex - 1;
-        }
-      }
-    },
-    [imageGalleryStateStore, isAccessibilityEnabled],
-  );
 
   useEffect(() => {
     return () => {
@@ -356,65 +385,26 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
       pointerEvents={'auto'}
       style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
-      <Animated.View
-        accessible
-        accessibilityActions={adjustableActions}
-        accessibilityLabel='Image Gallery'
-        accessibilityRole={isAdjustable ? 'adjustable' : undefined}
-        accessibilityValue={isAdjustable ? accessibilityValue : undefined}
-        onAccessibilityAction={isAdjustable ? onAccessibilityAction : undefined}
-        style={[StyleSheet.absoluteFill, containerBackground]}
-      />
+      {isAccessibilityEnabled ? (
+        <ImageGalleryA11yProbe containerBackground={containerBackground} />
+      ) : (
+        <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
+      )}
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View
             testID='image-gallery-pager'
             style={[styles.animatedContainer, pagerStyle, pager]}
           >
-            {assets.map((photo, i) =>
-              photo.type === FileTypes.Video ? (
-                <AnimatedGalleryVideo
-                  attachmentId={photo.id}
-                  index={i}
-                  key={photo.id}
-                  offsetScale={offsetScale}
-                  photo={photo}
-                  scale={scale}
-                  screenHeight={fullWindowHeight}
-                  style={[
-                    {
-                      height: fullWindowHeight * 8,
-                      marginRight: MARGIN,
-                      width: fullWindowWidth * 8,
-                    },
-                    slide,
-                  ]}
-                  translateX={translateX}
-                  translateY={translateY}
-                />
-              ) : (
-                <AnimatedGalleryImage
-                  accessibilityLabel={'Image Item'}
-                  index={i}
-                  key={photo.id}
-                  offsetScale={offsetScale}
-                  photo={photo}
-                  scale={scale}
-                  screenHeight={fullWindowHeight}
-                  screenWidth={fullWindowWidth}
-                  style={[
-                    {
-                      height: fullWindowHeight * 8,
-                      marginRight: MARGIN,
-                      width: fullWindowWidth * 8,
-                    },
-                    slide,
-                  ]}
-                  translateX={translateX}
-                  translateY={translateY}
-                />
-              ),
-            )}
+            <GalleryPager
+              fullWindowHeight={fullWindowHeight}
+              fullWindowWidth={fullWindowWidth}
+              offsetScale={offsetScale}
+              scale={scale}
+              slide={slide}
+              translateX={translateX}
+              translateY={translateY}
+            />
           </Animated.View>
         </Animated.View>
       </GestureDetector>

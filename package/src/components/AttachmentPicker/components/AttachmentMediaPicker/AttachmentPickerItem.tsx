@@ -228,7 +228,8 @@ const useStyles = () => {
       margin: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: semantics.backgroundCoreSurfaceSubtle,
+      backgroundColor: semantics.backgroundCoreSurfaceCard,
+      gap: primitives.spacingXs,
     },
     iosLimitedIcon: {
       color: semantics.textTertiary,
@@ -237,6 +238,7 @@ const useStyles = () => {
       fontWeight: primitives.typographyFontWeightSemiBold,
       fontSize: primitives.typographyFontSizeSm,
       color: semantics.textTertiary,
+      textAlign: 'center',
     },
   });
 };

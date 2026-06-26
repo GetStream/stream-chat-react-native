@@ -19,7 +19,7 @@ import { Camera } from '../../../icons/camera';
 import { Delete } from '../../../icons/delete';
 import { Picture } from '../../../icons/image';
 import type { IconProps } from '../../../icons/utils/base';
-import { NewClose } from '../../../icons/xmark';
+import { Cross } from '../../../icons/xmark-1';
 import type {
   EditChannelDetailsState,
   EditChannelImagePendingAction,
@@ -136,7 +136,7 @@ const ChannelEditImageSheetInner = () => {
           <Button
             accessibilityLabelKey='a11y/Close edit picture sheet'
             iconOnly
-            LeadingIcon={NewClose}
+            LeadingIcon={Cross}
             onPress={() => close()}
             size='md'
             testID='channel-edit-picture-sheet-close-button'

@@ -89,10 +89,13 @@ describe('ImageGallery', () => {
     render(
       <ImageGalleryComponent
         message={generateMessage({
+          // Video is placed at index 1 so it sits within the video-slide
+          // window (`shouldRender < 2`) — at index 2 it would render as a
+          // spacer instead of <AnimatedGalleryVideo>.
           attachments: [
             generateImageAttachment(),
-            generateGiphyAttachment(),
             generateVideoAttachment({ type: 'video' }),
+            generateGiphyAttachment(),
           ],
         })}
       />,

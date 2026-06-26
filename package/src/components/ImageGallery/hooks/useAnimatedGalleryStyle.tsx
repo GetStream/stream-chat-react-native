@@ -4,12 +4,11 @@ import { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { useViewport } from '../../../hooks/useViewport';
 
 type Props = {
+  currentIndexShared: SharedValue<number>;
   index: number;
   offsetScale: SharedValue<number>;
-  previous: boolean;
   scale: SharedValue<number>;
   screenHeight: number;
-  selected: boolean;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
 };
@@ -17,12 +16,11 @@ type Props = {
 const oneEighth = 1 / 8;
 
 export const useAnimatedGalleryStyle = ({
+  currentIndexShared,
   index,
   offsetScale,
-  previous,
   scale,
   screenHeight,
-  selected,
   translateX,
   translateY,
 }: Props) => {
@@ -40,6 +38,8 @@ export const useAnimatedGalleryStyle = ({
    * place as to not come into the screen when the image shrinks.
    */
   const animatedGalleryStyle = useAnimatedStyle<ImageStyle>(() => {
+    const selected = currentIndexShared.value === index;
+    const previous = currentIndexShared.value > index;
     const xScaleOffset = -7 * screenWidth * (0.5 + index);
     const yScaleOffset = -screenHeight * 3.5;
     return {
@@ -62,7 +62,7 @@ export const useAnimatedGalleryStyle = ({
         { scaleX: 1 },
       ],
     };
-  }, [previous, selected]);
+  }, []);
 
   const animatedStyles = useAnimatedStyle(() => {
     const xScaleOffset = 7 * screenWidth * (0.5 + index);

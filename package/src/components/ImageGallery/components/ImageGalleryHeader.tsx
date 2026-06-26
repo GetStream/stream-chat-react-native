@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import type { ImageGalleryHeaderProps } from './types';
 
@@ -17,11 +18,6 @@ import { ImageGalleryState } from '../../../state-store/image-gallery-state-stor
 import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui/Button/Button';
-import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
-
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(SafeAreaView)
-  : SafeAreaView;
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   asset: state.assets[state.currentIndex],
@@ -35,6 +31,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
   const { imageGalleryStateStore } = useImageGalleryContext();
   const { asset } = useStateStore(imageGalleryStateStore.state, imageGallerySelector);
   const { setOverlay } = useOverlayContext();
+  const topInset = useContext(SafeAreaInsetsContext)?.top ?? 0;
 
   const date = useMemo(
     () =>
@@ -71,17 +68,19 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView edges={['top']} style={[styles.container, headerStyle]}>
+      <Animated.View style={[styles.container, { paddingTop: topInset }, headerStyle]}>
         <View style={styles.innerContainer}>
-          <Button
-            accessibilityLabelKey='a11y/Hide Overlay'
-            variant='secondary'
-            type='ghost'
-            size='md'
-            onPress={hideOverlay}
-            LeadingIcon={ChevronLeft}
-            iconOnly
-          />
+          <View style={styles.leftContainer}>
+            <Button
+              accessibilityLabelKey='a11y/Hide Overlay'
+              variant='secondary'
+              type='ghost'
+              size='md'
+              onPress={hideOverlay}
+              LeadingIcon={ChevronLeft}
+              iconOnly
+            />
+          </View>
           <View style={styles.centerContainer} accessibilityLabel='Center element'>
             <Text style={styles.userName}>
               {asset?.user?.name || asset?.user?.id || t('Unknown User')}
@@ -90,7 +89,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
           </View>
           <View style={styles.rightContainer} accessibilityLabel='Right element' />
         </View>
-      </ReanimatedSafeAreaView>
+      </Animated.View>
     </View>
   );
 };
@@ -114,7 +113,7 @@ const useStyles = () => {
         },
         centerContainer: {
           alignItems: 'center',
-          flex: 1,
+          flex: 2,
           justifyContent: 'center',
           gap: primitives.spacingXxs,
           ...header.centerContainer,
@@ -134,9 +133,13 @@ const useStyles = () => {
           borderBottomColor: semantics.borderCoreSubtle,
           ...header.innerContainer,
         },
+        leftContainer: {
+          flex: 1,
+        },
         rightContainer: {
           width: 24,
           height: 24,
+          flex: 1,
         },
         userName: {
           color: semantics.textPrimary,

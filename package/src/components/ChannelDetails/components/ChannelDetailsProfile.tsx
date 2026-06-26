@@ -81,10 +81,11 @@ const useStyles = () => {
         container: {
           alignItems: 'center',
           gap: primitives.spacingMd,
+          paddingBottom: primitives.spacing2xl,
         },
         heading: {
           alignItems: 'center',
-          gap: primitives.spacingXs,
+          gap: primitives.spacingXxs,
           width: '100%',
         },
         subtitle: {

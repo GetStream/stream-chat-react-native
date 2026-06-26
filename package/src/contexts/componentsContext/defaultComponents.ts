@@ -36,7 +36,9 @@ import {
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
   ChannelDetailsProfile,
+  ChannelDetailsEditButton,
   ChannelDetailsNavHeader,
   ChannelEditDetails,
   ChannelEditImageSheet,
@@ -44,6 +46,12 @@ import {
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
+  FileAttachmentItem,
+  FileAttachmentList,
+  MediaItem,
+  MediaList,
+  PinnedMessageItem,
+  PinnedMessageList,
 } from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -315,8 +323,10 @@ const components = {
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
+  ChannelDetailsNavigationSection,
   ChannelDetailsProfile,
   ChannelDetailsContent,
+  ChannelDetailsEditButton,
   ChannelDetailsNavHeader,
   ChannelEditDetails,
   ChannelEditImageSheet,
@@ -324,6 +334,12 @@ const components = {
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
+  FileAttachmentItem,
+  FileAttachmentList,
+  MediaItem,
+  MediaList,
+  PinnedMessageItem,
+  PinnedMessageList,
 
   // Thread
   ThreadMessageComposer: MessageComposer,
@@ -363,7 +379,6 @@ const components = {
  */
 export interface OptionalComponentOverrides {
   AttachmentPickerIOSSelectMorePhotos?: React.ComponentType;
-  ChannelDetailsNavigationSection?: React.ComponentType;
   ChatLoadingIndicator?: React.ComponentType | null;
   CreatePollContent?: React.ComponentType;
   Input?: React.ComponentType<{
