@@ -9,7 +9,7 @@ import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageComposer,
-  MessageList,
+  // MessageList,
   MessageFlashList,
   ThreadContextValue,
   useAttachmentPickerContext,
@@ -115,7 +115,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   const { channel: channelFromProp, channelId, messageId } = route.params;
   const {
     chatClient,
-    messageListImplementation,
+    // messageListImplementation,
     messageListMode,
     messageListPruning,
     messageInputFloating,
@@ -284,17 +284,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />
         </PortalWhileClosingView>
-        {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        ) : (
-          <MessageList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        )}
+        {/* TEMP(#9 debug): force the native recycled list regardless of the menu setting so the
+            diagnosis can't accidentally land on FlashList. Restore the ternary afterwards. */}
+        <MessageFlashList
+          nativeList
+          onThreadSelect={onThreadSelect}
+          isLiveStreaming={messageListMode === 'livestream'}
+        />
         <AITypingIndicatorView channel={channel} />
         <MessageComposer />
         {modalVisible && (

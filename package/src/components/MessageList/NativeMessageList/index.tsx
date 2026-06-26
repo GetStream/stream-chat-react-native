@@ -145,6 +145,17 @@ function NativeMessageListComponent<T>(
       scrollYRef.current = contentOffset.y;
       atBottomRef.current =
         contentOffset.y >= contentSize.height - layoutMeasurement.height - BOTTOM_STICK_THRESHOLD;
+
+      console.log(
+        '[NML5] scroll y',
+        Math.round(contentOffset.y),
+        'contentH',
+        Math.round(contentSize.height),
+        'vp',
+        Math.round(layoutMeasurement.height),
+        'atBottom',
+        atBottomRef.current,
+      );
       if (Math.abs(contentOffset.y - anchorRef.current) > renderAhead / 2) {
         anchorRef.current = contentOffset.y;
         recompute(contentOffset.y);
@@ -163,6 +174,17 @@ function NativeMessageListComponent<T>(
         scrollYRef.current = totalRef.current - viewport;
         didInitBottom.current = true;
       }
+
+      console.log(
+        '[NML5] layout vp',
+        Math.round(viewport),
+        'total',
+        Math.round(totalRef.current),
+        'didInit',
+        didInitBottom.current,
+        'seedY',
+        Math.round(scrollYRef.current),
+      );
       recompute(scrollYRef.current);
     },
     [recompute],
@@ -272,6 +294,21 @@ function NativeMessageListComponent<T>(
     end = count - 1;
     start = Math.max(0, indexForOffset(total - viewportRef.current - renderAhead));
   }
+
+  console.log(
+    '[NML5] render rows',
+    start,
+    '-',
+    end,
+    'of',
+    count,
+    'atBottom',
+    atBottomRef.current,
+    'total',
+    Math.round(total),
+    'cellTopStart',
+    Math.round(offsets[start] ?? 0),
+  );
 
   // Reconcile the recycle pool to the window [start, end]: free slots that fell out of the window,
   // then assign each now-visible index without a slot to a freed one (the reused cell). Idempotent, so

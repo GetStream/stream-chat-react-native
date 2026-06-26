@@ -448,7 +448,7 @@ const HomeScreen = () => {
 };
 
 // TEMP(native-list-spike): set to true to boot directly into the native list scroll spike (R1 gate).
-const NATIVE_LIST_SPIKE = true;
+const NATIVE_LIST_SPIKE = false;
 const NativeListSpikeApp = () => <NativeListSpikeScreen />;
 
 export default NATIVE_LIST_SPIKE ? NativeListSpikeApp : App;

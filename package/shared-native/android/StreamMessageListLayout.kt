@@ -2,6 +2,7 @@ package com.streamchatreactnative
 
 import android.content.Context
 import android.graphics.Canvas
+import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
@@ -9,7 +10,9 @@ import android.view.ViewConfiguration
 import android.view.ViewTreeObserver
 import android.widget.OverScroller
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.views.view.ReactViewGroup
 import kotlin.math.abs
@@ -43,6 +46,16 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
    *  which reads stale right after a transaction and oscillates during windowing churn. */
   private var contentHeightPx = 0
 
+  // Fabric state bridge: the live scroll offset is pushed into the shadow node's State so
+  // getContentOriginOffset can shift descendant window coords (measureInWindow + findNodeAtPoint).
+  // Wired in by the ViewManager's updateState.
+  var stateWrapper: StateWrapper? = null
+  private var lastPushedOffsetY = Float.NaN
+  // The offset is pushed to Fabric State only once scrolling settles (idle), not per frame: the only
+  // readers (measureInWindow / findNodeAtPoint) fire when the finger is held still, so per-frame
+  // commits during a fling would be wasted work. Debounced via this runnable.
+  private val statePushRunnable = Runnable { pushScrollState() }
+
   // MVCP anchor: topmost visible cell + its content-top, so a prepend / above-fold height change can
   // be compensated (shift scrollY by the same delta) to keep the visible content from jumping.
   private var anchorChild: View? = null
@@ -73,6 +86,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   }
 
   override fun onDetachedFromWindow() {
+    removeCallbacks(statePushRunnable)
     viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
     super.onDetachedFromWindow()
   }
@@ -82,6 +96,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   fun setContentHeightDip(dp: Double) {
     val px = max(0, PixelUtil.toPixelFromDIP(dp.toFloat()).toInt())
     if (px == contentHeightPx) return
+    Log.d("NML5", "setContentH px=$px was=$contentHeightPx scrollY=$scrollY h=$height maxYnew=${max(0, px - height)} stick=$stickToBottom")
     contentHeightPx = px
     // Stick / anchor adjust runs post-layout in the listener, which can tell a prepend (anchor moved →
     // hold) from an append (anchor didn't → stick). Sticking here (pre-layout) snapped on prepends too.
@@ -92,6 +107,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   /** Pin to the bottom while stuck. Driven by content-height pushes from JS and by size changes, so
    *  the newest content stays visible as the list grows or the viewport shrinks (e.g. keyboard). */
   internal fun maintainBottomIfStuck() {
+    Log.d("NML5", "maintain stick=$stickToBottom target=${maxScrollY()} scrollY=$scrollY h=$height contentHpx=$contentHeightPx")
     if (!stickToBottom) return
     val target = maxScrollY()
     if (scrollY != target) scrollTo(0, target)
@@ -117,10 +133,12 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   private fun refreshStickToBottom() {
     val maxY = maxScrollY()
     stickToBottom = maxY <= 0 || scrollY >= maxY - stickThresholdPx
+    Log.d("NML5", "refreshStick scrollY=$scrollY maxY=$maxY -> stick=$stickToBottom")
   }
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
+    Log.d("NML5", "sizeChanged h=$h contentHpx=$contentHeightPx scrollY=$scrollY stick=$stickToBottom")
     maintainBottomIfStuck()
   }
 
@@ -167,12 +185,15 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
       MotionEvent.ACTION_DOWN -> {
         lastTouchY = ev.y
         isDragging = false
+        Log.d("NML1", "DOWN y=${ev.y.toInt()} slop=$touchSlop")
         if (!scroller.isFinished) scroller.abortAnimation()
       }
       MotionEvent.ACTION_MOVE -> {
-        if (!isDragging && abs(ev.y - lastTouchY) > touchSlop) {
+        val dy = abs(ev.y - lastTouchY)
+        if (!isDragging && dy > touchSlop) {
           isDragging = true
           lastTouchY = ev.y
+          Log.d("NML1", "CLAIMED drag dy=${dy.toInt()} slop=$touchSlop (steals child gesture)")
         }
       }
     }
@@ -241,6 +262,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
     super.onScrollChanged(l, t, oldl, oldt)
     refreshStickToBottom()
     emitScrollEvent()
+    scheduleStatePush()
   }
 
   private fun recycleVelocityTracker() {
@@ -249,6 +271,28 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   }
 
   // --- events to JS ---
+
+  /** Debounce the State push to scroll-idle: each scroll change resets the timer; ~100ms after the
+   *  last change the scroll has settled and we push once. Long-press (the measure trigger) needs a
+   *  ~500ms still hold, so the offset is always current by the time anything reads it. */
+  private fun scheduleStatePush() {
+    removeCallbacks(statePushRunnable)
+    postDelayed(statePushRunnable, 100L)
+  }
+
+  /** Push the live scroll offset (dip) into the shadow node's State. getContentOriginOffset reads it
+   *  back as -contentOffset, so Fabric coordinate math (measureInWindow + findNodeAtPoint) accounts
+   *  for our custom scroll. Deduped to skip sub-pixel repeats. */
+  private fun pushScrollState() {
+    val wrapper = stateWrapper ?: return
+    val dipY = PixelUtil.toDIPFromPixel(scrollY.toFloat())
+    if (!lastPushedOffsetY.isNaN() && abs(lastPushedOffsetY - dipY) < 0.5f) return
+    lastPushedOffsetY = dipY
+    val map = WritableNativeMap()
+    map.putDouble("contentOffsetX", 0.0)
+    map.putDouble("contentOffsetY", dipY.toDouble())
+    wrapper.updateState(map)
+  }
 
   private fun emitScrollEvent() {
     val reactContext = context as? ReactContext ?: return

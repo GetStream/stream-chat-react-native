@@ -20,6 +20,7 @@ import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
+import { NativeMessageList } from './NativeMessageList';
 
 import {
   AttachmentPickerContextValue,
@@ -185,6 +186,8 @@ type MessageFlashListPropsWithContext = Pick<
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
     /** Turn off grouping of messages by user */
+    /** SPIKE(#9): render the custom native recycled list instead of FlashList (Android/Fabric). */
+    nativeList?: boolean;
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
     /**
@@ -284,6 +287,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputHeightStore,
     myMessageTheme,
     readEvents,
+    nativeList,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
@@ -1071,34 +1075,44 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         </View>
       ) : (
         <MessageListItemProvider value={messageListItemContextValue}>
-          <FlashList
-            contentContainerStyle={flatListContentContainerStyle}
-            data={processedMessageList}
-            drawDistance={800}
-            getItemType={getItemTypeInternal}
-            keyboardShouldPersistTaps='handled'
-            keyExtractor={keyExtractor}
-            ListFooterComponent={ListFooterComponent}
-            ListHeaderComponent={HeaderComponent}
-            maintainVisibleContentPosition={maintainVisibleContentPosition}
-            onMomentumScrollEnd={onUserScrollEvent}
-            onScroll={handleScroll}
-            onScrollBeginDrag={onScrollBeginDrag}
-            onScrollEndDrag={onScrollEndDrag}
-            onTouchEnd={dismissImagePicker}
-            onViewableItemsChanged={stableOnViewableItemsChanged}
-            ref={refCallback}
-            renderItem={renderItem}
-            scrollEnabled={scrollEnabled}
-            scrollEventThrottle={isLiveStreaming ? 16 : undefined}
-            showsVerticalScrollIndicator={false}
-            style={flatListStyle}
-            testID='message-flash-list'
-            viewabilityConfig={flatListViewabilityConfig}
-            {...additionalFlashListPropsExcludingStyle}
-            accessibilityActions={messageListAccessibilityActions}
-            onAccessibilityAction={messageListOnAccessibilityAction}
-          />
+          {nativeList ? (
+            <NativeMessageList
+              data={processedMessageList}
+              estimateItemHeight={80}
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              style={flatListStyle}
+            />
+          ) : (
+            <FlashList
+              contentContainerStyle={flatListContentContainerStyle}
+              data={processedMessageList}
+              drawDistance={800}
+              getItemType={getItemTypeInternal}
+              keyboardShouldPersistTaps='handled'
+              keyExtractor={keyExtractor}
+              ListFooterComponent={ListFooterComponent}
+              ListHeaderComponent={HeaderComponent}
+              maintainVisibleContentPosition={maintainVisibleContentPosition}
+              onMomentumScrollEnd={onUserScrollEvent}
+              onScroll={handleScroll}
+              onScrollBeginDrag={onScrollBeginDrag}
+              onScrollEndDrag={onScrollEndDrag}
+              onTouchEnd={dismissImagePicker}
+              onViewableItemsChanged={stableOnViewableItemsChanged}
+              ref={refCallback}
+              renderItem={renderItem}
+              scrollEnabled={scrollEnabled}
+              scrollEventThrottle={isLiveStreaming ? 16 : undefined}
+              showsVerticalScrollIndicator={false}
+              style={flatListStyle}
+              testID='message-flash-list'
+              viewabilityConfig={flatListViewabilityConfig}
+              {...additionalFlashListPropsExcludingStyle}
+              accessibilityActions={messageListAccessibilityActions}
+              onAccessibilityAction={messageListOnAccessibilityAction}
+            />
+          )}
         </MessageListItemProvider>
       )}
       <View

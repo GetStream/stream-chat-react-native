@@ -36,6 +36,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollToOffset'],
 });
 
-export default codegenNativeComponent<NativeProps>(
-  'StreamMessageListView',
-) as HostComponent<NativeProps>;
+export default codegenNativeComponent<NativeProps>('StreamMessageListView', {
+  // Hand-written C++ ShadowNode/ComponentDescriptor (android/src/main/jni/) overrides the
+  // codegen default to report the scroll offset into Fabric (getContentOriginOffset). Requires
+  // codegen to emit interface only (Props/EventEmitters) and skip the default ShadowNode +
+  // ViewManager delegate. Registered via react-native.config.js `componentDescriptors`.
+  interfaceOnly: true,
+}) as HostComponent<NativeProps>;
