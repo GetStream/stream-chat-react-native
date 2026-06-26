@@ -5,7 +5,13 @@ import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { UserResponse } from 'stream-chat';
 
 import { Avatar, AvatarProps } from './Avatar';
-import { fontSizes, iconSizes, indicatorSizes, numberOfInitials } from './constants';
+import {
+  fontSizes,
+  iconSizes,
+  indicatorPositions,
+  indicatorSizes,
+  numberOfInitials,
+} from './constants';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { PeopleIcon } from '../../../icons/users';
@@ -57,7 +63,7 @@ export const UserAvatar = (props: UserAvatarProps) => {
         style={style}
       />
       {showOnlineIndicator ? (
-        <View style={styles.onlineIndicatorWrapper}>
+        <View style={[styles.onlineIndicatorWrapper, indicatorPositions[size]]}>
           <OnlineIndicator online={true} size={indicatorSizes[size]} />
         </View>
       ) : null}
@@ -71,8 +77,6 @@ const useStyles = () => {
       StyleSheet.create({
         onlineIndicatorWrapper: {
           position: 'absolute',
-          right: -2,
-          top: -2,
         },
       }),
     [],
