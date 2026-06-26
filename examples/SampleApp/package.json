@@ -85,10 +85,11 @@
     "@react-native/metro-config": "0.85.3",
     "@react-native/typescript-config": "0.85.3",
     "@rnx-kit/metro-config": "^2.1.0",
+    "@stream-io/typescript-config": "workspace:^",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/react": "^19.2.0",
     "babel-plugin-react-compiler": "^1.0.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "engines": {
     "node": ">=20.19.4"

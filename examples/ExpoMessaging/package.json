@@ -58,8 +58,9 @@
   "devDependencies": {
     "@rnx-kit/metro-config": "^2.1.2",
     "@rnx-kit/metro-resolver-symlinks": "^0.2.6",
+    "@stream-io/typescript-config": "workspace:^",
     "@types/react": "~19.2.10",
-    "typescript": "~5.9.2"
+    "typescript": "6.0.3"
   },
   "expo": {
     "install": {

@@ -78,11 +78,14 @@
     }
   },
   "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "prepack": "bash ../scripts/sync-shared-native.sh native-package && cp ../../README.md .",
     "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh native-package"
   },
   "devDependencies": {
-    "react-native": "0.85.3"
+    "@stream-io/typescript-config": "workspace:^",
+    "react-native": "0.85.3",
+    "typescript": "6.0.3"
   },
   "codegenConfig": {
     "name": "StreamChatReactNativeSpec",

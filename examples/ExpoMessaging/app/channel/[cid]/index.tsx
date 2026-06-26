@@ -60,8 +60,8 @@ export default function ChannelScreen() {
     payload,
   ) => {
     const { message, defaultHandler, emitter } = payload;
-    const { shared_location } = message ?? {};
-    if (emitter === 'messageContent' && shared_location) {
+    const shared_location = message?.shared_location;
+    if (emitter === 'messageContent' && message && shared_location) {
       // Create url params from shared_location
       const params = Object.entries(shared_location)
         .map(([key, value]) => `${key}=${value}`)

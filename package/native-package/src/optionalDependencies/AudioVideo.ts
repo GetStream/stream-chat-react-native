@@ -22,6 +22,8 @@ let AudioVideoComponent:
       };
       ignoreSilentSwitch?: 'ignore' | 'obey';
       repeat?: boolean;
+      resizeMode?: string;
+      rate?: number;
     }>
   | undefined;
 

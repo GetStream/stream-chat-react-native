@@ -19,6 +19,8 @@ import {
   useTheme,
 } from 'stream-chat-expo';
 
+import type { AppTheme } from '@/types/theme';
+
 const MessageLocationFooter = ({
   client,
   shared_location,
@@ -32,9 +34,9 @@ const MessageLocationFooter = ({
     theme: {
       colors: { grey },
     },
-  } = useTheme();
-  const liveLocationActive = new Date(end_at) > new Date();
+  } = useTheme() as unknown as { theme: AppTheme };
   const endedAtDate = end_at ? new Date(end_at) : null;
+  const liveLocationActive = endedAtDate ? endedAtDate > new Date() : false;
   const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
 
   const stopSharingLiveLocation = useCallback(async () => {
@@ -44,7 +46,7 @@ const MessageLocationFooter = ({
   if (!end_at) {
     return null;
   }
-  const isCurrentUser = user_id === client.user.id;
+  const isCurrentUser = user_id === client.user?.id;
   if (!isCurrentUser) {
     return (
       <View style={styles.footer}>
@@ -72,7 +74,10 @@ const MessageLocationFooter = ({
 export const MessageLocation = ({ message }: MessageLocationProps) => {
   const { client } = useChatContext();
   const { shared_location } = message;
-  const { latitude, longitude } = shared_location || {};
+  // Coordinates are only rendered when `shared_location` exists (the component returns
+  // `null` below otherwise). Default to 0 so the values are concrete numbers for the
+  // `Region`/`LatLng` shapes the hooks below build.
+  const { latitude = 0, longitude = 0 } = shared_location || {};
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);
 
@@ -83,7 +88,7 @@ export const MessageLocation = ({ message }: MessageLocationProps) => {
     theme: {
       colors: { accent_blue },
     },
-  } = useTheme();
+  } = useTheme() as unknown as { theme: AppTheme };
 
   const region = useMemo(() => {
     const latitudeDelta = 0.1;
@@ -132,7 +137,7 @@ export const MessageLocation = ({ message }: MessageLocationProps) => {
             <View style={styles.markerWrapper}>
               <Image
                 style={[styles.markerImage, { borderColor: accent_blue }]}
-                source={{ uri: client.user.image }}
+                source={{ uri: client.user?.image }}
               />
             </View>
           </Marker>

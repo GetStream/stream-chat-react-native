@@ -12,6 +12,8 @@ import {
   UserAvatar,
 } from 'stream-chat-react-native';
 
+import type { StreamThemeWithColors } from '../theme/AppTheme';
+
 const renderUserItem = ({ item }: { item: UserResponse }) => (
   <View style={styles.userItem}>
     <UserAvatar user={item} size={'md'} />
@@ -34,7 +36,7 @@ export const MessageInfoBottomSheet = ({
 }) => {
   const {
     theme: { colors },
-  } = useTheme();
+  } = useTheme() as unknown as { theme: StreamThemeWithColors };
   const { client } = useChatContext();
   const deliveredStatus = useMessageDeliveredData({ message });
   const readStatus = useMessageReadData({ message });

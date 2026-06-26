@@ -136,7 +136,7 @@ const MessageLocationComponent = ({
             </View>
           </Marker>
         ) : (
-          <Marker coordinate={region} ref={markerRef} pinColor={accent_blue} />
+          <Marker coordinate={region} ref={markerRef} pinColor={accent_blue as string} />
         )}
       </MapView>
       <MessageLocationFooter client={client} shared_location={shared_location} />

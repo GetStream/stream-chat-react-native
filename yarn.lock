@@ -6548,6 +6548,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stream-io/typescript-config@workspace:^, @stream-io/typescript-config@workspace:configs/typescript-config":
+  version: 0.0.0-use.local
+  resolution: "@stream-io/typescript-config@workspace:configs/typescript-config"
+  languageName: unknown
+  linkType: soft
+
 "@swc/core-darwin-arm64@npm:1.15.33":
   version: 1.15.33
   resolution: "@swc/core-darwin-arm64@npm:1.15.33"
@@ -7409,6 +7415,7 @@ __metadata:
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@rnx-kit/metro-resolver-symlinks": "npm:^0.2.6"
     "@shopify/flash-list": "npm:^2.3.1"
+    "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.2.10"
     expo: "npm:^56.0.0"
     expo-asset: "npm:~56.0.0"
@@ -7445,7 +7452,7 @@ __metadata:
     stream-chat: "npm:^9.47.1"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
-    typescript: "npm:~5.9.2"
+    typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
 
@@ -18733,7 +18740,7 @@ __metadata:
     husky: "npm:^9.1.7"
     prettier: "npm:^3.8.3"
     semantic-release: "npm:^25.0.3"
-    typescript: "npm:5.9.3"
+    typescript: "npm:6.0.3"
     typescript-eslint: "npm:^8.59.2"
     uglify-js: "npm:^3.19.2"
   dependenciesMeta:
@@ -18861,6 +18868,7 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.16.0"
     "@rnx-kit/metro-config": "npm:^2.1.0"
     "@shopify/flash-list": "npm:^2.3.1"
+    "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
     "@types/react": "npm:^19.2.0"
     babel-plugin-react-compiler: "npm:^1.0.0"
@@ -18887,7 +18895,7 @@ __metadata:
     stream-chat: "npm:^9.47.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
-    typescript: "npm:5.9.3"
+    typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
 
@@ -19511,11 +19519,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "stream-chat-expo@workspace:package/expo-package"
   dependencies:
+    "@stream-io/typescript-config": "workspace:^"
     expo: "npm:^56.0.0"
     expo-audio: "npm:~56.0.0"
     expo-image-manipulator: "npm:~56.0.0"
     mime: "npm:^4.0.7"
     stream-chat-react-native-core: "workspace:^"
+    typescript: "npm:6.0.3"
   peerDependencies:
     expo: ">=52.0.0"
     expo-audio: "*"
@@ -19568,6 +19578,7 @@ __metadata:
     "@react-native/babel-preset": "npm:0.85.3"
     "@react-native/jest-preset": "npm:0.85.3"
     "@shopify/flash-list": "npm:^2.3.1"
+    "@stream-io/typescript-config": "workspace:^"
     "@testing-library/jest-native": "npm:^5.4.3"
     "@testing-library/react-native": "npm:13.2.0"
     "@total-typescript/shoehorn": "npm:^0.1.2"
@@ -19612,7 +19623,7 @@ __metadata:
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
     stream-chat: "npm:^9.47.1"
-    typescript: "npm:5.9.3"
+    typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
   peerDependencies:
@@ -19643,10 +19654,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "stream-chat-react-native@workspace:package/native-package"
   dependencies:
+    "@stream-io/typescript-config": "workspace:^"
     es6-symbol: "npm:^3.1.3"
     mime: "npm:^4.0.7"
     react-native: "npm:0.85.3"
     stream-chat-react-native-core: "workspace:^"
+    typescript: "npm:6.0.3"
   peerDependencies:
     "@react-native-camera-roll/camera-roll": ">=7.9.0"
     "@react-native-clipboard/clipboard": ">=1.16.0"
@@ -20481,23 +20494,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.9.3, typescript@npm:~5.9.2":
-  version: 5.9.3
-  resolution: "typescript@npm:5.9.3"
+"typescript@npm:6.0.3":
+  version: 6.0.3
+  resolution: "typescript@npm:6.0.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/6bd7552ce39f97e711db5aa048f6f9995b53f1c52f7d8667c1abdc1700c68a76a308f579cd309ce6b53646deb4e9a1be7c813a93baaf0a28ccd536a30270e1c5
+  checksum: 10c0/4a25ff5045b984370f48f196b3a0120779b1b343d40b9a68d114ea5e5fff099809b2bb777576991a63a5cd59cf7bffd96ff6fe10afcefbcb8bd6fb96ad4b6606
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
-  version: 5.9.3
-  resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
+"typescript@patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>":
+  version: 6.0.3
+  resolution: "typescript@patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/ad09fdf7a756814dce65bc60c1657b40d44451346858eea230e10f2e95a289d9183b6e32e5c11e95acc0ccc214b4f36289dcad4bf1886b0adb84d711d336a430
+  checksum: 10c0/2f25c74e65663c248fa1ade2b8459d9ce5372ff9dad07067310f132966ebec1d93f6c42f0baf77a6b6a7a91460463f708e6887013aaade22111037457c6b25df
   languageName: node
   linkType: hard
 
@@ -20521,6 +20534,7 @@ __metadata:
     "@react-navigation/native": "npm:^7.1.10"
     "@react-navigation/stack": "npm:^7.3.3"
     "@rnx-kit/metro-config": "npm:^2.1.0"
+    "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:^19.1.0"
     react: "npm:19.1.0"
     react-native: "npm:0.80.2"
@@ -20539,7 +20553,7 @@ __metadata:
     stream-chat: "npm:^9.47.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
-    typescript: "npm:5.9.3"
+    typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
 

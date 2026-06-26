@@ -80,11 +80,14 @@
     }
   },
   "devDependencies": {
+    "@stream-io/typescript-config": "workspace:^",
     "expo": "^56.0.0",
     "expo-audio": "~56.0.0",
-    "expo-image-manipulator": "~56.0.0"
+    "expo-image-manipulator": "~56.0.0",
+    "typescript": "6.0.3"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",
     "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh expo-package"
   },

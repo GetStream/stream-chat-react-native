@@ -22,6 +22,8 @@ import {
   useTranslationContext,
 } from 'stream-chat-expo';
 
+import type { AppTheme } from '@/types/theme';
+
 type LiveLocationCreateModalProps = {
   visible: boolean;
   onRequestClose: () => void;
@@ -41,7 +43,7 @@ export const LiveLocationCreateModal = ({
     theme: {
       colors: { accent_blue, grey, grey_whisper },
     },
-  } = useTheme();
+  } = useTheme() as unknown as { theme: AppTheme };
   const { t } = useTranslationContext();
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);
@@ -112,10 +114,13 @@ export const LiveLocationCreateModal = ({
         const options: AlertButton[] = endedAtDurations.map((offsetMs) => ({
           text: t('timestamp/Location end at', { milliseconds: offsetMs }),
           onPress: async () => {
+            if (!location) {
+              return;
+            }
             await messageComposer.locationComposer.setData({
               durationMs: offsetMs,
-              latitude: location?.latitude,
-              longitude: location?.longitude,
+              latitude: location.latitude,
+              longitude: location.longitude,
             });
             await messageComposer.sendLocation();
             onRequestClose();

@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "workspaces": [
+    "configs/typescript-config",
     "package",
     "package/native-package",
     "package/expo-package",
@@ -57,7 +58,7 @@
     "husky": "^9.1.7",
     "prettier": "^3.8.3",
     "semantic-release": "^25.0.3",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "typescript-eslint": "^8.59.2",
     "uglify-js": "^3.19.2"
   },
@@ -71,7 +72,7 @@
     "lint-fix": "prettier --write . && eslint . --fix --max-warnings 0",
     "prettier": "prettier --list-different .",
     "prettier-fix": "prettier --write .",
-    "typecheck": "yarn workspaces foreach -A --parallel --include 'stream-chat-react-native-core' --include 'sampleapp' --include 'typescriptmessaging' --include 'ExpoMessaging' run typecheck",
+    "typecheck": "yarn workspaces foreach -A --parallel --include 'stream-chat-react-native-core' --include 'stream-chat-react-native' --include 'stream-chat-expo' --include 'sampleapp' --include 'typescriptmessaging' --include 'ExpoMessaging' run typecheck",
     "build": "yarn workspace stream-chat-react-native-core build",
     "test:coverage": "yarn workspace stream-chat-react-native-core test:coverage",
     "test:unit": "yarn workspace stream-chat-react-native-core test:unit",

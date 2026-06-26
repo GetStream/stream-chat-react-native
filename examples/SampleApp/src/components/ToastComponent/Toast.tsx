@@ -2,19 +2,24 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Notification, NotificationState } from 'stream-chat';
+import type { Notification } from 'stream-chat';
 import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
 
 import { useLegacyColors } from '../../theme/useLegacyColors';
 
 const { width } = Dimensions.get('window');
 
-const severityIconMap: Record<Notification['severity'], string> = {
+type KnownSeverity = 'error' | 'success' | 'warning' | 'info';
+
+const severityIconMap: Record<KnownSeverity, string> = {
   error: '❌',
   success: '✅',
   warning: '⚠️',
   info: 'ℹ️',
 };
+
+const getSeverityIcon = (severity: Notification['severity']) =>
+  severity && severity in severityIconMap ? severityIconMap[severity as KnownSeverity] : 'ℹ️';
 
 export const Toast = () => {
   const { closeInAppNotification, notifications } = useInAppNotificationsState();
@@ -25,7 +30,7 @@ export const Toast = () => {
 
   // When offline, we upload pending attachments by cleaning up the previous upload, this results in a cancelled/aborted error from the server, so we filter out those notifications.
   const filteredNotifications = notifications.filter(
-    (notification: NotificationState) => notification.metadata?.reason !== 'canceled',
+    (notification: Notification) => notification.metadata?.reason !== 'canceled',
   );
 
   return (
@@ -39,7 +44,7 @@ export const Toast = () => {
         >
           <View style={[styles.icon, { backgroundColor: overlay }]}>
             <Text style={[styles.iconText, { color: white_smoke }]}>
-              {severityIconMap[notification.severity]}
+              {getSeverityIcon(notification.severity)}
             </Text>
           </View>
           <View style={styles.content}>

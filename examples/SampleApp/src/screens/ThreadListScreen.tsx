@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { NavigationProp, useNavigation, useIsFocused } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme, ThreadList } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 
 import { useLegacyColors } from '../theme/useLegacyColors';
-import type { BottomTabNavigatorParamList } from '../types';
+import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,7 +32,7 @@ export type ThreadsScreenProps = {
 export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
   useTheme();
   const { white_snow } = useLegacyColors();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const isFocused = useIsFocused();
 
   return (

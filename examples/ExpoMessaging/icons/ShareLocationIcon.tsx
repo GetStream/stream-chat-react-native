@@ -2,13 +2,15 @@ import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from 'stream-chat-expo';
 
+import type { AppTheme } from '@/types/theme';
+
 // Icon for "Share Location" button, next to input box.
 export const ShareLocationIcon = () => {
   const {
     theme: {
       colors: { grey },
     },
-  } = useTheme();
+  } = useTheme() as unknown as { theme: AppTheme };
   return (
     <Svg width={28} height={28} viewBox='0 0 24 24' fill='none'>
       <Path

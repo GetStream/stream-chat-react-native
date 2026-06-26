@@ -1,16 +1,9 @@
-import { ColorValue } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
+import type { IconProps } from 'stream-chat-react-native';
+
 // Icon for "Share Location" button, next to input box.
-export const ShareLocationIcon = ({
-  width,
-  height,
-  stroke,
-}: {
-  stroke: ColorValue;
-  width: number;
-  height: number;
-}) => {
+export const ShareLocationIcon = ({ width = 24, height = 24, stroke }: IconProps) => {
   return (
     <Svg width={width} height={height} viewBox='0 0 24 24' fill='none'>
       <Path
