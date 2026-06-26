@@ -39,6 +39,9 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
   private var lastTouchY = 0f
   private var lastFlingY = 0
   private var isDragging = false
+  // True once the user has actually scrolled (dragged). Gates the initial-open re-pin (#5) so it can
+  // never fire for a prepend — prepends require scrolling up, which flips this true.
+  private var hasUserScrolled = false
   private var stickToBottom = true
   private val stickThresholdPx = PixelUtil.toPixelFromDIP(120f)
 
@@ -100,6 +103,12 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
     contentHeightPx = px
     // Stick / anchor adjust runs post-layout in the listener, which can tell a prepend (anchor moved →
     // hold) from an append (anchor didn't → stick). Sticking here (pre-layout) snapped on prepends too.
+    //
+    // EXCEPTION — the initial open (#5): estimate→real heights balloon the total here, but the listener
+    // doesn't re-pin reliably at that first settle, so the list stays parked at the estimate-based
+    // bottom with dead space above. Re-pin to the true bottom directly — gated on !hasUserScrolled so
+    // this is the open-settle only and can never fire for a prepend (which needs a scroll-up first).
+    if (stickToBottom && !hasUserScrolled) maintainBottomIfStuck()
   }
 
   private fun maxScrollY(): Int = max(0, contentHeightPx - height)
@@ -192,6 +201,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
         val dy = abs(ev.y - lastTouchY)
         if (!isDragging && dy > touchSlop) {
           isDragging = true
+          hasUserScrolled = true
           lastTouchY = ev.y
           Log.d("NML1", "CLAIMED drag dy=${dy.toInt()} slop=$touchSlop (steals child gesture)")
         }
@@ -209,6 +219,7 @@ class StreamMessageListLayout(context: Context) : ReactViewGroup(context) {
         if (!scroller.isFinished) scroller.abortAnimation()
       }
       MotionEvent.ACTION_MOVE -> {
+        hasUserScrolled = true
         val dy = (lastTouchY - ev.y).toInt()
         lastTouchY = ev.y
         scrollTo(0, (scrollY + dy).coerceIn(0, maxScrollY()))
