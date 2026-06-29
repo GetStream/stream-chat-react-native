@@ -29,8 +29,6 @@ export type EditChannelDetailsState = {
  * events, so an inbound `channel.updated` does not clobber the user's
  * in-progress edits. Leaf components can subscribe to narrow slices via
  * {@link useStateStore}.
- *
- * @experimental This API is experimental and is subject to change.
  */
 export class EditChannelDetailsStore {
   public state: StateStore<EditChannelDetailsState>;
@@ -68,39 +66,46 @@ export class EditChannelDetailsStore {
 }
 
 /** Whether the name input differs from the channel's initial name. */
-export const isNameDirty = (state: EditChannelDetailsState) =>
+export const isNameEdited = (state: EditChannelDetailsState) =>
   state.currentName !== state.initialName;
 
 /**
- * Whether the image has unsaved changes. The image is dirty once touched
+ * Whether the image has unsaved changes. The image is edited once touched
  * (`updatedImage !== undefined`), except when both the initial and updated
  * image are falsy (no image before, none now).
  */
-export const isImageDirty = (state: EditChannelDetailsState) =>
+export const isImageEdited = (state: EditChannelDetailsState) =>
   !(state.updatedImage === undefined || (!state.updatedImage && !state.initialImage));
 
-const selectIsNameDirty = (state: EditChannelDetailsState) => ({
-  isNameDirty: isNameDirty(state),
+const selectIsNameEdited = (state: EditChannelDetailsState) => ({
+  isNameEdited: isNameEdited(state),
 });
 
-const selectIsImageDirty = (state: EditChannelDetailsState) => ({
-  isImageDirty: isImageDirty(state),
+const selectIsImageEdited = (state: EditChannelDetailsState) => ({
+  isImageEdited: isImageEdited(state),
+});
+
+const selectAreChannelDetailsEdited = (state: EditChannelDetailsState) => ({
+  areChannelDetailsEdited: isNameEdited(state) || isImageEdited(state),
 });
 
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the name
  * input has unsaved changes.
- *
- * @experimental This API is experimental and is subject to change.
  */
-export const useIsNameDirty = (store: EditChannelDetailsStore) =>
-  useStateStore(store.state, selectIsNameDirty).isNameDirty;
+export const useIsNameEdited = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectIsNameEdited).isNameEdited;
 
 /**
  * Subscribes to an {@link EditChannelDetailsStore} and returns whether the image
  * has unsaved changes.
- *
- * @experimental This API is experimental and is subject to change.
  */
-export const useIsImageDirty = (store: EditChannelDetailsStore) =>
-  useStateStore(store.state, selectIsImageDirty).isImageDirty;
+export const useIsImageEdited = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectIsImageEdited).isImageEdited;
+
+/**
+ * Subscribes to an {@link EditChannelDetailsStore} and returns whether the form
+ * has any unsaved changes (name or image).
+ */
+export const useAreChannelDetailsEdited = (store: EditChannelDetailsStore) =>
+  useStateStore(store.state, selectAreChannelDetailsEdited).areChannelDetailsEdited;

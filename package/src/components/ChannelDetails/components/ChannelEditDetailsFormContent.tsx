@@ -18,10 +18,7 @@ const selector = (state: EditChannelDetailsState) => ({
   updatedImage: state.updatedImage,
 });
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelEditDetails = () => {
+export const ChannelEditDetailsFormContent = () => {
   const { channel } = useChannelDetailsContext();
   const { store } = useChannelEditDetailsContext();
   const { ChannelEditImageSheet, ChannelEditName } = useComponentsContext();

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { MessageResponse, SearchSourceState } from 'stream-chat';
+import type { MessageResponse, MessageSearchSource, SearchSourceState } from 'stream-chat';
 
 import { PinnedMessageListLoadingSkeleton } from './PinnedMessageListLoadingSkeleton';
 
@@ -33,6 +33,12 @@ export type PinnedMessageListProps = {
    */
   additionalFlatListProps?: Partial<FlatListProps<MessageResponse>>;
   searchInputProps?: SearchInputProps;
+  /**
+   * A custom `MessageSearchSource` used to query and paginate the pinned
+   * messages. Overrides the source the provider creates by default
+   * (pre-configured to fetch pinned messages and search by `text`).
+   */
+  searchSource?: MessageSearchSource;
 };
 
 const keyExtractor = (message: MessageResponse) => message.id;
@@ -60,7 +66,8 @@ const PinnedMessageListContent = ({
 
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelPinnedMessageListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelPinnedMessageListContext();
   const { error, hasNext, loading, messages, searchQuery } = useStateStore(
     searchSource.state,
     listStateSelector,
@@ -158,10 +165,7 @@ const PinnedMessageListContent = ({
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const PinnedMessageList = (props: PinnedMessageListProps) => {
+export const PinnedMessageList = ({ searchSource, ...props }: PinnedMessageListProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `pinned-message-list:${channel.cid}` : undefined;
 
@@ -170,7 +174,7 @@ export const PinnedMessageList = (props: PinnedMessageListProps) => {
   }
 
   return (
-    <ChannelPinnedMessageListProvider channel={channel}>
+    <ChannelPinnedMessageListProvider channel={channel} searchSource={searchSource}>
       <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
         <PinnedMessageListContent {...props} />
       </NotificationTargetProvider>
@@ -190,7 +194,7 @@ const useStyles = () => {
         },
         listContent: {
           flexGrow: 1,
-          paddingBottom: primitives.spacingXl,
+          paddingBottom: primitives.spacing3xl,
         },
       }),
     [],

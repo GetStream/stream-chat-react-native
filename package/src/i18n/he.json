@@ -457,5 +457,13 @@
   "Pin Chat": "הצמד/י צ'אט",
   "Pin Group": "הצמד/י קבוצה",
   "Unpin Chat": "בטל/י הצמדת צ'אט",
-  "Unpin Group": "בטל/י הצמדת קבוצה"
+  "Unpin Group": "בטל/י הצמדת קבוצה",
+  "Block": "חסום/חסמי",
+  "Block {{ name }}": "חסימת {{ name }}",
+  "They won't be able to message or call you. You can unblock them later.": "הוא/היא לא יוכל/תוכל לשלוח לך הודעות או להתקשר אליך. ניתן לבטל את החסימה מאוחר יותר.",
+  "Leave": "צא/י",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "תפסיק/תפסיקי לקבל הודעות מ-{{ name }}. ניתן להצטרף בחזרה בכל עת.",
+  "group": "הקבוצה",
+  "No members found": "לא נמצאו חברים",
+  "a11y/Search members": "חיפוש חברים"
 }

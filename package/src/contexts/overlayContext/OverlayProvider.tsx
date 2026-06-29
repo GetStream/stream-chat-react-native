@@ -15,6 +15,7 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { AccessibilityProvider } from '../accessibilityContext/AccessibilityContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
+import { ScreenReaderProvider } from '../screenReaderContext/ScreenReaderContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
 
 import {
@@ -104,21 +105,23 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
   return (
     <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <AccessibilityProvider value={accessibility}>
-        <OverlayContext.Provider value={overlayContext}>
-          <ImageGalleryProvider value={imageGalleryProviderProps}>
-            <ThemeProvider style={overlayContext.style}>
-              <PortalProvider>
-                {accessibility?.enabled ? (
-                  <OverlayA11yShield>{children}</OverlayA11yShield>
-                ) : (
-                  children
-                )}
-                {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
-                <MessageOverlayHostLayer />
-              </PortalProvider>
-            </ThemeProvider>
-          </ImageGalleryProvider>
-        </OverlayContext.Provider>
+        <ScreenReaderProvider>
+          <OverlayContext.Provider value={overlayContext}>
+            <ImageGalleryProvider value={imageGalleryProviderProps}>
+              <ThemeProvider style={overlayContext.style}>
+                <PortalProvider>
+                  {accessibility?.enabled ? (
+                    <OverlayA11yShield>{children}</OverlayA11yShield>
+                  ) : (
+                    children
+                  )}
+                  {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
+                  <MessageOverlayHostLayer />
+                </PortalProvider>
+              </ThemeProvider>
+            </ImageGalleryProvider>
+          </OverlayContext.Provider>
+        </ScreenReaderProvider>
       </AccessibilityProvider>
     </TranslationProvider>
   );

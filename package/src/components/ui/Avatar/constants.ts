@@ -41,6 +41,45 @@ const indicatorSizes: Record<UserAvatarProps['size'], OnlineIndicatorProps['size
   xs: 'sm',
 };
 
+const onlineIndicatorSizes: Record<
+  OnlineIndicatorProps['size'],
+  { borderWidth: number; height: number; width: number }
+> = {
+  xl: {
+    borderWidth: 2,
+    height: 16,
+    width: 16,
+  },
+  lg: {
+    borderWidth: 2,
+    height: 14,
+    width: 14,
+  },
+  md: {
+    borderWidth: 2,
+    height: 12,
+    width: 12,
+  },
+  sm: {
+    borderWidth: 1,
+    height: 8,
+    width: 8,
+  },
+};
+
+// Anchors the presence dot on the avatar's circular edge at 45°:
+// offset = avatarWidth / 2 * (1 - Math.SQRT1_2) - indicatorDiameter / 2  (rounded to px)
+const indicatorPositions = (Object.keys(avatarSizes) as UserAvatarProps['size'][]).reduce(
+  (acc, size) => {
+    const avatarDiameter = avatarSizes[size].width;
+    const indicatorDiameter = onlineIndicatorSizes[indicatorSizes[size]].width;
+    const offset = Math.round((avatarDiameter / 2) * (1 - Math.SQRT1_2) - indicatorDiameter / 2);
+    acc[size] = { right: offset, top: offset };
+    return acc;
+  },
+  {} as Record<UserAvatarProps['size'], { right: number; top: number }>,
+);
+
 const iconSizes: Record<UserAvatarProps['size'], number> = {
   xs: 10,
   sm: 12,
@@ -99,4 +138,12 @@ const numberOfInitials: Record<UserAvatarProps['size'], number> = {
   '2xl': 2,
 };
 
-export { indicatorSizes, iconSizes, fontSizes, numberOfInitials, avatarSizes };
+export {
+  indicatorSizes,
+  onlineIndicatorSizes,
+  indicatorPositions,
+  iconSizes,
+  fontSizes,
+  numberOfInitials,
+  avatarSizes,
+};

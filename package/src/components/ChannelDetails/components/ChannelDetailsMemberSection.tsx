@@ -3,27 +3,28 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { ChannelAddMembersModal } from './members/ChannelAddMembersModal';
-import { ChannelAllMembersModal } from './members/ChannelAllMembersModal';
+import { ChannelDetailsModal } from './modal/Modal';
+import { ModalHeader } from './modal/ModalHeader';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelOwnCapabilities } from '../../../hooks/useChannelOwnCapabilities';
 import { primitives } from '../../../theme';
-import { Button } from '../../ui/Button/Button';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelDetailsMemberSection = () => {
-  const { channel, onAddMembersPress, onMemberPress, onViewAllMembersPress } =
-    useChannelDetailsContext();
+export type ChannelDetailsMemberSectionProps = {
+  /**
+   * Fired when the user taps the "view all members" button. By default it opens the members bottom sheet.
+   */
+  onViewAllMembersPress?: () => void;
+};
+
+export const ChannelDetailsMemberSection = ({
+  onViewAllMembersPress,
+}: ChannelDetailsMemberSectionProps) => {
+  const { channel } = useChannelDetailsContext();
   const { t } = useTranslationContext();
-  const ownCapabilities = useChannelOwnCapabilities(channel);
-  const updateChannelMembers = ownCapabilities?.includes('update-channel-members') ?? false;
   const {
     theme: {
       channelDetails: {
@@ -32,17 +33,22 @@ export const ChannelDetailsMemberSection = () => {
           header: headerOverride,
           headerTitle: headerTitleOverride,
           viewAllLabel: viewAllLabelOverride,
+          addButtonWrapper: addButtonWrapperOverride,
         },
         sectionCard: sectionCardOverride,
       },
       semantics,
     },
   } = useTheme();
-  const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
+  const {
+    ChannelAddMembersButton,
+    ChannelMemberActionsSheet,
+    ChannelMemberItem,
+    ChannelMemberList,
+  } = useComponentsContext();
   const { hasMore, total, visible } = useChannelDetailsMembersPreview(channel);
   const styles = useStyles();
   const [isMemberListVisible, setMemberListVisible] = useState(false);
-  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
   const handleViewAllPress = useCallback(() => {
@@ -55,28 +61,11 @@ export const ChannelDetailsMemberSection = () => {
 
   const handleMemberListClose = useCallback(() => setMemberListVisible(false), []);
 
-  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-
-  const handleAddMembersPress = useCallback(() => {
-    if (onAddMembersPress) {
-      onAddMembersPress();
-      return;
-    }
-    setMemberListVisible(false);
-    setAddMembersVisible(true);
-  }, [onAddMembersPress]);
-
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
   const handleMemberPress = useCallback(
-    (member: ChannelMemberResponse) => {
-      if (onMemberPress) {
-        onMemberPress(member);
-        return;
-      }
-      setSelectedMember(member);
-    },
-    [onMemberPress],
+    (member: ChannelMemberResponse) => setSelectedMember(member),
+    [],
   );
 
   return (
@@ -94,20 +83,13 @@ export const ChannelDetailsMemberSection = () => {
         >
           {t('{{count}} members', { count: total })}
         </Text>
-        {updateChannelMembers ? (
-          <View style={styles.headerAddButton}>
-            <Button
-              accessibilityLabelKey='a11y/Add members'
-              label={t('Add')}
-              onPress={handleAddMembersPress}
-              size='sm'
-              style={styles.headerAddButtonInner}
-              testID='channel-details-member-section-add-button'
-              type='outline'
-              variant='secondary'
-            />
-          </View>
-        ) : null}
+        <View style={[styles.addButtonWrapper, addButtonWrapperOverride]}>
+          <ChannelAddMembersButton
+            style={{ flexShrink: 0, width: 'auto' }}
+            testID='channel-details-member-section-add-button'
+            variant='text'
+          />
+        </View>
       </View>
       <View style={styles.list}>
         {visible.map((member) => {
@@ -133,12 +115,21 @@ export const ChannelDetailsMemberSection = () => {
           </View>
         </Pressable>
       ) : null}
-      <ChannelAllMembersModal
-        onAddMembersPress={handleAddMembersPress}
-        onClose={handleMemberListClose}
-        visible={isMemberListVisible}
-      />
-      <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+      {onViewAllMembersPress ? null : (
+        <ChannelDetailsModal onClose={handleMemberListClose} visible={isMemberListVisible}>
+          <ModalHeader
+            onClose={handleMemberListClose}
+            rightAction={
+              <ChannelAddMembersButton
+                testID='channel-details-member-list-add-button'
+                variant='icon'
+              />
+            }
+            title={t('{{count}} members', { count: total })}
+          />
+          <ChannelMemberList />
+        </ChannelDetailsModal>
+      )}
       {selectedMember ? (
         <ChannelMemberActionsSheet
           member={selectedMember}
@@ -167,12 +158,6 @@ const useStyles = () =>
           paddingHorizontal: primitives.spacingMd,
           paddingTop: primitives.spacingXs,
         },
-        headerAddButton: {
-          flexShrink: 0,
-        },
-        headerAddButtonInner: {
-          width: 'auto',
-        },
         headerTitle: {
           flexShrink: 1,
           fontSize: primitives.typographyFontSizeMd,
@@ -182,6 +167,7 @@ const useStyles = () =>
         },
         list: {
           paddingBottom: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingXxs,
         },
         sectionCard: {
           borderRadius: primitives.radiusLg,
@@ -197,6 +183,12 @@ const useStyles = () =>
           fontSize: primitives.typographyFontSizeMd,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightNormal,
+        },
+        addButtonWrapper: {
+          height: 48,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         },
       }),
     [],

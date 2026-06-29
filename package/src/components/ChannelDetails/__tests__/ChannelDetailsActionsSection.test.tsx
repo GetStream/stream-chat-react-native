@@ -71,7 +71,7 @@ const sectionElement = () => (
           } as never
         }
       >
-        <ChannelDetailsContextProvider value={{ channel }}>
+        <ChannelDetailsContextProvider channel={channel}>
           <WithComponents overrides={{ ChannelDetailsActionItem: ActionItemProbe }}>
             <ChannelDetailsActionsSection />
           </WithComponents>

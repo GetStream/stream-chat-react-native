@@ -3,14 +3,18 @@ import { useMemo } from 'react';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
   ChannelActionItem,
+  GetChannelActionItems,
   useChannelActionItems,
 } from '../../../hooks/actions/useChannelActionItems';
 
-/**
- * @experimental This hook is experimental and is subject to change.
- */
-export const useChannelDetailsActionItems = (): ChannelActionItem[] => {
-  const { channel, getChannelActionItems, onChannelDismiss } = useChannelDetailsContext();
+export const useChannelDetailsActionItems = ({
+  getChannelActionItems,
+  onChannelDismiss,
+}: {
+  getChannelActionItems?: GetChannelActionItems;
+  onChannelDismiss?: () => void;
+} = {}): ChannelActionItem[] => {
+  const { channel } = useChannelDetailsContext();
 
   const items = useChannelActionItems({ channel, getChannelActionItems, surface: 'details' });
 

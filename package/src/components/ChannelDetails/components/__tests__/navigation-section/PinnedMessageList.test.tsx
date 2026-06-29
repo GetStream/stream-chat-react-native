@@ -74,7 +74,6 @@ jest.mock(
       return children;
     },
     useChannelPinnedMessageListContext: () => ({
-      channel: mockChannel,
       searchSource: mockCurrentSearchSource,
     }),
   }),
@@ -148,7 +147,7 @@ const tree = (searchSource: FakeSearchSource, props: { additionalFlatListProps?:
         }}
       >
         <ChannelDetailsContextProvider
-          value={{ channel: mockChannel } as unknown as ChannelDetailsContextValue}
+          channel={mockChannel as unknown as ChannelDetailsContextValue['channel']}
         >
           <PinnedMessageList additionalFlatListProps={props.additionalFlatListProps as never} />
         </ChannelDetailsContextProvider>

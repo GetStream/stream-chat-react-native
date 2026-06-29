@@ -4,10 +4,11 @@ import { Alert } from 'react-native';
 import { act, renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
-import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { ChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateFileReference } from '../../../mock-builders/attachments';
 import { NativeHandlers } from '../../../native';
+import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import { useEditChannelImage } from '../hooks/useEditChannelImage';
 
 jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
@@ -29,9 +30,15 @@ const wrap = ({ compressImageQuality }: { compressImageQuality?: number }) => {
         userLanguage: 'en',
       }}
     >
-      <ChannelDetailsContextProvider value={{ channel: buildChannel(), compressImageQuality }}>
+      <ChannelEditDetailsContext.Provider
+        value={{
+          compressImageQuality,
+          store: new EditChannelDetailsStore(buildChannel()),
+          submit: jest.fn(),
+        }}
+      >
         {children}
-      </ChannelDetailsContextProvider>
+      </ChannelEditDetailsContext.Provider>
     </TranslationProvider>
   );
   return Wrapper;

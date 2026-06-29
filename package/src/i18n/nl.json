@@ -457,5 +457,13 @@
   "Pin Chat": "Chat vastmaken",
   "Pin Group": "Groep vastmaken",
   "Unpin Chat": "Chat losmaken",
-  "Unpin Group": "Groep losmaken"
+  "Unpin Group": "Groep losmaken",
+  "Block": "Blokkeren",
+  "Block {{ name }}": "{{ name }} blokkeren",
+  "They won't be able to message or call you. You can unblock them later.": "Deze persoon kan je geen berichten sturen of bellen. Je kunt de blokkering later opheffen.",
+  "Leave": "Verlaten",
+  "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Je ontvangt geen berichten meer van {{ name }}. Je kunt op elk moment opnieuw deelnemen.",
+  "group": "de groep",
+  "No members found": "Geen leden gevonden",
+  "a11y/Search members": "Zoek leden"
 }

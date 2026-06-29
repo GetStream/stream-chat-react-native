@@ -13,9 +13,6 @@ import { Input, InputProps } from '../ui/Input/Input';
 
 export type SearchInputProps = Partial<InputProps>;
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   const { t } = useTranslationContext();
   const {
@@ -83,9 +80,7 @@ SearchInput.displayName = 'SearchInput{searchInput}';
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: primitives.spacingSm,
-    paddingHorizontal: primitives.spacingMd,
-    paddingTop: primitives.spacingXs,
+    padding: primitives.spacingMd,
   },
   input: {
     borderRadius: primitives.radiusMax,

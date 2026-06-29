@@ -32,7 +32,10 @@ import { AutoCompleteSuggestionList } from '../../components/AutoCompleteInput/A
 import { InputView } from '../../components/AutoCompleteInput/InputView';
 import { ChannelDetailsContent } from '../../components/ChannelDetails/ChannelDetails';
 import {
-  ChannelAddMembers,
+  ChannelAddMembersButton,
+  ChannelAddMembersForm,
+  ChannelAddMembersFormContent,
+  ChannelAddMembersFormHeader,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
@@ -40,7 +43,9 @@ import {
   ChannelDetailsProfile,
   ChannelDetailsEditButton,
   ChannelDetailsNavHeader,
-  ChannelEditDetails,
+  ChannelEditDetailsForm,
+  ChannelEditDetailsFormContent,
+  ChannelEditDetailsFormHeader,
   ChannelEditImageSheet,
   ChannelEditName,
   ChannelMemberActionsSheet,
@@ -52,6 +57,8 @@ import {
   MediaList,
   PinnedMessageItem,
   PinnedMessageList,
+  RoleItem,
+  RoleList,
 } from '../../components/ChannelDetails/components';
 import { ChannelListFooterLoadingIndicator } from '../../components/ChannelList/ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -319,7 +326,10 @@ const components = {
   ChannelDetailsHeader,
 
   // Channel Details Screen
-  ChannelAddMembers,
+  ChannelAddMembersButton,
+  ChannelAddMembersForm,
+  ChannelAddMembersFormContent,
+  ChannelAddMembersFormHeader,
   ChannelDetailsActionsSection,
   ChannelDetailsActionItem,
   ChannelDetailsMemberSection,
@@ -328,12 +338,16 @@ const components = {
   ChannelDetailsContent,
   ChannelDetailsEditButton,
   ChannelDetailsNavHeader,
-  ChannelEditDetails,
+  ChannelEditDetailsForm,
+  ChannelEditDetailsFormContent,
+  ChannelEditDetailsFormHeader,
   ChannelEditImageSheet,
   ChannelEditName,
   ChannelMemberActionsSheet,
   ChannelMemberItem,
   ChannelMemberList,
+  RoleItem,
+  RoleList,
   FileAttachmentItem,
   FileAttachmentList,
   MediaItem,

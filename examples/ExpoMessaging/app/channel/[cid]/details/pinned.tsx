@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable } from 'react-native';
 
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 import {
   ChannelDetailsContextProvider,
@@ -12,12 +12,7 @@ import {
   WithComponents,
 } from 'stream-chat-expo';
 
-import { ScreenHeader } from '../../../../components/ScreenHeader';
 import { AppContext } from '../../../../context/AppContext';
-
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-});
 
 /**
  * Custom pinned-message row that navigates back to the parent channel screen
@@ -41,7 +36,9 @@ const PinnedMessage = (props: PinnedMessageItemProps) => {
 };
 
 export default function ChannelPinnedMessagesScreen() {
-  useTheme();
+  const {
+    theme: { semantics },
+  } = useTheme();
   const { channel } = useContext(AppContext);
 
   if (!channel) {
@@ -49,13 +46,13 @@ export default function ChannelPinnedMessagesScreen() {
   }
 
   return (
-    <View style={styles.flex}>
-      <ScreenHeader titleText='Pinned Messages' />
-      <ChannelDetailsContextProvider value={{ channel }}>
+    <>
+      <Stack.Screen options={{ contentStyle: { backgroundColor: semantics.backgroundCoreApp } }} />
+      <ChannelDetailsContextProvider channel={channel}>
         <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
           <PinnedMessageList />
         </WithComponents>
       </ChannelDetailsContextProvider>
-    </View>
+    </>
   );
 }

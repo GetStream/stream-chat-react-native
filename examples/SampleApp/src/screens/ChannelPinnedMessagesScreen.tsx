@@ -106,7 +106,7 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
   return (
     <View style={[styles.flex]}>
       <ScreenHeader titleText='Pinned Messages' />
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
           <PinnedMessageList />
         </WithComponents>

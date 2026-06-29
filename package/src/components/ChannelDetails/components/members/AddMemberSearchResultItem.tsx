@@ -17,9 +17,6 @@ export type AddMemberSearchResultItemProps = {
   user: UserResponse;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const AddMemberSearchResultItem = ({ onPress, user }: AddMemberSearchResultItemProps) => {
   const { t } = useTranslationContext();
   const { selectionStore } = useChannelAddMembersContext();

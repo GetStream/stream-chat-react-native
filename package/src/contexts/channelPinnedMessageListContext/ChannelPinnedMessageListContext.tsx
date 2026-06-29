@@ -6,11 +6,7 @@ import { useChatContext } from '..';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelPinnedMessageListContextValue = {
-  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -18,15 +14,13 @@ export const ChannelPinnedMessageListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelPinnedMessageListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelPinnedMessageListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: MessageSearchSource }>) => {
   const { client } = useChatContext();
-  const [searchSource] = useState(() => {
+  const [defaultSearchSource] = useState(() => {
     const source = new MessageSearchSource(
       client,
       { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
@@ -46,17 +40,15 @@ export const ChannelPinnedMessageListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelPinnedMessageListContext.Provider value={{ channel, searchSource }}>
+    <ChannelPinnedMessageListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelPinnedMessageListContext.Provider>
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelPinnedMessageListContext = () => {
   const contextValue = useContext(
     ChannelPinnedMessageListContext,

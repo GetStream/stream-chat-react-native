@@ -105,7 +105,7 @@ jest.mock('../../../../../contexts/channelMediaListContext/ChannelMediaListConte
       mockProviderProbe.push({ channel: providedChannel });
       return ReactLib.createElement(
         actual.ChannelMediaListContext.Provider,
-        { value: { channel: mockChannel, searchSource: mockCurrentSearchSource } },
+        { value: { searchSource: mockCurrentSearchSource } },
         children,
       );
     },
@@ -165,7 +165,7 @@ const tree = (searchSource: FakeSearchSource, props: { additionalFlatListProps?:
         }}
       >
         <ChannelDetailsContextProvider
-          value={{ channel: mockChannel } as unknown as ChannelDetailsContextValue}
+          channel={mockChannel as unknown as ChannelDetailsContextValue['channel']}
         >
           <MediaList additionalFlatListProps={props.additionalFlatListProps as never} />
         </ChannelDetailsContextProvider>

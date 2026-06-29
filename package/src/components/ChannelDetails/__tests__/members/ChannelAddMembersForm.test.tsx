@@ -21,13 +21,13 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
-import { ChannelAddMembersModal } from '../../components/members/ChannelAddMembersModal';
+import { ChannelAddMembersForm } from '../../components/members/ChannelAddMembersForm';
 
 jest.mock('../../../../hooks/actions/useChannelActions');
 const mockedUseChannelActions = jest.mocked(useChannelActions);
 
-// Stands in for the real ChannelAddMembers list: drives the shared selection store
-// directly instead of running the search source / list.
+// Stands in for the real ChannelAddMembersFormContent list: drives the shared
+// selection store directly instead of running the search source / list.
 const AddMembersProbe = () => {
   const { selectionStore } = useChannelAddMembersContext();
   return (
@@ -76,16 +76,14 @@ const applyCapabilities = (
   return channel;
 };
 
-const renderModal = ({
+const renderForm = ({
   capabilities,
   channel,
   onClose = jest.fn(),
-  visible = true,
 }: {
   channel: Channel;
   capabilities?: Partial<OwnCapabilitiesContextValue>;
   onClose?: () => void;
-  visible?: boolean;
 }) =>
   render(
     <ThemeProvider theme={defaultTheme}>
@@ -100,11 +98,9 @@ const renderModal = ({
           <ChatContext.Provider
             value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
           >
-            <ChannelDetailsContextProvider
-              value={{ channel: applyCapabilities(channel, capabilities) }}
-            >
-              <WithComponents overrides={{ ChannelAddMembers: AddMembersProbe }}>
-                <ChannelAddMembersModal onClose={onClose} visible={visible} />
+            <ChannelDetailsContextProvider channel={applyCapabilities(channel, capabilities)}>
+              <WithComponents overrides={{ ChannelAddMembersFormContent: AddMembersProbe }}>
+                <ChannelAddMembersForm onClose={onClose} />
               </WithComponents>
             </ChannelDetailsContextProvider>
           </ChatContext.Provider>
@@ -118,13 +114,11 @@ const makeMembers = (count: number) =>
     generateMember({ user: generateUser({ id: `u-${idx}`, name: `User ${idx}` }) }),
   );
 
-describe('ChannelAddMembersModal', () => {
+describe('ChannelAddMembersForm', () => {
   let addMembersSpy: jest.Mock;
 
   beforeEach(() => {
-    addMembersSpy = jest.fn(async (_ids: string[], options?: { onSuccess?: () => unknown }) => {
-      await options?.onSuccess?.();
-    });
+    addMembersSpy = jest.fn().mockResolvedValue(undefined);
     mockedUseChannelActions.mockReturnValue({
       addMembers: addMembersSpy,
     } as unknown as ReturnType<typeof useChannelActions>);
@@ -135,10 +129,10 @@ describe('ChannelAddMembersModal', () => {
     mockedUseChannelActions.mockReset();
   });
 
-  it('enables the confirm button only while ChannelAddMembers reports a selection', () => {
+  it('enables the confirm button only while the form content reports a selection', () => {
     const channel = buildChannel(makeMembers(3), 3);
 
-    renderModal({ channel });
+    renderForm({ channel });
 
     const confirm = screen.getByTestId('channel-details-add-members-confirm-button');
     expect(confirm.props.accessibilityState).toMatchObject({ disabled: true });
@@ -154,11 +148,11 @@ describe('ChannelAddMembersModal', () => {
     ).toMatchObject({ disabled: true });
   });
 
-  it('calls addMembers from useChannelActions with the selected user ids and closes the sheet on confirm', async () => {
+  it('calls addMembers from useChannelActions with the selected user ids and closes the form on confirm', async () => {
     const channel = buildChannel(makeMembers(3), 3);
     const onClose = jest.fn();
 
-    renderModal({ channel, onClose });
+    renderForm({ channel, onClose });
 
     fireEvent.press(screen.getByTestId('probe-select-one'));
 
@@ -169,7 +163,7 @@ describe('ChannelAddMembersModal', () => {
 
     expect(addMembersSpy).toHaveBeenCalledWith(
       ['picked-1'],
-      expect.objectContaining({ onSuccess: expect.any(Function) }),
+      expect.objectContaining({ onFailure: expect.any(Function) }),
     );
     expect(channel.addMembers).not.toHaveBeenCalled();
     await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
@@ -179,19 +173,23 @@ describe('ChannelAddMembersModal', () => {
     const channel = buildChannel(makeMembers(3), 3);
     const onClose = jest.fn();
 
-    renderModal({ channel, onClose });
+    renderForm({ channel, onClose });
 
     fireEvent.press(screen.getByLabelText('a11y/Close'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps the sheet open and re-enables confirm when addMembers does not invoke onSuccess', async () => {
+  it('keeps the form open and re-enables confirm when addMembers invokes onFailure', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-    addMembersSpy.mockResolvedValueOnce(undefined);
+    addMembersSpy.mockImplementationOnce(
+      async (_ids: string[], options?: { onFailure?: (error: unknown) => unknown }) => {
+        await options?.onFailure?.(new Error('failed'));
+      },
+    );
     const channel = buildChannel(makeMembers(3), 3);
     const onClose = jest.fn();
 
-    renderModal({ channel, onClose });
+    renderForm({ channel, onClose });
 
     fireEvent.press(screen.getByTestId('probe-select-one'));
 
@@ -203,7 +201,7 @@ describe('ChannelAddMembersModal', () => {
 
     expect(addMembersSpy).toHaveBeenCalledWith(
       ['picked-1'],
-      expect.objectContaining({ onSuccess: expect.any(Function) }),
+      expect.objectContaining({ onFailure: expect.any(Function) }),
     );
     expect(onClose).not.toHaveBeenCalled();
     expect(screen.getByTestId('add-members-probe')).toBeTruthy();
