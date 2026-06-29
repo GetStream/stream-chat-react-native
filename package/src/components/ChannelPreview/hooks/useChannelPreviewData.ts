@@ -109,8 +109,14 @@ export const useChannelPreviewData = (
         setForceUpdate((prev) => prev + 1);
       }
     };
-    const { unsubscribe } = client.on('message.read', handleReadEvent);
-    return unsubscribe;
+    const readSubscription = client.on('message.read', handleReadEvent);
+    // `message.local_read` is the client-only equivalent emitted by `channel.markReadLocally()` when
+    // read events are disabled (e.g. livestreams with `isLocalUnreadCountEnabled`).
+    const localReadSubscription = client.on('message.local_read', handleReadEvent);
+    return () => {
+      readSubscription.unsubscribe();
+      localReadSubscription.unsubscribe();
+    };
   }, [client, channel]);
 
   /**

@@ -74,6 +74,7 @@ export const useChatClient = () => {
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance(config.apiKey, {
       timeout: 6000,
+      isLocalUnreadCountEnabled: true, // TEST: localized unread count — revert before committing
       // logger: (type, msg) => console.log(type, msg)
     });
     setChatClient(client);

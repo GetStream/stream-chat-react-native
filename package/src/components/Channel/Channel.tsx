@@ -515,8 +515,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
-  const [messageInputHeightStore] = useState(new MessageInputHeightStore());
+  const [channelUnreadStateStore] = useState(() => new ChannelUnreadStateStore());
+  const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
@@ -690,7 +690,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           return;
         }
 
+        if (event.type === 'message.local_read') {
+          // Local unread reset (read events disabled, e.g. livestreams): the count is already updated
+          // in the client state, and the preview badge / unread divider are handled elsewhere, so
+          // there is nothing to copy into channel state here.
+          return;
+        }
+
         if (event.type === 'message.read' || event.type === 'notification.mark_read') {
+          console.log('READ EVENT MENTION ?!', event);
           setReadThrottled();
           return;
         }
@@ -812,7 +820,20 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const markReadInternal: ChannelContextValue['markRead'] = throttle(
     async (options?: MarkReadFunctionOptions) => {
       const { updateChannelUnreadState = true } = options ?? {};
-      if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
+      if (!channel || channel?.disconnected) {
+        return;
+      }
+
+      // When read events are disabled (e.g. livestreams) we cannot mark read on the backend. If the
+      // client opted into a local unread count, reset it locally instead so the user's "caught up"
+      // state is reflected without a server round-trip.
+      if (!clientChannelConfig?.read_events) {
+        if (client.options.isLocalUnreadCountEnabled) {
+          channel.markReadLocally();
+          if (updateChannelUnreadState) {
+            setChannelUnreadState({ last_read: new Date(), unread_messages: 0 });
+          }
+        }
         return;
       }
 
