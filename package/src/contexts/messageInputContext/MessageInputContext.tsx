@@ -507,7 +507,19 @@ export const MessageInputProvider = ({
         ? await compressedImageURI(normalizedFile, value.compressImageQuality)
         : normalizedFile.uri;
       const updatedFile = { ...normalizedFile, uri: fileURI };
-      await attachmentManager.uploadFiles([updatedFile]);
+      const uploadedFiles = await attachmentManager.uploadFiles([updatedFile]);
+      // A blocked upload (i.e the file exceeds the size limit or has a
+      // disallowed type) is a permanent validation failure that the server
+      // will always reject, so remove it from the composer instead of leaving
+      // an unsendable preview behind. The blocked notification has already been
+      // surfaced to the user by the attachment manager at this point.
+      const blockedAttachmentIds = (uploadedFiles ?? [])
+        .filter((attachment) => attachment?.localMetadata?.uploadState === 'blocked')
+        .map((attachment) => attachment?.localMetadata.id)
+        .filter((id): id is string => typeof id === 'string');
+      if (blockedAttachmentIds.length) {
+        attachmentManager.removeAttachments(blockedAttachmentIds);
+      }
       uploadAbortControllerRef.current.delete(normalizedFile.name);
     } catch (error) {
       if (
