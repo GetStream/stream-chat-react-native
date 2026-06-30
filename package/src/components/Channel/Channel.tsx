@@ -826,12 +826,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       // When read events are disabled (e.g. livestreams) we cannot mark read on the backend. If the
       // client opted into a local unread count, reset it locally instead so the user's "caught up"
-      // state is reflected without a server round-trip.
+      // state is reflected without a server round trip.
       if (!clientChannelConfig?.read_events) {
         if (client.options.isLocalUnreadCountEnabled) {
-          channel.markReadLocally();
-          if (updateChannelUnreadState) {
-            setChannelUnreadState({ last_read: new Date(), unread_messages: 0 });
+          const event = channel.markReadLocally();
+          if (updateChannelUnreadState && event && lastReadRef.current) {
+            setChannelUnreadState({
+              last_read: lastReadRef.current,
+              last_read_message_id: event.last_read_message_id,
+              unread_messages: 0,
+            });
+            lastReadRef.current = new Date();
           }
         }
         return;
