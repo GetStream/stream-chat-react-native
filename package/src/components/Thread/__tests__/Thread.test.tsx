@@ -142,7 +142,9 @@ describe('Thread', () => {
       threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
     );
 
-    let setLastRead: ((date?: Date) => void) | undefined;
+    let setChannelUnreadState:
+      | React.ContextType<typeof ChannelContext>['setChannelUnreadState']
+      | undefined;
 
     const { getByText, toJSON } = render(
       <ChannelsStateProvider>
@@ -161,7 +163,7 @@ describe('Thread', () => {
               <Channel channel={channel} thread={thread} threadList>
                 <ChannelContext.Consumer>
                   {(c) => {
-                    setLastRead = c.setLastRead;
+                    setChannelUnreadState = c.setChannelUnreadState;
                     return <Thread />;
                   }}
                 </ChannelContext.Consumer>
@@ -178,7 +180,7 @@ describe('Thread', () => {
       expect(getByText('Message6')).toBeTruthy();
     });
 
-    act(() => setLastRead!(new Date('2020-08-17T18:08:03.196Z')));
+    act(() => setChannelUnreadState!(undefined));
 
     const snapshot = toJSON() as unknown as {
       children: Array<{

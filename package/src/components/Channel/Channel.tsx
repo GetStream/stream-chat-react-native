@@ -511,7 +511,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
-  const [lastRead, setLastRead] = useState<Date | undefined>();
+  const lastReadRef = useRef<Date | undefined>(undefined);
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
@@ -711,7 +711,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   useEffect(() => {
     let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
-      setLastRead(new Date());
+      lastReadRef.current = new Date();
       const unreadCount = channel.countUnread();
       const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
       if (!channel || !shouldSyncChannel) {
@@ -842,13 +842,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       } else {
         try {
           const response = await channel.markRead();
-          if (updateChannelUnreadState && response && lastRead) {
+          if (updateChannelUnreadState && response && lastReadRef.current) {
             setChannelUnreadState({
-              last_read: lastRead,
+              last_read: lastReadRef.current,
               last_read_message_id: response?.event.last_read_message_id,
               unread_messages: 0,
             });
-            setLastRead(new Date());
+            lastReadRef.current = new Date();
           }
         } catch (err) {
           console.log('Error marking channel as read:', err);
@@ -1599,7 +1599,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
-    lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
@@ -1611,7 +1610,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
-    setLastRead,
     setTargetedMessage,
     hasPendingInitialTargetLoad,
     targetedMessage,

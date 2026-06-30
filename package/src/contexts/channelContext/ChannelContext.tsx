@@ -110,7 +110,6 @@ export type ChannelContextValue = {
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
   setChannelUnreadState: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
-  setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId?: string) => void;
   /**
    * Returns true when Channel is about to load an initial targeted message.
@@ -131,8 +130,6 @@ export type ChannelContextValue = {
    */
   highlightedMessageId?: string;
   isChannelActive?: boolean;
-
-  lastRead?: Date;
   loading?: boolean;
   /**
    * Maximum time in milliseconds that should occur between messages
