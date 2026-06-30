@@ -690,7 +690,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           return;
         }
 
-        if (event.type === 'message.local_read') {
+        if (event.type === 'message.read_locally') {
           // Local unread reset (read events disabled, e.g. livestreams): the count is already updated
           // in the client state, and the preview badge / unread divider are handled elsewhere, so
           // there is nothing to copy into channel state here.
