@@ -11,6 +11,7 @@ jest.mock('../../native', () => ({
 }));
 
 const createMockPlayerRef = () => ({
+  currentTime: 0,
   pause: jest.fn(),
   play: jest.fn(),
   seek: jest.fn(),
@@ -92,8 +93,8 @@ describe('VideoPlayer', () => {
       player.duration = 10000;
       player.seek(5000);
 
-      // Expo uses seekBy instead of seek
-      expect(mockRef.seekBy).toHaveBeenCalled();
+      // Expo performs an absolute seek by assigning currentTime (in seconds)
+      expect(mockRef.currentTime).toBe(5);
       expect(mockRef.seek).not.toHaveBeenCalled();
     });
 
@@ -402,7 +403,7 @@ describe('VideoPlayer', () => {
       expect(mockRef.seekBy).not.toHaveBeenCalled();
     });
 
-    it('should call seekBy on playerRef for Expo SDK', () => {
+    it('should set currentTime on playerRef for Expo SDK (absolute seek)', () => {
       (NativeHandlers as { SDK: string }).SDK = 'stream-chat-expo';
       const player = new VideoPlayer({ id: 'test-player' });
       const mockRef = createMockPlayerRef();
@@ -411,7 +412,9 @@ describe('VideoPlayer', () => {
 
       player.seek(5000);
 
-      expect(mockRef.seekBy).toHaveBeenCalledWith(5000 / ONE_SECOND_IN_MILLISECONDS);
+      // seekBy is relative and must not be used to jump to a timestamp
+      expect(mockRef.currentTime).toBe(5000 / ONE_SECOND_IN_MILLISECONDS);
+      expect(mockRef.seekBy).not.toHaveBeenCalled();
       expect(mockRef.seek).not.toHaveBeenCalled();
     });
 

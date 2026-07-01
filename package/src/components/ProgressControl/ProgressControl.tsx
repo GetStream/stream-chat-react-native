@@ -51,6 +51,8 @@ export const ProgressControl = (props: ProgressControlProps) => {
   const thumbDirectionMultiplier = isRTL ? -1 : 1;
 
   const state = useSharedValue(progress);
+  const isSeekable = onEndDrag !== undefined;
+
   const {
     theme: {
       progressControl: { container, filledStyles, thumb },
@@ -68,6 +70,7 @@ export const ProgressControl = (props: ProgressControlProps) => {
   const pan = useMemo(
     () =>
       Gesture.Pan()
+        .enabled(isSeekable)
         .maxPointers(1)
         .onStart(() => {
           if (onStartDrag) {
@@ -84,7 +87,7 @@ export const ProgressControl = (props: ProgressControlProps) => {
           }
         })
         .withTestId(testID),
-    [isRTL, onEndDrag, onStartDrag, state, testID, widthInNumbers],
+    [isRTL, isSeekable, onEndDrag, onStartDrag, state, testID, widthInNumbers],
   );
 
   const thumbStyles = useAnimatedStyle(
