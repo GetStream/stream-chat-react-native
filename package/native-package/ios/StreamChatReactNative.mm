@@ -9,7 +9,18 @@
 #import "RCTImageLoader.h"
 #endif
 
-NSString *moduleName = @"StreamChatReactNative";
+static NSString *const moduleName = @"StreamChatReactNative";
+
+// These helpers are declared `static` so their symbols keep internal linkage and
+// are not exported from the framework. Otherwise they collide (duplicate symbol
+// link error) with libraries that vendor the same image-resizer sources, e.g.
+// @bam.tech/react-native-image-resizer. See issue #3227.
+static bool saveImage(NSString *fullPath, UIImage *image, NSString *format, float quality);
+static NSString *generateFilePath(NSString *ext, NSString *outputPath);
+static UIImage *rotateImage(UIImage *inputImage, float rotationDegrees);
+static float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlyScaleDown, bool maximize);
+static UIImage *scaleImage(UIImage *image, CGSize toSize, NSString *mode, bool onlyScaleDown);
+static NSDictionary *transformImage(UIImage *image, int rotation, CGSize newSize, NSString *fullPath, NSString *format, int quality, NSDictionary *options);
 
 @implementation StreamChatReactNative
 
@@ -67,7 +78,7 @@ RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width hei
 
 
 
-bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)
+static bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)
 {
     NSData* data = nil;
     if ([format isEqualToString:@"JPEG"]) {
@@ -84,7 +95,7 @@ bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float qu
     return [fileManager createFileAtPath:fullPath contents:data attributes:nil];
 }
 
-NSString * generateFilePath(NSString * ext, NSString * outputPath)
+static NSString * generateFilePath(NSString * ext, NSString * outputPath)
 {
     NSString* directory;
 
@@ -115,7 +126,7 @@ NSString * generateFilePath(NSString * ext, NSString * outputPath)
     return fullPath;
 }
 
-UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
+static UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
 {
 
     // We want only fixed 0, 90, 180, 270 degree rotations.
@@ -148,7 +159,7 @@ UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
     }
 }
 
-float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlyScaleDown, bool maximize)
+static float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlyScaleDown, bool maximize)
 {
     float    sx = theSize.width;
     float    sy = theSize.height;
@@ -184,7 +195,7 @@ float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlySc
 // any :image scale factor.
 // The returned image is an unscaled image (scale = 1.0)
 // so no additional scaling math needs to be done to get its pixel dimensions
-UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlyScaleDown)
+static UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlyScaleDown)
 {
 
     // Need to do scaling corrections
@@ -222,7 +233,7 @@ UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlySca
     return newImage;
 }
 
-NSDictionary * transformImage(UIImage *image,
+static NSDictionary * transformImage(UIImage *image,
                               int rotation,
                               CGSize newSize,
                               NSString* fullPath,
