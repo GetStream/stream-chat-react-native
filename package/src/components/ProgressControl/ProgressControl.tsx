@@ -50,8 +50,6 @@ export type ProgressControlProps = {
 
 const TRACK_HEIGHT = 3;
 
-// Vertical hit-slop added around the 3px track when `expandedTouchArea` is set,
-// growing the touch target to a comfortable ~27px without changing the visual track.
 const EXPANDED_TOUCH_SLOP = 12;
 
 export const ProgressControl = (props: ProgressControlProps) => {
@@ -99,7 +97,6 @@ export const ProgressControl = (props: ProgressControlProps) => {
       .withTestId(testID);
 
     if (expandedTouchArea) {
-      // The 3px track is a tiny drag target; expand the active area vertically.
       gesture.hitSlop({ bottom: EXPANDED_TOUCH_SLOP, top: EXPANDED_TOUCH_SLOP });
     }
 

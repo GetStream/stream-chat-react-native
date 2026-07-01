@@ -168,7 +168,6 @@ export class VideoPlayer {
         this.playerRef.currentTime = positionInSeconds;
       }
     } else {
-      // react-native-video's imperative `seek` takes an absolute time in seconds.
       if (this.playerRef?.seek) {
         this.playerRef.seek(positionInSeconds);
       }
