@@ -162,13 +162,14 @@ export class VideoPlayer {
 
   seek(position: number) {
     this.position = position;
+    const positionInSeconds = position / ONE_SECOND_IN_MILLISECONDS;
     if (this.isExpoCLI) {
-      if (this.playerRef?.seekBy) {
-        this.playerRef.seekBy(position / ONE_SECOND_IN_MILLISECONDS);
+      if (this.playerRef) {
+        this.playerRef.currentTime = positionInSeconds;
       }
     } else {
       if (this.playerRef?.seek) {
-        this.playerRef.seek(position / ONE_SECOND_IN_MILLISECONDS);
+        this.playerRef.seek(positionInSeconds);
       }
     }
   }

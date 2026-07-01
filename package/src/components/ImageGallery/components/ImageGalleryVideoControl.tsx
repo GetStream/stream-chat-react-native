@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { ImageGalleryVideoControlProps } from './types';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
+import { useStableCallback } from '../../../hooks/useStableCallback';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { Pause } from '../../../icons/pause-fill';
 import { Play } from '../../../icons/play-fill';
@@ -70,6 +71,24 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
     await videoPlayer.changePlaybackRate();
   };
 
+  // Remember whether playback was ongoing so it can be resumed once the user
+  // finishes scrubbing.
+  const wasPlayingBeforeSeek = useRef(false);
+
+  // Pause while scrubbing so the incoming progress updates don't fight the
+  // user's finger on the seek bar.
+  const handleStartDrag = useStableCallback(() => {
+    wasPlayingBeforeSeek.current = videoPlayer.isPlaying;
+    videoPlayer.pause();
+  });
+
+  const handleEndDrag = useStableCallback((seekProgress: number) => {
+    videoPlayer.seek(seekProgress * duration);
+    if (wasPlayingBeforeSeek.current) {
+      videoPlayer.play();
+    }
+  });
+
   return (
     <View style={[styles.container, container]}>
       <View style={styles.leftContainer}>
@@ -92,7 +111,10 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
 
       <View style={styles.progressContainer}>
         <ProgressControl
+          expandedTouchArea
           isPlaying={isPlaying}
+          onEndDrag={handleEndDrag}
+          onStartDrag={handleStartDrag}
           progress={progress}
           testID={'progress-control'}
           width={180}
