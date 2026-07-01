@@ -60,6 +60,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
+import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
@@ -139,7 +140,10 @@ type MessageFlashListPropsWithContext = Pick<
     | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
-  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
+  Pick<
+    MessageInputContextValue,
+    'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
+  > &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
@@ -259,6 +263,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    allowSendBeforeAttachmentsUpload,
     attachmentPickerStore,
     additionalFlashListProps,
     channel,
@@ -1153,7 +1158,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           <AutoCompleteSuggestionList />
         </PortalWhileClosingView>
       </Animated.View>
-      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
+      <NotificationList
+        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
+        filter={allowSendBeforeAttachmentsUpload ? excludeCanceledUploadNotifications : undefined}
+      />
     </View>
   );
 };
@@ -1238,11 +1246,13 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
+  const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
+    useMessageInputContext();
 
   return (
     <MessageFlashListWithContext
       {...{
+        allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
         channelUnreadStateStore,
