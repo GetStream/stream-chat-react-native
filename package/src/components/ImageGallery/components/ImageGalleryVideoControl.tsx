@@ -111,6 +111,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
 
       <View style={styles.progressContainer}>
         <ProgressControl
+          expandedTouchArea
           isPlaying={isPlaying}
           onEndDrag={handleEndDrag}
           onStartDrag={handleStartDrag}
