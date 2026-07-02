@@ -281,7 +281,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
               );
             case 'attachments':
               return otherAttachments.map((attachment, attachmentIndex) => (
-                <Attachment attachment={attachment} key={`${message.id}-${attachmentIndex}`} />
+                <Attachment attachment={attachment} key={`attachment-${attachmentIndex}`} />
               ));
             case 'files':
               return (
@@ -297,7 +297,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
               const pollId = message.poll_id;
               const poll = pollId && client.polls.fromState(pollId);
               return pollId && poll ? (
-                <Poll key={`poll_${message.poll_id}`} message={message} poll={poll} />
+                <Poll key={`poll_${messageContentOrderIndex}`} message={message} poll={poll} />
               ) : null;
             }
             case 'location':
