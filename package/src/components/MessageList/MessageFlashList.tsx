@@ -1132,7 +1132,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           <FlashList
             contentContainerStyle={flatListContentContainerStyle}
             data={processedMessageList}
-            drawDistance={250}
+            drawDistance={800}
             getItemType={getItemTypeInternal}
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
