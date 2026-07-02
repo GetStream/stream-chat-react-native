@@ -233,6 +233,7 @@ const WAIT_FOR_SCROLL_TIMEOUT = 0;
 const getAttachmentItemType = (message: LocalMessage) => {
   const attachments = message.attachments ?? [];
   let hasGiphy = false;
+  let hasAudio = false;
   let hasFile = false;
   let hasCard = false;
   for (const attachment of attachments) {
@@ -249,10 +250,11 @@ const getAttachmentItemType = (message: LocalMessage) => {
     if (attachment.type === FileTypes.Giphy) {
       hasGiphy = true;
     } else if (
-      attachment.type === FileTypes.File ||
       attachment.type === FileTypes.Audio ||
       attachment.type === FileTypes.VoiceRecording
     ) {
+      hasAudio = true;
+    } else if (attachment.type === FileTypes.File) {
       hasFile = true;
     } else if (attachment.og_scrape_url || attachment.title_link) {
       hasCard = true;
@@ -260,6 +262,9 @@ const getAttachmentItemType = (message: LocalMessage) => {
   }
   if (hasGiphy) {
     return 'message-with-giphy';
+  }
+  if (hasAudio) {
+    return 'message-with-audio';
   }
   if (hasFile) {
     return 'message-with-file';
