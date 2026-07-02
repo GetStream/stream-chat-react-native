@@ -44,7 +44,13 @@ export const ChannelDetailsContent = ({ onBack }: Pick<ChannelDetailsProps, 'onB
       ]}
     >
       <ChannelDetailsNavHeader
-        action={isDirect ? undefined : <ChannelDetailsEditButton />}
+        action={
+          isDirect ? undefined : (
+            <View style={{ flexShrink: 0, flexGrow: 0 }}>
+              <ChannelDetailsEditButton />
+            </View>
+          )
+        }
         onBack={onBack}
       />
       <ScrollView contentContainerStyle={[styles.scrollContent, scrollContentOverride]}>

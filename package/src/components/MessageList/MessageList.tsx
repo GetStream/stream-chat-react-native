@@ -74,6 +74,7 @@ import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
+import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -229,7 +230,10 @@ type MessageListPropsWithContext = Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
-  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
+  Pick<
+    MessageInputContextValue,
+    'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
+  > &
   Pick<
     ThreadContextValue,
     'loadMoreRecentThread' | 'loadMoreThread' | 'threadHasMore' | 'thread' | 'threadInstance'
@@ -320,6 +324,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    allowSendBeforeAttachmentsUpload,
     animateLayout = true,
     attachmentPickerStore,
     additionalFlatListProps,
@@ -1391,7 +1396,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           <AutoCompleteSuggestionList />
         </PortalWhileClosingView>
       </Animated.View>
-      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
+      <NotificationList
+        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
+        filter={allowSendBeforeAttachmentsUpload ? excludeCanceledUploadNotifications : undefined}
+      />
     </View>
   );
 };
@@ -1423,7 +1431,8 @@ export const MessageList = (props: MessageListProps) => {
   const { readEvents } = useOwnCapabilitiesContext();
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
     useMessagesContext();
-  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
+  const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
+    useMessageInputContext();
   const { loadMore, loadMoreRecent, hasMore } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
     useThreadContext();
@@ -1431,6 +1440,7 @@ export const MessageList = (props: MessageListProps) => {
   return (
     <MessageListWithContext
       {...{
+        allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
         channelUnreadStateStore,
