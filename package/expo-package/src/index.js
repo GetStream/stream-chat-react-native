@@ -24,7 +24,10 @@ import {
   Video,
 } from './optionalDependencies';
 
-registerNativeHandlers({
+/**
+ * The default native handlers this package registers with the core SDK.
+ */
+export const defaultNativeHandlers = {
   Audio,
   compressImage,
   deleteFile,
@@ -39,13 +42,17 @@ registerNativeHandlers({
   pickDocument,
   pickImage,
   saveFile,
-  SDK: 'stream-chat-expo',
   setClipboardString,
   shareImage,
   Sound,
   takePhoto,
   triggerHaptic,
   Video,
+};
+
+registerNativeHandlers({
+  ...defaultNativeHandlers,
+  SDK: 'stream-chat-expo',
 });
 
 export * from 'stream-chat-react-native-core';
