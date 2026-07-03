@@ -17,7 +17,7 @@ export type FileAttachmentGroupPropsWithContext = Pick<MessageContextValue, 'fil
 };
 
 const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithContext) => {
-  const { files, message, styles: stylesProp = {} } = props;
+  const { files, styles: stylesProp = {} } = props;
   const { Attachment } = useComponentsContext();
 
   const {
@@ -32,7 +32,7 @@ const FileAttachmentGroupWithContext = (props: FileAttachmentGroupPropsWithConte
     <View style={[styles.container, {}, container, stylesProp.container]}>
       {files.map((file, index) => (
         <View
-          key={`file-by-attachment-group-${message.id}-${index}`}
+          key={`file-by-attachment-group-${index}`}
           style={[styles.item, stylesProp.attachmentContainer, attachmentContainer]}
         >
           <Attachment attachment={file} />
