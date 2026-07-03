@@ -238,6 +238,7 @@ const useStyles = () => {
       fontWeight: primitives.typographyFontWeightSemiBold,
       fontSize: primitives.typographyFontSizeSm,
       color: semantics.textTertiary,
+      textAlign: 'center',
     },
   });
 };

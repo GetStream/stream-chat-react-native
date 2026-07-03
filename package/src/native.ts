@@ -303,6 +303,11 @@ export type VideoType = {
   repeat?: boolean;
   replayAsync?: () => void;
   resizeMode?: string;
+  /**
+   * Absolute playback position in seconds. Assigning to it performs an absolute
+   * seek (expo-video's `VideoPlayer.currentTime`).
+   */
+  currentTime?: number;
   seek?: (seconds: number) => void;
   seekBy?: (seconds: number) => void;
   setPositionAsync?: (position: number) => void;

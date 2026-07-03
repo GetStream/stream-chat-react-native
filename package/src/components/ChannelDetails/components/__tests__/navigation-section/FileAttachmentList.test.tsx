@@ -81,7 +81,6 @@ jest.mock(
       return children;
     },
     useChannelFileAttachmentListContext: () => ({
-      channel: mockChannel,
       searchSource: mockCurrentSearchSource,
     }),
   }),
@@ -135,7 +134,7 @@ const tree = (
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider value={props.translators ?? fakeTranslators}>
         <ChannelDetailsContextProvider
-          value={{ channel: mockChannel } as unknown as ChannelDetailsContextValue}
+          channel={mockChannel as unknown as ChannelDetailsContextValue['channel']}
         >
           <FileAttachmentList
             additionalSectionListProps={props.additionalSectionListProps as never}

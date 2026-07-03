@@ -34,7 +34,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   return (
     <View style={[styles.flex]}>
       <ScreenHeader titleText='Files' />
-      <ChannelDetailsContextProvider value={{ channel }}>
+      <ChannelDetailsContextProvider channel={channel}>
         <FileAttachmentList />
       </ChannelDetailsContextProvider>
     </View>

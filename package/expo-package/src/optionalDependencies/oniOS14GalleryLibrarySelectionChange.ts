@@ -3,9 +3,13 @@ import { Platform } from 'react-native';
 let MediaLibrary;
 
 try {
-  MediaLibrary = require('expo-media-library');
+  MediaLibrary = require('expo-media-library/legacy');
 } catch (e) {
-  // do nothing
+  try {
+    MediaLibrary = require('expo-media-library');
+  } catch (e) {
+    // do nothing
+  }
 }
 
 if (!MediaLibrary) {

@@ -18,8 +18,6 @@ import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
  * The shape passed to `MediaItem`'s `onPress` callback, identifying the rendered attachment, the
  * message it belongs to, and the tile's native node handle (used as the open-animation origin when
  * launching the fullscreen image gallery).
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type MediaItemPressParams = {
   attachment: Attachment;
@@ -41,9 +39,6 @@ export type MediaItemProps = {
   onPress?: (params: MediaItemPressParams) => void;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const MediaItem = (props: MediaItemProps) => {
   const { ImageComponent: Image } = useComponentsContext();
   const { attachment, message, onPress, size } = props;

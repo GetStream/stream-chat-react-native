@@ -12,7 +12,6 @@ import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelO
  * Resolves the subtitle status line shown under the channel title.
  *   - Direct chats: `t('Online')` when the other member is online, otherwise an empty string.
  *   - Group chats: `t('{{memberCount}} members, {{onlineCount}} online')`.
- * @experimental This hook is experimental and is subject to change.
  */
 export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
   const { t } = useTranslationContext();

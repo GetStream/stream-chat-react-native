@@ -27,6 +27,12 @@ const mockProviderProbe: { channel: unknown }[] = [];
 const mockNotificationTargetProbe: { hostId?: string; panel?: string }[] = [];
 const mockAddNotification = jest.fn();
 
+let mockMemberCount = 1;
+
+jest.mock('../../../../hooks/useChannelMemberCount', () => ({
+  useChannelMemberCount: () => mockMemberCount,
+}));
+
 jest.mock('../../../Notifications/hooks/useNotificationApi', () => ({
   useNotificationApi: () => ({ addNotification: mockAddNotification }),
 }));
@@ -66,7 +72,6 @@ jest.mock('../../../../contexts/channelMemberListContext/ChannelMemberListContex
     return children;
   },
   useChannelMemberListContext: () => ({
-    channel: mockChannel,
     searchSource: mockCurrentSearchSource,
   }),
 }));
@@ -94,6 +99,7 @@ jest.mock('../../../UIComponents/SearchInput', () => {
 });
 
 type FakeSearchSource = {
+  resetStateAndActivate: jest.Mock;
   search: jest.Mock;
   state: StateStore<
     Pick<
@@ -122,6 +128,7 @@ const makeSearchSource = (
   // The component calls state.partialNext on search input change; spy on it.
   jest.spyOn(state, 'partialNext');
   return {
+    resetStateAndActivate: jest.fn(),
     search: jest.fn(),
     state: state as FakeSearchSource['state'],
   };
@@ -147,7 +154,6 @@ const tree = (
   searchSource: FakeSearchSource,
   props: {
     additionalFlatListProps?: object;
-    onMemberPress?: (member: ChannelMemberResponse) => void;
   } = {},
 ) => {
   mockCurrentSearchSource = searchSource;
@@ -161,12 +167,7 @@ const tree = (
         }}
       >
         <ChannelDetailsContextProvider
-          value={
-            {
-              channel: mockChannel,
-              onMemberPress: props.onMemberPress,
-            } as unknown as ChannelDetailsContextValue
-          }
+          channel={mockChannel as unknown as ChannelDetailsContextValue['channel']}
         >
           <WithComponents
             overrides={{
@@ -188,6 +189,7 @@ describe('ChannelMemberList', () => {
     mockSheetProbe.length = 0;
     mockProviderProbe.length = 0;
     mockNotificationTargetProbe.length = 0;
+    mockMemberCount = 1;
   });
 
   afterEach(() => jest.clearAllMocks());
@@ -298,7 +300,7 @@ describe('ChannelMemberList', () => {
     expect(screen.queryByTestId('channel-member-list')).toBeNull();
   });
 
-  it('opens the per-member actions sheet on press when no onMemberPress override is provided, and closes it', () => {
+  it('opens the per-member actions sheet on press, and closes it', () => {
     const bob = generateMember({ user: generateUser({ id: 'bob', name: 'Bob' }) });
     render(tree(makeSearchSource({ items: [bob] })));
 
@@ -308,18 +310,6 @@ describe('ChannelMemberList', () => {
     expect(screen.getByTestId('member-actions-sheet-probe').props.children).toBe('bob');
 
     act(() => mockSheetProbe[mockSheetProbe.length - 1]?.onClose?.());
-    expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
-  });
-
-  it('calls onMemberPress instead of opening the sheet when an override is provided', () => {
-    const alice = generateMember({ user: generateUser({ id: 'alice', name: 'Alice' }) });
-    const onMemberPress = jest.fn();
-    render(tree(makeSearchSource({ items: [alice] }), { onMemberPress }));
-
-    fireEvent.press(screen.getByTestId('member-alice'));
-
-    expect(onMemberPress).toHaveBeenCalledTimes(1);
-    expect(onMemberPress.mock.calls[0][0].user?.id).toBe('alice');
     expect(screen.queryByTestId('member-actions-sheet-probe')).toBeNull();
   });
 
@@ -359,5 +349,29 @@ describe('ChannelMemberList', () => {
     render(tree(makeSearchSource({ items: [] })));
 
     expect(mockAddNotification).not.toHaveBeenCalled();
+  });
+
+  it('refreshes the list when the member count changes and there is no search query', () => {
+    const searchSource = makeSearchSource({ searchQuery: '' });
+    const { rerender } = render(tree(searchSource));
+    expect(searchSource.search).toHaveBeenCalledTimes(1);
+    searchSource.search.mockClear();
+
+    mockMemberCount = 2;
+    rerender(tree(searchSource));
+
+    expect(searchSource.search).toHaveBeenCalledTimes(1);
+    expect(searchSource.search).toHaveBeenCalledWith();
+  });
+
+  it('does not refresh the list when the member count changes while a search query is active', () => {
+    const searchSource = makeSearchSource({ searchQuery: 'alice' });
+    const { rerender } = render(tree(searchSource));
+    searchSource.search.mockClear();
+
+    mockMemberCount = 2;
+    rerender(tree(searchSource));
+
+    expect(searchSource.search).not.toHaveBeenCalled();
   });
 });

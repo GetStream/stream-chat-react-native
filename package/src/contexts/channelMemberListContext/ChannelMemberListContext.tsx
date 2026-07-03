@@ -5,11 +5,7 @@ import { Channel, ChannelMemberSearchSource } from 'stream-chat';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelMemberListContextValue = {
-  channel: Channel;
   searchSource: ChannelMemberSearchSource;
 };
 
@@ -17,14 +13,12 @@ export const ChannelMemberListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelMemberListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelMemberListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
-  const [searchSource] = useState(() => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: ChannelMemberSearchSource }>) => {
+  const [defaultSearchSource] = useState(() => {
     const source = new ChannelMemberSearchSource(
       channel,
       {
@@ -46,17 +40,15 @@ export const ChannelMemberListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelMemberListContext.Provider value={{ channel, searchSource }}>
+    <ChannelMemberListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelMemberListContext.Provider>
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelMemberListContext = () => {
   const contextValue = useContext(
     ChannelMemberListContext,

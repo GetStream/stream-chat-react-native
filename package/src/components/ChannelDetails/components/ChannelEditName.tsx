@@ -11,9 +11,6 @@ const selectCurrentName = (state: EditChannelDetailsState) => ({
   currentName: state.currentName,
 });
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelEditName = () => {
   const { store } = useChannelEditDetailsContext();
   const { t } = useTranslationContext();

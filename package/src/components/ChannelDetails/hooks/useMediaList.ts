@@ -7,8 +7,6 @@ import { FileTypes } from '../../../types/types';
 /**
  * A single image/video attachment paired with the message it belongs to. The media grid renders
  * one tile per attachment, so a message with multiple media attachments yields multiple tiles.
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type MediaTile = {
   attachment: Attachment;
@@ -44,8 +42,6 @@ const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => 
  * Gathers and filters the image/video attachments from a list of messages into a flat list of
  * media tiles, ready to render in the media grid. Scraped/OG link-preview attachments and
  * non-media attachments are excluded.
- *
- * @experimental This hook is experimental and is subject to change.
  */
 export const useMediaList = (messages?: MessageResponse[]): MediaTile[] =>
   useMemo(() => getMediaTiles(messages), [messages]);

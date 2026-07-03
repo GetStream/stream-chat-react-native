@@ -4,7 +4,10 @@ import { StyleSheet, Switch, View } from 'react-native';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { ChannelActionItem } from '../../../hooks/actions/useChannelActionItems';
+import {
+  ChannelActionItem,
+  GetChannelActionItems,
+} from '../../../hooks/actions/useChannelActionItems';
 import { getOtherUserInDirectChannel } from '../../../hooks/actions/useChannelActions';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { primitives } from '../../../theme';
@@ -101,10 +104,26 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelDetailsActionsSection = () => {
+export type ChannelDetailsActionsSectionProps = {
+  /**
+   * Customize the list of action items rendered in the channel details actions section.
+   *
+   * Receives the default items the SDK produces for the current channel and returns the
+   * final list to render. Use this to filter, reorder, replace, or add items.
+   *
+   * The SDK still wires `onChannelDismiss` into the resulting `leave`, `deleteChannel`, and
+   * `block` items (matched by `id`) after this callback runs, so those actions continue to
+   * dismiss the screen on success regardless of how the items are customized.
+   */
+  getChannelActionItems?: GetChannelActionItems;
+  /** Fired after the channel is no longer available to the current user (delete, leave, or block actions). */
+  onChannelDismiss?: () => void;
+};
+
+export const ChannelDetailsActionsSection = ({
+  getChannelActionItems,
+  onChannelDismiss,
+}: ChannelDetailsActionsSectionProps) => {
   const {
     theme: {
       channelDetails: { sectionCard: sectionCardOverride },
@@ -114,7 +133,7 @@ export const ChannelDetailsActionsSection = () => {
   const { ChannelDetailsActionItem } = useComponentsContext();
   const styles = useStyles();
 
-  const items = useChannelDetailsActionItems();
+  const items = useChannelDetailsActionItems({ getChannelActionItems, onChannelDismiss });
 
   if (items.length === 0) return null;
 
@@ -173,6 +192,7 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
           paddingVertical: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingXxs,
         },
       }),
     [],

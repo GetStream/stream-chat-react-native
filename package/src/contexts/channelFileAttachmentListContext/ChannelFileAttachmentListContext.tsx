@@ -6,11 +6,7 @@ import { useChatContext } from '..';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelFileAttachmentListContextValue = {
-  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -18,15 +14,13 @@ export const ChannelFileAttachmentListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelFileAttachmentListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelFileAttachmentListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: MessageSearchSource }>) => {
   const { client } = useChatContext();
-  const [searchSource] = useState(() => {
+  const [defaultSearchSource] = useState(() => {
     const source = new MessageSearchSource(client, {
       allowEmptySearchString: true,
       pageSize: 25,
@@ -41,17 +35,15 @@ export const ChannelFileAttachmentListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelFileAttachmentListContext.Provider value={{ channel, searchSource }}>
+    <ChannelFileAttachmentListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelFileAttachmentListContext.Provider>
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelFileAttachmentListContext = () => {
   const contextValue = useContext(
     ChannelFileAttachmentListContext,

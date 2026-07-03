@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 
-import type { MessageResponse, SearchSourceState } from 'stream-chat';
+import type { MessageResponse, MessageSearchSource, SearchSourceState } from 'stream-chat';
 
 import { FileAttachmentListLoadingSkeleton } from './FileAttachmentListLoadingSkeleton';
 import { FileAttachmentListSectionHeader } from './FileAttachmentListSectionHeader';
@@ -42,6 +42,12 @@ export type FileAttachmentListProps = {
    * See https://reactnative.dev/docs/sectionlist#props for the full list.
    */
   additionalSectionListProps?: Partial<SectionListProps<FileAttachmentTile, FileAttachmentSection>>;
+  /**
+   * A custom `MessageSearchSource` used to query and paginate the file/audio
+   * attachments. Overrides the source the provider creates by default
+   * (pre-configured to fetch file/audio attachments, newest first).
+   */
+  searchSource?: MessageSearchSource;
 };
 
 const keyExtractor = (item: FileAttachmentTile, index: number) => `${item.message.id}-${index}`;
@@ -65,7 +71,8 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
 
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelFileAttachmentListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelFileAttachmentListContext();
   const { error, hasNext, loading, messages } = useStateStore(
     searchSource.state,
     listStateSelector,
@@ -164,10 +171,7 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const FileAttachmentList = (props: FileAttachmentListProps) => {
+export const FileAttachmentList = ({ searchSource, ...props }: FileAttachmentListProps) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `file-attachment-list:${channel.cid}` : undefined;
 
@@ -176,7 +180,7 @@ export const FileAttachmentList = (props: FileAttachmentListProps) => {
   }
 
   return (
-    <ChannelFileAttachmentListProvider channel={channel}>
+    <ChannelFileAttachmentListProvider channel={channel} searchSource={searchSource}>
       <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
         <FileAttachmentListContent {...props} />
       </NotificationTargetProvider>
