@@ -1,16 +1,20 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
-import type { RouteProp } from '@react-navigation/native';
+import { useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ChannelDetails,
+  ChannelDetailsActionsSection,
+  ChannelDetailsNavigationSection,
   GetChannelDetailsNavigationItems,
   GetChannelMemberActionItems,
-  ChannelAddMembersModal,
-  ChannelAllMembersModal,
   ChannelDetailsContextProvider,
   ChannelDetailsNavigationSectionType,
+  ChannelMemberActionsSheet,
+  WithComponents,
+  ChannelDetailsActionsSectionProps,
+  useChannelDetailsContext,
 } from 'stream-chat-react-native';
 
 import { SendDirectMessage } from '../icons/SendDirectMessage';
@@ -40,12 +44,10 @@ const navigationItems: {
   files: 'ChannelFilesScreen',
 };
 
-export const ChannelDetailsScreen: React.FC<Props> = ({
-  navigation,
-  route: {
-    params: { channel },
-  },
-}) => {
+const ChannelDetailsScreenInner = () => {
+  const navigation = useNavigation<ChannelDetailsScreenNavigationProp>();
+  const { channel, closeModals } = useChannelDetailsContext();
+
   const onBack = useCallback(() => navigation.goBack(), [navigation]);
   const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
     ({ defaultItems }) =>
@@ -65,15 +67,13 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       }),
     [navigation],
   );
-  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
-  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-  const handleAddMembersPress = useCallback(() => {
-    setAllMembersVisible(false);
-    setAddMembersVisible(true);
-  }, []);
-  const [isAllMembersVisible, setAllMembersVisible] = useState(false);
-  const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
-  const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
+
+  const ActionsSection = useCallback(
+    (props: ChannelDetailsActionsSectionProps) => (
+      <ChannelDetailsActionsSection {...props} onChannelDismiss={popToRoot} />
+    ),
+    [popToRoot],
+  );
 
   const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
     ({ context, defaultItems }) => {
@@ -85,7 +85,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
       return [
         {
           action: () => {
-            setAllMembersVisible(false);
+            closeModals();
             navigation.navigate('NewDirectMessagingScreen', { initialUser: user });
             return Promise.resolve();
           },
@@ -97,28 +97,47 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
         ...defaultItems,
       ];
     },
-    [navigation],
+    [navigation, closeModals],
+  );
+
+  const NavigationSection = useCallback(
+    (props: Parameters<typeof ChannelDetailsNavigationSection>[0]) => (
+      <ChannelDetailsNavigationSection {...props} getNavigationItems={getNavigationItems} />
+    ),
+    [getNavigationItems],
+  );
+
+  const MemberActionsSheet = useCallback(
+    (props: Parameters<typeof ChannelMemberActionsSheet>[0]) => (
+      <ChannelMemberActionsSheet
+        {...props}
+        getChannelMemberActionItems={getChannelMemberActionItems}
+      />
+    ),
+    [getChannelMemberActionItems],
   );
 
   return (
-    <>
-      <ChannelDetails
-        channel={channel}
-        getChannelMemberActionItems={getChannelMemberActionItems}
-        getNavigationItems={getNavigationItems}
-        onBack={onBack}
-        onChannelDismiss={popToRoot}
-        // Handler view all members modal so we can close it after navigation is triggered by our custom action
-        onViewAllMembersPress={handleAllMembersPress}
-      />
-      <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
-        <ChannelAllMembersModal
-          onClose={handleAllMembersClose}
-          visible={isAllMembersVisible}
-          onAddMembersPress={handleAddMembersPress}
-        />
-        <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
-      </ChannelDetailsContextProvider>
-    </>
+    <WithComponents
+      overrides={{
+        ChannelDetailsActionsSection: ActionsSection,
+        ChannelDetailsNavigationSection: NavigationSection,
+        ChannelMemberActionsSheet: MemberActionsSheet,
+      }}
+    >
+      <ChannelDetails onBack={onBack} />
+    </WithComponents>
+  );
+};
+
+export const ChannelDetailsScreen: React.FC<Props> = ({
+  route: {
+    params: { channel },
+  },
+}) => {
+  return (
+    <ChannelDetailsContextProvider channel={channel}>
+      <ChannelDetailsScreenInner />
+    </ChannelDetailsContextProvider>
   );
 };

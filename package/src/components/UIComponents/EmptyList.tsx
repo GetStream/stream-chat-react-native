@@ -20,9 +20,6 @@ export type EmptyListProps = {
   subtitle?: string;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const EmptyList = ({ icon: Icon, subtitle, title }: EmptyListProps) => {
   const {
     theme: {

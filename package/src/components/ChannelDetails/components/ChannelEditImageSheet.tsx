@@ -165,9 +165,6 @@ const ChannelEditImageSheetInner = () => {
   );
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const ChannelEditImageSheet = ({ onClose, visible }: ChannelEditImageSheetProps) => (
   <BottomSheetModal enableDynamicSizing onClose={onClose} visible={visible}>
     <ChannelEditImageSheetInner />

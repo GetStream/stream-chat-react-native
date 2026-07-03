@@ -1,15 +1,17 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext } from 'react';
 
 import { Stack, useRouter } from 'expo-router';
 
 import {
-  ChannelAddMembersModal,
-  ChannelAllMembersModal,
   ChannelDetails,
+  ChannelDetailsActionsSection,
   ChannelDetailsContextProvider,
+  ChannelDetailsNavigationSection,
   ChannelDetailsNavigationSectionType,
   GetChannelDetailsNavigationItems,
-  GetChannelMemberActionItems,
+  ChannelDetailsEditButton,
+  useCanEditChannel,
+  useIsDirectChat,
   WithComponents,
 } from 'stream-chat-expo';
 
@@ -23,13 +25,16 @@ const navigationItems: {
   files: 'files',
 };
 
-const Header = () => {
+const EmptyHeader = () => {
   return null;
 };
 
 export default function ChannelDetailsScreen() {
   const router = useRouter();
   const { channel } = useContext(AppContext);
+  const canEdit = useCanEditChannel(channel);
+  const isDirect = useIsDirectChat(channel);
+  const isEditButtonVisible = canEdit && !isDirect;
 
   const getNavigationItems = useCallback<GetChannelDetailsNavigationItems>(
     ({ defaultItems }) =>
@@ -48,20 +53,24 @@ export default function ChannelDetailsScreen() {
 
   const popToRoot = useCallback(() => router.replace('/'), [router]);
 
-  const [isAddMembersVisible, setAddMembersVisible] = useState(false);
-  const handleAddMembersClose = useCallback(() => setAddMembersVisible(false), []);
-  const handleAddMembersPress = useCallback(() => {
-    setAllMembersVisible(false);
-    setAddMembersVisible(true);
-  }, []);
+  const NavigationSection = useCallback(
+    () => <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />,
+    [getNavigationItems],
+  );
 
-  const [isAllMembersVisible, setAllMembersVisible] = useState(false);
-  const handleAllMembersClose = useCallback(() => setAllMembersVisible(false), []);
-  const handleAllMembersPress = useCallback(() => setAllMembersVisible(true), []);
+  const renderHeaderRight = useCallback(
+    () =>
+      channel ? (
+        <ChannelDetailsContextProvider channel={channel}>
+          <ChannelDetailsEditButton style={{ flexShrink: 0, width: 'auto' }} />
+        </ChannelDetailsContextProvider>
+      ) : null,
+    [channel],
+  );
 
-  const getChannelMemberActionItems = useCallback<GetChannelMemberActionItems>(
-    ({ defaultItems }) => defaultItems,
-    [],
+  const ActionsSection = useCallback(
+    () => <ChannelDetailsActionsSection onChannelDismiss={popToRoot} />,
+    [popToRoot],
   );
 
   if (!channel) {
@@ -73,24 +82,19 @@ export default function ChannelDetailsScreen() {
       <Stack.Screen
         options={{
           title: 'Channel details',
+          headerRight: isEditButtonVisible ? renderHeaderRight : undefined,
         }}
       />
-      <WithComponents overrides={{ ChannelDetailsNavHeader: Header }}>
-        <ChannelDetails
-          channel={channel}
-          getChannelMemberActionItems={getChannelMemberActionItems}
-          getNavigationItems={getNavigationItems}
-          onChannelDismiss={popToRoot}
-          onViewAllMembersPress={handleAllMembersPress}
-        />
-      </WithComponents>
-      <ChannelDetailsContextProvider value={{ channel, getChannelMemberActionItems }}>
-        <ChannelAllMembersModal
-          onClose={handleAllMembersClose}
-          visible={isAllMembersVisible}
-          onAddMembersPress={handleAddMembersPress}
-        />
-        <ChannelAddMembersModal onClose={handleAddMembersClose} visible={isAddMembersVisible} />
+      <ChannelDetailsContextProvider channel={channel}>
+        <WithComponents
+          overrides={{
+            ChannelDetailsActionsSection: ActionsSection,
+            ChannelDetailsNavHeader: EmptyHeader,
+            ChannelDetailsNavigationSection: NavigationSection,
+          }}
+        >
+          <ChannelDetails />
+        </WithComponents>
       </ChannelDetailsContextProvider>
     </>
   );

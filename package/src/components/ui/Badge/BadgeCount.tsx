@@ -6,10 +6,14 @@ import { primitives } from '../../../theme';
 
 export type BadgeCountProps = {
   count: string | number;
-  size: 'sm' | 'md' | 'lg';
+  size: 'sm' | 'md' | 'lg' | 'xl';
 };
 
 const sizes = {
+  xl: {
+    minWidth: 40,
+    height: 40,
+  },
   lg: {
     minWidth: 32,
     height: 32,
@@ -37,12 +41,17 @@ const textStyles = {
     fontSize: primitives.typographyFontSizeSm,
     fontWeight: primitives.typographyFontWeightBold,
   },
+  xl: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: primitives.typographyFontWeightBold,
+  },
 };
 
 const paddingHorizontal: Record<BadgeCountProps['size'], number> = {
   sm: primitives.spacingXxs,
   md: primitives.spacingXs,
   lg: primitives.spacingXs,
+  xl: primitives.spacingSm,
 };
 
 export const BadgeCount = (props: BadgeCountProps) => {

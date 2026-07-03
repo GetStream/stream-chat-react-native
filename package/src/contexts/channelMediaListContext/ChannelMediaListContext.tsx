@@ -6,11 +6,7 @@ import { useChatContext } from '..';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export type ChannelMediaListContextValue = {
-  channel: Channel;
   searchSource: MessageSearchSource;
 };
 
@@ -18,15 +14,13 @@ export const ChannelMediaListContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as ChannelMediaListContextValue,
 );
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const ChannelMediaListProvider = ({
   channel,
   children,
-}: PropsWithChildren<{ channel: Channel }>) => {
+  searchSource: searchSourceProp,
+}: PropsWithChildren<{ channel: Channel; searchSource?: MessageSearchSource }>) => {
   const { client } = useChatContext();
-  const [searchSource] = useState(() => {
+  const [defaultSearchSource] = useState(() => {
     const source = new MessageSearchSource(client, {
       allowEmptySearchString: true,
       pageSize: 25,
@@ -42,17 +36,15 @@ export const ChannelMediaListProvider = ({
     source.activate();
     return source;
   });
+  const searchSource = searchSourceProp ?? defaultSearchSource;
 
   return (
-    <ChannelMediaListContext.Provider value={{ channel, searchSource }}>
+    <ChannelMediaListContext.Provider value={{ searchSource }}>
       {children}
     </ChannelMediaListContext.Provider>
   );
 };
 
-/**
- * @experimental This API is experimental and is subject to change.
- */
 export const useChannelMediaListContext = () => {
   const contextValue = useContext(
     ChannelMediaListContext,

@@ -17,7 +17,7 @@ import { useNotificationApi } from '../../../Notifications/hooks/useNotification
 import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../../UIComponents/SearchInput';
 
-export type ChannelAddMembersProps = {
+export type ChannelAddMembersFormContentProps = {
   /**
    * Besides the existing default behavior of the user list, you can attach
    * additional props to the underlying React Native FlatList.
@@ -38,10 +38,9 @@ const listStateSelector = (state: SearchSourceState<UserResponse>) => {
   };
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelAddMembers = ({ additionalFlatListProps }: ChannelAddMembersProps) => {
+export const ChannelAddMembersFormContent = ({
+  additionalFlatListProps,
+}: ChannelAddMembersFormContentProps) => {
   const { t } = useTranslationContext();
   const styles = useStyles();
   const {

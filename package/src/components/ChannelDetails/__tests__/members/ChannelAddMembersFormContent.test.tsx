@@ -11,7 +11,7 @@ import { TranslationProvider } from '../../../../contexts/translationContext/Tra
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { SelectionStore } from '../../../../state-store/selection-store';
 import type { AddMemberSearchResultItemProps } from '../../components/members/AddMemberSearchResultItem';
-import { ChannelAddMembers } from '../../components/members/ChannelAddMembers';
+import { ChannelAddMembersFormContent } from '../../components/members/ChannelAddMembersFormContent';
 
 const mockRowProbe: AddMemberSearchResultItemProps[] = [];
 
@@ -98,13 +98,15 @@ const tree = (
       }}
     >
       <ChannelAddMembersContext.Provider value={{ searchSource, selectionStore } as never}>
-        <ChannelAddMembers additionalFlatListProps={props.additionalFlatListProps as never} />
+        <ChannelAddMembersFormContent
+          additionalFlatListProps={props.additionalFlatListProps as never}
+        />
       </ChannelAddMembersContext.Provider>
     </TranslationProvider>
   </ThemeProvider>
 );
 
-describe('ChannelAddMembers', () => {
+describe('ChannelAddMembersFormContent', () => {
   beforeEach(() => {
     mockRowProbe.length = 0;
   });

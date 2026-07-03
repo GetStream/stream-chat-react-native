@@ -1,7 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
-import type { ChannelMemberResponse, SearchSourceState } from 'stream-chat';
+import type {
+  ChannelMemberResponse,
+  ChannelMemberSearchSource,
+  SearchSourceState,
+} from 'stream-chat';
 
 import { MemberListLoadingSkeleton } from './MemberListLoadingSkeleton';
 
@@ -14,6 +18,7 @@ import { useComponentsContext } from '../../../../contexts/componentsContext/Com
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
+import { useChannelMemberCount } from '../../../../hooks/useChannelMemberCount';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
@@ -41,6 +46,12 @@ export type ChannelMemberListProps = {
    */
   additionalFlatListProps?: Partial<FlatListProps<ChannelMemberResponse>>;
   searchInputProps?: SearchInputProps;
+  /**
+   * A custom `ChannelMemberSearchSource` used to query and paginate the member
+   * list. Overrides the source the provider creates by default (pre-configured
+   * to autocomplete by `name`).
+   */
+  searchSource?: ChannelMemberSearchSource;
 };
 
 const ChannelMemberListContent = ({
@@ -53,11 +64,11 @@ const ChannelMemberListContent = ({
       channelDetails: { memberList },
     },
   } = useTheme();
-  const { onMemberPress } = useChannelDetailsContext();
   const { ChannelMemberActionsSheet, ChannelMemberItem } = useComponentsContext();
   const { addNotification } = useNotificationApi();
 
-  const { channel, searchSource } = useChannelMemberListContext();
+  const { channel } = useChannelDetailsContext();
+  const { searchSource } = useChannelMemberListContext();
   const { error, hasNext, loading, members, searchQuery } = useStateStore(
     searchSource.state,
     listStateSelector,
@@ -65,13 +76,16 @@ const ChannelMemberListContent = ({
 
   const [selectedMember, setSelectedMember] = useState<ChannelMemberResponse | null>(null);
 
-  const initialized = useRef(false);
+  const memberCount = useChannelMemberCount(channel);
+
+  // Fetch members on mount and when the member count changes
+  // Member count changes used when add member modal is opened above member list modal
   useEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
+    if (!searchSource.state.getLatestValue().searchQuery) {
+      searchSource.resetStateAndActivate();
       searchSource.search();
     }
-  }, [searchSource]);
+  }, [memberCount, searchSource]);
 
   useEffect(() => {
     if (!error) {
@@ -91,14 +105,8 @@ const ChannelMemberListContent = ({
   const handleMemberActionsClose = useCallback(() => setSelectedMember(null), []);
 
   const handleMemberPress = useCallback(
-    (member: ChannelMemberResponse) => {
-      if (onMemberPress) {
-        onMemberPress(member);
-        return;
-      }
-      setSelectedMember(member);
-    },
-    [onMemberPress],
+    (member: ChannelMemberResponse) => setSelectedMember(member),
+    [],
   );
 
   const renderItem = useCallback(
@@ -164,9 +172,8 @@ const ChannelMemberListContent = ({
 
 /**
  * Lists all channel members with the ability to search them.
- * @experimental This component is experimental and is subject to change.
  */
-export const ChannelMemberList = (props: ChannelMemberListProps = {}) => {
+export const ChannelMemberList = ({ searchSource, ...props }: ChannelMemberListProps = {}) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `channel-member-list:${channel.cid}` : undefined;
 
@@ -175,7 +182,7 @@ export const ChannelMemberList = (props: ChannelMemberListProps = {}) => {
   }
 
   return (
-    <ChannelMemberListProvider channel={channel}>
+    <ChannelMemberListProvider channel={channel} searchSource={searchSource}>
       <NotificationTargetProvider hostId={notificationHostId} panel='channel-details'>
         <ChannelMemberListContent {...props} />
       </NotificationTargetProvider>

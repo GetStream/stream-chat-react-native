@@ -36,6 +36,13 @@ export type ProgressControlProps = {
    */
   onStartDrag?: (progress: number) => void;
   /**
+   * Expands the draggable/touchable area vertically around the thin visual
+   * track via `hitSlop`. The 3px track is easy to miss, so set this when the
+   * control is the primary seek surface (e.g. the image gallery video controls)
+   * to make it comfortably grabbable. The visual track height is unchanged.
+   */
+  expandedTouchArea?: boolean;
+  /**
    * The width of the progress control
    */
   width?: number;
@@ -43,14 +50,18 @@ export type ProgressControlProps = {
 
 const TRACK_HEIGHT = 3;
 
+const EXPANDED_TOUCH_SLOP = 12;
+
 export const ProgressControl = (props: ProgressControlProps) => {
-  const { isPlaying, onEndDrag, onStartDrag, progress, testID } = props;
+  const { expandedTouchArea, isPlaying, onEndDrag, onStartDrag, progress, testID } = props;
   const styles = useStyles();
   const [widthInNumbers, setWidthInNumbers] = useState<number>(0);
   const isRTL = I18nManager.isRTL;
   const thumbDirectionMultiplier = isRTL ? -1 : 1;
 
   const state = useSharedValue(progress);
+  const isSeekable = onEndDrag !== undefined;
+
   const {
     theme: {
       progressControl: { container, filledStyles, thumb },
@@ -65,27 +76,32 @@ export const ProgressControl = (props: ProgressControlProps) => {
     [progress],
   );
 
-  const pan = useMemo(
-    () =>
-      Gesture.Pan()
-        .maxPointers(1)
-        .onStart(() => {
-          if (onStartDrag) {
-            runOnJS(onStartDrag)(state.value);
-          }
-        })
-        .onUpdate((event) => {
-          const nextProgress = isRTL ? 1 - event.x / widthInNumbers : event.x / widthInNumbers;
-          state.value = Math.max(0, Math.min(nextProgress, 1));
-        })
-        .onEnd(() => {
-          if (onEndDrag) {
-            runOnJS(onEndDrag)(state.value);
-          }
-        })
-        .withTestId(testID),
-    [isRTL, onEndDrag, onStartDrag, state, testID, widthInNumbers],
-  );
+  const pan = useMemo(() => {
+    const gesture = Gesture.Pan()
+      .enabled(isSeekable)
+      .maxPointers(1)
+      .onStart(() => {
+        if (onStartDrag) {
+          runOnJS(onStartDrag)(state.value);
+        }
+      })
+      .onUpdate((event) => {
+        const nextProgress = isRTL ? 1 - event.x / widthInNumbers : event.x / widthInNumbers;
+        state.value = Math.max(0, Math.min(nextProgress, 1));
+      })
+      .onEnd(() => {
+        if (onEndDrag) {
+          runOnJS(onEndDrag)(state.value);
+        }
+      })
+      .withTestId(testID);
+
+    if (expandedTouchArea) {
+      gesture.hitSlop({ bottom: EXPANDED_TOUCH_SLOP, top: EXPANDED_TOUCH_SLOP });
+    }
+
+    return gesture;
+  }, [expandedTouchArea, isRTL, isSeekable, onEndDrag, onStartDrag, state, testID, widthInNumbers]);
 
   const thumbStyles = useAnimatedStyle(
     () => ({

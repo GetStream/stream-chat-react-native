@@ -15,7 +15,10 @@ jest.mock('../../../../ChannelPreview/ChannelLastMessagePreview', () => {
   const { Text } = require('react-native');
   return {
     ChannelLastMessagePreview: ({ message }: { message: MessageResponse }) =>
-      ReactLib.createElement(Text, { testID: 'preview-message' }, message.id),
+      ReactLib.createElement(ReactLib.Fragment, null, [
+        ReactLib.createElement(Text, { key: 'id', testID: 'preview-message' }, message.id),
+        ReactLib.createElement(Text, { key: 'text', testID: 'preview-message-text' }, message.text),
+      ]),
   };
 });
 
@@ -37,6 +40,7 @@ const channel = { cid: 'messaging:1' } as never;
 const renderItem = (
   message: MessageResponse,
   formatMessageDate?: (date?: string | Date) => string,
+  userLanguage = 'en',
 ) =>
   render(
     <ThemeProvider theme={defaultTheme}>
@@ -44,7 +48,7 @@ const renderItem = (
         value={{
           t: ((key: string) => key) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
-          userLanguage: 'en',
+          userLanguage: userLanguage as never,
         }}
       >
         <PinnedMessageItem
@@ -108,5 +112,29 @@ describe('PinnedMessageItem', () => {
     renderItem(message);
 
     expect(screen.getByTestId('pinned-message-item-m-1')).toBeTruthy();
+  });
+
+  it('renders the translated text for the user language in the last message preview', () => {
+    const message = generateMessage({
+      i18n: { es_text: '¡Hola mundo!' } as never,
+      id: 'm-es',
+      text: 'Hello world!',
+    }) as unknown as MessageResponse;
+
+    renderItem(message, undefined, 'es');
+
+    expect(screen.getByTestId('preview-message-text')).toHaveTextContent('¡Hola mundo!');
+  });
+
+  it('renders the original text when no translation exists for the user language', () => {
+    const message = generateMessage({
+      i18n: { es_text: '¡Hola mundo!' } as never,
+      id: 'm-en',
+      text: 'Hello world!',
+    }) as unknown as MessageResponse;
+
+    renderItem(message, undefined, 'en');
+
+    expect(screen.getByTestId('preview-message-text')).toHaveTextContent('Hello world!');
   });
 });

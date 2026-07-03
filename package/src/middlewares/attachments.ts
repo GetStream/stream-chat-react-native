@@ -55,7 +55,12 @@ export const createAttachmentsCompositionMiddleware = (
       if (!attachmentManager) return forward();
 
       const attachments = (state.message.attachments ?? []).concat(
-        attachmentManager.attachments.map(localAttachmentToAttachment),
+        attachmentManager.attachments
+          // Blocked attachments (e.g. over the size limit) are permanent
+          // validation failures the server will reject, so never serialize
+          // them into the outgoing message.
+          .filter((attachment) => attachment.localMetadata.uploadState !== 'blocked')
+          .map(localAttachmentToAttachment),
       );
 
       // prevent introducing attachments array into the payload sent to the server
@@ -90,7 +95,11 @@ export const createDraftAttachmentsCompositionMiddleware = (
       if (!attachmentManager) return forward();
 
       const attachments = (state.draft.attachments ?? []).concat(
-        attachmentManager.attachments.map(localAttachmentToAttachment),
+        attachmentManager.attachments
+          // Don't persist blocked attachments (e.g. over the size limit) into
+          // the draft — they are permanent validation failures.
+          .filter((attachment) => attachment.localMetadata.uploadState !== 'blocked')
+          .map(localAttachmentToAttachment),
       );
 
       return next({

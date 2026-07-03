@@ -14,7 +14,6 @@ import { getDateString } from '../../../utils/i18n/getDateString';
  *
  * The relative time is produced through the shared `getDateString` + translation-key
  * pipeline used by message timestamps, so the format follows the configured locale.
- * @experimental This hook is experimental and is subject to change.
  */
 export const useUserActivityStatus = (user?: UserResponse): string => {
   const { t, tDateTimeParser } = useTranslationContext();

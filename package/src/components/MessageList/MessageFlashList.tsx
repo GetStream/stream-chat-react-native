@@ -55,11 +55,14 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
+import { isVideoPlayerAvailable } from '../../native';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
+import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
@@ -139,7 +142,10 @@ type MessageFlashListPropsWithContext = Pick<
     | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
-  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
+  Pick<
+    MessageInputContextValue,
+    'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
+  > &
   Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
   Pick<
     MessagesContextValue,
@@ -218,10 +224,61 @@ type MessageFlashListPropsWithContext = Pick<
 
 const WAIT_FOR_SCROLL_TIMEOUT = 0;
 
+// Classify an attachment bearing message by its primary shape so FlashList only
+// recycles same shaped cells (means less work to rerender). Gallery/media is the
+// heaviest subtree to mount, so we short circuit to it as soon as we see one gallery
+// image/video nad this keeps gallery cells recycling only with other gallery cells,
+// so the Gallery subtree reconciles on rebind instead of unmount & remount. Mirrors
+// the attachment categorization in Message.
+const getAttachmentItemType = (message: LocalMessage) => {
+  const attachments = message.attachments ?? [];
+  let hasGiphy = false;
+  let hasAudio = false;
+  let hasFile = false;
+  let hasCard = false;
+  for (const attachment of attachments) {
+    const isGalleryImage =
+      attachment.type === FileTypes.Image &&
+      !attachment.og_scrape_url &&
+      !attachment.title_link &&
+      (!!attachment.image_url || !!attachment.thumb_url);
+    const isGalleryVideo =
+      attachment.type === FileTypes.Video && !attachment.og_scrape_url && isVideoPlayerAvailable();
+    if (isGalleryImage || isGalleryVideo) {
+      return 'message-with-gallery';
+    }
+    if (attachment.type === FileTypes.Giphy) {
+      hasGiphy = true;
+    } else if (
+      attachment.type === FileTypes.Audio ||
+      attachment.type === FileTypes.VoiceRecording
+    ) {
+      hasAudio = true;
+    } else if (attachment.type === FileTypes.File) {
+      hasFile = true;
+    } else if (attachment.og_scrape_url || attachment.title_link) {
+      hasCard = true;
+    }
+  }
+  if (hasGiphy) {
+    return 'message-with-giphy';
+  }
+  if (hasAudio) {
+    return 'message-with-audio';
+  }
+  if (hasFile) {
+    return 'message-with-file';
+  }
+  if (hasCard) {
+    return 'message-with-card';
+  }
+  return 'message-with-attachments';
+};
+
 const getItemTypeInternal = (message: LocalMessage) => {
   if (message.type === 'regular') {
     if ((message.attachments?.length ?? 0) > 0) {
-      return 'message-with-attachments';
+      return getAttachmentItemType(message);
     }
 
     if (message.poll_id) {
@@ -259,6 +316,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
+    allowSendBeforeAttachmentsUpload,
     attachmentPickerStore,
     additionalFlashListProps,
     channel,
@@ -1153,7 +1211,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           <AutoCompleteSuggestionList />
         </PortalWhileClosingView>
       </Animated.View>
-      <NotificationList bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined} />
+      <NotificationList
+        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
+        filter={allowSendBeforeAttachmentsUpload ? excludeCanceledUploadNotifications : undefined}
+      />
     </View>
   );
 };
@@ -1238,11 +1299,13 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
+  const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
+    useMessageInputContext();
 
   return (
     <MessageFlashListWithContext
       {...{
+        allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
         channelUnreadStateStore,

@@ -5,6 +5,7 @@ import type { Channel, MessageResponse } from 'stream-chat';
 
 import { useComponentsContext } from '../../../../contexts';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useTranslatedMessage } from '../../../../hooks/useTranslatedMessage';
 import { primitives } from '../../../../theme';
 import { ChannelPreviewStatusProps } from '../../../ChannelPreview/ChannelPreviewStatus';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
@@ -16,11 +17,8 @@ export type PinnedMessageItemProps = {
   message: MessageResponse;
 } & { formatMessageDate?: ChannelPreviewStatusProps['formatLatestMessageDate'] };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const PinnedMessageItem = (props: PinnedMessageItemProps) => {
-  const { channel, message, formatMessageDate } = props;
+  const { channel, message: propMessage, formatMessageDate } = props;
   const {
     theme: {
       channelDetails: { pinnedMessageItem },
@@ -29,6 +27,9 @@ export const PinnedMessageItem = (props: PinnedMessageItemProps) => {
   } = useTheme();
   const { ChannelPreviewLastMessage, ChannelPreviewStatus } = useComponentsContext();
   const styles = useStyles();
+
+  const translatedMessage = useTranslatedMessage(propMessage);
+  const message = translatedMessage ?? propMessage;
 
   const senderName = message.user?.name || message.user?.id || '';
 

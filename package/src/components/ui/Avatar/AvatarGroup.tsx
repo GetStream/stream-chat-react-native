@@ -78,7 +78,7 @@ const avatarSize: Record<AvatarGroupProps['size'], AvatarProps['size']> = {
 };
 
 const badgeCountSize: Record<AvatarGroupProps['size'], BadgeCountProps['size']> = {
-  '2xl': 'lg',
+  '2xl': 'xl',
   xl: 'md',
   lg: 'sm',
 };

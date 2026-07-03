@@ -14,13 +14,25 @@ import { primitives } from '../../../theme';
 import { ImageGallery } from '../../ImageGallery/ImageGallery';
 import {
   type ChannelDetailsNavigationSectionType,
+  type GetChannelDetailsNavigationItems,
   useChannelDetailsNavigationItems,
 } from '../hooks/useChannelDetailsNavigationItems';
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
-export const ChannelDetailsNavigationSection = () => {
+export type ChannelDetailsNavigationSectionProps = {
+  /**
+   * Customize the navigation rows rendered in the channel details navigation section.
+   *
+   * Receives the built-in `defaultItems` (and a `context`) and returns the rows to render.
+   * Map over `defaultItems` to override a row's `onPress` (e.g. to push your own screen) or
+   * to add/remove rows. Any row whose `onPress` you leave untouched keeps its built-in
+   * behavior (opening the built-in modal), including sections added in future SDK versions.
+   */
+  getNavigationItems?: GetChannelDetailsNavigationItems;
+};
+
+export const ChannelDetailsNavigationSection = ({
+  getNavigationItems,
+}: ChannelDetailsNavigationSectionProps) => {
   const {
     theme: {
       channelDetails: { sectionCard: sectionCardOverride },
@@ -29,7 +41,7 @@ export const ChannelDetailsNavigationSection = () => {
   } = useTheme();
   const styles = useStyles();
   const { FileAttachmentList, MediaList, PinnedMessageList } = useComponentsContext();
-  const items = useChannelDetailsNavigationItems();
+  const items = useChannelDetailsNavigationItems({ getNavigationItems });
   const [activeSection, setActiveSection] = useState<ChannelDetailsNavigationSectionType | null>(
     null,
   );
@@ -119,6 +131,7 @@ const useStyles = () => {
           borderRadius: primitives.radiusLg,
           overflow: 'hidden',
           paddingVertical: primitives.spacingXs,
+          paddingHorizontal: primitives.spacingXxs,
         },
       }),
     [],

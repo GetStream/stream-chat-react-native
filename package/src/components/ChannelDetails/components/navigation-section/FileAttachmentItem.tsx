@@ -11,8 +11,6 @@ import { openUrlSafely } from '../../../Attachment/utils/openUrlSafely';
 /**
  * The shape passed to `FileAttachmentItem`'s `onPress` callback, identifying the rendered
  * attachment and the message it belongs to.
- *
- * @experimental This type is experimental and is subject to change.
  */
 export type FileAttachmentItemPressParams = {
   attachment: Attachment;
@@ -31,9 +29,6 @@ export type FileAttachmentItemProps = {
   onPress?: (params: FileAttachmentItemPressParams) => void;
 };
 
-/**
- * @experimental This component is experimental and is subject to change.
- */
 export const FileAttachmentItem = (props: FileAttachmentItemProps) => {
   const { attachment, message, onPress } = props;
   const {

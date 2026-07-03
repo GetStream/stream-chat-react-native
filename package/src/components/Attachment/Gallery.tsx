@@ -272,7 +272,7 @@ const GalleryThumbnail = ({
       accessibilityLabel={thumbnailAccessibilityLabel}
       accessibilityRole='button'
       disabled={preventPress}
-      key={`gallery-item-${message.id}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
+      key={`gallery-item-${colIndex}/${rowIndex}`}
       ref={thumbnailRef}
       onLongPress={(event) => {
         if (onLongPress) {
