@@ -3227,7 +3227,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 57270ccc2b77472d7e85c4cbe45972564eff78bb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: d8f4d6c98c2ea2858468ad58fbf6b3a0b33e4da6
+  hermes-engine: b79f183911245b3275df65c55a128c726513c9d6
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3245,7 +3245,7 @@ SPEC CHECKSUMS:
   React: e2dc35338068bbd299c66f043ae0d7f25de8499e
   React-callinvoker: 28b25d21b124c26cebaea713ba7d801b9351dc48
   React-Core: 02ed7d2ffb70437bdf2aba074a13078a7b0b9ff0
-  React-Core-prebuilt: 07da8c06ca047a4047eb44266cd74e1f422d7655
+  React-Core-prebuilt: 20720c0f7e2cc18477561f84fe6d63a1cd351e25
   React-CoreModules: b3a5a42dadcde3b5d47b325bd912eb2ced89e146
   React-cxxreact: fe8f88dda044e5905e99a00f41b7a874c3908716
   React-debug: 9af1e96a6069c996e3d9f1e493603e74bc9f1593
@@ -3317,7 +3317,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 25c9c516839be2c5e3d3344f95dc7da5f7e63fc2
   ReactCodegen: 7016a2114079361a2f1536b3c91a15ceb8eb7ca4
   ReactCommon: 7dfc3250793bf36cf221096ff59e1179e13eef7f
-  ReactNativeDependencies: b494f9d4ef665da25093dffcdd0b1a110475f404
+  ReactNativeDependencies: e5bed54c1e4961f7fbc7333c31159f7969176b88
   RNCClipboard: 7a7d4557bfd3370b35c99dfecd92ae7b9fc4948a
   RNFastImage: 14580cef91660b889645fb9e87f58a53621db993
   RNFBApp: 3b942e786ca88524ba17df665a1a360fb3eee525
@@ -3338,6 +3338,6 @@ SPEC CHECKSUMS:
   Teleport: 58dccc8594d74a77cdc2a2191b60656f9aaac743
   Yoga: e240fec777ff1f21ef42ccebbb44b6d262125855
 
-PODFILE CHECKSUM: 265665a90a2835886ea9693f40400a18ed64d6e5
+PODFILE CHECKSUM: ac9682db83e42d63d399a8de4586161e86b3e751
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
