@@ -698,7 +698,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
 
         if (event.type === 'message.read' || event.type === 'notification.mark_read') {
-          console.log('READ EVENT MENTION ?!', event);
           setReadThrottled();
           return;
         }
