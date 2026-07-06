@@ -18,6 +18,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   View,
+  type ModalProps,
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -45,6 +46,14 @@ import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomShe
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
+
+const supportedOrientations: ModalProps['supportedOrientations'] = [
+  'portrait',
+  'portrait-upside-down',
+  'landscape',
+  'landscape-left',
+  'landscape-right',
+];
 
 export type BottomSheetModalProps = {
   /**
@@ -574,6 +583,7 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     <Modal
       onDismiss={handleNativeModalDismiss}
       onRequestClose={onClose}
+      supportedOrientations={supportedOrientations}
       transparent
       visible={visible && !isDismissing}
     >
