@@ -18,6 +18,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   View,
+  type ModalProps,
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -43,8 +44,18 @@ import { useAnnounceOnShow } from '../../a11y/hooks/useAnnounceOnShow';
 import { useResolvedModalAccessibilityProps } from '../../a11y/hooks/useResolvedModalAccessibilityProps';
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useStableCallback } from '../../hooks';
+import { useScreenOrientation, useStableCallback } from '../../hooks';
 import { primitives } from '../../theme';
+
+const supportedOrientations: ModalProps['supportedOrientations'] = [
+  'portrait',
+  'portrait-upside-down',
+  'landscape',
+  'landscape-left',
+  'landscape-right',
+];
+
+const LANDSCAPE_MAX_HEIGHT_RATIO = 0.9;
 
 export type BottomSheetModalProps = {
   /**
@@ -90,11 +101,16 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     },
   } = useTheme();
   const styles = useStyles();
+  const isLandscape = useScreenOrientation() === 'landscape';
 
-  const maxHeight = Math.max(
+  const availableHeight = Math.max(
     0,
     windowHeight - topInset - (Platform.OS === 'android' ? bottomInset + 16 : 0),
   );
+
+  const maxHeight = isLandscape
+    ? Math.round(availableHeight * LANDSCAPE_MAX_HEIGHT_RATIO)
+    : availableHeight;
   const fixedBaseHeight = Math.min(height, maxHeight);
 
   const contentHeight = useSharedValue<number | undefined>(undefined);
@@ -574,6 +590,7 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     <Modal
       onDismiss={handleNativeModalDismiss}
       onRequestClose={onClose}
+      supportedOrientations={supportedOrientations}
       transparent
       visible={visible && !isDismissing}
     >
