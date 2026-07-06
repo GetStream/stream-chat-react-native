@@ -128,6 +128,15 @@ export type InputMessageInputContextValue = {
     options?: UpdateMessageOptions;
   }) => ReturnType<StreamChat['updateMessage']>;
 
+  /**
+   * Controls what happens when the attach button is pressed while the attachment picker is open.
+   * When true (default), the message input is focused, toggling from the picker to the keyboard.
+   * When false, the attachment picker is closed without focusing the input.
+   * @type boolean
+   * @default true
+   */
+  focusInputOnPickerClose: boolean;
+
   /** When false, CameraSelectorIcon will be hidden */
   hasCameraPicker: boolean;
 

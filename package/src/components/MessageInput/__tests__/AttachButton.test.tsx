@@ -180,4 +180,35 @@ describe('AttachButton', () => {
       expect(queryByTestId('attachment-picker-list')).toBeTruthy();
     });
   });
+
+  it('should close the attachment picker on second press when focusInputOnPickerClose is false', async () => {
+    jest.spyOn(NativeHandler, 'isImageMediaLibraryAvailable').mockImplementation(() => true);
+
+    const channelProps = { channel, focusInputOnPickerClose: false };
+    const props = {};
+
+    renderComponent({ channelProps, client, props });
+
+    const { queryByTestId } = screen;
+
+    await waitFor(() => {
+      expect(queryByTestId('attach-button')).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('attachment-picker-list')).toBeTruthy();
+    });
+
+    act(() => {
+      fireEvent.press(screen.getByTestId('attach-button'));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('attachment-picker-list')).toBeNull();
+    });
+  });
 });

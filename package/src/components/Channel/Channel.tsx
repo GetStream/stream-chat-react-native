@@ -218,6 +218,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'compressImageQuality'
       | 'createPollOptionGap'
       | 'doFileUploadRequest'
+      | 'focusInputOnPickerClose'
       | 'handleAttachButtonPress'
       | 'hasCameraPicker'
       | 'hasCommands'
@@ -423,6 +424,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FlatList = NativeHandlers.FlatList,
+    focusInputOnPickerClose = true,
     forceAlignMessages,
     getMessageGroupStyle,
     handleAttachButtonPress,
@@ -1651,6 +1653,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     createPollOptionGap,
     doFileUploadRequest,
     editMessage,
+    focusInputOnPickerClose,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
