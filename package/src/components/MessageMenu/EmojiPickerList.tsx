@@ -13,6 +13,7 @@ import { primitives } from '../../theme';
 import { StreamBottomSheetModalFlatList } from '../UIComponents';
 
 const EMOJI_SIZE = Platform.OS === 'ios' ? 32 : 28;
+const EMOJI_CELL_SIZE = 54;
 
 const emojiKeyExtractor = (item: string) => `unicode-${item}`;
 
@@ -54,6 +55,7 @@ export const EmojiPickerList = ({
   renderFullInitially?: boolean;
 }) => {
   const styles = useStyles();
+
   const onSelectEmoji = useStableCallback((emoji: string) => {
     const scalarString = toUnicodeScalarString(emoji);
     onSelectReaction(scalarString);
@@ -94,9 +96,9 @@ const useStyles = () => {
       StyleSheet.create({
         bottomSheetColumnWrapper: {
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-evenly',
           width: '100%',
-          height: 54,
+          height: EMOJI_CELL_SIZE,
         },
         bottomSheetContentContainer: { paddingBottom: 16 },
         emojiContainer: {
