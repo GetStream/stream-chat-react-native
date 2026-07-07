@@ -12,6 +12,7 @@ import {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   type AnimatedStyle,
+  cancelAnimation,
   clamp,
   runOnJS,
   useAnimatedStyle,
@@ -152,12 +153,13 @@ export const MessageOverlayHostLayer = () => {
     return Math.max(0, contentH - available);
   });
 
-  // Keep the scroll position deterministic. While closing, rewind to the top with the SAME
-  // spring the frame uses so the message slides back into its row as one coordinated motion
-  // (no jump). Hard-reset once fully closed, ready for the next open.
+  // We do NOT rewind the scroll during the close animation — the message closes from
+  // wherever it was scrolled to (the close target folds in the scroll; see hostStyle). On
+  // close we just freeze any in-flight fling so the offset is stable while it animates back.
+  // Only reset the scroll once the overlay is fully closed, ready for the next open.
   useEffect(() => {
     if (closing) {
-      scrollY.value = withSpring(0, { duration: DURATION });
+      cancelAnimation(scrollY);
     } else if (!isActive) {
       scrollY.value = 0;
     }
@@ -296,13 +298,22 @@ export const MessageOverlayHostLayer = () => {
 
   // The message host. There is NO clipping: the message is rendered BEHIND the (opaque) top
   // and bottom items, so a scrolled/overflowing message simply passes behind them and flows
-  // into the safe areas — exactly like the action list already lets it. Two translateY
-  // transforms compose: the first is the springed open/close positioning; the second is the
-  // direct, un-springed scroll offset driven by the pan gesture.
+  // into the safe areas — exactly like the action list already lets it.
+  //
+  // Two translateY transforms compose: the first is the springed open/close positioning; the
+  // second is the direct scroll offset driven by the pan gesture. On CLOSE we fold the
+  // current scroll into the FIRST transform's target so the message springs from wherever it
+  // was scrolled to straight onto its row. The scroll transform (second) stays constant
+  // through the close — it does NOT rewind — so the message keeps its scrolled appearance as
+  // it animates back.
   const hostStyle = useAnimatedStyle(() => {
     if (!messageH.value) return { height: 0 };
-    const translateY = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
     const scroll = scrollGeom.value.needsScroll ? scrollY.value : 0;
+    const translateY = isActive
+      ? closing
+        ? closeCorrectionY.value + scroll
+        : messageShiftY.value
+      : 0;
     return {
       height: messageH.value.h,
       left: messageH.value.x,
