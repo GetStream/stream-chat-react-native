@@ -26,6 +26,7 @@ import { ClosingPortalHostsLayer } from './ClosingPortalHostsLayer';
 
 import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useAccessibilityAnnouncer } from '../../components/Accessibility/useAccessibilityAnnouncer';
+import { useScreenOrientation } from '../../hooks';
 import {
   closeOverlay,
   finalizeCloseOverlay,
@@ -97,6 +98,21 @@ export const MessageOverlayHostLayer = () => {
       announcedOpenRef.current = false;
     }
   }, [isActive, overlayOpenHint, announce]);
+
+  // When orientation changes, we dismiss the overlay. While it is possible
+  // (and I have a working PoC of) a repositioning solution, it is pretty
+  // complex and probably bug prone. This is anyway how the iOS native contextual
+  // menu works (as seen on iMessage and Twitch for example, which support landscape
+  // mode).
+  const orientation = useScreenOrientation();
+  const prevOrientationRef = useRef(orientation);
+  useEffect(() => {
+    if (prevOrientationRef.current === orientation) {
+      return;
+    }
+    prevOrientationRef.current = orientation;
+    finalizeCloseOverlay();
+  }, [orientation]);
 
   const padding = 8;
   const minY = topInset + padding;

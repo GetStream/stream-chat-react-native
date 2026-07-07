@@ -115,6 +115,9 @@ export const scheduleActionOnClose = (action: () => void | Promise<void>) => {
 };
 
 export const finalizeCloseOverlay = () => {
+  if (!overlayStore.getLatestValue().id) {
+    return;
+  }
   overlayStore.next({
     ...DefaultState,
     closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
