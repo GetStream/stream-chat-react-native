@@ -385,51 +385,50 @@ export const MessageOverlayHostLayer = () => {
         ) : null}
 
         {/*
-          The overlay hosts (and therefore the ScrollView) mount only while an overlay is
-          active. `isActive` stays true through the closing animation and only drops on
-          `finalizeCloseOverlay`, so the teleported subtrees stay stable for the whole
-          open -> closing session and nothing is mounted when idle.
+          The portal hosts are always mounted (matching the SDK's original behavior). We do
+          NOT gate them on `isActive`: remounting the hosts on every open makes the native
+          teleport re-lay-out its content on a fresh host, which on iOS renders the teleported
+          message/action-list at a stale/collapsed size on the first frame. Keeping the hosts
+          mounted keeps the teleport target stable. Only the backdrop press target is gated.
         */}
         <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
           {isActive ? (
-            <>
-              <Pressable
-                onPress={closeOverlay}
-                style={StyleSheet.absoluteFill}
-                testID='message-overlay-backdrop'
-              />
-
-              {MessageActions ? (
-                <MessageActions
-                  bottomItemStyle={bottomItemStyle}
-                  hostStyle={hostStyle}
-                  portalHostStyle={styles.absoluteFill}
-                  topItemStyle={topItemStyle}
-                />
-              ) : (
-                <>
-                  {/*
-                    Order matters: the message is rendered FIRST (lowest z) so it sits BEHIND
-                    the opaque top and bottom items. A tall/scrolled message therefore passes
-                    behind them and into the safe areas, with no clipping and no cut-off.
-                  */}
-                  <GestureDetector gesture={pan}>
-                    <Animated.View style={hostStyle} testID='message-overlay-message'>
-                      <PortalHost name='message-overlay' style={styles.absoluteFill} />
-                    </Animated.View>
-                  </GestureDetector>
-
-                  <Animated.View style={topItemStyle} testID='message-overlay-top'>
-                    <PortalHost name='top-item' style={styles.absoluteFill} />
-                  </Animated.View>
-
-                  <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
-                    <PortalHost name='bottom-item' style={styles.absoluteFill} />
-                  </Animated.View>
-                </>
-              )}
-            </>
+            <Pressable
+              onPress={closeOverlay}
+              style={StyleSheet.absoluteFill}
+              testID='message-overlay-backdrop'
+            />
           ) : null}
+
+          {MessageActions ? (
+            <MessageActions
+              bottomItemStyle={bottomItemStyle}
+              hostStyle={hostStyle}
+              portalHostStyle={styles.absoluteFill}
+              topItemStyle={topItemStyle}
+            />
+          ) : (
+            <>
+              {/*
+                Order matters: the message is rendered FIRST (lowest z) so it sits BEHIND
+                the opaque top and bottom items. A tall/scrolled message therefore passes
+                behind them and into the safe areas, with no clipping and no cut-off.
+              */}
+              <GestureDetector gesture={pan}>
+                <Animated.View style={hostStyle} testID='message-overlay-message'>
+                  <PortalHost name='message-overlay' style={styles.absoluteFill} />
+                </Animated.View>
+              </GestureDetector>
+
+              <Animated.View style={topItemStyle} testID='message-overlay-top'>
+                <PortalHost name='top-item' style={styles.absoluteFill} />
+              </Animated.View>
+
+              <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
+                <PortalHost name='bottom-item' style={styles.absoluteFill} />
+              </Animated.View>
+            </>
+          )}
         </View>
 
         <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />

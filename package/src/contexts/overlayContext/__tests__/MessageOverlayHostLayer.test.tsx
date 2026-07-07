@@ -229,7 +229,7 @@ describe('MessageOverlayHostLayer', () => {
     });
   });
 
-  it('unmounts the overlay hosts after finalizeCloseOverlay', () => {
+  it('keeps the hosts mounted but resets their geometry after finalizeCloseOverlay', () => {
     const renderTree = () => (
       <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
         <MessageOverlayHostLayer />
@@ -261,11 +261,17 @@ describe('MessageOverlayHostLayer', () => {
 
     rerender(renderTree());
 
-    // The default host subtree (and therefore the ScrollView) is gated on `isActive`, so
-    // once the overlay is fully closed nothing overlay-related stays mounted.
-    expect(screen.queryByTestId('message-overlay-top')).toBeNull();
-    expect(screen.queryByTestId('message-overlay-message')).toBeNull();
-    expect(screen.queryByTestId('message-overlay-bottom')).toBeNull();
+    // The hosts stay mounted (not gated on isActive) so the native teleport target is stable
+    // across opens; only their geometry resets to 0. The backdrop press target is gated.
+    expect(StyleSheet.flatten(screen.getByTestId('message-overlay-top').props.style)).toMatchObject(
+      { height: 0 },
+    );
+    expect(
+      StyleSheet.flatten(screen.getByTestId('message-overlay-message').props.style),
+    ).toMatchObject({ height: 0 });
+    expect(
+      StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
+    ).toMatchObject({ height: 0 });
     expect(screen.queryByTestId('message-overlay-backdrop')).toBeNull();
   });
 
