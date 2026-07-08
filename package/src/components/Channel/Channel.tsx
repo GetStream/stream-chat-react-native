@@ -489,8 +489,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     messageSwipeToReplyHitSlop,
     messageTextNumberOfLines,
     myMessageTheme,
-    // TODO: Think about this one
-    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -504,7 +502,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     setThreadMessages,
     shouldShowUnreadUnderlay = true,
     shouldSyncChannel,
-    stateUpdateThrottleInterval = defaultThrottleInterval,
     supportedReactions = reactionData,
     t,
     thread: threadFromProps,
@@ -579,10 +576,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const {
-    copyMessagesStateFromChannel: rawCopyMessagesStateFromChannel,
     loadChannelAroundMessage: loadChannelAroundMessageFn,
     loadChannelAtFirstUnreadMessage,
-    loadInitialMessagesStateFromChannel,
     loadLatestMessages,
     loadMore,
     loadMoreRecent,
@@ -603,36 +598,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
-  const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
-    usePrunableMessageList({ maximumMessageLimit, setMessages: rawCopyMessagesStateFromChannel });
-
-  const copyMessagesStateFromChannelThrottled = useMemo(
-    () =>
-      throttle(
-        () => {
-          if (channel) {
-            copyMessagesStateFromChannel(channel);
-          }
-        },
-        newMessageStateUpdateThrottleInterval,
-        throttleOptions,
-      ),
-    [channel, newMessageStateUpdateThrottleInterval, copyMessagesStateFromChannel],
-  );
-
-  const copyChannelState = useMemo(
-    () =>
-      throttle(
-        () => {
-          if (channel) {
-            copyMessagesStateFromChannel(channel);
-          }
-        },
-        stateUpdateThrottleInterval,
-        throttleOptions,
-      ),
-    [stateUpdateThrottleInterval, channel, copyMessagesStateFromChannel],
-  );
+  // The message list is now backed reactively by channel.messagePaginator; the WS event handlers no
+  // longer copy channel.state into React state. Viewport tracking is still needed by the list.
+  // TODO(paginator-pruning): re-implement pruning as a window cap over messagePaginator.state.items
+  // (the paginator retains all loaded items in its ItemIndex).
+  const { viewabilityChangedCallback } = usePrunableMessageList({
+    maximumMessageLimit,
+    setMessages: () => {},
+  });
 
   const handleEvent: EventHandler = useStableCallback((event) => {
     if (shouldSyncChannel) {
@@ -681,34 +654,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         setChannelUnreadState(undefined);
       }
 
-      // only update channel state if the events are not the previously subscribed useEffect's subscription events
-      if (channel) {
-        // we skip the new message events if we've already done an optimistic update for the new message
-        if (event.type === 'message.new' || event.type === 'notification.message_new') {
-          const messageId = event.message?.id ?? '';
-          if (
-            event.user?.id !== client.userID ||
-            !optimisticallyUpdatedNewMessages.has(messageId)
-          ) {
-            copyMessagesStateFromChannelThrottled();
-          }
-          optimisticallyUpdatedNewMessages.delete(messageId);
-          return;
-        }
-
-        if (event.type === 'message.read_locally') {
-          // When local unread reset happens, the count is already updated in the client state,
-          // and the preview badge / unread divider are handled elsewhere, so there is nothing
-          // to copy into channel state here. Thus, we skip it.
-          return;
-        }
-
-        if (event.type === 'message.read' || event.type === 'notification.mark_read') {
-          // Read state is sourced reactively from channel.state.readStore; nothing to copy here.
-          return;
-        }
-
-        copyChannelState();
+      // The message list is backed reactively by channel.messagePaginator (channel._handleChannelEvent
+      // ingests message.new/updated/deleted + reaction events), and read/typing/members come from
+      // their reactive stores — so the WS handler no longer copies channel.state into React state.
+      if (event.type === 'message.new' || event.type === 'notification.message_new') {
+        optimisticallyUpdatedNewMessages.delete(event.message?.id ?? '');
       }
     }
   });
@@ -736,7 +686,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (!errored) {
-        loadInitialMessagesStateFromChannel(channel, channel.state.messagePagination.hasPrev);
+        // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
+        // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
+        // to avoid a redundant fetch.
+        if (!channel.messagePaginator.state.getLatestValue().items?.length) {
+          await channel.messagePaginator.reload();
+        }
       }
 
       if (client.user?.id && channel.state.read[client.user.id]) {
@@ -773,7 +728,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     initChannel();
 
     return () => {
-      copyChannelState.cancel();
       loadMoreThreadFinished.cancel();
       listener?.unsubscribe();
     };
@@ -941,11 +895,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (!thread) {
-        copyChannelState();
-
         const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
+        await channel.messagePaginator.reload();
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
+          failedMessages.forEach((m) =>
+            channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
+          );
         }
         await markRead();
         channel.state.setIsUpToDate(true);
@@ -1065,16 +1021,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * MESSAGE METHODS
    */
   const updateMessage: MessagesContextValue['updateMessage'] = useStableCallback(
-    (updatedMessage, extraState = {}, throttled = false) => {
+    (updatedMessage, extraState = {}) => {
       if (!channel) {
         return;
       }
 
+      // Keep legacy channel.state in sync (many readers remain) and ingest into the reactive
+      // paginator that now backs the message list.
       channel.state.addMessageSorted(updatedMessage, true);
-      if (throttled) {
-        copyMessagesStateFromChannelThrottled();
+      const formatted = channel.state.formatMessage(updatedMessage);
+      if (updatedMessage.parent_id) {
+        threadInstance?.messagePaginator?.ingestItem(formatted);
       } else {
-        copyMessagesStateFromChannel(channel);
+        channel.messagePaginator.ingestItem(formatted);
       }
 
       if (thread && updatedMessage.parent_id) {
@@ -1089,7 +1048,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (channel) {
         channel.state.removeMessage(oldMessage);
         channel.state.addMessageSorted(newMessage, true);
-        copyMessagesStateFromChannel(channel);
+        const paginator = newMessage.parent_id
+          ? threadInstance?.messagePaginator
+          : channel.messagePaginator;
+        paginator?.removeItem({ id: oldMessage.id });
+        paginator?.ingestItem(channel.state.formatMessage(newMessage));
 
         if (thread && newMessage.parent_id) {
           const threadMessages = channel.state.threads[newMessage.parent_id] || [];
@@ -1380,7 +1343,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     async (message) => {
       if (channel) {
         channel.state.removeMessage(message);
-        copyMessagesStateFromChannel(channel);
+        const paginator = message.parent_id
+          ? threadInstance?.messagePaginator
+          : channel.messagePaginator;
+        paginator?.removeItem({ id: message.id });
 
         if (thread) {
           setThreadMessages(channel.state.threads[thread.id] || []);
@@ -1415,7 +1381,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         user: client.user,
       });
 
-      copyMessagesStateFromChannel(channel);
+      const reactedMessage = channel.state.findMessage(messageId);
+      if (reactedMessage) {
+        (reactedMessage.parent_id
+          ? threadInstance?.messagePaginator
+          : channel.messagePaginator
+        )?.ingestItem(reactedMessage);
+      }
     }
 
     const sendReactionResponse = await channel.sendReaction(...payload);
@@ -1477,7 +1449,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           updated_at: '',
         });
 
-        copyMessagesStateFromChannel(channel);
+        const reactedMessage = channel.state.findMessage(messageId);
+        if (reactedMessage) {
+          (reactedMessage.parent_id
+            ? threadInstance?.messagePaginator
+            : channel.messagePaginator
+          )?.ingestItem(reactedMessage);
+        }
       }
 
       await channel.deleteReaction(...payload);
