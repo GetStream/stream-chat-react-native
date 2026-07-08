@@ -11,6 +11,10 @@ on:
       - 'package/**'
       - 'examples/SampleApp/**'
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
