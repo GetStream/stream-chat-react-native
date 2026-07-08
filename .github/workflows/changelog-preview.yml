@@ -6,6 +6,10 @@ on:
       - main
     types: [opened, synchronize]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   generate_changelog_preview:
     runs-on: ubuntu-latest
