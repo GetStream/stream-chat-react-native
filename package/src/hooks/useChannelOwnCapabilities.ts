@@ -1,12 +1,15 @@
-import { Channel, EventTypes } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
-import { useSelectedChannelState } from './useSelectedChannelState';
+import { useStateStore } from './useStateStore';
 
-const selector = (channel: Channel) => channel.data?.own_capabilities as string[] | undefined;
-const keys: EventTypes[] = ['capabilities.changed'];
+const selector = (state: { ownCapabilities: string[] }) => ({
+  ownCapabilities: state.ownCapabilities,
+});
 
-export function useChannelOwnCapabilities(channel: Channel): string[] | undefined;
-export function useChannelOwnCapabilities(channel?: Channel): string[] | undefined;
-export function useChannelOwnCapabilities(channel?: Channel) {
-  return useSelectedChannelState({ channel, selector, stateChangeEventKeys: keys });
+/**
+ * Returns the current user's capabilities for the channel, sourced reactively from
+ * `channel.state.ownCapabilitiesStore`.
+ */
+export function useChannelOwnCapabilities(channel?: Channel): string[] | undefined {
+  return useStateStore(channel?.state?.ownCapabilitiesStore, selector)?.ownCapabilities;
 }

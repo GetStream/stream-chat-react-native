@@ -12,19 +12,22 @@ import {
   EventHandler,
   LocalMessage,
   localMessageToNewMessagePayload,
+  MembersState,
   MessageLabel,
   MessageResponse,
   Reaction,
+  ReadState,
   SendMessageAPIResponse,
   SendMessageOptions,
   StreamChat,
   Event as StreamEvent,
   Message as StreamMessage,
   Thread,
+  TypingUsersState,
   UpdateMessageOptions,
+  WatcherState,
 } from 'stream-chat';
 
-import { useChannelDataState } from './hooks/useChannelDataState';
 import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 
@@ -85,7 +88,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { TypingProvider } from '../../contexts/typingContext/TypingContext';
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useStateStore } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
@@ -386,6 +389,14 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     initializeOnMount?: boolean;
   };
 
+const membersStateSelector = (state: MembersState) => ({ members: state.members });
+const readStateSelector = (state: ReadState) => ({ read: state.read });
+const typingStateSelector = (state: TypingUsersState) => ({ typing: state.typing });
+const watcherStateSelector = (state: WatcherState) => ({
+  watcherCount: state.watcherCount,
+  watchers: state.watchers,
+});
+
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
@@ -557,13 +568,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doUpdateMessageRequest,
   });
 
-  const {
-    copyStateFromChannel,
-    initStateFromChannel,
-    setRead,
-    setTyping,
-    state: channelState,
-  } = useChannelDataState(channel);
+  // Channel scalar state (members/read/typing/watchers) is sourced reactively from
+  // stream-chat's per-channel StateStores.
+  const { members } = useStateStore(channel.state.membersStore, membersStateSelector);
+  const { read } = useStateStore(channel.state.readStore, readStateSelector);
+  const { typing } = useStateStore(channel.state.typingStore, typingStateSelector);
+  const { watcherCount, watchers } = useStateStore(
+    channel.state.watcherStore,
+    watcherStateSelector,
+  );
 
   const {
     copyMessagesStateFromChannel: rawCopyMessagesStateFromChannel,
@@ -593,20 +606,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
     usePrunableMessageList({ maximumMessageLimit, setMessages: rawCopyMessagesStateFromChannel });
 
-  const setReadThrottled = useMemo(
-    () =>
-      throttle(
-        () => {
-          if (channel) {
-            setRead(channel);
-          }
-        },
-        stateUpdateThrottleInterval,
-        throttleOptions,
-      ),
-    [channel, stateUpdateThrottleInterval, setRead],
-  );
-
   const copyMessagesStateFromChannelThrottled = useMemo(
     () =>
       throttle(
@@ -626,14 +625,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       throttle(
         () => {
           if (channel) {
-            copyStateFromChannel(channel);
             copyMessagesStateFromChannel(channel);
           }
         },
         stateUpdateThrottleInterval,
         throttleOptions,
       ),
-    [stateUpdateThrottleInterval, channel, copyStateFromChannel, copyMessagesStateFromChannel],
+    [stateUpdateThrottleInterval, channel, copyMessagesStateFromChannel],
   );
 
   const handleEvent: EventHandler = useStableCallback((event) => {
@@ -651,11 +649,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         return;
       }
 
-      // If the event is typing.start or typing.stop, set the typing state
+      // Typing state is sourced reactively from channel.state.typingStore; nothing to copy here.
       if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        if (event.user?.id !== client.userID) {
-          setTyping(channel);
-        }
         return;
       } else {
         if (thread?.id) {
@@ -709,7 +704,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
 
         if (event.type === 'message.read' || event.type === 'notification.mark_read') {
-          setReadThrottled();
+          // Read state is sourced reactively from channel.state.readStore; nothing to copy here.
           return;
         }
 
@@ -741,7 +736,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (!errored) {
-        initStateFromChannel(channel);
         loadInitialMessagesStateFromChannel(channel, channel.state.messagePagination.hasPrev);
       }
 
@@ -1620,8 +1614,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     markRead,
     maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
-    members: channelState.members ?? {},
-    read: channelState.read ?? {},
+    members: members ?? {},
+    read: read ?? {},
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
@@ -1630,8 +1624,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     targetedMessage,
     threadList,
     uploadAbortControllerRef,
-    watcherCount: channelState.watcherCount,
-    watchers: channelState.watchers,
+    watcherCount,
+    watchers,
   });
 
   // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
@@ -1762,7 +1756,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const typingContext = useCreateTypingContext({
-    typing: channelState.typing ?? {},
+    typing: typing ?? {},
   });
 
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(

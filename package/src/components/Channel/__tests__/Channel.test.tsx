@@ -28,11 +28,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
 import { Channel } from '../Channel';
-import {
-  channelInitialState,
-  useChannelDataState,
-  useChannelMessageDataState,
-} from '../hooks/useChannelDataState';
+import { channelInitialState, useChannelMessageDataState } from '../hooks/useChannelDataState';
 import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
@@ -452,11 +448,11 @@ describe('Channel initial load useEffect', () => {
     renderComponent({ channel });
 
     const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    const { result: channelState } = renderHook(() => useChannelDataState(channel));
 
     await waitFor(() => expect(watchSpy).toHaveBeenCalled());
     await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(10));
-    await waitFor(() => expect(Object.keys(channelState.current.state.members!)).toHaveLength(10));
+    // members now come reactively from channel.state.membersStore (via the shim getter).
+    await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 
   function getElementsAround<T extends object>(array: T[], key: keyof T, id: unknown) {

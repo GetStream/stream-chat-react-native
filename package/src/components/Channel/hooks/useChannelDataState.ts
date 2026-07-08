@@ -160,61 +160,6 @@ export const useChannelMessageDataState = (channel: Channel) => {
   };
 };
 
-/**
- * The useChannelThreadState hook that handles the state for the channel member, read, typing, watchers, etc.
- */
-export const useChannelDataState = (channel: Channel) => {
-  const [state, setState] = useState<ChannelState>({
-    members: channel.state.members,
-    read: channel.state.read,
-    typing: {},
-    watcherCount: 0,
-    watchers: {},
-  });
-
-  const initStateFromChannel = useCallback(
-    (channel: Channel) => {
-      setState({
-        ...state,
-        members: { ...channel.state.members },
-        read: { ...channel.state.read },
-        typing: { ...channel.state.typing },
-        watcherCount: channel.state.watcher_count,
-        watchers: { ...channel.state.watchers },
-      });
-    },
-    [state],
-  );
-
-  const copyStateFromChannel = useCallback((channel: Channel) => {
-    setState((prev) => ({
-      ...prev,
-      members: { ...channel.state.members },
-      read: { ...channel.state.read },
-      watcherCount: channel.state.watcher_count,
-      watchers: { ...channel.state.watchers },
-    }));
-  }, []);
-
-  const setRead = useCallback((channel: Channel) => {
-    setState((prev) => ({
-      ...prev,
-      read: { ...channel.state.read }, // Synchronize the read state from the channel
-    }));
-  }, []);
-
-  const setTyping = useCallback((channel: Channel) => {
-    setState((prev) => ({
-      ...prev,
-      typing: { ...channel.state.typing }, // Synchronize the typing state from the channel
-    }));
-  }, []);
-
-  return {
-    copyStateFromChannel,
-    initStateFromChannel,
-    setRead,
-    setTyping,
-    state,
-  };
-};
+// Channel scalar state (members/read/typing/watchers) now comes reactively from
+// stream-chat's channel.state StateStores (membersStore/readStore/typingStore/watcherStore),
+// consumed directly via useStateStore — no React-state mirror needed.
