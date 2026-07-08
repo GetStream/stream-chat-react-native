@@ -68,10 +68,13 @@ const uniqueModules = dependencyPackageNames.map((packageName) => {
 const blockList = uniqueModules.map(({ blockPattern }) => blockPattern);
 
 // provide the path for the unique modules
-const extraNodeModules = uniqueModules.reduce((acc, item) => {
-  acc[item.packageName] = item.modulePath;
-  return acc;
-}, { 'stream-chat': streamChatLocalPath });
+const extraNodeModules = uniqueModules.reduce(
+  (acc, item) => {
+    acc[item.packageName] = item.modulePath;
+    return acc;
+  },
+  { 'stream-chat': streamChatLocalPath },
+);
 
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;

@@ -25,6 +25,7 @@ import {
 } from 'stream-chat';
 
 import { useChannelDataState } from './hooks/useChannelDataState';
+import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
@@ -547,6 +548,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
+
+  // Register the integrator's custom message-request overrides into channel.configState so the
+  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
+  useChannelRequestHandlers({
+    channel,
+    doSendMessageRequest,
+    doUpdateMessageRequest,
+  });
 
   const {
     copyStateFromChannel,
