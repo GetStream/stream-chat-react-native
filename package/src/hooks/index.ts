@@ -17,6 +17,8 @@ export * from './useViewport';
 export * from './useScreenDimensions';
 export * from './useScreenOrientation';
 export * from './useStateStore';
+export * from './useChannel';
+export * from './useMessagePaginator';
 export * from './usePendingAttachmentUpload';
 export * from './useStableCallback';
 export * from './useLoadingImage';
