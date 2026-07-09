@@ -842,17 +842,16 @@ exports[`SendButton should render a SendButton 1`] = `
       }
     >
       <View
+        collapsable={false}
         style={
           {
             "height": 0,
-            "opacity": 0,
-            "width": 0,
           }
         }
-        testID="message-overlay-top"
+        testID="message-overlay-message"
       >
         <View
-          name="top-item"
+          name="message-overlay"
           style={
             {
               "bottom": 0,
@@ -865,16 +864,17 @@ exports[`SendButton should render a SendButton 1`] = `
         />
       </View>
       <View
-        pointerEvents="box-none"
         style={
           {
             "height": 0,
+            "opacity": 0,
+            "width": 0,
           }
         }
-        testID="message-overlay-message"
+        testID="message-overlay-top"
       >
         <View
-          name="message-overlay"
+          name="top-item"
           style={
             {
               "bottom": 0,
@@ -952,9 +952,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         <View
           handlerTags={
             [
+              20,
               19,
               18,
-              17,
             ]
           }
           onGestureHandlerEvent={[Function]}
@@ -1124,9 +1124,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             <View
               handlerTags={
                 [
+                  23,
                   22,
                   21,
-                  20,
                 ]
               }
               onGestureHandlerEvent={[Function]}
@@ -1271,9 +1271,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             <View
               handlerTags={
                 [
+                  26,
                   25,
                   24,
-                  23,
                 ]
               }
               onGestureHandlerEvent={[Function]}
@@ -1447,9 +1447,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             <View
               handlerTags={
                 [
+                  29,
                   28,
                   27,
-                  26,
                 ]
               }
               onGestureHandlerEvent={[Function]}
@@ -1590,9 +1590,9 @@ exports[`SendButton should render a disabled SendButton 1`] = `
             <View
               handlerTags={
                 [
+                  32,
                   31,
                   30,
-                  29,
                 ]
               }
               onGestureHandlerEvent={[Function]}
@@ -1756,17 +1756,16 @@ exports[`SendButton should render a disabled SendButton 1`] = `
       }
     >
       <View
+        collapsable={false}
         style={
           {
             "height": 0,
-            "opacity": 0,
-            "width": 0,
           }
         }
-        testID="message-overlay-top"
+        testID="message-overlay-message"
       >
         <View
-          name="top-item"
+          name="message-overlay"
           style={
             {
               "bottom": 0,
@@ -1779,16 +1778,17 @@ exports[`SendButton should render a disabled SendButton 1`] = `
         />
       </View>
       <View
-        pointerEvents="box-none"
         style={
           {
             "height": 0,
+            "opacity": 0,
+            "width": 0,
           }
         }
-        testID="message-overlay-message"
+        testID="message-overlay-top"
       >
         <View
-          name="message-overlay"
+          name="top-item"
           style={
             {
               "bottom": 0,

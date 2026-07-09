@@ -12,11 +12,13 @@ import {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   type AnimatedStyle,
+  cancelAnimation,
   clamp,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withDecay,
   withSpring,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -118,6 +120,41 @@ export const MessageOverlayHostLayer = () => {
   const minY = topInset + padding;
   const maxY = screenH - bottomInset - padding;
 
+  // When top + message + bottom don't fit the usable area, a Pan gesture drives `scrollY` and
+  // the message is translated by it (see hostStyle). No ScrollView, all on the UI thread.
+  const scrollY = useSharedValue(0);
+  const scrollStartY = useSharedValue(0);
+
+  const scrollGeom = useDerivedValue(() => {
+    if (!messageH.value || !topH.value || !bottomH.value) {
+      return { needsScroll: false };
+    }
+    const available = maxY - minY;
+    const contentH = topH.value.h + messageH.value.h + bottomH.value.h;
+    return { needsScroll: contentH > available };
+  });
+
+  // How far the message can scroll: the amount its content overflows the usable area. At max
+  // scroll the message tail lands just above the sticky footer.
+  const maxScroll = useDerivedValue(() => {
+    if (!scrollGeom.value.needsScroll || !messageH.value || !topH.value || !bottomH.value) {
+      return 0;
+    }
+    const available = maxY - minY;
+    const contentH = topH.value.h + messageH.value.h + bottomH.value.h;
+    return Math.max(0, contentH - available);
+  });
+
+  // On close, freeze any inflight fling (the message closes from where it was scrolled - see
+  // `hostStyle`) and only reset the offset once fully closed, ready for the next open.
+  useEffect(() => {
+    if (closing) {
+      cancelAnimation(scrollY);
+    } else if (!isActive) {
+      scrollY.value = 0;
+    }
+  }, [closing, isActive, scrollY]);
+
   const backdrop = useSharedValue(0);
   const closeCoverOpacity = useSharedValue(0);
 
@@ -171,6 +208,12 @@ export const MessageOverlayHostLayer = () => {
     const anchorY = messageH.value.y;
     const msgH = messageH.value.h;
     const minTop = minY + topH.value.h;
+
+    // When scrolling, pin the message directly under the (pinned) top item; scrollY does the rest.
+    if (scrollGeom.value.needsScroll) {
+      return minTop - anchorY;
+    }
+
     const maxTopWithBottom = maxY - (msgH + bottomH.value.h);
     const canFitBottomWithoutOverlap = minTop <= maxTopWithBottom;
     const solvedTop = canFitBottomWithoutOverlap
@@ -186,6 +229,12 @@ export const MessageOverlayHostLayer = () => {
     const anchorMessageTop = messageH.value.y;
     const msgH = messageH.value.h;
     const minMessageTop = minY + topH.value.h;
+
+    // When scrolling, pin the bottom item as a sticky footer at the bottom of the usable area.
+    if (scrollGeom.value.needsScroll) {
+      return maxY - bottomH.value.h - bottomH.value.y;
+    }
+
     const maxMessageTopWithBottom = maxY - (msgH + bottomH.value.h);
     const canFitBottomWithoutOverlap = minMessageTop <= maxMessageTopWithBottom;
     const solvedMessageTop = canFitBottomWithoutOverlap
@@ -234,18 +283,46 @@ export const MessageOverlayHostLayer = () => {
     };
   });
 
+  // Two composed `translateY`: first is the springed open/close position, second is the raw
+  // scroll offset. On close we fold the scroll into the first (springed) target so the message
+  // animates back from where it was scrolled, while the latter stays put.
   const hostStyle = useAnimatedStyle(() => {
     if (!messageH.value) return { height: 0 };
-    const translateY = isActive ? (closing ? closeCorrectionY.value : messageShiftY.value) : 0;
+    const scroll = scrollGeom.value.needsScroll ? scrollY.value : 0;
+    const translateY = isActive
+      ? closing
+        ? closeCorrectionY.value + scroll
+        : messageShiftY.value
+      : 0;
     return {
       height: messageH.value.h,
       left: messageH.value.x,
       position: 'absolute',
       top: messageH.value.y,
-      transform: [{ translateY: withSpring(translateY, { duration: DURATION }) }],
+      transform: [
+        { translateY: withSpring(translateY, { duration: DURATION }) },
+        { translateY: scroll === 0 ? 0 : -scroll },
+      ],
       width: messageH.value.w,
     };
   });
+
+  // Drag scrolls the message (clamped to `[0, maxScroll]`); release flings with decay. When the
+  // content fits, `maxScroll` is 0 so this is a noop.
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .onBegin(() => {
+          scrollStartY.value = scrollY.value;
+        })
+        .onUpdate((e) => {
+          scrollY.value = clamp(scrollStartY.value - e.translationY, 0, maxScroll.value);
+        })
+        .onEnd((e) => {
+          scrollY.value = withDecay({ clamp: [0, maxScroll.value], velocity: -e.velocityY });
+        }),
+    [maxScroll, scrollStartY, scrollY],
+  );
 
   const tap = useMemo(
     () =>
@@ -279,8 +356,9 @@ export const MessageOverlayHostLayer = () => {
         })
         .onEnd(() => {
           runOnJS(closeOverlay)();
-        }),
-    [bottomH, bottomShiftY, messageShiftY, topH],
+        })
+        .requireExternalGestureToFail(pan),
+    [bottomH, bottomShiftY, messageShiftY, pan, topH],
   );
 
   return (
@@ -314,16 +392,18 @@ export const MessageOverlayHostLayer = () => {
             />
           ) : (
             <>
+              {/*
+                Message renders first (lowest z) so it sits behind the opaque top/bottom items;
+                a scrolled/overflowing message passes behind them instead of being clipped.
+              */}
+              <GestureDetector gesture={pan}>
+                <Animated.View style={hostStyle} testID='message-overlay-message'>
+                  <PortalHost name='message-overlay' style={styles.absoluteFill} />
+                </Animated.View>
+              </GestureDetector>
+
               <Animated.View style={topItemStyle} testID='message-overlay-top'>
                 <PortalHost name='top-item' style={styles.absoluteFill} />
-              </Animated.View>
-
-              <Animated.View
-                pointerEvents='box-none'
-                style={hostStyle}
-                testID='message-overlay-message'
-              >
-                <PortalHost name='message-overlay' style={styles.absoluteFill} />
               </Animated.View>
 
               <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
