@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AppState,
   FlatList,
   FlatListProps,
   FlatList as FlatListType,
@@ -15,7 +16,7 @@ import Animated from 'react-native-reanimated';
 
 import debounce from 'lodash/debounce';
 
-import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
+import type { Channel, Event, LocalMessage } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
@@ -188,20 +189,6 @@ const hasReadLastMessage = (channel: Channel, userId: string) => {
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
 
-const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageResponse) => {
-  if (!newMessage) return;
-  let previousLastMessage;
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const msg = messages[i];
-    if (!msg?.id) break;
-    if (msg.id !== newMessage.id) {
-      previousLastMessage = msg;
-      break;
-    }
-  }
-  return previousLastMessage;
-};
-
 type MessageListPropsWithContext = Pick<
   AttachmentPickerContextValue,
   'closePicker' | 'attachmentPickerStore'
@@ -218,7 +205,6 @@ type MessageListPropsWithContext = Pick<
     | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
-    | 'setChannelUnreadState'
     | 'setTargetedMessage'
     | 'targetedMessage'
     | 'threadList'
@@ -356,7 +342,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onThreadSelect,
     readEvents,
     reloadChannel,
-    setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
     targetedMessage,
@@ -658,6 +643,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const shouldMarkRead = () => {
       const channelUnreadState = channelUnreadStateStore.channelUnreadState;
       return (
+        AppState.currentState === 'active' &&
         !channelUnreadState?.first_unread_message_id &&
         !scrollToBottomButtonVisible &&
         client.user?.id &&
@@ -666,26 +652,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     };
 
     const handleEvent = async (event: Event) => {
+      // The unread count is owned by channel.messagePaginator.unreadStateSnapshot (mirrored into
+      // channelUnreadStateStore); we no longer manually bump it here. We only mark the channel read
+      // when the user is caught up at the bottom and the app is foregrounded.
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
-      const isMyOwnMessage = event.message?.user?.id === client.user?.id;
-      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
-      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
-      if (
-        (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
-        !isMyOwnMessage
-      ) {
-        const previousUnreadCount = channelUnreadState?.unread_messages ?? 0;
-        const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
-        setChannelUnreadState({
-          ...channelUnreadState,
-          last_read:
-            channelUnreadState?.last_read ??
-            (previousUnreadCount === 0 && previousLastMessage?.created_at
-              ? new Date(previousLastMessage.created_at)
-              : new Date(0)), // not having information about the last read message means the whole channel is unread,
-          unread_messages: previousUnreadCount + 1,
-        });
-      } else if (mainChannelUpdated && shouldMarkRead()) {
+      if (mainChannelUpdated && shouldMarkRead()) {
         await markRead();
       }
     };
@@ -701,7 +672,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     client.user?.id,
     markRead,
     scrollToBottomButtonVisible,
-    setChannelUnreadState,
     threadList,
   ]);
 
@@ -1427,7 +1397,6 @@ export const MessageList = (props: MessageListProps) => {
     markRead,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setChannelUnreadState,
     setTargetedMessage,
     targetedMessage,
     threadList,
@@ -1472,7 +1441,6 @@ export const MessageList = (props: MessageListProps) => {
         readEvents,
         reloadChannel,
         scrollToFirstUnreadThreshold,
-        setChannelUnreadState,
         setTargetedMessage,
         shouldShowUnreadUnderlay,
         targetedMessage,

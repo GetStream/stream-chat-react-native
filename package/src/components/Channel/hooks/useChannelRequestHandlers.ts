@@ -14,6 +14,8 @@ type RequestHandlers = NonNullable<ChannelInstanceConfig['requestHandlers']>;
 
 export type ChannelRequestHandlersParams = {
   channel: Channel;
+  /** Overrides the default mark-read request. Mirrors the `<Channel doMarkReadRequest>` prop. */
+  doMarkReadRequest?: (channel: Channel) => void;
   /** Overrides the default send/retry request. Mirrors the `<Channel doSendMessageRequest>` prop. */
   doSendMessageRequest?: (
     channelId: string,
@@ -40,6 +42,7 @@ export type ChannelRequestHandlersParams = {
  */
 export const useChannelRequestHandlers = ({
   channel,
+  doMarkReadRequest,
   doSendMessageRequest,
   doUpdateMessageRequest,
 }: ChannelRequestHandlersParams) => {
@@ -48,9 +51,19 @@ export const useChannelRequestHandlers = ({
     const nextRequestHandlers: RequestHandlers = { ...(currentRequestHandlers ?? {}) };
 
     // Reset the handlers this hook manages, then register only the provided overrides.
+    delete nextRequestHandlers.markReadRequest;
     delete nextRequestHandlers.retrySendMessageRequest;
     delete nextRequestHandlers.sendMessageRequest;
     delete nextRequestHandlers.updateMessageRequest;
+
+    if (doMarkReadRequest) {
+      // RN's doMarkReadRequest performs the custom mark-read itself (returns void); its obsolete 2nd
+      // (setChannelUnreadUiState) arg is dropped now that unread state is the paginator snapshot.
+      nextRequestHandlers.markReadRequest = ({ channel: markReadChannel }) => {
+        doMarkReadRequest(markReadChannel);
+        return Promise.resolve(null);
+      };
+    }
 
     if (doSendMessageRequest) {
       const sendMessageRequest: RequestHandlers['sendMessageRequest'] = async ({
@@ -79,5 +92,5 @@ export const useChannelRequestHandlers = ({
       requestHandlers:
         Object.keys(nextRequestHandlers).length > 0 ? nextRequestHandlers : undefined,
     });
-  }, [channel, doSendMessageRequest, doUpdateMessageRequest]);
+  }, [channel, doMarkReadRequest, doSendMessageRequest, doUpdateMessageRequest]);
 };

@@ -535,6 +535,32 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
     [channelUnreadStateStore],
   );
+
+  // Unread state is owned by the LLC: channel.messagePaginator.unreadStateSnapshot is the single
+  // source of truth (the paginator updates it on seeding / message.new / notification.mark_unread /
+  // truncate). Mirror it into channelUnreadStateStore so existing consumers keep working.
+  useEffect(() => {
+    const snapshotStore = channel.messagePaginator.unreadStateSnapshot;
+    const applyUnreadSnapshot = (snapshot: {
+      firstUnreadMessageId: string | null;
+      lastReadAt: Date | null;
+      lastReadMessageId: string | null;
+      unreadCount: number;
+    }) => {
+      setChannelUnreadState(
+        snapshot.firstUnreadMessageId || snapshot.lastReadMessageId || snapshot.unreadCount
+          ? {
+              first_unread_message_id: snapshot.firstUnreadMessageId ?? undefined,
+              last_read: snapshot.lastReadAt ?? new Date(0),
+              last_read_message_id: snapshot.lastReadMessageId ?? undefined,
+              unread_messages: snapshot.unreadCount,
+            }
+          : undefined,
+      );
+    };
+    applyUnreadSnapshot(snapshotStore.getLatestValue());
+    return snapshotStore.subscribe(applyUnreadSnapshot);
+  }, [channel, setChannelUnreadState]);
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
@@ -561,6 +587,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
   useChannelRequestHandlers({
     channel,
+    doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
   });
@@ -638,21 +665,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
       }
 
-      if (event.type === 'notification.mark_unread') {
-        if (!(event.last_read_at && event.user)) {
-          return;
-        }
-        setChannelUnreadState({
-          first_unread_message_id: event.first_unread_message_id,
-          last_read: new Date(event.last_read_at),
-          last_read_message_id: event.last_read_message_id,
-          unread_messages: event.unread_messages ?? 0,
-        });
-      }
-
-      if (event.type === 'channel.truncated' && event.cid === channel.cid) {
-        setChannelUnreadState(undefined);
-      }
+      // notification.mark_unread + channel.truncated update channel.messagePaginator.unreadStateSnapshot
+      // in the LLC; that snapshot is mirrored into channelUnreadStateStore, so no manual handling here.
 
       // The message list is backed reactively by channel.messagePaginator (channel._handleChannelEvent
       // ingests message.new/updated/deleted + reaction events), and read/typing/members come from
@@ -694,32 +708,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
       }
 
-      if (client.user?.id && channel.state.read[client.user.id]) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[client.user.id];
-        setChannelUnreadState(ownReadState);
-      }
+      // The paginator's unreadStateSnapshot is populated by the seed/reload above and mirrored into
+      // channelUnreadStateStore, so there's no manual initial read-state copy here.
 
       if (messageId) {
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
       } else if (shouldLoadAtFirstUnread) {
-        const clientUserId = client.user?.id;
-        if (!clientUserId) {
-          return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[clientUserId];
-
-        await loadChannelAtFirstUnreadMessage({
-          channelUnreadState: ownReadState,
-          setChannelUnreadState,
-          setTargetedMessage,
-        });
+        // jumpToTheFirstUnreadMessage resolves the first-unread id from the paginator's snapshot.
+        await loadChannelAtFirstUnreadMessage({ setTargetedMessage });
       }
 
       if (unreadCount > 0 && markReadOnMount) {
-        await markRead({ updateChannelUnreadState: false });
+        await markRead();
       }
 
       listener = channel.on(handleEvent);
@@ -776,46 +776,28 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * CHANNEL METHODS
    */
   const markReadInternal: ChannelContextValue['markRead'] = throttle(
-    async (options?: MarkReadFunctionOptions) => {
-      const { updateChannelUnreadState = true } = options ?? {};
+    async () => {
       if (!channel || channel?.disconnected) {
         return;
       }
 
-      // When read events are disabled (e.g. livestreams) we cannot mark read on the backend. If the
-      // client opted into a local unread count, reset it locally instead so the user's "caught up"
-      // state is reflected without a server round trip.
+      // Read events disabled (e.g. livestreams): if the client opted into a local unread count,
+      // reset it locally (dispatches message.read_locally) — no backend round trip. The paginator's
+      // unread snapshot updates from that, and is mirrored into channelUnreadStateStore.
       if (!clientChannelConfig?.read_events) {
         if (client.options.isLocalUnreadCountEnabled) {
-          const event = channel.markReadLocally();
-          if (updateChannelUnreadState && event && lastReadRef.current) {
-            setChannelUnreadState({
-              last_read: lastReadRef.current,
-              last_read_message_id: event.last_read_message_id,
-              unread_messages: 0,
-            });
-            lastReadRef.current = new Date();
-          }
+          channel.markReadLocally();
         }
         return;
       }
 
-      if (doMarkReadRequest) {
-        doMarkReadRequest(channel, updateChannelUnreadState ? setChannelUnreadState : undefined);
-      } else {
-        try {
-          const response = await channel.markRead();
-          if (updateChannelUnreadState && response && lastReadRef.current) {
-            setChannelUnreadState({
-              last_read: lastReadRef.current,
-              last_read_message_id: response?.event.last_read_message_id,
-              unread_messages: 0,
-            });
-            lastReadRef.current = new Date();
-          }
-        } catch (err) {
-          console.log('Error marking channel as read:', err);
-        }
+      // channel.markRead() delegates to client.messageDeliveryReporter.markRead(this), which honors
+      // any custom markReadRequest handler registered in channel.configState (see
+      // useChannelRequestHandlers). Unread state updates in the LLC snapshot, mirrored into the store.
+      try {
+        await channel.markRead();
+      } catch (err) {
+        console.log('Error marking channel as read:', err);
       }
     },
     defaultThrottleInterval,
