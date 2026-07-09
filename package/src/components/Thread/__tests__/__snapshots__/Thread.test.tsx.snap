@@ -1833,9 +1833,9 @@ exports[`Thread should match thread snapshot 1`] = `
                       <View
                         handlerTags={
                           [
+                            27,
                             26,
                             25,
-                            24,
                           ]
                         }
                         onGestureHandlerEvent={[Function]}
@@ -2211,9 +2211,9 @@ exports[`Thread should match thread snapshot 1`] = `
                           <View
                             handlerTags={
                               [
+                                30,
                                 29,
                                 28,
-                                27,
                               ]
                             }
                             onGestureHandlerEvent={[Function]}
@@ -2393,9 +2393,9 @@ exports[`Thread should match thread snapshot 1`] = `
           <View
             handlerTags={
               [
+                33,
                 32,
                 31,
-                30,
               ]
             }
             onGestureHandlerEvent={[Function]}
@@ -2540,9 +2540,9 @@ exports[`Thread should match thread snapshot 1`] = `
           <View
             handlerTags={
               [
+                36,
                 35,
                 34,
-                33,
               ]
             }
             onGestureHandlerEvent={[Function]}
@@ -2716,9 +2716,9 @@ exports[`Thread should match thread snapshot 1`] = `
           <View
             handlerTags={
               [
+                39,
                 38,
                 37,
-                36,
               ]
             }
             onGestureHandlerEvent={[Function]}
@@ -2859,9 +2859,9 @@ exports[`Thread should match thread snapshot 1`] = `
           <View
             handlerTags={
               [
+                42,
                 41,
                 40,
-                39,
               ]
             }
             onGestureHandlerEvent={[Function]}

@@ -1,6 +1,9 @@
 import type { Attachment } from 'stream-chat';
 
-import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
+import {
+  generateImageAttachment,
+  generateVideoAttachment,
+} from '../../../mock-builders/generator/attachment';
 import { buildGallery } from '../utils/buildGallery/buildGallery';
 
 describe('buildGallery', () => {
@@ -125,5 +128,36 @@ describe('buildGallery', () => {
     expect(t2.url.includes('&h=*')).toBe(true);
     expect(t2.url.includes('&w=*')).toBe(true);
     expect(t2.url.includes('&resize=*')).toBe(true);
+  });
+
+  it('resizes the thumb_url of a video attachment', () => {
+    const video = generateVideoAttachment({
+      image_url:
+        'https://us-east.stream-io-cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&oh=2532&ow=1170&s=v',
+      thumb_url:
+        'https://us-east.stream-io-cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&oh=2532&ow=1170&s=v',
+    });
+
+    const { thumbnailGrid } = buildGallery({
+      images: [video],
+      sizeConfig: defaultSizeConfig,
+    });
+
+    const thumbnail = thumbnailGrid[0][0];
+    expect(thumbnail.thumb_url?.includes('&h=')).toBe(true);
+    expect(thumbnail.thumb_url?.includes('&w=')).toBe(true);
+    expect(thumbnail.thumb_url?.includes('&resize=clip')).toBe(true);
+  });
+
+  it('leaves a non-resizable thumb_url untouched', () => {
+    const thumbUrl = 'https://not-a-stream-cdn.example.com/thumb.jpg';
+    const video = generateVideoAttachment({ thumb_url: thumbUrl });
+
+    const { thumbnailGrid } = buildGallery({
+      images: [video],
+      sizeConfig: defaultSizeConfig,
+    });
+
+    expect(thumbnailGrid[0][0].thumb_url).toBe(thumbUrl);
   });
 });

@@ -92,13 +92,23 @@ export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
  */
 export const AttachButton = (props: AttachButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
-  const { inputBoxRef, handleAttachButtonPress, openAttachmentPicker } = useMessageInputContext();
+  const {
+    closeAttachmentPicker,
+    focusInputOnPickerClose,
+    handleAttachButtonPress,
+    inputBoxRef,
+    openAttachmentPicker,
+  } = useMessageInputContext();
   const { attachmentPickerStore } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const toggleAttachmentPicker = useStableCallback(() => {
     if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
-      inputBoxRef.current?.focus();
+      if (focusInputOnPickerClose) {
+        inputBoxRef.current?.focus();
+      } else {
+        closeAttachmentPicker();
+      }
     } else {
       openAttachmentPicker();
     }
