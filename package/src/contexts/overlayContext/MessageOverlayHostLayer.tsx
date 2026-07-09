@@ -120,12 +120,8 @@ export const MessageOverlayHostLayer = () => {
   const minY = topInset + padding;
   const maxY = screenH - bottomInset - padding;
 
-  // Scrollability: when the reaction picker + message + action list are taller than the
-  // available space, the message becomes scrollable between a pinned top item and a sticky
-  // footer. We do NOT use a ScrollView; instead a Pan gesture drives `scrollY` (a shared
-  // value) and the message content is translated by `-scrollY` inside a clipped frame,
-  // with `withDecay` momentum. Everything stays on the UI thread, consistent with the rest
-  // of this host. All of it is gated on `isActive`, so nothing is mounted when idle.
+  // When top + message + bottom don't fit the usable area, a Pan gesture drives `scrollY` and
+  // the message is translated by it (see hostStyle). No ScrollView, all on the UI thread.
   const scrollY = useSharedValue(0);
   const scrollStartY = useSharedValue(0);
 
@@ -133,17 +129,13 @@ export const MessageOverlayHostLayer = () => {
     if (!messageH.value || !topH.value || !bottomH.value) {
       return { needsScroll: false };
     }
-    // Scroll kicks in when the reaction picker + message + action list don't fit the usable
-    // area (the footer must stay above the safe area).
     const available = maxY - minY;
     const contentH = topH.value.h + messageH.value.h + bottomH.value.h;
     return { needsScroll: contentH > available };
   });
 
-  // Furthest the message can scroll: exactly the amount by which the content overflows the
-  // usable area. At max scroll the message tail lands on top of the sticky footer
-  // (`maxY - bottomH`). This is independent of the clip-frame height, so the message can run
-  // edge-to-edge into the safe area while scrolling still stops in the right place.
+  // How far the message can scroll: the amount its content overflows the usable area. At max
+  // scroll the message tail lands just above the sticky footer.
   const maxScroll = useDerivedValue(() => {
     if (!scrollGeom.value.needsScroll || !messageH.value || !topH.value || !bottomH.value) {
       return 0;
@@ -153,10 +145,8 @@ export const MessageOverlayHostLayer = () => {
     return Math.max(0, contentH - available);
   });
 
-  // We do NOT rewind the scroll during the close animation — the message closes from
-  // wherever it was scrolled to (the close target folds in the scroll; see hostStyle). On
-  // close we just freeze any in-flight fling so the offset is stable while it animates back.
-  // Only reset the scroll once the overlay is fully closed, ready for the next open.
+  // On close, freeze any inflight fling (the message closes from where it was scrolled - see
+  // `hostStyle`) and only reset the offset once fully closed, ready for the next open.
   useEffect(() => {
     if (closing) {
       cancelAnimation(scrollY);
@@ -219,8 +209,7 @@ export const MessageOverlayHostLayer = () => {
     const msgH = messageH.value.h;
     const minTop = minY + topH.value.h;
 
-    // When scrolling, the message clip frame pins directly under the (pinned) top item;
-    // the message itself scrolls within that frame via the ScrollView.
+    // When scrolling, pin the message directly under the (pinned) top item; scrollY does the rest.
     if (scrollGeom.value.needsScroll) {
       return minTop - anchorY;
     }
@@ -241,9 +230,7 @@ export const MessageOverlayHostLayer = () => {
     const msgH = messageH.value.h;
     const minMessageTop = minY + topH.value.h;
 
-    // When scrolling, the bottom item is a sticky footer pinned to the bottom of the
-    // viewport. The ScrollView content carries `bottomH` of trailing padding so the tail
-    // of the message clears the footer once fully scrolled.
+    // When scrolling, pin the bottom item as a sticky footer at the bottom of the usable area.
     if (scrollGeom.value.needsScroll) {
       return maxY - bottomH.value.h - bottomH.value.y;
     }
@@ -296,16 +283,9 @@ export const MessageOverlayHostLayer = () => {
     };
   });
 
-  // The message host. There is NO clipping: the message is rendered BEHIND the (opaque) top
-  // and bottom items, so a scrolled/overflowing message simply passes behind them and flows
-  // into the safe areas — exactly like the action list already lets it.
-  //
-  // Two translateY transforms compose: the first is the springed open/close positioning; the
-  // second is the direct scroll offset driven by the pan gesture. On CLOSE we fold the
-  // current scroll into the FIRST transform's target so the message springs from wherever it
-  // was scrolled to straight onto its row. The scroll transform (second) stays constant
-  // through the close — it does NOT rewind — so the message keeps its scrolled appearance as
-  // it animates back.
+  // Two composed `translateY`: first is the springed open/close position, second is the raw
+  // scroll offset. On close we fold the scroll into the first (springed) target so the message
+  // animates back from where it was scrolled, while the latter stays put.
   const hostStyle = useAnimatedStyle(() => {
     if (!messageH.value) return { height: 0 };
     const scroll = scrollGeom.value.needsScroll ? scrollY.value : 0;
@@ -327,9 +307,8 @@ export const MessageOverlayHostLayer = () => {
     };
   });
 
-  // Manual scroller for the message. Drags translate `scrollY` (clamped to the scrollable
-  // range); release flings with `withDecay`. When the content fits, `maxScroll` is 0 so the
-  // clamp keeps `scrollY` at 0 and the drag is an effective no-op.
+  // Drag scrolls the message (clamped to `[0, maxScroll]`); release flings with decay. When the
+  // content fits, `maxScroll` is 0 so this is a noop.
   const pan = useMemo(
     () =>
       Gesture.Pan()
@@ -395,13 +374,6 @@ export const MessageOverlayHostLayer = () => {
           </Animated.View>
         ) : null}
 
-        {/*
-          The portal hosts are always mounted (matching the SDK's original behavior). We do
-          NOT gate them on `isActive`: remounting the hosts on every open makes the native
-          teleport re-lay-out its content on a fresh host, which on iOS renders the teleported
-          message/action-list at a stale/collapsed size on the first frame. Keeping the hosts
-          mounted keeps the teleport target stable. Only the backdrop press target is gated.
-        */}
         <View pointerEvents='box-none' style={StyleSheet.absoluteFill}>
           {isActive ? (
             <Pressable
@@ -421,9 +393,8 @@ export const MessageOverlayHostLayer = () => {
           ) : (
             <>
               {/*
-                Order matters: the message is rendered FIRST (lowest z) so it sits BEHIND
-                the opaque top and bottom items. A tall/scrolled message therefore passes
-                behind them and into the safe areas, with no clipping and no cut-off.
+                Message renders first (lowest z) so it sits behind the opaque top/bottom items;
+                a scrolled/overflowing message passes behind them instead of being clipped.
               */}
               <GestureDetector gesture={pan}>
                 <Animated.View style={hostStyle} testID='message-overlay-message'>
