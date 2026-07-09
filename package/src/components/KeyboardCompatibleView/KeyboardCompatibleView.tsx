@@ -120,18 +120,18 @@ export class KeyboardCompatibleView extends React.Component<
       //
       // - Non edge-to-edge apps use `adjustResize`: the OS shrinks the window and already
       //   keeps the composer above the keyboard, so no JS offset is needed. Applying one
-      //   anyway double-offsets the view — and because our layout `frame` only reflects the
-      //   resize a render *after* `keyboardDidShow` fires, that offset is briefly computed
-      //   from the stale, full-height frame and stacked on top of the native resize. That is
-      //   the transient "jump to a very high point that then settles" reported on devices
-      //   such as Samsung / Android 13. So here we skip the JS offset entirely.
+      //   anyway double offsets the view and because our layout `frame` only reflects the
+      //   resize a render AFTER `keyboardDidShow` fires, that offset is briefly computed
+      //   from the stale, full height frame and stacked on top of the native resize. That
+      //   manifests as a transient jump to a very high point that then settles, more commonly
+      //   seen on devices such as Samsung on Android 13. So here we skip the JS offset entirely.
       //
-      // - Edge-to-edge apps (the platform default on Android 15 / API 35+, and opt-in below
+      // - Edge-to-edge apps (the platform default on Android 15/API 35+ and optin below
       //   that) do NOT resize the window for the keyboard, so the JS offset below is the only
       //   thing keeping the composer visible and must be applied.
       //
-      // `screen - window` reflects the system-bar inset, which is present on non edge-to-edge
-      // AND on edge-to-edge below API 35 — so it can't distinguish the two on its own. We pair
+      // `screen - window` reflects the system bar inset, which is present on non edge-to-edge
+      // AND on edge-to-edge below API 35, so it can't distinguish the two on its own. We pair
       // it with the `isEdgeToEdge` native flag: only skip the offset when the bars are inset
       // (there is room for `adjustResize` to shrink into) AND the app is not edge-to-edge.
       const systemBarsInset = Dimensions.get('screen').height - Dimensions.get('window').height;
@@ -150,7 +150,7 @@ export class KeyboardCompatibleView extends React.Component<
 
     if (Platform.OS === 'android') {
       // Edge-to-edge only reaches here (systemBarsInset === 0 above): guard against
-      // sub-status-bar noise so we don't apply a tiny bogus offset.
+      // sub status bar noise so we don't apply a tiny bogus offset.
       const systemInsetFloor = StatusBar.currentHeight ?? 0;
       if (relativeHeight <= systemInsetFloor) {
         return 0;
