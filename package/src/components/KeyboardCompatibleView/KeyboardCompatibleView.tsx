@@ -17,6 +17,7 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
+  TurboModuleRegistry,
   View,
 } from 'react-native';
 
@@ -26,6 +27,34 @@ export type KeyboardCompatibleViewProps = KeyboardAvoidingViewProps;
 
 export const dismissKeyboard = () => {
   Keyboard.dismiss();
+};
+
+/**
+ * Whether the app runs edge-to-edge on Android (drawing behind the system bars). React Native
+ * exposes this as a `DeviceInfo` native constant. It's a static, app-level value, so we read it
+ * once and cache it. Defaults to `false` if the constant is unavailable (older RN / iOS).
+ *
+ * We need it to decide whether the OS resizes the window when the soft keyboard opens:
+ * edge-to-edge apps do NOT resize (RN dispatches insets instead), non edge-to-edge apps use
+ * `adjustResize` and the window shrinks. `Dimensions.screen - Dimensions.window` alone cannot
+ * tell them apart, because on API < 35 the bars are reported as an inset in BOTH cases.
+ */
+let cachedIsEdgeToEdge: boolean | undefined;
+const getIsEdgeToEdge = (): boolean => {
+  if (cachedIsEdgeToEdge === undefined) {
+    cachedIsEdgeToEdge = false;
+    if (Platform.OS === 'android') {
+      try {
+        const deviceInfo = TurboModuleRegistry.get('DeviceInfo') as {
+          getConstants?: () => { isEdgeToEdge?: boolean };
+        } | null;
+        cachedIsEdgeToEdge = deviceInfo?.getConstants?.().isEdgeToEdge ?? false;
+      } catch {
+        cachedIsEdgeToEdge = false;
+      }
+    }
+  }
+  return cachedIsEdgeToEdge;
 };
 
 type State = {
@@ -86,25 +115,27 @@ export class KeyboardCompatibleView extends React.Component<
     const keyboardY = keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
 
     if (Platform.OS === 'android') {
-      // On Android, how much (if anything) we need to move the view up depends on
-      // whether the OS resizes the window when the soft keyboard opens:
+      // On Android, whether we need a JS offset depends on whether the OS resizes the
+      // window when the soft keyboard opens:
       //
-      // - Non edge-to-edge apps: the window is inset by the system bars, so
-      //   `screen.height - window.height > 0`. With `adjustResize` (which this SDK
-      //   requires) the OS shrinks the window and already keeps the composer above the
-      //   keyboard, so no JS offset is needed. Applying one anyway double-offsets the
-      //   view. Worse, our layout `frame` only reflects the resize a render *after*
-      //   `keyboardDidShow` fires, so for that render we'd compute the offset from the
-      //   stale, full-height frame and briefly apply it on top of the native resize —
-      //   this is the transient "jump to a very high point that then settles" reported
-      //   on devices such as Samsung / Android 13.
+      // - Non edge-to-edge apps use `adjustResize`: the OS shrinks the window and already
+      //   keeps the composer above the keyboard, so no JS offset is needed. Applying one
+      //   anyway double-offsets the view — and because our layout `frame` only reflects the
+      //   resize a render *after* `keyboardDidShow` fires, that offset is briefly computed
+      //   from the stale, full-height frame and stacked on top of the native resize. That is
+      //   the transient "jump to a very high point that then settles" reported on devices
+      //   such as Samsung / Android 13. So here we skip the JS offset entirely.
       //
-      // - Edge-to-edge apps: the window spans the whole screen, so
-      //   `screen.height - window.height === 0` (the platform default on Android 15 /
-      //   API 35+). These do NOT resize the window for the keyboard, so the JS offset
-      //   below is the only thing keeping the composer visible and must be applied.
+      // - Edge-to-edge apps (the platform default on Android 15 / API 35+, and opt-in below
+      //   that) do NOT resize the window for the keyboard, so the JS offset below is the only
+      //   thing keeping the composer visible and must be applied.
+      //
+      // `screen - window` reflects the system-bar inset, which is present on non edge-to-edge
+      // AND on edge-to-edge below API 35 — so it can't distinguish the two on its own. We pair
+      // it with the `isEdgeToEdge` native flag: only skip the offset when the bars are inset
+      // (there is room for `adjustResize` to shrink into) AND the app is not edge-to-edge.
       const systemBarsInset = Dimensions.get('screen').height - Dimensions.get('window').height;
-      if (systemBarsInset > 0) {
+      if (systemBarsInset > 0 && !getIsEdgeToEdge()) {
         return 0;
       }
     }
