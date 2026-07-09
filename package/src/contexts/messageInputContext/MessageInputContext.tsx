@@ -14,7 +14,6 @@ import {
   LocalMessage,
   MessageComposer,
   SendMessageOptions,
-  StreamChat,
   Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
@@ -126,7 +125,7 @@ export type InputMessageInputContextValue = {
   editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
-  }) => ReturnType<StreamChat['updateMessage']>;
+  }) => Promise<void>;
 
   /**
    * Controls what happens when the attach button is pressed while the attachment picker is open.

@@ -12,7 +12,6 @@ import {
   EventHandler,
   LocalMessage,
   localMessageToNewMessagePayload,
-  MessageLabel,
   MessageResponse,
   Reaction,
   SendMessageAPIResponse,
@@ -1213,51 +1212,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!channel) {
         throw new Error('Channel has not been initialized');
       }
-
-      const cid = channel.cid;
-      const currentMessage = channel.state.findMessage(localMessage.id, localMessage.parent_id);
-      const isFailedMessage =
-        currentMessage?.status === MessageStatusTypes.FAILED ||
-        localMessage.status === MessageStatusTypes.FAILED;
-      const optimisticEditedAt = new Date();
-      const optimisticEditedAtString = optimisticEditedAt.toISOString();
-      const optimisticMessage = {
-        ...currentMessage,
-        ...localMessage,
-        cid,
-        message_text_updated_at: isFailedMessage ? undefined : optimisticEditedAtString,
-        updated_at: optimisticEditedAt,
-      } as unknown as LocalMessage;
-
-      updateMessage(optimisticMessage);
-      threadInstance?.updateParentMessageOrReplyLocally(
-        optimisticMessage as unknown as MessageResponse,
-      );
-      client.offlineDb?.executeQuerySafely(
-        (db) =>
-          db.updateMessage({
-            message: { ...optimisticMessage, cid },
-          }),
-        { method: 'updateMessage' },
-      );
-
-      const response = doUpdateMessageRequest
-        ? await doUpdateMessageRequest(cid, localMessage, options)
-        : await client.updateMessage(localMessage, undefined, options);
-
-      if (response?.message) {
-        updateMessage(response.message);
-        threadInstance?.updateParentMessageOrReplyLocally(response.message);
-        client.offlineDb?.executeQuerySafely(
-          (db) =>
-            db.updateMessage({
-              message: { ...response.message, cid },
-            }),
-          { method: 'updateMessage' },
-        );
-      }
-
-      return response;
+      // The LLC handles the optimistic local update (ingest into the paginator), the network
+      // request (honoring any doUpdateMessageRequest registered into channel.configState in
+      // useChannelRequestHandlers), the received/failed state transitions, and offline queueing.
+      // Thread edits route through the thread instance's own message operations.
+      await (threadInstance ?? channel).updateMessageWithLocalUpdate({ localMessage, options });
     },
   );
 
@@ -1324,6 +1283,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
     async (message, optionsOrHardDelete = false) => {
+      if (!channel?.id) {
+        throw new Error('Channel has not been initialized yet');
+      }
+
+      // A failed (never-sent) message exists only locally — remove it without a server delete.
+      if (message.status === MessageStatusTypes.FAILED) {
+        await removeMessage(message);
+        return;
+      }
+
       let options: DeleteMessageOptions = {};
       if (typeof optionsOrHardDelete === 'boolean') {
         options = optionsOrHardDelete ? { hardDelete: true } : {};
@@ -1332,29 +1301,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       } else if (optionsOrHardDelete?.hardDelete) {
         options = { hardDelete: true };
       }
-      if (!channel.id) {
-        throw new Error('Channel has not been initialized yet');
-      }
 
-      if (message.status === MessageStatusTypes.FAILED) {
-        await removeMessage(message);
-        return;
-      }
-      const updatedMessage = {
-        ...message,
-        cid: channel.cid,
-        deleted_at: new Date(),
-        type: 'deleted' as MessageLabel,
-      };
-      updateMessage(updatedMessage);
-
-      threadInstance?.upsertReplyLocally({ message: updatedMessage });
-
-      const data = await client.deleteMessage(message.id, options);
-
-      if (data?.message) {
-        updateMessage({ ...data.message });
-      }
+      // The LLC performs the delete request (honoring any configState delete handler) and ingests
+      // the deleted message into the paginator. Thread deletes route through the thread instance.
+      await (threadInstance ?? channel).deleteMessageWithLocalUpdate({
+        localMessage: message,
+        options,
+      });
     },
   );
 
