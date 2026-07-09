@@ -1,12 +1,15 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { TypingUsersState } from 'stream-chat';
+
 import { filterTypingUsers } from './utils/filterTypingUsers';
 
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
-import { TypingContextValue, useTypingContext } from '../../contexts/typingContext/TypingContext';
+import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 
 const styles = StyleSheet.create({
@@ -17,8 +20,12 @@ const styles = StyleSheet.create({
   },
 });
 
-type TypingIndicatorContainerPropsWithContext = Pick<TypingContextValue, 'typing'> &
-  Pick<ChatContextValue, 'client'> &
+const typingSelector = (state: TypingUsersState) => ({ typing: state.typing });
+
+type TypingIndicatorContainerPropsWithContext = { typing: TypingUsersState['typing'] } & Pick<
+  ChatContextValue,
+  'client'
+> &
   Pick<ThreadContextValue, 'thread'>;
 
 const TypingIndicatorContainerWithContext = (
@@ -49,9 +56,10 @@ export type TypingIndicatorContainerProps = PropsWithChildren<
 >;
 
 export const TypingIndicatorContainer = (props: TypingIndicatorContainerProps) => {
-  const { typing } = useTypingContext();
+  const { channel } = useChannelContext();
   const { client } = useChatContext();
   const { thread } = useThreadContext();
+  const { typing } = useStateStore(channel.state.typingStore, typingSelector) ?? { typing: {} };
 
   return <TypingIndicatorContainerWithContext {...{ client, thread, typing }} {...props} />;
 };

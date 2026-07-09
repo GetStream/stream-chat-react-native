@@ -1,11 +1,12 @@
-import { UserResponse } from 'stream-chat';
+import { TypingUsersState, UserResponse } from 'stream-chat';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
 
-type FilterTypingUsersParams = Pick<TypingContextValue, 'typing'> &
-  Pick<ChatContextValue, 'client'> &
+type FilterTypingUsersParams = { typing: TypingUsersState['typing'] } & Pick<
+  ChatContextValue,
+  'client'
+> &
   Pick<ThreadContextValue, 'thread'>;
 
 export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersParams) => {

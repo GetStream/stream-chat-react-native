@@ -23,7 +23,6 @@ import {
   Event as StreamEvent,
   Message as StreamMessage,
   Thread,
-  TypingUsersState,
   UpdateMessageOptions,
   WatcherState,
 } from 'stream-chat';
@@ -39,8 +38,6 @@ import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitie
 import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
-
-import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 
 import { useMessageListPagination } from './hooks/useMessageListPagination';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
@@ -87,7 +84,6 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { TypingProvider } from '../../contexts/typingContext/TypingContext';
 import { useStableCallback, useStateStore } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
@@ -391,7 +387,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
 
 const membersStateSelector = (state: MembersState) => ({ members: state.members });
 const readStateSelector = (state: ReadState) => ({ read: state.read });
-const typingStateSelector = (state: TypingUsersState) => ({ typing: state.typing });
 const watcherStateSelector = (state: WatcherState) => ({
   watcherCount: state.watcherCount,
   watchers: state.watchers,
@@ -595,11 +590,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doUpdateMessageRequest,
   });
 
-  // Channel scalar state (members/read/typing/watchers) is sourced reactively from
+  // Channel scalar state (members/read/watchers) is sourced reactively from
   // stream-chat's per-channel StateStores.
   const { members } = useStateStore(channel.state.membersStore, membersStateSelector);
   const { read } = useStateStore(channel.state.readStore, readStateSelector);
-  const { typing } = useStateStore(channel.state.typingStore, typingStateSelector);
   const { watcherCount, watchers } = useStateStore(
     channel.state.watcherStore,
     watcherStateSelector,
@@ -1711,10 +1705,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     threadMessages,
   });
 
-  const typingContext = useCreateTypingContext({
-    typing: typing ?? {},
-  });
-
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(
     () => ({ allowConcurrentAudioPlayback }),
     [allowConcurrentAudioPlayback],
@@ -1751,25 +1741,23 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     >
       <ChannelProvider value={channelContext}>
         <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-          <TypingProvider value={typingContext}>
-            <PaginatedMessageListProvider value={messageListContext}>
-              <MessagesProvider value={messagesContext}>
-                <ThreadProvider value={threadContext}>
-                  <AttachmentPickerProvider value={attachmentPickerContext}>
-                    <MessageComposerProvider value={messageComposerContext}>
-                      <MessageInputProvider value={inputMessageInputContext}>
-                        <AudioPlayerProvider value={audioPlayerContext}>
-                          <NotificationAnnouncer />
-                          <View style={{ height: '100%' }}>{children}</View>
-                          <AttachmentPicker />
-                        </AudioPlayerProvider>
-                      </MessageInputProvider>
-                    </MessageComposerProvider>
-                  </AttachmentPickerProvider>
-                </ThreadProvider>
-              </MessagesProvider>
-            </PaginatedMessageListProvider>
-          </TypingProvider>
+          <PaginatedMessageListProvider value={messageListContext}>
+            <MessagesProvider value={messagesContext}>
+              <ThreadProvider value={threadContext}>
+                <AttachmentPickerProvider value={attachmentPickerContext}>
+                  <MessageComposerProvider value={messageComposerContext}>
+                    <MessageInputProvider value={inputMessageInputContext}>
+                      <AudioPlayerProvider value={audioPlayerContext}>
+                        <NotificationAnnouncer />
+                        <View style={{ height: '100%' }}>{children}</View>
+                        <AttachmentPicker />
+                      </AudioPlayerProvider>
+                    </MessageInputProvider>
+                  </MessageComposerProvider>
+                </AttachmentPickerProvider>
+              </ThreadProvider>
+            </MessagesProvider>
+          </PaginatedMessageListProvider>
         </OwnCapabilitiesProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
