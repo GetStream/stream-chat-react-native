@@ -12,6 +12,9 @@ permissions:
 
 jobs:
   generate_changelog_preview:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     strategy:
       matrix:
