@@ -1,5 +1,22 @@
 # Change Log
 
+## [9.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.6.0...v9.6.1) (2026-07-09)
+
+### Bug Fixes
+
+* add optional toggling between keyboard and picker ([#3712](https://github.com/GetStream/stream-chat-react-native/issues/3712)) ([8cae158](https://github.com/GetStream/stream-chat-react-native/commit/8cae158f9178de4c3fe7af27b44635b35de66124))
+* context menu scrollability ([#3719](https://github.com/GetStream/stream-chat-react-native/issues/3719)) ([eccc660](https://github.com/GetStream/stream-chat-react-native/commit/eccc660e85ad65882818287240fff18509229851))
+* disappearing context menu ([#3714](https://github.com/GetStream/stream-chat-react-native/issues/3714)) ([8971bef](https://github.com/GetStream/stream-chat-react-native/commit/8971bef28bcb813fb99bd3837d9d0a62db20f1ca))
+* keyboard jump on samsung non edge-to-edge devices ([#3718](https://github.com/GetStream/stream-chat-react-native/issues/3718)) ([07e5554](https://github.com/GetStream/stream-chat-react-native/commit/07e555400a15fd2ac6ae057e00a417f94c03b47f))
+* orientation awareness in bottom sheet ([#3711](https://github.com/GetStream/stream-chat-react-native/issues/3711)) ([372255a](https://github.com/GetStream/stream-chat-react-native/commit/372255a1fea86b2c68eba64d6402f030dc055faf))
+* restore release automation token and backfill missing changelog ([#3717](https://github.com/GetStream/stream-chat-react-native/issues/3717)) ([df611bb](https://github.com/GetStream/stream-chat-react-native/commit/df611bb5025a0065b7244a36549105a465d8dfcc))
+* the MessageComposerTrailingView slot moved to same row as input … ([#3716](https://github.com/GetStream/stream-chat-react-native/issues/3716)) ([a9a54ab](https://github.com/GetStream/stream-chat-react-native/commit/a9a54ab374cb82f2ac645d2b7caea393801c5e8b))
+* thread_manager reload before activation ([#3720](https://github.com/GetStream/stream-chat-react-native/issues/3720)) ([2ff90d5](https://github.com/GetStream/stream-chat-react-native/commit/2ff90d518a2d6cb2f961bbb8b2c4f0853da80f23))
+
+### Performance Improvements
+
+* resize video thumbnails ([#3713](https://github.com/GetStream/stream-chat-react-native/issues/3713)) ([9e9fccd](https://github.com/GetStream/stream-chat-react-native/commit/9e9fccd9b5166248080cf112b90a6e12922e4764))
+
 ## [9.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.5.2...v9.6.0) (2026-07-03)
 
 - feat: localized unread count ([#3679](https://github.com/GetStream/stream-chat-react-native/pull/3679))
