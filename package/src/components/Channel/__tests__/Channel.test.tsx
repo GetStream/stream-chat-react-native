@@ -265,7 +265,6 @@ describe('Channel', () => {
         channel,
         client: chatClient,
         markRead: () => {},
-        watcherCount: 5,
       };
 
       render(
@@ -285,7 +284,6 @@ describe('Channel', () => {
         expect(ctx.channel).toBeInstanceOf(Object);
         expect(ctx.client).toBeInstanceOf(StreamChat);
         expect(ctx.markRead).toBeInstanceOf(Function);
-        expect(ctx.watcherCount).toBe(5);
       });
     });
   });

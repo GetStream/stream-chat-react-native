@@ -19,8 +19,6 @@ export const useCreateChannelContext = ({
   markRead,
   maxTimeBetweenGroupedMessages,
   maximumMessageLimit,
-  members,
-  read,
   reloadChannel,
   scrollToFirstUnreadThreshold,
   setChannelUnreadState,
@@ -29,17 +27,8 @@ export const useCreateChannelContext = ({
   targetedMessage,
   threadList,
   uploadAbortControllerRef,
-  watcherCount,
-  watchers,
 }: ChannelContextValue) => {
   const channelId = channel?.id;
-  const membersLength = Object.keys(members).length;
-
-  const readUsers = Object.values(read);
-  const readUsersLength = readUsers.length;
-  const readUsersLastReads = readUsers
-    .map(({ last_read }) => last_read?.toISOString() ?? '')
-    .join();
 
   const channelContext: ChannelContextValue = useMemo(
     () => ({
@@ -59,8 +48,6 @@ export const useCreateChannelContext = ({
       markRead,
       maximumMessageLimit,
       maxTimeBetweenGroupedMessages,
-      members,
-      read,
       reloadChannel,
       scrollToFirstUnreadThreshold,
       setChannelUnreadState,
@@ -69,8 +56,6 @@ export const useCreateChannelContext = ({
       targetedMessage,
       threadList,
       uploadAbortControllerRef,
-      watcherCount,
-      watchers,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -80,12 +65,8 @@ export const useCreateChannelContext = ({
       isChannelActive,
       highlightedMessageId,
       loading,
-      membersLength,
-      readUsersLength,
-      readUsersLastReads,
       targetedMessage,
       threadList,
-      watcherCount,
       maximumMessageLimit,
     ],
   );

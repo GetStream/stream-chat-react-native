@@ -11,7 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
+import type {
+  Attachment,
+  LocalMessage,
+  MembersState,
+  MentionEntity,
+  UserResponse,
+} from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -56,7 +62,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useStateStore } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import {
   closeOverlay,
@@ -186,9 +192,8 @@ export type MessageActionHandlers = {
 
 export type MessagePropsWithContext = Pick<
   ChannelContextValue,
-  'channel' | 'enforceUniqueReaction' | 'members'
-> &
-  Pick<KeyboardContextValue, 'dismissKeyboard'> &
+  'channel' | 'enforceUniqueReaction'
+> & { members: MembersState['members'] } & Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
     Omit<
       MessageContextValue,
@@ -1127,6 +1132,8 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
+const messageMembersSelector = (state: MembersState) => ({ members: state.members });
+
 export type MessageProps = Partial<
   Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message'>
 > &
@@ -1140,7 +1147,10 @@ export type MessageProps = Partial<
  */
 export const Message = (props: MessageProps) => {
   const { message } = props;
-  const { channel, enforceUniqueReaction, members } = useChannelContext();
+  const { channel, enforceUniqueReaction } = useChannelContext();
+  const { members } = useStateStore(channel.state.membersStore, messageMembersSelector) ?? {
+    members: {},
+  };
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();

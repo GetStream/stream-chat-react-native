@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ChannelState } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
 import {
@@ -82,31 +82,6 @@ export type ChannelContextValue = {
   }) => Promise<void>;
 
   markRead: (options?: MarkReadFunctionOptions) => void;
-  /**
-   *
-   * ```json
-   * {
-   *   "thierry-123": {
-   *     "id": "thierry-123",
-   *     "role": "user",
-   *     "created_at": "2019-04-03T14:42:47.087869Z",
-   *     "updated_at": "2019-04-16T09:20:03.982283Z",
-   *     "last_active": "2019-04-16T11:23:51.168113408+02:00",
-   *     "online": true
-   *   },
-   *   "vishal-123": {
-   *     "id": "vishal-123",
-   *     "role": "user",
-   *     "created_at": "2019-05-03T14:42:47.087869Z",
-   *     "updated_at": "2019-05-16T09:20:03.982283Z",
-   *     "last_active": "2019-06-16T11:23:51.168113408+02:00",
-   *     "online": false
-   *   }
-   * }
-   * ```
-   */
-  members: ChannelState['members'];
-  read: ChannelState['read'];
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
   setChannelUnreadState: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
@@ -148,31 +123,6 @@ export type ChannelContextValue = {
    */
   targetedMessage?: string;
   threadList?: boolean;
-  watcherCount?: ChannelState['watcher_count'];
-  /**
-   *
-   * ```json
-   * {
-   *   "thierry-123": {
-   *     "id": "thierry-123",
-   *     "role": "user",
-   *     "created_at": "2019-04-03T14:42:47.087869Z",
-   *     "updated_at": "2019-04-16T09:20:03.982283Z",
-   *     "last_active": "2019-04-16T11:23:51.168113408+02:00",
-   *     "online": true
-   *   },
-   *   "vishal-123": {
-   *     "id": "vishal-123",
-   *     "role": "user",
-   *     "created_at": "2019-05-03T14:42:47.087869Z",
-   *     "updated_at": "2019-05-16T09:20:03.982283Z",
-   *     "last_active": "2019-06-16T11:23:51.168113408+02:00",
-   *     "online": false
-   *   }
-   * }
-   * ```
-   */
-  watchers?: ChannelState['watchers'];
 };
 
 export const ChannelContext = React.createContext(

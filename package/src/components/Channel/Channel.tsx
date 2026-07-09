@@ -12,11 +12,9 @@ import {
   EventHandler,
   LocalMessage,
   localMessageToNewMessagePayload,
-  MembersState,
   MessageLabel,
   MessageResponse,
   Reaction,
-  ReadState,
   SendMessageAPIResponse,
   SendMessageOptions,
   StreamChat,
@@ -24,7 +22,6 @@ import {
   Message as StreamMessage,
   Thread,
   UpdateMessageOptions,
-  WatcherState,
 } from 'stream-chat';
 
 import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
@@ -84,7 +81,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { useStableCallback, useStateStore } from '../../hooks';
+import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
@@ -385,13 +382,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     initializeOnMount?: boolean;
   };
 
-const membersStateSelector = (state: MembersState) => ({ members: state.members });
-const readStateSelector = (state: ReadState) => ({ read: state.read });
-const watcherStateSelector = (state: WatcherState) => ({
-  watcherCount: state.watcherCount,
-  watchers: state.watchers,
-});
-
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
@@ -589,15 +579,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     doSendMessageRequest,
     doUpdateMessageRequest,
   });
-
-  // Channel scalar state (members/read/watchers) is sourced reactively from
-  // stream-chat's per-channel StateStores.
-  const { members } = useStateStore(channel.state.membersStore, membersStateSelector);
-  const { read } = useStateStore(channel.state.readStore, readStateSelector);
-  const { watcherCount, watchers } = useStateStore(
-    channel.state.watcherStore,
-    watcherStateSelector,
-  );
 
   const {
     loadChannelAroundMessage: loadChannelAroundMessageFn,
@@ -1564,8 +1545,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     markRead,
     maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
-    members: members ?? {},
-    read: read ?? {},
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
@@ -1574,8 +1553,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     targetedMessage,
     threadList,
     uploadAbortControllerRef,
-    watcherCount,
-    watchers,
   });
 
   // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
