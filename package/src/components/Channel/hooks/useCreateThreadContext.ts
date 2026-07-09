@@ -1,14 +1,23 @@
-import { ThreadState } from 'stream-chat';
+import { LocalMessage } from 'stream-chat';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import { useStateStore } from '../../../hooks';
 
-const selector = (nextValue: ThreadState) =>
-  ({
-    isLoadingNext: nextValue.pagination.isLoadingNext,
-    isLoadingPrev: nextValue.pagination.isLoadingPrev,
-    latestReplies: nextValue.replies,
-  }) as const;
+type ThreadMessagePaginatorState = {
+  hasMoreHead: boolean;
+  hasMoreTail: boolean;
+  isLoading: boolean;
+  items?: LocalMessage[];
+};
+
+// Reply list is sourced from the thread's messagePaginator (optimistic thread ops write there,
+// not to the legacy state.replies). tailward === older replies (loadMoreThread); headward ===
+// newer replies (loadMoreRecentThread).
+const selector = (state: ThreadMessagePaginatorState) => ({
+  hasMore: state.hasMoreTail,
+  isLoading: state.isLoading,
+  messages: state.items,
+});
 
 export const useCreateThreadContext = ({
   allowThreadMessagesInChannel,
@@ -24,17 +33,21 @@ export const useCreateThreadContext = ({
   threadLoadingMore,
   threadMessages,
 }: ThreadContextValue) => {
-  const { isLoadingNext, isLoadingPrev, latestReplies } =
-    useStateStore(threadInstance?.state, selector) ?? {};
+  const { hasMore, isLoading, messages } =
+    useStateStore(threadInstance?.messagePaginator?.state, selector) ?? {};
 
   const contextAdapter = threadInstance
     ? {
-        loadMoreRecentThread: threadInstance.loadNextPage,
-        loadMoreThread: threadInstance.loadPrevPage,
+        loadMoreRecentThread: async () => {
+          await threadInstance.messagePaginator.toHead();
+        },
+        loadMoreThread: async () => {
+          await threadInstance.messagePaginator.toTail();
+        },
+        threadHasMore: hasMore ?? false,
         threadInstance,
-        threadLoadingMore: isLoadingPrev,
-        threadLoadingMoreRecent: isLoadingNext,
-        threadMessages: latestReplies ?? [],
+        threadLoadingMore: !!isLoading,
+        threadMessages: messages ?? [],
       }
     : {};
 

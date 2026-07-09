@@ -517,13 +517,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const components = useComponentsContext();
   const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
 
-  const { thread: threadProps, threadInstance } = threadFromProps;
+  const { thread: threadProps, threadInstance: threadInstanceFromProps } = threadFromProps;
 
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const lastReadRef = useRef<Date | undefined>(undefined);
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
+  const [threadInstance, setThreadInstance] = useState<Thread | null>(
+    threadInstanceFromProps ?? null,
+  );
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [channelUnreadStateStore] = useState(() => new ChannelUnreadStateStore());
@@ -807,28 +810,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const markRead = useStableCallback(markReadInternal);
 
   const reloadThread = useStableCallback(async () => {
-    if (!channel || !thread?.id) {
+    if (!channel || !thread?.id || !threadInstance) {
       return;
     }
     setThreadLoadingMore(true);
     try {
-      const parentID = thread.id;
-
-      const limit = 50;
-      // channel.state.threads[parentID] = [];
-      const queryResponse = await channel.getReplies(parentID, {
-        limit,
-      });
-
-      const updatedHasMore = queryResponse.messages.length === limit;
-      const updatedThreadMessages = channel.state.threads[parentID] || [];
-      loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
-      const { messages } = await channel.getMessagesById([parentID]);
-      const [threadMessage] = messages;
-      if (threadMessage && !threadInstance) {
-        const formattedMessage = channel.state.formatMessage(threadMessage);
-        setThread(formattedMessage);
-      }
+      // Rehydrate the thread instance (parent + read state) and reload its reply paginator.
+      await threadInstance.reload();
+      await threadInstance.messagePaginator.reload();
+      setThreadLoadingMore(false);
     } catch (err) {
       console.warn('Thread loading request failed with error', err);
       if (err instanceof Error) {
@@ -1449,24 +1439,30 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    */
   const openThread: ThreadContextValue['openThread'] = useCallback(
     (message) => {
+      // Construct a stream-chat Thread instance for the opened parent message; its
+      // messagePaginator drives the reply list + optimistic reply ops.
+      const newThreadInstance = new Thread({ channel, client, parentMessage: message });
       setThread(message);
-
+      setThreadInstance(newThreadInstance);
+      // Seed the reply paginator so replies render on open.
+      newThreadInstance.messagePaginator
+        .reload()
+        .catch((err) => console.warn('Thread reply load failed with error:', err));
       if (channel.initialized) {
+        // Mark the thread read on open. A freshly-constructed minimal thread has ownUnreadCount 0,
+        // so threadInstance.markRead() would no-op; channel.markRead({thread_id}) marks it reliably
+        // (and still delegates to the messageDeliveryReporter).
         channel.markRead({ thread_id: message.id });
       }
-      // This was causing inconsistencies within the thread state as well as being responsible
-      // of threads essentially never unloading (due to all of the previous threads + 50 loading
-      // every time we'd run this). It seemingly has no impact (other than a performance boost)
-      // and having it was causing issues with the Threads V2 architecture.
-      // setThreadMessages(newThreadMessages);
     },
-    [channel, setThread],
+    [channel, client],
   );
 
   const closeThread: ThreadContextValue['closeThread'] = useCallback(() => {
     setThread(null);
+    setThreadInstance(null);
     setThreadMessages([]);
-  }, [setThread, setThreadMessages]);
+  }, [setThreadMessages]);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreThreadFinished = useRef(
