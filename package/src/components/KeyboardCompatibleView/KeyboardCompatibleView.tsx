@@ -85,6 +85,30 @@ export class KeyboardCompatibleView extends React.Component<
 
     const keyboardY = keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
 
+    if (Platform.OS === 'android') {
+      // On Android, how much (if anything) we need to move the view up depends on
+      // whether the OS resizes the window when the soft keyboard opens:
+      //
+      // - Non edge-to-edge apps: the window is inset by the system bars, so
+      //   `screen.height - window.height > 0`. With `adjustResize` (which this SDK
+      //   requires) the OS shrinks the window and already keeps the composer above the
+      //   keyboard, so no JS offset is needed. Applying one anyway double-offsets the
+      //   view. Worse, our layout `frame` only reflects the resize a render *after*
+      //   `keyboardDidShow` fires, so for that render we'd compute the offset from the
+      //   stale, full-height frame and briefly apply it on top of the native resize —
+      //   this is the transient "jump to a very high point that then settles" reported
+      //   on devices such as Samsung / Android 13.
+      //
+      // - Edge-to-edge apps: the window spans the whole screen, so
+      //   `screen.height - window.height === 0` (the platform default on Android 15 /
+      //   API 35+). These do NOT resize the window for the keyboard, so the JS offset
+      //   below is the only thing keeping the composer visible and must be applied.
+      const systemBarsInset = Dimensions.get('screen').height - Dimensions.get('window').height;
+      if (systemBarsInset > 0) {
+        return 0;
+      }
+    }
+
     if (this.props.behavior === 'height') {
       return Math.max(this.state.bottom + frame.y + frame.height - keyboardY, 0);
     }
@@ -94,9 +118,9 @@ export class KeyboardCompatibleView extends React.Component<
     const relativeHeight = Math.max(frame.y + frame.height - keyboardY, 0);
 
     if (Platform.OS === 'android') {
-      const barHeights = Dimensions.get('screen').height - Dimensions.get('window').height;
-      const systemInsetFloor = Math.max(barHeights, StatusBar.currentHeight ?? 0);
-
+      // Edge-to-edge only reaches here (systemBarsInset === 0 above): guard against
+      // sub-status-bar noise so we don't apply a tiny bogus offset.
+      const systemInsetFloor = StatusBar.currentHeight ?? 0;
       if (relativeHeight <= systemInsetFloor) {
         return 0;
       }
