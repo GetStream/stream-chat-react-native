@@ -445,6 +445,122 @@ describe('MessageContent', () => {
     });
   });
 
+  // Collects the given testIDs in the order they appear in the rendered tree.
+  const collectOrderedTestIDs = (
+    root: ReturnType<typeof screen.getByTestId>,
+    targets: string[],
+  ) => {
+    const found: string[] = [];
+    const walk = (node: typeof root | string | null) => {
+      if (!node || typeof node === 'string') {
+        return;
+      }
+      const testID = node.props?.testID;
+      if (testID && targets.includes(testID) && !found.includes(testID)) {
+        found.push(testID);
+      }
+      (node.children ?? []).forEach((child) => walk(child as typeof root | string));
+    };
+    walk(root);
+    return found;
+  };
+
+  it('renders text after attachments with the default messageContentOrder', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+      ],
+      text: 'a caption',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('gallery-container')).toBeTruthy();
+      expect(screen.getByTestId('message-text-container')).toBeTruthy();
+    });
+
+    expect(
+      collectOrderedTestIDs(screen.getByTestId('message-content-wrapper'), [
+        'gallery-container',
+        'message-text-container',
+      ]),
+    ).toEqual(['gallery-container', 'message-text-container']);
+  });
+
+  it('renders text before attachments when messageContentOrder puts text first', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+      ],
+      text: 'a caption',
+      user,
+    });
+
+    render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={channel}
+          messageContentOrder={[
+            'text',
+            'quoted_reply',
+            'gallery',
+            'files',
+            'poll',
+            'ai_text',
+            'attachments',
+            'location',
+          ]}
+        >
+          <Message groupStyles={['bottom']} message={message} />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('gallery-container')).toBeTruthy();
+      expect(screen.getByTestId('message-text-container')).toBeTruthy();
+    });
+
+    expect(
+      collectOrderedTestIDs(screen.getByTestId('message-content-wrapper'), [
+        'gallery-container',
+        'message-text-container',
+      ]),
+    ).toEqual(['message-text-container', 'gallery-container']);
+  });
+
+  it('suppresses the text container for an ephemeral giphy preview with actions', async () => {
+    const user = generateUser();
+    const message = generateMessage({
+      attachments: [
+        {
+          ...generateGiphyAttachment(),
+          actions: [
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+            generateAttachmentAction(),
+          ],
+        },
+      ],
+      text: '/giphy hello',
+      user,
+    });
+
+    renderMessage({ message });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('giphy-action-attachment')).toBeTruthy();
+    });
+
+    expect(screen.queryByTestId('message-text-container')).toBeFalsy();
+  });
+
   it('renders the ReactionList when the message has reactions', async () => {
     const user = generateUser();
     const reaction = generateReaction();
