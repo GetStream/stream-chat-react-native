@@ -60,7 +60,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
    * Loads older messages (before the oldest loaded message).
    */
   const loadMore = useStableCallback(async () => {
-    if (!paginator.hasMoreTail || loadingMore || loadingMoreRecent) {
+    if (!paginator.hasMoreTail || paginator.isLoading) {
       return;
     }
     setLoadingMore(true);
@@ -77,7 +77,7 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
    * Loads newer messages (after the most recent loaded message).
    */
   const loadMoreRecent = useStableCallback(async () => {
-    if (!paginator.hasMoreHead || loadingMore || loadingMoreRecent) {
+    if (!paginator.hasMoreHead || paginator.isLoading) {
       return;
     }
     setLoadingMoreRecent(true);
