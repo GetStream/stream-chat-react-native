@@ -1,66 +1,40 @@
-import React, { FC } from 'react';
+import React from 'react';
 
 import { renderHook } from '@testing-library/react-native';
 
-import type { StreamChat } from 'stream-chat';
+import type { Channel, LocalMessage } from 'stream-chat';
 
-import { useCreatePaginatedMessageListContext } from '../../../components/Channel/hooks/useCreatePaginatedMessageListContext';
-import {
-  ChatContext,
-  ChatContextValue,
-  PaginatedMessageListContextValue,
-  PaginatedMessageListProvider,
-} from '../../../contexts';
-
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import { generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
-
 import { useMessageList } from '../hooks/useMessageList';
-
-const clientUser = generateUser();
-let chatClient: StreamChat;
-
-beforeEach(async () => {
-  chatClient = await getTestClientWithUser(clientUser);
-});
 
 const messages = new Array(10)
   .fill(undefined)
-  .map((_: undefined, id: number) => generateMessage({ id: String(id) }));
-
-const Providers: FC<{ children: React.ReactNode }> = ({ children }) => {
-  const messageListContext = useCreatePaginatedMessageListContext({
-    messages,
-  } as unknown as PaginatedMessageListContextValue);
-
-  return (
-    <ChatContext.Provider
-      value={
-        {
-          auto_translation_enabled: true,
-          client: chatClient,
-        } as unknown as ChatContextValue
-      }
-    >
-      <PaginatedMessageListProvider value={messageListContext}>
-        {children}
-      </PaginatedMessageListProvider>
-    </ChatContext.Provider>
-  );
-};
+  .map((_: undefined, id: number) =>
+    generateMessage({ id: String(id) }),
+  ) as unknown as LocalMessage[];
 
 describe('useMessageList', () => {
+  let channel: Channel;
+
+  beforeEach(async () => {
+    const {
+      channels: [ch],
+    } = await initiateClientWithChannels();
+    channel = ch;
+    // The message list is sourced reactively from channel.messagePaginator.
+    channel.messagePaginator.state.partialNext({ items: messages });
+  });
+
   it('should always return a list of reversed messages', () => {
-    const { result } = renderHook(
-      () =>
-        useMessageList({
-          noGroupByUser: true,
-          threadList: false,
-        } as unknown as Parameters<typeof useMessageList>[0]),
-      { wrapper: Providers },
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <ChannelProvider value={{ channel } as never}>{children}</ChannelProvider>
     );
-    const reversedMessages = messages.reverse();
+
+    const { result } = renderHook(() => useMessageList({ threadList: false }), { wrapper });
+
+    const reversedMessages = [...messages].reverse();
     expect(result.current.processedMessageList.map(({ id }) => id)).toEqual(
       reversedMessages.map(({ id }) => id),
     );

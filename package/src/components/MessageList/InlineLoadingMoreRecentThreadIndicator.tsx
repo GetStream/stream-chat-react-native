@@ -54,7 +54,9 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
   areEqual,
 ) as typeof InlineLoadingMoreRecentIndicatorWithContext;
 
-export const InlineLoadingMoreRecentThreadIndicator = () => {
+export const InlineLoadingMoreRecentThreadIndicator = (
+  _props: InlineLoadingMoreRecentThreadIndicatorPropsWithContext,
+) => {
   const { threadLoadingMoreRecent } = useThreadContext();
 
   return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={threadLoadingMoreRecent} />;

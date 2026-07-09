@@ -2,15 +2,17 @@ import { useMemo } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
-import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import { useRAFCoalescedValue } from '../../../hooks';
+import { useRAFCoalescedValue, useStateStore } from '../../../hooks';
+import { usePrunableMessageList } from '../../../hooks/usePrunableMessageList';
 
 export type UseMessageListParams = {
   threadList?: boolean;
   isLiveStreaming?: boolean;
   isFlashList?: boolean;
+  maximumMessageLimit?: number;
 };
 
 /**
@@ -22,11 +24,23 @@ export type MessageGroupStyles = {
   [key: string]: string[];
 };
 
+const EMPTY_MESSAGES: LocalMessage[] = [];
+
+const messageListSelector = (state: { items?: LocalMessage[] }) => ({ messages: state.items });
+
 export const useMessageList = (params: UseMessageListParams) => {
-  const { threadList, isLiveStreaming, isFlashList = false } = params;
-  const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
+  const { threadList, isLiveStreaming, isFlashList = false, maximumMessageLimit } = params;
+  const { channel } = useChannelContext();
+  // The channel message list is sourced reactively from channel.messagePaginator (channel-specific,
+  // NOT the thread-aware useMessagePaginator — so the main list keeps showing channel messages while
+  // a thread is open). Thread reply lists read threadMessages from the ThreadContext instead.
+  const { messages } = useStateStore(channel.messagePaginator.state, messageListSelector) ?? {};
+  const { viewabilityChangedCallback } = usePrunableMessageList({
+    maximumMessageLimit,
+    setMessages: () => {},
+  });
   const { threadMessages } = useThreadContext();
-  const messageList = threadList ? threadMessages : messages;
+  const messageList = (threadList ? threadMessages : messages) ?? EMPTY_MESSAGES;
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList: LocalMessage[] = [];

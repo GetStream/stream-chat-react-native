@@ -32,7 +32,6 @@ import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessage
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 
 import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
-import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
@@ -67,10 +66,6 @@ import {
   OwnCapabilitiesContextValue,
   OwnCapabilitiesProvider,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import {
-  PaginatedMessageListContextValue,
-  PaginatedMessageListProvider,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -85,7 +80,6 @@ import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
-import { usePrunableMessageList } from '../../hooks/usePrunableMessageList';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
@@ -227,9 +221,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Pick<TranslationContextValue, 't'> &
-  Partial<
-    Pick<PaginatedMessageListContextValue, 'messages' | 'loadingMore' | 'loadingMoreRecent'>
-  > &
   Pick<UseChannelStateValue, 'threadMessages' | 'setThreadMessages'> &
   Partial<
     Pick<
@@ -452,8 +443,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     isMessageAIGenerated = () => false,
     keyboardBehavior,
     keyboardVerticalOffset,
-    loadingMore: loadingMoreProp,
-    loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     markReadOnMount = true,
     maxTimeBetweenGroupedMessages,
@@ -584,8 +573,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadChannelAroundMessage: loadChannelAroundMessageFn,
     loadChannelAtFirstUnreadMessage,
     loadLatestMessages,
-    loadMore,
-    loadMoreRecent,
     state: channelMessagesState,
   } = useMessageListPagination({
     channel,
@@ -601,15 +588,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const hasPendingInitialTargetLoad = useStableCallback(() => {
     return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
-  });
-
-  // The message list is now backed reactively by channel.messagePaginator; the WS event handlers no
-  // longer copy channel.state into React state. Viewport tracking is still needed by the list.
-  // TODO(paginator-pruning): re-implement pruning as a window cap over messagePaginator.state.items
-  // (the paginator retains all loaded items in its ItemIndex).
-  const { viewabilityChangedCallback } = usePrunableMessageList({
-    maximumMessageLimit,
-    setMessages: () => {},
   });
 
   const handleEvent: EventHandler = useStableCallback((event) => {
@@ -1596,21 +1574,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     setInputRef,
   });
 
-  const messageListContext = useCreatePaginatedMessageListContext({
-    channelId,
-    hasMore: channelMessagesState.hasMore,
-    loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : channelMessagesState.loadingMore,
-    loadingMoreRecent:
-      loadingMoreRecentProp !== undefined
-        ? loadingMoreRecentProp
-        : channelMessagesState.loadingMoreRecent,
-    loadLatestMessages,
-    loadMore,
-    loadMoreRecent,
-    messages: channelMessagesState.messages ?? [],
-    viewabilityChangedCallback,
-  });
-
   const messagesContext = useCreateMessagesContext({
     additionalPressableProps,
     channelId,
@@ -1718,23 +1681,21 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     >
       <ChannelProvider value={channelContext}>
         <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-          <PaginatedMessageListProvider value={messageListContext}>
-            <MessagesProvider value={messagesContext}>
-              <ThreadProvider value={threadContext}>
-                <AttachmentPickerProvider value={attachmentPickerContext}>
-                  <MessageComposerProvider value={messageComposerContext}>
-                    <MessageInputProvider value={inputMessageInputContext}>
-                      <AudioPlayerProvider value={audioPlayerContext}>
-                        <NotificationAnnouncer />
-                        <View style={{ height: '100%' }}>{children}</View>
-                        <AttachmentPicker />
-                      </AudioPlayerProvider>
-                    </MessageInputProvider>
-                  </MessageComposerProvider>
-                </AttachmentPickerProvider>
-              </ThreadProvider>
-            </MessagesProvider>
-          </PaginatedMessageListProvider>
+          <MessagesProvider value={messagesContext}>
+            <ThreadProvider value={threadContext}>
+              <AttachmentPickerProvider value={attachmentPickerContext}>
+                <MessageComposerProvider value={messageComposerContext}>
+                  <MessageInputProvider value={inputMessageInputContext}>
+                    <AudioPlayerProvider value={audioPlayerContext}>
+                      <NotificationAnnouncer />
+                      <View style={{ height: '100%' }}>{children}</View>
+                      <AttachmentPicker />
+                    </AudioPlayerProvider>
+                  </MessageInputProvider>
+                </MessageComposerProvider>
+              </AttachmentPickerProvider>
+            </ThreadProvider>
+          </MessagesProvider>
         </OwnCapabilitiesProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>

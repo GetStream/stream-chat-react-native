@@ -19,6 +19,7 @@ import debounce from 'lodash/debounce';
 import type { Channel, Event, LocalMessage } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 
@@ -60,10 +61,6 @@ import {
   OwnCapabilitiesContextValue,
   useOwnCapabilitiesContext,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import {
-  PaginatedMessageListContextValue,
-  usePaginatedMessageListContext,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
@@ -74,6 +71,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
+import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents';
@@ -210,9 +208,13 @@ type MessageListPropsWithContext = Pick<
     | 'threadList'
     | 'maximumMessageLimit'
   > &
-  Pick<ChatContextValue, 'client'> &
-  Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent' | 'hasMore'> &
-  Pick<
+  Pick<ChatContextValue, 'client'> & {
+    loadMore: () => Promise<void>;
+    loadMoreRecent: () => Promise<void>;
+    hasMore?: boolean;
+    loadingMore?: boolean;
+    loadingMoreRecent?: boolean;
+  } & Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
@@ -242,12 +244,12 @@ type MessageListPropsWithContext = Pick<
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
-     * from context.
+     * from props.
      *
      * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header by default if inverted is true or defaulted
      */
-    FooterComponent?: React.ComponentType;
+    FooterComponent?: React.ComponentType<{ loadingMore?: boolean }>;
     /**
      * UI component for header of message list. By default message list will use `InlineLoadingMoreRecentIndicator`
      * as HeaderComponent. If you want to implement your own inline loading indicator, you can access `loadingMoreRecent`
@@ -328,6 +330,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
+    loadingMore,
+    loadingMoreRecent,
     loadMore,
     loadMoreRecent,
     loadMoreRecentThread,
@@ -392,6 +396,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isLiveStreaming,
+    maximumMessageLimit,
     threadList,
   });
 
@@ -1227,6 +1232,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     viewportHeightRef.current = nextViewportHeight;
   });
 
+  const ListFooterComponent = useCallback(
+    () => <FooterComponent loadingMore={loadingMore} />,
+    [FooterComponent, loadingMore],
+  );
+
   const ListHeaderComponent = useCallback(() => {
     if (HeaderComponent) {
       return <HeaderComponent />;
@@ -1234,7 +1244,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     return (
       <>
-        <LoadingMoreRecentIndicator />
+        <LoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />
         {!disableTypingIndicator && TypingIndicator && (
           <TypingIndicatorContainer>
             <TypingIndicator />
@@ -1245,6 +1255,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [
     HeaderComponent,
     LoadingMoreRecentIndicator,
+    loadingMoreRecent,
     TypingIndicator,
     TypingIndicatorContainer,
     disableTypingIndicator,
@@ -1282,7 +1293,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             inverted={inverted}
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
-            ListFooterComponent={FooterComponent}
+            ListFooterComponent={ListFooterComponent}
             ListHeaderComponent={ListHeaderComponent}
             /**
             If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
@@ -1407,7 +1418,11 @@ export const MessageList = (props: MessageListProps) => {
     useMessagesContext();
   const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
     useMessageInputContext();
-  const { loadMore, loadMoreRecent, hasMore } = usePaginatedMessageListContext();
+  const {
+    loadMore,
+    loadMoreRecent,
+    state: { hasMore, loadingMore, loadingMoreRecent },
+  } = useMessageListPagination({ channel });
   const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
     useThreadContext();
 
@@ -1448,6 +1463,8 @@ export const MessageList = (props: MessageListProps) => {
         threadInstance,
         threadList,
         hasMore,
+        loadingMore,
+        loadingMoreRecent,
         threadHasMore,
       }}
       {...props}

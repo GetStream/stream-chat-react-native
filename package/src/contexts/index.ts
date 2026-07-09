@@ -17,7 +17,6 @@ export * from './messageInputContext/hooks/useAttachmentManagerState';
 export * from './messageInputContext/hooks/useMessageComposerHasSendableData';
 export * from './messageComposerContext/MessageComposerAPIContext';
 export * from './messagesContext/MessagesContext';
-export * from './paginatedMessageListContext/PaginatedMessageListContext';
 export * from './overlayContext/OverlayContext';
 export * from './overlayContext/OverlayProvider';
 export * from './ownCapabilitiesContext/OwnCapabilitiesContext';

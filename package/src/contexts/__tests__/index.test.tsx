@@ -13,7 +13,6 @@ import {
   useMessagesContext,
   useOverlayContext,
   useOwnCapabilitiesContext,
-  usePaginatedMessageListContext,
   useTheme,
   useThreadContext,
 } from '../';
@@ -31,10 +30,6 @@ describe('contexts hooks in a component throws an error with message when not wr
     [
       useOverlayContext,
       'The useOverlayContext hook was called outside the OverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
-    ],
-    [
-      usePaginatedMessageListContext,
-      'The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
     ],
     [
       useChannelsStateContext,

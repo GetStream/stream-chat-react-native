@@ -14,6 +14,7 @@ import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
+
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 import { useTypingUsers } from './hooks/useTypingUsers';
@@ -47,10 +48,6 @@ import {
   OwnCapabilitiesContextValue,
   useOwnCapabilitiesContext,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import {
-  PaginatedMessageListContextValue,
-  usePaginatedMessageListContext,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
@@ -61,6 +58,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
+import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
@@ -145,9 +143,12 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<
     MessageInputContextValue,
     'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
-  > &
-  Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
-  Pick<
+  > & {
+    loadMore: () => Promise<void>;
+    loadMoreRecent: () => Promise<void>;
+    loadingMore?: boolean;
+    loadingMoreRecent?: boolean;
+  } & Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
@@ -187,7 +188,7 @@ type MessageFlashListPropsWithContext = Pick<
      * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header if inverted is false
      */
-    HeaderComponent?: React.ComponentType;
+    HeaderComponent?: React.ComponentType<{ loadingMore?: boolean }>;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
     /** Turn off grouping of messages by user */
@@ -332,6 +333,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
+    loadingMore,
+    loadingMoreRecent,
     loadMore,
     loadMoreRecent,
     loadMoreRecentThread,
@@ -411,6 +414,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isFlashList: true,
     isLiveStreaming,
+    maximumMessageLimit,
     threadList,
   });
 
@@ -1089,6 +1093,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     currentListHeightRef.current = height;
   });
 
+  const ListHeaderComponent = useCallback(
+    () => <HeaderComponent loadingMore={loadingMore} />,
+    [HeaderComponent, loadingMore],
+  );
+
   const ListFooterComponent = useCallback(() => {
     if (FooterComponent) {
       return <FooterComponent />;
@@ -1096,7 +1105,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     return (
       <FlashListFooterTypingAdapter enabled={!disableTypingIndicator && !!TypingIndicator}>
-        <LoadingMoreRecentIndicator />
+        <LoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />
         {!disableTypingIndicator && TypingIndicator && (
           <TypingIndicatorContainer>
             <TypingIndicator />
@@ -1107,6 +1116,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }, [
     FooterComponent,
     LoadingMoreRecentIndicator,
+    loadingMoreRecent,
     TypingIndicator,
     TypingIndicatorContainer,
     disableTypingIndicator,
@@ -1142,7 +1152,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={ListFooterComponent}
-            ListHeaderComponent={HeaderComponent}
+            ListHeaderComponent={ListHeaderComponent}
             maintainVisibleContentPosition={maintainVisibleContentPosition}
             onMomentumScrollEnd={onUserScrollEvent}
             onScroll={handleScroll}
@@ -1301,7 +1311,11 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { client } = useChatContext();
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
     useMessagesContext();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
+  const {
+    loadMore,
+    loadMoreRecent,
+    state: { loadingMore, loadingMoreRecent },
+  } = useMessageListPagination({ channel });
   const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
@@ -1328,6 +1342,8 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         loading,
         loadMore,
         loadMoreRecent,
+        loadingMore,
+        loadingMoreRecent,
         loadMoreRecentThread,
         loadMoreThread,
         markRead,
