@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          token: ${{ secrets.STREAM_CI_GITHUB_BOT_TOKEN }}
           fetch-depth: '0'
 
       - name: Fetch tags
@@ -59,6 +60,8 @@ jobs:
       - name: Publish Release (main)
         if: github.ref == 'refs/heads/main'
         run: yarn release
+        env:
+          GH_TOKEN: ${{ secrets.STREAM_CI_GITHUB_BOT_TOKEN }}
 
       - name: Merge back changes (main -> develop)
         if: github.ref == 'refs/heads/main'
