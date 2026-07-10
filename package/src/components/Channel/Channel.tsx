@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { StyleSheet, Text, View } from 'react-native';
 
 import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
 
 import {
   Channel as ChannelClass,
@@ -96,6 +95,7 @@ import { MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
@@ -149,12 +149,7 @@ export const reactionData: ReactionData[] = [
  */
 const scrollToFirstUnreadThreshold = 0;
 
-const defaultThrottleInterval = 500;
 const defaultDebounceInterval = 500;
-const throttleOptions = {
-  leading: true,
-  trailing: true,
-};
 
 const debounceOptions = {
   leading: true,
@@ -695,36 +690,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * CHANNEL METHODS
    */
-  const markReadInternal: ChannelContextValue['markRead'] = throttle(
-    async () => {
-      if (!channel || channel?.disconnected) {
-        return;
-      }
-
-      // Read events disabled (e.g. livestreams): if the client opted into a local unread count,
-      // reset it locally (dispatches message.read_locally) — no backend round trip. The paginator's
-      // unread snapshot updates from that.
-      if (!clientChannelConfig?.read_events) {
-        if (client.options.isLocalUnreadCountEnabled) {
-          channel.markReadLocally();
-        }
-        return;
-      }
-
-      // channel.markRead() delegates to client.messageDeliveryReporter.markRead(this), which honors
-      // any custom markReadRequest handler registered in channel.configState (see
-      // useChannelRequestHandlers). Unread state updates in the LLC snapshot, mirrored into the store.
-      try {
-        await channel.markRead();
-      } catch (err) {
-        console.log('Error marking channel as read:', err);
-      }
-    },
-    defaultThrottleInterval,
-    throttleOptions,
-  );
-
-  const markRead = useStableCallback(markReadInternal);
+  // markRead is no longer placed on the ChannelContext; the message lists own their own throttled
+  // instance via useMarkRead(channel). Channel still needs it internally (mark-read-on-mount + resync).
+  const markRead = useMarkRead(channel);
 
   const reloadThread = useStableCallback(async () => {
     if (!channel || !thread?.id || !threadInstance) {
@@ -1247,7 +1215,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
-    markRead,
     maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
     reloadChannel,

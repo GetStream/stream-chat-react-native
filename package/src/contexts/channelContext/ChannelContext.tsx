@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { Channel } from 'stream-chat';
 
-import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -64,7 +63,6 @@ export type ChannelContextValue = {
    */
   loadChannelAtFirstUnreadMessage: (options?: { limit?: number }) => Promise<void>;
 
-  markRead: (options?: MarkReadFunctionOptions) => void;
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
   /**

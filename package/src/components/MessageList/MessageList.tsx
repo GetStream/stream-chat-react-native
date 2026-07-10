@@ -18,6 +18,7 @@ import debounce from 'lodash/debounce';
 
 import type { Channel, Event, LocalMessage } from 'stream-chat';
 
+import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
 
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
@@ -72,6 +73,7 @@ import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
+import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
@@ -200,7 +202,6 @@ type MessageListPropsWithContext = Pick<
     | 'hideStickyDateHeader'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'threadList'
@@ -209,6 +210,7 @@ type MessageListPropsWithContext = Pick<
   Pick<ChatContextValue, 'client'> & {
     loadMore: () => Promise<void>;
     loadMoreRecent: () => Promise<void>;
+    markRead: (options?: MarkReadFunctionOptions) => void;
     hasMore?: boolean;
     loadingMore?: boolean;
     loadingMoreRecent?: boolean;
@@ -1324,7 +1326,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+          <UnreadMessagesNotification
+            markRead={markRead}
+            onCloseHandler={onUnreadNotificationClose}
+          />
         </View>
       ) : null}
       <Animated.View
@@ -1365,11 +1370,11 @@ export const MessageList = (props: MessageListProps) => {
     loadChannelAroundMessage,
     loading,
     maximumMessageLimit,
-    markRead,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     threadList,
   } = useChannelContext();
+  const markRead = useMarkRead(channel);
   const { client } = useChatContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =

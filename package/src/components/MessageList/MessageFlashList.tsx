@@ -13,6 +13,7 @@ import Animated from 'react-native-reanimated';
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage } from 'stream-chat';
 
+import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
 
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
@@ -59,6 +60,7 @@ import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
 import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
+import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
@@ -115,7 +117,6 @@ type MessageFlashListPropsWithContext = Pick<
     | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'hasPendingInitialTargetLoad'
@@ -129,6 +130,7 @@ type MessageFlashListPropsWithContext = Pick<
   > & {
     loadMore: () => Promise<void>;
     loadMoreRecent: () => Promise<void>;
+    markRead: (options?: MarkReadFunctionOptions) => void;
     loadingMore?: boolean;
     loadingMoreRecent?: boolean;
   } & Pick<
@@ -1165,7 +1167,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
+          <UnreadMessagesNotification
+            markRead={markRead}
+            onCloseHandler={onUnreadNotificationClose}
+          />
         </View>
       ) : null}
       <Animated.View
@@ -1255,13 +1260,13 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     isChannelActive,
     loadChannelAroundMessage,
     loading,
-    markRead,
     maximumMessageLimit,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
   } = useChannelContext();
+  const markRead = useMarkRead(channel);
   const { client } = useChatContext();
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
     useMessagesContext();

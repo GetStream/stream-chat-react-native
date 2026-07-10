@@ -10,9 +10,15 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { ArrowUp } from '../../icons/arrow-up';
 import { NewClose } from '../../icons/xmark';
 import { primitives } from '../../theme';
+import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { Button } from '../ui';
 
 export type UnreadMessagesNotificationProps = {
+  /**
+   * Marks the channel as read. Passed down from the message list so the notification shares the
+   * list's throttled `markRead` instance.
+   */
+  markRead?: (options?: MarkReadFunctionOptions) => void;
   /**
    * Callback to handle the close event
    */
@@ -32,9 +38,9 @@ const unreadCountSelector = (snapshot: UnreadSnapshotState) => ({
 });
 
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { onCloseHandler, onPressHandler, unreadCount } = props;
+  const { markRead, onCloseHandler, onPressHandler, unreadCount } = props;
   const { t } = useTranslationContext();
-  const { channel, loadChannelAtFirstUnreadMessage, markRead } = useChannelContext();
+  const { channel, loadChannelAtFirstUnreadMessage } = useChannelContext();
   const { unread_messages } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,
     unreadCountSelector,
@@ -54,7 +60,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     if (onCloseHandler) {
       await onCloseHandler();
     } else {
-      await markRead();
+      await markRead?.();
     }
   };
 

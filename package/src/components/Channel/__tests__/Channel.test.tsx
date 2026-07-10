@@ -280,7 +280,6 @@ describe('Channel', () => {
       const mockContext = {
         channel,
         client: chatClient,
-        markRead: () => {},
       };
 
       render(
@@ -299,7 +298,6 @@ describe('Channel', () => {
         const ctx = context as unknown as typeof mockContext;
         expect(ctx.channel).toBeInstanceOf(Object);
         expect(ctx.client).toBeInstanceOf(StreamChat);
-        expect(ctx.markRead).toBeInstanceOf(Function);
       });
     });
   });
