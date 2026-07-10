@@ -94,3 +94,19 @@ jobs:
         env:
           ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
           FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
+      # Publish the same APK to S3 for the public download link. Reuses the
+      # artifact the Fastlane step above already built (app-build/), no rebuild.
+      - name: Configure AWS credentials
+        if: github.ref == 'refs/heads/develop'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Upload APK to S3
+        if: github.ref == 'refs/heads/develop'
+        working-directory: examples/SampleApp
+        # Public download link: https://getstream.io/downloads/rn-sample-app.apk
+        run: |
+          cp app-build/reactnativesampleapp.apk rn-sample-app.apk
+          aws s3 cp rn-sample-app.apk s3://${{ secrets.AWS_S3_BUCKET }} --sse AES256
