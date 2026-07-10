@@ -11,7 +11,6 @@ import {
   DeleteMessageOptions,
   EventHandler,
   LocalMessage,
-  localMessageToNewMessagePayload,
   MessageResponse,
   Reaction,
   SendMessageAPIResponse,
@@ -91,17 +90,9 @@ import {
 } from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { DefaultAttachmentData, FileTypes } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
-import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import {
-  getFileNameFromPath,
-  isBouncedMessage,
-  isLocalUrl,
-  MessageStatusTypes,
-  ReactionData,
-} from '../../utils/utils';
+import { MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
@@ -481,7 +472,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     threadList,
     threadMessages,
     topInset = 0,
-    isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
     urlPreviewType = 'full',
@@ -967,243 +957,50 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     },
   );
 
-  const replaceMessage = useStableCallback(
-    (oldMessage: LocalMessage, newMessage: MessageResponse) => {
-      if (channel) {
-        channel.state.removeMessage(oldMessage);
-        channel.state.addMessageSorted(newMessage, true);
-        const paginator = newMessage.parent_id
-          ? threadInstance?.messagePaginator
-          : channel.messagePaginator;
-        paginator?.removeItem({ id: oldMessage.id });
-        paginator?.ingestItem(channel.state.formatMessage(newMessage));
-
-        if (thread && newMessage.parent_id) {
-          const threadMessages = channel.state.threads[newMessage.parent_id] || [];
-          setThreadMessages(threadMessages);
-        }
-      }
-    },
-  );
-
-  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
-    const updatedMessage = { ...message };
-    if (!updatedMessage.attachments?.length || !channel?.cid) {
-      return updatedMessage;
-    }
-
-    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
-      if (
-        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
-        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
-      ) {
-        return;
-      }
-
-      const originalFile = attachment.originalFile;
-      if (!originalFile?.uri) {
-        return;
-      }
-
-      const localId = (attachment as DefaultAttachmentData).localId;
-      if (!localId) {
-        console.warn('uploadPendingAttachments: local attachment missing localId, skipping upload');
-        return;
-      }
-
-      let fileForUpload = originalFile;
-      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
-        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
-        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
-        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
-      }
-
-      const response = await (
-        client as typeof client & {
-          uploadManager: {
-            upload(args: {
-              channelCid: string;
-              file: {
-                name?: string;
-                type?: string;
-                uri: string;
-              };
-              id: string;
-            }): Promise<{ file: string; thumb_url?: string }>;
-          };
-        }
-      ).uploadManager.upload({
-        channelCid: channel.cid,
-        file: fileForUpload,
-        id: localId,
-      });
-
-      if (attachment.type === FileTypes.Image) {
-        attachment.image_url = response.file;
-      } else {
-        attachment.asset_url = response.file;
-        if (response.thumb_url) {
-          attachment.thumb_url = response.thumb_url;
-        }
-      }
-
-      delete attachment.originalFile;
-      delete (attachment as DefaultAttachmentData).localId;
-
-      client.offlineDb?.executeQuerySafely(
-        (db) =>
-          db.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          }),
-        { method: 'updateMessage' },
-      );
-    };
-
-    await Promise.all(updatedMessage.attachments.map((att) => uploadOne(att)));
-
-    return updatedMessage;
-  });
-
-  const sendMessageRequest = useStableCallback(
-    async ({
-      localMessage,
-      message,
-      options,
-      retrying,
-    }: {
-      localMessage: LocalMessage;
-      message: StreamMessage;
-      options?: SendMessageOptions;
-      retrying?: boolean;
-    }) => {
-      let failedMessageUpdated = false;
-      const handleFailedMessage = () => {
-        if (!failedMessageUpdated) {
-          const updatedMessage = {
-            ...localMessage,
-            cid: channel.cid,
-            status: MessageStatusTypes.FAILED,
-          };
-          updateMessage(updatedMessage);
-          threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-          optimisticallyUpdatedNewMessages.delete(localMessage.id);
-
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: updatedMessage,
-              }),
-            { method: 'updateMessage' },
-          );
-
-          failedMessageUpdated = true;
-        }
-      };
-
-      try {
-        if (!isOnline) {
-          await handleFailedMessage();
-        }
-
-        const updatedLocalMessage = await uploadPendingAttachments(localMessage);
-        const { attachments } = updatedLocalMessage;
-        const { text, mentioned_users } = message;
-        if (!channel.id) {
-          return;
-        }
-
-        const messageData = {
-          ...message,
-          attachments,
-          text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
-          // We cannot send an error message, so we convert it to a regular message.
-          type: message.type === 'error' ? 'regular' : message.type,
-        } as StreamMessage;
-
-        let messageResponse = {} as SendMessageAPIResponse;
-
-        if (doSendMessageRequest) {
-          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
-        } else if (channel) {
-          messageResponse = await channel.sendMessage(messageData, options);
-        }
-
-        if (messageResponse?.message) {
-          const newMessageResponse = {
-            ...messageResponse.message,
-            status: MessageStatusTypes.RECEIVED,
-          };
-
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...newMessageResponse, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
-
-          if (retrying) {
-            replaceMessage(localMessage, newMessageResponse);
-          } else {
-            updateMessage(newMessageResponse, {}, true);
-          }
-        }
-      } catch (err) {
-        console.log('Error sending message:', err);
-        await handleFailedMessage();
-      }
-    },
-  );
-
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
     async ({ localMessage, message, options }) => {
-      if (channel?.state?.filterErrorMessages) {
-        channel.state.filterErrorMessages();
-      }
-
-      updateMessage(localMessage);
-      threadInstance?.upsertReplyLocally?.({ message: localMessage });
-      optimisticallyUpdatedNewMessages.add(localMessage.id);
-
-      // While sending a message, we add the message to local db with failed status, so that
-      // if app gets closed before message gets sent and next time user opens the app
-      // then user can see that message in failed state and can retry.
-      // If succesfull, it will be updated with received status.
-      client.offlineDb?.executeQuerySafely(
-        (db) =>
-          db.upsertMessages({
-            // @ts-ignore
-            messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-          }),
-        { method: 'upsertMessages' },
-      );
-
       if (preSendMessageRequest) {
         await preSendMessageRequest({ localMessage, message, options });
       }
-      await sendMessageRequest({ localMessage, message, options });
+
+      // Preserve RN's moderation slash-command patching ("/mute @user" -> "/mute @userId").
+      const messageToSend = message
+        ? {
+            ...message,
+            text: patchMessageTextCommand(message.text ?? '', message.mentioned_users ?? []),
+          }
+        : message;
+
+      // Thread replies: the RN reply list reads `threadMessages` (channel.state.threads), which the
+      // LLC thread paginator does not feed — so we optimistically reflect the reply there ourselves
+      // (and mark it failed on error). Channel messages need no such bridge: that list reads
+      // channel.messagePaginator, which the LLC ingests into directly.
+      const isThreadReply = !!localMessage.parent_id && !!threadInstance;
+      if (isThreadReply) {
+        updateMessage(localMessage);
+      }
+
+      // The stream-chat message-operations engine owns the optimistic lifecycle (pending ->
+      // received/failed), offline-DB persistence and paginator ingest. It throws on failure, which
+      // the MessageInput send flow catches to surface a notification.
+      try {
+        await (threadInstance ?? channel).sendMessageWithLocalUpdate({
+          localMessage,
+          message: messageToSend,
+          options,
+        });
+      } catch (error) {
+        if (isThreadReply) {
+          updateMessage({ ...localMessage, status: MessageStatusTypes.FAILED });
+        }
+        throw error;
+      }
     },
   );
 
   const retrySendMessage: MessagesContextValue['retrySendMessage'] = useStableCallback(
     async (localMessage) => {
-      const statusPendingMessage = {
-        ...localMessage,
-        status: MessageStatusTypes.SENDING,
-      };
-
-      const messageWithoutReservedFields = localMessageToNewMessagePayload(statusPendingMessage);
-
-      // For bounced messages, we don't need to update the message, instead always send a new message.
-      if (!isBouncedMessage(localMessage)) {
-        updateMessage(messageWithoutReservedFields as MessageResponse);
-      }
-
-      await sendMessageRequest({
-        localMessage,
-        message: messageWithoutReservedFields,
-        retrying: true,
-      });
+      await (threadInstance ?? channel).retrySendMessageWithLocalUpdate({ localMessage });
     },
   );
 
