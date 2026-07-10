@@ -1067,7 +1067,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         (reactedMessage.parent_id
           ? threadInstance?.messagePaginator
           : channel.messagePaginator
-        )?.ingestItem(reactedMessage);
+        )?.ingestItem(channel.state.formatMessage(reactedMessage));
       }
     }
 
@@ -1129,7 +1129,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           (reactedMessage.parent_id
             ? threadInstance?.messagePaginator
             : channel.messagePaginator
-          )?.ingestItem(reactedMessage);
+          )?.ingestItem(channel.state.formatMessage(reactedMessage));
         }
       }
 
