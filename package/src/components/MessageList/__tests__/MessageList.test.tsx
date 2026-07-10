@@ -16,12 +16,28 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Channel } from '../../Channel/Channel';
-import { channelInitialState } from '../../Channel/hooks/useChannelDataState';
 import * as MessageListPaginationHook from '../../Channel/hooks/useMessageListPagination';
 import { Chat } from '../../Chat/Chat';
 
 import { SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME } from '../hooks/useScrollToBottomAccessibilityAction';
 import { MessageList } from '../MessageList';
+
+// Local test fixture (was previously imported from the now-removed useChannelDataState hook).
+const channelInitialState = {
+  hasMore: true,
+  hasMoreNewer: false,
+  loading: false,
+  loadingMore: false,
+  loadingMoreRecent: false,
+  members: {},
+  messages: [],
+  pinnedMessages: [],
+  read: {},
+  targetedMessageId: undefined,
+  typing: {},
+  watcherCount: 0,
+  watchers: {},
+};
 
 describe('MessageList', () => {
   afterEach(() => {
@@ -511,10 +527,8 @@ describe('MessageList pagination', () => {
     return jest
       .spyOn(MessageListPaginationHook, 'useMessageListPagination')
       .mockImplementation(() => ({
-        copyMessagesStateFromChannel: jest.fn(),
         loadChannelAroundMessage: jest.fn(),
         loadChannelAtFirstUnreadMessage: jest.fn(),
-        loadInitialMessagesStateFromChannel: jest.fn(),
         loadLatestMessages: jest.fn(),
         loadMore: jest.fn(),
         loadMoreRecent: jest.fn(),

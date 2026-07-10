@@ -1,7 +1,7 @@
 import React, { type ComponentProps, useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
-import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
 import { StreamChat } from 'stream-chat';
 
@@ -28,8 +28,24 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
 import { Channel } from '../Channel';
-import { channelInitialState, useChannelMessageDataState } from '../hooks/useChannelDataState';
 import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
+
+// Local test fixture (was previously imported from the now-removed useChannelDataState hook).
+const channelInitialState = {
+  hasMore: true,
+  hasMoreNewer: false,
+  loading: false,
+  loadingMore: false,
+  loadingMoreRecent: false,
+  members: {},
+  messages: [],
+  pinnedMessages: [],
+  read: {},
+  targetedMessageId: undefined,
+  typing: {},
+  watcherCount: 0,
+  watchers: {},
+};
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -445,10 +461,7 @@ describe('Channel initial load useEffect', () => {
 
     renderComponent({ channel });
 
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-
     await waitFor(() => expect(watchSpy).toHaveBeenCalled());
-    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(10));
     // members now come reactively from channel.state.membersStore (via the shim getter).
     await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
@@ -496,16 +509,6 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => {
       expect(loadMessageIntoState).toHaveBeenCalledWith(messageToSearch.id, undefined, 25);
     });
-
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(25));
-    await waitFor(() =>
-      expect(
-        channelMessageState.current.state.messages!.find(
-          (message) => message.id === messageToSearch.id,
-        ),
-      ).toBeTruthy(),
-    );
   });
 
   describe('initialScrollToFirstUnreadMessage', () => {
@@ -522,10 +525,8 @@ describe('Channel initial load useEffect', () => {
       jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(
         () =>
           ({
-            copyMessagesStateFromChannel: jest.fn(),
             loadChannelAroundMessage: jest.fn(),
             loadChannelAtFirstUnreadMessage: jest.fn(),
-            loadInitialMessagesStateFromChannel: jest.fn(),
             loadLatestMessages: jest.fn(),
             loadMore: jest.fn(),
             loadMoreRecent: jest.fn(),
