@@ -220,12 +220,13 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const { setNativeScrollability } = useMessageListItemContext();
   const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
+  const gap = primitives.spacingXs;
   const contentBody = (
     <>
       <View
         style={[
           {
-            gap: primitives.spacingXs,
+            gap,
             paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
             paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
             paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
@@ -330,7 +331,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                       // Cancel the container's 8px inter-item gap so only the caption's own
                       // paragraph marginTop shows. Skip for the first item: there is no gap to
                       // cancel
-                      marginTop: messageContentOrderIndex === 0 ? 0 : -primitives.spacingXs,
+                      marginTop: messageContentOrderIndex === 0 ? 0 : -gap,
                     },
                   }}
                 />
