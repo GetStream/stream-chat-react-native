@@ -220,12 +220,25 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
   const { setNativeScrollability } = useMessageListItemContext();
   const hasContentSideViews = !!(MessageContentLeadingView || MessageContentTrailingView);
+  const gap = primitives.spacingXs;
+
+  const messageTextContainerStyles = useMemo(() => {
+    return {
+      textContainer: {
+        // Cancel the container's 8px inter-item gap so only the caption's own
+        // paragraph marginTop shows. Skip for the first item: there is no gap to
+        // cancel
+        marginTop: -gap,
+      },
+    };
+  }, [gap]);
+
   const contentBody = (
     <>
       <View
         style={[
           {
-            gap: primitives.spacingXs,
+            gap,
             paddingTop: hidePaddingTop ? 0 : primitives.spacingXs,
             paddingHorizontal: hidePaddingHorizontal ? 0 : primitives.spacingXs,
             paddingBottom: hidePaddingBottom ? 0 : primitives.spacingXs,
@@ -313,14 +326,21 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
                   key={`ai_message_text_container_${messageContentOrderIndex}`}
                 />
               ) : null;
+            case 'text': {
+              const suppressed =
+                (otherAttachments.length && otherAttachments[0].actions) || isAIGenerated;
+              return suppressed ? null : (
+                <MessageTextContainer
+                  key={`message_text_container_${messageContentOrderIndex}`}
+                  styles={messageContentOrderIndex === 0 ? undefined : messageTextContainerStyles}
+                />
+              );
+            }
             default:
               return null;
           }
         })}
       </View>
-      {(otherAttachments.length && otherAttachments[0].actions) || isAIGenerated ? null : (
-        <MessageTextContainer />
-      )}
     </>
   );
   const a11yPressableLabel = useMemo(() => {
