@@ -35,7 +35,6 @@ export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
 export * from './Channel/hooks/useCreateThreadContext';
-export * from './Channel/hooks/useTargetedMessage';
 
 /** Channel List exports*/
 export * from './ChannelList/ChannelList';

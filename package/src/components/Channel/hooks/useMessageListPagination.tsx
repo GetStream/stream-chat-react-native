@@ -7,7 +7,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStableCallback, useStateStore } from '../../../hooks';
 import { useNotificationApi } from '../../Notifications';
 
-const DEFAULT_HIGHLIGHT_DURATION = 3000;
+export const DEFAULT_HIGHLIGHT_DURATION = 3000;
 
 type MessagePaginatorState = {
   hasMoreHead: boolean;
@@ -108,16 +108,17 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
    * @param messageId If undefined, no-op.
    */
   const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] =
-    useStableCallback(async ({ messageId: messageIdToLoadAround, setTargetedMessage }) => {
+    useStableCallback(async ({ messageId: messageIdToLoadAround }) => {
       if (!messageIdToLoadAround) {
         return;
       }
       try {
+        // jumpToMessage loads-around the target AND emits messageFocusSignal, which drives both the
+        // highlight and the scroll-to-target — no separate targeted-message React state needed.
         await paginator.jumpToMessage(messageIdToLoadAround, {
           focusReason: 'jump-to-message',
           focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
         });
-        setTargetedMessage?.(messageIdToLoadAround);
       } catch (error) {
         console.warn(
           'Message pagination(fetching messages around a message id) request failed with error:',
@@ -131,15 +132,12 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
    * from its unread snapshot / channel read state.
    */
   const loadChannelAtFirstUnreadMessage: ChannelContextValue['loadChannelAtFirstUnreadMessage'] =
-    useStableCallback(async ({ setTargetedMessage }) => {
+    useStableCallback(async () => {
       try {
+        // jumpToTheFirstUnreadMessage emits messageFocusSignal, which drives the highlight + scroll.
         await paginator.jumpToTheFirstUnreadMessage({
           focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
         });
-        const focusedMessageId = paginator.messageFocusSignal.getLatestValue().signal?.messageId;
-        if (focusedMessageId) {
-          setTargetedMessage?.(focusedMessageId);
-        }
       } catch (error) {
         notifyJumpToFirstUnreadError(error);
       }

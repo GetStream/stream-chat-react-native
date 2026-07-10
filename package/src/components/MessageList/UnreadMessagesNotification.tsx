@@ -34,8 +34,7 @@ const unreadCountSelector = (snapshot: UnreadSnapshotState) => ({
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
   const { onCloseHandler, onPressHandler, unreadCount } = props;
   const { t } = useTranslationContext();
-  const { channel, loadChannelAtFirstUnreadMessage, markRead, setTargetedMessage } =
-    useChannelContext();
+  const { channel, loadChannelAtFirstUnreadMessage, markRead } = useChannelContext();
   const { unread_messages } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,
     unreadCountSelector,
@@ -47,9 +46,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     if (onPressHandler) {
       await onPressHandler();
     } else {
-      await loadChannelAtFirstUnreadMessage({
-        setTargetedMessage,
-      });
+      await loadChannelAtFirstUnreadMessage();
     }
   };
 

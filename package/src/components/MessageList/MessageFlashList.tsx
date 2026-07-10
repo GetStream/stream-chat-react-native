@@ -118,9 +118,7 @@ type MessageFlashListPropsWithContext = Pick<
     | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
-    | 'setTargetedMessage'
     | 'hasPendingInitialTargetLoad'
-    | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
   > &
@@ -297,6 +295,13 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
+const messageFocusSelector = (state: {
+  signal: { messageId?: string; token?: number } | null;
+}) => ({
+  focusedMessageId: state.signal?.messageId,
+  focusToken: state.signal?.token,
+});
+
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -334,9 +339,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     onThreadSelect,
     reloadChannel,
     setFlatListRef,
-    setTargetedMessage,
     hasPendingInitialTargetLoad,
-    targetedMessage,
     thread,
     threadInstance,
     threadList = false,
@@ -466,66 +469,64 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [disabled]);
 
+  // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump emits
+  // it, and the effect below scrolls to it. `token` re-fires the effect on every jump (even to the
+  // same id); see MessageList for the full rationale.
+  const focusPaginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const { focusedMessageId, focusToken } =
+    useStateStore(focusPaginator?.messageFocusSignal, messageFocusSelector) ?? {};
+  const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
+
   /**
-   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
-   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   * Scrolls to the focused message (messageFocusSignal) once it's rendered. Re-attempts when the
+   * list updates while a focus is pending, and marks each focus token handled so unrelated list
+   * changes during the highlight window don't re-scroll.
    */
   useEffect(() => {
-    if (!targetedMessage) {
+    if (!focusedMessageId || focusToken === lastFocusScrollTokenRef.current) {
       return;
     }
 
     const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === targetedMessage,
+      (message) => message?.id === focusedMessageId,
     );
 
-    // the message we want to scroll to has not been loaded in the state yet
+    // Not in the rendered window yet (jumpToMessage already loaded-around it, so a later
+    // processedMessageList change re-runs this) — bail rather than re-jump (no jump↔effect loop).
     if (indexOfParentInMessageList === -1) {
-      loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
-    } else {
-      scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-
-        const scrollToIndex = async () => {
-          const list = flashListRef.current;
-
-          if (!list) {
-            return false;
-          }
-
-          await list.scrollToIndex({
-            animated: true,
-            index: indexOfParentInMessageList,
-            viewPosition: 0.5,
-          });
-
-          return true;
-        };
-
-        await scrollToIndex();
-        requestAnimationFrame(async () => {
-          await scrollToIndex();
-          setTargetedMessage(undefined);
-        });
-      }, WAIT_FOR_SCROLL_TIMEOUT);
+      return;
     }
-  }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
+
+    lastFocusScrollTokenRef.current = focusToken;
+    scrollToDebounceTimeoutRef.current = setTimeout(async () => {
+      clearTimeout(scrollToDebounceTimeoutRef.current);
+
+      const scrollToIndex = async () => {
+        const list = flashListRef.current;
+
+        if (!list) {
+          return false;
+        }
+
+        await list.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5,
+        });
+
+        return true;
+      };
+
+      await scrollToIndex();
+      requestAnimationFrame(async () => {
+        await scrollToIndex();
+      });
+    }, WAIT_FOR_SCROLL_TIMEOUT);
+  }, [focusToken, focusedMessageId, processedMessageList]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-
-    try {
-      if (indexOfParentInMessageList === -1) {
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        await loadChannelAroundMessage({ messageId, setTargetedMessage });
-      } else {
-        setTargetedMessage(messageId);
-      }
-    } catch (e) {
-      console.warn('Error while scrolling to message', e);
-    }
+    // jumpToMessage loads-around + emits messageFocusSignal → the effect scrolls and highlights.
+    await loadChannelAroundMessage({ messageId });
   });
 
   useEffect(() => {
@@ -1258,9 +1259,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     maximumMessageLimit,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setTargetedMessage,
     hasPendingInitialTargetLoad,
-    targetedMessage,
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
@@ -1308,10 +1307,8 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         readEvents,
         reloadChannel,
         scrollToFirstUnreadThreshold,
-        setTargetedMessage,
         hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,
-        targetedMessage,
         thread,
         threadInstance,
         threadList,

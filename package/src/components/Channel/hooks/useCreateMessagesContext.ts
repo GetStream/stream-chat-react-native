@@ -52,7 +52,6 @@ export const useCreateMessagesContext = ({
   sendReaction,
   shouldShowUnreadUnderlay,
   supportedReactions,
-  targetedMessage,
   updateMessage,
   urlPreviewType,
 }: MessagesContextValue & {
@@ -116,7 +115,6 @@ export const useCreateMessagesContext = ({
       sendReaction,
       shouldShowUnreadUnderlay,
       supportedReactions,
-      targetedMessage,
       updateMessage,
       urlPreviewType,
     }),
@@ -132,7 +130,6 @@ export const useCreateMessagesContext = ({
       messageOverlayTargetId,
       supportedReactionsLength,
       myMessageTheme,
-      targetedMessage,
       hasCreatePoll,
     ],
   );

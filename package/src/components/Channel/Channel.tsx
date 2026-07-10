@@ -33,8 +33,10 @@ import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitie
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
-import { useMessageListPagination } from './hooks/useMessageListPagination';
-import { useTargetedMessage } from './hooks/useTargetedMessage';
+import {
+  DEFAULT_HIGHLIGHT_DURATION,
+  useMessageListPagination,
+} from './hooks/useMessageListPagination';
 
 import {
   AttachmentPickerContextValue,
@@ -78,6 +80,7 @@ import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
+import { useStateStore } from '../../hooks/useStateStore';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
@@ -360,6 +363,12 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     initializeOnMount?: boolean;
   };
 
+// The highlighted message id is derived from the paginator's messageFocusSignal (LLC), which is
+// emitted by the jump fns and auto-cleared after its TTL — no separate targeted-message React state.
+const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
+  highlightedMessageId: state.signal?.messageId,
+});
+
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
@@ -494,7 +503,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const syncingChannelRef = useRef(false);
 
-  const { highlightedMessageId, setTargetedMessage, targetedMessage } = useTargetedMessage();
+  const { highlightedMessageId } = useStateStore(
+    (threadInstance ?? channel).messagePaginator.messageFocusSignal,
+    messageFocusSignalSelector,
+  );
 
   /**
    * This ref will hold the abort controllers for
@@ -620,10 +632,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // of truth for unread state), so there's no manual initial read-state copy here.
 
       if (messageId) {
-        await loadChannelAroundMessage({ messageId, setTargetedMessage });
+        await loadChannelAroundMessage({ messageId });
       } else if (shouldLoadAtFirstUnread) {
         // jumpToTheFirstUnreadMessage resolves the first-unread id from the paginator's snapshot.
-        await loadChannelAtFirstUnreadMessage({ setTargetedMessage });
+        await loadChannelAtFirstUnreadMessage();
       }
 
       if (unreadCount > 0 && markReadOnMount) {
@@ -872,9 +884,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             await channel.state.loadMessageIntoState(messageIdToLoadAround, thread.id);
             setThreadLoadingMore(false);
             setThreadMessages(channel.state.threads[thread.id]);
-            if (setTargetedMessage) {
-              setTargetedMessage(messageIdToLoadAround);
-            }
+            // The reply list still reads channel.state.threads; emit the thread paginator's focus
+            // signal so the thread-aware highlight + scroll fire (mirrors the channel jump path).
+            threadInstance?.messagePaginator?.emitMessageFocusSignal({
+              messageId: messageIdToLoadAround,
+              reason: 'jump-to-message',
+              ttlMs: DEFAULT_HIGHLIGHT_DURATION,
+            });
           } catch (err) {
             if (err instanceof Error) {
               setError(err);
@@ -886,7 +902,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         } else {
           await loadChannelAroundMessageFn({
             messageId: messageIdToLoadAround,
-            setTargetedMessage,
           });
         }
       } catch (err) {
@@ -1237,9 +1252,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     maxTimeBetweenGroupedMessages,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setTargetedMessage,
     hasPendingInitialTargetLoad,
-    targetedMessage,
     threadList,
     uploadAbortControllerRef,
   });
@@ -1336,7 +1349,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     sendReaction,
     shouldShowUnreadUnderlay,
     supportedReactions,
-    targetedMessage,
     updateMessage,
     urlPreviewType,
   });

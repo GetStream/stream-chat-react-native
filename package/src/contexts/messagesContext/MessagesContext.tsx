@@ -339,8 +339,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * The supported reactions that the user can use to react to messages.
    */
   supportedReactions?: ReactionData[];
-
-  targetedMessage?: string;
 };
 
 export const MessagesContext = React.createContext(

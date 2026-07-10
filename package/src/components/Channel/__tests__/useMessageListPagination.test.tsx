@@ -130,42 +130,36 @@ describe('useMessageListPagination', () => {
     expect(paginator.jumpToTheLatestMessage).toHaveBeenCalledTimes(1);
   });
 
-  it('loadChannelAroundMessage jumps to the message and targets it', async () => {
+  it('loadChannelAroundMessage jumps to the message (emitting the focus signal)', async () => {
     const paginator = makePaginator({
       hasMoreHead: true,
       hasMoreTail: true,
       isLoading: false,
       items: [],
     });
-    const setTargetedMessage = jest.fn();
     const { result } = renderHook(() =>
       useMessageListPagination({ channel: makeChannel(paginator) }),
     );
     await act(async () => {
-      await result.current.loadChannelAroundMessage({ messageId: 'm7', setTargetedMessage });
+      await result.current.loadChannelAroundMessage({ messageId: 'm7' });
     });
     expect(paginator.jumpToMessage).toHaveBeenCalledWith(
       'm7',
       expect.objectContaining({ focusReason: 'jump-to-message' }),
     );
-    expect(setTargetedMessage).toHaveBeenCalledWith('m7');
   });
 
-  it('loadChannelAtFirstUnreadMessage jumps to first unread and targets the focused message', async () => {
+  it('loadChannelAtFirstUnreadMessage jumps to first unread (emitting the focus signal)', async () => {
     const paginator = makePaginator(
       { hasMoreHead: true, hasMoreTail: true, isLoading: false, items: [] },
       'm5',
     );
-    const setTargetedMessage = jest.fn();
     const { result } = renderHook(() =>
       useMessageListPagination({ channel: makeChannel(paginator) }),
     );
     await act(async () => {
-      await result.current.loadChannelAtFirstUnreadMessage({ setTargetedMessage } as Parameters<
-        typeof result.current.loadChannelAtFirstUnreadMessage
-      >[0]);
+      await result.current.loadChannelAtFirstUnreadMessage();
     });
     expect(paginator.jumpToTheFirstUnreadMessage).toHaveBeenCalledTimes(1);
-    expect(setTargetedMessage).toHaveBeenCalledWith('m5');
   });
 });

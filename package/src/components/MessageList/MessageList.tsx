@@ -203,8 +203,6 @@ type MessageListPropsWithContext = Pick<
     | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
-    | 'setTargetedMessage'
-    | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
   > &
@@ -307,6 +305,13 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
  * [ThreadContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/thread-context/)
  * [TranslationContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
+const messageFocusSelector = (state: {
+  signal: { messageId?: string; token?: number } | null;
+}) => ({
+  focusedMessageId: state.signal?.messageId,
+  focusToken: state.signal?.token,
+});
+
 const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -346,8 +351,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     readEvents,
     reloadChannel,
     setFlatListRef,
-    setTargetedMessage,
-    targetedMessage,
     thread,
     threadInstance,
     threadList = false,
@@ -486,11 +489,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   const onScrollEventTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  /**
-   * Last messageID that was scrolled to after loading a new message list,
-   * this flag keeps track of it so that we dont scroll to it again on target message set
-   */
-  const messageIdLastScrolledToRef = useRef<string>(undefined);
   const [hasMoved, setHasMoved] = useState(false);
 
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
@@ -787,73 +785,50 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     maximumMessageLimit,
   ]);
 
+  // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump
+  // (jumpToMessage / jumpToTheFirstUnreadMessage / emitMessageFocusSignal) emits it, and the effect
+  // below scrolls to it. `token` re-fires the effect on every jump, even to the same message id.
+  const focusPaginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const { focusedMessageId, focusToken } =
+    useStateStore(focusPaginator?.messageFocusSignal, messageFocusSelector) ?? {};
+  const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
+
   const goToMessage = useStableCallback(async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-    try {
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId });
-        return;
-      } else {
-        if (!flatListRef.current) {
-          return;
-        }
-        clearTimeout(failScrollTimeoutId.current);
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // keep track of this messageId, so that we dont scroll to again in useEffect for targeted message change
-        messageIdLastScrolledToRef.current = messageId;
-        setTargetedMessage(messageId);
-        // now scroll to it with animated=true
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        return;
-      }
-    } catch (e) {
-      console.warn('Error while scrolling to message', e);
-    }
+    // jumpToMessage loads-around the target + emits messageFocusSignal → the effect scrolls and the
+    // message highlights (mirrors stream-chat-react — no bespoke scroll/highlight bookkeeping).
+    await loadChannelAroundMessage({ messageId });
   });
 
   /**
-   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
-   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   * Scrolls to the focused message (messageFocusSignal) once it's rendered. Keyed on the focus
+   * token so it re-fires on every jump (even to the same id); also re-attempts when the list
+   * updates while a focus is pending, and marks each token handled so unrelated list changes during
+   * the highlight window don't re-scroll.
    */
   useEffect(() => {
-    if (!targetedMessage) {
+    if (!focusedMessageId || focusToken === lastFocusScrollTokenRef.current) {
       return;
     }
-    scrollToDebounceTimeoutRef.current = setTimeout(async () => {
+    scrollToDebounceTimeoutRef.current = setTimeout(() => {
       const indexOfParentInMessageList = processedMessageList.findIndex(
-        (message) => message?.id === targetedMessage,
+        (message) => message?.id === focusedMessageId,
       );
-
-      // the message we want to scroll to has not been loaded in the state yet
-      if (indexOfParentInMessageList === -1) {
-        await loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
-      } else {
-        if (!flatListRef.current) {
-          return;
-        }
-        // By a fresh scroll we should clear the retries for the previous failed scroll
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        clearTimeout(failScrollTimeoutId.current);
-        // reset the retry count
-        scrollToIndexFailedRetryCountRef.current = 0;
-        // now scroll to it
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: indexOfParentInMessageList,
-          viewPosition: 0.5, // try to place message in the center of the screen
-        });
-        setTargetedMessage(undefined);
+      // Not in the rendered window yet (jumpToMessage already loaded-around it, so a later
+      // processedMessageList change re-runs this) — bail rather than re-jump (no jump↔effect loop).
+      if (indexOfParentInMessageList === -1 || !flatListRef.current) {
+        return;
       }
+      clearTimeout(scrollToDebounceTimeoutRef.current);
+      clearTimeout(failScrollTimeoutId.current);
+      scrollToIndexFailedRetryCountRef.current = 0;
+      lastFocusScrollTokenRef.current = focusToken;
+      flatListRef.current.scrollToIndex({
+        animated: true,
+        index: indexOfParentInMessageList,
+        viewPosition: 0.5, // try to place message in the center of the screen
+      });
     }, WAIT_FOR_SCROLL_TIMEOUT);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetedMessage]);
+  }, [focusToken, focusedMessageId, processedMessageList]);
 
   const setNativeScrollability = useStableCallback((value: boolean) => {
     if (flatListRef.current) {
@@ -1075,11 +1050,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           index: info.index,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
-        if (messageIdLastScrolledToRef.current) {
-          // in case the target message was cleared out
-          // the state being set again will trigger the highlight again
-          setTargetedMessage(messageIdLastScrolledToRef.current);
-        }
+        // The highlight is driven by the live messageFocusSignal (persists for its TTL), so there's
+        // no targeted-message state to re-set across scroll-fail retries.
         scrollToIndexFailedRetryCountRef.current = 0;
       } catch (e) {
         if (
@@ -1396,8 +1368,6 @@ export const MessageList = (props: MessageListProps) => {
     markRead,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setTargetedMessage,
-    targetedMessage,
     threadList,
   } = useChannelContext();
   const { client } = useChatContext();
@@ -1443,9 +1413,7 @@ export const MessageList = (props: MessageListProps) => {
         readEvents,
         reloadChannel,
         scrollToFirstUnreadThreshold,
-        setTargetedMessage,
         shouldShowUnreadUnderlay,
-        targetedMessage,
         thread,
         threadInstance,
         threadList,

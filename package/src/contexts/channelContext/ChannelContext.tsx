@@ -45,37 +45,28 @@ export type ChannelContextValue = {
   hideDateSeparators: boolean;
   hideStickyDateHeader: boolean;
   /**
-   * Loads channel around a specific message
+   * Loads channel around a specific message. Emits `messageFocusSignal` on the paginator, which
+   * drives the highlight + scroll-to-target.
    * @param limit - The number of messages to load around the message
    * @param messageId - The message around which to load messages
-   * @param setTargetedMessage - Callback to set the targeted message
    */
   loadChannelAroundMessage: ({
     limit,
     messageId,
-    setTargetedMessage,
   }: {
     limit?: number;
     messageId?: string;
-    setTargetedMessage?: (messageId: string) => void;
   }) => Promise<void>;
 
   /**
-   * Loads channel at first unread message.
+   * Loads channel at first unread message. Emits `messageFocusSignal` on the paginator.
    * @param limit - The number of messages to load around the first unread message
    */
-  loadChannelAtFirstUnreadMessage: ({
-    limit,
-    setTargetedMessage,
-  }: {
-    limit?: number;
-    setTargetedMessage?: (messageId: string) => void;
-  }) => Promise<void>;
+  loadChannelAtFirstUnreadMessage: (options?: { limit?: number }) => Promise<void>;
 
   markRead: (options?: MarkReadFunctionOptions) => void;
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
-  setTargetedMessage: (messageId?: string) => void;
   /**
    * Returns true when Channel is about to load an initial targeted message.
    *
@@ -106,11 +97,6 @@ export type ChannelContextValue = {
    * currently near them within the viewport.
    */
   maximumMessageLimit?: number;
-  /**
-   * Id of message, around which Channel/MessageList gets loaded when opened.
-   * You will see a highlighted background for targetted message, when opened.
-   */
-  targetedMessage?: string;
   threadList?: boolean;
 };
 
