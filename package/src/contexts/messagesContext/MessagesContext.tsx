@@ -2,15 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { PressableProps, ViewProps } from 'react-native';
 
-import type {
-  Attachment,
-  Channel,
-  ChannelState,
-  CommandSuggestion,
-  DeleteMessageOptions,
-  LocalMessage,
-  MessageResponse,
-} from 'stream-chat';
+import type { Attachment, Channel, LocalMessage } from 'stream-chat';
 
 import type { MessagePressableHandlerPayload } from '../../components/Message/Message';
 import type { MarkdownRules } from '../../components/Message/MessageItemView/utils/renderText';
@@ -45,13 +37,6 @@ export type MessageLocationProps = {
 };
 
 export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerated'> & {
-  // FIXME: Remove the signature with optionsOrHardDelete boolean with the next major release
-  deleteMessage: (
-    message: LocalMessage,
-    optionsOrHardDelete?: boolean | DeleteMessageOptions,
-  ) => Promise<void>;
-  deleteReaction: (type: string, messageId: string) => Promise<void>;
-
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
 
@@ -80,21 +65,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * Custom `MessageOverlayWrapper` usages should pass a matching `targetId`.
    */
   messageOverlayTargetId?: string;
-  removeMessage: (message: { id: string; parent_id?: string }) => Promise<void>;
-  /**
-   * Override the api request for retry message functionality.
-   */
-  retrySendMessage: (message: LocalMessage) => Promise<void>;
-  sendReaction: (type: string, messageId: string) => Promise<void>;
-  updateMessage: (
-    updatedMessage: MessageResponse | LocalMessage,
-    extraState?: {
-      commands?: CommandSuggestion[];
-      messageInput?: string;
-      threadMessages?: ChannelState['threads'][string];
-    },
-    throttled?: boolean,
-  ) => void;
   /**
    * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
    * Please check docs for Pressable for supported props - https://reactnative.dev/docs/pressable#props

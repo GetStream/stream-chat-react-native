@@ -31,8 +31,7 @@ export const useCreateThreadContext = ({
   threadHasMore,
   threadInstance,
   threadLoadingMore,
-  threadMessages,
-}: ThreadContextValue) => {
+}: Omit<ThreadContextValue, 'threadMessages'>) => {
   const { hasMore, isLoading, messages } =
     useStateStore(threadInstance?.messagePaginator?.state, selector) ?? {};
 
@@ -47,7 +46,6 @@ export const useCreateThreadContext = ({
         threadHasMore: hasMore ?? false,
         threadInstance,
         threadLoadingMore: !!isLoading,
-        threadMessages: messages ?? [],
       }
     : {};
 
@@ -62,7 +60,10 @@ export const useCreateThreadContext = ({
     thread,
     threadHasMore,
     threadLoadingMore,
-    threadMessages,
+    // The reply list is sourced solely from the thread's messagePaginator (optimistic thread ops
+    // write there). Empty when no thread is open (threadInstance null); the list only reads this
+    // when threadList is true, i.e. a thread is open and threadInstance is set.
+    threadMessages: messages ?? [],
     ...contextAdapter,
   };
 };

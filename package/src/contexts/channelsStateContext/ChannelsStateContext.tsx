@@ -10,13 +10,15 @@ import React, {
 
 import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
 
-import type { ThreadContextValue } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+// Per-channel state is no longer stored here — message/thread state lives in the LLC paginators.
+// This context now only tracks which channels are mounted ("active"), which the ChannelList uses
+// to skip re-initializing their state on a reconnect query (see useChannelState / usePaginatedChannels).
 export type ChannelState = {
-  threadMessages: ThreadContextValue['threadMessages'];
+  active: boolean;
 };
 
 type ChannelsState = {

@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 import { LocalMessage } from 'stream-chat';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
+import { MessageOperations } from './useMessageOperations';
 
 import { useUserMuteActive } from './useUserMuteActive';
 
@@ -39,30 +40,33 @@ import { MessageStatusTypes } from '../../../utils/utils';
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
 export type MessageActionsHookProps = Pick<
-  MessagesContextValue,
+  MessageOperations,
   | 'deleteMessage'
   | 'sendReaction'
-  | 'handleBan'
-  | 'handleCopy'
-  | 'handleDelete'
-  | 'handleDeleteForMe'
-  | 'handleEdit'
-  | 'handleFlag'
-  | 'handleQuotedReply'
-  | 'handleMarkUnread'
-  | 'handleMute'
-  | 'handlePinMessage'
-  | 'handleRetry'
-  | 'handleReaction'
-  | 'handleThreadReply'
-  | 'handleBlockUser'
   | 'removeMessage'
   | 'deleteReaction'
   | 'retrySendMessage'
-  | 'selectReaction'
-  | 'supportedReactions'
   | 'updateMessage'
 > &
+  Pick<
+    MessagesContextValue,
+    | 'handleBan'
+    | 'handleCopy'
+    | 'handleDelete'
+    | 'handleDeleteForMe'
+    | 'handleEdit'
+    | 'handleFlag'
+    | 'handleQuotedReply'
+    | 'handleMarkUnread'
+    | 'handleMute'
+    | 'handlePinMessage'
+    | 'handleRetry'
+    | 'handleReaction'
+    | 'handleThreadReply'
+    | 'handleBlockUser'
+    | 'selectReaction'
+    | 'supportedReactions'
+  > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
   Pick<ThreadContextValue, 'openThread'> &

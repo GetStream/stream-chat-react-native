@@ -23,6 +23,7 @@ import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
+import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
 import { useMessageReadData } from './hooks/useMessageReadData';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
@@ -210,9 +211,16 @@ export type MessagePropsWithContext = Pick<
     'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredToCount'
   > &
   Pick<
-    MessagesContextValue,
+    MessageOperations,
     | 'sendReaction'
     | 'deleteMessage'
+    | 'removeMessage'
+    | 'deleteReaction'
+    | 'retrySendMessage'
+    | 'updateMessage'
+  > &
+  Pick<
+    MessagesContextValue,
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBan'
@@ -236,12 +244,8 @@ export type MessagePropsWithContext = Pick<
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
-    | 'removeMessage'
-    | 'deleteReaction'
-    | 'retrySendMessage'
     | 'selectReaction'
     | 'supportedReactions'
-    | 'updateMessage'
   > &
   Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -1154,6 +1158,7 @@ export const Message = (props: MessageProps) => {
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
+  const messageOperations = useMessageOperations();
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readBy = useMessageReadData({ message });
@@ -1163,6 +1168,7 @@ export const Message = (props: MessageProps) => {
   return (
     <MemoizedMessage
       {...messagesContext}
+      {...messageOperations}
       {...{
         channel,
         chatContext,

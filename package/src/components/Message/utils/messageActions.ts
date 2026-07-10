@@ -1,10 +1,10 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { isClipboardAvailable } from '../../../native';
 
 import { FileTypes } from '../../../types/types';
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
+import type { MessageOperations } from '../hooks/useMessageOperations';
 
 export type MessageActionsParams = {
   banUser: MessageActionType;
@@ -27,7 +27,7 @@ export type MessageActionsParams = {
   // Optional Actions
   deleteForMeMessage?: MessageActionType;
 } & Pick<MessageContextValue, 'message' | 'isMyMessage'> &
-  Pick<MessagesContextValue, 'updateMessage'>;
+  Pick<MessageOperations, 'updateMessage'>;
 
 export type MessageActionsProp = (param: MessageActionsParams) => MessageActionType[];
 
