@@ -11,7 +11,7 @@ import {
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
-import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
+import type { Channel, Event, LocalMessage } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
 
@@ -58,6 +58,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
+import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
 import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
@@ -97,20 +98,6 @@ const hasReadLastMessage = (channel: Channel, userId: string) => {
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };
 
-const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageResponse) => {
-  if (!newMessage) return;
-  let previousLastMessage;
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const msg = messages[i];
-    if (!msg?.id) break;
-    if (msg.id !== newMessage.id) {
-      previousLastMessage = msg;
-      break;
-    }
-  }
-  return previousLastMessage;
-};
-
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
@@ -123,7 +110,6 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<
     ChannelContextValue,
     | 'channel'
-    | 'channelUnreadStateStore'
     | 'disabled'
     | 'hideStickyDateHeader'
     | 'highlightedMessageId'
@@ -132,7 +118,6 @@ type MessageFlashListPropsWithContext = Pick<
     | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
-    | 'setChannelUnreadState'
     | 'setTargetedMessage'
     | 'hasPendingInitialTargetLoad'
     | 'targetedMessage'
@@ -321,7 +306,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     attachmentPickerStore,
     additionalFlashListProps,
     channel,
-    channelUnreadStateStore,
     client,
     closePicker,
     disabled,
@@ -349,7 +333,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     onListScroll,
     onThreadSelect,
     reloadChannel,
-    setChannelUnreadState,
     setFlatListRef,
     setTargetedMessage,
     hasPendingInitialTargetLoad,
@@ -633,7 +616,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    */
   useEffect(() => {
     const shouldMarkRead = () => {
-      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+      const channelUnreadState = getChannelUnreadState(channel);
       return (
         !channelUnreadState?.first_unread_message_id &&
         !scrollToBottomButtonVisible &&
@@ -643,26 +626,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     };
 
     const handleEvent = async (event: Event) => {
+      // The unread count is owned by channel.messagePaginator.unreadStateSnapshot (the LLC bumps it
+      // on message.new); we no longer manually bump it here. We only mark the channel read when the
+      // user is caught up at the bottom.
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
-      const isMyOwnMessage = event.message?.user?.id === client.user?.id;
-      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
-      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
-      if (
-        (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
-        !isMyOwnMessage
-      ) {
-        const previousUnreadCount = channelUnreadState?.unread_messages ?? 0;
-        const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
-        setChannelUnreadState({
-          ...channelUnreadState,
-          last_read:
-            channelUnreadState?.last_read ??
-            (previousUnreadCount === 0 && previousLastMessage?.created_at
-              ? new Date(previousLastMessage.created_at)
-              : new Date(0)), // not having information about the last read message means the whole channel is unread,
-          unread_messages: previousUnreadCount + 1,
-        });
-      } else if (mainChannelUpdated && shouldMarkRead()) {
+      if (mainChannelUpdated && shouldMarkRead()) {
         await markRead();
       }
     };
@@ -672,15 +640,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     return () => {
       listener?.unsubscribe();
     };
-  }, [
-    channel,
-    channelUnreadStateStore,
-    client.user?.id,
-    markRead,
-    scrollToBottomButtonVisible,
-    setChannelUnreadState,
-    threadList,
-  ]);
+  }, [channel, client.user?.id, markRead, scrollToBottomButtonVisible, threadList]);
 
   const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
     if (!viewableItems.length) {
@@ -715,7 +675,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+    const channelUnreadState = getChannelUnreadState(channel);
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
@@ -1204,10 +1164,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification
-            onCloseHandler={onUnreadNotificationClose}
-            channelUnreadStateStore={channelUnreadStateStore}
-          />
+          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
         </View>
       ) : null}
       <Animated.View
@@ -1289,7 +1246,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
   const {
     channel,
-    channelUnreadStateStore,
     disabled,
     enableMessageGroupingByUser,
     error,
@@ -1302,7 +1258,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     maximumMessageLimit,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setChannelUnreadState,
     setTargetedMessage,
     hasPendingInitialTargetLoad,
     targetedMessage,
@@ -1327,7 +1282,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
-        channelUnreadStateStore,
         client,
         closePicker,
         disabled,
@@ -1354,7 +1308,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         readEvents,
         reloadChannel,
         scrollToFirstUnreadThreshold,
-        setChannelUnreadState,
         setTargetedMessage,
         hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,

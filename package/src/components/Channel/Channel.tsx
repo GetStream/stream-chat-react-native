@@ -84,12 +84,9 @@ import {
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import {
-  ChannelUnreadStateStore,
-  ChannelUnreadStateStoreType,
-} from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import type { ChannelUnreadState } from '../../types/types';
 import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { MessageStatusTypes, ReactionData } from '../../utils/utils';
@@ -283,7 +280,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     doMarkReadRequest?: (
       channel: ChannelType,
-      setChannelUnreadUiState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void,
+      setChannelUnreadUiState?: (data: ChannelUnreadState | undefined) => void,
     ) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
@@ -492,41 +489,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadStateStore] = useState(() => new ChannelUnreadStateStore());
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
-  // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
-  const setChannelUnreadState = useCallback(
-    (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
-      channelUnreadStateStore.channelUnreadState = data;
-    },
-    [channelUnreadStateStore],
-  );
-
-  // Unread state is owned by the LLC: channel.messagePaginator.unreadStateSnapshot is the single
-  // source of truth (the paginator updates it on seeding / message.new / notification.mark_unread /
-  // truncate). Mirror it into channelUnreadStateStore so existing consumers keep working.
-  useEffect(() => {
-    const snapshotStore = channel.messagePaginator.unreadStateSnapshot;
-    const applyUnreadSnapshot = (snapshot: {
-      firstUnreadMessageId: string | null;
-      lastReadAt: Date | null;
-      lastReadMessageId: string | null;
-      unreadCount: number;
-    }) => {
-      setChannelUnreadState(
-        snapshot.firstUnreadMessageId || snapshot.lastReadMessageId || snapshot.unreadCount
-          ? {
-              first_unread_message_id: snapshot.firstUnreadMessageId ?? undefined,
-              last_read: snapshot.lastReadAt ?? new Date(0),
-              last_read_message_id: snapshot.lastReadMessageId ?? undefined,
-              unread_messages: snapshot.unreadCount,
-            }
-          : undefined,
-      );
-    };
-    applyUnreadSnapshot(snapshotStore.getLatestValue());
-    return snapshotStore.subscribe(applyUnreadSnapshot);
-  }, [channel, setChannelUnreadState]);
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
@@ -611,7 +574,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       // notification.mark_unread + channel.truncated update channel.messagePaginator.unreadStateSnapshot
-      // in the LLC; that snapshot is mirrored into channelUnreadStateStore, so no manual handling here.
+      // in the LLC (the single source of truth for unread state), so no manual handling here.
 
       // The message list is backed reactively by channel.messagePaginator (channel._handleChannelEvent
       // ingests message.new/updated/deleted + reaction events), and read/typing/members come from
@@ -653,8 +616,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
       }
 
-      // The paginator's unreadStateSnapshot is populated by the seed/reload above and mirrored into
-      // channelUnreadStateStore, so there's no manual initial read-state copy here.
+      // The paginator's unreadStateSnapshot is populated by the seed/reload above (the single source
+      // of truth for unread state), so there's no manual initial read-state copy here.
 
       if (messageId) {
         await loadChannelAroundMessage({ messageId, setTargetedMessage });
@@ -728,7 +691,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       // Read events disabled (e.g. livestreams): if the client opted into a local unread count,
       // reset it locally (dispatches message.read_locally) — no backend round trip. The paginator's
-      // unread snapshot updates from that, and is mirrored into channelUnreadStateStore.
+      // unread snapshot updates from that.
       if (!clientChannelConfig?.read_events) {
         if (client.options.isLocalUnreadCountEnabled) {
           channel.markReadLocally();
@@ -1258,7 +1221,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
@@ -1275,7 +1237,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     maxTimeBetweenGroupedMessages,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setChannelUnreadState,
     setTargetedMessage,
     hasPendingInitialTargetLoad,
     targetedMessage,

@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { LocalMessage } from 'stream-chat';
+import { LocalMessage, UnreadSnapshotState } from 'stream-chat';
 
 import { useMessageDateSeparator } from '../../../components/MessageList/hooks/useMessageDateSeparator';
 import { useMessageGroupStyles } from '../../../components/MessageList/hooks/useMessageGroupStyles';
@@ -14,15 +14,7 @@ import { useMessagesContext } from '../../../contexts/messagesContext/MessagesCo
 import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { useStateStore } from '../../../hooks/useStateStore';
-import { ChannelUnreadStateStoreType } from '../../../state-store/channel-unread-state';
 import { primitives } from '../../../theme';
-
-const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
-  first_unread_message_id: state.channelUnreadState?.first_unread_message_id,
-  last_read_message_id: state.channelUnreadState?.last_read_message_id,
-  last_read_timestamp: state.channelUnreadState?.last_read?.getTime(),
-  unread_messages: state.channelUnreadState?.unread_messages,
-});
 
 export type MessageWrapperProps = {
   message: LocalMessage;
@@ -34,7 +26,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   const { message, previousMessage, nextMessage } = props;
   const { client } = useChatContext();
   const {
-    channelUnreadStateStore,
     channel,
     hideDateSeparators,
     highlightedMessageId,
@@ -52,7 +43,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     previousMessage,
   });
 
-  const isNewestMessage = nextMessage === undefined;
   const groupStyles = useMessageGroupStyles({
     dateSeparatorDate,
     getMessageGroupStyle,
@@ -63,8 +53,61 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     noGroupByUser,
   });
 
-  const { first_unread_message_id, last_read_timestamp, last_read_message_id, unread_messages } =
-    useStateStore(channelUnreadStateStore.state, channelUnreadStateSelector);
+  const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
+  const messageIsOwn = message.user?.id === client.userID;
+  const nextMessageId = nextMessage?.id;
+  const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
+  const nextMessageCreatedAt = nextMessage?.created_at
+    ? new Date(nextMessage.created_at).getTime()
+    : undefined;
+
+  // The unread separator belongs above the first UNREAD message from another user — i.e. on the row
+  // whose newer neighbour is that first unread. We locate it per-message inside the selector so
+  // `useStateStore`'s per-key comparison keeps the flag referentially stable (`false === false`) for
+  // every non-boundary row: a mark-read changes the channel-wide unread fields but only re-renders
+  // the one or two boundary rows whose flag actually flips, not the whole list.
+  //
+  // We deliberately do NOT anchor on `lastReadMessageId`. It tracks the last read message from
+  // ANOTHER user and is not advanced by our own sends, so anchoring on it drops the separator in
+  // front of our own just-sent messages (read → us → new-unread would wrongly separate before "us").
+  // Skipping our own messages (they are always read) places it correctly above the first incoming
+  // unread instead.
+  const showUnreadSeparatorSelector = useCallback(
+    (snapshot: UnreadSnapshotState) => {
+      let showUnreadSeparator: boolean;
+      if (snapshot.firstUnreadMessageId) {
+        // Frozen boundary (channel open / mark-unread): anchor directly to the known first-unread id.
+        showUnreadSeparator = nextMessageId === snapshot.firstUnreadMessageId;
+      } else if (snapshot.unreadCount) {
+        // Live boundary: this row is the last read/own message before the first unread-from-another.
+        const lastReadAtMs = snapshot.lastReadAt?.getTime() ?? 0;
+        const nextIsUnreadFromOther =
+          !!nextMessageId &&
+          !nextMessageIsOwn &&
+          nextMessageCreatedAt !== undefined &&
+          nextMessageCreatedAt > lastReadAtMs;
+        const thisIsUnreadFromOther =
+          !messageIsOwn && !!createdAtTimestamp && createdAtTimestamp > lastReadAtMs;
+        showUnreadSeparator = nextIsUnreadFromOther && !thisIsUnreadFromOther;
+      } else {
+        showUnreadSeparator = false;
+      }
+
+      return {
+        showUnreadSeparator,
+        // Only the boundary row needs the unread count (for its inline indicator). Gating it on
+        // `showUnreadSeparator` keeps this `undefined` for every other row, so the channel-wide
+        // count changing on each mark-read doesn't re-render the whole list.
+        unreadCount: showUnreadSeparator ? snapshot.unreadCount : undefined,
+      };
+    },
+    [createdAtTimestamp, messageIsOwn, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
+  );
+  const { showUnreadSeparator, unreadCount } = useStateStore(
+    channel.messagePaginator.unreadStateSnapshot,
+    showUnreadSeparatorSelector,
+  );
+
   const {
     theme: {
       messageList: { messageContainer },
@@ -74,17 +117,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   if (!channel || channel.disconnected) {
     return null;
   }
-
-  const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-  const isLastReadMessage =
-    last_read_message_id === message.id ||
-    (!unread_messages && createdAtTimestamp === last_read_timestamp);
-
-  const showUnreadSeparator =
-    isLastReadMessage &&
-    !isNewestMessage &&
-    // The `channelUnreadState?.first_unread_message_id` is here for sent messages unread label
-    (!!first_unread_message_id || !!unread_messages);
 
   const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
@@ -125,7 +157,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
       )}
       {showUnreadUnderlay && (
         <View style={styles.unreadUnderlayContainer}>
-          <InlineUnreadIndicator unreadCount={unread_messages} />
+          <InlineUnreadIndicator unreadCount={unreadCount} />
         </View>
       )}
     </View>

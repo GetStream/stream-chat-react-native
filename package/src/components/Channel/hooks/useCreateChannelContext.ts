@@ -4,7 +4,6 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 
 export const useCreateChannelContext = ({
   channel,
-  channelUnreadStateStore,
   disabled,
   enableMessageGroupingByUser,
   enforceUniqueReaction,
@@ -21,7 +20,6 @@ export const useCreateChannelContext = ({
   maximumMessageLimit,
   reloadChannel,
   scrollToFirstUnreadThreshold,
-  setChannelUnreadState,
   setTargetedMessage,
   hasPendingInitialTargetLoad,
   targetedMessage,
@@ -33,7 +31,6 @@ export const useCreateChannelContext = ({
   const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
-      channelUnreadStateStore,
       disabled,
       enableMessageGroupingByUser,
       enforceUniqueReaction,
@@ -50,7 +47,6 @@ export const useCreateChannelContext = ({
       maxTimeBetweenGroupedMessages,
       reloadChannel,
       scrollToFirstUnreadThreshold,
-      setChannelUnreadState,
       setTargetedMessage,
       hasPendingInitialTargetLoad,
       targetedMessage,

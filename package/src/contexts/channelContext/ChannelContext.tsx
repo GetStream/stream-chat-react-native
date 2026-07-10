@@ -3,10 +3,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { Channel } from 'stream-chat';
 
 import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
-import {
-  ChannelUnreadStateStore,
-  ChannelUnreadStateStoreType,
-} from '../../state-store/channel-unread-state';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -66,25 +62,19 @@ export type ChannelContextValue = {
 
   /**
    * Loads channel at first unread message.
-   * @param channelUnreadState - The unread state of the channel
    * @param limit - The number of messages to load around the first unread message
-   * @param setChannelUnreadState - Callback to set the channel unread state
    */
   loadChannelAtFirstUnreadMessage: ({
-    channelUnreadState,
     limit,
     setTargetedMessage,
   }: {
-    channelUnreadState?: ChannelUnreadStateStoreType['channelUnreadState'];
     limit?: number;
-    setChannelUnreadState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
     setTargetedMessage?: (messageId: string) => void;
   }) => Promise<void>;
 
   markRead: (options?: MarkReadFunctionOptions) => void;
   reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
-  setChannelUnreadState: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
   setTargetedMessage: (messageId?: string) => void;
   /**
    * Returns true when Channel is about to load an initial targeted message.
@@ -97,7 +87,6 @@ export type ChannelContextValue = {
    * Its a map of filename and AbortController
    */
   uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
-  channelUnreadStateStore: ChannelUnreadStateStore;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   /**

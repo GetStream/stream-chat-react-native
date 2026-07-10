@@ -5,7 +5,6 @@ import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-ch
 import { v5 as uuidv5 } from 'uuid';
 
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -142,10 +141,6 @@ describe('Thread', () => {
       threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
     );
 
-    let setChannelUnreadState:
-      | React.ContextType<typeof ChannelContext>['setChannelUnreadState']
-      | undefined;
-
     const { getByText, toJSON } = render(
       <ChannelsStateProvider>
         <Chat client={chatClient} i18nInstance={i18nInstance}>
@@ -161,12 +156,7 @@ describe('Thread', () => {
               value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
             >
               <Channel channel={channel} thread={thread} threadList>
-                <ChannelContext.Consumer>
-                  {(c) => {
-                    setChannelUnreadState = c.setChannelUnreadState;
-                    return <Thread />;
-                  }}
-                </ChannelContext.Consumer>
+                <Thread />
               </Channel>
             </ImageGalleryProvider>
           </AttachmentPickerProvider>
@@ -180,7 +170,14 @@ describe('Thread', () => {
       expect(getByText('Message6')).toBeTruthy();
     });
 
-    act(() => setChannelUnreadState!(undefined));
+    act(() => {
+      channel.messagePaginator.unreadStateSnapshot.next({
+        firstUnreadMessageId: null,
+        lastReadAt: null,
+        lastReadMessageId: null,
+        unreadCount: 0,
+      });
+    });
 
     const snapshot = toJSON() as unknown as {
       children: Array<{

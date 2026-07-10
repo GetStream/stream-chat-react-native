@@ -70,6 +70,7 @@ import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
+import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
@@ -195,7 +196,6 @@ type MessageListPropsWithContext = Pick<
   Pick<
     ChannelContextValue,
     | 'channel'
-    | 'channelUnreadStateStore'
     | 'disabled'
     | 'hideStickyDateHeader'
     | 'loadChannelAroundMessage'
@@ -317,7 +317,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     attachmentPickerStore,
     additionalFlatListProps,
     channel,
-    channelUnreadStateStore,
     client,
     closePicker,
     disabled,
@@ -536,7 +535,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+    const channelUnreadState = getChannelUnreadState(channel);
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
@@ -646,7 +645,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
   useEffect(() => {
     const shouldMarkRead = () => {
-      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+      const channelUnreadState = getChannelUnreadState(channel);
       return (
         AppState.currentState === 'active' &&
         !channelUnreadState?.first_unread_message_id &&
@@ -657,9 +656,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     };
 
     const handleEvent = async (event: Event) => {
-      // The unread count is owned by channel.messagePaginator.unreadStateSnapshot (mirrored into
-      // channelUnreadStateStore); we no longer manually bump it here. We only mark the channel read
-      // when the user is caught up at the bottom and the app is foregrounded.
+      // The unread count is owned by channel.messagePaginator.unreadStateSnapshot; we no longer
+      // manually bump it here. We only mark the channel read when the user is caught up at the
+      // bottom and the app is foregrounded.
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       if (mainChannelUpdated && shouldMarkRead()) {
         await markRead();
@@ -671,14 +670,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     return () => {
       listener?.unsubscribe();
     };
-  }, [
-    channel,
-    channelUnreadStateStore,
-    client.user?.id,
-    markRead,
-    scrollToBottomButtonVisible,
-    threadList,
-  ]);
+  }, [channel, client.user?.id, markRead, scrollToBottomButtonVisible, threadList]);
 
   useEffect(() => {
     /**
@@ -1360,10 +1352,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
-          <UnreadMessagesNotification
-            onCloseHandler={onUnreadNotificationClose}
-            channelUnreadStateStore={channelUnreadStateStore}
-          />
+          <UnreadMessagesNotification onCloseHandler={onUnreadNotificationClose} />
         </View>
       ) : null}
       <Animated.View
@@ -1396,7 +1385,6 @@ export const MessageList = (props: MessageListProps) => {
   const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
   const {
     channel,
-    channelUnreadStateStore,
     disabled,
     enableMessageGroupingByUser,
     error,
@@ -1432,7 +1420,6 @@ export const MessageList = (props: MessageListProps) => {
         allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
-        channelUnreadStateStore,
         client,
         closePicker,
         disabled,
