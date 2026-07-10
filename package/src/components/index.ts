@@ -130,6 +130,7 @@ export * from './MessageInput/MessageInputFooterView';
 export * from './MessageInput/MessageInputHeaderView';
 export * from './MessageInput/MessageInputLeadingView';
 export * from './MessageInput/MessageInputTrailingView';
+export * from './MessageInput/components/OutputButtons';
 export * from './MessageInput/components/OutputButtons/SendButton';
 export * from './MessageInput/SendMessageDisallowedIndicator';
 export * from './MessageInput/ShowThreadMessageInChannelButton';
