@@ -651,11 +651,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // A thread supplied via props without its own Thread instance still needs one so the reply
       // list is backed by thread.messagePaginator (mirrors openThread).
       if (channel && threadProps?.id && !threadInstanceFromProps) {
-        const newThreadInstance = new Thread({ channel, client, parentMessage: threadProps });
+        // Mirror stream-chat-react: reuse the ThreadManager's instance when present, else construct
+        // one. Loading + live updates are handled by the Thread component's effects (reload + adopt
+        // into client.threads) — not a direct messagePaginator.reload() here.
+        const newThreadInstance =
+          client.threads.threadsById[threadProps.id] ??
+          new Thread({ channel, client, parentMessage: threadProps });
         setThreadInstance(newThreadInstance);
-        newThreadInstance.messagePaginator
-          .reload()
-          .catch((err) => console.warn('Thread reply load failed with error:', err));
       }
     } else {
       setThread(null);
@@ -915,15 +917,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    */
   const openThread: ThreadContextValue['openThread'] = useCallback(
     (message) => {
-      // Construct a stream-chat Thread instance for the opened parent message; its
-      // messagePaginator drives the reply list + optimistic reply ops.
-      const newThreadInstance = new Thread({ channel, client, parentMessage: message });
+      // Mirror stream-chat-react: reuse the ThreadManager's instance when it already exists
+      // (it's registered + self-updating), otherwise construct one. The reply list is loaded by
+      // the Thread component (reload for metadata + loadMoreThread for the first page) and kept
+      // live by the manager once the instance is adopted — so we do NOT reload the paginator here.
+      const newThreadInstance =
+        client.threads.threadsById[message.id] ??
+        new Thread({ channel, client, parentMessage: message });
       setThread(message);
       setThreadInstance(newThreadInstance);
-      // Seed the reply paginator so replies render on open.
-      newThreadInstance.messagePaginator
-        .reload()
-        .catch((err) => console.warn('Thread reply load failed with error:', err));
       if (channel.initialized) {
         // Mark the thread read on open. A freshly-constructed minimal thread has ownUnreadCount 0,
         // so threadInstance.markRead() would no-op; channel.markRead({thread_id}) marks it reliably

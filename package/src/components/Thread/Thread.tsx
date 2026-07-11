@@ -1,11 +1,15 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
+import type { LocalMessage, Thread as StreamThread } from 'stream-chat';
+
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
+
+import { useStateStore } from '../../hooks/useStateStore';
 
 import type { MessageComposerProps } from '../MessageInput/MessageComposer';
 import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
@@ -62,8 +66,29 @@ type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
     shouldUseFlashList?: boolean;
   };
 
+type ThreadReplyPaginatorState = {
+  isLoading: boolean;
+  items?: LocalMessage[];
+  lastQueryError?: Error;
+};
+
+const paginatorSelector = (state: ThreadReplyPaginatorState) => ({
+  isLoading: state.isLoading,
+  items: state.items,
+  lastQueryError: state.lastQueryError,
+});
+
+const threadStaleSelector = (state: { isStateStale: boolean }) => ({
+  isStateStale: state.isStateStale,
+});
+
+const threadManagerSelector = (state: { threads: StreamThread[] }) => ({
+  threads: state.threads,
+});
+
 const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const {
+    client,
     additionalMessageComposerProps,
     additionalMessageListProps,
     additionalMessageFlashListProps,
@@ -81,6 +106,44 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   } = props;
   const { MessageList, ThreadMessageComposer: MessageComposer } = useComponentsContext();
 
+  const { isLoading, items, lastQueryError } =
+    useStateStore(threadInstance?.messagePaginator?.state, paginatorSelector) ?? {};
+  const { isStateStale } = useStateStore(threadInstance?.state, threadStaleSelector) ?? {};
+  const { threads } = useStateStore(client.threads.state, threadManagerSelector) ?? {
+    threads: client.threads.state.getLatestValue().threads,
+  };
+  const isThreadManaged = threadInstance?.id
+    ? threads.some((managedThread) => managedThread.id === threadInstance.id)
+    : false;
+
+  // Mirror stream-chat-react: an unmanaged thread whose reply paginator hasn't loaded yet gets a
+  // metadata reload (parent message, read state, participants) — not a paginator reload.
+  useEffect(() => {
+    if (!threadInstance || isThreadManaged) return;
+    if (items !== undefined || isLoading) return;
+    void threadInstance.reload().catch((err) => console.warn('Thread reload failed', err));
+  }, [isThreadManaged, threadInstance, isLoading, items]);
+
+  // Reload when the thread's state goes stale (e.g. user stopped then resumed watching the channel).
+  useEffect(() => {
+    if (threadInstance && isStateStale) {
+      void threadInstance.reload().catch((err) => console.warn('Thread reload failed', err));
+    }
+  }, [isStateStale, threadInstance]);
+
+  // Once the reply paginator has loaded, adopt the instance into the ThreadManager. The manager
+  // registers the thread's subscriptions on adoption, which keeps the reply list live (incoming
+  // replies, read state, thread.updated) — mirrors stream-chat-react.
+  useEffect(() => {
+    if (!threadInstance || isThreadManaged) return;
+    if (isLoading || lastQueryError || items === undefined) return;
+    client.threads.state.next((current) =>
+      current.threads.some((managedThread) => managedThread.id === threadInstance.id)
+        ? current
+        : { ...current, threads: [threadInstance, ...current.threads] },
+    );
+  }, [client.threads.state, isThreadManaged, threadInstance, isLoading, items, lastQueryError]);
+
   useEffect(() => {
     if (threadInstance?.activate) {
       threadInstance.activate();
@@ -89,7 +152,10 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
       await loadMoreThread();
     };
 
-    if (thread?.id && thread.reply_count) {
+    // Load the reply paginator's first page even for a reply-less thread (returns []), so `items`
+    // becomes defined and the adopt effect can register the thread with the manager. Mirrors
+    // stream-chat-react, whose MessageList always loads the thread paginator.
+    if (thread?.id) {
       loadMoreThreadAsync();
     }
 
