@@ -5,7 +5,6 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import type { CircleProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 import { primitives, lightSemantics, darkSemantics } from '../../../theme';
@@ -139,11 +138,9 @@ export type Theme = {
     speedChangeButtonText: TextStyle;
   };
   avatar: {
-    BASE_AVATAR_SIZE: number;
+    border: ViewStyle;
     container: ViewStyle;
     image: ImageStyle;
-    presenceIndicator: CircleProps;
-    presenceIndicatorContainer: ViewStyle;
   };
   avatarStack: {
     userAvatarWrapper: ViewStyle;
@@ -1256,20 +1253,9 @@ export const defaultTheme: Theme = {
     speedChangeButtonText: {},
   },
   avatar: {
-    BASE_AVATAR_SIZE,
+    border: {},
     container: {},
-    image: {
-      borderRadius: 16,
-      height: 32,
-      width: 32,
-    },
-    presenceIndicator: {
-      cx: 6,
-      cy: 6,
-      r: 5,
-      strokeWidth: 2,
-    },
-    presenceIndicatorContainer: {},
+    image: {},
   },
   avatarStack: {
     userAvatarWrapper: {},

@@ -85,7 +85,7 @@ export const Avatar = (props: AvatarProps) => {
 
 const useStyles = () => {
   const {
-    theme: { semantics },
+    theme: { avatar, semantics },
   } = useTheme();
   const { borderCoreOpacitySubtle } = semantics;
   return useMemo(
@@ -94,15 +94,19 @@ const useStyles = () => {
         border: {
           borderColor: borderCoreOpacitySubtle,
           borderWidth: 1,
+          ...avatar.border,
         },
         container: {
           alignItems: 'center',
           borderRadius: primitives.radiusMax,
           justifyContent: 'center',
           overflow: 'hidden',
+          ...avatar.container,
         },
-        image: {},
+        image: {
+          ...avatar.image,
+        },
       }),
-    [borderCoreOpacitySubtle],
+    [avatar.border, avatar.container, avatar.image, borderCoreOpacitySubtle],
   );
 };
