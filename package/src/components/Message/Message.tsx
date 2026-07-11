@@ -22,9 +22,9 @@ import type {
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
-import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
+import { useMessageDeliveredToCount } from './hooks/useMessageDeliveredToCount';
 import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
-import { useMessageReadData } from './hooks/useMessageReadData';
+import { useMessageReadCount } from './hooks/useMessageReadCount';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
 import { MessageOverlayWrapper } from './MessageOverlayWrapper';
@@ -1164,8 +1164,8 @@ export const Message = (props: MessageProps) => {
   const messageOperations = useMessageOperations();
   const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
-  const readBy = useMessageReadData({ message });
-  const deliveredTo = useMessageDeliveredData({ message });
+  const readByCount = useMessageReadCount({ message });
+  const deliveredToCount = useMessageDeliveredToCount({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
@@ -1175,13 +1175,13 @@ export const Message = (props: MessageProps) => {
       {...{
         channel,
         chatContext,
-        deliveredToCount: deliveredTo.length,
+        deliveredToCount,
         dismissKeyboard,
         enforceUniqueReaction,
         members,
         messagesContext,
         openThread,
-        readBy: readBy.length,
+        readBy: readByCount,
         setEditingState,
         setQuotedMessage,
         t,
