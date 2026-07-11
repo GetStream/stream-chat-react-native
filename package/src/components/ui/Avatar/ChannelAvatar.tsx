@@ -61,7 +61,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
 
   const members = useChannelMembersState(channel);
   const usersForGroup = useMemo(
-    () => Object.values(members).map((member) => member.user as UserResponse),
+    () => Object.values(members ?? {}).map((member) => member.user as UserResponse),
     [members],
   );
   const usersWithoutSelf = useMemo(

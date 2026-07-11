@@ -141,6 +141,15 @@ export const reactionData: ReactionData[] = [
  */
 const scrollToFirstUnreadThreshold = 0;
 
+/**
+ * Initial message-list page size. stream-chat's `MessagePaginator` defaults to 100
+ * (`DEFAULT_CHANNEL_MESSAGE_LIST_PAGE_SIZE`). On native that makes the initial load — and therefore
+ * every subsequent message-list commit, whose cost scales with the number of loaded messages — several
+ * times heavier than necessary. We keep it to a screenful-plus-buffer; older messages load on demand
+ * via pagination. Mirrors the SDK's historical initial-load size.
+ */
+const DEFAULT_MESSAGE_LIST_PAGE_SIZE = 25;
+
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   Partial<
     Pick<
@@ -573,6 +582,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         return;
       }
       let errored = false;
+
+      // Keep the message-list page light: the list's per-update commit cost scales with the number
+      // of loaded messages, and the paginator otherwise defaults to a 100-message page.
+      channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
 
       if ((!channel.initialized || !channel.state.isUpToDate) && initializeOnMount) {
         try {
