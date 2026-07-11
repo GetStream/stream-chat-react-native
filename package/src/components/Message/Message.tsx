@@ -859,9 +859,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     groupStyles?.[0] === 'bottom'
       ? groupStyles[0]
       : undefined;
+
+  const lastPaginatorMessageId = channel?.messagePaginator?.state
+    .getLatestValue()
+    .items?.slice(-1)[0]?.id;
   const isVeryLastBubble =
-    messagesContext.enableMessageGroupingByUser &&
-    channel?.state.messages[channel.state.messages.length - 1]?.id === message.id;
+    messagesContext.enableMessageGroupingByUser && lastPaginatorMessageId === message.id;
   const styles = useStyles({
     groupKey,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
