@@ -964,6 +964,8 @@ export type Theme = {
     reactionListItemWrapper: {
       wrapper: ViewStyle;
       container: ViewStyle;
+      containerSelected: ViewStyle;
+      containerPressed: ViewStyle;
     };
     reactionListTop: {
       container: ViewStyle;
@@ -2048,6 +2050,8 @@ export const defaultTheme: Theme = {
     reactionListItemWrapper: {
       wrapper: {},
       container: {},
+      containerSelected: {},
+      containerPressed: {},
     },
     reactionListTop: {
       container: {},
