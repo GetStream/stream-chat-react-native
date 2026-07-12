@@ -188,49 +188,22 @@ describe('Channel', () => {
     await waitFor(() => expect(channelOnSpy).toHaveBeenCalledWith(expect.any(Function)));
   });
 
-  it('should be able to open threads', async () => {
+  it('exposes a thread provided via props through the thread context', async () => {
     const threadMessage = messages[0];
     const hasThread = jest.fn();
-    // this renders Channel, calls openThread from a child context consumer with a message,
-    // and then calls hasThread with the thread id if it was set.
-    const { rerender } = renderComponent(
-      { channel },
+    // Threads are now fully prop-driven: passing `thread` to Channel exposes it through
+    // ThreadContext synchronously (no openThread state setter).
+    renderComponent(
+      { channel, thread: threadMessage, threadList: true },
       (ctx) => {
-        const { openThread, thread } = ctx as {
-          openThread: (m: unknown) => void;
-          thread: { id: string } | null;
-        };
-        if (!thread) {
-          openThread(threadMessage);
-        } else {
+        const { thread } = ctx as { thread: { id: string } | null };
+        if (thread) {
           hasThread(thread.id);
         }
       },
       ThreadContext as React.Context<unknown>,
     );
 
-    rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <CallbackEffectWithContext
-              callback={(ctx) => {
-                const { openThread, thread } = ctx as {
-                  openThread: (m: unknown) => void;
-                  thread: { id: string } | null;
-                };
-                if (!thread) {
-                  openThread(threadMessage);
-                } else {
-                  hasThread(thread.id);
-                }
-              }}
-              context={ThreadContext as React.Context<unknown>}
-            />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
-    );
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
 
@@ -360,7 +333,6 @@ describe('Channel', () => {
       let context: ThreadContextValue | undefined;
 
       const mockContext = {
-        openThread: () => {},
         thread: {},
         threadHasMore: true,
         threadLoadingMore: false,
@@ -379,7 +351,6 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context!.openThread).toBeInstanceOf(Function);
         expect(context!.thread).toBeInstanceOf(Object);
         expect(context!.threadHasMore).toBe(true);
         expect(context!.threadLoadingMore).toBe(false);

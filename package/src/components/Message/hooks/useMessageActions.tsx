@@ -14,7 +14,6 @@ import { MessageComposerAPIContextValue } from '../../../contexts/messageCompose
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks';
 import {
@@ -69,7 +68,6 @@ export type MessageActionsHookProps = Pick<
   > &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'openThread'> &
   Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
     onThreadSelect?: (message: LocalMessage) => void;
@@ -97,7 +95,6 @@ export const useMessageActions = ({
   handleBlockUser,
   message,
   onThreadSelect,
-  openThread,
   retrySendMessage,
   selectReaction,
   sendReaction,
@@ -142,9 +139,6 @@ export const useMessageActions = ({
   const onOpenThread = useStableCallback(() => {
     if (onThreadSelect) {
       onThreadSelect(message);
-    }
-    if (openThread) {
-      openThread(message);
     }
   });
 

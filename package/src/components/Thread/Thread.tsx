@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import type { LocalMessage, Thread as StreamThread } from 'stream-chat';
 
@@ -28,12 +28,7 @@ try {
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
   Pick<
     ThreadContextValue,
-    | 'closeThread'
-    | 'loadMoreThread'
-    | 'parentMessagePreventPress'
-    | 'reloadThread'
-    | 'thread'
-    | 'threadInstance'
+    'loadMoreThread' | 'parentMessagePreventPress' | 'reloadThread' | 'thread' | 'threadInstance'
   > & {
     /**
      * Additional props for underlying MessageComposer component.
@@ -93,8 +88,6 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     additionalMessageListProps,
     additionalMessageFlashListProps,
     autoFocus = false,
-    closeThread,
-    closeThreadOnDismount = true,
     disabled,
     loadMoreThread,
     onThreadDismount,
@@ -144,34 +137,55 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     );
   }, [client.threads.state, isThreadManaged, threadInstance, isLoading, items, lastQueryError]);
 
+  // Activate the thread instance once it is available. `threadInstance` can resolve asynchronously
+  // (Channel adopts it from the ThreadManager after this component mounts), so keying on it — rather
+  // than running on mount alone — ensures activation isn't missed when the instance arrives late.
   useEffect(() => {
-    if (threadInstance?.activate) {
-      threadInstance.activate();
-    }
-    const loadMoreThreadAsync = async () => {
-      await loadMoreThread();
-    };
+    threadInstance?.activate?.();
+  }, [threadInstance]);
 
-    // Load the reply paginator's first page even for a reply-less thread (returns []), so `items`
-    // becomes defined and the adopt effect can register the thread with the manager. Mirrors
-    // stream-chat-react, whose MessageList always loads the thread paginator.
-    if (thread?.id) {
-      loadMoreThreadAsync();
+  // Mark the thread read on open. Mirrors the pre-refactor openThread behavior: channel.markRead with
+  // a thread_id marks reliably even when the thread instance's own unread count is 0 (so it can't
+  // rely on the LLC's active-thread auto-read); a reply-less parent has no server-side thread yet and
+  // rejects with "thread not found", which we swallow.
+  useEffect(() => {
+    const channel = threadInstance?.channel;
+    if (!threadInstance?.id || !channel?.initialized) {
+      return;
     }
+    channel
+      .markRead({ thread_id: threadInstance.id })
+      .catch((err) => console.warn('Marking thread as read on open failed with error:', err));
+  }, [threadInstance]);
 
-    return () => {
-      if (threadInstance?.deactivate) {
-        threadInstance.deactivate();
-      }
-      if (closeThreadOnDismount) {
-        closeThread();
-      }
+  // Load the first reply page, but only when the paginator hasn't already been seeded from the
+  // thread's `latest_replies` (managed/queried threads seed on construction) or loaded/loading. A
+  // seeded paginator already holds its first page, so we skip the fetch and let scroll-up load older
+  // replies — mirroring stream-chat-react, whose thread list has no mount-time fetch. Reactive on
+  // `threadInstance`/`items` because the instance can arrive after mount; the `items === undefined`
+  // guard makes this fire at most once (an unseeded thread fetches; the fetch defines `items`, which
+  // also lets the adopt effect register it with the manager).
+  useEffect(() => {
+    if (!threadInstance || isLoading || items !== undefined) {
+      return;
+    }
+    void loadMoreThread();
+  }, [threadInstance, items, isLoading, loadMoreThread]);
+
+  // Tear down on unmount. Use a ref so we deactivate whichever instance is current at unmount, not
+  // the (possibly null) one captured when this effect first ran.
+  const threadInstanceRef = useRef(threadInstance);
+  threadInstanceRef.current = threadInstance;
+  useEffect(
+    () => () => {
+      threadInstanceRef.current?.deactivate?.();
       if (onThreadDismount) {
         onThreadDismount();
       }
-    };
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    [],
+  );
 
   const MemoizedThreadFooterComponent = useCallback(
     () => <ThreadFooterComponent parentMessagePreventPress={parentMessagePreventPress} />,
@@ -232,7 +246,7 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();
   const { threadList } = useChannelContext();
-  const { closeThread, loadMoreThread, reloadThread, thread, threadInstance } = useThreadContext();
+  const { loadMoreThread, reloadThread, thread, threadInstance } = useThreadContext();
 
   if (thread?.id && !threadList) {
     throw new Error(
@@ -244,7 +258,6 @@ export const Thread = (props: ThreadProps) => {
     <ThreadWithContext
       {...{
         client,
-        closeThread,
         loadMoreThread,
         reloadThread,
         thread,

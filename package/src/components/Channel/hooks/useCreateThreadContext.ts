@@ -22,9 +22,7 @@ const selector = (state: ThreadMessagePaginatorState) => ({
 export const useCreateThreadContext = ({
   allowThreadMessagesInChannel,
   onAlsoSentToChannelHeaderPress,
-  closeThread,
   loadMoreThread,
-  openThread,
   reloadThread,
   setThreadLoadingMore,
   thread,
@@ -52,9 +50,7 @@ export const useCreateThreadContext = ({
   return {
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    closeThread,
     loadMoreThread,
-    openThread,
     reloadThread,
     setThreadLoadingMore,
     thread,

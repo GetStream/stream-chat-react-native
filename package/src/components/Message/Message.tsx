@@ -57,7 +57,6 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -247,7 +246,6 @@ export type MessagePropsWithContext = Pick<
     | 'selectReaction'
     | 'supportedReactions'
   > &
-  Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
     chatContext: ChatContextValue;
     messagesContext: MessagesContextValue;
@@ -314,7 +312,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
     onThreadSelect,
-    openThread,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -563,9 +560,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     if (onThreadSelect) {
       onThreadSelect(message);
     }
-    if (openThread) {
-      openThread(message);
-    }
   };
 
   const { existingReactions, hasReactions } = useProcessReactions({
@@ -644,7 +638,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleBlockUser,
     message,
     onThreadSelect,
-    openThread,
     removeMessage,
     retrySendMessage,
     selectReaction,
@@ -1162,7 +1155,6 @@ export const Message = (props: MessageProps) => {
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
   const messageOperations = useMessageOperations();
-  const { openThread } = useThreadContext();
   const { t } = useTranslationContext();
   const readByCount = useMessageReadCount({ message });
   const deliveredToCount = useMessageDeliveredToCount({ message });
@@ -1180,7 +1172,6 @@ export const Message = (props: MessageProps) => {
         enforceUniqueReaction,
         members,
         messagesContext,
-        openThread,
         readBy: readByCount,
         setEditingState,
         setQuotedMessage,

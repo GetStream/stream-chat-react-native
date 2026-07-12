@@ -478,10 +478,25 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const lastReadRef = useRef<Date | undefined>(undefined);
-  const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
-  const [threadInstance, setThreadInstance] = useState<Thread | null>(
-    threadInstanceFromProps ?? null,
-  );
+  // The active thread is fully prop-driven: derive it synchronously during render so the reply
+  // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
+  // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
+  const thread = threadProps ?? null;
+  const threadInstance = useMemo(() => {
+    if (threadInstanceFromProps) {
+      return threadInstanceFromProps;
+    }
+    if (!threadProps?.id || !channel) {
+      return null;
+    }
+    return (
+      client.threads.threadsById[threadProps.id] ??
+      new Thread({ channel, client, parentMessage: threadProps })
+    );
+    // Keyed on threadProps.id (stable) rather than the threadProps object so an unmanaged thread's
+    // constructed instance isn't recreated (losing paginator state) on unrelated re-renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [threadInstanceFromProps, threadProps?.id, channel, client]);
   const [threadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
@@ -642,28 +657,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     return unsubscribe;
   }, [channel?.cid, client]);
-
-  const threadPropsExists = !!threadProps;
-
-  useEffect(() => {
-    if (threadProps && shouldSyncChannel) {
-      setThread(threadProps);
-      // A thread supplied via props without its own Thread instance still needs one so the reply
-      // list is backed by thread.messagePaginator (mirrors openThread).
-      if (channel && threadProps?.id && !threadInstanceFromProps) {
-        // Mirror stream-chat-react: reuse the ThreadManager's instance when present, else construct
-        // one. Loading + live updates are handled by the Thread component's effects (reload + adopt
-        // into client.threads) — not a direct messagePaginator.reload() here.
-        const newThreadInstance =
-          client.threads.threadsById[threadProps.id] ??
-          new Thread({ channel, client, parentMessage: threadProps });
-        setThreadInstance(newThreadInstance);
-      }
-    } else {
-      setThread(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
     const channelData = channel.data;
@@ -915,36 +908,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * THREAD METHODS
    */
-  const openThread: ThreadContextValue['openThread'] = useCallback(
-    (message) => {
-      // Mirror stream-chat-react: reuse the ThreadManager's instance when it already exists
-      // (it's registered + self-updating), otherwise construct one. The reply list is loaded by
-      // the Thread component (reload for metadata + loadMoreThread for the first page) and kept
-      // live by the manager once the instance is adopted — so we do NOT reload the paginator here.
-      const newThreadInstance =
-        client.threads.threadsById[message.id] ??
-        new Thread({ channel, client, parentMessage: message });
-      setThread(message);
-      setThreadInstance(newThreadInstance);
-      if (channel.initialized) {
-        // Mark the thread read on open. A freshly-constructed minimal thread has ownUnreadCount 0,
-        // so threadInstance.markRead() would no-op; channel.markRead({thread_id}) marks it reliably
-        // (and still delegates to the messageDeliveryReporter). Opening a reply-less parent has no
-        // server-side thread yet, so this rejects with "thread not found" — a benign no-op we swallow
-        // (otherwise it surfaces as an unhandled promise rejection / dev redbox).
-        channel
-          .markRead({ thread_id: message.id })
-          .catch((err) => console.warn('Marking thread as read on open failed with error:', err));
-      }
-    },
-    [channel, client],
-  );
-
-  const closeThread: ThreadContextValue['closeThread'] = useCallback(() => {
-    setThread(null);
-    setThreadInstance(null);
-  }, []);
-
   const loadMoreThread: ThreadContextValue['loadMoreThread'] = useStableCallback(async () => {
     // Older replies are paginated via the thread's messagePaginator, which backs the reply list.
     // (useCreateThreadContext also wires loadMoreThread to the paginator when a thread instance
@@ -1116,9 +1079,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    closeThread,
     loadMoreThread,
-    openThread,
     reloadThread,
     setThreadLoadingMore,
     thread,

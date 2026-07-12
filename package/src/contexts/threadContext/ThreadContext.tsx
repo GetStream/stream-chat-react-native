@@ -14,9 +14,7 @@ export type AlsoSentToChannelHeaderPressPayload = {
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
-  closeThread: () => void;
   loadMoreThread: () => Promise<void>;
-  openThread: (message: LocalMessage) => void;
   reloadThread: () => void;
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
   thread: LocalMessage | null;
