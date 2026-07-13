@@ -659,8 +659,14 @@ export const MessageComposer = (props: MessageComposerProps) => {
   /**
    * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
    * Enable it in frozen mode, if it the input has editing state.
+   *
    */
-  if (!ownCapabilities.sendMessage && !editing && SendMessageDisallowedIndicator) {
+  if (
+    channel.initialized &&
+    !ownCapabilities.sendMessage &&
+    !editing &&
+    SendMessageDisallowedIndicator
+  ) {
     return <SendMessageDisallowedIndicator />;
   }
 

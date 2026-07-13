@@ -746,16 +746,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
         await markRead();
         channel.state.setIsUpToDate(true);
-      } else {
-        await reloadThread();
+      } else if (threadInstance) {
+        await threadInstance.messagePaginator.refresh();
 
         const currentThreadMessages =
-          threadInstance?.messagePaginator?.state.getLatestValue().items ?? [];
+          threadInstance.messagePaginator.state.getLatestValue().items ?? [];
         const failedThreadMessages = getRecoverableFailedMessages(currentThreadMessages);
         if (failedThreadMessages.length) {
           channel.state.addMessagesSorted(failedThreadMessages);
           failedThreadMessages.forEach((m) =>
-            threadInstance?.messagePaginator?.ingestItem(channel.state.formatMessage(m)),
+            threadInstance.messagePaginator.ingestItem(channel.state.formatMessage(m)),
           );
         }
       }
