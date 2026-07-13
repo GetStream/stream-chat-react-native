@@ -11,7 +11,6 @@ import { UserAvatar, UserAvatarProps } from './UserAvatar';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { PeopleIcon } from '../../../icons/users';
-import { primitives } from '../../../theme';
 import { BadgeCount, BadgeCountProps, OnlineIndicator, OnlineIndicatorProps } from '../Badge';
 
 export type AvatarGroupProps = {
@@ -217,7 +216,6 @@ const useUserAvatarGroupStyles = () => {
         userAvatarWrapper: {
           borderWidth: 2,
           borderColor: semantics.borderCoreInverse,
-          borderRadius: primitives.radiusMax,
         },
         onlineIndicatorWrapper: {
           position: 'absolute',

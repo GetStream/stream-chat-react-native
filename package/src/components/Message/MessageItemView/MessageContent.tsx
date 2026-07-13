@@ -190,7 +190,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     let computedBottomRightRadius = components.messageBubbleRadiusGroupBottom;
     if (isBottomOrSingle) {
       // add relevant sharp corner (the "tail")
-      if (isMyMessage) {
+      if (alignment === 'right') {
         computedBottomRightRadius = components.messageBubbleRadiusTail;
       } else {
         computedBottomLeftRadius = components.messageBubbleRadiusTail;
@@ -208,6 +208,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
     return style;
   }, [
+    alignment,
     backgroundColor,
     borderBottomLeftRadius,
     borderBottomRightRadius,
@@ -215,7 +216,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     borderTopLeftRadius,
     borderTopRightRadius,
     groupStyles,
-    isMyMessage,
   ]);
 
   const { setNativeScrollability } = useMessageListItemContext();
