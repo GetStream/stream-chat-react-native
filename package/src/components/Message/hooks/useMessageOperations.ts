@@ -49,10 +49,11 @@ export const useMessageOperations = (): MessageOperations => {
     // replies (the reply list is sourced solely from thread.messagePaginator).
     channel.state.addMessageSorted(updatedMessage, true);
     const formatted = channel.state.formatMessage(updatedMessage);
+    if (!updatedMessage.parent_id || updatedMessage.show_in_channel) {
+      channel.messagePaginator.ingestItem(formatted);
+    }
     if (updatedMessage.parent_id) {
       threadInstance?.messagePaginator?.ingestItem(formatted);
-    } else {
-      channel.messagePaginator.ingestItem(formatted);
     }
   });
 
@@ -62,10 +63,13 @@ export const useMessageOperations = (): MessageOperations => {
   const removeMessage: MessageOperations['removeMessage'] = useStableCallback(async (message) => {
     if (channel) {
       channel.state.removeMessage(message);
-      const paginator = message.parent_id
-        ? threadInstance?.messagePaginator
-        : channel.messagePaginator;
-      paginator?.removeItem({ id: message.id });
+      // removeItem is a no-op when the item isn't in that paginator, so removing from the channel
+      // unconditionally is safe (a hidden reply simply isn't there) and covers replies shown in
+      // the channel; replies additionally live in the open thread's paginator.
+      channel.messagePaginator.removeItem({ id: message.id });
+      if (message.parent_id) {
+        threadInstance?.messagePaginator?.removeItem({ id: message.id });
+      }
     }
 
     if (client.offlineDb) {
@@ -104,10 +108,13 @@ export const useMessageOperations = (): MessageOperations => {
 
         const reactedMessage = channel.state.findMessage(messageId);
         if (reactedMessage) {
-          (reactedMessage.parent_id
-            ? threadInstance?.messagePaginator
-            : channel.messagePaginator
-          )?.ingestItem(channel.state.formatMessage(reactedMessage));
+          const formatted = channel.state.formatMessage(reactedMessage);
+          if (!reactedMessage.parent_id || reactedMessage.show_in_channel) {
+            channel.messagePaginator.ingestItem(formatted);
+          }
+          if (reactedMessage.parent_id) {
+            threadInstance?.messagePaginator?.ingestItem(formatted);
+          }
         }
       }
 
@@ -137,10 +144,13 @@ export const useMessageOperations = (): MessageOperations => {
 
         const reactedMessage = channel.state.findMessage(messageId);
         if (reactedMessage) {
-          (reactedMessage.parent_id
-            ? threadInstance?.messagePaginator
-            : channel.messagePaginator
-          )?.ingestItem(channel.state.formatMessage(reactedMessage));
+          const formatted = channel.state.formatMessage(reactedMessage);
+          if (!reactedMessage.parent_id || reactedMessage.show_in_channel) {
+            channel.messagePaginator.ingestItem(formatted);
+          }
+          if (reactedMessage.parent_id) {
+            threadInstance?.messagePaginator?.ingestItem(formatted);
+          }
         }
       }
 
