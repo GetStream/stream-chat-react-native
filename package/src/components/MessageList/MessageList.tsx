@@ -737,7 +737,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       return;
     }
 
-    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+    const notLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
         channel.state.latestMessages[channel.state.latestMessages.length - 1];
@@ -979,7 +979,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const offset = event.nativeEvent.contentOffset.y;
     const isScrollAtBottom = offset <= messageInputHeight;
 
-    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+    const notLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
 
     const showScrollToBottomButton =
       messageListHasMessages && ((!threadList && notLatestSet) || !isScrollAtBottom);
@@ -998,7 +998,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   });
 
   const goToNewMessages = useStableCallback(async () => {
-    const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
+    const isNotLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
 
     if (isNotLatestSet) {
       resetPaginationTrackersRef.current();
