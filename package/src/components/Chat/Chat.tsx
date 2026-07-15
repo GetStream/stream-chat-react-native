@@ -51,7 +51,7 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * This only controls whether the native adapter gets installed by this Chat instance.
      * It does not uninstall an adapter that was already installed on the client.
      *
-     * @default true
+     * @default false
      */
     useNativeMultipartUpload?: boolean;
     /**
