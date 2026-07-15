@@ -725,10 +725,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         .map(parseMessage);
 
     try {
+      let watchResponse;
       if (channelMessagesState?.messages) {
-        await channel?.watch({
+        watchResponse = await channel?.watch({
           messages: {
-            // Do we want to reduce this to the default as well ?
             limit: channelMessagesState.messages.length,
           },
         });
@@ -737,17 +737,25 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
       if (!thread) {
         const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
-        await channel.messagePaginator.reload();
+        const newestWindow = (watchResponse?.messages ?? []).map((message) =>
+          channel.state.formatMessage(message),
+        );
+        channel.messagePaginator.mergeNewestPage(newestWindow);
         if (failedMessages?.length) {
           channel.state.addMessagesSorted(failedMessages);
           failedMessages.forEach((m) =>
             channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
           );
         }
-        await markRead();
-        channel.state.setIsUpToDate(true);
+        // The merge no-ops if the user had jumped away from the head; only claim up-to-date / mark
+        // read when it actually left us at the newest, otherwise keep their position untouched.
+        const atLatest = !channel.messagePaginator.hasMoreHead;
+        if (atLatest) {
+          await markRead();
+        }
+        channel.state.setIsUpToDate(atLatest);
       } else if (threadInstance) {
-        await threadInstance.messagePaginator.refresh();
+        await threadInstance.reload();
 
         const currentThreadMessages =
           threadInstance.messagePaginator.state.getLatestValue().items ?? [];
