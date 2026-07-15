@@ -5,11 +5,10 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { ArrowUp } from '../../icons/arrow-up';
-import { NewClose } from '../../icons/xmark';
 import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { primitives } from '../../theme';
 import { Button } from '../ui';
@@ -39,6 +38,7 @@ const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
   const { onCloseHandler, onPressHandler, unreadCount, channelUnreadStateStore } = props;
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { loadChannelAtFirstUnreadMessage, markRead, setChannelUnreadState, setTargetedMessage } =
     useChannelContext();
   const { unread_messages } = useStateStore(
@@ -76,7 +76,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
         <Button
           variant='secondary'
           type='ghost'
-          LeadingIcon={ArrowUp}
+          LeadingIcon={icons.ArrowUp}
           label={count ? t('{{count}} unread', { count }) : t('Unread Messages')}
           onPress={handleOnPress}
           size='md'
@@ -88,7 +88,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           variant='secondary'
           type='ghost'
           iconOnly
-          LeadingIcon={NewClose}
+          LeadingIcon={icons.NewClose}
           onPress={handleClose}
           size='md'
         />

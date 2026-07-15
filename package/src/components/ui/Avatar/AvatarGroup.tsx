@@ -9,8 +9,8 @@ import { iconSizes } from './constants';
 
 import { UserAvatar, UserAvatarProps } from './UserAvatar';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { PeopleIcon } from '../../../icons/users';
 import { BadgeCount, BadgeCountProps, OnlineIndicator, OnlineIndicatorProps } from '../Badge';
 
 export type AvatarGroupProps = {
@@ -84,6 +84,7 @@ const badgeCountSize: Record<AvatarGroupProps['size'], BadgeCountProps['size']> 
 
 export const AvatarGroup = (props: AvatarGroupProps) => {
   const { size, items = [] } = props;
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -99,7 +100,7 @@ export const AvatarGroup = (props: AvatarGroupProps) => {
           backgroundColor={semantics.avatarBgPlaceholder}
           showBorder={true}
           placeholder={
-            <PeopleIcon
+            <icons.PeopleIcon
               stroke={semantics.avatarTextPlaceholder}
               height={iconSizes[avatarSize[size]]}
               width={iconSizes[avatarSize[size]]}
@@ -109,7 +110,7 @@ export const AvatarGroup = (props: AvatarGroupProps) => {
         />,
       ]);
     },
-    [avatarGroupStyles.userAvatarWrapper, semantics, size],
+    [avatarGroupStyles.userAvatarWrapper, icons, semantics, size],
   );
 
   const buildForMore = useCallback(

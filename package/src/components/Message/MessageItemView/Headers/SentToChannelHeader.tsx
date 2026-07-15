@@ -8,12 +8,12 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
-import { ArrowUpRight } from '../../../../icons/arrow-up-right';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
@@ -34,10 +34,11 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
   const { threadList, onPress, showViewText } = props;
   const { t } = useTranslationContext();
   const styles = useStyles();
+  const { icons } = useComponentsContext();
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <ArrowUpRight height={16} width={16} stroke={styles.link.color} />
+      <icons.ArrowUpRight height={16} width={16} stroke={styles.link.color} />
       <Text style={styles.label}>
         {threadList ? t('Also sent in channel') : t('Replied to a thread')}
       </Text>

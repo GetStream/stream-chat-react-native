@@ -18,7 +18,6 @@ import {
 } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 
-import { Check } from '../../../icons';
 import { primitives } from '../../../theme';
 import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
@@ -165,6 +164,7 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
 };
 
 export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
+  const { icons } = useComponentsContext();
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
   const ownCapabilities = useOwnCapabilitiesContext();
@@ -219,7 +219,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         voteButtonContainer,
       ]}
     >
-      {hasVote ? <Check height={20} stroke={semantics.textOnAccent} width={20} /> : null}
+      {hasVote ? <icons.Check height={20} stroke={semantics.textOnAccent} width={20} /> : null}
     </Pressable>
   ) : null;
 };

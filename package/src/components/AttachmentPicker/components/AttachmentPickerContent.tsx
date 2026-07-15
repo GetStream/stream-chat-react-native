@@ -19,9 +19,9 @@ import {
   useMessageInputContext,
   useTranslationContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
-import { Camera, FilePickerIcon, PollThumbnail, VideoIcon } from '../../../icons';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
 
@@ -149,6 +149,7 @@ export const AttachmentCommandPicker = () => {
 
 export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { height } = props;
   const { openPollCreationDialog, sendMessage } = useMessageInputContext();
 
@@ -158,7 +159,7 @@ export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
 
   return (
     <AttachmentPickerGenericContent
-      Icon={PollThumbnail}
+      Icon={icons.PollThumbnail}
       onPress={openPollCreationModal}
       height={height}
       buttonText={t('Create Poll')}
@@ -172,6 +173,7 @@ export const AttachmentCameraPicker = (
 ) => {
   const [permissionDenied, setPermissionDenied] = useState(false);
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { height, videoOnly } = props;
   const { takeAndUploadImage } = useMessageInputContext();
 
@@ -198,7 +200,7 @@ export const AttachmentCameraPicker = (
 
   return permissionDenied ? (
     <AttachmentPickerGenericContent
-      Icon={Camera}
+      Icon={icons.Camera}
       onPress={openSettings}
       height={height}
       buttonText={t('Change in Settings')}
@@ -206,7 +208,7 @@ export const AttachmentCameraPicker = (
     />
   ) : (
     <AttachmentPickerGenericContent
-      Icon={videoOnly ? VideoIcon : Camera}
+      Icon={videoOnly ? icons.VideoIcon : icons.Camera}
       onPress={openCameraPicker}
       height={height}
       buttonText={t('Open Camera')}
@@ -217,12 +219,13 @@ export const AttachmentCameraPicker = (
 
 export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { height } = props;
   const { pickFile } = useMessageInputContext();
 
   return (
     <AttachmentPickerGenericContent
-      Icon={FilePickerIcon}
+      Icon={icons.FilePickerIcon}
       onPress={pickFile}
       height={height}
       buttonText={t('Open Files')}

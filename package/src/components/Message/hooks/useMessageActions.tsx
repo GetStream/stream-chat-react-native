@@ -9,6 +9,7 @@ import { useUserMuteActive } from './useUserMuteActive';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
@@ -16,22 +17,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks';
-import {
-  BlockUser,
-  Copy,
-  CurveLineLeftUp,
-  Delete,
-  Edit,
-  MessageFlag,
-  Mute,
-  Pin,
-  Resend,
-  Sound,
-  ThreadReply,
-  Unpin,
-  UnreadIndicator,
-  UserDelete,
-} from '../../../icons';
 
 import { removeReservedFields } from '../../../utils/removeReservedFields';
 import { MessageStatusTypes } from '../../../utils/utils';
@@ -105,6 +90,7 @@ export const useMessageActions = ({
   const {
     theme: { semantics },
   } = useTheme();
+  const { icons } = useComponentsContext();
   const {
     handleCopyMessage,
     handleDeleteMessage,
@@ -288,7 +274,7 @@ export const useMessageActions = ({
     const banUser: MessageActionType = {
       action: onBanUser,
       actionType: 'banUser',
-      icon: <UserDelete width={20} height={20} stroke={semantics.accentError} />,
+      icon: <icons.UserDelete width={20} height={20} stroke={semantics.accentError} />,
       title: message.user?.banned ? t('Unban User') : t('Ban User'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
@@ -297,7 +283,7 @@ export const useMessageActions = ({
     const copyMessage: MessageActionType = {
       action: onCopyMessage,
       actionType: 'copyMessage',
-      icon: <Copy width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <icons.Copy width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Copy Message'),
       type: 'standard',
     };
@@ -305,7 +291,7 @@ export const useMessageActions = ({
     const deleteMessage: MessageActionType = {
       action: onDeleteMessage,
       actionType: 'deleteMessage',
-      icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
+      icon: <icons.Delete stroke={semantics.accentError} width={20} height={20} />,
       title: t('Delete Message'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
@@ -314,7 +300,7 @@ export const useMessageActions = ({
     const deleteForMeMessage: MessageActionType = {
       action: onDeleteForMeMessage,
       actionType: 'deleteForMeMessage',
-      icon: <Delete stroke={semantics.accentError} width={20} height={20} />,
+      icon: <icons.Delete stroke={semantics.accentError} width={20} height={20} />,
       title: t('Delete for me'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
@@ -323,7 +309,7 @@ export const useMessageActions = ({
     const editMessage: MessageActionType = {
       action: onEditMessage,
       actionType: 'editMessage',
-      icon: <Edit width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <icons.Edit width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Edit Message'),
       type: 'standard',
     };
@@ -331,7 +317,7 @@ export const useMessageActions = ({
     const flagMessage: MessageActionType = {
       action: onFlagMessage,
       actionType: 'flagMessage',
-      icon: <MessageFlag width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <icons.MessageFlag width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Flag Message'),
       type: 'standard',
     };
@@ -339,7 +325,7 @@ export const useMessageActions = ({
     const markUnread: MessageActionType = {
       action: onMarkUnread,
       actionType: 'markUnread',
-      icon: <UnreadIndicator width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <icons.UnreadIndicator width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Mark as Unread'),
       type: 'standard',
     };
@@ -347,7 +333,7 @@ export const useMessageActions = ({
     const pinMessage: MessageActionType = {
       action: onTogglePinMessage,
       actionType: 'pinMessage',
-      icon: <Pin width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <icons.Pin width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Pin to Conversation'),
       type: 'standard',
     };
@@ -355,7 +341,7 @@ export const useMessageActions = ({
     const unpinMessage: MessageActionType = {
       action: onTogglePinMessage,
       actionType: 'unpinMessage',
-      icon: <Unpin width={20} height={20} stroke={semantics.textSecondary} />,
+      icon: <icons.Unpin width={20} height={20} stroke={semantics.textSecondary} />,
       title: t('Unpin from Conversation'),
       type: 'standard',
     };
@@ -364,9 +350,9 @@ export const useMessageActions = ({
       action: onMuteUser,
       actionType: 'muteUser',
       icon: isMuted ? (
-        <Sound height={20} stroke={semantics.textSecondary} width={20} />
+        <icons.Sound height={20} stroke={semantics.textSecondary} width={20} />
       ) : (
-        <Mute fill={semantics.textSecondary} height={20} width={20} />
+        <icons.Mute fill={semantics.textSecondary} height={20} width={20} />
       ),
       title: isMuted ? t('Unmute User') : t('Mute User'),
       type: 'standard',
@@ -375,7 +361,7 @@ export const useMessageActions = ({
     const quotedReply: MessageActionType = {
       action: onQuotedReply,
       actionType: 'quotedReply',
-      icon: <CurveLineLeftUp stroke={semantics.textSecondary} height={20} width={20} />,
+      icon: <icons.CurveLineLeftUp stroke={semantics.textSecondary} height={20} width={20} />,
       title: t('Reply'),
       type: 'standard',
     };
@@ -383,7 +369,7 @@ export const useMessageActions = ({
     const retry: MessageActionType = {
       action: onRetry,
       actionType: 'retry',
-      icon: <Resend stroke={semantics.textSecondary} height={20} width={20} />,
+      icon: <icons.Resend stroke={semantics.textSecondary} height={20} width={20} />,
       title: t('Resend'),
       type: 'standard',
     };
@@ -391,7 +377,7 @@ export const useMessageActions = ({
     const threadReply: MessageActionType = {
       action: onThreadReply,
       actionType: 'threadReply',
-      icon: <ThreadReply stroke={semantics.textSecondary} height={20} width={20} />,
+      icon: <icons.ThreadReply stroke={semantics.textSecondary} height={20} width={20} />,
       title: t('Thread Reply'),
       type: 'standard',
     };
@@ -399,7 +385,7 @@ export const useMessageActions = ({
     const blockUser: MessageActionType = {
       action: onBlockUser,
       actionType: 'blockUser',
-      icon: <BlockUser stroke={semantics.accentError} height={20} width={20} />,
+      icon: <icons.BlockUser stroke={semantics.accentError} height={20} width={20} />,
       title: isBlocked ? t('Unblock User') : t('Block User'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
@@ -424,6 +410,7 @@ export const useMessageActions = ({
     };
   }, [
     error,
+    icons,
     isBlocked,
     isMuted,
     message,

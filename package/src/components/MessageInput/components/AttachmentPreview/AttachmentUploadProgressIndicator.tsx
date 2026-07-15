@@ -7,8 +7,6 @@ import { AttachmentFileUploadProgressIndicator } from '../../../../components/At
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { ExclamationCircle } from '../../../../icons/exclamation-circle-fill';
-import { Warning } from '../../../../icons/exclamation-triangle-fill';
 import { primitives } from '../../../../theme';
 import { RetryBadge } from '../../../ui/Badge/RetryBadge';
 
@@ -44,6 +42,7 @@ export type FileUploadRetryIndicatorProps = {
 };
 
 export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorProps) => {
+  const { icons } = useComponentsContext();
   const {
     theme: {
       semantics,
@@ -59,7 +58,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
       testID='inline-retry-indicator'
     >
       <View style={[styles.networkErrorContainer, fileUploadRetryIndicator.networkErrorContainer]}>
-        <Warning
+        <icons.Warning
           height={16}
           fill={semantics.accentError}
           testID='retry-upload-progress-indicator'
@@ -91,6 +90,7 @@ export type FileUploadNotSupportedIndicatorProps = {
 export const FileUploadNotSupportedIndicator = ({
   localMetadata,
 }: FileUploadNotSupportedIndicatorProps) => {
+  const { icons } = useComponentsContext();
   const styles = useFileUploadNotSupportedStyles();
   const {
     theme: {
@@ -108,7 +108,7 @@ export const FileUploadNotSupportedIndicator = ({
       style={[styles.container, fileUploadNotSupportedIndicator.container]}
       testID='inline-not-supported-indicator'
     >
-      <ExclamationCircle height={16} width={16} fill={semantics.accentError} />
+      <icons.ExclamationCircle height={16} width={16} fill={semantics.accentError} />
       <Text style={[styles.notSupportedText, fileUploadNotSupportedIndicator.notSupportedText]}>
         {message}
       </Text>
@@ -138,6 +138,7 @@ export const ImageUploadRetryIndicator = ({ onRetryHandler }: ImageUploadRetryIn
 };
 
 export const ImageUploadNotSupportedIndicator = () => {
+  const { icons } = useComponentsContext();
   const styles = useImageUploadNotSupportedIndicatorStyles();
   const {
     theme: {
@@ -150,7 +151,7 @@ export const ImageUploadNotSupportedIndicator = () => {
       style={[styles.container, imageUploadNotSupportedIndicator.container]}
       testID='inline-not-supported-indicator'
     >
-      <ExclamationCircle height={20} width={20} fill={semantics.accentError} />
+      <icons.ExclamationCircle height={20} width={20} fill={semantics.accentError} />
     </View>
   );
 };

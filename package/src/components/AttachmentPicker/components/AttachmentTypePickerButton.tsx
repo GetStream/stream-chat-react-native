@@ -13,17 +13,10 @@ import {
   useMessagesContext,
   useOwnCapabilitiesContext,
 } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useStableCallback } from '../../../hooks';
 import { useAttachmentPickerState } from '../../../hooks/useAttachmentPickerState';
-import {
-  Camera,
-  Picture,
-  VideoIcon,
-  FilePickerIcon,
-  PollThumbnail,
-  CommandsIcon,
-  IconProps,
-} from '../../../icons';
+import { IconProps } from '../../../icons';
 import { Button, ButtonProps } from '../../ui';
 import { BottomSheetModal } from '../../UIComponents';
 
@@ -71,6 +64,7 @@ export const AttachmentTypePickerButton = ({
 export const MediaPickerButton = () => {
   const { hasImagePicker, pickAndUploadImageFromNativePicker } = useMessageInputContext();
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const setImagePicker = useStableCallback(() => {
@@ -85,7 +79,7 @@ export const MediaPickerButton = () => {
     <AttachmentTypePickerButton
       accessibilityLabelKey='a11y/Open photo picker'
       testID='upload-photo-touchable'
-      Icon={Picture}
+      Icon={icons.Picture}
       selected={selectedPicker === 'images'}
       onPress={setImagePicker}
     />
@@ -94,6 +88,7 @@ export const MediaPickerButton = () => {
 
 export const CameraPickerButton = () => {
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { hasCameraPicker, takeAndUploadImage } = useMessageInputContext();
@@ -119,14 +114,14 @@ export const CameraPickerButton = () => {
       <AttachmentTypePickerButton
         accessibilityLabelKey='a11y/Open camera'
         testID='take-photo-touchable'
-        Icon={Camera}
+        Icon={icons.Camera}
         selected={selectedPicker === 'camera-photo'}
         onPress={onCameraPickerPress}
       />
       {Platform.OS === 'android' ? (
         <AttachmentTypePickerButton
           accessibilityLabelKey='a11y/Open video recorder'
-          Icon={VideoIcon}
+          Icon={icons.VideoIcon}
           selected={selectedPicker === 'camera-video'}
           onPress={onVideoRecorderPickerPress}
         />
@@ -137,6 +132,7 @@ export const CameraPickerButton = () => {
 
 export const FilePickerButton = () => {
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { hasFilePicker, pickFile } = useMessageInputContext();
@@ -152,7 +148,7 @@ export const FilePickerButton = () => {
     <AttachmentTypePickerButton
       accessibilityLabelKey='a11y/Open file picker'
       testID='upload-file-touchable'
-      Icon={FilePickerIcon}
+      Icon={icons.FilePickerIcon}
       selected={selectedPicker === 'files'}
       onPress={openFilePicker}
     />
@@ -164,6 +160,7 @@ export const PollPickerButton = () => {
   const { selectedPicker } = useAttachmentPickerState();
 
   const { threadList } = useChannelContext();
+  const { icons } = useComponentsContext();
   const { hasCreatePoll } = useMessagesContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -180,7 +177,7 @@ export const PollPickerButton = () => {
     <AttachmentTypePickerButton
       accessibilityLabelKey='a11y/Open poll creation'
       testID='create-poll-touchable'
-      Icon={PollThumbnail}
+      Icon={icons.PollThumbnail}
       selected={selectedPicker === 'polls'}
       onPress={openPollCreationModal}
     />
@@ -191,6 +188,7 @@ export const CommandsPickerButton = () => {
   const [showCommandsSheet, setShowCommandsSheet] = useState(false);
   const { hasCommands } = useMessageInputContext();
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const setCommandsPicker = useStableCallback(() => {
@@ -208,7 +206,7 @@ export const CommandsPickerButton = () => {
       <AttachmentTypePickerButton
         accessibilityLabelKey='a11y/Open commands'
         testID='commands-touchable'
-        Icon={CommandsIcon}
+        Icon={icons.CommandsIcon}
         selected={selectedPicker === 'commands'}
         onPress={setCommandsPicker}
       />

@@ -1,17 +1,8 @@
 import React from 'react';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import type { IconsMap } from '../../contexts/componentsContext/defaultComponents';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-import { Audio } from '../../icons/filetype-audio-xl';
-import { Code } from '../../icons/filetype-code-xl';
-import { ZIP } from '../../icons/filetype-compression-xl';
-import { OtherFileIcon } from '../../icons/filetype-other-xl';
-import { PDF } from '../../icons/filetype-pdf-xl';
-import { Presentation } from '../../icons/filetype-presentation-xl';
-import { SpreadSheet } from '../../icons/filetype-spreadsheet-xl';
-import { DOC } from '../../icons/filetype-text-xl';
-import { Video } from '../../icons/filetype-video-xl';
-import type { IconProps } from '../../icons/utils/base';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
 const audioFileTypes = [
@@ -349,49 +340,49 @@ const codeFileTypes = [
   'text/plain',
 ];
 
-const mimeTypeToIconMap: Record<string, React.ComponentType<IconProps>> = {
-  'application/pdf': PDF, // .pdf
+const mimeTypeToIconKeyMap: Record<string, keyof IconsMap> = {
+  'application/pdf': 'PDF', // .pdf
 };
 
 for (const type of audioFileTypes) {
-  mimeTypeToIconMap[type] = Audio;
+  mimeTypeToIconKeyMap[type] = 'Audio';
 }
 
 for (const type of docMimeTypes) {
-  mimeTypeToIconMap[type] = DOC;
+  mimeTypeToIconKeyMap[type] = 'DOC';
 }
 
 for (const type of excelMimeTypes) {
-  mimeTypeToIconMap[type] = SpreadSheet;
+  mimeTypeToIconKeyMap[type] = 'SpreadSheet';
 }
 
 for (const type of powerpointMimeTypes) {
-  mimeTypeToIconMap[type] = Presentation;
+  mimeTypeToIconKeyMap[type] = 'Presentation';
 }
 
 for (const type of zipFileTypes) {
-  mimeTypeToIconMap[type] = ZIP;
+  mimeTypeToIconKeyMap[type] = 'ZIP';
 }
 
 for (const type of videoFileTypes) {
-  mimeTypeToIconMap[type] = Video;
+  mimeTypeToIconKeyMap[type] = 'Video';
 }
 
 for (const type of codeFileTypes) {
-  mimeTypeToIconMap[type] = Code;
+  mimeTypeToIconKeyMap[type] = 'Code';
 }
 
-function mimeTypeToIcon(mimeType?: string): React.ComponentType<IconProps> {
+function mimeTypeToIconKey(mimeType?: string): keyof IconsMap {
   if (!mimeType) {
-    return OtherFileIcon;
+    return 'OtherFileIcon';
   }
 
-  const Icon = mimeTypeToIconMap[mimeType];
-  if (Icon) {
-    return Icon;
+  const iconKey = mimeTypeToIconKeyMap[mimeType];
+  if (iconKey) {
+    return iconKey;
   }
 
-  return OtherFileIcon;
+  return 'OtherFileIcon';
 }
 
 export type FileIconProps = {
@@ -426,8 +417,9 @@ export const FileIcon = ({ mimeType, size = 'md' }: FileIconProps) => {
       },
     },
   } = useTheme();
+  const { icons } = useComponentsContext();
 
-  const Icon = mimeTypeToIcon(mimeType);
+  const Icon = icons[mimeTypeToIconKey(mimeType)];
 
   return <Icon {...(size ? sizeToNumber(size) : {})} {...icon} />;
 };

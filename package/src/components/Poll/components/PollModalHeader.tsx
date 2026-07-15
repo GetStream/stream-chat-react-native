@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Cross } from '../../../icons/xmark-1';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 
@@ -12,6 +12,7 @@ export type PollModalHeaderProps = {
 };
 
 export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
+  const { icons } = useComponentsContext();
   const {
     theme: {
       poll: {
@@ -30,7 +31,7 @@ export const PollModalHeader = ({ onPress, title }: PollModalHeaderProps) => {
           type='outline'
           size='md'
           iconOnly
-          LeadingIcon={Cross}
+          LeadingIcon={icons.Cross}
           onPress={onPress}
           testID='poll-results-close-button'
         />

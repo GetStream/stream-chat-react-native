@@ -14,9 +14,10 @@ import {
 import { useIsChannelMuted } from '../../components/ChannelPreview/hooks/useIsChannelMuted';
 import { useUserMuteActive } from '../../components/Message/hooks/useUserMuteActive';
 import { useTheme, useTranslationContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import type { IconsMap } from '../../contexts/componentsContext/defaultComponents';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import { IconProps, Mute, BlockUser, Delete, Pin, Sound, Unpin } from '../../icons';
-import { ArrowBoxLeft } from '../../icons/leave';
+import { IconProps } from '../../icons';
 import { useChannelMembershipState } from '../useChannelMembershipState';
 import { useIsDirectChat } from '../useIsDirectChat';
 import { useStateStore } from '../useStateStore';
@@ -63,6 +64,7 @@ export type ChannelActionItemsParams = {
   actions: ChannelActions;
   channel: Channel;
   channelMuteActive: boolean;
+  icons: IconsMap;
   isArchived: boolean;
   isBlocked: boolean | undefined;
   isDirectChat: boolean;
@@ -104,6 +106,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       unpin,
     },
     channelMuteActive,
+    icons,
     isBlocked,
     isDirectChat,
     isPinned,
@@ -119,9 +122,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       action: channelMuteActive ? unmuteChannel : muteChannel,
       Icon: (props) =>
         channelMuteActive ? (
-          <Sound width={20} height={20} {...props} />
+          <icons.Sound width={20} height={20} {...props} />
         ) : (
-          <Mute
+          <icons.Mute
             width={20}
             height={20}
             {...props}
@@ -145,7 +148,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   if (surface !== 'details') {
     actionItems.push({
       action: isPinned ? unpin : pin,
-      Icon: (props) => <ChannelActionsIcon Icon={isPinned ? Unpin : Pin} {...props} />,
+      Icon: (props) => <ChannelActionsIcon Icon={isPinned ? icons.Unpin : icons.Pin} {...props} />,
       id: 'pin',
       label: isDirectChat
         ? isPinned
@@ -164,10 +167,10 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       action: userMuteActive ? unmuteUser : muteUser,
       Icon: (props) =>
         userMuteActive ? (
-          <ChannelActionsIcon Icon={Sound} {...props} />
+          <ChannelActionsIcon Icon={icons.Sound} {...props} />
         ) : (
           <ChannelActionsIcon
-            Icon={Mute}
+            Icon={icons.Mute}
             {...props}
             fill={props.fill ?? props.stroke}
             stroke={undefined}
@@ -204,7 +207,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
     actionItems.push({
       action: isBlocked ? unblockUser : blockUserWithConfirmation,
-      Icon: (props) => <ChannelActionsIcon Icon={BlockUser} {...props} />,
+      Icon: (props) => <ChannelActionsIcon Icon={icons.BlockUser} {...props} />,
       id: 'block',
       label: isBlocked ? t('Unblock User') : t('Block User'),
       placement: 'sheet',
@@ -245,7 +248,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
 
   actionItems.push({
     action: leaveWithConfirmation,
-    Icon: (props) => <ChannelActionsIcon Icon={ArrowBoxLeft} {...props} />,
+    Icon: (props) => <ChannelActionsIcon Icon={icons.ArrowBoxLeft} {...props} />,
     id: 'leave',
     label: isDirectChat ? t('Leave Chat') : t('Leave Group'),
     placement: 'sheet',
@@ -274,7 +277,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           },
         ]);
       },
-      Icon: (props) => <ChannelActionsIcon Icon={Delete} {...props} />,
+      Icon: (props) => <ChannelActionsIcon Icon={icons.Delete} {...props} />,
       id: 'deleteChannel',
       label: isDirectChat ? t('Delete Chat') : t('Delete Group'),
       placement: 'sheet',
@@ -307,6 +310,7 @@ export const useChannelActionItems = ({
   getChannelActionItems: getChannelActionItemsProp = getChannelActionItems,
 }: UseChannelActionItemsParams) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const membership = useChannelMembershipState(channel);
   const channelActions = useChannelActions(channel);
   const isDirectChat = useIsDirectChat(channel);
@@ -331,6 +335,7 @@ export const useChannelActionItems = ({
       actions: channelActions,
       channel,
       channelMuteActive,
+      icons,
       isArchived,
       isBlocked,
       isDirectChat,
@@ -343,6 +348,7 @@ export const useChannelActionItems = ({
       channel,
       channelActions,
       channelMuteActive,
+      icons,
       isArchived,
       isBlocked,
       isDirectChat,

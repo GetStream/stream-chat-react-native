@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { MessageBubbleEmpty } from '../../icons';
 import { primitives } from '../../theme';
 
 export type EmptyStateProps = {
@@ -17,6 +17,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
       semantics,
     },
   } = useTheme();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const styles = useStyles();
 
@@ -24,7 +25,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
     case 'channel':
       return (
         <View style={[styles.container, channelContainer]}>
-          <MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
+          <icons.MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
           <Text style={[styles.channelTitle, channelTitle]} testID='empty-channel-state-title'>
             {t('No conversations yet')}
           </Text>
@@ -33,14 +34,14 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
     case 'message':
       return (
         <View style={[styles.container, messageContainer]}>
-          <MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
+          <icons.MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
           <Text style={[styles.messageTitle, messageTitle]}>{t('No chats here yet…')}</Text>
         </View>
       );
     case 'threads':
       return (
         <View style={styles.container}>
-          <MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
+          <icons.MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
           <Text style={styles.threadText}>{t('Reply to a message to start a thread')}</Text>
         </View>
       );

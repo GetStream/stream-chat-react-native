@@ -5,9 +5,9 @@ import { renderAttachmentPickerItem } from './AttachmentPickerItem';
 import { IOS_LIMITED_DEEPLINK, type PhotoContentItemType } from './shared';
 
 import { useAttachmentPickerContext, useTheme, useTranslationContext } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { useStableCallback } from '../../../../hooks';
-import { Picture } from '../../../../icons';
 
 import { NativeHandlers } from '../../../../native';
 import { BottomSheetFlatList } from '../../../BottomSheetCompatibility/BottomSheetFlatList';
@@ -38,8 +38,9 @@ export const AttachmentMediaPickerIcon = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { icons } = useComponentsContext();
 
-  return <Picture height={22} stroke={semantics.textTertiary} width={22} />;
+  return <icons.Picture height={22} stroke={semantics.textTertiary} width={22} />;
 };
 
 export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {

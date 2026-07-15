@@ -9,6 +9,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -17,7 +18,6 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { Check } from '../../icons';
 import { primitives } from '../../theme';
 
 const stateSelector = (state: MessageComposerState) => ({
@@ -34,6 +34,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
   props: ShowThreadMessageInChannelButtonWithContextProps,
 ) => {
   const styles = useStyles();
+  const { icons } = useComponentsContext();
   const { allowThreadMessagesInChannel, t, threadList } = props;
   const messageComposer = useMessageComposer();
   const { showReplyInChannel } = useStateStore(messageComposer.state, stateSelector);
@@ -83,7 +84,12 @@ export const ShowThreadMessageInChannelButtonWithContext = (
             ]}
           >
             {showReplyInChannel && (
-              <Check width={16} height={16} stroke={semantics.controlRadioCheckIcon} {...check} />
+              <icons.Check
+                width={16}
+                height={16}
+                stroke={semantics.controlRadioCheckIcon}
+                {...check}
+              />
             )}
           </View>
           <Text style={[styles.text, text]}>{t('Also send to channel')}</Text>

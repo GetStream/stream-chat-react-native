@@ -8,8 +8,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Loading } from '../../icons/loading';
 
 export type SpinnerProps = {
   height?: number;
@@ -19,6 +19,7 @@ export type SpinnerProps = {
 
 export const Spinner = (props: SpinnerProps) => {
   const rotation = useSharedValue(0);
+  const { icons } = useComponentsContext();
   const { height, style, width } = props;
 
   const {
@@ -46,7 +47,7 @@ export const Spinner = (props: SpinnerProps) => {
 
   return (
     <Animated.View style={[style, styles.spinner, animatedStyle, spinner, { height, width }]}>
-      <Loading
+      <icons.Loading
         height={height}
         startColor={semantics.accentPrimary}
         stopColor={semantics.accentPrimary}

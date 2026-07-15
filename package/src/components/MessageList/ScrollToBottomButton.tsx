@@ -3,8 +3,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Down } from '../../icons/arrow-up';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
@@ -26,6 +26,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { icons } = useComponentsContext();
   const accessibilityLabelParams = React.useMemo(
     () => (unreadCount ? { count: unreadCount } : undefined),
     [unreadCount],
@@ -58,7 +59,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
           accessibilityLabelParams={accessibilityLabelParams}
           variant='secondary'
           type='outline'
-          LeadingIcon={Down}
+          LeadingIcon={icons.Down}
           onPress={onPress}
           size='md'
           testID='scroll-to-bottom-button'

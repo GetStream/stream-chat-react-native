@@ -9,8 +9,10 @@ import { useUserActions, UserActions } from './useUserActions';
 
 import { useUserMuteActive } from '../../components/Message/hooks/useUserMuteActive';
 import { useTheme, useTranslationContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import type { IconsMap } from '../../contexts/componentsContext/defaultComponents';
 import type { TranslationContextValue } from '../../contexts/translationContext/TranslationContext';
-import { BlockUser, IconProps, Mute, Sound, UserDelete } from '../../icons';
+import { IconProps } from '../../icons';
 import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 import { useStateStore } from '../useStateStore';
 
@@ -19,6 +21,7 @@ export type ChannelMemberActionItem = ActionItem<'muteUser' | 'block' | string>;
 export type ChannelMemberActionItemsParams = {
   channel: Channel;
   channelActions: ChannelActions;
+  icons: IconsMap;
   isBlocked: boolean;
   isCurrentUser: boolean;
   member: ChannelMemberResponse;
@@ -48,6 +51,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
 ) => {
   const {
     channelActions: { removeMembers },
+    icons,
     isBlocked,
     isCurrentUser,
     member,
@@ -69,10 +73,10 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
         action: userMuteActive ? unmuteUser : muteUser,
         Icon: (props) =>
           userMuteActive ? (
-            <ChannelMemberActionsIcon Icon={Sound} {...props} />
+            <ChannelMemberActionsIcon Icon={icons.Sound} {...props} />
           ) : (
             <ChannelMemberActionsIcon
-              Icon={Mute}
+              Icon={icons.Mute}
               {...props}
               fill={props.fill ?? props.stroke}
               stroke={undefined}
@@ -106,7 +110,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
                 ],
               );
             },
-        Icon: (props) => <ChannelMemberActionsIcon Icon={BlockUser} {...props} />,
+        Icon: (props) => <ChannelMemberActionsIcon Icon={icons.BlockUser} {...props} />,
         id: 'block',
         label: isBlocked ? t('Unblock User') : t('Block User'),
         type: isBlocked ? 'standard' : 'destructive',
@@ -135,7 +139,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
             ],
           );
         },
-        Icon: (props) => <ChannelMemberActionsIcon Icon={UserDelete} {...props} />,
+        Icon: (props) => <ChannelMemberActionsIcon Icon={icons.UserDelete} {...props} />,
         id: 'removeMember',
         label: t('Remove User'),
         type: 'destructive',
@@ -169,6 +173,7 @@ export const useChannelMemberActionItems = ({
   getChannelMemberActionItems: getChannelMemberActionItemsProp = getChannelMemberActionItems,
 }: UseChannelMemberActionItemsParams) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const userActions = useUserActions(member.user);
   const channelActions = useChannelActions(channel);
 
@@ -189,6 +194,7 @@ export const useChannelMemberActionItems = ({
     () => ({
       channel,
       channelActions,
+      icons,
       isBlocked,
       isCurrentUser,
       member,
@@ -200,6 +206,7 @@ export const useChannelMemberActionItems = ({
     [
       channel,
       channelActions,
+      icons,
       isBlocked,
       isCurrentUser,
       member,

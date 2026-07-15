@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { ArrowShareLeft } from '../../../icons';
 import { primitives } from '../../../theme';
 
 export const MessageSwipeContent = () => {
@@ -10,10 +10,11 @@ export const MessageSwipeContent = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { icons } = useComponentsContext();
 
   return (
     <View style={styles.container}>
-      <ArrowShareLeft stroke={semantics.buttonSecondaryTextOnAccent} height={20} width={20} />
+      <icons.ArrowShareLeft stroke={semantics.buttonSecondaryTextOnAccent} height={20} width={20} />
     </View>
   );
 };

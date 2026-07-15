@@ -5,6 +5,7 @@ import type { Attachment } from 'stream-chat';
 
 import { GiphyImage } from './GiphyImage';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -16,7 +17,6 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
-import { EyeOpen } from '../../../icons/EyeOpen';
 import { components, primitives } from '../../../theme';
 import { Button } from '../../ui/';
 
@@ -43,6 +43,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
 
   const { actions, image_url, thumb_url } = attachment;
 
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
 
   const {
@@ -68,7 +69,7 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
       testID='giphy-action-attachment'
     >
       <View style={[styles.header, header]}>
-        <EyeOpen height={16} width={16} fill={semantics.chatTextOutgoing} />
+        <icons.EyeOpen height={16} width={16} fill={semantics.chatTextOutgoing} />
         <Text style={[styles.headerText, giphyHeaderText]}>{t('Only visible to you')}</Text>
       </View>
       <GiphyImage attachment={attachment} giphyVersion={giphyVersion} preview />

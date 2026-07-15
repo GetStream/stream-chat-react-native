@@ -12,6 +12,7 @@ import Animated, {
 
 import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useActiveAudioPlayer } from '../../../../contexts/audioPlayerContext/AudioPlayerContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -20,7 +21,6 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -79,6 +79,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     status,
     recording,
   } = props;
+  const { icons } = useComponentsContext();
   const { micPositionX, micPositionY } = useMicPositionContext();
   const activeAudioPlayer = useActiveAudioPlayer();
   const scale = useSharedValue(1);
@@ -260,7 +261,7 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
         accessible
         style={[styles.container, animatedStyle, micButtonContainer]}
       >
-        <Mic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
+        <icons.Mic height={20} width={20} strokeWidth={1.5} stroke={buttonStyles.foregroundColor} />
       </Animated.View>
     </GestureDetector>
   );

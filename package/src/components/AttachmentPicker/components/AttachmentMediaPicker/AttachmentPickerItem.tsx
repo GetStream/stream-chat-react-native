@@ -15,7 +15,6 @@ import { useMessageInputContext } from '../../../../contexts/messageInputContext
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useViewport } from '../../../../hooks/useViewport';
-import { Plus } from '../../../../icons/plus';
 import { NativeHandlers } from '../../../../native';
 import { primitives } from '../../../../theme';
 import type { File } from '../../../../types/types';
@@ -163,6 +162,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
 
 const AttachmentIosLimited = () => {
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { icons } = useComponentsContext();
   const { vw } = useViewport();
   const { t } = useTranslationContext();
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
@@ -178,7 +178,7 @@ const AttachmentIosLimited = () => {
       ]}
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
     >
-      <Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
+      <icons.Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
       <Text style={styles.iosLimitedText}>{t('Add more')}</Text>
     </BottomSheetTouchableOpacity>
   );

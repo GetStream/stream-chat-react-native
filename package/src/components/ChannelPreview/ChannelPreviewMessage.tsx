@@ -15,7 +15,6 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { PollIcon } from '../../icons/poll';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { ErrorBadge } from '../ui';
@@ -30,6 +29,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     ChannelPreviewTypingIndicator,
     ChannelPreviewMessageDeliveryStatus,
     ChannelPreviewLastMessage,
+    icons,
   } = useComponentsContext();
   const {
     theme: { semantics },
@@ -80,7 +80,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (pollLabel) {
     return (
       <View style={styles.container}>
-        <PollIcon height={16} width={16} stroke={semantics.textSecondary} />
+        <icons.PollIcon height={16} width={16} stroke={semantics.textSecondary} />
         <Text ellipsizeMode='tail' numberOfLines={1} style={styles.subtitle}>
           {pollLabel}
         </Text>

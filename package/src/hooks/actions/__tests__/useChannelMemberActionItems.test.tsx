@@ -6,6 +6,7 @@ import type { Channel, ChannelMemberResponse, Mute } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { defaultIcons } from '../../../contexts/componentsContext/defaultComponents';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
 import * as useChannelOwnCapabilitiesModule from '../../useChannelOwnCapabilities';
@@ -227,6 +228,7 @@ describe('useChannelMemberActionItems', () => {
         channelActions,
         isBlocked: false,
         isCurrentUser: false,
+        icons: defaultIcons,
         member,
         ownCapabilities: [],
         t: expect.any(Function),
@@ -253,6 +255,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       isCurrentUser: false,
       member,
       ownCapabilities: undefined,
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
@@ -273,6 +276,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       isCurrentUser: true,
       member,
       ownCapabilities: undefined,
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
@@ -290,6 +294,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       isCurrentUser: false,
       member,
       ownCapabilities: ['update-channel-members'],
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
@@ -310,6 +315,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       isCurrentUser: false,
       member,
       ownCapabilities: undefined,
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: true,
@@ -329,6 +335,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       isCurrentUser: false,
       member,
       ownCapabilities: undefined,
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: true,
@@ -347,6 +354,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
       isCurrentUser: false,
       member,
       ownCapabilities: undefined,
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
@@ -360,6 +368,7 @@ describe('buildDefaultChannelMemberActionItems', () => {
         isCurrentUser: false,
         member,
         ownCapabilities: undefined,
+        icons: defaultIcons,
         t: ((value: string) => value) as TranslationContextValue['t'],
         userActions: actions,
         userMuteActive: false,

@@ -9,8 +9,6 @@ import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/Im
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { Share as ShareIconDefault } from '../../../icons';
-import { ImageGrid } from '../../../icons/gallery';
 import { isFileSystemAvailable, isShareImageAvailable, NativeHandlers } from '../../../native';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
@@ -44,7 +42,7 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 
 export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) => {
   const { accessibilityLabel, opacity, openGridView, visible } = props;
-  const { ImageGalleryVideoControls } = useComponentsContext();
+  const { icons, ImageGalleryVideoControls } = useComponentsContext();
 
   const [height, setHeight] = useState(200);
   const [savingInProgress, setSavingInProgress] = useState(false);
@@ -139,7 +137,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
             type='ghost'
             size='md'
             onPress={openGridView}
-            LeadingIcon={ImageGrid}
+            LeadingIcon={icons.ImageGrid}
             iconOnly
           />
         </View>
@@ -155,6 +153,7 @@ type ShareButtonProps = {
 
 const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
   const styles = useStyles();
+  const { icons } = useComponentsContext();
   // If the shareImage, saveFile or deleteFile is null, we don't want to render the share button
   if (!isShareImageAvailable() || !isFileSystemAvailable()) {
     return null;
@@ -171,7 +170,7 @@ const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
       type='ghost'
       size='md'
       onPress={share}
-      LeadingIcon={ShareIconDefault}
+      LeadingIcon={icons.Share}
       iconOnly
     />
   );

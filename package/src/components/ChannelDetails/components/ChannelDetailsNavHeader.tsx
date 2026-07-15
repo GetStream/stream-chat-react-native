@@ -4,10 +4,10 @@ import { I18nManager, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
-import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 
@@ -26,6 +26,7 @@ export const ChannelDetailsNavHeader = ({
   title,
 }: ChannelDetailsNavHeaderProps) => {
   const { channel } = useChannelDetailsContext();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -54,7 +55,7 @@ export const ChannelDetailsNavHeader = ({
           <Button
             accessibilityLabelKey='a11y/Back'
             iconOnly
-            LeadingIcon={ChevronLeft}
+            LeadingIcon={icons.ChevronLeft}
             onPress={onBack}
             size='md'
             testID='channel-details-back-button'

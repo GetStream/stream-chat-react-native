@@ -11,7 +11,6 @@ import { AttachmentRemoveControl } from './AttachmentPreview/AttachmentRemoveCon
 
 import { useMessageComposer, useTheme } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { Link } from '../../../icons/link';
 import { components, primitives } from '../../../theme';
 import { useLinkPreviews } from '../hooks/useLinkPreviews';
 
@@ -39,7 +38,7 @@ type LinkPreviewProps = {
 
 export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
   const styles = useStyles();
-  const { ImageComponent } = useComponentsContext();
+  const { icons, ImageComponent } = useComponentsContext();
   const { linkPreviewsManager } = useMessageComposer();
   const { image_url, thumb_url, title, text, og_scrape_url } = linkPreview;
 
@@ -74,7 +73,7 @@ export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
           ) : null}
           {og_scrape_url ? (
             <View style={styles.linkContainer}>
-              <Link
+              <icons.Link
                 height={styles.text.fontSize}
                 stroke={styles.text.color}
                 width={styles.text.fontSize}

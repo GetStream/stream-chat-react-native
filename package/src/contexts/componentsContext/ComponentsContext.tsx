@@ -6,11 +6,27 @@ import React, { PropsWithChildren, useContext, useMemo } from 'react';
  * Adding a new default automatically makes it available as an override.
  *
  * Every key is optional — only specify the components you want to override.
+ *
+ * The `icons` slot is a nested map: it is typed as a *partial* icon map so
+ * integrators can override individual icons without having to supply them all.
+ * Sibling defaults are preserved via a deep merge (see below).
  */
-export type ComponentOverrides = Partial<
-  (typeof import('./defaultComponents'))['DEFAULT_COMPONENTS']
+export type ComponentOverrides = Omit<
+  Partial<(typeof import('./defaultComponents'))['DEFAULT_COMPONENTS']>,
+  'icons'
 > &
-  import('./defaultComponents').OptionalComponentOverrides;
+  import('./defaultComponents').OptionalComponentOverrides & {
+    icons?: Partial<import('./defaultComponents').IconsMap>;
+  };
+
+/**
+ * Resolved component overrides with defaults filled in. Unlike
+ * `ComponentOverrides`, the `icons` map is guaranteed fully populated (defaults
+ * back every key), so consumers can read `icons.Mute` without a null check.
+ */
+export type ResolvedComponents = Required<Omit<ComponentOverrides, 'icons'>> & {
+  icons: import('./defaultComponents').IconsMap;
+};
 
 const ComponentsContext = React.createContext<ComponentOverrides>({});
 
@@ -33,8 +49,17 @@ export const WithComponents = ({
   overrides,
 }: PropsWithChildren<{ overrides: ComponentOverrides }>) => {
   const parent = useContext(ComponentsContext);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally stable: overrides are set once at mount
-  const merged = useMemo(() => ({ ...parent, ...overrides }), []);
+  const merged = useMemo(
+    () => ({
+      ...parent,
+      ...overrides,
+      // Deep-merge the nested `icons` map so overriding one icon keeps the
+      // rest (a shallow spread would replace the whole map).
+      icons: { ...parent.icons, ...overrides.icons },
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally stable: overrides are set once at mount
+    [],
+  );
   return <ComponentsContext.Provider value={merged}>{children}</ComponentsContext.Provider>;
 };
 
@@ -55,9 +80,14 @@ const getDefaults = (): ComponentOverrides => {
  */
 export const useComponentsContext = () => {
   const overrides = useContext(ComponentsContext);
-  return useMemo(
-    () => ({ ...getDefaults(), ...overrides }) as Required<ComponentOverrides>,
+  return useMemo(() => {
+    const defaults = getDefaults();
+    return {
+      ...defaults,
+      ...overrides,
+      // Deep-merge icons so user overrides layer over the full default map.
+      icons: { ...defaults.icons, ...overrides.icons },
+    } as ResolvedComponents;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally stable: overrides are set once at mount
-    [],
-  );
+  }, []);
 };

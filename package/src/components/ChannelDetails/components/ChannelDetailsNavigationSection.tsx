@@ -8,8 +8,6 @@ import { ModalHeader } from './modal/ModalHeader';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { ChevronRight } from '../../../icons';
-import { ChevronLeft } from '../../../icons/chevron-left';
 import { primitives } from '../../../theme';
 import { ImageGallery } from '../../ImageGallery/ImageGallery';
 import {
@@ -40,7 +38,7 @@ export const ChannelDetailsNavigationSection = ({
     },
   } = useTheme();
   const styles = useStyles();
-  const { FileAttachmentList, MediaList, PinnedMessageList } = useComponentsContext();
+  const { FileAttachmentList, icons, MediaList, PinnedMessageList } = useComponentsContext();
   const items = useChannelDetailsNavigationItems({ getNavigationItems });
   const [activeSection, setActiveSection] = useState<ChannelDetailsNavigationSectionType | null>(
     null,
@@ -74,15 +72,15 @@ export const ChannelDetailsNavigationSection = ({
   const chevron = useMemo(
     () => (
       <View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>
-        <ChevronRight height={20} stroke={semantics.textTertiary} width={20} />
+        <icons.ChevronRight height={20} stroke={semantics.textTertiary} width={20} />
       </View>
     ),
-    [semantics.textTertiary],
+    [icons, semantics.textTertiary],
   );
 
   const closeButtonProps = useMemo(
-    () => ({ type: 'ghost' as const, LeadingIcon: ChevronLeft }),
-    [],
+    () => ({ type: 'ghost' as const, LeadingIcon: icons.ChevronLeft }),
+    [icons],
   );
 
   return (

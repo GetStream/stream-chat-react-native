@@ -8,7 +8,6 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { Mute } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { useUserMuteActive } from '../../../Message/hooks/useUserMuteActive';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
@@ -45,7 +44,7 @@ export const ChannelMemberItem = ({
 }: ChannelMemberItemProps) => {
   const { t } = useTranslationContext();
   const { client } = useChatContext();
-  const { RoleList } = useComponentsContext();
+  const { icons, RoleList } = useComponentsContext();
   const {
     theme: {
       channelDetails: {
@@ -102,7 +101,7 @@ export const ChannelMemberItem = ({
       {isMuted || roles.length > 0 ? (
         <View style={styles.trailing}>
           {isMuted ? (
-            <Mute
+            <icons.Mute
               height={16}
               pathFill={semantics.textTertiary}
               testID='channel-member-muted-indicator'
