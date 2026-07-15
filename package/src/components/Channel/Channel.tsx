@@ -622,8 +622,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         }
       }
 
-      // The paginator's unreadStateSnapshot is populated by the seed/reload above (the single source
-      // of truth for unread state), so there's no manual initial read-state copy here.
+      // Re-seed the unread snapshot from the CURRENT read state on every open. The paginator is
+      // usually reused from cache (the reload above is skipped), and hydrateActiveChannels merges
+      // rather than re-seeds, so without this the snapshot's boundary/count/first-unread stay frozen
+      // at the very first open — making the separator, the "N new" banner and the jump-to-first-unread
+      // target all go stale on reopen. Mirrors stream-chat-react, which re-seeds by re-querying on open.
+      channel.messagePaginator.seedUnreadSnapshot();
 
       if (messageId) {
         await loadChannelAroundMessage({ messageId });
@@ -633,7 +637,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (unreadCount > 0 && markReadOnMount) {
-        await markRead();
+        // Keep the original unread UI (separator frozen at the boundary, "N new" banner) when
+        // opening a channel with unreads — don't reset the snapshot here. It clears once the user
+        // catches up (a subsequent markRead with the default updateChannelUnreadState: true).
+        await markRead({ updateChannelUnreadState: false });
       }
 
       listener = channel.on(handleEvent);

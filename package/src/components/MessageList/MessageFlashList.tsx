@@ -628,13 +628,23 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       );
     };
 
-    const handleEvent = async (event: Event) => {
-      // The unread count is owned by channel.messagePaginator.unreadStateSnapshot (the LLC bumps it
-      // on message.new); we no longer manually bump it here. We only mark the channel read when the
-      // user is caught up at the bottom.
+    const handleEvent = (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       if (mainChannelUpdated && shouldMarkRead()) {
-        await markRead();
+        // We're caught up at the bottom and reading this message in real time. Clear the unread
+        // snapshot SYNCHRONOUSLY — before the throttled, async markRead below — so the "N new
+        // messages" banner / unread separator never flash for a message we're already looking at.
+        // The LLC bumps unreadCount on this same event; resetting it here (a later-registered
+        // listener in the same synchronous dispatch) means the bumped value is never rendered.
+        channel.messagePaginator.unreadStateSnapshot.next({
+          firstUnreadMessageId: null,
+          lastReadAt: new Date(),
+          lastReadMessageId:
+            event.message?.id ??
+            channel.messagePaginator.unreadStateSnapshot.getLatestValue().lastReadMessageId,
+          unreadCount: 0,
+        });
+        markRead();
       }
     };
 
