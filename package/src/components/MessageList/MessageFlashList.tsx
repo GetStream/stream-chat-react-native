@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AppState,
   LayoutChangeEvent,
   ScrollViewProps,
   StyleSheet,
@@ -367,6 +368,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const [hasMoved, setHasMoved] = useState(false);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
+  const [isAppActive, setIsAppActive] = useState(() => AppState.currentState === 'active');
+  const isNewestMessageVisibleRef = useRef(false);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
@@ -479,6 +482,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     useStateStore(focusPaginator?.messageFocusSignal, messageFocusSelector) ?? {};
   const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
 
+  // Clear the focus/highlight signal on unmount (or when switching channel/thread). The signal
+  // lives on the LLC paginator, which outlives this component — without this, a highlight still
+  // active when you navigate away re-fires the scroll+highlight on return (the scroll-token ref
+  // resets on remount). Mirrors the old React-state highlight that cleaned up on unmount.
+  useEffect(() => {
+    const paginator = focusPaginator;
+    return () => paginator?.clearMessageFocusSignal();
+  }, [focusPaginator]);
+
   /**
    * Scrolls to the focused message (messageFocusSignal) once it's rendered. Re-attempts when the
    * list updates while a focus is pending, and marks each focus token handled so unrelated list
@@ -523,8 +535,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       requestAnimationFrame(async () => {
         await scrollToIndex();
       });
+      // Start the highlight's auto-dismiss countdown now that the message is scrolled into view.
+      // The LLC deliberately does NOT start it on emit (the message may not be visible yet), so
+      // without this the highlight would persist forever.
+      focusPaginator?.scheduleMessageFocusSignalClear({ token: focusToken });
     }, WAIT_FOR_SCROLL_TIMEOUT);
-  }, [focusToken, focusedMessageId, processedMessageList]);
+  }, [focusPaginator, focusToken, focusedMessageId, processedMessageList]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     // jumpToMessage loads-around + emits messageFocusSignal → the effect scrolls and highlights.
@@ -615,14 +631,38 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
 
   /**
-   * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
+   * Track app foreground/background. Combined with viewability (above) it decides whether we are
+   * "viewing live"; the LLC skips the unread bump while live (see `messagePaginator.isViewingLive`).
+   */
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) =>
+      setIsAppActive(nextAppState === 'active'),
+    );
+    return () => subscription.remove();
+  }, []);
+
+  /**
+   * Push the "viewing live" signal when the app foreground state changes (viewability pushes it on
+   * scroll). Reset to false on unmount / channel switch so a backgrounded or torn-down list never
+   * suppresses unread counting.
+   */
+  useEffect(() => {
+    const { messagePaginator } = channel;
+    messagePaginator.setViewingLive(isAppActive && isNewestMessageVisibleRef.current);
+    return () => messagePaginator.setViewingLive(false);
+  }, [channel, isAppActive]);
+
+  /**
+   * Mark the channel read when a message arrives while the user is viewing the latest messages.
+   * The LLC skips the unread bump while live, so — unlike before — no synchronous snapshot reset is
+   * needed here (that was the fragile bump-then-undo); we just tell the server.
    */
   useEffect(() => {
     const shouldMarkRead = () => {
       const channelUnreadState = getChannelUnreadState(channel);
       return (
+        channel.messagePaginator.isViewingLive.getLatestValue().isViewingLive &&
         !channelUnreadState?.first_unread_message_id &&
-        !scrollToBottomButtonVisible &&
         client.user?.id &&
         !hasReadLastMessage(channel, client.user?.id)
       );
@@ -631,19 +671,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const handleEvent = (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       if (mainChannelUpdated && shouldMarkRead()) {
-        // We're caught up at the bottom and reading this message in real time. Clear the unread
-        // snapshot SYNCHRONOUSLY — before the throttled, async markRead below — so the "N new
-        // messages" banner / unread separator never flash for a message we're already looking at.
-        // The LLC bumps unreadCount on this same event; resetting it here (a later-registered
-        // listener in the same synchronous dispatch) means the bumped value is never rendered.
-        channel.messagePaginator.unreadStateSnapshot.next({
-          firstUnreadMessageId: null,
-          lastReadAt: new Date(),
-          lastReadMessageId:
-            event.message?.id ??
-            channel.messagePaginator.unreadStateSnapshot.getLatestValue().lastReadMessageId,
-          unreadCount: 0,
-        });
         markRead();
       }
     };
@@ -653,7 +680,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     return () => {
       listener?.unsubscribe();
     };
-  }, [channel, client.user?.id, markRead, scrollToBottomButtonVisible, threadList]);
+  }, [channel, client.user?.id, markRead]);
 
   const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
     if (!viewableItems.length) {
@@ -764,6 +791,24 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       updateStickyHeaderDateIfNeeded(viewableItems);
     }
     updateStickyUnreadIndicator(viewableItems);
+
+    // Report whether the user is viewing the latest messages (the newest channel message is on
+    // screen) so the LLC can skip the unread bump while live (see `messagePaginator.isViewingLive`).
+    // Viewability reflects the real layout, so this is correct even at mount — a channel opened at
+    // its first unread has the newest message off-screen and therefore reports `false`.
+    // The newest message comes from the paginator (what the list actually renders), not
+    // channel.state.latestMessages. The last loaded item is the true newest only when the head is
+    // loaded (`!hasMoreHead`) — if newer messages exist beyond the loaded window we're not live even
+    // when the last loaded item is visible.
+    const paginatorState = channel.messagePaginator.state.getLatestValue();
+    const loadedItems = paginatorState.items ?? [];
+    const newestMessageId = paginatorState.hasMoreHead
+      ? undefined
+      : loadedItems[loadedItems.length - 1]?.id;
+    isNewestMessageVisibleRef.current =
+      !!newestMessageId &&
+      viewableItems.some((viewable) => viewable.item.message?.id === newestMessageId);
+    channel.messagePaginator.setViewingLive(isAppActive && isNewestMessageVisibleRef.current);
   };
 
   const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
@@ -974,6 +1019,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     });
   });
 
+  // Non-reactive read for the accessibility action label only (the button owns its own reactive
+  // count). Refreshes on the list's normal re-renders (e.g. scroll), which is sufficient for a11y.
   const scrollToBottomUnreadCount =
     scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
   const {
@@ -1171,7 +1218,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         <ScrollToBottomButton
           onPress={goToNewMessages}
           showNotification={scrollToBottomButtonVisible}
-          unreadCount={scrollToBottomUnreadCount}
         />
       </Animated.View>
       <NetworkDownIndicator />

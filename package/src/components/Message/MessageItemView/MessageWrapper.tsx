@@ -54,7 +54,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   });
 
   const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
-  const messageIsOwn = message.user?.id === client.userID;
   const nextMessageId = nextMessage?.id;
   const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
   const nextMessageCreatedAt = nextMessage?.created_at
@@ -79,16 +78,22 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
         // Frozen boundary (channel open / mark-unread): anchor directly to the known first-unread id.
         showUnreadSeparator = nextMessageId === snapshot.firstUnreadMessageId;
       } else if (snapshot.unreadCount) {
-        // Live boundary: this row is the last read/own message before the first unread-from-another.
+        // Live boundary: the separator sits above the FIRST unread-from-another message — i.e. on
+        // the last genuinely-read row (created at/before the read boundary) whose newer neighbour is
+        // that first unread. Gating on "this row is read" (rather than "this row isn't itself an
+        // unread-from-another") keeps it to a SINGLE separator even when our own messages are
+        // interleaved among the unreads: an own message sent after the boundary is not "read" by
+        // this test, so `own → unread-from-another` transitions further down never start a second
+        // separator. Chronological ordering guarantees exactly one read→unread transition.
         const lastReadAtMs = snapshot.lastReadAt?.getTime() ?? 0;
         const nextIsUnreadFromOther =
           !!nextMessageId &&
           !nextMessageIsOwn &&
           nextMessageCreatedAt !== undefined &&
           nextMessageCreatedAt > lastReadAtMs;
-        const thisIsUnreadFromOther =
-          !messageIsOwn && !!createdAtTimestamp && createdAtTimestamp > lastReadAtMs;
-        showUnreadSeparator = nextIsUnreadFromOther && !thisIsUnreadFromOther;
+        const thisIsRead =
+          typeof createdAtTimestamp === 'number' && createdAtTimestamp <= lastReadAtMs;
+        showUnreadSeparator = nextIsUnreadFromOther && thisIsRead;
       } else {
         showUnreadSeparator = false;
       }
@@ -101,7 +106,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
         unreadCount: showUnreadSeparator ? snapshot.unreadCount : undefined,
       };
     },
-    [createdAtTimestamp, messageIsOwn, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
+    [createdAtTimestamp, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
   );
   const { showUnreadSeparator, unreadCount } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,

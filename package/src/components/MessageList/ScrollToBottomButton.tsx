@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
+import type { ReadState } from 'stream-chat';
+
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../hooks/useStateStore';
 import { Down } from '../../icons/arrow-up';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
@@ -18,15 +23,25 @@ export type ScrollToBottomButtonProps = {
   onPress: () => void;
   /** If we should show the notification or not */
   showNotification?: boolean;
-  unreadCount?: number;
 };
 
 export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
-  const { onPress, showNotification = true, unreadCount } = props;
+  const { onPress, showNotification = true } = props;
+  const { channel, threadList } = useChannelContext();
+  const { client } = useChatContext();
   const {
     theme: { semantics },
   } = useTheme();
-  const accessibilityLabelParams = React.useMemo(
+  const userId = client?.userID;
+  const ownUnreadSelector = useCallback(
+    (state: ReadState) => ({
+      unreadCount: userId ? (state.read[userId]?.unread_messages ?? 0) : 0,
+    }),
+    [userId],
+  );
+  const ownRead = useStateStore(channel?.state?.readStore, ownUnreadSelector);
+  const unreadCount = threadList ? undefined : ownRead?.unreadCount;
+  const accessibilityLabelParams = useMemo(
     () => (unreadCount ? { count: unreadCount } : undefined),
     [unreadCount],
   );

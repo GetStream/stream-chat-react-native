@@ -2,6 +2,10 @@ import React from 'react';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
+import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
@@ -67,10 +71,37 @@ describe('ScrollToBottomButton', () => {
     const t = jest.fn((key: string) => key);
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
+    // The button reads OUR user's count from the channel read store (see ScrollToBottomButton),
+    // keyed by the chat client's userID. Provide a minimal fake client + channel read store
+    // reporting 3 unread for that user. Hand-rolled to avoid a runtime `stream-chat` import (which
+    // breaks jest under the local portal).
+    const readState = {
+      read: {
+        me: {
+          last_read: new Date(),
+          unread_messages: 3,
+          user: { id: 'me' },
+        },
+      },
+    };
+    const channel = {
+      state: {
+        readStore: {
+          getLatestValue: () => readState,
+          subscribeWithSelector: () => () => {},
+        },
+      },
+    };
     const { getByTestId, getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t } as unknown as TranslationContextValue}>
-          <ScrollToBottomButton onPress={() => null} showNotification={true} unreadCount={3} />
+          <ChatProvider value={{ client: { userID: 'me' } } as unknown as ChatContextValue}>
+            <ChannelProvider
+              value={{ channel, threadList: false } as unknown as ChannelContextValue}
+            >
+              <ScrollToBottomButton onPress={() => null} showNotification={true} />
+            </ChannelProvider>
+          </ChatProvider>
         </TranslationProvider>
       </ThemeProvider>,
     );
