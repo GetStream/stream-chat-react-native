@@ -11,11 +11,7 @@ import { getNotificationDisplayMessage } from './notificationTranslations';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Check } from '../../icons/checkmark';
-import { ExclamationCircle } from '../../icons/exclamation-circle-fill';
-import { Reload } from '../../icons/refresh';
 import { IconProps } from '../../icons/utils/base';
-import { NewClose } from '../../icons/xmark';
 import { primitives } from '../../theme';
 import { Button } from '../ui/Button';
 
@@ -35,23 +31,27 @@ export type NotificationVariant = 'default' | NotificationSeverity;
 export const getNotificationVariant = (notification: NotificationType): NotificationVariant =>
   notification.severity ?? 'default';
 
-const IconsByVariant: Partial<Record<NotificationVariant, ComponentType<IconProps> | null>> = {
-  error: ExclamationCircle,
-  info: null,
-  loading: Reload,
-  success: Check,
-  warning: ExclamationCircle,
-};
-
-const getNotificationIconComponent = (notification: NotificationType) => {
+const getNotificationIconComponent = (
+  notification: NotificationType,
+  icons: ReturnType<typeof useComponentsContext>['icons'],
+) => {
   const variant = getNotificationVariant(notification);
   if (variant === 'default') return undefined;
+
+  const IconsByVariant: Partial<Record<NotificationVariant, ComponentType<IconProps> | null>> = {
+    error: icons.ExclamationCircle,
+    info: null,
+    loading: icons.Reload,
+    success: icons.Check,
+    warning: icons.ExclamationCircle,
+  };
 
   return IconsByVariant[variant] ?? undefined;
 };
 
 export const NotificationIcon = ({ notification }: NotificationIconProps) => {
-  const Icon = getNotificationIconComponent(notification);
+  const { icons } = useComponentsContext();
+  const Icon = getNotificationIconComponent(notification, icons);
   const { iconColor, styles } = useNotificationIconStyles();
   if (!Icon) return null;
 
@@ -84,14 +84,15 @@ export const Notification = ({
   onDismiss,
   showClose = false,
 }: NotificationProps) => {
-  const { NotificationIcon: NotificationIconComponent = NotificationIcon } = useComponentsContext();
+  const { icons, NotificationIcon: NotificationIconComponent = NotificationIcon } =
+    useComponentsContext();
   const { removeNotification } = useNotificationApi();
   const { t } = useTranslationContext();
   const displayMessage = getNotificationDisplayMessage({ notification, t });
   const ResolvedIcon = Icon ?? NotificationIconComponent;
   const hasResolvedIcon =
     ResolvedIcon === NotificationIcon
-      ? !!getNotificationIconComponent(notification)
+      ? !!getNotificationIconComponent(notification, icons)
       : !!ResolvedIcon;
   const { closeIconColor, styles } = useNotificationStyles({ hasResolvedIcon });
   const isPersistent = !notification.duration;
@@ -142,7 +143,7 @@ export const Notification = ({
           style={({ pressed }) => (pressed ? styles.closeButtonPressed : styles.closeButton)}
           testID='notification-close-button'
         >
-          <NewClose height={20} stroke={closeIconColor} width={20} />
+          <icons.NewClose height={20} stroke={closeIconColor} width={20} />
         </Pressable>
       ) : null}
     </View>

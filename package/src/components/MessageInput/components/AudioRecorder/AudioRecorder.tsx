@@ -6,6 +6,7 @@ import Animated, { type AnimatedStyle } from 'react-native-reanimated';
 import dayjs from 'dayjs';
 
 import { Button } from '../../../../components/ui';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -14,12 +15,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { Tick } from '../../../../icons/checkmark';
-import { ChevronLeft } from '../../../../icons/chevron-left';
-import { Delete } from '../../../../icons/delete';
-import { Stop } from '../../../../icons/stop-fill';
 import { IconProps } from '../../../../icons/utils/base';
-import { Mic } from '../../../../icons/voice';
 import { NativeHandlers } from '../../../../native';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -45,6 +41,7 @@ const StopRecording = ({
 }: {
   stopVoiceRecordingHandler: () => Promise<void>;
 }) => {
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -54,8 +51,8 @@ const StopRecording = ({
   };
 
   const StopIcon = useCallback(
-    (props: IconProps) => <Stop {...props} fill={semantics.buttonDestructiveBg} />,
-    [semantics.buttonDestructiveBg],
+    (props: IconProps) => <icons.Stop {...props} fill={semantics.buttonDestructiveBg} />,
+    [icons, semantics.buttonDestructiveBg],
   );
 
   return (
@@ -78,6 +75,7 @@ const UploadRecording = ({
   audioRecordingSendOnComplete: boolean;
   uploadVoiceRecordingHandler: (sendOnComplete: boolean) => Promise<void>;
 }) => {
+  const { icons } = useComponentsContext();
   const onUploadVoiceRecording = () => {
     NativeHandlers.triggerHaptic('impactMedium');
     uploadVoiceRecordingHandler(audioRecordingSendOnComplete);
@@ -89,7 +87,7 @@ const UploadRecording = ({
       variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
-      LeadingIcon={Tick}
+      LeadingIcon={icons.Tick}
       iconOnly
       size='sm'
     />
@@ -101,6 +99,7 @@ const DeleteRecording = ({
 }: {
   deleteVoiceRecordingHandler: () => Promise<void>;
 }) => {
+  const { icons } = useComponentsContext();
   const { addNotification } = useNotificationApi();
   const { t } = useTranslationContext();
   const onDeleteVoiceRecording = async () => {
@@ -120,7 +119,7 @@ const DeleteRecording = ({
       size='sm'
       iconOnly
       onPress={onDeleteVoiceRecording}
-      LeadingIcon={Delete}
+      LeadingIcon={icons.Delete}
     />
   );
 };
@@ -136,6 +135,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
     status,
     duration,
   } = props;
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
 
   const recordingStopped = status === 'stopped';
@@ -176,7 +176,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
     return (
       <>
         <View style={[styles.micContainer, micContainer]} testID='recording-active-container'>
-          <Mic height={20} width={20} stroke={semantics.accentError} {...micIcon} />
+          <icons.Mic height={20} width={20} stroke={semantics.accentError} {...micIcon} />
           <Text style={[styles.durationLabel]}>
             {duration ? dayjs.duration(duration).format('mm:ss') : '00:00'}
           </Text>
@@ -187,7 +187,12 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
           <Text style={[styles.slideToCancel, { color: semantics.textPrimary }]}>
             {t('Slide to Cancel')}
           </Text>
-          <ChevronLeft stroke={semantics.textTertiary} height={20} width={20} {...arrowLeftIcon} />
+          <icons.ChevronLeft
+            stroke={semantics.textTertiary}
+            height={20}
+            width={20}
+            {...arrowLeftIcon}
+          />
         </Animated.View>
       </>
     );

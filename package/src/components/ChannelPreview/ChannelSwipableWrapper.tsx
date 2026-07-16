@@ -13,7 +13,6 @@ import type {
   GetChannelActionItems,
 } from '../../hooks/actions/useChannelActionItems';
 import { useChannelActionItems } from '../../hooks/actions/useChannelActionItems';
-import { MenuPointHorizontal } from '../../icons';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 import {
   RightActions,
@@ -26,7 +25,8 @@ export const OpenChannelDetailsButton = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  return <MenuPointHorizontal stroke={semantics.textPrimary} />;
+  const { icons } = useComponentsContext();
+  return <icons.MenuPointHorizontal stroke={semantics.textPrimary} />;
 };
 
 export const ChannelSwipableWrapper = ({

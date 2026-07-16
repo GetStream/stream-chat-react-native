@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { Cross } from '../../../../icons/xmark-1';
 import { primitives } from '../../../../theme';
 import { Button, ButtonProps } from '../../../ui/Button/Button';
 
@@ -19,6 +19,7 @@ export const ModalHeader = ({
   title,
   additionalCloseButtonProps,
 }: ModalHeaderProps) => {
+  const { icons } = useComponentsContext();
   const {
     theme: {
       channelDetails: {
@@ -35,7 +36,7 @@ export const ModalHeader = ({
         <Button
           accessibilityLabelKey='a11y/Close'
           iconOnly
-          LeadingIcon={Cross}
+          LeadingIcon={icons.Cross}
           onPress={onClose}
           size='md'
           type='outline'

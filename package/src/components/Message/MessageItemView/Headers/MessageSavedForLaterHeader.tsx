@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { Bookmark } from '../../../../icons/save';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
@@ -13,10 +13,11 @@ export type MessageSavedForLaterHeaderProps = Partial<Pick<MessageContextValue, 
 export const MessageSavedForLaterHeader = () => {
   const styles = useStyles();
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <Bookmark height={16} width={16} stroke={styles.label.color} />
+      <icons.Bookmark height={16} width={16} stroke={styles.label.color} />
       <Text style={styles.label}>{t('Saved For Later')}</Text>
     </View>
   );

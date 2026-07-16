@@ -5,6 +5,7 @@ import type { Channel, Mute } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../../components/ChannelPreview/hooks/useIsChannelMuted';
+import { defaultIcons } from '../../../contexts/componentsContext/defaultComponents';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import * as TranslationContext from '../../../contexts/translationContext/TranslationContext';
 import * as useChannelMembershipStateModule from '../../useChannelMembershipState';
@@ -219,6 +220,7 @@ describe('useChannelActionItems', () => {
         isDirectChat: false,
         isPinned: false,
         surface: 'list',
+        icons: defaultIcons,
         t: expect.any(Function),
         userMuteActive: false,
       },
@@ -246,6 +248,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -259,6 +262,7 @@ describe('getChannelActionItems', () => {
         isDirectChat: false,
         isPinned: false,
         surface: 'list',
+        icons: defaultIcons,
         t: ((value: string) => value) as TranslationContextValue['t'],
         userMuteActive: false,
       },
@@ -291,6 +295,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: true,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
@@ -339,6 +344,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -356,6 +362,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -374,6 +381,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -399,6 +407,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: true,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -420,6 +429,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: true,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -439,6 +449,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'details',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -456,6 +467,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -472,6 +484,7 @@ describe('getChannelActionItems', () => {
       isBlocked: undefined,
       isDirectChat: false,
       isPinned: false,
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
@@ -490,6 +503,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: true,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
@@ -516,6 +530,7 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       surface: 'list',
+      icons: defaultIcons,
       t: ((value: string) => value) as TranslationContextValue['t'],
       userMuteActive: false,
     });

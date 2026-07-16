@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Exclamation } from '../../../icons/exclamation-mark-fill';
 import { primitives } from '../../../theme';
 
 const sizes = {
@@ -37,13 +37,14 @@ export type ErrorBadgeProps = ViewProps & {
 
 export const ErrorBadge = (props: ErrorBadgeProps) => {
   const { size = 'md', style, ...rest } = props;
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
   return (
     <View style={[styles.container, sizes[size], style]} {...rest}>
-      <Exclamation
+      <icons.Exclamation
         height={sizes[size].height}
         width={sizes[size].width}
         fill={semantics.textOnAccent}

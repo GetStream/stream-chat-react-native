@@ -3,10 +3,10 @@ import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
 import { composeAccessibilityLabel } from '../../../a11y/a11yUtils';
 import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelMuteActive } from '../../../hooks/useChannelMuteActive';
-import { Mute } from '../../../icons/mute';
 import { primitives } from '../../../theme';
 import { useChannelPreviewDisplayName } from '../../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { ChannelAvatar } from '../../ui/Avatar/ChannelAvatar';
@@ -14,6 +14,7 @@ import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMem
 
 export const ChannelDetailsProfile = () => {
   const { channel } = useChannelDetailsContext();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -53,7 +54,7 @@ export const ChannelDetailsProfile = () => {
             {displayName ?? ''}
           </Text>
           {muted ? (
-            <Mute
+            <icons.Mute
               fill={semantics.textTertiary}
               height={20}
               testID='channel-details-profile-muted-indicator'

@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Check, IconProps } from '../../../icons';
-import { Cross } from '../../../icons/xmark-1';
+import { IconProps } from '../../../icons';
 import { primitives } from '../../../theme';
 import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
@@ -27,6 +27,7 @@ export const CreatePollHeader = ({
   onCreatePollPressHandler,
 }: CreatePollHeaderProps) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
 
   const canCreatePoll = useCanCreatePoll();
 
@@ -44,7 +45,7 @@ export const CreatePollHeader = ({
   const renderSendPollIcon = useCallback(
     (props: IconProps) => {
       return (
-        <Check
+        <icons.Check
           {...props}
           height={18}
           stroke={canCreatePoll ? semantics.textOnAccent : semantics.textDisabled}
@@ -52,7 +53,7 @@ export const CreatePollHeader = ({
         />
       );
     },
-    [canCreatePoll, semantics.textOnAccent, semantics.textDisabled],
+    [canCreatePoll, icons, semantics.textOnAccent, semantics.textDisabled],
   );
 
   return (
@@ -63,7 +64,7 @@ export const CreatePollHeader = ({
         onPress={onBackPressHandler}
         type='outline'
         size='md'
-        LeadingIcon={Cross}
+        LeadingIcon={icons.Cross}
         iconOnly
       />
 

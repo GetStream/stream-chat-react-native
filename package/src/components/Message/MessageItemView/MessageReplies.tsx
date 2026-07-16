@@ -11,8 +11,6 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
-import { ReplyConnectorLeft } from '../../../icons/ReplyConnectorLeft';
-import { ReplyConnectorRight } from '../../../icons/ReplyConnectorRight';
 import { primitives } from '../../../theme';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
@@ -43,7 +41,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
     t,
     threadList,
   } = props;
-  const { MessageRepliesAvatars } = useComponentsContext();
+  const { icons, MessageRepliesAvatars } = useComponentsContext();
 
   const {
     theme: {
@@ -66,9 +64,9 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
 
   const connector =
     physicalAlignment === 'left' ? (
-      <ReplyConnectorLeft height={48} width={16} stroke={connectorStroke} />
+      <icons.ReplyConnectorLeft height={48} width={16} stroke={connectorStroke} />
     ) : (
-      <ReplyConnectorRight height={48} width={16} stroke={connectorStroke} />
+      <icons.ReplyConnectorRight height={48} width={16} stroke={connectorStroke} />
     );
 
   if (threadList || !message.reply_count) {

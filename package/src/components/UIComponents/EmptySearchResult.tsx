@@ -1,8 +1,8 @@
 import React from 'react';
 import { I18nManager, StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Search } from '../../icons/search';
 import { primitives } from '../../theme';
 
 export type EmptySearchResultProps = {
@@ -10,6 +10,7 @@ export type EmptySearchResultProps = {
 };
 
 export const EmptySearchResult = ({ label }: EmptySearchResultProps) => {
+  const { icons } = useComponentsContext();
   const {
     theme: {
       emptySearchResult: { container, text },
@@ -19,7 +20,7 @@ export const EmptySearchResult = ({ label }: EmptySearchResultProps) => {
 
   return (
     <View style={[styles.container, container]} testID='empty-search-result'>
-      <Search height={24} stroke={semantics.textTertiary} width={24} />
+      <icons.Search height={24} stroke={semantics.textTertiary} width={24} />
       <Text style={[styles.text, { color: semantics.textSecondary }, text]}>{label}</Text>
     </View>
   );

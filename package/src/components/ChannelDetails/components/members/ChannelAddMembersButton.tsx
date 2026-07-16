@@ -4,7 +4,6 @@ import { useChannelDetailsContext } from '../../../../contexts/channelDetailsCon
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useCanAddMembersToChannel } from '../../../../hooks/useCanAddMembersToChannel';
-import { UserAdd } from '../../../../icons/user-add';
 import { Button, ButtonProps } from '../../../ui/Button/Button';
 import { ChannelDetailsModal } from '../modal/Modal';
 
@@ -24,7 +23,7 @@ export const ChannelAddMembersButton = ({
   variant = 'text',
 }: ChannelAddMembersButtonProps) => {
   const { channel } = useChannelDetailsContext();
-  const { ChannelAddMembersForm } = useComponentsContext();
+  const { ChannelAddMembersForm, icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const isVisible = useCanAddMembersToChannel(channel);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
@@ -53,7 +52,7 @@ export const ChannelAddMembersButton = ({
         <Button
           accessibilityLabelKey='a11y/Add members'
           iconOnly
-          LeadingIcon={UserAdd}
+          LeadingIcon={icons.UserAdd}
           onPress={handlePress}
           size='md'
           style={style}
