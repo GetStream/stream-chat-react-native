@@ -22,6 +22,20 @@ import { useChannelMembershipState } from '../useChannelMembershipState';
 import { useIsDirectChat } from '../useIsDirectChat';
 import { useStateStore } from '../useStateStore';
 
+// Lazily resolved to avoid a static import cycle with defaultComponents.ts
+// (defaultComponents → ChannelDetails*/ChannelPreview* → this file). Statically
+// importing defaultIcons corrupts module-init order; require it at call time
+// instead. Same pattern as ComponentsContext's getDefaults().
+let cachedDefaultIcons: IconsMap | undefined;
+const getDefaultIcons = (): IconsMap => {
+  if (!cachedDefaultIcons) {
+    cachedDefaultIcons = (
+      require('../../contexts/componentsContext/defaultComponents') as { defaultIcons: IconsMap }
+    ).defaultIcons;
+  }
+  return cachedDefaultIcons;
+};
+
 export type ChannelActionItem = ActionItem<
   'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | 'pin' | string
 > & {
@@ -75,7 +89,7 @@ export type ChannelActionItemsParams = {
 };
 
 export type BuildDefaultChannelActionItems = (
-  channelActionItemsParams: ChannelActionItemsParams,
+  channelActionItemsParams: Omit<ChannelActionItemsParams, 'icons'> & { icons?: IconsMap },
 ) => ChannelActionItem[];
 
 const ChannelActionsIcon = ({
@@ -106,7 +120,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       unpin,
     },
     channelMuteActive,
-    icons,
+    icons = getDefaultIcons(),
     isBlocked,
     isDirectChat,
     isPinned,

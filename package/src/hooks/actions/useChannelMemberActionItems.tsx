@@ -16,6 +16,20 @@ import { IconProps } from '../../icons';
 import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 import { useStateStore } from '../useStateStore';
 
+// Lazily resolved to avoid a static import cycle with defaultComponents.ts
+// (defaultComponents → ChannelDetails*/ChannelPreview* → this file). Statically
+// importing defaultIcons corrupts module-init order; require it at call time
+// instead. Same pattern as ComponentsContext's getDefaults().
+let cachedDefaultIcons: IconsMap | undefined;
+const getDefaultIcons = (): IconsMap => {
+  if (!cachedDefaultIcons) {
+    cachedDefaultIcons = (
+      require('../../contexts/componentsContext/defaultComponents') as { defaultIcons: IconsMap }
+    ).defaultIcons;
+  }
+  return cachedDefaultIcons;
+};
+
 export type ChannelMemberActionItem = ActionItem<'muteUser' | 'block' | string>;
 
 export type ChannelMemberActionItemsParams = {
@@ -32,7 +46,9 @@ export type ChannelMemberActionItemsParams = {
 };
 
 export type BuildDefaultChannelMemberActionItems = (
-  channelMemberActionItemsParams: ChannelMemberActionItemsParams,
+  channelMemberActionItemsParams: Omit<ChannelMemberActionItemsParams, 'icons'> & {
+    icons?: IconsMap;
+  },
 ) => ChannelMemberActionItem[];
 
 const ChannelMemberActionsIcon = ({
@@ -51,7 +67,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
 ) => {
   const {
     channelActions: { removeMembers },
-    icons,
+    icons = getDefaultIcons(),
     isBlocked,
     isCurrentUser,
     member,
