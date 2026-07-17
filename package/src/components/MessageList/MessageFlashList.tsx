@@ -138,10 +138,7 @@ type MessageFlashListPropsWithContext = Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
-  Pick<
-    ThreadContextValue,
-    'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
-  > & {
+  Pick<ThreadContextValue, 'thread' | 'threadInstance'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -329,8 +326,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     loadingMoreRecent,
     loadMore,
     loadMoreRecent,
-    loadMoreRecentThread,
-    loadMoreThread,
     markRead,
     maximumMessageLimit,
     messageInputFloating,
@@ -891,9 +886,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       await onEndReachedInPromise.current;
     }
     onStartReachedInPromise.current = (
-      threadList && !!threadInstance && loadMoreRecentThread
-        ? loadMoreRecentThread({})
-        : loadMoreRecent()
+      threadList && threadInstance ? threadInstance.messagePaginator.toHead() : loadMoreRecent()
     )
       .then(callback)
       .catch(onError);
@@ -932,7 +925,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       await onStartReachedInPromise.current;
     }
 
-    onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
+    onEndReachedInPromise.current = (
+      threadList ? (threadInstance?.messagePaginator.toTail() ?? Promise.resolve()) : loadMore()
+    )
       .then(callback)
       .catch(onError);
   });
@@ -1331,7 +1326,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     loadMoreRecent,
     state: { loadingMore, loadingMoreRecent },
   } = useMessageListPagination({ channel });
-  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
+  const { thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
     useMessageInputContext();
@@ -1358,8 +1353,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         loadMoreRecent,
         loadingMore,
         loadingMoreRecent,
-        loadMoreRecentThread,
-        loadMoreThread,
         markRead,
         maximumMessageLimit,
         messageInputFloating,

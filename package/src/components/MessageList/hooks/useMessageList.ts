@@ -31,16 +31,16 @@ const messageListSelector = (state: { items?: LocalMessage[] }) => ({ messages: 
 export const useMessageList = (params: UseMessageListParams) => {
   const { threadList, isLiveStreaming, isFlashList = false, maximumMessageLimit } = params;
   const { channel } = useChannelContext();
-  // The channel message list is sourced reactively from channel.messagePaginator (channel-specific,
-  // NOT the thread-aware useMessagePaginator — so the main list keeps showing channel messages while
-  // a thread is open). Thread reply lists read threadMessages from the ThreadContext instead.
-  const { messages } = useStateStore(channel.messagePaginator.state, messageListSelector) ?? {};
+  const { threadInstance } = useThreadContext();
+  const messagePaginatorState = threadList
+    ? threadInstance?.messagePaginator?.state
+    : channel.messagePaginator.state;
+  const { messages } = useStateStore(messagePaginatorState, messageListSelector) ?? {};
   const { viewabilityChangedCallback } = usePrunableMessageList({
     maximumMessageLimit,
     setMessages: () => {},
   });
-  const { threadMessages } = useThreadContext();
-  const messageList = (threadList ? threadMessages : messages) ?? EMPTY_MESSAGES;
+  const messageList = messages ?? EMPTY_MESSAGES;
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList: LocalMessage[] = [];

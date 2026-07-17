@@ -222,10 +222,7 @@ type MessageListPropsWithContext = Pick<
     MessageInputContextValue,
     'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
   > &
-  Pick<
-    ThreadContextValue,
-    'loadMoreRecentThread' | 'loadMoreThread' | 'threadHasMore' | 'thread' | 'threadInstance'
-  > & {
+  Pick<ThreadContextValue, 'thread' | 'threadInstance'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -340,8 +337,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     loadingMoreRecent,
     loadMore,
     loadMoreRecent,
-    loadMoreRecentThread,
-    loadMoreThread,
     markRead,
     maximumMessageLimit,
     messageInputFloating,
@@ -357,7 +352,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     threadInstance,
     threadList = false,
     hasMore,
-    threadHasMore,
   } = props;
   const {
     EmptyStateIndicator,
@@ -948,9 +942,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       await onEndReachedInPromise.current;
     }
     onStartReachedInPromise.current = (
-      threadList && !!threadInstance && loadMoreRecentThread
-        ? loadMoreRecentThread({})
-        : loadMoreRecent()
+      threadList && threadInstance ? threadInstance.messagePaginator.toHead() : loadMoreRecent()
     )
       .then(callback)
       .catch(onError);
@@ -962,7 +954,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
   const maybeCallOnEndReached = useStableCallback(async () => {
-    const shouldQuery = (threadList && threadHasMore) || (!threadList && hasMore);
+    const shouldQuery =
+      (threadList && !!threadInstance?.messagePaginator.hasMoreTail) || (!threadList && hasMore);
     // If onEndReached has already been called for given messageList length, then ignore.
     if (
       (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) ||
@@ -991,7 +984,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     if (onStartReachedInPromise.current) {
       await onStartReachedInPromise.current;
     }
-    onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
+    onEndReachedInPromise.current = (
+      threadList ? (threadInstance?.messagePaginator.toTail() ?? Promise.resolve()) : loadMore()
+    )
       .then(callback)
       .catch(onError);
   });
@@ -1432,8 +1427,7 @@ export const MessageList = (props: MessageListProps) => {
     loadMoreRecent,
     state: { hasMore, loadingMore, loadingMoreRecent },
   } = useMessageListPagination({ channel });
-  const { loadMoreRecentThread, loadMoreThread, threadHasMore, thread, threadInstance } =
-    useThreadContext();
+  const { thread, threadInstance } = useThreadContext();
 
   return (
     <MessageListWithContext
@@ -1454,8 +1448,6 @@ export const MessageList = (props: MessageListProps) => {
         loading,
         loadMore,
         loadMoreRecent,
-        loadMoreRecentThread,
-        loadMoreThread,
         markRead,
         maximumMessageLimit,
         messageInputFloating,
@@ -1471,7 +1463,6 @@ export const MessageList = (props: MessageListProps) => {
         hasMore,
         loadingMore,
         loadingMoreRecent,
-        threadHasMore,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}

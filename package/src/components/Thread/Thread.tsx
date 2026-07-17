@@ -26,10 +26,7 @@ try {
 }
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<
-    ThreadContextValue,
-    'loadMoreThread' | 'parentMessagePreventPress' | 'reloadThread' | 'thread' | 'threadInstance'
-  > & {
+  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread' | 'threadInstance'> & {
     /**
      * Additional props for underlying MessageComposer component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input/#props
@@ -89,7 +86,6 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     additionalMessageFlashListProps,
     autoFocus = false,
     disabled,
-    loadMoreThread,
     onThreadDismount,
     notificationHostId: notificationHostIdProp,
     parentMessagePreventPress = true,
@@ -169,8 +165,8 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     if (!threadInstance || isLoading || items !== undefined) {
       return;
     }
-    void loadMoreThread();
-  }, [threadInstance, items, isLoading, loadMoreThread]);
+    void threadInstance.messagePaginator.toTail();
+  }, [threadInstance, items, isLoading]);
 
   // Tear down on unmount. Use a ref so we deactivate whichever instance is current at unmount, not
   // the (possibly null) one captured when this effect first ran.
@@ -246,7 +242,7 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();
   const { threadList } = useChannelContext();
-  const { loadMoreThread, reloadThread, thread, threadInstance } = useThreadContext();
+  const { thread, threadInstance } = useThreadContext();
 
   if (thread?.id && !threadList) {
     throw new Error(
@@ -258,8 +254,6 @@ export const Thread = (props: ThreadProps) => {
     <ThreadWithContext
       {...{
         client,
-        loadMoreThread,
-        reloadThread,
         thread,
         threadInstance,
       }}

@@ -18,14 +18,18 @@ type ThreadFooterComponentPropsWithContext = Pick<
   'parentMessagePreventPress' | 'thread' | 'threadInstance'
 >;
 
+const loadingSelector = (state: { isLoading: boolean }) => ({ isLoading: state.isLoading });
+
 export const InlineLoadingMoreThreadIndicator = () => {
-  const { threadLoadingMore } = useThreadContext();
+  const { threadInstance } = useThreadContext();
   const {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
+  const { isLoading } =
+    useStateStore(threadInstance?.messagePaginator?.state, loadingSelector) ?? {};
 
-  if (!threadLoadingMore) {
+  if (!isLoading) {
     return null;
   }
 
@@ -136,8 +140,7 @@ export type ThreadFooterComponentProps = Partial<
 >;
 
 export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
-  const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
-    useThreadContext();
+  const { parentMessagePreventPress, thread, threadInstance } = useThreadContext();
 
   return (
     <MemoizedThreadFooter
@@ -145,7 +148,6 @@ export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
         parentMessagePreventPress,
         thread,
         threadInstance,
-        threadLoadingMore,
       }}
       {...props}
     />

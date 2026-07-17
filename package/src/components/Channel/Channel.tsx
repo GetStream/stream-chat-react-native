@@ -497,8 +497,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // constructed instance isn't recreated (losing paginator state) on unrelated re-renders.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [threadInstanceFromProps, threadProps?.id, channel, client]);
-  const [threadHasMore] = useState(true);
-  const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
@@ -685,28 +683,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // instance via useMarkRead(channel). Channel still needs it internally (mark-read-on-mount + resync).
   const markRead = useMarkRead(channel);
 
-  const reloadThread = useStableCallback(async () => {
-    if (!channel || !thread?.id || !threadInstance) {
-      return;
-    }
-    setThreadLoadingMore(true);
-    try {
-      // Rehydrate the thread instance (parent + read state) and reload its reply paginator.
-      await threadInstance.reload();
-      await threadInstance.messagePaginator.reload();
-      setThreadLoadingMore(false);
-    } catch (err) {
-      console.warn('Thread loading request failed with error', err);
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-      setThreadLoadingMore(false);
-      throw err;
-    }
-  });
-
   const resyncChannel = useStableCallback(async () => {
     if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
       return;
@@ -850,22 +826,20 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       try {
         if (thread) {
-          setThreadLoadingMore(true);
           try {
             // jumpToMessage loads the message range into thread.messagePaginator (which backs the
             // reply list) and emits the focus signal driving the thread-aware highlight + scroll.
+            // The reply-list loading spinner is driven off the paginator's own isLoading flag.
             await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
               focusReason: 'jump-to-message',
               focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
             });
-            setThreadLoadingMore(false);
           } catch (err) {
             if (err instanceof Error) {
               setError(err);
             } else {
               setError(true);
             }
-            setThreadLoadingMore(false);
           }
         } else {
           await loadChannelAroundMessageFn({
@@ -919,30 +893,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       await (threadInstance ?? channel).updateMessageWithLocalUpdate({ localMessage, options });
     },
   );
-
-  /**
-   * THREAD METHODS
-   */
-  const loadMoreThread: ThreadContextValue['loadMoreThread'] = useStableCallback(async () => {
-    // Older replies are paginated via the thread's messagePaginator, which backs the reply list.
-    // (useCreateThreadContext also wires loadMoreThread to the paginator when a thread instance
-    // exists — this keeps the ThreadContext shape stable and the behavior identical; the paginator
-    // guards against concurrent loads and tracks hasMore/loading reactively.)
-    if (!threadInstance) {
-      return;
-    }
-    try {
-      await threadInstance.messagePaginator.toTail();
-    } catch (err) {
-      console.warn('Message pagination request failed with error', err);
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-      throw err;
-    }
-  });
 
   const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
   const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
@@ -1094,13 +1044,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    loadMoreThread,
-    reloadThread,
-    setThreadLoadingMore,
     thread,
-    threadHasMore,
     threadInstance,
-    threadLoadingMore,
   });
 
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(

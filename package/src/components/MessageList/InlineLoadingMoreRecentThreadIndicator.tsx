@@ -1,7 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { useThreadContext } from '../../contexts';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
@@ -57,7 +56,9 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
 export const InlineLoadingMoreRecentThreadIndicator = (
   _props: InlineLoadingMoreRecentThreadIndicatorPropsWithContext,
 ) => {
-  const { threadLoadingMoreRecent } = useThreadContext();
-
-  return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={threadLoadingMoreRecent} />;
+  // The reply paginator exposes a single `isLoading` flag with no head/tail direction, so a
+  // dedicated "loading newer replies" state isn't available yet; keep this indicator dormant (it
+  // was previously driven by `threadLoadingMoreRecent`, which was never actually produced).
+  // TODO: wire to a directional loading flag on MessagePaginator once one exists.
+  return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={false} />;
 };

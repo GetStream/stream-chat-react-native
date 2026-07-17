@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { ChannelState, LocalMessage, Thread } from 'stream-chat';
+import { LocalMessage, Thread } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -14,20 +14,12 @@ export type AlsoSentToChannelHeaderPressPayload = {
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
-  loadMoreThread: () => Promise<void>;
-  reloadThread: () => void;
-  setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
   thread: LocalMessage | null;
-  threadHasMore: boolean;
-  threadMessages: ChannelState['threads'][string];
-  loadMoreRecentThread?: (opts: { limit?: number }) => Promise<void>;
   /**
    * Boolean to enable/disable parent message press
    */
   parentMessagePreventPress?: boolean;
   threadInstance?: Thread | null;
-  threadLoadingMore?: boolean;
-  threadLoadingMoreRecent?: boolean;
   /**
    * Function to handle press on the "Also sent to channel" header action.
    * @param payload - Navigation payload with optional parent thread message and targeted message id
