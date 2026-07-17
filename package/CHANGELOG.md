@@ -1,5 +1,19 @@
 # Change Log
 
+## [9.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.6.1...v9.7.0) (2026-07-17)
+
+### Bug Fixes
+
+* allow moving text inside message content ([#3723](https://github.com/GetStream/stream-chat-react-native/issues/3723)) ([dbecc8e](https://github.com/GetStream/stream-chat-react-native/commit/dbecc8ef6d12506cd1a9fcbd3db6a7c15dcc862d))
+* export missing base UI components and correct stale JSDoc/comments ([#3730](https://github.com/GetStream/stream-chat-react-native/issues/3730)) ([0a38205](https://github.com/GetStream/stream-chat-react-native/commit/0a38205cf9a19331a8f1fae2e976aa6ad610e032)), closes [GetStream/docs-content#1435](https://github.com/GetStream/docs-content/issues/1435)
+* export OutputButtons from the SDK ([#3727](https://github.com/GetStream/stream-chat-react-native/issues/3727)) ([eb94ff8](https://github.com/GetStream/stream-chat-react-native/commit/eb94ff8d3832ecbd8c8ff4eb93197d6bc0f20db5))
+* theming fixes (avatar, reaction pill, force message alignment) ([#3728](https://github.com/GetStream/stream-chat-react-native/issues/3728)) ([a740c7a](https://github.com/GetStream/stream-chat-react-native/commit/a740c7a641e205edff116736e5236838af2a8cae))
+* yarn workspaces ci issues ([#3724](https://github.com/GetStream/stream-chat-react-native/issues/3724)) ([d786211](https://github.com/GetStream/stream-chat-react-native/commit/d786211b659f457e34001765614582587f9690ae)), closes [#3717](https://github.com/GetStream/stream-chat-react-native/issues/3717)
+
+### Features
+
+* allow custom icons ([#3731](https://github.com/GetStream/stream-chat-react-native/issues/3731)) ([230cfa1](https://github.com/GetStream/stream-chat-react-native/commit/230cfa104d616f3753dc06bbe34640fd20868f15))
+
 ## [9.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.6.0...v9.6.1) (2026-07-09)
 
 ### Bug Fixes
