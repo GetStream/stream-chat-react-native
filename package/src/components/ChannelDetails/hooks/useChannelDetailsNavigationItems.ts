@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Picture } from '../../../icons';
-import { Folder } from '../../../icons/folder';
-
-import { Pin } from '../../../icons/pin';
 import type { IconProps } from '../../../icons/utils/base';
 
 /**
@@ -37,16 +34,17 @@ export type ChannelDetailsNavigationItem = {
 };
 
 /**
- * Maps each navigation section to the icon and (translatable) label rendered for its row and,
- * when opened, its modal header. The declaration order also drives the order of the rendered rows.
+ * Maps each navigation section to the icon (by its key in the components-context icons map) and
+ * (translatable) label rendered for its row and, when opened, its modal header. The declaration
+ * order also drives the order of the rendered rows.
  */
 const SECTION_CONFIG: Record<
   'pinned-messages' | 'photos-and-videos' | 'files',
-  { Icon: React.ComponentType<IconProps>; label: string }
+  { icon: 'Pin' | 'Picture' | 'Folder'; label: string }
 > = {
-  'pinned-messages': { Icon: Pin, label: 'Pinned Messages' },
-  'photos-and-videos': { Icon: Picture, label: 'Photos & Videos' },
-  files: { Icon: Folder, label: 'Files' },
+  'pinned-messages': { icon: 'Pin', label: 'Pinned Messages' },
+  'photos-and-videos': { icon: 'Picture', label: 'Photos & Videos' },
+  files: { icon: 'Folder', label: 'Files' },
 };
 
 const SECTIONS = Object.keys(SECTION_CONFIG) as Array<keyof typeof SECTION_CONFIG>;
@@ -82,6 +80,7 @@ export const useChannelDetailsNavigationItems = ({
 }: {
   getNavigationItems?: GetChannelDetailsNavigationItems;
 } = {}): ChannelDetailsNavigationItem[] => {
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
 
   const context = useMemo<ChannelDetailsNavigationItemsContext>(() => ({ t }), [t]);
@@ -89,10 +88,10 @@ export const useChannelDetailsNavigationItems = ({
   const defaultItems = useMemo<ChannelDetailsNavigationItem[]>(
     () =>
       SECTIONS.map((section) => {
-        const { Icon, label } = SECTION_CONFIG[section];
-        return { Icon, label: t(label), section };
+        const { icon, label } = SECTION_CONFIG[section];
+        return { Icon: icons[icon], label: t(label), section };
       }),
-    [t],
+    [icons, t],
   );
 
   return useMemo(

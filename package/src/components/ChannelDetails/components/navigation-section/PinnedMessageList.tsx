@@ -15,7 +15,6 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Pin } from '../../../../icons/pin';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { NotificationList } from '../../../Notifications/NotificationList';
@@ -62,7 +61,7 @@ const PinnedMessageListContent = ({
     },
   } = useTheme();
   const styles = useStyles();
-  const { PinnedMessageItem } = useComponentsContext();
+  const { icons, PinnedMessageItem } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
 
@@ -120,7 +119,7 @@ const PinnedMessageListContent = ({
     <PinnedMessageListLoadingSkeleton />
   ) : isEmpty ? (
     <EmptyList
-      icon={Pin}
+      icon={icons.Pin}
       subtitle={t('Long-press a message to pin it to the chat')}
       title={t('No pinned messages')}
     />

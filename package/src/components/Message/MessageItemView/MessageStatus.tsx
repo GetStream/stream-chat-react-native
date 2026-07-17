@@ -3,14 +3,12 @@ import { StyleSheet, View } from 'react-native';
 
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Check } from '../../../icons/checkmark';
-import { CheckAll } from '../../../icons/checks';
-import { Time } from '../../../icons/clock';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
 import { HiddenA11yText } from '../../Accessibility/HiddenA11yText';
@@ -25,6 +23,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
   const { deliveredToCount, message, readBy } = props;
 
   const styles = useStyles();
+  const { icons } = useComponentsContext();
 
   const {
     theme: {
@@ -71,13 +70,23 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
         style={[styles.container, container]}
       >
         {read ? (
-          <CheckAll height={16} stroke={styles.readCheck.color} width={16} {...checkAllIcon} />
+          <icons.CheckAll
+            height={16}
+            stroke={styles.readCheck.color}
+            width={16}
+            {...checkAllIcon}
+          />
         ) : delivered ? (
-          <CheckAll stroke={styles.deliveredCheck.color} height={16} width={16} {...checkAllIcon} />
+          <icons.CheckAll
+            stroke={styles.deliveredCheck.color}
+            height={16}
+            width={16}
+            {...checkAllIcon}
+          />
         ) : sending ? (
-          <Time stroke={styles.sendingCheck.color} height={16} width={16} {...timeIcon} />
+          <icons.Time stroke={styles.sendingCheck.color} height={16} width={16} {...timeIcon} />
         ) : sent ? (
-          <Check stroke={styles.sentCheck.color} height={16} width={16} {...checkIcon} />
+          <icons.Check stroke={styles.sentCheck.color} height={16} width={16} {...checkIcon} />
         ) : null}
       </View>
     </>

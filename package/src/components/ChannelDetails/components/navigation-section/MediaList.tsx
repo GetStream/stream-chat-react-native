@@ -30,7 +30,6 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Picture } from '../../../../icons/image';
 import { isVideoPlayerAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
 import { FileTypes } from '../../../../types/types';
@@ -79,7 +78,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   } = useTheme();
   const styles = useStyles();
   const { width } = useWindowDimensions();
-  const { MediaItem } = useComponentsContext();
+  const { icons, MediaItem } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
 
@@ -183,7 +182,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
       <MediaListLoadingSkeleton />
     ) : (
       <EmptyList
-        icon={Picture}
+        icon={icons.Picture}
         subtitle={t('Share a photo or video to see it here')}
         title={t('No photos or videos')}
       />

@@ -11,7 +11,7 @@ import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { MessageUserReactionsItem } from '../MessageUserReactionsItem';
 
-jest.mock('../../../icons', () => ({
+jest.mock('../../../icons/Unknown', () => ({
   Unknown: () => {
     const { Text } = require('react-native');
     return <Text testID='unknown-icon'>unknown</Text>;

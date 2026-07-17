@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Imgur } from '../../../icons/imgur';
 import { primitives } from '../../../theme';
 
 export const ImgurBadge = () => {
+  const { icons } = useComponentsContext();
   const styles = useStyles();
   return (
     <View style={styles.container}>
-      <Imgur height={12} width={12} />
+      <icons.Imgur height={12} width={12} />
       <Text style={styles.text}>IMGUR</Text>
     </View>
   );

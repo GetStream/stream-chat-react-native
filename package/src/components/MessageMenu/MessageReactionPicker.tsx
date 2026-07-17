@@ -6,6 +6,7 @@ import { EmojiPickerList } from './EmojiPickerList';
 import { useMessageOwnReactions } from './hooks/useMessageOwnReactions';
 import { ReactionButton } from './ReactionButton';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   MessagesContextValue,
@@ -15,7 +16,6 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { Plus } from '../../icons/plus';
 import { NativeHandlers } from '../../native';
 import { scheduleActionOnClose } from '../../state-store';
 
@@ -90,6 +90,7 @@ export const EmojiViewerButton = ({
 }) => {
   const styles = useStyles();
   const [emojiViewerOpened, setEmojiViewerOpened] = React.useState<boolean>(false);
+  const { icons } = useComponentsContext();
 
   const {
     theme: {
@@ -120,7 +121,7 @@ export const EmojiViewerButton = ({
           type='outline'
           size='sm'
           iconOnly
-          LeadingIcon={Plus}
+          LeadingIcon={icons.Plus}
           onPress={onOpenEmojiViewer}
           testID='more-reactions-button'
         />

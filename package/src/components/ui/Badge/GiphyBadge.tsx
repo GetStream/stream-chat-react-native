@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Giphy } from '../../../icons/giphy';
 import { primitives } from '../../../theme';
 
 export const GiphyBadge = () => {
+  const { icons } = useComponentsContext();
   const styles = useStyles();
   return (
     <View style={styles.container}>
-      <Giphy height={12} width={12} />
+      <icons.Giphy height={12} width={12} />
       <Text style={styles.text}>GIPHY</Text>
     </View>
   );

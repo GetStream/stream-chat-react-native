@@ -5,13 +5,13 @@ import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
 } from '../../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStableCallback } from '../../../../hooks';
 import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
-import { Plus } from '../../../../icons/plus';
 import { Button } from '../../../ui/';
 
 type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttachButtonPress'> &
@@ -23,6 +23,7 @@ type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttach
   } & { toggleAttachmentPicker: () => void };
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
+  const { icons } = useComponentsContext();
   const {
     disabled = false,
     handleAttachButtonPress,
@@ -55,7 +56,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       type='outline'
       size='lg'
       iconOnly
-      LeadingIcon={Plus}
+      LeadingIcon={icons.Plus}
       onPress={onPressHandler}
       disabled={disabled}
       testID='attach-button'

@@ -8,7 +8,6 @@ import {
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { CircleBan } from '../../../icons/no-sign';
 import { components, primitives } from '../../../theme';
 
 type MessageDeletedComponentProps = {
@@ -21,7 +20,7 @@ type MessageDeletedPropsWithContext = Pick<MessageContextValue, 'alignment' | 'm
 
 const MessageDeletedWithContext = (props: MessageDeletedPropsWithContext) => {
   const { alignment, date, groupStyle } = props;
-  const { MessageFooter } = useComponentsContext();
+  const { icons, MessageFooter } = useComponentsContext();
 
   const {
     theme: {
@@ -55,7 +54,7 @@ const MessageDeletedWithContext = (props: MessageDeletedPropsWithContext) => {
           containerInner,
         ]}
       >
-        <CircleBan height={16} width={16} stroke={semantics.textSecondary} />
+        <icons.CircleBan height={16} width={16} stroke={semantics.textSecondary} />
         <Text style={[styles.deletedText, deletedText]}>{t('Message deleted')}</Text>
       </View>
       <MessageFooter date={date} />

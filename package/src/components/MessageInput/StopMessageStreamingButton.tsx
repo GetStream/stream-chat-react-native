@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Stop } from '../../icons';
 import { primitives } from '../../theme';
 
 export type StopMessageStreamingButtonProps = {
@@ -13,6 +13,7 @@ export type StopMessageStreamingButtonProps = {
 export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProps) => {
   const { onPress } = props;
 
+  const { icons } = useComponentsContext();
   const {
     theme: {
       semantics,
@@ -28,7 +29,7 @@ export const StopMessageStreamingButton = (props: StopMessageStreamingButtonProp
       style={[styles.stopStreamingButton, stopMessageStreamingButton]}
       testID='more-options-button'
     >
-      <Stop fill={semantics.accentPrimary} size={24} {...stopMessageStreamingIcon} />
+      <icons.Stop fill={semantics.accentPrimary} size={24} {...stopMessageStreamingIcon} />
     </Pressable>
   );
 };

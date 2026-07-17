@@ -3,8 +3,8 @@ import React, { useMemo } from 'react';
 import { Pressable, PressableProps, StyleSheet } from 'react-native';
 
 import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { NewClose } from '../../../../icons/xmark';
 import { primitives } from '../../../../theme';
 
 type AttachmentRemoveControlProps = PressableProps & {
@@ -18,6 +18,7 @@ export const AttachmentRemoveControl = ({
   onPress,
   ...rest
 }: AttachmentRemoveControlProps) => {
+  const { icons } = useComponentsContext();
   const {
     theme: {
       semantics,
@@ -48,7 +49,7 @@ export const AttachmentRemoveControl = ({
       testID='remove-upload-preview'
       {...rest}
     >
-      <NewClose
+      <icons.NewClose
         height={16}
         stroke={dismissIconColor || semantics.controlRemoveControlIcon}
         {...dismissIcon}

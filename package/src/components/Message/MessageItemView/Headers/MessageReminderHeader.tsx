@@ -4,12 +4,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ReminderState } from 'stream-chat';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useMessageReminder } from '../../../../hooks/useMessageReminder';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Bell } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
@@ -26,10 +26,11 @@ const MessageReminderHeaderWithContext = (props: MessageReminderHeaderPropsWithC
   const { timeLeftMs, isReminderTimeLeft } = props;
   const { t } = useTranslationContext();
   const styles = useStyles();
+  const { icons } = useComponentsContext();
 
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
-      <Bell height={16} width={16} stroke={styles.time.color} />
+      <icons.Bell height={16} width={16} stroke={styles.time.color} />
       <Text style={styles.label}>
         {isReminderTimeLeft ? t('Reminder set') : t('Reminder overdue')}
       </Text>

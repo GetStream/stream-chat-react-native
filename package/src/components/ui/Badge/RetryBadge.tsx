@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Reload } from '../../../icons/refresh';
 import { primitives } from '../../../theme';
 
 const sizes = {
@@ -44,13 +44,14 @@ export type RetryBadgeProps = ViewProps & {
 
 export const RetryBadge = (props: RetryBadgeProps) => {
   const { size = 'md', style, ...rest } = props;
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
   return (
     <View style={[styles.container, sizes[size], style]} {...rest}>
-      <Reload
+      <icons.Reload
         height={iconSizes[size].height}
         width={iconSizes[size].width}
         stroke={semantics.textOnAccent}

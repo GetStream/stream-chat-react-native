@@ -28,6 +28,8 @@ export const ReactionListItemWrapper = (props: ReactionListItemWrapperProps) => 
                 ? semantics.backgroundUtilityPressed
                 : semantics.reactionBg,
           },
+          selected && styles.containerSelected,
+          pressed && styles.containerPressed,
           style,
         ]}
         {...rest}
@@ -43,7 +45,7 @@ const useStyles = () => {
     theme: {
       semantics,
       messageItemView: {
-        reactionListItemWrapper: { wrapper, container },
+        reactionListItemWrapper: { wrapper, container, containerSelected, containerPressed },
       },
     },
   } = useTheme();
@@ -61,11 +63,17 @@ const useStyles = () => {
         gap: primitives.spacingXxs,
         ...container,
       },
+      containerPressed: {
+        ...containerPressed,
+      },
+      containerSelected: {
+        ...containerSelected,
+      },
       wrapper: {
         backgroundColor: semantics.reactionBg,
         borderRadius: primitives.radiusMax,
         ...wrapper,
       },
     });
-  }, [semantics, wrapper, container]);
+  }, [semantics, wrapper, container, containerSelected, containerPressed]);
 };

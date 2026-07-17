@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { SendRight } from '../../../../icons/send';
 import { Button } from '../../../ui';
 
 export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
@@ -14,6 +14,7 @@ export type SendButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessag
 
 export const SendButton = (props: SendButtonProps) => {
   const { disabled = false, sendMessage: propsSendMessage } = props;
+  const { icons } = useComponentsContext();
   const { sendMessage: sendMessageFromContext } = useMessageInputContext();
   const sendMessage = propsSendMessage || sendMessageFromContext;
 
@@ -30,7 +31,7 @@ export const SendButton = (props: SendButtonProps) => {
       variant='primary'
       type='solid'
       disabled={disabled}
-      LeadingIcon={SendRight}
+      LeadingIcon={icons.SendRight}
       onPress={onPressHandler}
       size='sm'
       testID='send-button'

@@ -6,10 +6,10 @@ import Animated, { LinearTransition, StretchInY, StretchOutY } from 'react-nativ
 import { PollComposerState } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { Minus, Plus } from '../../../icons';
 import { primitives } from '../../../theme';
 import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 import { Button } from '../../ui';
@@ -96,6 +96,7 @@ const MaxVotesTextInput = () => {
 export const MultipleVotesSettings = () => {
   const [allowMaxVotesPerPerson, setAllowMaxVotesPerPerson] = useState<boolean>(false);
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { modalStateStore } = useCreatePollContentContext();
   const { isClosing = false } = useStateStore(modalStateStore, modalStateSelector) ?? {};
   const messageComposer = useMessageComposer();
@@ -168,7 +169,7 @@ export const MultipleVotesSettings = () => {
             type='outline'
             size='md'
             iconOnly
-            LeadingIcon={Minus}
+            LeadingIcon={icons.Minus}
             onPress={decrementMaxVotes}
             disabled={decrementDisabled}
             style={decrementDisabled ? styles.buttonDisabled : styles.buttonEnabled}
@@ -181,7 +182,7 @@ export const MultipleVotesSettings = () => {
             type='outline'
             size='md'
             iconOnly
-            LeadingIcon={Plus}
+            LeadingIcon={icons.Plus}
             onPress={incrementMaxVotes}
             disabled={incrementDisabled}
             style={incrementDisabled ? styles.buttonDisabled : styles.buttonEnabled}

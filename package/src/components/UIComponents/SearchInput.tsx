@@ -3,10 +3,9 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Search } from '../../icons/search';
-import { XCircle } from '../../icons/x-circle';
 import { primitives } from '../../theme';
 import type { IconRenderer } from '../ui/Button/Button';
 import { Input, InputProps } from '../ui/Input/Input';
@@ -15,6 +14,7 @@ export type SearchInputProps = Partial<InputProps>;
 
 export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -37,8 +37,8 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   }, [onChangeText]);
 
   const LeadingIcon: IconRenderer = useCallback(
-    () => <Search height={20} stroke={semantics.textSecondary} width={20} />,
-    [semantics.textSecondary],
+    () => <icons.Search height={20} stroke={semantics.textSecondary} width={20} />,
+    [icons, semantics.textSecondary],
   );
 
   const ClearIcon: IconRenderer = useCallback(
@@ -50,10 +50,10 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
         onPress={handleClear}
         testID='clear-search'
       >
-        <XCircle height={15} stroke={semantics.inputTextIcon} width={15} />
+        <icons.XCircle height={15} stroke={semantics.inputTextIcon} width={15} />
       </Pressable>
     ),
-    [handleClear, semantics.inputTextIcon, t],
+    [handleClear, icons, semantics.inputTextIcon, t],
   );
 
   return (

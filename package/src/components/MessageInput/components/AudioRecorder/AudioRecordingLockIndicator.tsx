@@ -3,10 +3,8 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import Animated, { type AnimatedStyle, LinearTransition } from 'react-native-reanimated';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { ChevronUp } from '../../../../icons/chevron-up';
-import { Lock } from '../../../../icons/lock';
-import { Unlock } from '../../../../icons/unlock';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 
@@ -31,6 +29,7 @@ export const AudioRecordingLockIndicator = ({
 }: AudioRecordingLockIndicatorProps) => {
   const [visible, setVisible] = useState(true);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const { icons } = useComponentsContext();
   const styles = useStyles();
 
   useEffect(() => {
@@ -64,12 +63,12 @@ export const AudioRecordingLockIndicator = ({
       style={[styles.container, style, { bottom: messageInputHeight }, container]}
     >
       {micLocked ? (
-        <Lock stroke={semantics.accentPrimary} height={20} width={20} />
+        <icons.Lock stroke={semantics.accentPrimary} height={20} width={20} />
       ) : (
-        <Unlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
+        <icons.Unlock stroke={semantics.textPrimary} height={20} width={20} {...lockIcon} />
       )}
       {!micLocked && (
-        <ChevronUp stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
+        <icons.ChevronUp stroke={semantics.textPrimary} height={20} width={20} {...arrowUpIcon} />
       )}
     </Animated.View>
   );

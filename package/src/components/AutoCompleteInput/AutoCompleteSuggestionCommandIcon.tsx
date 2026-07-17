@@ -3,32 +3,31 @@ import { StyleSheet, View } from 'react-native';
 
 import { CommandVariants } from 'stream-chat';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Flag, GiphyIcon, Mute, Sound, UserAdd, UserDelete } from '../../icons';
-import { Lightning } from '../../icons/bolt';
-import { Imgur } from '../../icons/imgur';
 
 export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { icons } = useComponentsContext();
 
   if (name === 'ban') {
-    return <UserDelete height={20} stroke={semantics.textSecondary} width={20} />;
+    return <icons.UserDelete height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'flag') {
-    return <Flag height={20} stroke={semantics.textSecondary} width={20} />;
+    return <icons.Flag height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'giphy') {
-    return <GiphyIcon height={20} width={20} />;
+    return <icons.GiphyIcon height={20} width={20} />;
   } else if (name === 'imgur') {
-    return <Imgur height={20} width={20} />;
+    return <icons.Imgur height={20} width={20} />;
   } else if (name === 'mute') {
-    return <Mute height={20} fill={semantics.textSecondary} width={20} />;
+    return <icons.Mute height={20} fill={semantics.textSecondary} width={20} />;
   } else if (name === 'unban') {
-    return <UserAdd height={20} stroke={semantics.textSecondary} width={20} />;
+    return <icons.UserAdd height={20} stroke={semantics.textSecondary} width={20} />;
   } else if (name === 'unmute') {
-    return <Sound height={20} stroke={semantics.textSecondary} width={20} />;
+    return <icons.Sound height={20} stroke={semantics.textSecondary} width={20} />;
   } else {
-    return <Lightning fill={semantics.textSecondary} height={16} width={16} />;
+    return <icons.Lightning fill={semantics.textSecondary} height={16} width={16} />;
   }
 };
 
