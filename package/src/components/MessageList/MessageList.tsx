@@ -683,7 +683,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const shouldMarkRead = () => {
       const channelUnreadState = getChannelUnreadState(channel);
       return (
-        channel.messagePaginator.isViewingLive.getLatestValue().isViewingLive &&
+        channel.messagePaginator.isViewingLive &&
         !channelUnreadState?.first_unread_message_id &&
         client.user?.id &&
         !hasReadLastMessage(channel, client.user?.id)
