@@ -2476,7 +2476,7 @@ PODS:
     - ReactNativeDependencies
     - RNFBApp
     - Yoga
-  - RNGestureHandler (2.31.2):
+  - RNGestureHandler (3.0.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2526,7 +2526,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNReanimated (4.3.1):
+  - RNReanimated (4.5.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2548,11 +2548,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/apple (= 4.3.1)
-    - RNReanimated/common (= 4.3.1)
+    - RNReanimated/apple (= 4.5.1)
+    - RNReanimated/common (= 4.5.1)
+    - RNReanimated/view (= 4.5.1)
     - RNWorklets
     - Yoga
-  - RNReanimated/apple (4.3.1):
+  - RNReanimated/apple (4.5.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2576,7 +2577,31 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNReanimated/common (4.3.1):
+  - RNReanimated/common (4.5.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - RNWorklets
+    - Yoga
+  - RNReanimated/view (4.5.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2714,7 +2739,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.8.3):
+  - RNWorklets (0.10.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2736,10 +2761,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/apple (= 0.8.3)
-    - RNWorklets/common (= 0.8.3)
+    - RNWorklets/apple (= 0.10.2)
+    - RNWorklets/common (= 0.10.2)
     - Yoga
-  - RNWorklets/apple (0.8.3):
+  - RNWorklets/apple (0.10.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2762,7 +2787,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets/common (0.8.3):
+  - RNWorklets/common (0.10.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2796,7 +2821,7 @@ PODS:
   - SDWebImageWebPCoder (0.15.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - stream-chat-react-native (8.1.0):
+  - stream-chat-react-native (9.6.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3322,19 +3347,19 @@ SPEC CHECKSUMS:
   RNFastImage: 14580cef91660b889645fb9e87f58a53621db993
   RNFBApp: 3b942e786ca88524ba17df665a1a360fb3eee525
   RNFBMessaging: b82ba0933288d710f5371f57d3115092abf64903
-  RNGestureHandler: a97cc64efbfcb7a53969a38310a189a3d5246c65
+  RNGestureHandler: 795970e76a4f4bcef87e77c12c5c791d86574ab6
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNReactNativeHapticFeedback: 9dc72312c12cb53ee240b5b7aae1e167f3d940a6
-  RNReanimated: 8aac6baab55e39ca4e02afd69f77fb127b26520c
+  RNReanimated: e9815897227d24f4629b1ca467cf5f26bffdc7eb
   RNScreens: 8d318eb8905fa1d3439a1ce5d567f82ae8245657
   RNShare: 26c9524aee8cc3eedbab6d6b98cacce2f5247893
   RNSVG: 8efa5ad14ceb98fe56c03793bd55bc4bd30ad84b
-  RNWorklets: 4931990f73bc8f347586918b2e13f11dfadf3b75
+  RNWorklets: 53439575fed8525fb8d1cabcc05a3d4d91e6ffe4
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  stream-chat-react-native: eedc4ebe706de6e9bfbcf943599b4e62bad6079f
+  stream-chat-react-native: fdb9929071f737e85eee5b8dbdb6bc4e120ac5c4
   Teleport: 58dccc8594d74a77cdc2a2191b60656f9aaac743
   Yoga: e240fec777ff1f21ef42ccebbb44b6d262125855
 
