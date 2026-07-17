@@ -7,10 +7,9 @@ import { MessageComposerContextValue } from '../../messageComposerContext/Messag
 
 export const useCreateMessageComposer = ({
   editing: editedMessage,
-  thread: parentMessage,
   threadInstance,
   channel,
-}: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread' | 'editing'>) => {
+}: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'editing'>) => {
   const { client } = useChatContext();
   const { messageComposerCache: queueCache } = client;
 
@@ -21,17 +20,8 @@ export const useCreateMessageComposer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedMessage?.id]);
 
-  const cachedParentMessage = useMemo(() => {
-    if (!parentMessage) return undefined;
-
-    return parentMessage;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parentMessage?.id]);
-
-  // composer hierarchy
-  // edited message (always new) -> thread instance (own) -> thread message (always new) -> channel (own)
-  // editedMessage ?? thread ?? parentMessage ?? channel;
-
+  // composer hierarchy: edited message (always new) -> thread instance (own) -> channel (own)
+  // editedMessage ?? threadInstance ?? channel
   const messageComposer = useMemo(() => {
     if (cachedEditedMessage) {
       const tag = MessageComposer.constructTag(cachedEditedMessage);
@@ -49,38 +39,13 @@ export const useCreateMessageComposer = ({
       });
     } else if (threadInstance) {
       return threadInstance.messageComposer;
-    } else if (cachedParentMessage) {
-      const compositionContext = {
-        ...cachedParentMessage,
-        legacyThreadId: cachedParentMessage.id,
-      };
-
-      const tag = MessageComposer.constructTag(compositionContext);
-
-      const cachedComposer = queueCache.get(tag);
-      if (cachedComposer) return cachedComposer;
-
-      // legacy thread will receive new composer
-      return new MessageComposer({
-        client,
-        compositionContext,
-      });
     } else {
       return channel.messageComposer;
     }
-  }, [
-    cachedEditedMessage,
-    cachedParentMessage,
-    channel.messageComposer,
-    client,
-    queueCache,
-    threadInstance,
-  ]);
+  }, [cachedEditedMessage, channel.messageComposer, client, queueCache, threadInstance]);
 
   if (
-    (['legacy_thread', 'message'] as MessageComposer['contextType'][]).includes(
-      messageComposer.contextType,
-    ) &&
+    (['message'] as MessageComposer['contextType'][]).includes(messageComposer.contextType) &&
     !queueCache.peek(messageComposer.tag)
   ) {
     queueCache.add(messageComposer.tag, messageComposer);

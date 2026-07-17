@@ -222,7 +222,7 @@ type MessageListPropsWithContext = Pick<
     MessageInputContextValue,
     'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
   > &
-  Pick<ThreadContextValue, 'thread' | 'threadInstance'> & {
+  Pick<ThreadContextValue, 'threadInstance'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -266,7 +266,7 @@ type MessageListPropsWithContext = Pick<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: ThreadContextValue['thread']) => void;
+    onThreadSelect?: (message: LocalMessage | null) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -348,7 +348,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     readEvents,
     reloadChannel,
     setFlatListRef,
-    thread,
     threadInstance,
     threadList = false,
     hasMore,
@@ -374,7 +373,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   );
 
   useIncomingMessageAnnouncements({
-    activeThreadId: thread?.id,
+    activeThreadId: threadInstance?.id,
     channel,
     ownUserId: client.user?.id,
     threadList,
@@ -1158,7 +1157,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
     if (debugRef.current.setSendEventParams) {
       debugRef.current.setSendEventParams({
-        action: thread ? 'ThreadList' : 'Messages',
+        action: threadInstance ? 'ThreadList' : 'Messages',
         data: processedMessageList,
       });
     }
@@ -1285,7 +1284,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   return (
     <View style={styles.container} testID='message-flat-list-wrapper'>
       {/* Don't show the empty list indicator for Thread messages */}
-      {processedMessageList.length === 0 && !thread ? (
+      {processedMessageList.length === 0 && !threadInstance ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
@@ -1427,7 +1426,7 @@ export const MessageList = (props: MessageListProps) => {
     loadMoreRecent,
     state: { hasMore, loadingMore, loadingMoreRecent },
   } = useMessageListPagination({ channel });
-  const { thread, threadInstance } = useThreadContext();
+  const { threadInstance } = useThreadContext();
 
   return (
     <MessageListWithContext
@@ -1457,7 +1456,6 @@ export const MessageList = (props: MessageListProps) => {
         reloadChannel,
         scrollToFirstUnreadThreshold,
         shouldShowUnreadUnderlay,
-        thread,
         threadInstance,
         threadList,
         hasMore,

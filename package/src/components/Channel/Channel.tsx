@@ -1044,7 +1044,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    thread,
     threadInstance,
   });
 
@@ -1054,8 +1053,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const messageComposerContext = useMemo(
-    () => ({ channel, thread, threadInstance }),
-    [channel, thread, threadInstance],
+    () => ({ channel, threadInstance }),
+    [channel, threadInstance],
   );
 
   // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.

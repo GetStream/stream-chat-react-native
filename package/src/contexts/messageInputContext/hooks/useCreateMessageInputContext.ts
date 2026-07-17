@@ -42,9 +42,9 @@ export const useCreateMessageInputContext = ({
   deleteVoiceRecording,
   uploadVoiceRecording,
   stopVoiceRecording,
-  thread,
-}: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
-  const threadId = thread?.id;
+  threadInstance,
+}: MessageInputContextValue & Pick<ThreadContextValue, 'threadInstance'>) => {
+  const threadId = threadInstance?.id;
 
   const messageInputContext: MessageInputContextValue = useMemo(
     () => ({

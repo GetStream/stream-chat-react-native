@@ -11,7 +11,6 @@ import {
   MessageComposer,
   MessageList,
   MessageFlashList,
-  ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
   useChatContext,
@@ -130,7 +129,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
-  const [selectedThread, setSelectedThread] = useState<ThreadContextValue['thread']>();
+  const [selectedThread, setSelectedThread] = useState<LocalMessage | null>();
 
   useEffect(() => {
     const initChannel = async () => {

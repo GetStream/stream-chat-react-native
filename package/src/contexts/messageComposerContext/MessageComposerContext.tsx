@@ -16,7 +16,6 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageComposerContextValue = {
   channel: ChannelProps['channel'];
-  thread: ThreadContextValue['thread'];
   threadInstance: ThreadContextValue['threadInstance'];
   /**
    * Variable that tracks the editing state.
@@ -30,7 +29,7 @@ export const MessageComposerContext = React.createContext(
 );
 
 type Props = React.PropsWithChildren<{
-  value: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread'>;
+  value: Pick<MessageComposerContextValue, 'channel' | 'threadInstance'>;
 }>;
 
 export const MessageComposerProvider = ({ children, value }: Props) => {

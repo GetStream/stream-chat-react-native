@@ -8,7 +8,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 
-import { Channel as ChannelType, ChannelSort } from 'stream-chat';
+import { Channel as ChannelType, ChannelSort, LocalMessage } from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -19,7 +19,6 @@ import {
   SqliteClient,
   Streami18n,
   Thread,
-  ThreadContextValue,
   useCreateChatClient,
   useOverlayContext,
 } from 'stream-chat-react-native';
@@ -187,8 +186,8 @@ const Stack = createStackNavigator<NavigationParamsList>();
 type AppContextType = {
   channel: ChannelType | undefined;
   setChannel: React.Dispatch<React.SetStateAction<ChannelType | undefined>>;
-  setThread: React.Dispatch<React.SetStateAction<ThreadContextValue['thread'] | undefined>>;
-  thread: ThreadContextValue['thread'] | undefined;
+  setThread: React.Dispatch<React.SetStateAction<LocalMessage | null | undefined>>;
+  thread: LocalMessage | null | undefined;
 };
 
 const AppContext = React.createContext({} as AppContextType);
@@ -268,7 +267,7 @@ const App = () => {
 
 export default () => {
   const [channel, setChannel] = useState<ChannelType>();
-  const [thread, setThread] = useState<ThreadContextValue['thread']>();
+  const [thread, setThread] = useState<LocalMessage | null>();
   const theme = useStreamChatTheme();
   const colorScheme = useColorScheme();
 

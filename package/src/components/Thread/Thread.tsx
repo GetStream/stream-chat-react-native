@@ -26,7 +26,7 @@ try {
 }
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread' | 'threadInstance'> & {
+  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'threadInstance'> & {
     /**
      * Additional props for underlying MessageComposer component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input/#props
@@ -89,7 +89,6 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     onThreadDismount,
     notificationHostId: notificationHostIdProp,
     parentMessagePreventPress = true,
-    thread,
     threadInstance,
     shouldUseFlashList = false,
   } = props;
@@ -196,14 +195,15 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     [disabled, autoFocus],
   );
 
-  if (!thread?.id) {
+  const threadId = threadInstance?.id;
+  if (!threadId) {
     return null;
   }
 
-  const notificationHostId = notificationHostIdProp ?? getThreadNotificationHostId(thread.id);
+  const notificationHostId = notificationHostIdProp ?? getThreadNotificationHostId(threadId);
 
   return (
-    <React.Fragment key={`thread-${thread.id}`}>
+    <React.Fragment key={`thread-${threadId}`}>
       <NotificationTargetProvider hostId={notificationHostId} panel='thread'>
         {FlashList && shouldUseFlashList ? (
           <MessageFlashList
@@ -242,9 +242,9 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();
   const { threadList } = useChannelContext();
-  const { thread, threadInstance } = useThreadContext();
+  const { threadInstance } = useThreadContext();
 
-  if (thread?.id && !threadList) {
+  if (threadInstance?.id && !threadList) {
     throw new Error(
       'Please add a threadList prop to your Channel component when rendering a thread list. Check our Channel documentation for more info: https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#threadlist',
     );
@@ -254,7 +254,6 @@ export const Thread = (props: ThreadProps) => {
     <ThreadWithContext
       {...{
         client,
-        thread,
         threadInstance,
       }}
       {...props}

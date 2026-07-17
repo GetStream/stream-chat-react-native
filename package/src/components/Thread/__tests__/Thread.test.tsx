@@ -64,9 +64,6 @@ describe('Thread', () => {
     const cid = 'messaging:test-channel';
     const thread = generateMessage({ cid, text: 'Thread Message Text' });
     const parent_id = thread.id;
-    const props = {
-      thread,
-    };
 
     const threadResponses = [
       generateMessage({ cid, parent_id, text: 'Response Message Text' }),
@@ -78,7 +75,7 @@ describe('Thread', () => {
       threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
     );
 
-    renderComponent({ channel, chatClient, props, thread });
+    renderComponent({ channel, chatClient, thread });
 
     const { getAllByText, getByText, queryByText } = screen;
 

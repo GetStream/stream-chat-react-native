@@ -138,7 +138,7 @@ type MessageFlashListPropsWithContext = Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
-  Pick<ThreadContextValue, 'thread' | 'threadInstance'> & {
+  Pick<ThreadContextValue, 'threadInstance'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -182,7 +182,7 @@ type MessageFlashListPropsWithContext = Pick<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: ThreadContextValue['thread']) => void;
+    onThreadSelect?: (message: LocalMessage | null) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -338,7 +338,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     reloadChannel,
     setFlatListRef,
     hasPendingInitialTargetLoad,
-    thread,
     threadInstance,
     threadList = false,
   } = props;
@@ -1153,7 +1152,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   return (
     <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
-      {processedMessageList.length === 0 && !thread ? (
+      {processedMessageList.length === 0 && !threadInstance ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
@@ -1326,7 +1325,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     loadMoreRecent,
     state: { loadingMore, loadingMoreRecent },
   } = useMessageListPagination({ channel });
-  const { thread, threadInstance } = useThreadContext();
+  const { threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
     useMessageInputContext();
@@ -1363,7 +1362,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         scrollToFirstUnreadThreshold,
         hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,
-        thread,
         threadInstance,
         threadList,
       }}

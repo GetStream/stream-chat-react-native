@@ -334,7 +334,6 @@ describe('Channel', () => {
 
       const mockContext = {
         allowThreadMessagesInChannel: true,
-        thread: {},
       };
 
       render(
@@ -350,7 +349,6 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context!.thread).toBeInstanceOf(Object);
         expect(context!.allowThreadMessagesInChannel).toBe(true);
       });
     });

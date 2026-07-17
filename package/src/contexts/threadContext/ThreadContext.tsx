@@ -14,7 +14,6 @@ export type AlsoSentToChannelHeaderPressPayload = {
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
-  thread: LocalMessage | null;
   /**
    * Boolean to enable/disable parent message press
    */
