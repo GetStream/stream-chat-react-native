@@ -1,25 +1,20 @@
-import throttle from 'lodash/throttle';
-
 import type { Channel } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStableCallback } from '../../../hooks';
 import { MarkReadFunctionOptions } from '../../Channel/Channel';
 
-const defaultThrottleInterval = 500;
-const throttleOptions = {
-  leading: true,
-  trailing: true,
-};
-
 /**
- * Returns a throttled `markRead` callback for the active channel.
+ * Returns a `markRead` callback for the active channel.
  *
- * The behavior mirrors the previous `Channel`-level implementation: it is a no-op when the channel
- * is missing or disconnected, resets the local unread count when read events are disabled (and the
- * client opted into a local unread count), and otherwise delegates to `channel.markRead()` and then
- * resets the paginator's unread snapshot (unless `updateChannelUnreadState` is `false`).
- * The returned function is stabilized so it can be used as a dependency without triggering rerenders.
+ * Marks the channel read through the client's `messageDeliveryReporter.throttledMarkRead` — the
+ * canonical v10 read-reporting path, which the reporter throttles + coordinates — rather than calling
+ * `channel.markRead()` behind our own throttle. It is a no-op when the channel is missing or
+ * disconnected; when read events are disabled it resets the local unread count via `markReadLocally()`
+ * (dispatches `message.read_locally`) if the client opted into a local count; otherwise it reports the
+ * read and resets the paginator's unread snapshot (unless `updateChannelUnreadState` is `false`) so the
+ * "N new messages" banner + unread separator clear once caught up. The returned function is stabilized
+ * so it can be used as a dependency without triggering rerenders.
  */
 export const useMarkRead = (channel: Channel) => {
   const { client } = useChatContext();
@@ -35,56 +30,47 @@ export const useMarkRead = (channel: Channel) => {
     }
   };
 
-  const clientChannelConfig = getChannelConfigSafely();
+  const markRead = useStableCallback((options?: MarkReadFunctionOptions) => {
+    if (!channel || channel?.disconnected) {
+      return;
+    }
 
-  const markReadInternal = throttle(
-    async (options?: MarkReadFunctionOptions) => {
-      if (!channel || channel?.disconnected) {
-        return;
+    // Read events disabled (e.g. livestreams): if the client opted into a local unread count, reset
+    // it locally (dispatches message.read_locally) — no backend round trip. The paginator's unread
+    // snapshot updates from that.
+    if (!getChannelConfigSafely()?.read_events) {
+      if (client.options.isLocalUnreadCountEnabled) {
+        channel.markReadLocally();
       }
+      return;
+    }
 
-      // Read events disabled (e.g. livestreams): if the client opted into a local unread count,
-      // reset it locally (dispatches message.read_locally) — no backend round trip. The paginator's
-      // unread snapshot updates from that.
-      if (!clientChannelConfig?.read_events) {
-        if (client.options.isLocalUnreadCountEnabled) {
-          channel.markReadLocally();
-        }
-        return;
-      }
+    // Canonical v10 read reporting: the reporter throttles + coordinates the `/read` calls and honors
+    // any custom markReadRequest handler registered in channel.configState (see
+    // useChannelRequestHandlers).
+    client.messageDeliveryReporter.throttledMarkRead(channel);
 
-      // channel.markRead() delegates to client.messageDeliveryReporter.markRead(this), which honors
-      // any custom markReadRequest handler registered in channel.configState (see
-      // useChannelRequestHandlers).
-      try {
-        const response = await channel.markRead();
-
-        // Reset the paginator's unread snapshot so the "N new messages" banner and the unread
-        // separator clear once the channel is caught up. The LLC bumps `unreadCount` on every
-        // incoming `message.new` but never clears it on `message.read`, so without this the banner
-        // latches on and can't be dismissed. Mirrors stream-chat-react's `markChannelRead`.
-        //
-        // Gated on `updateChannelUnreadState` (default true): the mark-read-on-mount call passes
-        // `false` so opening a channel with unreads keeps its original unread UI (separator frozen
-        // at the boundary) until the user actually catches up.
-        const { updateChannelUnreadState = true } = options ?? {};
-        if (updateChannelUnreadState && response?.event) {
-          channel.messagePaginator.unreadStateSnapshot.next({
-            firstUnreadMessageId: null,
-            lastReadAt: new Date(),
-            lastReadMessageId: response.event.last_read_message_id ?? null,
-            unreadCount: 0,
-          });
-        }
-      } catch (err) {
-        console.log('Error marking channel as read:', err);
-      }
-    },
-    defaultThrottleInterval,
-    throttleOptions,
-  );
-
-  const markRead: (options?: MarkReadFunctionOptions) => void = useStableCallback(markReadInternal);
+    // Reset the paginator's unread snapshot so the "N new messages" banner and the unread separator
+    // clear once the channel is caught up. The LLC bumps `unreadCount` on every incoming
+    // `message.new` but never clears it on `message.read`, so without this the banner latches on and
+    // can't be dismissed. `throttledMarkRead` is fire-and-forget (no response to read), so advance
+    // the boundary to the latest loaded message.
+    //
+    // Gated on `updateChannelUnreadState` (default true): the mark-read-on-mount call passes `false`
+    // so opening a channel with unreads keeps its original unread UI (separator frozen at the
+    // boundary) until the user actually catches up.
+    const { updateChannelUnreadState = true } = options ?? {};
+    if (updateChannelUnreadState) {
+      const loadedItems = channel.messagePaginator.state.getLatestValue().items ?? [];
+      const previous = channel.messagePaginator.unreadStateSnapshot.getLatestValue();
+      channel.messagePaginator.unreadStateSnapshot.next({
+        firstUnreadMessageId: null,
+        lastReadAt: new Date(),
+        lastReadMessageId: loadedItems[loadedItems.length - 1]?.id ?? previous.lastReadMessageId,
+        unreadCount: 0,
+      });
+    }
+  });
 
   return markRead;
 };
