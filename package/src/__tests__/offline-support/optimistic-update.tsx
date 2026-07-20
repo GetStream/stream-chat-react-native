@@ -16,7 +16,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Channel as ChannelRaw } from '../../components/Channel/Channel';
 import { Chat } from '../../components/Chat/Chat';
-import { MessageInputContext, MessagesContext } from '../../contexts';
+import {
+  MessageOperations,
+  useMessageOperations,
+} from '../../components/Message/hooks/useMessageOperations';
+import { MessageInputContext } from '../../contexts';
 import { deleteMessageApi } from '../../mock-builders/api/deleteMessage';
 import { deleteReactionApi } from '../../mock-builders/api/deleteReaction';
 import { erroredDeleteApi, erroredPostApi } from '../../mock-builders/api/error';
@@ -210,6 +214,33 @@ export const OptimisticUpdates = () => {
       return <>{children}</>;
     };
 
+    // Same as CallbackEffectWithContext, but sources the message operations (delete/react/etc.)
+    // from the useMessageOperations hook instead of a context — they no longer live on MessagesContext.
+    const CallbackEffectWithMessageOperations = ({
+      callback,
+      children,
+    }: {
+      callback: (ops: MessageOperations) => Promise<void> | void;
+      children: React.ReactNode;
+    }) => {
+      const ops = useMessageOperations();
+      const [ready, setReady] = useState(false);
+      useEffect(() => {
+        const call = async () => {
+          await callback(ops);
+          setReady(true);
+        };
+
+        call();
+      }, [callback, ops]);
+
+      if (!ready) {
+        return null;
+      }
+
+      return <>{children}</>;
+    };
+
     describe('delete message', () => {
       it('pending task should exist if deleteMessage request fails', async () => {
         const message = generateMessage();
@@ -217,7 +248,7 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel} initialValue={message.text}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ deleteMessage }) => {
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
@@ -226,10 +257,9 @@ export const OptimisticUpdates = () => {
                     // do nothing
                   }
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );
@@ -248,15 +278,14 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel} initialValue={message.text}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ deleteMessage }) => {
                   useMockedApis(chatClient, [deleteMessageApi(message)]);
                   await deleteMessage(message);
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );
@@ -277,7 +306,7 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ sendReaction }) => {
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
@@ -286,10 +315,9 @@ export const OptimisticUpdates = () => {
                     // do nothing
                   }
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );
@@ -310,15 +338,14 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ sendReaction }) => {
                   useMockedApis(chatClient, [sendReactionApi(targetMessage, reaction)]);
                   await sendReaction(reaction.type, targetMessage.id);
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );
@@ -407,7 +434,7 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ deleteReaction }) => {
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
@@ -416,10 +443,9 @@ export const OptimisticUpdates = () => {
                     // do nothing
                   }
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );
@@ -440,15 +466,14 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ deleteReaction }) => {
                   useMockedApis(chatClient, [deleteReactionApi(targetMessage, reaction)]);
                   await deleteReaction(reaction.type, targetMessage.id);
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );
@@ -696,7 +721,7 @@ export const OptimisticUpdates = () => {
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel} initialValue={message.text}>
-              <CallbackEffectWithContext
+              <CallbackEffectWithMessageOperations
                 callback={async ({ deleteMessage, sendReaction }) => {
                   useMockedApis(chatClient, [erroredDeleteApi()]);
                   try {
@@ -712,10 +737,9 @@ export const OptimisticUpdates = () => {
                     // do nothing
                   }
                 }}
-                context={MessagesContext}
               >
                 <View testID='children' />
-              </CallbackEffectWithContext>
+              </CallbackEffectWithMessageOperations>
             </Channel>
           </Chat>,
         );

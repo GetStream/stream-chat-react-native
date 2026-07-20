@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AppState,
   LayoutChangeEvent,
   ScrollViewProps,
   StyleSheet,
@@ -11,9 +12,11 @@ import {
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
-import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
+import type { Channel, Event, LocalMessage } from 'stream-chat';
 
+import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
+
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
 import { useTypingUsers } from './hooks/useTypingUsers';
@@ -47,10 +50,6 @@ import {
   OwnCapabilitiesContextValue,
   useOwnCapabilitiesContext,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import {
-  PaginatedMessageListContextValue,
-  usePaginatedMessageListContext,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
@@ -61,6 +60,9 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
+import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
+import { MarkReadFunctionOptions } from '../Channel/Channel';
+import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
@@ -93,24 +95,11 @@ const flatListViewabilityConfig: ViewabilityConfig = {
 };
 
 const hasReadLastMessage = (channel: Channel, userId: string) => {
-  const latestMessageIdInChannel =
-    channel.state.latestMessages[channel.state.latestMessages.length - 1]?.id;
+  const latestMessageIdInChannel = channel.messagePaginator.state
+    .getLatestValue()
+    .items?.at(-1)?.id;
   const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
   return latestMessageIdInChannel === lastReadMessageIdServer;
-};
-
-const getPreviousLastMessage = (messages: LocalMessage[], newMessage?: MessageResponse) => {
-  if (!newMessage) return;
-  let previousLastMessage;
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const msg = messages[i];
-    if (!msg?.id) break;
-    if (msg.id !== newMessage.id) {
-      previousLastMessage = msg;
-      break;
-    }
-  }
-  return previousLastMessage;
 };
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
@@ -125,19 +114,14 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<
     ChannelContextValue,
     | 'channel'
-    | 'channelUnreadStateStore'
     | 'disabled'
     | 'hideStickyDateHeader'
     | 'highlightedMessageId'
     | 'loadChannelAroundMessage'
     | 'loading'
-    | 'markRead'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
-    | 'setChannelUnreadState'
-    | 'setTargetedMessage'
     | 'hasPendingInitialTargetLoad'
-    | 'targetedMessage'
     | 'threadList'
     | 'maximumMessageLimit'
   > &
@@ -145,16 +129,17 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<
     MessageInputContextValue,
     'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
-  > &
-  Pick<PaginatedMessageListContextValue, 'loadMore' | 'loadMoreRecent'> &
-  Pick<
+  > & {
+    loadMore: () => Promise<void>;
+    loadMoreRecent: () => Promise<void>;
+    markRead: (options?: MarkReadFunctionOptions) => void;
+    loadingMore?: boolean;
+    loadingMoreRecent?: boolean;
+  } & Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
-  Pick<
-    ThreadContextValue,
-    'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
-  > & {
+  Pick<ThreadContextValue, 'threadInstance'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -187,7 +172,7 @@ type MessageFlashListPropsWithContext = Pick<
      * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header if inverted is false
      */
-    HeaderComponent?: React.ComponentType;
+    HeaderComponent?: React.ComponentType<{ loadingMore?: boolean }>;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
     /** Turn off grouping of messages by user */
@@ -198,7 +183,7 @@ type MessageFlashListPropsWithContext = Pick<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: ThreadContextValue['thread']) => void;
+    onThreadSelect?: (message: LocalMessage | null) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -311,6 +296,13 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
+const messageFocusSelector = (state: {
+  signal: { messageId?: string; token?: number } | null;
+}) => ({
+  focusedMessageId: state.signal?.messageId,
+  focusToken: state.signal?.token,
+});
+
 const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) => {
   const LoadingMoreRecentIndicator = props.threadList
     ? InlineLoadingMoreRecentThreadIndicator
@@ -320,7 +312,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     attachmentPickerStore,
     additionalFlashListProps,
     channel,
-    channelUnreadStateStore,
     client,
     closePicker,
     disabled,
@@ -332,10 +323,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     isLiveStreaming = false,
     loadChannelAroundMessage,
     loading,
+    loadingMore,
+    loadingMoreRecent,
     loadMore,
     loadMoreRecent,
-    loadMoreRecentThread,
-    loadMoreThread,
     markRead,
     maximumMessageLimit,
     messageInputFloating,
@@ -346,12 +337,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     onListScroll,
     onThreadSelect,
     reloadChannel,
-    setChannelUnreadState,
     setFlatListRef,
-    setTargetedMessage,
     hasPendingInitialTargetLoad,
-    targetedMessage,
-    thread,
     threadInstance,
     threadList = false,
   } = props;
@@ -376,6 +363,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const [hasMoved, setHasMoved] = useState(false);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
+  const [isAppActive, setIsAppActive] = useState(() => AppState.currentState === 'active');
+  const isNewestMessageVisibleRef = useRef(false);
   const [isUnreadNotificationOpen, setIsUnreadNotificationOpen] = useState<boolean>(false);
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
@@ -411,6 +400,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
     isFlashList: true,
     isLiveStreaming,
+    maximumMessageLimit,
     threadList,
   });
 
@@ -479,66 +469,77 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [disabled]);
 
+  // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump emits
+  // it, and the effect below scrolls to it. `token` re-fires the effect on every jump (even to the
+  // same id); see MessageList for the full rationale.
+  const focusPaginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const { focusedMessageId, focusToken } =
+    useStateStore(focusPaginator?.messageFocusSignal, messageFocusSelector) ?? {};
+  const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
+
+  // Clear the focus/highlight signal on unmount (or when switching channel/thread). The signal
+  // lives on the LLC paginator, which outlives this component — without this, a highlight still
+  // active when you navigate away re-fires the scroll+highlight on return (the scroll-token ref
+  // resets on remount). Mirrors the old React-state highlight that cleaned up on unmount.
+  useEffect(() => {
+    const paginator = focusPaginator;
+    return () => paginator?.clearMessageFocusSignal();
+  }, [focusPaginator]);
+
   /**
-   * Check if a messageId needs to be scrolled to after list loads, and scroll to it
-   * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
+   * Scrolls to the focused message (messageFocusSignal) once it's rendered. Re-attempts when the
+   * list updates while a focus is pending, and marks each focus token handled so unrelated list
+   * changes during the highlight window don't re-scroll.
    */
   useEffect(() => {
-    if (!targetedMessage) {
+    if (!focusedMessageId || focusToken === lastFocusScrollTokenRef.current) {
       return;
     }
 
     const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === targetedMessage,
+      (message) => message?.id === focusedMessageId,
     );
 
-    // the message we want to scroll to has not been loaded in the state yet
+    // Not in the rendered window yet (jumpToMessage already loaded-around it, so a later
+    // processedMessageList change re-runs this) — bail rather than re-jump (no jump↔effect loop).
     if (indexOfParentInMessageList === -1) {
-      loadChannelAroundMessage({ messageId: targetedMessage, setTargetedMessage });
-    } else {
-      scrollToDebounceTimeoutRef.current = setTimeout(async () => {
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-
-        const scrollToIndex = async () => {
-          const list = flashListRef.current;
-
-          if (!list) {
-            return false;
-          }
-
-          await list.scrollToIndex({
-            animated: true,
-            index: indexOfParentInMessageList,
-            viewPosition: 0.5,
-          });
-
-          return true;
-        };
-
-        await scrollToIndex();
-        requestAnimationFrame(async () => {
-          await scrollToIndex();
-          setTargetedMessage(undefined);
-        });
-      }, WAIT_FOR_SCROLL_TIMEOUT);
+      return;
     }
-  }, [loadChannelAroundMessage, processedMessageList, setTargetedMessage, targetedMessage]);
+
+    lastFocusScrollTokenRef.current = focusToken;
+    scrollToDebounceTimeoutRef.current = setTimeout(async () => {
+      clearTimeout(scrollToDebounceTimeoutRef.current);
+
+      const scrollToIndex = async () => {
+        const list = flashListRef.current;
+
+        if (!list) {
+          return false;
+        }
+
+        await list.scrollToIndex({
+          animated: true,
+          index: indexOfParentInMessageList,
+          viewPosition: 0.5,
+        });
+
+        return true;
+      };
+
+      await scrollToIndex();
+      requestAnimationFrame(async () => {
+        await scrollToIndex();
+      });
+      // Start the highlight's auto-dismiss countdown now that the message is scrolled into view.
+      // The LLC deliberately does NOT start it on emit (the message may not be visible yet), so
+      // without this the highlight would persist forever.
+      focusPaginator?.scheduleMessageFocusSignalClear({ token: focusToken });
+    }, WAIT_FOR_SCROLL_TIMEOUT);
+  }, [focusPaginator, focusToken, focusedMessageId, processedMessageList]);
 
   const goToMessage = useStableCallback(async (messageId: string) => {
-    const indexOfParentInMessageList = processedMessageList.findIndex(
-      (message) => message?.id === messageId,
-    );
-
-    try {
-      if (indexOfParentInMessageList === -1) {
-        clearTimeout(scrollToDebounceTimeoutRef.current);
-        await loadChannelAroundMessage({ messageId, setTargetedMessage });
-      } else {
-        setTargetedMessage(messageId);
-      }
-    } catch (e) {
-      console.warn('Error while scrolling to message', e);
-    }
+    // jumpToMessage loads-around + emits messageFocusSignal → the effect scrolls and highlights.
+    await loadChannelAroundMessage({ messageId });
   });
 
   useEffect(() => {
@@ -592,7 +593,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       return;
     }
 
-    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+    const notLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
         channel.state.latestMessages[channel.state.latestMessages.length - 1];
@@ -625,41 +626,47 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }, [channel, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, threadList]);
 
   /**
-   * Effect to mark the channel as read when the user scrolls to the bottom of the message list.
+   * Track app foreground/background. Combined with viewability (above) it decides whether we are
+   * "viewing live"; the LLC skips the unread bump while live (see `messagePaginator.isViewingLive`).
+   */
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) =>
+      setIsAppActive(nextAppState === 'active'),
+    );
+    return () => subscription.remove();
+  }, []);
+
+  /**
+   * Push the "viewing live" signal when the app foreground state changes (viewability pushes it on
+   * scroll). Reset to false on unmount / channel switch so a backgrounded or torn-down list never
+   * suppresses unread counting.
+   */
+  useEffect(() => {
+    const { messagePaginator } = channel;
+    messagePaginator.setViewingLive(isAppActive && isNewestMessageVisibleRef.current);
+    return () => messagePaginator.setViewingLive(false);
+  }, [channel, isAppActive]);
+
+  /**
+   * Mark the channel read when a message arrives while the user is viewing the latest messages.
+   * The LLC skips the unread bump while live, so — unlike before — no synchronous snapshot reset is
+   * needed here (that was the fragile bump-then-undo); we just tell the server.
    */
   useEffect(() => {
     const shouldMarkRead = () => {
-      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+      const channelUnreadState = getChannelUnreadState(channel);
       return (
+        channel.messagePaginator.isViewingLive &&
         !channelUnreadState?.first_unread_message_id &&
-        !scrollToBottomButtonVisible &&
         client.user?.id &&
         !hasReadLastMessage(channel, client.user?.id)
       );
     };
 
-    const handleEvent = async (event: Event) => {
+    const handleEvent = (event: Event) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
-      const isMyOwnMessage = event.message?.user?.id === client.user?.id;
-      const channelUnreadState = channelUnreadStateStore.channelUnreadState;
-      // When the scrollToBottomButtonVisible is true, we need to manually update the channelUnreadState when its a received message.
-      if (
-        (scrollToBottomButtonVisible || channelUnreadState?.first_unread_message_id) &&
-        !isMyOwnMessage
-      ) {
-        const previousUnreadCount = channelUnreadState?.unread_messages ?? 0;
-        const previousLastMessage = getPreviousLastMessage(channel.state.messages, event.message);
-        setChannelUnreadState({
-          ...channelUnreadState,
-          last_read:
-            channelUnreadState?.last_read ??
-            (previousUnreadCount === 0 && previousLastMessage?.created_at
-              ? new Date(previousLastMessage.created_at)
-              : new Date(0)), // not having information about the last read message means the whole channel is unread,
-          unread_messages: previousUnreadCount + 1,
-        });
-      } else if (mainChannelUpdated && shouldMarkRead()) {
-        await markRead();
+      if (mainChannelUpdated && shouldMarkRead()) {
+        markRead();
       }
     };
 
@@ -668,15 +675,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     return () => {
       listener?.unsubscribe();
     };
-  }, [
-    channel,
-    channelUnreadStateStore,
-    client.user?.id,
-    markRead,
-    scrollToBottomButtonVisible,
-    setChannelUnreadState,
-    threadList,
-  ]);
+  }, [channel, client.user?.id, markRead]);
 
   const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
     if (!viewableItems.length) {
@@ -711,7 +710,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    * This function should show or hide the unread indicator depending on the
    */
   const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    const channelUnreadState = channelUnreadStateStore.channelUnreadState;
+    const channelUnreadState = getChannelUnreadState(channel);
     // we need this check to make sure that regular list change do not trigger
     // the unread notification to appear (for example if the old last read messages
     // go out of the viewport).
@@ -787,6 +786,24 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       updateStickyHeaderDateIfNeeded(viewableItems);
     }
     updateStickyUnreadIndicator(viewableItems);
+
+    // Report whether the user is viewing the latest messages (the newest channel message is on
+    // screen) so the LLC can skip the unread bump while live (see `messagePaginator.isViewingLive`).
+    // Viewability reflects the real layout, so this is correct even at mount — a channel opened at
+    // its first unread has the newest message off-screen and therefore reports `false`.
+    // The newest message comes from the paginator (what the list actually renders), not
+    // channel.state.latestMessages. The last loaded item is the true newest only when the head is
+    // loaded (`!hasMoreHead`) — if newer messages exist beyond the loaded window we're not live even
+    // when the last loaded item is visible.
+    const paginatorState = channel.messagePaginator.state.getLatestValue();
+    const loadedItems = paginatorState.items ?? [];
+    const newestMessageId = paginatorState.hasMoreHead
+      ? undefined
+      : loadedItems[loadedItems.length - 1]?.id;
+    isNewestMessageVisibleRef.current =
+      !!newestMessageId &&
+      viewableItems.some((viewable) => viewable.item.message?.id === newestMessageId);
+    channel.messagePaginator.setViewingLive(isAppActive && isNewestMessageVisibleRef.current);
   };
 
   const onViewableItemsChanged = useRef(unstableOnViewableItemsChanged);
@@ -869,9 +886,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       await onEndReachedInPromise.current;
     }
     onStartReachedInPromise.current = (
-      threadList && !!threadInstance && loadMoreRecentThread
-        ? loadMoreRecentThread({})
-        : loadMoreRecent()
+      threadList && threadInstance ? threadInstance.messagePaginator.toHead() : loadMoreRecent()
     )
       .then(callback)
       .catch(onError);
@@ -910,7 +925,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       await onStartReachedInPromise.current;
     }
 
-    onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
+    onEndReachedInPromise.current = (
+      threadList ? (threadInstance?.messagePaginator.toTail() ?? Promise.resolve()) : loadMore()
+    )
       .then(callback)
       .catch(onError);
   });
@@ -957,7 +974,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     const isScrollAtStart = contentLength - visibleLength - offset < messageInputHeight;
 
-    const notLatestSet = channel.state.messages !== channel.state.latestMessages;
+    const notLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
 
     const showScrollToBottomButton =
       messageListHasMessages && ((!threadList && notLatestSet) || !isScrollAtStart);
@@ -976,7 +993,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   });
 
   const goToNewMessages = useStableCallback(async () => {
-    const isNotLatestSet = channel.state.messages !== channel.state.latestMessages;
+    const isNotLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
 
     if (isNotLatestSet) {
       resetPaginationTrackersRef.current();
@@ -997,6 +1014,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     });
   });
 
+  // Non-reactive read for the accessibility action label only (the button owns its own reactive
+  // count). Refreshes on the list's normal re-renders (e.g. scroll), which is sufficient for a11y.
   const scrollToBottomUnreadCount =
     scrollToBottomButtonVisible && !threadList ? channel?.countUnread() : undefined;
   const {
@@ -1089,6 +1108,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     currentListHeightRef.current = height;
   });
 
+  const ListHeaderComponent = useCallback(
+    () => <HeaderComponent loadingMore={loadingMore} />,
+    [HeaderComponent, loadingMore],
+  );
+
   const ListFooterComponent = useCallback(() => {
     if (FooterComponent) {
       return <FooterComponent />;
@@ -1096,7 +1120,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     return (
       <FlashListFooterTypingAdapter enabled={!disableTypingIndicator && !!TypingIndicator}>
-        <LoadingMoreRecentIndicator />
+        <LoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />
         {!disableTypingIndicator && TypingIndicator && (
           <TypingIndicatorContainer>
             <TypingIndicator />
@@ -1107,6 +1131,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }, [
     FooterComponent,
     LoadingMoreRecentIndicator,
+    loadingMoreRecent,
     TypingIndicator,
     TypingIndicatorContainer,
     disableTypingIndicator,
@@ -1128,7 +1153,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   return (
     <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
-      {processedMessageList.length === 0 && !thread ? (
+      {processedMessageList.length === 0 && !threadInstance ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
@@ -1142,7 +1167,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={ListFooterComponent}
-            ListHeaderComponent={HeaderComponent}
+            ListHeaderComponent={ListHeaderComponent}
             maintainVisibleContentPosition={maintainVisibleContentPosition}
             onMomentumScrollEnd={onUserScrollEvent}
             onScroll={handleScroll}
@@ -1188,15 +1213,14 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         <ScrollToBottomButton
           onPress={goToNewMessages}
           showNotification={scrollToBottomButtonVisible}
-          unreadCount={scrollToBottomUnreadCount}
         />
       </Animated.View>
       <NetworkDownIndicator />
       {isUnreadNotificationOpen && !threadList ? (
         <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification
+            markRead={markRead}
             onCloseHandler={onUnreadNotificationClose}
-            channelUnreadStateStore={channelUnreadStateStore}
           />
         </View>
       ) : null}
@@ -1279,7 +1303,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
   const {
     channel,
-    channelUnreadStateStore,
     disabled,
     enableMessageGroupingByUser,
     error,
@@ -1288,21 +1311,22 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     isChannelActive,
     loadChannelAroundMessage,
     loading,
-    markRead,
     maximumMessageLimit,
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setChannelUnreadState,
-    setTargetedMessage,
     hasPendingInitialTargetLoad,
-    targetedMessage,
     threadList,
   } = useChannelContext();
+  const markRead = useMarkRead(channel);
   const { client } = useChatContext();
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
     useMessagesContext();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
-  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
+  const {
+    loadMore,
+    loadMoreRecent,
+    state: { loadingMore, loadingMoreRecent },
+  } = useMessageListPagination({ channel });
+  const { threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
     useMessageInputContext();
@@ -1313,7 +1337,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
-        channelUnreadStateStore,
         client,
         closePicker,
         disabled,
@@ -1328,8 +1351,8 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         loading,
         loadMore,
         loadMoreRecent,
-        loadMoreRecentThread,
-        loadMoreThread,
+        loadingMore,
+        loadingMoreRecent,
         markRead,
         maximumMessageLimit,
         messageInputFloating,
@@ -1338,12 +1361,8 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         readEvents,
         reloadChannel,
         scrollToFirstUnreadThreshold,
-        setChannelUnreadState,
-        setTargetedMessage,
         hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,
-        targetedMessage,
-        thread,
         threadInstance,
         threadList,
       }}

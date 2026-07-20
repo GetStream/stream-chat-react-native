@@ -16,12 +16,28 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Channel } from '../../Channel/Channel';
-import { channelInitialState } from '../../Channel/hooks/useChannelDataState';
 import * as MessageListPaginationHook from '../../Channel/hooks/useMessageListPagination';
 import { Chat } from '../../Chat/Chat';
 
 import { SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME } from '../hooks/useScrollToBottomAccessibilityAction';
 import { MessageList } from '../MessageList';
+
+// Local test fixture (was previously imported from the now-removed useChannelDataState hook).
+const channelInitialState = {
+  hasMore: true,
+  hasMoreNewer: false,
+  loading: false,
+  loadingMore: false,
+  loadingMoreRecent: false,
+  members: {},
+  messages: [],
+  pinnedMessages: [],
+  read: {},
+  targetedMessageId: undefined,
+  typing: {},
+  watcherCount: 0,
+  watchers: {},
+};
 
 describe('MessageList', () => {
   afterEach(() => {
@@ -272,11 +288,17 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
+    channel.messagePaginator.emitMessageFocusSignal({
+      messageId: targetedMessageId,
+      reason: 'jump-to-message',
+      ttlMs: 3000,
+    });
+
     render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageList targetedMessage={targetedMessageId} />
+            <MessageList />
           </Channel>
         </Chat>
       </OverlayProvider>,
@@ -428,11 +450,21 @@ describe('MessageList', () => {
       .spyOn(FlatList.prototype, 'scrollToIndex')
       .mockImplementation(() => {});
 
+    // Targeting is driven by the paginator's messageFocusSignal now (not a prop): emitting it makes
+    // the list scroll to the focused message. NOTE: like the other full-list-render tests here, this
+    // is runtime-stale under the portal (it seeds channel.state.messages, not
+    // channel.messagePaginator.state.items) — the seed needs updating when the portal is removed.
+    channel.messagePaginator.emitMessageFocusSignal({
+      messageId: targetedMessage,
+      reason: 'jump-to-message',
+      ttlMs: 3000,
+    });
+
     render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageList targetedMessage={targetedMessage} />
+            <MessageList />
           </Channel>
         </Chat>
       </OverlayProvider>,
@@ -443,54 +475,6 @@ describe('MessageList', () => {
         animated: true,
         index: 14,
         viewPosition: 0.5,
-      });
-    });
-  });
-
-  it("should load more messages around the message id if the targeted message isn't present in the list", async () => {
-    const user = generateUser();
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user })],
-    });
-
-    const messages = Array.from({ length: 20 }, (_, i) =>
-      generateMessage({ id: `${i}`, text: `message-${i}` }),
-    );
-
-    const chatClient = await getTestClientWithUser({ id: user.id });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
-    await channel.watch();
-
-    const targetedMessage = '21';
-    const setTargetedMessage = jest.fn();
-
-    channel.state = {
-      ...channelInitialState,
-      latestMessages: [],
-      messages,
-    } as unknown as typeof channel.state;
-
-    const loadChannelAroundMessage = jest.fn(() => Promise.resolve());
-
-    render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageList
-              loadChannelAroundMessage={loadChannelAroundMessage}
-              setTargetedMessage={setTargetedMessage}
-              targetedMessage={targetedMessage}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    await waitFor(() => {
-      expect(loadChannelAroundMessage).toHaveBeenCalledWith({
-        messageId: targetedMessage,
-        setTargetedMessage,
       });
     });
   });
@@ -511,10 +495,8 @@ describe('MessageList pagination', () => {
     return jest
       .spyOn(MessageListPaginationHook, 'useMessageListPagination')
       .mockImplementation(() => ({
-        copyMessagesStateFromChannel: jest.fn(),
         loadChannelAroundMessage: jest.fn(),
         loadChannelAtFirstUnreadMessage: jest.fn(),
-        loadInitialMessagesStateFromChannel: jest.fn(),
         loadLatestMessages: jest.fn(),
         loadMore: jest.fn(),
         loadMoreRecent: jest.fn(),

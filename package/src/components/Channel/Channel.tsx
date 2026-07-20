@@ -1,20 +1,11 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
-
 import {
-  Channel as ChannelClass,
-  ChannelState,
   Channel as ChannelType,
-  DeleteMessageOptions,
   EventHandler,
   LocalMessage,
-  localMessageToNewMessagePayload,
-  MessageLabel,
   MessageResponse,
-  Reaction,
   SendMessageAPIResponse,
   SendMessageOptions,
   StreamChat,
@@ -24,7 +15,7 @@ import {
   UpdateMessageOptions,
 } from 'stream-chat';
 
-import { useChannelDataState } from './hooks/useChannelDataState';
+import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
@@ -32,14 +23,13 @@ import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessage
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 
 import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
-import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
-import { useCreateTypingContext } from './hooks/useCreateTypingContext';
-
-import { useMessageListPagination } from './hooks/useMessageListPagination';
-import { useTargetedMessage } from './hooks/useTargetedMessage';
+import {
+  DEFAULT_HIGHLIGHT_DURATION,
+  useMessageListPagination,
+} from './hooks/useMessageListPagination';
 
 import {
   AttachmentPickerContextValue,
@@ -51,7 +41,6 @@ import {
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
 
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
-import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -69,10 +58,6 @@ import {
   OwnCapabilitiesContextValue,
   OwnCapabilitiesProvider,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import {
-  PaginatedMessageListContextValue,
-  PaginatedMessageListProvider,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -83,38 +68,26 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { TypingProvider } from '../../contexts/typingContext/TypingContext';
 import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
-import { usePrunableMessageList } from '../../hooks/usePrunableMessageList';
+import { useStateStore } from '../../hooks/useStateStore';
 import {
   isDocumentPickerAvailable,
   isImageMediaLibraryAvailable,
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import {
-  ChannelUnreadStateStore,
-  ChannelUnreadStateStoreType,
-} from '../../state-store/channel-unread-state';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import { DefaultAttachmentData, FileTypes } from '../../types/types';
-import { addReactionToLocalState } from '../../utils/addReactionToLocalState';
-import { compressedImageURI } from '../../utils/compressImage';
+import type { ChannelUnreadState } from '../../types/types';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import {
-  getFileNameFromPath,
-  isBouncedMessage,
-  isLocalUrl,
-  MessageStatusTypes,
-  ReactionData,
-} from '../../utils/utils';
+import { MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
@@ -168,17 +141,14 @@ export const reactionData: ReactionData[] = [
  */
 const scrollToFirstUnreadThreshold = 0;
 
-const defaultThrottleInterval = 500;
-const defaultDebounceInterval = 500;
-const throttleOptions = {
-  leading: true,
-  trailing: true,
-};
-
-const debounceOptions = {
-  leading: true,
-  trailing: true,
-};
+/**
+ * Initial message-list page size. stream-chat's `MessagePaginator` defaults to 100
+ * (`DEFAULT_CHANNEL_MESSAGE_LIST_PAGE_SIZE`). On native that makes the initial load — and therefore
+ * every subsequent message-list commit, whose cost scales with the number of loaded messages — several
+ * times heavier than necessary. We keep it to a screenful-plus-buffer; older messages load on demand
+ * via pagination. Mirrors the SDK's historical initial-load size.
+ */
+const DEFAULT_MESSAGE_LIST_PAGE_SIZE = 25;
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   Partial<
@@ -230,10 +200,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     >
   > &
   Pick<TranslationContextValue, 't'> &
-  Partial<
-    Pick<PaginatedMessageListContextValue, 'messages' | 'loadingMore' | 'loadingMoreRecent'>
-  > &
-  Pick<UseChannelStateValue, 'threadMessages' | 'setThreadMessages'> &
   Partial<
     Pick<
       MessagesContextValue,
@@ -305,7 +271,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     doMarkReadRequest?: (
       channel: ChannelType,
-      setChannelUnreadUiState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void,
+      setChannelUnreadUiState?: (data: ChannelUnreadState | undefined) => void,
     ) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
@@ -385,6 +351,12 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     initializeOnMount?: boolean;
   };
 
+// The highlighted message id is derived from the paginator's messageFocusSignal (LLC), which is
+// emitted by the jump fns and auto-cleared after its TTL — no separate targeted-message React state.
+const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
+  highlightedMessageId: state.signal?.messageId,
+});
+
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
@@ -455,8 +427,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     isMessageAIGenerated = () => false,
     keyboardBehavior,
     keyboardVerticalOffset,
-    loadingMore: loadingMoreProp,
-    loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     markReadOnMount = true,
     maxTimeBetweenGroupedMessages,
@@ -477,8 +447,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     messageSwipeToReplyHitSlop,
     messageTextNumberOfLines,
     myMessageTheme,
-    // TODO: Think about this one
-    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -489,17 +457,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reactionListType = 'clustered',
     selectReaction,
     setInputRef,
-    setThreadMessages,
     shouldShowUnreadUnderlay = true,
     shouldSyncChannel,
-    stateUpdateThrottleInterval = defaultThrottleInterval,
     supportedReactions = reactionData,
     t,
     thread: threadFromProps,
     threadList,
-    threadMessages,
     topInset = 0,
-    isOnline,
     maximumMessageLimit,
     initializeOnMount = true,
     urlPreviewType = 'full',
@@ -508,29 +472,40 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const components = useComponentsContext();
   const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
 
-  const { thread: threadProps, threadInstance } = threadFromProps;
+  const { thread: threadProps, threadInstance: threadInstanceFromProps } = threadFromProps;
 
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const lastReadRef = useRef<Date | undefined>(undefined);
-  const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
-  const [threadHasMore, setThreadHasMore] = useState(true);
-  const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadStateStore] = useState(() => new ChannelUnreadStateStore());
+  // The active thread is fully prop-driven: derive it synchronously during render so the reply
+  // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
+  // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
+  const thread = threadProps ?? null;
+  const threadInstance = useMemo(() => {
+    if (threadInstanceFromProps) {
+      return threadInstanceFromProps;
+    }
+    if (!threadProps?.id || !channel) {
+      return null;
+    }
+    return (
+      client.threads.threadsById[threadProps.id] ??
+      new Thread({ channel, client, parentMessage: threadProps })
+    );
+    // Keyed on threadProps.id (stable) rather than the threadProps object so an unmanaged thread's
+    // constructed instance isn't recreated (losing paginator state) on unrelated re-renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [threadInstanceFromProps, threadProps?.id, channel, client]);
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
-  // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
-  const setChannelUnreadState = useCallback(
-    (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
-      channelUnreadStateStore.channelUnreadState = data;
-    },
-    [channelUnreadStateStore],
-  );
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
   const syncingChannelRef = useRef(false);
 
-  const { highlightedMessageId, setTargetedMessage, targetedMessage } = useTargetedMessage();
+  const { highlightedMessageId } = useStateStore(
+    (threadInstance ?? channel).messagePaginator.messageFocusSignal,
+    messageFocusSignalSelector,
+  );
 
   /**
    * This ref will hold the abort controllers for
@@ -548,22 +523,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
 
-  const {
-    copyStateFromChannel,
-    initStateFromChannel,
-    setRead,
-    setTyping,
-    state: channelState,
-  } = useChannelDataState(channel);
+  // Register the integrator's custom message-request overrides into channel.configState so the
+  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
+  useChannelRequestHandlers({
+    channel,
+    doMarkReadRequest,
+    doSendMessageRequest,
+    doUpdateMessageRequest,
+  });
 
   const {
-    copyMessagesStateFromChannel: rawCopyMessagesStateFromChannel,
     loadChannelAroundMessage: loadChannelAroundMessageFn,
     loadChannelAtFirstUnreadMessage,
-    loadInitialMessagesStateFromChannel,
     loadLatestMessages,
-    loadMore,
-    loadMoreRecent,
     state: channelMessagesState,
   } = useMessageListPagination({
     channel,
@@ -581,52 +553,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
-  const { setMessages: copyMessagesStateFromChannel, viewabilityChangedCallback } =
-    usePrunableMessageList({ maximumMessageLimit, setMessages: rawCopyMessagesStateFromChannel });
-
-  const setReadThrottled = useMemo(
-    () =>
-      throttle(
-        () => {
-          if (channel) {
-            setRead(channel);
-          }
-        },
-        stateUpdateThrottleInterval,
-        throttleOptions,
-      ),
-    [channel, stateUpdateThrottleInterval, setRead],
-  );
-
-  const copyMessagesStateFromChannelThrottled = useMemo(
-    () =>
-      throttle(
-        () => {
-          if (channel) {
-            copyMessagesStateFromChannel(channel);
-          }
-        },
-        newMessageStateUpdateThrottleInterval,
-        throttleOptions,
-      ),
-    [channel, newMessageStateUpdateThrottleInterval, copyMessagesStateFromChannel],
-  );
-
-  const copyChannelState = useMemo(
-    () =>
-      throttle(
-        () => {
-          if (channel) {
-            copyStateFromChannel(channel);
-            copyMessagesStateFromChannel(channel);
-          }
-        },
-        stateUpdateThrottleInterval,
-        throttleOptions,
-      ),
-    [stateUpdateThrottleInterval, channel, copyStateFromChannel, copyMessagesStateFromChannel],
-  );
-
   const handleEvent: EventHandler = useStableCallback((event) => {
     if (shouldSyncChannel) {
       /**
@@ -642,69 +568,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         return;
       }
 
-      // If the event is typing.start or typing.stop, set the typing state
+      // Typing state is sourced reactively from channel.state.typingStore; nothing to copy here.
       if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        if (event.user?.id !== client.userID) {
-          setTyping(channel);
-        }
         return;
-      } else {
-        if (thread?.id) {
-          const updatedThreadMessages =
-            (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
-          setThreadMessages(updatedThreadMessages);
-
-          if (channel && event.message?.id === thread.id && !threadInstance) {
-            const updatedThread = channel.state.formatMessage(event.message);
-            setThread(updatedThread);
-          }
-        }
       }
 
-      if (event.type === 'notification.mark_unread') {
-        if (!(event.last_read_at && event.user)) {
-          return;
-        }
-        setChannelUnreadState({
-          first_unread_message_id: event.first_unread_message_id,
-          last_read: new Date(event.last_read_at),
-          last_read_message_id: event.last_read_message_id,
-          unread_messages: event.unread_messages ?? 0,
-        });
-      }
+      // notification.mark_unread + channel.truncated update channel.messagePaginator.unreadStateSnapshot
+      // in the LLC (the single source of truth for unread state), so no manual handling here.
 
-      if (event.type === 'channel.truncated' && event.cid === channel.cid) {
-        setChannelUnreadState(undefined);
-      }
-
-      // only update channel state if the events are not the previously subscribed useEffect's subscription events
-      if (channel) {
-        // we skip the new message events if we've already done an optimistic update for the new message
-        if (event.type === 'message.new' || event.type === 'notification.message_new') {
-          const messageId = event.message?.id ?? '';
-          if (
-            event.user?.id !== client.userID ||
-            !optimisticallyUpdatedNewMessages.has(messageId)
-          ) {
-            copyMessagesStateFromChannelThrottled();
-          }
-          optimisticallyUpdatedNewMessages.delete(messageId);
-          return;
-        }
-
-        if (event.type === 'message.read_locally') {
-          // When local unread reset happens, the count is already updated in the client state,
-          // and the preview badge / unread divider are handled elsewhere, so there is nothing
-          // to copy into channel state here. Thus, we skip it.
-          return;
-        }
-
-        if (event.type === 'message.read' || event.type === 'notification.mark_read') {
-          setReadThrottled();
-          return;
-        }
-
-        copyChannelState();
+      // The message list is backed reactively by channel.messagePaginator (channel._handleChannelEvent
+      // ingests message.new/updated/deleted + reaction events), and read/typing/members come from
+      // their reactive stores — so the WS handler no longer copies channel.state into React state.
+      if (event.type === 'message.new' || event.type === 'notification.message_new') {
+        optimisticallyUpdatedNewMessages.delete(event.message?.id ?? '');
       }
     }
   });
@@ -720,6 +596,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       let errored = false;
 
+      // Keep the message-list page light: the list's per-update commit cost scales with the number
+      // of loaded messages, and the paginator otherwise defaults to a 100-message page.
+      channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
+
       if ((!channel.initialized || !channel.state.isUpToDate) && initializeOnMount) {
         try {
           await channel?.watch();
@@ -732,35 +612,32 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (!errored) {
-        initStateFromChannel(channel);
-        loadInitialMessagesStateFromChannel(channel, channel.state.messagePagination.hasPrev);
+        // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
+        // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
+        // to avoid a redundant fetch.
+        if (!channel.messagePaginator.state.getLatestValue().items?.length) {
+          await channel.messagePaginator.reload();
+        }
       }
 
-      if (client.user?.id && channel.state.read[client.user.id]) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[client.user.id];
-        setChannelUnreadState(ownReadState);
-      }
+      // Re-seed the unread snapshot from the CURRENT read state on every open. The paginator is
+      // usually reused from cache (the reload above is skipped), and hydrateActiveChannels merges
+      // rather than re-seeds, so without this the snapshot's boundary/count/first-unread stay frozen
+      // at the very first open — making the separator, the "N new" banner and the jump-to-first-unread
+      // target all go stale on reopen. Mirrors stream-chat-react, which re-seeds by re-querying on open.
+      channel.messagePaginator.seedUnreadSnapshot();
 
       if (messageId) {
-        await loadChannelAroundMessage({ messageId, setTargetedMessage });
+        await loadChannelAroundMessage({ messageId });
       } else if (shouldLoadAtFirstUnread) {
-        const clientUserId = client.user?.id;
-        if (!clientUserId) {
-          return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { user, ...ownReadState } = channel.state.read[clientUserId];
-
-        await loadChannelAtFirstUnreadMessage({
-          channelUnreadState: ownReadState,
-          setChannelUnreadState,
-          setTargetedMessage,
-        });
+        // jumpToTheFirstUnreadMessage resolves the first-unread id from the paginator's snapshot.
+        await loadChannelAtFirstUnreadMessage();
       }
 
       if (unreadCount > 0 && markReadOnMount) {
+        // Keep the original unread UI (separator frozen at the boundary, "N new" banner) when
+        // opening a channel with unreads — don't reset the snapshot here. It clears once the user
+        // catches up (a subsequent markRead with the default updateChannelUnreadState: true).
         await markRead({ updateChannelUnreadState: false });
       }
 
@@ -770,8 +647,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     initChannel();
 
     return () => {
-      copyChannelState.cancel();
-      loadMoreThreadFinished.cancel();
       listener?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -787,20 +662,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     return unsubscribe;
   }, [channel?.cid, client]);
-
-  const threadPropsExists = !!threadProps;
-
-  useEffect(() => {
-    if (threadProps && shouldSyncChannel) {
-      setThread(threadProps);
-      if (channel && threadProps?.id) {
-        setThreadMessages(channel.state.threads?.[threadProps.id] || []);
-      }
-    } else {
-      setThread(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadPropsExists, shouldSyncChannel]);
 
   const handleAppBackground = useCallback(() => {
     const channelData = channel.data;
@@ -818,89 +679,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * CHANNEL METHODS
    */
-  const markReadInternal: ChannelContextValue['markRead'] = throttle(
-    async (options?: MarkReadFunctionOptions) => {
-      const { updateChannelUnreadState = true } = options ?? {};
-      if (!channel || channel?.disconnected) {
-        return;
-      }
-
-      // When read events are disabled (e.g. livestreams) we cannot mark read on the backend. If the
-      // client opted into a local unread count, reset it locally instead so the user's "caught up"
-      // state is reflected without a server round trip.
-      if (!clientChannelConfig?.read_events) {
-        if (client.options.isLocalUnreadCountEnabled) {
-          const event = channel.markReadLocally();
-          if (updateChannelUnreadState && event && lastReadRef.current) {
-            setChannelUnreadState({
-              last_read: lastReadRef.current,
-              last_read_message_id: event.last_read_message_id,
-              unread_messages: 0,
-            });
-            lastReadRef.current = new Date();
-          }
-        }
-        return;
-      }
-
-      if (doMarkReadRequest) {
-        doMarkReadRequest(channel, updateChannelUnreadState ? setChannelUnreadState : undefined);
-      } else {
-        try {
-          const response = await channel.markRead();
-          if (updateChannelUnreadState && response && lastReadRef.current) {
-            setChannelUnreadState({
-              last_read: lastReadRef.current,
-              last_read_message_id: response?.event.last_read_message_id,
-              unread_messages: 0,
-            });
-            lastReadRef.current = new Date();
-          }
-        } catch (err) {
-          console.log('Error marking channel as read:', err);
-        }
-      }
-    },
-    defaultThrottleInterval,
-    throttleOptions,
-  );
-
-  const markRead = useStableCallback(markReadInternal);
-
-  const reloadThread = useStableCallback(async () => {
-    if (!channel || !thread?.id) {
-      return;
-    }
-    setThreadLoadingMore(true);
-    try {
-      const parentID = thread.id;
-
-      const limit = 50;
-      // channel.state.threads[parentID] = [];
-      const queryResponse = await channel.getReplies(parentID, {
-        limit,
-      });
-
-      const updatedHasMore = queryResponse.messages.length === limit;
-      const updatedThreadMessages = channel.state.threads[parentID] || [];
-      loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
-      const { messages } = await channel.getMessagesById([parentID]);
-      const [threadMessage] = messages;
-      if (threadMessage && !threadInstance) {
-        const formattedMessage = channel.state.formatMessage(threadMessage);
-        setThread(formattedMessage);
-      }
-    } catch (err) {
-      console.warn('Thread loading request failed with error', err);
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-      setThreadLoadingMore(false);
-      throw err;
-    }
-  });
+  // markRead is no longer placed on the ChannelContext; the message lists own their own throttled
+  // instance via useMarkRead(channel). Channel still needs it internally (mark-read-on-mount + resync).
+  const markRead = useMarkRead(channel);
 
   const resyncChannel = useStableCallback(async () => {
     if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
@@ -927,10 +708,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         .map(parseMessage);
 
     try {
+      let watchResponse;
       if (channelMessagesState?.messages) {
-        await channel?.watch({
+        watchResponse = await channel?.watch({
           messages: {
-            // Do we want to reduce this to the default as well ?
             limit: channelMessagesState.messages.length,
           },
         });
@@ -938,21 +719,33 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       if (!thread) {
-        copyChannelState();
-
         const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
+        const newestWindow = (watchResponse?.messages ?? []).map((message) =>
+          channel.state.formatMessage(message),
+        );
+        channel.messagePaginator.mergeNewestPage(newestWindow);
         if (failedMessages?.length) {
-          channel.state.addMessagesSorted(failedMessages);
+          failedMessages.forEach((m) =>
+            channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
+          );
         }
-        await markRead();
-        channel.state.setIsUpToDate(true);
-      } else {
-        await reloadThread();
+        // The merge no-ops if the user had jumped away from the head; only claim up-to-date / mark
+        // read when it actually left us at the newest, otherwise keep their position untouched.
+        const atLatest = !channel.messagePaginator.hasMoreHead;
+        if (atLatest) {
+          await markRead();
+        }
+        channel.state.setIsUpToDate(atLatest);
+      } else if (threadInstance) {
+        await threadInstance.reload();
 
-        const failedThreadMessages = thread ? getRecoverableFailedMessages(threadMessages) : [];
+        const currentThreadMessages =
+          threadInstance.messagePaginator.state.getLatestValue().items ?? [];
+        const failedThreadMessages = getRecoverableFailedMessages(currentThreadMessages);
         if (failedThreadMessages.length) {
-          channel.state.addMessagesSorted(failedThreadMessages);
-          setThreadMessages([...channel.state.threads[thread.id]]);
+          failedThreadMessages.forEach((m) =>
+            threadInstance.messagePaginator.ingestItem(channel.state.formatMessage(m)),
+          );
         }
       }
     } catch (err) {
@@ -1031,26 +824,24 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       try {
         if (thread) {
-          setThreadLoadingMore(true);
           try {
-            await channel.state.loadMessageIntoState(messageIdToLoadAround, thread.id);
-            setThreadLoadingMore(false);
-            setThreadMessages(channel.state.threads[thread.id]);
-            if (setTargetedMessage) {
-              setTargetedMessage(messageIdToLoadAround);
-            }
+            // jumpToMessage loads the message range into thread.messagePaginator (which backs the
+            // reply list) and emits the focus signal driving the thread-aware highlight + scroll.
+            // The reply-list loading spinner is driven off the paginator's own isLoading flag.
+            await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
+              focusReason: 'jump-to-message',
+              focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+            });
           } catch (err) {
             if (err instanceof Error) {
               setError(err);
             } else {
               setError(true);
             }
-            setThreadLoadingMore(false);
           }
         } else {
           await loadChannelAroundMessageFn({
             messageId: messageIdToLoadAround,
-            setTargetedMessage,
           });
         }
       } catch (err) {
@@ -1061,258 +852,29 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * MESSAGE METHODS
    */
-  const updateMessage: MessagesContextValue['updateMessage'] = useStableCallback(
-    (updatedMessage, extraState = {}, throttled = false) => {
-      if (!channel) {
-        return;
-      }
-
-      channel.state.addMessageSorted(updatedMessage, true);
-      if (throttled) {
-        copyMessagesStateFromChannelThrottled();
-      } else {
-        copyMessagesStateFromChannel(channel);
-      }
-
-      if (thread && updatedMessage.parent_id) {
-        extraState.threadMessages = channel.state.threads[updatedMessage.parent_id] || [];
-        setThreadMessages(extraState.threadMessages);
-      }
-    },
-  );
-
-  const replaceMessage = useStableCallback(
-    (oldMessage: LocalMessage, newMessage: MessageResponse) => {
-      if (channel) {
-        channel.state.removeMessage(oldMessage);
-        channel.state.addMessageSorted(newMessage, true);
-        copyMessagesStateFromChannel(channel);
-
-        if (thread && newMessage.parent_id) {
-          const threadMessages = channel.state.threads[newMessage.parent_id] || [];
-          setThreadMessages(threadMessages);
-        }
-      }
-    },
-  );
-
-  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
-    const updatedMessage = { ...message };
-    if (!updatedMessage.attachments?.length || !channel?.cid) {
-      return updatedMessage;
-    }
-
-    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
-      if (
-        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
-        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
-      ) {
-        return;
-      }
-
-      const originalFile = attachment.originalFile;
-      if (!originalFile?.uri) {
-        return;
-      }
-
-      const localId = (attachment as DefaultAttachmentData).localId;
-      if (!localId) {
-        console.warn('uploadPendingAttachments: local attachment missing localId, skipping upload');
-        return;
-      }
-
-      let fileForUpload = originalFile;
-      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
-        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
-        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
-        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
-      }
-
-      const response = await (
-        client as typeof client & {
-          uploadManager: {
-            upload(args: {
-              channelCid: string;
-              file: {
-                name?: string;
-                type?: string;
-                uri: string;
-              };
-              id: string;
-            }): Promise<{ file: string; thumb_url?: string }>;
-          };
-        }
-      ).uploadManager.upload({
-        channelCid: channel.cid,
-        file: fileForUpload,
-        id: localId,
-      });
-
-      if (attachment.type === FileTypes.Image) {
-        attachment.image_url = response.file;
-      } else {
-        attachment.asset_url = response.file;
-        if (response.thumb_url) {
-          attachment.thumb_url = response.thumb_url;
-        }
-      }
-
-      delete attachment.originalFile;
-      delete (attachment as DefaultAttachmentData).localId;
-
-      client.offlineDb?.executeQuerySafely(
-        (db) =>
-          db.updateMessage({
-            message: { ...updatedMessage, cid: channel.cid },
-          }),
-        { method: 'updateMessage' },
-      );
-    };
-
-    await Promise.all(updatedMessage.attachments.map((att) => uploadOne(att)));
-
-    return updatedMessage;
-  });
-
-  const sendMessageRequest = useStableCallback(
-    async ({
-      localMessage,
-      message,
-      options,
-      retrying,
-    }: {
-      localMessage: LocalMessage;
-      message: StreamMessage;
-      options?: SendMessageOptions;
-      retrying?: boolean;
-    }) => {
-      let failedMessageUpdated = false;
-      const handleFailedMessage = () => {
-        if (!failedMessageUpdated) {
-          const updatedMessage = {
-            ...localMessage,
-            cid: channel.cid,
-            status: MessageStatusTypes.FAILED,
-          };
-          updateMessage(updatedMessage);
-          threadInstance?.upsertReplyLocally?.({ message: updatedMessage });
-          optimisticallyUpdatedNewMessages.delete(localMessage.id);
-
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: updatedMessage,
-              }),
-            { method: 'updateMessage' },
-          );
-
-          failedMessageUpdated = true;
-        }
-      };
-
-      try {
-        if (!isOnline) {
-          await handleFailedMessage();
-        }
-
-        const updatedLocalMessage = await uploadPendingAttachments(localMessage);
-        const { attachments } = updatedLocalMessage;
-        const { text, mentioned_users } = message;
-        if (!channel.id) {
-          return;
-        }
-
-        const messageData = {
-          ...message,
-          attachments,
-          text: patchMessageTextCommand(text ?? '', mentioned_users ?? []),
-          // We cannot send an error message, so we convert it to a regular message.
-          type: message.type === 'error' ? 'regular' : message.type,
-        } as StreamMessage;
-
-        let messageResponse = {} as SendMessageAPIResponse;
-
-        if (doSendMessageRequest) {
-          messageResponse = await doSendMessageRequest(channel?.cid || '', messageData, options);
-        } else if (channel) {
-          messageResponse = await channel.sendMessage(messageData, options);
-        }
-
-        if (messageResponse?.message) {
-          const newMessageResponse = {
-            ...messageResponse.message,
-            status: MessageStatusTypes.RECEIVED,
-          };
-
-          client.offlineDb?.executeQuerySafely(
-            (db) =>
-              db.updateMessage({
-                message: { ...newMessageResponse, cid: channel.cid },
-              }),
-            { method: 'updateMessage' },
-          );
-
-          if (retrying) {
-            replaceMessage(localMessage, newMessageResponse);
-          } else {
-            updateMessage(newMessageResponse, {}, true);
-          }
-        }
-      } catch (err) {
-        console.log('Error sending message:', err);
-        await handleFailedMessage();
-      }
-    },
-  );
-
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
     async ({ localMessage, message, options }) => {
-      if (channel?.state?.filterErrorMessages) {
-        channel.state.filterErrorMessages();
-      }
-
-      updateMessage(localMessage);
-      threadInstance?.upsertReplyLocally?.({ message: localMessage });
-      optimisticallyUpdatedNewMessages.add(localMessage.id);
-
-      // While sending a message, we add the message to local db with failed status, so that
-      // if app gets closed before message gets sent and next time user opens the app
-      // then user can see that message in failed state and can retry.
-      // If succesfull, it will be updated with received status.
-      client.offlineDb?.executeQuerySafely(
-        (db) =>
-          db.upsertMessages({
-            // @ts-ignore
-            messages: [{ ...localMessage, cid: channel.cid, status: MessageStatusTypes.FAILED }],
-          }),
-        { method: 'upsertMessages' },
-      );
-
       if (preSendMessageRequest) {
         await preSendMessageRequest({ localMessage, message, options });
       }
-      await sendMessageRequest({ localMessage, message, options });
-    },
-  );
 
-  const retrySendMessage: MessagesContextValue['retrySendMessage'] = useStableCallback(
-    async (localMessage) => {
-      const statusPendingMessage = {
-        ...localMessage,
-        status: MessageStatusTypes.SENDING,
-      };
+      // Preserve RN's moderation slash-command patching ("/mute @user" -> "/mute @userId").
+      const messageToSend = message
+        ? {
+            ...message,
+            text: patchMessageTextCommand(message.text ?? '', message.mentioned_users ?? []),
+          }
+        : message;
 
-      const messageWithoutReservedFields = localMessageToNewMessagePayload(statusPendingMessage);
-
-      // For bounced messages, we don't need to update the message, instead always send a new message.
-      if (!isBouncedMessage(localMessage)) {
-        updateMessage(messageWithoutReservedFields as MessageResponse);
-      }
-
-      await sendMessageRequest({
+      // The stream-chat message-operations engine owns the full optimistic lifecycle (pending ->
+      // received/failed), offline-DB persistence and paginator ingest — for both channel messages
+      // (channel.messagePaginator) and thread replies (thread.messagePaginator, which the thread
+      // instance ingests into directly). It throws on failure, which the MessageInput send flow
+      // catches to surface a notification.
+      await (threadInstance ?? channel).sendMessageWithLocalUpdate({
         localMessage,
-        message: messageWithoutReservedFields,
-        retrying: true,
+        message: messageToSend,
+        options,
       });
     },
   );
@@ -1322,242 +884,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!channel) {
         throw new Error('Channel has not been initialized');
       }
-
-      const cid = channel.cid;
-      const currentMessage = channel.state.findMessage(localMessage.id, localMessage.parent_id);
-      const isFailedMessage =
-        currentMessage?.status === MessageStatusTypes.FAILED ||
-        localMessage.status === MessageStatusTypes.FAILED;
-      const optimisticEditedAt = new Date();
-      const optimisticEditedAtString = optimisticEditedAt.toISOString();
-      const optimisticMessage = {
-        ...currentMessage,
-        ...localMessage,
-        cid,
-        message_text_updated_at: isFailedMessage ? undefined : optimisticEditedAtString,
-        updated_at: optimisticEditedAt,
-      } as unknown as LocalMessage;
-
-      updateMessage(optimisticMessage);
-      threadInstance?.updateParentMessageOrReplyLocally(
-        optimisticMessage as unknown as MessageResponse,
-      );
-      client.offlineDb?.executeQuerySafely(
-        (db) =>
-          db.updateMessage({
-            message: { ...optimisticMessage, cid },
-          }),
-        { method: 'updateMessage' },
-      );
-
-      const response = doUpdateMessageRequest
-        ? await doUpdateMessageRequest(cid, localMessage, options)
-        : await client.updateMessage(localMessage, undefined, options);
-
-      if (response?.message) {
-        updateMessage(response.message);
-        threadInstance?.updateParentMessageOrReplyLocally(response.message);
-        client.offlineDb?.executeQuerySafely(
-          (db) =>
-            db.updateMessage({
-              message: { ...response.message, cid },
-            }),
-          { method: 'updateMessage' },
-        );
-      }
-
-      return response;
+      // The LLC handles the optimistic local update (ingest into the paginator), the network
+      // request (honoring any doUpdateMessageRequest registered into channel.configState in
+      // useChannelRequestHandlers), the received/failed state transitions, and offline queueing.
+      // Thread edits route through the thread instance's own message operations.
+      await (threadInstance ?? channel).updateMessageWithLocalUpdate({ localMessage, options });
     },
   );
-
-  /**
-   * Removes the message from local state
-   */
-  const removeMessage: MessagesContextValue['removeMessage'] = useStableCallback(
-    async (message) => {
-      if (channel) {
-        channel.state.removeMessage(message);
-        copyMessagesStateFromChannel(channel);
-
-        if (thread) {
-          setThreadMessages(channel.state.threads[thread.id] || []);
-        }
-      }
-
-      if (client.offlineDb) {
-        await client.offlineDb.handleRemoveMessage({ messageId: message.id });
-      }
-    },
-  );
-
-  const sendReaction = useStableCallback(async (type: string, messageId: string) => {
-    if (!channel?.id || !client.user) {
-      throw new Error('Channel has not been initialized');
-    }
-
-    const payload: Parameters<ChannelClass['sendReaction']> = [
-      messageId,
-      {
-        type,
-      } as Reaction,
-      { enforce_unique: enforceUniqueReaction },
-    ];
-
-    if (enableOfflineSupport) {
-      await addReactionToLocalState({
-        channel,
-        enforceUniqueReaction,
-        messageId,
-        reactionType: type,
-        user: client.user,
-      });
-
-      copyMessagesStateFromChannel(channel);
-    }
-
-    const sendReactionResponse = await channel.sendReaction(...payload);
-
-    if (sendReactionResponse?.message) {
-      threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
-    }
-  });
-
-  const deleteMessage: MessagesContextValue['deleteMessage'] = useStableCallback(
-    async (message, optionsOrHardDelete = false) => {
-      let options: DeleteMessageOptions = {};
-      if (typeof optionsOrHardDelete === 'boolean') {
-        options = optionsOrHardDelete ? { hardDelete: true } : {};
-      } else if (optionsOrHardDelete?.deleteForMe) {
-        options = { deleteForMe: true };
-      } else if (optionsOrHardDelete?.hardDelete) {
-        options = { hardDelete: true };
-      }
-      if (!channel.id) {
-        throw new Error('Channel has not been initialized yet');
-      }
-
-      if (message.status === MessageStatusTypes.FAILED) {
-        await removeMessage(message);
-        return;
-      }
-      const updatedMessage = {
-        ...message,
-        cid: channel.cid,
-        deleted_at: new Date(),
-        type: 'deleted' as MessageLabel,
-      };
-      updateMessage(updatedMessage);
-
-      threadInstance?.upsertReplyLocally({ message: updatedMessage });
-
-      const data = await client.deleteMessage(message.id, options);
-
-      if (data?.message) {
-        updateMessage({ ...data.message });
-      }
-    },
-  );
-
-  const deleteReaction: MessagesContextValue['deleteReaction'] = useStableCallback(
-    async (type: string, messageId: string) => {
-      if (!channel?.id || !client.user) {
-        throw new Error('Channel has not been initialized');
-      }
-
-      const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
-
-      if (enableOfflineSupport) {
-        channel.state.removeReaction({
-          created_at: '',
-          message_id: messageId,
-          type,
-          updated_at: '',
-        });
-
-        copyMessagesStateFromChannel(channel);
-      }
-
-      await channel.deleteReaction(...payload);
-    },
-  );
-
-  /**
-   * THREAD METHODS
-   */
-  const openThread: ThreadContextValue['openThread'] = useCallback(
-    (message) => {
-      setThread(message);
-
-      if (channel.initialized) {
-        channel.markRead({ thread_id: message.id });
-      }
-      // This was causing inconsistencies within the thread state as well as being responsible
-      // of threads essentially never unloading (due to all of the previous threads + 50 loading
-      // every time we'd run this). It seemingly has no impact (other than a performance boost)
-      // and having it was causing issues with the Threads V2 architecture.
-      // setThreadMessages(newThreadMessages);
-    },
-    [channel, setThread],
-  );
-
-  const closeThread: ThreadContextValue['closeThread'] = useCallback(() => {
-    setThread(null);
-    setThreadMessages([]);
-  }, [setThread, setThreadMessages]);
-
-  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreThreadFinished = useRef(
-    debounce(
-      (newThreadHasMore: boolean, updatedThreadMessages: ChannelState['threads'][string]) => {
-        setThreadHasMore(newThreadHasMore);
-        setThreadLoadingMore(false);
-        setThreadMessages(updatedThreadMessages);
-      },
-      defaultDebounceInterval,
-      debounceOptions,
-    ),
-  ).current;
-
-  const loadMoreThread: ThreadContextValue['loadMoreThread'] = useStableCallback(async () => {
-    if (threadLoadingMore || !thread?.id) {
-      return;
-    }
-    setThreadLoadingMore(true);
-
-    try {
-      if (channel) {
-        const parentID = thread.id;
-
-        /**
-         * In the channel is re-initializing, then threads may get wiped out during the process
-         * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
-         * preserve the messages on active thread, so lets simply copy messages from UI state to
-         * `channel.state`.
-         */
-        channel.state.threads[parentID] = threadMessages;
-        const oldestMessageID = threadMessages?.[0]?.id;
-
-        const limit = 50;
-        const queryResponse = await channel.getReplies(parentID, {
-          id_lt: oldestMessageID,
-          limit,
-        });
-
-        const updatedHasMore = queryResponse.messages.length === limit;
-        const updatedThreadMessages = channel.state.threads[parentID] || [];
-        loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
-      }
-    } catch (err) {
-      console.warn('Message pagination request failed with error', err);
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-      setThreadLoadingMore(false);
-      throw err;
-    }
-  });
 
   const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
   const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
@@ -1596,7 +929,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    channelUnreadStateStore,
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
@@ -1608,21 +940,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
-    markRead,
     maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
-    members: channelState.members ?? {},
-    read: channelState.read ?? {},
     reloadChannel,
     scrollToFirstUnreadThreshold,
-    setChannelUnreadState,
-    setTargetedMessage,
     hasPendingInitialTargetLoad,
-    targetedMessage,
     threadList,
     uploadAbortControllerRef,
-    watcherCount: channelState.watcherCount,
-    watchers: channelState.watchers,
   });
 
   // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
@@ -1666,27 +990,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     setInputRef,
   });
 
-  const messageListContext = useCreatePaginatedMessageListContext({
-    channelId,
-    hasMore: channelMessagesState.hasMore,
-    loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : channelMessagesState.loadingMore,
-    loadingMoreRecent:
-      loadingMoreRecentProp !== undefined
-        ? loadingMoreRecentProp
-        : channelMessagesState.loadingMoreRecent,
-    loadLatestMessages,
-    loadMore,
-    loadMoreRecent,
-    messages: channelMessagesState.messages ?? [],
-    viewabilityChangedCallback,
-  });
-
   const messagesContext = useCreateMessagesContext({
     additionalPressableProps,
     channelId,
     customMessageSwipeAction,
-    deleteMessage,
-    deleteReaction,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     enableMessageGroupingByUser,
@@ -1726,34 +1033,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     onPressMessage,
     reactionListPosition,
     reactionListType,
-    removeMessage,
-    retrySendMessage,
     selectReaction,
-    sendReaction,
     shouldShowUnreadUnderlay,
     supportedReactions,
-    targetedMessage,
-    updateMessage,
     urlPreviewType,
   });
 
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    closeThread,
-    loadMoreThread,
-    openThread,
-    reloadThread,
-    setThreadLoadingMore,
-    thread,
-    threadHasMore,
     threadInstance,
-    threadLoadingMore,
-    threadMessages,
-  });
-
-  const typingContext = useCreateTypingContext({
-    typing: channelState.typing ?? {},
   });
 
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(
@@ -1762,8 +1051,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   const messageComposerContext = useMemo(
-    () => ({ channel, thread, threadInstance }),
-    [channel, thread, threadInstance],
+    () => ({ channel, threadInstance }),
+    [channel, threadInstance],
   );
 
   // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
@@ -1792,25 +1081,21 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     >
       <ChannelProvider value={channelContext}>
         <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-          <TypingProvider value={typingContext}>
-            <PaginatedMessageListProvider value={messageListContext}>
-              <MessagesProvider value={messagesContext}>
-                <ThreadProvider value={threadContext}>
-                  <AttachmentPickerProvider value={attachmentPickerContext}>
-                    <MessageComposerProvider value={messageComposerContext}>
-                      <MessageInputProvider value={inputMessageInputContext}>
-                        <AudioPlayerProvider value={audioPlayerContext}>
-                          <NotificationAnnouncer />
-                          <View style={{ height: '100%' }}>{children}</View>
-                          <AttachmentPicker />
-                        </AudioPlayerProvider>
-                      </MessageInputProvider>
-                    </MessageComposerProvider>
-                  </AttachmentPickerProvider>
-                </ThreadProvider>
-              </MessagesProvider>
-            </PaginatedMessageListProvider>
-          </TypingProvider>
+          <MessagesProvider value={messagesContext}>
+            <ThreadProvider value={threadContext}>
+              <AttachmentPickerProvider value={attachmentPickerContext}>
+                <MessageComposerProvider value={messageComposerContext}>
+                  <MessageInputProvider value={inputMessageInputContext}>
+                    <AudioPlayerProvider value={audioPlayerContext}>
+                      <NotificationAnnouncer />
+                      <View style={{ height: '100%' }}>{children}</View>
+                      <AttachmentPicker />
+                    </AudioPlayerProvider>
+                  </MessageInputProvider>
+                </MessageComposerProvider>
+              </AttachmentPickerProvider>
+            </ThreadProvider>
+          </MessagesProvider>
         </OwnCapabilitiesProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
@@ -1850,10 +1135,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
 
   const shouldSyncChannel = threadMessage?.id ? !!props.threadList : true;
 
-  const { setThreadMessages, threadMessages } = useChannelState(
-    props.channel,
-    props.threadList ? threadMessage?.id : undefined,
-  );
+  useChannelState(props.channel);
 
   const channelWithContext = (
     <ChannelWithContext
@@ -1867,9 +1149,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       {...{
         isMessageAIGenerated,
         isOnline,
-        setThreadMessages,
         thread,
-        threadMessages,
       }}
     />
   );

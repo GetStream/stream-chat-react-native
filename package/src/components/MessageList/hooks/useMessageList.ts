@@ -2,15 +2,17 @@ import { useMemo } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
-import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import { useRAFCoalescedValue } from '../../../hooks';
+import { useRAFCoalescedValue, useStateStore } from '../../../hooks';
+import { usePrunableMessageList } from '../../../hooks/usePrunableMessageList';
 
 export type UseMessageListParams = {
   threadList?: boolean;
   isLiveStreaming?: boolean;
   isFlashList?: boolean;
+  maximumMessageLimit?: number;
 };
 
 /**
@@ -22,11 +24,23 @@ export type MessageGroupStyles = {
   [key: string]: string[];
 };
 
+const EMPTY_MESSAGES: LocalMessage[] = [];
+
+const messageListSelector = (state: { items?: LocalMessage[] }) => ({ messages: state.items });
+
 export const useMessageList = (params: UseMessageListParams) => {
-  const { threadList, isLiveStreaming, isFlashList = false } = params;
-  const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
-  const { threadMessages } = useThreadContext();
-  const messageList = threadList ? threadMessages : messages;
+  const { threadList, isLiveStreaming, isFlashList = false, maximumMessageLimit } = params;
+  const { channel } = useChannelContext();
+  const { threadInstance } = useThreadContext();
+  const messagePaginatorState = threadList
+    ? threadInstance?.messagePaginator?.state
+    : channel.messagePaginator.state;
+  const { messages } = useStateStore(messagePaginatorState, messageListSelector) ?? {};
+  const { viewabilityChangedCallback } = usePrunableMessageList({
+    maximumMessageLimit,
+    setMessages: () => {},
+  });
+  const messageList = messages ?? EMPTY_MESSAGES;
 
   const processedMessageList = useMemo<LocalMessage[]>(() => {
     const newMessageList: LocalMessage[] = [];

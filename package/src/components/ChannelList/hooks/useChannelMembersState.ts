@@ -1,21 +1,18 @@
-import { Channel, ChannelMemberResponse, EventTypes } from 'stream-chat';
+import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { useSelectedChannelState } from '../../../hooks/useSelectedChannelState';
+import { useStateStore } from '../../../hooks/useStateStore';
 
-const selector = (channel: Channel) => channel.state.members;
-const keys: EventTypes[] = [
-  'member.added',
-  'member.updated',
-  'member.removed',
-  'user.banned',
-  'user.unbanned',
-  'user.presence.changed',
-  'user.updated',
-];
+const selector = (state: { members: Record<string, ChannelMemberResponse> }) => ({
+  members: state.members,
+});
+
+/**
+ * Returns the channel's members, sourced reactively from `channel.state.membersStore`.
+ */
 export function useChannelMembersState(channel: Channel): Record<string, ChannelMemberResponse>;
 export function useChannelMembersState(
   channel?: Channel,
 ): Record<string, ChannelMemberResponse> | undefined;
 export function useChannelMembersState(channel?: Channel) {
-  return useSelectedChannelState({ channel, selector, stateChangeEventKeys: keys });
+  return useStateStore(channel?.state?.membersStore, selector)?.members;
 }

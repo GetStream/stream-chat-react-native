@@ -1,19 +1,11 @@
-import { useEffect, useState } from 'react';
+import type { Mute, StreamChat } from 'stream-chat';
 
-import type { Event, Mute, StreamChat } from 'stream-chat';
+import { useStateStore } from '../../../hooks/useStateStore';
 
-export const useClientMutedUsers = (client: StreamChat) => {
-  const [mutedUsers, setMutedUsers] = useState<Mute[]>(client?.mutedUsers || []);
+const selector = (state: { mutedUsers: Mute[] }) => ({ mutedUsers: state.mutedUsers });
 
-  useEffect(() => {
-    const handleEvent = (event: Event) => {
-      setMutedUsers((mutes) => event.me?.mutes || mutes || []);
-    };
-
-    const listener = client?.on('notification.mutes_updated', handleEvent);
-    return () => listener?.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setMutedUsers]);
-
-  return mutedUsers;
-};
+/**
+ * Returns the client's muted users, sourced reactively from `client.mutedUsersStore`.
+ */
+export const useClientMutedUsers = (client: StreamChat): Mute[] =>
+  useStateStore(client?.mutedUsersStore, selector)?.mutedUsers ?? [];

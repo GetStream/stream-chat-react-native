@@ -10,7 +10,7 @@ import Animated, {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type UserResponse } from 'stream-chat';
+import { type MembersState, type UserResponse, type WatcherState } from 'stream-chat';
 
 import { MicPositionProvider } from './contexts/MicPositionContext';
 
@@ -138,8 +138,10 @@ const useStyles = () => {
 };
 
 type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'members' | 'watchers'> &
-  Pick<
+  Pick<ChannelContextValue, 'channel'> & {
+    members: MembersState['members'];
+    watchers: WatcherState['watchers'];
+  } & Pick<
     MessageInputContextValue,
     | 'audioRecorderManager'
     | 'additionalTextInputProps'
@@ -174,6 +176,9 @@ type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
+
+const membersSelector = (state: MembersState) => ({ members: state.members });
+const watchersSelector = (state: WatcherState) => ({ watchers: state.watchers });
 
 const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const {
@@ -612,7 +617,11 @@ export const MessageComposer = (props: MessageComposerProps) => {
   const { isOnline } = useChatContext();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, members, watchers } = useChannelContext();
+  const { channel } = useChannelContext();
+  const { members } = useStateStore(channel.state.membersStore, membersSelector) ?? { members: {} };
+  const { watchers } = useStateStore(channel.state.watcherStore, watchersSelector) ?? {
+    watchers: {},
+  };
 
   const {
     audioRecorderManager,
@@ -649,8 +658,14 @@ export const MessageComposer = (props: MessageComposerProps) => {
   /**
    * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
    * Enable it in frozen mode, if it the input has editing state.
+   *
    */
-  if (!ownCapabilities.sendMessage && !editing && SendMessageDisallowedIndicator) {
+  if (
+    channel.initialized &&
+    !ownCapabilities.sendMessage &&
+    !editing &&
+    SendMessageDisallowedIndicator
+  ) {
     return <SendMessageDisallowedIndicator />;
   }
 

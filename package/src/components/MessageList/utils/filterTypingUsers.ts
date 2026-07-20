@@ -1,14 +1,13 @@
-import { UserResponse } from 'stream-chat';
+import { TypingUsersState, UserResponse } from 'stream-chat';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
 
-type FilterTypingUsersParams = Pick<TypingContextValue, 'typing'> &
-  Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'thread'>;
+type FilterTypingUsersParams = { threadId?: string; typing: TypingUsersState['typing'] } & Pick<
+  ChatContextValue,
+  'client'
+>;
 
-export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersParams) => {
+export const filterTypingUsers = ({ client, threadId, typing }: FilterTypingUsersParams) => {
   const nonSelfUsers: UserResponse[] = [];
 
   if (!client || !client.user || !typing) {
@@ -27,8 +26,8 @@ export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersP
       return;
     }
 
-    const isRegularEvent = !typing[typingKey].parent_id && !thread?.id;
-    const isCurrentThreadEvent = typing[typingKey].parent_id === thread?.id;
+    const isRegularEvent = !typing[typingKey].parent_id && !threadId;
+    const isCurrentThreadEvent = typing[typingKey].parent_id === threadId;
 
     /** filters different threads events */
     if (!isRegularEvent && !isCurrentThreadEvent) {

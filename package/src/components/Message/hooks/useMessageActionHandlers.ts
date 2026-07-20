@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 
 import { UserResponse } from 'stream-chat';
 
+import { MessageOperations } from './useMessageOperations';
 import { useUserMuteActive } from './useUserMuteActive';
 
 import { useScreenReaderEnabled } from '../../../a11y/hooks/useScreenReaderEnabled';
@@ -60,9 +61,10 @@ export const useMessageActionHandlers = ({
   setEditingState,
   setQuotedMessage,
 }: Pick<
-  MessagesContextValue,
-  'sendReaction' | 'deleteMessage' | 'deleteReaction' | 'retrySendMessage' | 'supportedReactions'
+  MessageOperations,
+  'sendReaction' | 'deleteMessage' | 'deleteReaction' | 'retrySendMessage'
 > &
+  Pick<MessagesContextValue, 'supportedReactions'> &
   Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
   Pick<ChatContextValue, 'client'> &
   Pick<MessageContextValue, 'message'> &

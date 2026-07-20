@@ -15,17 +15,21 @@ import { primitives } from '../../../theme';
 
 type ThreadFooterComponentPropsWithContext = Pick<
   ThreadContextValue,
-  'parentMessagePreventPress' | 'thread' | 'threadInstance'
+  'parentMessagePreventPress' | 'threadInstance'
 >;
 
+const loadingSelector = (state: { isLoading: boolean }) => ({ isLoading: state.isLoading });
+
 export const InlineLoadingMoreThreadIndicator = () => {
-  const { threadLoadingMore } = useThreadContext();
+  const { threadInstance } = useThreadContext();
   const {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
+  const { isLoading } =
+    useStateStore(threadInstance?.messagePaginator?.state, loadingSelector) ?? {};
 
-  if (!threadLoadingMore) {
+  if (!isLoading) {
     return null;
   }
 
@@ -38,19 +42,23 @@ export const InlineLoadingMoreThreadIndicator = () => {
 
 const selector = (nextValue: ThreadState) =>
   ({
+    parentMessage: nextValue.parentMessage,
     replyCount: nextValue.replyCount,
   }) as const;
 
 const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
-  const { parentMessagePreventPress, thread, threadInstance } = props;
+  const { parentMessagePreventPress, threadInstance } = props;
   const { Message } = useComponentsContext();
   const { t } = useTranslationContext();
 
   const styles = useStyles();
 
-  const { replyCount = thread?.reply_count } = useStateStore(threadInstance?.state, selector) ?? {};
+  // The parent message is read reactively from the thread instance so the header updates live when
+  // it is edited / reacted to / its reply_count changes.
+  const { parentMessage, replyCount = parentMessage?.reply_count } =
+    useStateStore(threadInstance?.state, selector) ?? {};
 
-  if (!thread) {
+  if (!parentMessage) {
     return null;
   }
 
@@ -58,7 +66,7 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
     <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
       <Message
         groupStyles={['single']}
-        message={thread}
+        message={parentMessage}
         preventPress={parentMessagePreventPress}
         readBy={0}
         threadList
@@ -81,49 +89,22 @@ const areEqual = (
   prevProps: ThreadFooterComponentPropsWithContext,
   nextProps: ThreadFooterComponentPropsWithContext,
 ) => {
+  // The parent message + reply count are read reactively from `threadInstance.state` inside the
+  // component (via useStateStore), so this memo only needs to gate parent-driven re-renders on the
+  // remaining props: the prevent-press flag and the thread instance identity.
   const {
     parentMessagePreventPress: prevParentMessagePreventPress,
-    thread: prevThread,
     threadInstance: prevThreadInstance,
   } = prevProps;
   const {
     parentMessagePreventPress: nextParentMessagePreventPress,
-    thread: nextThread,
     threadInstance: nextThreadInstance,
   } = nextProps;
 
-  if (prevParentMessagePreventPress !== nextParentMessagePreventPress) {
-    return false;
-  }
-
-  const threadEqual =
-    prevThread?.id === nextThread?.id &&
-    prevThread?.text === nextThread?.text &&
-    prevThread?.reply_count === nextThread?.reply_count;
-
-  if (!threadEqual) {
-    return false;
-  }
-
-  if (prevThreadInstance !== nextThreadInstance) {
-    return false;
-  }
-
-  const latestReactionsEqual =
-    prevThread &&
-    nextThread &&
-    Array.isArray(prevThread.latest_reactions) &&
-    Array.isArray(nextThread.latest_reactions)
-      ? prevThread.latest_reactions.length === nextThread.latest_reactions.length &&
-        prevThread.latest_reactions.every(
-          ({ type }, index) => type === nextThread.latest_reactions?.[index].type,
-        )
-      : prevThread?.latest_reactions === nextThread?.latest_reactions;
-  if (!latestReactionsEqual) {
-    return false;
-  }
-
-  return true;
+  return (
+    prevParentMessagePreventPress === nextParentMessagePreventPress &&
+    prevThreadInstance === nextThreadInstance
+  );
 };
 
 const MemoizedThreadFooter = React.memo(
@@ -132,20 +113,17 @@ const MemoizedThreadFooter = React.memo(
 ) as typeof ThreadFooterComponentWithContext;
 
 export type ThreadFooterComponentProps = Partial<
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>
+  Pick<ThreadContextValue, 'parentMessagePreventPress'>
 >;
 
 export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
-  const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
-    useThreadContext();
+  const { parentMessagePreventPress, threadInstance } = useThreadContext();
 
   return (
     <MemoizedThreadFooter
       {...{
         parentMessagePreventPress,
-        thread,
         threadInstance,
-        threadLoadingMore,
       }}
       {...props}
     />

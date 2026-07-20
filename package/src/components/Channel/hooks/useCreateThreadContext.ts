@@ -1,55 +1,23 @@
-import { ThreadState } from 'stream-chat';
+import { useMemo } from 'react';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import { useStateStore } from '../../../hooks';
 
-const selector = (nextValue: ThreadState) =>
-  ({
-    isLoadingNext: nextValue.pagination.isLoadingNext,
-    isLoadingPrev: nextValue.pagination.isLoadingPrev,
-    latestReplies: nextValue.replies,
-  }) as const;
-
+// The ThreadContext now carries only the Thread instance (+ a few UI-config props). Reply data,
+// pagination and loading state — and the parent message — are read by consumers straight off
+// `threadInstance.messagePaginator` / `threadInstance.state` via useStateStore.
 export const useCreateThreadContext = ({
   allowThreadMessagesInChannel,
   onAlsoSentToChannelHeaderPress,
-  closeThread,
-  loadMoreThread,
-  openThread,
-  reloadThread,
-  setThreadLoadingMore,
-  thread,
-  threadHasMore,
   threadInstance,
-  threadLoadingMore,
-  threadMessages,
-}: ThreadContextValue) => {
-  const { isLoadingNext, isLoadingPrev, latestReplies } =
-    useStateStore(threadInstance?.state, selector) ?? {};
-
-  const contextAdapter = threadInstance
-    ? {
-        loadMoreRecentThread: threadInstance.loadNextPage,
-        loadMoreThread: threadInstance.loadPrevPage,
-        threadInstance,
-        threadLoadingMore: isLoadingPrev,
-        threadLoadingMoreRecent: isLoadingNext,
-        threadMessages: latestReplies ?? [],
-      }
-    : {};
-
-  return {
-    allowThreadMessagesInChannel,
-    onAlsoSentToChannelHeaderPress,
-    closeThread,
-    loadMoreThread,
-    openThread,
-    reloadThread,
-    setThreadLoadingMore,
-    thread,
-    threadHasMore,
-    threadLoadingMore,
-    threadMessages,
-    ...contextAdapter,
-  };
-};
+}: Pick<
+  ThreadContextValue,
+  'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress' | 'threadInstance'
+>): ThreadContextValue =>
+  useMemo(
+    () => ({
+      allowThreadMessagesInChannel,
+      onAlsoSentToChannelHeaderPress,
+      threadInstance,
+    }),
+    [allowThreadMessagesInChannel, onAlsoSentToChannelHeaderPress, threadInstance],
+  );

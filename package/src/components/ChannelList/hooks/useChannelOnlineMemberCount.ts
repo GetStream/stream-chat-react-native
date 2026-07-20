@@ -1,17 +1,15 @@
-import { Channel, EventTypes } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
-import { useChatContext } from '../../../contexts';
-import { useSyncClientEventsToChannel } from '../../../hooks/useSyncClientEvents';
+import { useStateStore } from '../../../hooks/useStateStore';
 
-const selector = (channel: Channel) => {
-  return channel.state.watcher_count ?? 0;
-};
+const selector = (state: { watcherCount: number }) => ({ watcherCount: state.watcherCount });
 
-const keys: EventTypes[] = ['user.watching.start', 'user.watching.stop'];
-
+/**
+ * Returns the channel's online (watcher) count, sourced reactively from
+ * `channel.state.watcherStore`.
+ */
 export function useChannelOnlineMemberCount(channel: Channel): number;
 export function useChannelOnlineMemberCount(channel?: Channel): number | undefined;
 export function useChannelOnlineMemberCount(channel?: Channel) {
-  const { client } = useChatContext();
-  return useSyncClientEventsToChannel({ channel, client, selector, stateChangeEventKeys: keys });
+  return useStateStore(channel?.state?.watcherStore, selector)?.watcherCount;
 }

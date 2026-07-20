@@ -27,8 +27,9 @@ export const useMessageData = ({
   const isMyMessage = propIsMyMessage || contextIsMyMessage;
   const message = propMessage || contextMessage;
 
+  const paginatorItems = channel?.messagePaginator?.state.getLatestValue().items;
   const isVeryLastMessage =
-    channel?.state.messages[channel?.state.messages.length - 1]?.id === message.id;
+    !!paginatorItems?.length && paginatorItems[paginatorItems.length - 1]?.id === message.id;
 
   const messageGroupedSingle = groupStyles.includes('single');
   const messageGroupedBottom = groupStyles.includes('bottom');

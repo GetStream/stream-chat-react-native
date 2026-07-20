@@ -330,7 +330,9 @@ const areEqual = (
     return false;
   }
 
-  const channelEqual = prevChannel?.state.messages.length === nextChannel?.state.messages.length;
+  const channelEqual =
+    prevChannel?.messagePaginator.state.getLatestValue().items?.length ===
+    nextChannel?.messagePaginator.state.getLatestValue().items?.length;
   if (!channelEqual) {
     return false;
   }

@@ -23,28 +23,31 @@ export const ChannelsUnreadCountBadge: React.FC = () => {
   const { chatClient } = useAppContext();
   const [unreadCount, setUnreadCount] = useState<number>(0);
   /**
-   * Listen to changes in unread counts and update the badge count
+   * Listen to changes in unread counts and update the badge count.
+   *
+   * We deliberately derive the total from each channel's local `countUnread()` (a sum over the
+   * loaded/active channels) rather than the server-sent `event.total_unread_count`. The local count
+   * respects the "viewing live" gate — the channel the user is currently reading at the bottom stays
+   * at 0 — so the badge does NOT flicker when a message arrives in the active channel. The server
+   * total, by contrast, briefly counts that message until the mark-read round-trips.
    */
   useEffect(() => {
-    const listener = chatClient?.on((e) => {
-      const event = e.me ?? e;
-      if (event.total_unread_count !== undefined) {
-        setUnreadCount(event.total_unread_count);
-      } else {
-        if (Object.keys(chatClient?.activeChannels).length > 0) {
-          const countUnread = Object.values(chatClient.activeChannels).reduce(
-            (count, channel) => count + channel.countUnread(),
-            0,
-          );
-          setUnreadCount(countUnread);
-        }
-      }
+    if (!chatClient) {
+      return;
+    }
+    const computeUnreadCount = () =>
+      Object.values(chatClient.activeChannels).reduce(
+        (count, channel) => count + (channel?.countUnread() ?? 0),
+        0,
+      );
+
+    setUnreadCount(computeUnreadCount());
+    const listener = chatClient.on(() => {
+      setUnreadCount(computeUnreadCount());
     });
 
     return () => {
-      if (listener) {
-        listener.unsubscribe();
-      }
+      listener.unsubscribe();
     };
   }, [chatClient]);
 

@@ -2,34 +2,38 @@ import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import type { Event, StreamChat } from 'stream-chat';
+import type { TypingUsersState } from 'stream-chat';
 
-import { TypingProvider } from '../../../contexts/typingContext/TypingContext';
-
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { TypingIndicator } from '../TypingIndicator';
 
 afterEach(cleanup);
 
 describe('TypingIndicator', () => {
-  let chatClient: StreamChat;
-
   it('should render typing indicator for two users', async () => {
     const user0 = generateUser();
     const user1 = generateUser();
     const user2 = generateUser();
 
-    chatClient = await getTestClientWithUser({ id: user0.id });
-    await chatClient.setUser(user0, 'testToken');
-    const typing = { user1: { user: user1 }, user2: { user: user2 } };
+    const {
+      channels: [channel],
+      client,
+    } = await initiateClientWithChannels({ customUser: user0 });
+    channel.state.typingStore.partialNext({
+      typing: {
+        user1: { user: user1 },
+        user2: { user: user2 },
+      } as unknown as TypingUsersState['typing'],
+    });
 
     const { getAllByTestId, getByTestId } = render(
-      <Chat client={chatClient}>
-        <TypingProvider value={{ typing: typing as unknown as Record<string, Event> }}>
+      <Chat client={client}>
+        <ChannelProvider value={{ channel } as never}>
           <TypingIndicator />
-        </TypingProvider>
+        </ChannelProvider>
       </Chat>,
     );
     await waitFor(() => {
@@ -42,15 +46,19 @@ describe('TypingIndicator', () => {
     const user0 = generateUser();
     const user1 = generateUser();
 
-    chatClient = await getTestClientWithUser({ id: user0.id });
-    await chatClient.setUser(user0, 'testToken');
-    const typing = { user1: { user: user1 } };
+    const {
+      channels: [channel],
+      client,
+    } = await initiateClientWithChannels({ customUser: user0 });
+    channel.state.typingStore.partialNext({
+      typing: { user1: { user: user1 } } as unknown as TypingUsersState['typing'],
+    });
 
     const { getAllByTestId, getByTestId } = render(
-      <Chat client={chatClient}>
-        <TypingProvider value={{ typing: typing as unknown as Record<string, Event> }}>
+      <Chat client={client}>
+        <ChannelProvider value={{ channel } as never}>
           <TypingIndicator />
-        </TypingProvider>
+        </ChannelProvider>
       </Chat>,
     );
     await waitFor(() => {
@@ -64,15 +72,22 @@ describe('TypingIndicator', () => {
     const user1 = generateStaticUser(1);
     const user2 = generateStaticUser(3);
 
-    chatClient = await getTestClientWithUser({ id: user0.id });
-    await chatClient.setUser(user0, 'testToken');
-    const typing = { user1: { user: user1 }, user2: { user: user2 } };
+    const {
+      channels: [channel],
+      client,
+    } = await initiateClientWithChannels({ customUser: user0 });
+    channel.state.typingStore.partialNext({
+      typing: {
+        user1: { user: user1 },
+        user2: { user: user2 },
+      } as unknown as TypingUsersState['typing'],
+    });
 
     const { toJSON } = render(
-      <Chat client={chatClient}>
-        <TypingProvider value={{ typing: typing as unknown as Record<string, Event> }}>
+      <Chat client={client}>
+        <ChannelProvider value={{ channel } as never}>
           <TypingIndicator />
-        </TypingProvider>
+        </ChannelProvider>
       </Chat>,
     );
     await waitFor(() => {

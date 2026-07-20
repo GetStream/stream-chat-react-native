@@ -1,22 +1,23 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
+import type { UnreadSnapshotState } from 'stream-chat';
+
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { primitives } from '../../theme';
+import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { Button } from '../ui';
 
-export type UnreadMessagesNotificationProps = Pick<
-  ChannelContextValue,
-  'channelUnreadStateStore'
-> & {
+export type UnreadMessagesNotificationProps = {
+  /**
+   * Marks the channel as read. Passed down from the message list so the notification shares the
+   * list's throttled `markRead` instance.
+   */
+  markRead?: (options?: MarkReadFunctionOptions) => void;
   /**
    * Callback to handle the close event
    */
@@ -31,19 +32,18 @@ export type UnreadMessagesNotificationProps = Pick<
   unreadCount?: number;
 };
 
-const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
-  unread_messages: state.channelUnreadState?.unread_messages,
+const unreadCountSelector = (snapshot: UnreadSnapshotState) => ({
+  unread_messages: snapshot.unreadCount,
 });
 
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { onCloseHandler, onPressHandler, unreadCount, channelUnreadStateStore } = props;
+  const { markRead, onCloseHandler, onPressHandler, unreadCount } = props;
   const { t } = useTranslationContext();
   const { icons } = useComponentsContext();
-  const { loadChannelAtFirstUnreadMessage, markRead, setChannelUnreadState, setTargetedMessage } =
-    useChannelContext();
+  const { channel, loadChannelAtFirstUnreadMessage } = useChannelContext();
   const { unread_messages } = useStateStore(
-    channelUnreadStateStore.state,
-    channelUnreadStateSelector,
+    channel.messagePaginator.unreadStateSnapshot,
+    unreadCountSelector,
   );
 
   const count = unread_messages ?? unreadCount;
@@ -52,11 +52,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     if (onPressHandler) {
       await onPressHandler();
     } else {
-      await loadChannelAtFirstUnreadMessage({
-        channelUnreadState: channelUnreadStateStore.channelUnreadState,
-        setChannelUnreadState,
-        setTargetedMessage,
-      });
+      await loadChannelAtFirstUnreadMessage();
     }
   };
 
@@ -64,7 +60,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     if (onCloseHandler) {
       await onCloseHandler();
     } else {
-      await markRead();
+      await markRead?.();
     }
   };
 

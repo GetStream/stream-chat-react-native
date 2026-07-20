@@ -11,13 +11,20 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
+import type {
+  Attachment,
+  LocalMessage,
+  MembersState,
+  MentionEntity,
+  UserResponse,
+} from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
-import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
-import { useMessageReadData } from './hooks/useMessageReadData';
+import { useMessageDeliveredToCount } from './hooks/useMessageDeliveredToCount';
+import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
+import { useMessageReadCount } from './hooks/useMessageReadCount';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
 import { MessageOverlayWrapper } from './MessageOverlayWrapper';
@@ -50,13 +57,12 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useStateStore } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import {
   closeOverlay,
@@ -186,9 +192,8 @@ export type MessageActionHandlers = {
 
 export type MessagePropsWithContext = Pick<
   ChannelContextValue,
-  'channel' | 'enforceUniqueReaction' | 'members'
-> &
-  Pick<KeyboardContextValue, 'dismissKeyboard'> &
+  'channel' | 'enforceUniqueReaction'
+> & { members: MembersState['members'] } & Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
     Omit<
       MessageContextValue,
@@ -205,9 +210,16 @@ export type MessagePropsWithContext = Pick<
     'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredToCount'
   > &
   Pick<
-    MessagesContextValue,
+    MessageOperations,
     | 'sendReaction'
     | 'deleteMessage'
+    | 'removeMessage'
+    | 'deleteReaction'
+    | 'retrySendMessage'
+    | 'updateMessage'
+  > &
+  Pick<
+    MessagesContextValue,
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBan'
@@ -231,14 +243,9 @@ export type MessagePropsWithContext = Pick<
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
-    | 'removeMessage'
-    | 'deleteReaction'
-    | 'retrySendMessage'
     | 'selectReaction'
     | 'supportedReactions'
-    | 'updateMessage'
   > &
-  Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
     chatContext: ChatContextValue;
     messagesContext: MessagesContextValue;
@@ -305,7 +312,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
     onThreadSelect,
-    openThread,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -554,9 +560,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     if (onThreadSelect) {
       onThreadSelect(message);
     }
-    if (openThread) {
-      openThread(message);
-    }
   };
 
   const { existingReactions, hasReactions } = useProcessReactions({
@@ -635,7 +638,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleBlockUser,
     message,
     onThreadSelect,
-    openThread,
     removeMessage,
     retrySendMessage,
     selectReaction,
@@ -850,9 +852,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     groupStyles?.[0] === 'bottom'
       ? groupStyles[0]
       : undefined;
+
+  const lastPaginatorMessageId = channel?.messagePaginator?.state
+    .getLatestValue()
+    .items?.slice(-1)[0]?.id;
   const isVeryLastBubble =
-    messagesContext.enableMessageGroupingByUser &&
-    channel?.state.messages[channel.state.messages.length - 1]?.id === message.id;
+    messagesContext.enableMessageGroupingByUser && lastPaginatorMessageId === message.id;
   const styles = useStyles({
     groupKey,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
@@ -1127,6 +1132,8 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
+const messageMembersSelector = (state: MembersState) => ({ members: state.members });
+
 export type MessageProps = Partial<
   Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message'>
 > &
@@ -1140,29 +1147,32 @@ export type MessageProps = Partial<
  */
 export const Message = (props: MessageProps) => {
   const { message } = props;
-  const { channel, enforceUniqueReaction, members } = useChannelContext();
+  const { channel, enforceUniqueReaction } = useChannelContext();
+  const { members } = useStateStore(channel.state.membersStore, messageMembersSelector) ?? {
+    members: {},
+  };
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
-  const { openThread } = useThreadContext();
+  const messageOperations = useMessageOperations();
   const { t } = useTranslationContext();
-  const readBy = useMessageReadData({ message });
-  const deliveredTo = useMessageDeliveredData({ message });
+  const readByCount = useMessageReadCount({ message });
+  const deliveredToCount = useMessageDeliveredToCount({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
     <MemoizedMessage
       {...messagesContext}
+      {...messageOperations}
       {...{
         channel,
         chatContext,
-        deliveredToCount: deliveredTo.length,
+        deliveredToCount,
         dismissKeyboard,
         enforceUniqueReaction,
         members,
         messagesContext,
-        openThread,
-        readBy: readBy.length,
+        readBy: readByCount,
         setEditingState,
         setQuotedMessage,
         t,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import type { Channel } from 'stream-chat';
 
@@ -7,6 +7,11 @@ import {
   OwnCapabilitiesContextValue,
   OwnCapability,
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useStateStore } from '../../../hooks/useStateStore';
+
+const selector = (state: { ownCapabilities: string[] }) => ({
+  ownCapabilities: state.ownCapabilities,
+});
 
 export const useCreateOwnCapabilitiesContext = ({
   channel,
@@ -15,35 +20,19 @@ export const useCreateOwnCapabilitiesContext = ({
   channel: Channel;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
-  const [own_capabilities, setOwnCapabilites] = useState(
-    JSON.stringify(channel.data?.own_capabilities as Array<string>),
-  );
+  // Sourced reactively from channel.state.ownCapabilitiesStore (kept up to date by the client
+  // on watch/query and `capabilities.changed`).
+  const { ownCapabilities = [] } =
+    useStateStore(channel.state.ownCapabilitiesStore, selector) ?? {};
+
   const overrideCapabilitiesStr = overrideCapabilities
     ? JSON.stringify(Object.values(overrideCapabilities))
     : null;
-
-  // Effect to watch for changes in channel.data?.own_capabilities and update the own_capabilities state accordingly.
-  useEffect(() => {
-    setOwnCapabilites(JSON.stringify(channel.data?.own_capabilities as Array<string>));
-  }, [channel.data?.own_capabilities]);
-
-  // Effect to listen to the `capabilities.changed` event.
-  useEffect(() => {
-    const listener = channel.on('capabilities.changed', (event) => {
-      if (event.own_capabilities) {
-        setOwnCapabilites(JSON.stringify(event.own_capabilities as Array<string>));
-      }
-    });
-
-    return () => {
-      listener.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const ownCapabilitiesStr = JSON.stringify(ownCapabilities);
 
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
-    const capabilities = (own_capabilities || []) as Array<string>;
-    const ownCapabilitiesContext = Object.keys(allOwnCapabilities).reduce(
+    const capabilities = ownCapabilities as Array<string>;
+    return Object.keys(allOwnCapabilities).reduce(
       (result, capability) => ({
         ...result,
         [capability]:
@@ -52,10 +41,8 @@ export const useCreateOwnCapabilitiesContext = ({
       }),
       {} as OwnCapabilitiesContextValue,
     );
-
-    return ownCapabilitiesContext;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, overrideCapabilitiesStr, own_capabilities]);
+  }, [channel.id, overrideCapabilitiesStr, ownCapabilitiesStr]);
 
   return ownCapabilitiesContext;
 };

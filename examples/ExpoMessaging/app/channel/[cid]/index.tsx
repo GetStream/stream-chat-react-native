@@ -10,7 +10,6 @@ import {
   ChannelAvatar,
   MessageComposer,
   MessageList,
-  ThreadContextValue,
   useChannelPreviewDisplayName,
   useChatContext,
 } from 'stream-chat-expo';
@@ -110,7 +109,7 @@ export default function ChannelScreen() {
         messageId={messageId}
       >
         <MessageList
-          onThreadSelect={(thread: ThreadContextValue['thread']) => {
+          onThreadSelect={(thread) => {
             setThread(thread);
             router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
           }}

@@ -14,7 +14,6 @@ import {
   LocalMessage,
   MessageComposer,
   SendMessageOptions,
-  StreamChat,
   Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
@@ -126,7 +125,7 @@ export type InputMessageInputContextValue = {
   editMessage: (params: {
     localMessage: LocalMessage;
     options?: UpdateMessageOptions;
-  }) => ReturnType<StreamChat['updateMessage']>;
+  }) => Promise<void>;
 
   /**
    * Controls what happens when the attach button is pressed while the attachment picker is open.
@@ -228,7 +227,7 @@ export const MessageInputProvider = ({
 
   const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
-  const { thread } = useThreadContext();
+  const { threadInstance } = useThreadContext();
   const { t } = useTranslationContext();
   const { addNotification } = useNotificationApi();
   const inputBoxRef = useRef<InputBoxRef | null>(null);
@@ -560,7 +559,7 @@ export const MessageInputProvider = ({
     pickFile,
     setInputBoxRef,
     takeAndUploadImage,
-    thread,
+    threadInstance,
     uploadNewFile,
     ...value,
     closePollCreationDialog,

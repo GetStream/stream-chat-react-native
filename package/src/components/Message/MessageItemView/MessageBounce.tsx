@@ -9,14 +9,11 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { MessageOperations, useMessageOperations } from '../hooks/useMessageOperations';
 
 export type MessageBouncePropsWithContext = Pick<
-  MessagesContextValue,
+  MessageOperations,
   'removeMessage' | 'retrySendMessage'
 > &
   Pick<MessageContextValue, 'message'> & {
@@ -95,7 +92,7 @@ export type MessageBounceProps = Partial<MessageBouncePropsWithContext> & {
 
 export const MessageBounce = (props: MessageBounceProps) => {
   const { message } = useMessageContext();
-  const { removeMessage, retrySendMessage } = useMessagesContext();
+  const { removeMessage, retrySendMessage } = useMessageOperations();
   const { setEditingState } = useMessageComposerAPIContext();
   return (
     <MemoizedMessageBounce

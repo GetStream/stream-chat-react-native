@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
-import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   Alignment,
@@ -162,7 +161,7 @@ const MemoizedMessageFooter = React.memo(
   areEqual,
 ) as typeof MessageFooterWithContext;
 
-export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
+export type MessageFooterProps = Partial<Pick<MessageContextValue, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
     lastGroupMessage?: boolean;

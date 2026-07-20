@@ -1,7 +1,7 @@
 import React, { type ComponentProps, useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
-import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
 import { StreamChat } from 'stream-chat';
 
@@ -28,12 +28,24 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
 import { Channel } from '../Channel';
-import {
-  channelInitialState,
-  useChannelDataState,
-  useChannelMessageDataState,
-} from '../hooks/useChannelDataState';
 import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
+
+// Local test fixture (was previously imported from the now-removed useChannelDataState hook).
+const channelInitialState = {
+  hasMore: true,
+  hasMoreNewer: false,
+  loading: false,
+  loadingMore: false,
+  loadingMoreRecent: false,
+  members: {},
+  messages: [],
+  pinnedMessages: [],
+  read: {},
+  targetedMessageId: undefined,
+  typing: {},
+  watcherCount: 0,
+  watchers: {},
+};
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -176,49 +188,22 @@ describe('Channel', () => {
     await waitFor(() => expect(channelOnSpy).toHaveBeenCalledWith(expect.any(Function)));
   });
 
-  it('should be able to open threads', async () => {
+  it('exposes a thread provided via props through the thread context', async () => {
     const threadMessage = messages[0];
     const hasThread = jest.fn();
-    // this renders Channel, calls openThread from a child context consumer with a message,
-    // and then calls hasThread with the thread id if it was set.
-    const { rerender } = renderComponent(
-      { channel },
+    // Threads are now fully prop-driven: passing `thread` to Channel exposes it through
+    // ThreadContext synchronously (no openThread state setter).
+    renderComponent(
+      { channel, thread: threadMessage, threadList: true },
       (ctx) => {
-        const { openThread, thread } = ctx as {
-          openThread: (m: unknown) => void;
-          thread: { id: string } | null;
-        };
-        if (!thread) {
-          openThread(threadMessage);
-        } else {
+        const { thread } = ctx as { thread: { id: string } | null };
+        if (thread) {
           hasThread(thread.id);
         }
       },
       ThreadContext as React.Context<unknown>,
     );
 
-    rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <CallbackEffectWithContext
-              callback={(ctx) => {
-                const { openThread, thread } = ctx as {
-                  openThread: (m: unknown) => void;
-                  thread: { id: string } | null;
-                };
-                if (!thread) {
-                  openThread(threadMessage);
-                } else {
-                  hasThread(thread.id);
-                }
-              }}
-              context={ThreadContext as React.Context<unknown>}
-            />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
-    );
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
 
@@ -268,8 +253,6 @@ describe('Channel', () => {
       const mockContext = {
         channel,
         client: chatClient,
-        markRead: () => {},
-        watcherCount: 5,
       };
 
       render(
@@ -288,8 +271,6 @@ describe('Channel', () => {
         const ctx = context as unknown as typeof mockContext;
         expect(ctx.channel).toBeInstanceOf(Object);
         expect(ctx.client).toBeInstanceOf(StreamChat);
-        expect(ctx.markRead).toBeInstanceOf(Function);
-        expect(ctx.watcherCount).toBe(5);
       });
     });
   });
@@ -352,10 +333,7 @@ describe('Channel', () => {
       let context: ThreadContextValue | undefined;
 
       const mockContext = {
-        openThread: () => {},
-        thread: {},
-        threadHasMore: true,
-        threadLoadingMore: false,
+        allowThreadMessagesInChannel: true,
       };
 
       render(
@@ -371,10 +349,7 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context!.openThread).toBeInstanceOf(Function);
-        expect(context!.thread).toBeInstanceOf(Object);
-        expect(context!.threadHasMore).toBe(true);
-        expect(context!.threadLoadingMore).toBe(false);
+        expect(context!.allowThreadMessagesInChannel).toBe(true);
       });
     });
   });
@@ -451,12 +426,9 @@ describe('Channel initial load useEffect', () => {
 
     renderComponent({ channel });
 
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    const { result: channelState } = renderHook(() => useChannelDataState(channel));
-
     await waitFor(() => expect(watchSpy).toHaveBeenCalled());
-    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(10));
-    await waitFor(() => expect(Object.keys(channelState.current.state.members!)).toHaveLength(10));
+    // members now come reactively from channel.state.membersStore (via the shim getter).
+    await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 
   function getElementsAround<T extends object>(array: T[], key: keyof T, id: unknown) {
@@ -502,16 +474,6 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => {
       expect(loadMessageIntoState).toHaveBeenCalledWith(messageToSearch.id, undefined, 25);
     });
-
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(25));
-    await waitFor(() =>
-      expect(
-        channelMessageState.current.state.messages!.find(
-          (message) => message.id === messageToSearch.id,
-        ),
-      ).toBeTruthy(),
-    );
   });
 
   describe('initialScrollToFirstUnreadMessage', () => {
@@ -528,10 +490,8 @@ describe('Channel initial load useEffect', () => {
       jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(
         () =>
           ({
-            copyMessagesStateFromChannel: jest.fn(),
             loadChannelAroundMessage: jest.fn(),
             loadChannelAtFirstUnreadMessage: jest.fn(),
-            loadInitialMessagesStateFromChannel: jest.fn(),
             loadLatestMessages: jest.fn(),
             loadMore: jest.fn(),
             loadMoreRecent: jest.fn(),

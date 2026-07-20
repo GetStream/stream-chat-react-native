@@ -1,12 +1,21 @@
 import { useMemo } from 'react';
 
-import { useChatContext, useThreadContext, useTypingContext } from '../../../contexts';
+import { TypingUsersState } from 'stream-chat';
+
+import { useChannelContext, useChatContext, useThreadContext } from '../../../contexts';
+import { useStateStore } from '../../../hooks';
 import { filterTypingUsers } from '../utils/filterTypingUsers';
+
+const selector = (state: TypingUsersState) => ({ typing: state.typing });
 
 export const useTypingUsers = () => {
   const { client } = useChatContext();
-  const { thread } = useThreadContext();
-  const { typing } = useTypingContext();
+  const { channel } = useChannelContext();
+  const { threadInstance } = useThreadContext();
+  const { typing } = useStateStore(channel.state.typingStore, selector) ?? { typing: {} };
 
-  return useMemo(() => filterTypingUsers({ client, thread, typing }), [client, thread, typing]);
+  return useMemo(
+    () => filterTypingUsers({ client, threadId: threadInstance?.id, typing }),
+    [client, threadInstance, typing],
+  );
 };
