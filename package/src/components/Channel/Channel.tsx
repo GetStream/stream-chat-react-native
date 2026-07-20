@@ -725,7 +725,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         );
         channel.messagePaginator.mergeNewestPage(newestWindow);
         if (failedMessages?.length) {
-          channel.state.addMessagesSorted(failedMessages);
           failedMessages.forEach((m) =>
             channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
           );
@@ -744,7 +743,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           threadInstance.messagePaginator.state.getLatestValue().items ?? [];
         const failedThreadMessages = getRecoverableFailedMessages(currentThreadMessages);
         if (failedThreadMessages.length) {
-          channel.state.addMessagesSorted(failedThreadMessages);
           failedThreadMessages.forEach((m) =>
             threadInstance.messagePaginator.ingestItem(channel.state.formatMessage(m)),
           );

@@ -185,7 +185,9 @@ const flatListViewabilityConfig: ViewabilityConfig = {
 };
 
 const hasReadLastMessage = (channel: Channel, userId: string) => {
-  const latestMessageIdInChannel = channel.state.latestMessages.slice(-1)[0]?.id;
+  const latestMessageIdInChannel = channel.messagePaginator.state
+    .getLatestValue()
+    .items?.at(-1)?.id;
   const lastReadMessageIdServer = channel.state.read[userId]?.last_read_message_id;
   return latestMessageIdInChannel === lastReadMessageIdServer;
 };

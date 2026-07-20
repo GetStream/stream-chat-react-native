@@ -63,15 +63,16 @@ export function usePrunableMessageList({
 
     if (
       maximumMessageLimit == null ||
-      channel.state.messages.length <= maximumMessageLimit ||
+      (channel.messagePaginator.state.getLatestValue().items?.length ?? 0) <= maximumMessageLimit ||
       isNearEnd({ maximumMessageLimit, rangeConfig })
     ) {
       rawSetMessages(channel);
       return;
     }
 
-    channel.state.pruneOldest(maximumMessageLimit);
-
+    // TODO(#6): reimplement pruning over channel.messagePaginator — it has no prune API yet, and
+    // channel.state.pruneOldest is being removed. This path is currently dead (setMessages is wired
+    // to a no-op in useMessageList), so no window-cap is enforced today.
     rawSetMessages(channel);
   });
 
