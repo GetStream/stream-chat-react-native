@@ -4,11 +4,10 @@ import { StyleSheet, Text } from 'react-native';
 import { ReactionListItemWrapper } from './ReactionListItemWrapper';
 
 import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import { MessagesContextValue } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-
-import { Unknown } from '../../../../icons/Unknown';
 
 import type { IconProps } from '../../../../icons/utils/base';
 
@@ -24,8 +23,9 @@ type Props = Pick<IconProps, 'pathFill' | 'style'> & {
 };
 
 const Icon = ({ size, style, supportedReactions, type }: Props) => {
+  const { icons } = useComponentsContext();
   const ReactionIcon =
-    supportedReactions?.find((reaction) => reaction.type === type)?.Icon || Unknown;
+    supportedReactions?.find((reaction) => reaction.type === type)?.Icon || icons.Unknown;
 
   return <ReactionIcon size={size} style={style} />;
 };

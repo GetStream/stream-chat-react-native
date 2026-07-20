@@ -4,11 +4,10 @@ import { StyleSheet, View } from 'react-native';
 import type { UnreadSnapshotState } from 'stream-chat';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { ArrowUp } from '../../icons/arrow-up';
-import { NewClose } from '../../icons/xmark';
 import { primitives } from '../../theme';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { Button } from '../ui';
@@ -40,6 +39,7 @@ const unreadCountSelector = (snapshot: UnreadSnapshotState) => ({
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
   const { markRead, onCloseHandler, onPressHandler, unreadCount } = props;
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { channel, loadChannelAtFirstUnreadMessage } = useChannelContext();
   const { unread_messages } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,
@@ -72,7 +72,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
         <Button
           variant='secondary'
           type='ghost'
-          LeadingIcon={ArrowUp}
+          LeadingIcon={icons.ArrowUp}
           label={count ? t('{{count}} unread', { count }) : t('Unread Messages')}
           onPress={handleOnPress}
           size='md'
@@ -84,7 +84,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           variant='secondary'
           type='ghost'
           iconOnly
-          LeadingIcon={NewClose}
+          LeadingIcon={icons.NewClose}
           onPress={handleClose}
           size='md'
         />

@@ -7,12 +7,12 @@ import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import type { ImageGalleryHeaderProps } from './types';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { ChevronLeft } from '../../../icons/chevron-left';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';
@@ -26,6 +26,7 @@ const imageGallerySelector = (state: ImageGalleryState) => ({
 export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
   const { opacity, visible } = props;
   const [height, setHeight] = useState(200);
+  const { icons } = useComponentsContext();
   const styles = useStyles();
   const { t, tDateTimeParser } = useTranslationContext();
   const { imageGalleryStateStore } = useImageGalleryContext();
@@ -77,7 +78,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
               type='ghost'
               size='md'
               onPress={hideOverlay}
-              LeadingIcon={ChevronLeft}
+              LeadingIcon={icons.ChevronLeft}
               iconOnly
             />
           </View>

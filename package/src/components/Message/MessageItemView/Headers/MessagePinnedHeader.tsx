@@ -2,13 +2,13 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { Pin } from '../../../../icons/pin';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
@@ -21,6 +21,7 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
   const styles = useStyles();
   const { t } = useTranslationContext();
   const { client } = useChatContext();
+  const { icons } = useComponentsContext();
 
   if (!message?.pinned) {
     return null;
@@ -28,7 +29,7 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
 
   return (
     <View accessibilityLabel='Message Pinned Header' style={styles.container}>
-      <Pin height={16} width={16} stroke={styles.label.color} />
+      <icons.Pin height={16} width={16} stroke={styles.label.color} />
       <Text style={styles.label}>
         {t('Pinned by')}{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}

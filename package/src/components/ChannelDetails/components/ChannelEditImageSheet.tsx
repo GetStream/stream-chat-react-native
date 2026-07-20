@@ -15,11 +15,7 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { Camera } from '../../../icons/camera';
-import { Delete } from '../../../icons/delete';
-import { Picture } from '../../../icons/image';
 import type { IconProps } from '../../../icons/utils/base';
-import { Cross } from '../../../icons/xmark-1';
 import type {
   EditChannelDetailsState,
   EditChannelImagePendingAction,
@@ -51,7 +47,7 @@ const keyExtractor = (item: SheetItem) => item.id;
 
 const ChannelEditImageSheetInner = () => {
   const { store } = useChannelEditDetailsContext();
-  const { ChannelDetailsActionItem } = useComponentsContext();
+  const { ChannelDetailsActionItem, icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -81,7 +77,7 @@ const ChannelEditImageSheetInner = () => {
   const items = useMemo<SheetItem[]>(() => {
     const base: SheetItem[] = [
       {
-        Icon: Camera,
+        Icon: icons.Camera,
         id: 'take-photo',
         label: t('Take Photo'),
         onPress: () => {
@@ -90,7 +86,7 @@ const ChannelEditImageSheetInner = () => {
         testID: 'channel-edit-picture-take-photo',
       },
       {
-        Icon: Picture,
+        Icon: icons.Picture,
         id: 'choose-image',
         label: t('Choose Image'),
         onPress: () => {
@@ -103,7 +99,7 @@ const ChannelEditImageSheetInner = () => {
     if (canReset) {
       base.push({
         destructive: true,
-        Icon: Delete,
+        Icon: icons.Delete,
         id: 'reset-picture',
         label: t('Reset Picture'),
         onPress: () => {
@@ -114,7 +110,7 @@ const ChannelEditImageSheetInner = () => {
     }
 
     return base;
-  }, [canReset, onSelect, t]);
+  }, [canReset, icons, onSelect, t]);
 
   const renderItem = useCallback<ListRenderItem<SheetItem>>(
     ({ item }) => (
@@ -136,7 +132,7 @@ const ChannelEditImageSheetInner = () => {
           <Button
             accessibilityLabelKey='a11y/Close edit picture sheet'
             iconOnly
-            LeadingIcon={Cross}
+            LeadingIcon={icons.Cross}
             onPress={() => close()}
             size='md'
             testID='channel-edit-picture-sheet-close-button'

@@ -25,11 +25,9 @@ import Animated, {
 import { PollComposerOption, PollComposerState } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { InfoTooltip } from '../../../icons/info';
-import { CircleMinus } from '../../../icons/minus-circle';
-import { DotGrid } from '../../../icons/reorder';
 import { primitives } from '../../../theme';
 
 export type CurrentOptionPositionsCache = {
@@ -285,6 +283,7 @@ export const CreatePollOption = ({
   onRemoveOption,
 }: CreatePollOptionType) => {
   const { t } = useTranslationContext();
+  const { icons } = useComponentsContext();
   const { createPollOptionGap = 8 } = useCreatePollContentContext();
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
@@ -510,7 +509,7 @@ export const CreatePollOption = ({
       <Animated.View layout={LayoutTransition} style={[styles.optionContent, optionStyle.content]}>
         <GestureDetector gesture={gesture}>
           <Animated.View>
-            <DotGrid height={20} width={20} stroke={semantics.inputTextIcon} />
+            <icons.DotGrid height={20} width={20} stroke={semantics.inputTextIcon} />
           </Animated.View>
         </GestureDetector>
         <TextInput
@@ -521,7 +520,7 @@ export const CreatePollOption = ({
           style={[styles.optionInput, optionStyle.input]}
         />
         <Pressable onPress={onRemoveOptionHandler}>
-          <CircleMinus height={20} width={20} stroke={semantics.inputTextIcon} />
+          <icons.CircleMinus height={20} width={20} stroke={semantics.inputTextIcon} />
         </Pressable>
       </Animated.View>
 
@@ -530,7 +529,7 @@ export const CreatePollOption = ({
           onLayout={onErrorLayoutHandler}
           style={[styles.optionValidationErrorContainer, optionStyle.validationErrorContainer]}
         >
-          <InfoTooltip height={20} width={20} fill={semantics.accentError} />
+          <icons.InfoTooltip height={20} width={20} fill={semantics.accentError} />
           <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
             {t(error)}
           </Text>

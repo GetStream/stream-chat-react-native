@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { Smile } from '../../icons/emoji';
 import { primitives } from '../../theme';
 
 export type AutoCompleteSuggestionHeaderProps = {
@@ -48,11 +48,12 @@ export const EmojiHeader: React.FC<AutoCompleteSuggestionHeaderProps> = ({ query
       semantics,
     },
   } = useTheme();
+  const { icons } = useComponentsContext();
   const styles = useStyles();
 
   return (
     <View style={[styles.container, container]}>
-      <Smile pathFill={semantics.accentPrimary} />
+      <icons.Smile pathFill={semantics.accentPrimary} />
       <Text accessibilityRole='header' style={[styles.title, title]} testID='emojis-header-title'>
         {`Emoji matching "${queryText}"`}
       </Text>

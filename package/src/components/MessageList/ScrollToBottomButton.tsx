@@ -7,9 +7,9 @@ import type { ReadState } from 'stream-chat';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { Down } from '../../icons/arrow-up';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
@@ -32,6 +32,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { icons } = useComponentsContext();
   const userId = client?.userID;
   const ownUnreadSelector = useCallback(
     (state: ReadState) => ({
@@ -73,7 +74,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
           accessibilityLabelParams={accessibilityLabelParams}
           variant='secondary'
           type='outline'
-          LeadingIcon={Down}
+          LeadingIcon={icons.Down}
           onPress={onPress}
           size='md'
           testID='scroll-to-bottom-button'

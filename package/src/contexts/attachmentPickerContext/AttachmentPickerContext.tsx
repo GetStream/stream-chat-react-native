@@ -22,7 +22,7 @@ export type AttachmentPickerContextValue = Pick<
 > & {
   /**
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
-   * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
+   * This can be set via the `bottomInset` prop on the `Channel` component.
    *
    * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
    * for more details.

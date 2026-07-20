@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Mute } from '../../icons';
 import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
 
 /**
@@ -15,11 +15,12 @@ export const ChannelPreviewMutedStatus = () => {
       semantics,
     },
   } = useTheme();
+  const { icons } = useComponentsContext();
   const accessibilityLabel = useA11yLabel('a11y/Muted');
 
   return (
     <CompositeAccessibilityProbe label={accessibilityLabel}>
-      <Mute height={20} fill={semantics.textTertiary} width={20} {...mutedStatus} />
+      <icons.Mute height={20} fill={semantics.textTertiary} width={20} {...mutedStatus} />
     </CompositeAccessibilityProbe>
   );
 };

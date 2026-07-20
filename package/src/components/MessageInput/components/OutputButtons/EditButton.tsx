@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
-import { Tick } from '../../../../icons/checkmark';
 import { Button } from '../../../ui';
 
 export type EditButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessage'>> & {
@@ -14,6 +14,7 @@ export type EditButtonProps = Partial<Pick<MessageInputContextValue, 'sendMessag
 
 export const EditButton = (props: EditButtonProps) => {
   const { disabled = false, sendMessage: propsSendMessage } = props;
+  const { icons } = useComponentsContext();
   const { sendMessage: sendMessageFromContext } = useMessageInputContext();
   const sendMessage = propsSendMessage || sendMessageFromContext;
 
@@ -29,7 +30,7 @@ export const EditButton = (props: EditButtonProps) => {
       accessibilityLabelKey='a11y/Save edited message'
       variant='primary'
       type='solid'
-      LeadingIcon={Tick}
+      LeadingIcon={icons.Tick}
       iconOnly
       onPress={onPressHandler}
       size='sm'

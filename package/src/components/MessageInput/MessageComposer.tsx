@@ -429,6 +429,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                     </Animated.View>
                   </View>
                 </Animated.View>
+                <MessageComposerTrailingView />
               </View>
             )}
             {!isRecordingStateIdle ? (
@@ -446,9 +447,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                   style={lockIndicatorAnimatedStyle}
                 />
               </View>
-            ) : (
-              <MessageComposerTrailingView />
-            )}
+            ) : null}
           </View>
         </PortalWhileClosingView>
       </Animated.View>

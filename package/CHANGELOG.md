@@ -1,5 +1,332 @@
 # Change Log
 
+## [9.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.6.1...v9.7.0) (2026-07-17)
+
+### Bug Fixes
+
+* allow moving text inside message content ([#3723](https://github.com/GetStream/stream-chat-react-native/issues/3723)) ([dbecc8e](https://github.com/GetStream/stream-chat-react-native/commit/dbecc8ef6d12506cd1a9fcbd3db6a7c15dcc862d))
+* export missing base UI components and correct stale JSDoc/comments ([#3730](https://github.com/GetStream/stream-chat-react-native/issues/3730)) ([0a38205](https://github.com/GetStream/stream-chat-react-native/commit/0a38205cf9a19331a8f1fae2e976aa6ad610e032)), closes [GetStream/docs-content#1435](https://github.com/GetStream/docs-content/issues/1435)
+* export OutputButtons from the SDK ([#3727](https://github.com/GetStream/stream-chat-react-native/issues/3727)) ([eb94ff8](https://github.com/GetStream/stream-chat-react-native/commit/eb94ff8d3832ecbd8c8ff4eb93197d6bc0f20db5))
+* theming fixes (avatar, reaction pill, force message alignment) ([#3728](https://github.com/GetStream/stream-chat-react-native/issues/3728)) ([a740c7a](https://github.com/GetStream/stream-chat-react-native/commit/a740c7a641e205edff116736e5236838af2a8cae))
+* yarn workspaces ci issues ([#3724](https://github.com/GetStream/stream-chat-react-native/issues/3724)) ([d786211](https://github.com/GetStream/stream-chat-react-native/commit/d786211b659f457e34001765614582587f9690ae)), closes [#3717](https://github.com/GetStream/stream-chat-react-native/issues/3717)
+
+### Features
+
+* allow custom icons ([#3731](https://github.com/GetStream/stream-chat-react-native/issues/3731)) ([230cfa1](https://github.com/GetStream/stream-chat-react-native/commit/230cfa104d616f3753dc06bbe34640fd20868f15))
+
+## [9.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.6.0...v9.6.1) (2026-07-09)
+
+### Bug Fixes
+
+* add optional toggling between keyboard and picker ([#3712](https://github.com/GetStream/stream-chat-react-native/issues/3712)) ([8cae158](https://github.com/GetStream/stream-chat-react-native/commit/8cae158f9178de4c3fe7af27b44635b35de66124))
+* context menu scrollability ([#3719](https://github.com/GetStream/stream-chat-react-native/issues/3719)) ([eccc660](https://github.com/GetStream/stream-chat-react-native/commit/eccc660e85ad65882818287240fff18509229851))
+* disappearing context menu ([#3714](https://github.com/GetStream/stream-chat-react-native/issues/3714)) ([8971bef](https://github.com/GetStream/stream-chat-react-native/commit/8971bef28bcb813fb99bd3837d9d0a62db20f1ca))
+* keyboard jump on samsung non edge-to-edge devices ([#3718](https://github.com/GetStream/stream-chat-react-native/issues/3718)) ([07e5554](https://github.com/GetStream/stream-chat-react-native/commit/07e555400a15fd2ac6ae057e00a417f94c03b47f))
+* orientation awareness in bottom sheet ([#3711](https://github.com/GetStream/stream-chat-react-native/issues/3711)) ([372255a](https://github.com/GetStream/stream-chat-react-native/commit/372255a1fea86b2c68eba64d6402f030dc055faf))
+* restore release automation token and backfill missing changelog ([#3717](https://github.com/GetStream/stream-chat-react-native/issues/3717)) ([df611bb](https://github.com/GetStream/stream-chat-react-native/commit/df611bb5025a0065b7244a36549105a465d8dfcc))
+* the MessageComposerTrailingView slot moved to same row as input … ([#3716](https://github.com/GetStream/stream-chat-react-native/issues/3716)) ([a9a54ab](https://github.com/GetStream/stream-chat-react-native/commit/a9a54ab374cb82f2ac645d2b7caea393801c5e8b))
+* thread_manager reload before activation ([#3720](https://github.com/GetStream/stream-chat-react-native/issues/3720)) ([2ff90d5](https://github.com/GetStream/stream-chat-react-native/commit/2ff90d518a2d6cb2f961bbb8b2c4f0853da80f23))
+
+### Performance Improvements
+
+* resize video thumbnails ([#3713](https://github.com/GetStream/stream-chat-react-native/issues/3713)) ([9e9fccd](https://github.com/GetStream/stream-chat-react-native/commit/9e9fccd9b5166248080cf112b90a6e12922e4764))
+
+## [9.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.5.2...v9.6.0) (2026-07-03)
+
+- feat: localized unread count ([#3679](https://github.com/GetStream/stream-chat-react-native/pull/3679))
+- fix: expose default native handlers ([#3704](https://github.com/GetStream/stream-chat-react-native/pull/3704))
+
+## [9.5.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.5.1...v9.5.2) (2026-07-03)
+
+- perf: prevent recycling remounting in MessageContent descendants ([#3696](https://github.com/GetStream/stream-chat-react-native/pull/3696))
+- perf: optimize recycling item type resolution ([#3697](https://github.com/GetStream/stream-chat-react-native/pull/3697))
+- fix: draw distance regression ([#3699](https://github.com/GetStream/stream-chat-react-native/pull/3699))
+- fix: support expo-media-library 56.0.5+ ([#3700](https://github.com/GetStream/stream-chat-react-native/pull/3700))
+
+## [9.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.5.0...v9.5.1) (2026-07-02)
+
+- fix: prevent upload for files above size limit ([#3686](https://github.com/GetStream/stream-chat-react-native/pull/3686))
+- fix: member label doesn't overlap with user pictures in channel avatar 2xl ([#3687](https://github.com/GetStream/stream-chat-react-native/pull/3687))
+- fix: channel details edit button padding ([#3685](https://github.com/GetStream/stream-chat-react-native/pull/3685))
+- fix: don't exclude user from online member count; use watcher_count ([#3688](https://github.com/GetStream/stream-chat-react-native/pull/3688))
+- fix: build error with image resizer installed ([#3690](https://github.com/GetStream/stream-chat-react-native/pull/3690))
+- fix: gallery video seeking ([#3691](https://github.com/GetStream/stream-chat-react-native/pull/3691))
+- fix: generate thumbnails for ph assets without asset download ([#3689](https://github.com/GetStream/stream-chat-react-native/pull/3689))
+- fix: pinned message translations in channel details ([#3692](https://github.com/GetStream/stream-chat-react-native/pull/3692))
+- fix: suppress upload cancelled notification for async uploads ([#3693](https://github.com/GetStream/stream-chat-react-native/pull/3693))
+
+## [9.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.4.0...v9.5.0) (2026-06-29)
+
+- fix: destructive channel actions dialog ([#3666](https://github.com/GetStream/stream-chat-react-native/pull/3666))
+- chore: remove duplicate screen headers from expo app ([#3667](https://github.com/GetStream/stream-chat-react-native/pull/3667))
+- feat: add search bar for members list in channel details ([#3668](https://github.com/GetStream/stream-chat-react-native/pull/3668))
+- fix(a11y): focus inputs on enter and page transitions ([#3671](https://github.com/GetStream/stream-chat-react-native/pull/3671))
+- chore: update a11y skill ([#3672](https://github.com/GetStream/stream-chat-react-native/pull/3672))
+- fix: respect command sorting coming from dashboard ([#3673](https://github.com/GetStream/stream-chat-react-native/pull/3673))
+- perf: screen reader queries ([#3674](https://github.com/GetStream/stream-chat-react-native/pull/3674))
+- perf: gallery virtualization ([#3675](https://github.com/GetStream/stream-chat-react-native/pull/3675))
+- chore: move check and sample distribution runners to self hosted ([#3676](https://github.com/GetStream/stream-chat-react-native/pull/3676))
+- fix: core ui component alignment fixes ([#3677](https://github.com/GetStream/stream-chat-react-native/pull/3677))
+- refactor: channel details cleanup ([#3669](https://github.com/GetStream/stream-chat-react-native/pull/3669))
+- fix: online indicator misaligned for 2xl avatar ([#3678](https://github.com/GetStream/stream-chat-react-native/pull/3678))
+- chore: bump stream-chat-js to latest ([#3681](https://github.com/GetStream/stream-chat-react-native/pull/3681))
+
+## [9.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.3.1...v9.4.0) (2026-06-17)
+
+- fix: downgrade rngh ([#3641](https://github.com/GetStream/stream-chat-react-native/pull/3641))
+- feat: channel info screens ([#3590](https://github.com/GetStream/stream-chat-react-native/pull/3590))
+- fix: context menu extra padding ([#3644](https://github.com/GetStream/stream-chat-react-native/pull/3644))
+- fix: poll style fixes ([#3645](https://github.com/GetStream/stream-chat-react-native/pull/3645))
+- fix: audio attachment style edge cases ([#3646](https://github.com/GetStream/stream-chat-react-native/pull/3646))
+- chore: update sample app icon ([#3647](https://github.com/GetStream/stream-chat-react-native/pull/3647))
+- fix: use client mandated composer queue ([#3648](https://github.com/GetStream/stream-chat-react-native/pull/3648))
+- fix: nitro sound audio recording ([#3649](https://github.com/GetStream/stream-chat-react-native/pull/3649))
+- fix: revert nitro sound to 0.2.9 ([#3650](https://github.com/GetStream/stream-chat-react-native/pull/3650))
+- feat: pinned channels design ([#3651](https://github.com/GetStream/stream-chat-react-native/pull/3651))
+- fix: variety ui design edge cases ([#3653](https://github.com/GetStream/stream-chat-react-native/pull/3653))
+- fix: pin channel action order ([#3655](https://github.com/GetStream/stream-chat-react-native/pull/3655))
+- fix: support custom channel preview username text ([#3654](https://github.com/GetStream/stream-chat-react-native/pull/3654))
+- feat: enhanced mentions ([#3631](https://github.com/GetStream/stream-chat-react-native/pull/3631))
+- feat: channel details navigational screens ([#3652](https://github.com/GetStream/stream-chat-react-native/pull/3652))
+- perf: gallery perf improvements ([#3662](https://github.com/GetStream/stream-chat-react-native/pull/3662))
+
+## [9.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.3.0...v9.3.1) (2026-06-10)
+
+- chore(yarn): migrate to Yarn 4 + native workspaces ([#3594](https://github.com/GetStream/stream-chat-react-native/pull/3594))
+- fix: switch to `npm` actions with `--no-workspaces` ([#3622](https://github.com/GetStream/stream-chat-react-native/pull/3622))
+- perf: short circuit removal of redundant views ([#3623](https://github.com/GetStream/stream-chat-react-native/pull/3623))
+- fix: on selection change issues ([#3624](https://github.com/GetStream/stream-chat-react-native/pull/3624))
+- perf: message content styles and perf scripts ([#3626](https://github.com/GetStream/stream-chat-react-native/pull/3626))
+- fix: a11y actionable items fixes ([#3628](https://github.com/GetStream/stream-chat-react-native/pull/3628))
+- chore: rn 0.85 upgrade of SampleApp and rngh 3 support ([#3629](https://github.com/GetStream/stream-chat-react-native/pull/3629))
+- fix: revert reanimated version ([#3630](https://github.com/GetStream/stream-chat-react-native/pull/3630))
+- fix: a11y continuous improvements ([#3632](https://github.com/GetStream/stream-chat-react-native/pull/3632))
+- fix: a11y follow up fixes ([#3634](https://github.com/GetStream/stream-chat-react-native/pull/3634))
+- fix: android flicker on a11y tree traversal ([#3635](https://github.com/GetStream/stream-chat-react-native/pull/3635))
+- fix: expo ui bottom sheet synchronization issues ([#3636](https://github.com/GetStream/stream-chat-react-native/pull/3636))
+- fix: patch rngh with potential pressability fix ([#3637](https://github.com/GetStream/stream-chat-react-native/pull/3637))
+
+## [9.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.2.2...v9.3.0) (2026-05-26)
+
+- fix: patch expo-audio to allow seeking on android ([#3610](https://github.com/GetStream/stream-chat-react-native/pull/3610))
+- feat: add Arabic (ar) language support ([#3488](https://github.com/GetStream/stream-chat-react-native/pull/3488))
+- fix: message gallery overflow styles ([#3615](https://github.com/GetStream/stream-chat-react-native/pull/3615))
+- fix: patch flashlist autoscroll behaviour ([#3614](https://github.com/GetStream/stream-chat-react-native/pull/3614))
+- feat: svg aware images ([#3616](https://github.com/GetStream/stream-chat-react-native/pull/3616))
+- fix: autoscrolling while ctx menu is active ([#3617](https://github.com/GetStream/stream-chat-react-native/pull/3617))
+
+## [9.2.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.2.1...v9.2.2) (2026-05-19)
+
+- fix: flashlist disappearing items ([#3600](https://github.com/GetStream/stream-chat-react-native/pull/3600))
+- fix: flash list scroll to behaviour ([#3602](https://github.com/GetStream/stream-chat-react-native/pull/3602))
+- fix: stop replaying audio on expo when seeing to 0 ([#3603](https://github.com/GetStream/stream-chat-react-native/pull/3603))
+- fix: remove keyboard controller remnants ([#3605](https://github.com/GetStream/stream-chat-react-native/pull/3605))
+- fix: respect topInset on bottom sheet once again ([#3606](https://github.com/GetStream/stream-chat-react-native/pull/3606))
+
+## [9.2.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.2.0...v9.2.1) (2026-05-15)
+
+- chore: predefined filter support for offline mode ([#3595](https://github.com/GetStream/stream-chat-react-native/pull/3595))
+- fix: design ux improvements ([#3596](https://github.com/GetStream/stream-chat-react-native/pull/3596))
+- fix: predefined filters sorting ([#3597](https://github.com/GetStream/stream-chat-react-native/pull/3597))
+
+## [9.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.1.3...v9.2.0) (2026-05-13)
+
+- feat(a11y): Accessibility foundation ([#3583](https://github.com/GetStream/stream-chat-react-native/pull/3583))
+- feat: extended accessibility options ([#3587](https://github.com/GetStream/stream-chat-react-native/pull/3587))
+- docs: refresh README cover image and remove stale screenshots ([#3589](https://github.com/GetStream/stream-chat-react-native/pull/3589))
+- feat: snackbar notifications ([#3588](https://github.com/GetStream/stream-chat-react-native/pull/3588))
+- fix: notification styles and default icons ([#3591](https://github.com/GetStream/stream-chat-react-native/pull/3591))
+
+## [9.1.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.1.2...v9.1.3) (2026-05-05)
+
+- fix: video thumbnail loading ([#3584](https://github.com/GetStream/stream-chat-react-native/pull/3584))
+- fix: bump stream-chat to fix commands regression ([#3585](https://github.com/GetStream/stream-chat-react-native/pull/3585))
+
+## [9.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.1.1...v9.1.2) (2026-04-30)
+
+- fix: unique reactions memoization ([#3577](https://github.com/GetStream/stream-chat-react-native/pull/3577))
+- chore: update github actions to latest versions ([#3579](https://github.com/GetStream/stream-chat-react-native/pull/3579))
+- fix: commands flow when interacting with other composer elements ([#3570](https://github.com/GetStream/stream-chat-react-native/pull/3570))
+
+## [9.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.1.0...v9.1.1) (2026-04-28)
+
+- fix: reanimated 4.3.0 attachment preview list ([#3569](https://github.com/GetStream/stream-chat-react-native/pull/3569))
+- fix: podspecPath warning ([#3574](https://github.com/GetStream/stream-chat-react-native/pull/3574))
+
+## [9.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.0.1...v9.1.0) (2026-04-24)
+
+- refactor(tests): migrate test suite and mock-builders to TypeScript ([#3562](https://github.com/GetStream/stream-chat-react-native/pull/3562))
+- fix: add missing translation keys ([#3565](https://github.com/GetStream/stream-chat-react-native/pull/3565))
+- feat: track attachment uploads outside of message composer - in progress ([#3527](https://github.com/GetStream/stream-chat-react-native/pull/3527))
+- feat: native multipart upload ([#3566](https://github.com/GetStream/stream-chat-react-native/pull/3566))
+
+## [9.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.0.0...v9.0.1) (2026-04-17)
+
+- fix: message reply border in RTL mode ([#3555](https://github.com/GetStream/stream-chat-react-native/pull/3555))
+- refactor: remove dead MessageMenu and finish useAudioPlayer rename ([#3556](https://github.com/GetStream/stream-chat-react-native/pull/3556))
+- docs: add AI-agent migration guide for v8 → v9 ([#3557](https://github.com/GetStream/stream-chat-react-native/pull/3557))
+- chore: customizability of context menu ([#3558](https://github.com/GetStream/stream-chat-react-native/pull/3558))
+- fix: pagination breaks if first/last message is shadowed ([#3559](https://github.com/GetStream/stream-chat-react-native/pull/3559))
+
+## [9.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.12.0...v9.0.0) (2026-04-16)
+
+`V9.0.0` is finally here ! 🚀 
+
+**Important changes:**
+
+  - **Complete design overhaul**: V9 introduces a full visual redesign across the SDK, including the message list, channel list, composer, and overall chat experience.
+  - **Redesigned message contextual menu**: The message overlay and contextual menu system were reworked to provide a more modern and customizable foundation for message actions, reactions, and related interactions.
+  - **`WithComponents` customization model**: V9 expands and standardizes top-level component overrides through `WithComponents`, making SDK customization more consistent and easier to manage.
+  - **New design token system**: V9 introduces a new token-based theming model built around `primitives`, `foundations`, `components`, and `semantics`.
+  - **New Architecture only**: V9 now supports React Native’s New Architecture exclusively.
+
+For more details, see the [V9 docs](https://getstream.io/chat/docs/sdk/react-native/v9/), the [migration guide](https://getstream.io/chat/docs/sdk/react-native/v9/basics/upgrading-from-v8/), [migration guide for AI Coding Agents](https://github.com/GetStream/stream-chat-react-native/blob/develop/ai-docs/ai-migration.md), and the [theming docs](https://getstream.io/chat/docs/sdk/react-native/v9/customization/theming/).
+
+## [8.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.11.0...v8.12.0) (2025-12-18)
+
+- feat: issue sending message and edit message when moderation bounced it and add blocked component ([#3323](https://github.com/GetStream/stream-chat-react-native/pull/3323))
+- fix: performance improvement for message list render item ([#3306](https://github.com/GetStream/stream-chat-react-native/pull/3306))
+
+## [8.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.10.1...v8.11.0) (2025-12-15)
+
+- feat: add attachment picker handle theme ([#3317](https://github.com/GetStream/stream-chat-react-native/pull/3317))
+- feat: manage audio centrally in the SDK ([#3288](https://github.com/GetStream/stream-chat-react-native/pull/3288))
+- fix(message-action-handlers): copy translated message ([#3325](https://github.com/GetStream/stream-chat-react-native/pull/3325))
+- fix: trusted package releases ([#3326](https://github.com/GetStream/stream-chat-react-native/pull/3326))
+
+## [8.10.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.10.0...v8.10.1) (2025-12-05)
+
+- fix: theme not getting applied to attachment picker flatlist ([#3307](https://github.com/GetStream/stream-chat-react-native/pull/3307))
+- test: update snapshots for message input component ([#3309](https://github.com/GetStream/stream-chat-react-native/pull/3309))
+- fix: broken poll vote casting with react compiler ([#3308](https://github.com/GetStream/stream-chat-react-native/pull/3308))
+- fix: preSendMessageRequest type ([#3313](https://github.com/GetStream/stream-chat-react-native/pull/3313))
+
+## [8.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.9.2...v8.10.0) (2025-11-28)
+
+- fix: change message info bottom sheet modal ([#3302](https://github.com/GetStream/stream-chat-react-native/pull/3302))
+- feat: add support for ephemeral channels ([#3301](https://github.com/GetStream/stream-chat-react-native/pull/3301))
+
+## [8.9.2](https://github.com/GetStream/stream-chat-react-native/compare/v8.9.1...v8.9.2) (2025-11-25)
+
+- fix: image gallery image gallery photos reversed issue ([#3297](https://github.com/GetStream/stream-chat-react-native/pull/3297))
+
+## [8.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.9.0...v8.9.1) (2025-11-23)
+
+- fix: swipability regression ([#3295](https://github.com/GetStream/stream-chat-react-native/pull/3295))
+
+## [8.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.8.1...v8.9.0) (2025-11-21)
+
+- feat: enable react compiler in the Sample and Expo app ([#3279](https://github.com/GetStream/stream-chat-react-native/pull/3279))
+- fix: export hooks and add message info read and delivery UI ([#3291](https://github.com/GetStream/stream-chat-react-native/pull/3291))
+- fix: update stream-chat version to 9.26.0 ([#3292](https://github.com/GetStream/stream-chat-react-native/pull/3292))
+- chore(deps-dev): bump @react-native-community/cli from 19.1.1 to 19.1.2 in /examples/TypeScriptMessaging ([#3290](https://github.com/GetStream/stream-chat-react-native/pull/3290))
+- perf: prevent unmounting `MessageBubble` when STR happens ([#3281](https://github.com/GetStream/stream-chat-react-native/pull/3281))
+
+## [8.8.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.8.0...v8.8.1) (2025-11-13)
+
+- fix: crash around audio attachment upload preview in draft mode ([#3280](https://github.com/GetStream/stream-chat-react-native/pull/3280))
+- chore(deps-dev): bump @react-native-community/cli from 19.1.1 to 19.1.2 in /examples/SampleApp ([#3284](https://github.com/GetStream/stream-chat-react-native/pull/3284))
+- chore: removed SafeAreaView legacy package usage + fixed the issue wi… ([#3282](https://github.com/GetStream/stream-chat-react-native/pull/3282))
+
+## [8.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.7.0...v8.8.0) (2025-11-03)
+
+- fix: image tap functionality on android ([#3272](https://github.com/GetStream/stream-chat-react-native/pull/3272))
+- fix: use native stack navigator and broken navigate call ([#3275](https://github.com/GetStream/stream-chat-react-native/pull/3275))
+- feat: optional support for react-native-nitro-sound ([#3271](https://github.com/GetStream/stream-chat-react-native/pull/3271))
+- feat: show delivery status and read status on the message and channel preview ([#3258](https://github.com/GetStream/stream-chat-react-native/pull/3258))
+
+## [8.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.6.2...v8.7.0) (2025-10-24)
+
+- feat: add optional support of delete message for me ([#3246](https://github.com/GetStream/stream-chat-react-native/pull/3246))
+- fix: regression due to scaleX for individual images ([#3261](https://github.com/GetStream/stream-chat-react-native/pull/3261))
+- fix: respect max file size config for pick image API ([#3262](https://github.com/GetStream/stream-chat-react-native/pull/3262))
+- fix: stop the loading state of the image when image fails to load ([#3264](https://github.com/GetStream/stream-chat-react-native/pull/3264))
+- fix: add delete for me action type ([#3267](https://github.com/GetStream/stream-chat-react-native/pull/3267))
+- fix: make camera roll usage optional using a channel prop ([#3263](https://github.com/GetStream/stream-chat-react-native/pull/3263))
+- fix: move the default saveFile and deleteFile api to use legacy expo-file-system ([#3268](https://github.com/GetStream/stream-chat-react-native/pull/3268))
+
+## [8.6.2](https://github.com/GetStream/stream-chat-react-native/compare/v8.6.1...v8.6.2) (2025-10-16)
+
+- perf: `MessageList` livestreaming improvements ([#3244](https://github.com/GetStream/stream-chat-react-native/pull/3244))
+- fix: pagination breaking during pruning ([#3254](https://github.com/GetStream/stream-chat-react-native/pull/3254))
+- fix: disable progress seek animation on android as aac not supported ([#3256](https://github.com/GetStream/stream-chat-react-native/pull/3256))
+
+## [8.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.6.0...v8.6.1) (2025-10-15)
+
+- fix: issue with playing audio multiple times after recording ([#3251](https://github.com/GetStream/stream-chat-react-native/pull/3251))
+- fix: add expo PN entitelments on app.json ([#3253](https://github.com/GetStream/stream-chat-react-native/pull/3253))
+
+## [8.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.5.2...v8.6.0) (2025-10-13)
+
+- perf: re-render issue in the useFetchReactions hook ([#3233](https://github.com/GetStream/stream-chat-react-native/pull/3233))
+- fix: respect read events for unread notification display in Message Lists ([#3234](https://github.com/GetStream/stream-chat-react-native/pull/3234))
+- chore: add AGENTS.md file ([#3237](https://github.com/GetStream/stream-chat-react-native/pull/3237))
+- fix: audio player init issue and replay issue after position reset ([#3236](https://github.com/GetStream/stream-chat-react-native/pull/3236))
+- fix: keep editing message composer with up-to-date edited message reference ([#3242](https://github.com/GetStream/stream-chat-react-native/pull/3242))
+- fix: image gallery animation and wrong indexing ([#3241](https://github.com/GetStream/stream-chat-react-native/pull/3241))
+- feat: expo sample app 54 upgrade, pn setup and login user flow ([#3238](https://github.com/GetStream/stream-chat-react-native/pull/3238))
+- fix: export useAudioController from the SDK ([#3243](https://github.com/GetStream/stream-chat-react-native/pull/3243))
+- fix: handle react-native-safe-area-context optionally for RN version >=0.81 ([#3239](https://github.com/GetStream/stream-chat-react-native/pull/3239))
+- feat: add video playing optional capability through expo-av ([#3248](https://github.com/GetStream/stream-chat-react-native/pull/3248))
+- fix: remove setters from use audio controller ([#3249](https://github.com/GetStream/stream-chat-react-native/pull/3249))
+
+## [8.5.2](https://github.com/GetStream/stream-chat-react-native/compare/v8.5.1...v8.5.2) (2025-09-30)
+
+- chore: update sdk size ([#3220](https://github.com/GetStream/stream-chat-react-native/pull/3220))
+- fix: regression in group styles condition for message after date separators ([#3222](https://github.com/GetStream/stream-chat-react-native/pull/3222))
+- fix: component paths ([#3223](https://github.com/GetStream/stream-chat-react-native/pull/3223))
+- fix: expo audio crash with options been passed to prepareToRecordAsync ([#3230](https://github.com/GetStream/stream-chat-react-native/pull/3230))
+
+## [8.5.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.5.0...v8.5.1) (2025-09-16)
+
+- fix: list item row render in markdown as a View component ([#3208](https://github.com/GetStream/stream-chat-react-native/pull/3208))
+- perf: implement raf coalesced value ([#3211](https://github.com/GetStream/stream-chat-react-native/pull/3211))
+- fix: optionally render attachment picker as per media library availability ([#3218](https://github.com/GetStream/stream-chat-react-native/pull/3218))
+
+## [8.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.4.0...v8.5.0) (2025-08-28)
+
+- fix: regression in theme default value colors ([#3203](https://github.com/GetStream/stream-chat-react-native/pull/3203))
+- fix: message input focus responsiveness ([#3202](https://github.com/GetStream/stream-chat-react-native/pull/3202))
+- fix: upgrade stream-chat version to 9.17.0 ([#3197](https://github.com/GetStream/stream-chat-react-native/pull/3197))
+- fix: add support for calendar format in dayjsLocaleConfigForLanguage of Streami18nOptions ([#3205](https://github.com/GetStream/stream-chat-react-native/pull/3205))
+- feat: add toast component to sample app to handle client notifications ([#3204](https://github.com/GetStream/stream-chat-react-native/pull/3204))
+
+## [8.4.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.3.3...v8.4.0) (2025-08-22)
+
+- chore: RN 0.80 compatibility ([#3125](https://github.com/GetStream/stream-chat-react-native/pull/3125))
+- feat: optionally override TextInput inside AutoCompleteInput completely using props ([#3198](https://github.com/GetStream/stream-chat-react-native/pull/3198))
+- fix: remove inverted list android workaround ([#3199](https://github.com/GetStream/stream-chat-react-native/pull/3199))
+- feat: add custom swipe action handler ([#3200](https://github.com/GetStream/stream-chat-react-native/pull/3200))
+- fix: message list sub components props ([#3201](https://github.com/GetStream/stream-chat-react-native/pull/3201))
+
+## [8.3.3](https://github.com/GetStream/stream-chat-react-native/compare/v8.3.2...v8.3.3) (2025-08-07)
+
+- fix: make the sdk and sample apps react-native-reanimated v4 compatible ([#3192](https://github.com/GetStream/stream-chat-react-native/pull/3192))
+
+## [8.3.2](https://github.com/GetStream/stream-chat-react-native/compare/v8.3.1...v8.3.2) (2025-08-05)
+
+- fix: auto scroll to bottom when the message was deleted or removed from the list ([#3187](https://github.com/GetStream/stream-chat-react-native/pull/3187))
+
+## [8.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.3.0...v8.3.1) (2025-07-30)
+
+- fix: update the stream-chat version to 9.13.0 ([#3182](https://github.com/GetStream/stream-chat-react-native/pull/3182))
+
+## [8.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.2.0...v8.3.0) (2025-07-29)
+
+- feat: add static and live locations support ([#3173](https://github.com/GetStream/stream-chat-react-native/pull/3173))
+- fix: duplicate command injection issue when commands added in message ([#3179](https://github.com/GetStream/stream-chat-react-native/pull/3179))
+
+## [8.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.1.1...v8.2.0) (2025-07-23)
+
+- fix: add thread prop in channel component in channel screen to sync state ([#3170](https://github.com/GetStream/stream-chat-react-native/pull/3170))
+- feat: add a way to override query channels ([#3176](https://github.com/GetStream/stream-chat-react-native/pull/3176))
+
+## [8.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v8.1.0...v8.1.1) (2025-07-11)
+
+- fix: remove docusaurus folder ([#3163](https://github.com/GetStream/stream-chat-react-native/pull/3163))
+- fix: include size in response so that LLC can recognise media library uploads as file reference ([#3165](https://github.com/GetStream/stream-chat-react-native/pull/3165))
+- fix: update pod lock files and yark lock and stream chat to 9.11.0 ([#3166](https://github.com/GetStream/stream-chat-react-native/pull/3166))
+
 ## [8.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v8.0.0...v8.1.0) (2025-07-09)
 
 ### Features

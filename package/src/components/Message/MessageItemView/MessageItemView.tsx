@@ -221,7 +221,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
         <View
           style={[
             styles.contentContainer,
-            isMyMessage ? styles.rightAlignItems : styles.leftAlignItems,
+            alignment === 'right' ? styles.rightAlignItems : styles.leftAlignItems,
             isMessageErrorType ? errorContainer : {},
           ]}
           testID='message-components'

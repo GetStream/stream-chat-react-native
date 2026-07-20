@@ -186,6 +186,90 @@ import { ChannelAvatar } from '../../components/ui/Avatar/ChannelAvatar';
 import { SvgAwareImage } from '../../components/UIComponents/SvgAwareImage';
 import { DefaultMessageOverlayBackground } from '../../contexts/overlayContext/MessageOverlayHostLayer';
 import type { MessageActionsProps } from '../../contexts/overlayContext/MessageOverlayHostLayer';
+import { ArrowUp, Down } from '../../icons/arrow-up';
+import { ArrowUpRight } from '../../icons/arrow-up-right';
+import { Sound } from '../../icons/audio';
+import { Bell } from '../../icons/bell';
+import { Lightning } from '../../icons/bolt';
+import { Camera } from '../../icons/camera';
+import { Check, Tick } from '../../icons/checkmark';
+import { Checkmark } from '../../icons/checkmark-1';
+import { CheckAll } from '../../icons/checks';
+import { ChevronLeft } from '../../icons/chevron-left';
+import { ChevronRight } from '../../icons/chevron-right';
+import { ChevronUp } from '../../icons/chevron-up';
+import { Time } from '../../icons/clock';
+import { CommandsIcon } from '../../icons/command';
+import { Copy } from '../../icons/copy';
+import { Delete } from '../../icons/delete';
+import { Edit } from '../../icons/edit';
+import { Smile } from '../../icons/emoji';
+import { MoreEmojis } from '../../icons/emoji-add-1';
+import { ExclamationCircle } from '../../icons/exclamation-circle-fill';
+import { Exclamation } from '../../icons/exclamation-mark-fill';
+import { Warning } from '../../icons/exclamation-triangle-fill';
+import { EyeOpen } from '../../icons/EyeOpen';
+import { File, FilePickerIcon } from '../../icons/file';
+import { Audio } from '../../icons/filetype-audio-xl';
+import { Code } from '../../icons/filetype-code-xl';
+import { ZIP } from '../../icons/filetype-compression-xl';
+import { OtherFileIcon } from '../../icons/filetype-other-xl';
+import { PDF } from '../../icons/filetype-pdf-xl';
+import { Presentation } from '../../icons/filetype-presentation-xl';
+import { SpreadSheet } from '../../icons/filetype-spreadsheet-xl';
+import { DOC } from '../../icons/filetype-text-xl';
+import { Video } from '../../icons/filetype-video-xl';
+import { Flag, MessageFlag } from '../../icons/flag';
+import { Folder } from '../../icons/folder';
+import { ImageGrid } from '../../icons/gallery';
+import { Giphy as GiphyFiletypeIcon, GiphyIcon } from '../../icons/giphy';
+import { PhotoIcon, Picture } from '../../icons/image';
+import { Imgur } from '../../icons/imgur';
+import { InfoTooltip } from '../../icons/info';
+import { ArrowBoxLeft } from '../../icons/leave';
+import { Link } from '../../icons/link';
+import { Loading } from '../../icons/loading';
+import { MapPin } from '../../icons/location';
+import { Lock } from '../../icons/lock';
+import { Megaphone } from '../../icons/megaphone';
+import { MessageBubbleEmpty } from '../../icons/message-bubble';
+import { Minus } from '../../icons/minus';
+import { CircleMinus } from '../../icons/minus-circle';
+import { MenuPointHorizontal } from '../../icons/more';
+import { Mute } from '../../icons/mute';
+import { BlockUser, CircleBan } from '../../icons/no-sign';
+import { UnreadIndicator } from '../../icons/notification';
+import { Pause } from '../../icons/pause-fill';
+import { Pin } from '../../icons/pin';
+import { Play } from '../../icons/play-fill';
+import { Plus } from '../../icons/plus';
+import { PollIcon, PollThumbnail } from '../../icons/poll';
+import { Reload } from '../../icons/refresh';
+import { DotGrid } from '../../icons/reorder';
+import { ArrowShareLeft, CurveLineLeftUp } from '../../icons/reply';
+import { ReplyConnectorLeft } from '../../icons/ReplyConnectorLeft';
+import { ReplyConnectorRight } from '../../icons/ReplyConnectorRight';
+import { Resend } from '../../icons/Retry';
+import { Bookmark } from '../../icons/save';
+import { Search } from '../../icons/search';
+import { SendRight } from '../../icons/send';
+import { Share } from '../../icons/share';
+import { Shield } from '../../icons/shield';
+import { Stop } from '../../icons/stop-fill';
+import { ThreadReply } from '../../icons/thread';
+import { Unknown } from '../../icons/Unknown';
+import { Unlock } from '../../icons/unlock';
+import { Unpin } from '../../icons/unpin';
+import { UserAdd } from '../../icons/user-add';
+import { UserDelete } from '../../icons/user-remove';
+import { PeopleIcon } from '../../icons/users';
+import type { IconProps } from '../../icons/utils/base';
+import { VideoIcon } from '../../icons/video';
+import { Recorder } from '../../icons/video-fill';
+import { Mic } from '../../icons/voice';
+import { XCircle } from '../../icons/x-circle';
+import { NewClose } from '../../icons/xmark';
+import { Cross } from '../../icons/xmark-1';
 
 /**
  * Normalizes each component entry to React.ComponentType<P>, stripping
@@ -197,7 +281,116 @@ type NormalizeComponents<T> = {
   [K in keyof T]: T[K] extends React.ComponentType<infer P> ? React.ComponentType<P> : T[K];
 };
 
+/**
+ * All overridable icon components in the SDK, keyed by their exported name.
+ * Exposed via `WithComponents` under the nested `icons` key so integrators can
+ * swap any icon: `<WithComponents overrides={{ icons: { Mute: MyMute } }}>`.
+ *
+ * Only icons that are actually rendered by the SDK are registered here.
+ */
+export const defaultIcons = {
+  ArrowBoxLeft,
+  ArrowShareLeft,
+  ArrowUp,
+  ArrowUpRight,
+  Audio,
+  Bell,
+  BlockUser,
+  Bookmark,
+  Camera,
+  Check,
+  CheckAll,
+  Checkmark,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  CircleBan,
+  CircleMinus,
+  Code,
+  CommandsIcon,
+  Copy,
+  Cross,
+  CurveLineLeftUp,
+  Delete,
+  DOC,
+  DotGrid,
+  Down,
+  Edit,
+  Exclamation,
+  ExclamationCircle,
+  EyeOpen,
+  File,
+  FilePickerIcon,
+  Flag,
+  Folder,
+  Giphy: GiphyFiletypeIcon,
+  GiphyIcon,
+  ImageGrid,
+  Imgur,
+  InfoTooltip,
+  Lightning,
+  Link,
+  Loading,
+  Lock,
+  MapPin,
+  Megaphone,
+  MenuPointHorizontal,
+  MessageBubbleEmpty,
+  MessageFlag,
+  Mic,
+  Minus,
+  MoreEmojis,
+  Mute,
+  NewClose,
+  OtherFileIcon,
+  Pause,
+  PDF,
+  PeopleIcon,
+  PhotoIcon,
+  Picture,
+  Pin,
+  Play,
+  Plus,
+  PollIcon,
+  PollThumbnail,
+  Presentation,
+  Recorder,
+  Reload,
+  ReplyConnectorLeft,
+  ReplyConnectorRight,
+  Resend,
+  Search,
+  SendRight,
+  Share,
+  Shield,
+  Smile,
+  Sound,
+  SpreadSheet,
+  Stop,
+  ThreadReply,
+  Tick,
+  Time,
+  Unknown,
+  Unlock,
+  Unpin,
+  UnreadIndicator,
+  UserAdd,
+  UserDelete,
+  Video,
+  VideoIcon,
+  Warning,
+  XCircle,
+  ZIP,
+} satisfies Record<string, React.ComponentType<IconProps>>;
+
+/**
+ * Map of all overridable SDK icons. Used to type the `icons` override slot
+ * and the resolved value returned by `useComponentsContext().icons`.
+ */
+export type IconsMap = typeof defaultIcons;
+
 const components = {
+  icons: defaultIcons,
   Attachment,
   AttachmentUploadIndicator,
   AttachButton,

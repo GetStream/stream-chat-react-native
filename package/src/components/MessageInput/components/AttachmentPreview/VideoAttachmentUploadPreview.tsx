@@ -8,8 +8,8 @@ import { FileAttachmentUploadPreview } from './FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview } from './ImageAttachmentUploadPreview';
 
 import { useMessageInputContext } from '../../../../contexts';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { Recorder } from '../../../../icons';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { formatMsToMinSec, getDurationLabelFromDuration } from '../../../../utils/utils';
@@ -63,6 +63,7 @@ export const VideoAttachmentMetadataPill = ({
   format?: 'descriptive' | 'timer';
 }) => {
   const styles = useStyles();
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -81,7 +82,7 @@ export const VideoAttachmentMetadataPill = ({
 
   return durationLabel ? (
     <View style={styles.durationContainer}>
-      <Recorder height={12} width={12} pathFill={semantics.textOnInverse} />
+      <icons.Recorder height={12} width={12} pathFill={semantics.textOnInverse} />
       <Text style={styles.durationText}>{durationLabel}</Text>
     </View>
   ) : null;

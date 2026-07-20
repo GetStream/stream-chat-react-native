@@ -6,7 +6,6 @@ import type { Attachment, MessageResponse } from 'stream-chat';
 import { useChatConfigContext } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { Recorder } from '../../../../icons/video-fill';
 import { primitives } from '../../../../theme';
 import { FileTypes } from '../../../../types/types';
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
@@ -40,7 +39,7 @@ export type MediaItemProps = {
 };
 
 export const MediaItem = (props: MediaItemProps) => {
-  const { ImageComponent: Image } = useComponentsContext();
+  const { ImageComponent: Image, icons } = useComponentsContext();
   const { attachment, message, onPress, size } = props;
   const {
     theme: {
@@ -95,7 +94,7 @@ export const MediaItem = (props: MediaItemProps) => {
             mediaItem.videoBadge,
           ]}
         >
-          <Recorder fill={semantics.badgeTextOnInverse} size={12} />
+          <icons.Recorder fill={semantics.badgeTextOnInverse} size={12} />
           <Text
             style={[
               styles.videoBadgeText,
