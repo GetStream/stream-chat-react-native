@@ -46,6 +46,13 @@ const attachmentManagerStateSelector = (state: AttachmentManagerState) => ({
   attachments: state.attachments,
 });
 
+type ThreadReplyPaginatorState = { items?: LocalMessage[] };
+
+// The messagePaginator is the sole reply source (Thread.state.replies was removed).
+const lastReplySelector = (state: ThreadReplyPaginatorState) => ({
+  lastReply: state.items?.at(-1),
+});
+
 export const ThreadListItemComponent = () => {
   const {
     channel,
@@ -153,7 +160,6 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
       ({
         channel: nextValue.channel,
         deletedAt: nextValue.deletedAt,
-        lastReply: nextValue.replies.at(-1),
         ownUnreadMessageCount:
           (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
         parentMessage: nextValue.parentMessage,
@@ -161,10 +167,12 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
     [client],
   );
 
-  const { channel, deletedAt, lastReply, ownUnreadMessageCount, parentMessage } = useStateStore(
+  const { channel, deletedAt, ownUnreadMessageCount, parentMessage } = useStateStore(
     thread.state,
     selector,
   );
+
+  const { lastReply } = useStateStore(thread.messagePaginator.state, lastReplySelector) ?? {};
 
   const timestamp = lastReply?.created_at;
 
