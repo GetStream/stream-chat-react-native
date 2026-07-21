@@ -1,11 +1,12 @@
 # stream-chat-react-native v9 → v10 — Agent Migration Guide
 
 > Machine-oriented migration reference for AI coding agents, mirroring the style
-> of `ai-migration.md` (v8 → v9). **WORK IN PROGRESS.** v10 adopts the
-> `stream-chat` v10 reactive state layer (instance-owned `StateStore`s +
-> `messagePaginator`). This file currently documents the **context-teardown
-> breaking changes** that have shipped; more v10 changes (optimistic-ops
-> migration, targeting, unread-state) are not yet landed and will be appended.
+> of `ai-migration.md` (v8 → v9). v10 adopts the `stream-chat` v10 **reactive
+> state layer**: state that used to be copied into React context is now read
+> reactively from `stream-chat` instance stores (`channel.state.*Store`,
+> `channel.messagePaginator`, `thread.messagePaginator`) via
+> `useStateStore(store, selector)`. This guide documents every integrator-facing
+> breaking change verified against the v10 source.
 
 ## 0. For the agent (read first)
 
@@ -16,31 +17,120 @@
    read reactively from `stream-chat` instance stores via the SDK hook
    `useStateStore(store, selector)`. The channel exposes per-concern stores on
    `channel.state.*` and a message paginator on `channel.messagePaginator`.
-3. **Resolution hooks** (already present since early v10):
+3. **Resolution hooks** (new in v10, additive — use these as the entry points):
    - `useChannelContext().channel` — the active `Channel` instance.
+   - `useChannel()` — `threadInstance?.channel ?? channel` (thread-aware).
    - `useMessagePaginator()` — `threadInstance?.messagePaginator ?? channel.messagePaginator`.
    - `useStateStore(store, selector)` — subscribe to a `StateStore` with a
      memo-stable selector (return a stable object; do not allocate fresh arrays
      inside the selector).
-4. **Detect before editing.** Run §1; skip any section with zero hits.
+4. **Message ops and mark-read moved to new hooks.** The message operations
+   formerly on `useMessagesContext()` (§9) and `markRead` formerly on
+   `useChannelContext()` (§5) now live on the exported hooks
+   `useMessageOperations()` and `useMarkRead()` — both **new in v10**. Use those
+   as the drop-in replacements; the underlying `channel.*` instance methods are
+   available too for non-React call sites.
+5. **Capability is preserved — only the means changed.** Every removed symbol
+   has a documented v10 replacement (a store, an instance method, or a component
+   override). If you know the v9 symbol you used, Ctrl-F it in the mapping table
+   below.
+6. **Detect before editing.** Run §1; skip any section with zero hits.
 
 ## 1. Detection (run first)
 
-Run each ripgrep against the customer's app source root. Zero hits = skip.
+Run each ripgrep against the customer's app source root. Zero hits = skip the
+matching section.
 
 ```bash
-# §2 — TypingContext removed
-rg '\b(useTypingContext|TypingProvider|TypingContext|TypingContextValue|useCreateTypingContext)\b' src/
+# §2 — TypingContext + typing prop/util changes
+rg '\b(useTypingContext|TypingProvider|TypingContext|TypingContextValue|useCreateTypingContext|filterTypingUsers)\b' src/
+rg '\bTypingIndicatorContainer\b' src/
 
-# §3 — ChannelContext scalar fields removed
-rg 'useChannelContext\(\)' -A6 src/ | rg '\b(members|read|watchers|watcherCount)\b'
-
-# §4 — PaginatedMessageListContext removed
+# §3 — PaginatedMessageListContext removed
 rg '\b(usePaginatedMessageListContext|PaginatedMessageListProvider|PaginatedMessageListContextValue|useCreatePaginatedMessageListContext)\b' src/
 
-# §5 — custom FooterComponent / HeaderComponent reading loadingMore from context
-rg '\b(FooterComponent|HeaderComponent)\b' src/
+# §4 — ChannelContext scalar fields removed
+rg 'useChannelContext\(\)' -A6 src/ | rg '\b(members|read|watchers|watcherCount)\b'
+
+# §5 — markRead removed from ChannelContext
+rg 'useChannelContext\(\)' -A8 src/ | rg '\bmarkRead\b'
+
+# §6 — message targeting / highlight removed
+rg '\b(useTargetedMessage|targetedMessage|setTargetedMessage)\b' src/
+
+# §7 — unread-state store / props removed
+rg '\b(channelUnreadStateStore|setChannelUnreadState|ScrollToBottomButton|UnreadMessagesNotification)\b' src/
+rg '\bunreadCount\b' src/
+
+# §8 — ChannelContext loader signatures
+rg '\b(loadChannelAroundMessage|loadChannelAtFirstUnreadMessage)\b' src/
+
+# §9 — message operations off MessagesContext
+rg 'useMessagesContext\(\)' -A10 src/ | rg '\b(sendReaction|deleteReaction|deleteMessage|removeMessage|retrySendMessage|updateMessage)\b'
+rg '\buseMessageActions\b' src/
+
+# §10 — thread API (instance + prop-driven)
+rg '\b(useThreadContext|openThread|closeThread|reloadThread|loadMoreThread|threadMessages|closeThreadOnDismount|ThreadFooterComponent)\b' src/
+
+# §11 — editMessage return type
+rg '\beditMessage\b' src/
+
+# §12 — MessageList / MessageFlashList props
+rg '\b(FooterComponent|HeaderComponent|MessageList|MessageFlashList)\b' src/
+
+# §13 — ChannelProps removed props
+rg '<Channel\b' -A20 src/ | rg '\b(messages|loadingMore|loadingMoreRecent|threadMessages|setThreadMessages|doMarkReadRequest)\b'
+
+# §14–§15 — hooks
+rg '\b(useMutedUsers|useCreateChannelContext|useCreateMessagesContext|useCreateThreadContext|useCreateMessageInputContext)\b' src/
+
+# §16 — behavioral (no symbol; review if you rely on send/mark-read/page-size behavior)
+rg '\b(sendMessage|SendMessageDisallowedIndicator)\b' src/
 ```
+
+---
+
+## Quick reference — v9 → v10 map
+
+Ctrl-F the v9 symbol you used. Every entry preserves the capability — only the
+means changed. Details in the linked section.
+
+| v9 — you used to… | v10 — now do… | § |
+|---|---|---|
+| `useTypingContext().typing` | `useStateStore(channel.state.typingStore, s => ({ typing: s.typing }))` | §2 |
+| `filterTypingUsers({ client, thread, typing })` | `filterTypingUsers({ client, threadId: thread?.id, typing })` | §2.1 |
+| `usePaginatedMessageListContext().messages` | `useStateStore(channel.messagePaginator.state, s => s.items)` | §3 |
+| …`.hasMore` / `.hasMoreNewer` | `channel.messagePaginator.state.hasMoreTail` / `.hasMoreHead` | §3 |
+| …`.loadMore()` / `.loadMoreRecent()` | `channel.messagePaginator.toTail()` / `.toHead()` | §3 |
+| …`.loadLatestMessages()` | `channel.messagePaginator.jumpToTheLatestMessage()` | §3 |
+| `useChannelContext().members` / `read` / `watchers` / `watcherCount` | `channel.state.membersStore` / `readStore` / `watcherStore` (via `useStateStore`) | §4 |
+| `useChannelContext().markRead()` | `useMarkRead(channel)()` — or `channel.markRead()` | §5 |
+| `useTargetedMessage()` / `setTargetedMessage(id)` | `useChannelContext().loadChannelAroundMessage({ messageId })`; read `highlightedMessageId` | §6 |
+| `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
+| `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state.readStore` (override the component to control) | §7 |
+| app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.activeChannels` | §7.1 |
+| `useMessagesContext()` → `sendReaction` / `deleteReaction` / `deleteMessage` / `removeMessage` / `retrySendMessage` / `updateMessage` | `useMessageOperations()` (same names) | §9 |
+| `useMessagesContext().targetedMessage` | `useChannelContext().highlightedMessageId` | §6 |
+| `useThreadContext().thread` (parent message) | `useStateStore(threadInstance.state, s => ({ parentMessage: s.parentMessage }))` | §10 |
+| `useThreadContext().threadMessages` | `threadInstance.messagePaginator.state.items` | §10 |
+| `useThreadContext().loadMoreThread()` / `loadMoreRecentThread()` | `threadInstance.messagePaginator.toTail()` / `.toHead()` | §10 |
+| `useThreadContext().threadHasMore` / `threadLoadingMore` | `threadInstance.messagePaginator.state.hasMoreTail` / `.isLoading` | §10 |
+| `useThreadContext().reloadThread()` | `threadInstance.reload()` | §10 |
+| `openThread(msg)` / `closeThread()` | lift `onThreadSelect` → `<Channel thread={msg \| null} />` | §10.1 |
+| `useMessageComposerContext().thread` | `threadInstance` | §10.2 |
+| `editMessage()` → `UpdateMessageAPIResponse` | `editMessage()` → `Promise<void>`; for the response, `client.updateMessage()` | §11 |
+| `<MessageList thread / targetedMessage / loadMoreThread …>` props | removed — list reads `threadInstance` + paginator internally | §12 |
+| custom `FooterComponent` / `HeaderComponent` reading `loadingMore` from context | receive `{ loadingMore?: boolean }` as a prop | §12.1 |
+| `<Channel messages / loadingMore / threadMessages / setThreadMessages …>` props | removed — state lives in the paginator | §13 |
+| `useMutedUsers(channel)` | `useMutedUsers()` | §14 |
+| `useCreateTypingContext` / `useCreatePaginatedMessageListContext` | removed (their contexts are gone) | §15 |
+| initial message-list page size ~100 | 25 — override via `channel.messagePaginator.pageSize` | §16.1 |
+| `sendMessage` errors swallowed | `sendMessage` throws — handle the rejection | §16.2 |
+| `stream-chat` v9 | `stream-chat` `^10.x` required | §17 |
+
+---
+
+# Part A — Removed contexts
 
 ## 2. `TypingContext` removed → `channel.state.typingStore`
 
@@ -69,7 +159,78 @@ const { typing } = useStateStore(channel.state.typingStore, typingSelector) ?? {
 
 `typing` has the same shape as before (`Record<string, Event>`).
 
-## 3. `ChannelContext` scalar state fields removed → `channel.state.*Store`
+### 2.1 Typing prop/util changes (if you override the typing indicator)
+
+- **`TypingIndicatorContainerProps`**: the `thread` prop is removed; pass
+  `threadId?: string` instead. `typing` is retyped
+  `TypingContextValue['typing']` → `TypingUsersState['typing']` (same runtime
+  shape).
+- **`filterTypingUsers` util**: signature changed
+  `({ client, thread, typing })` → `({ client, threadId, typing })` where
+  `typing: TypingUsersState['typing']`. Pass `threadId: thread?.id`.
+
+```tsx
+// Before
+filterTypingUsers({ client, thread, typing });
+// After
+filterTypingUsers({ client, threadId: thread?.id, typing });
+```
+
+## 3. `PaginatedMessageListContext` removed → `useMessagePaginator()` / `channel.messagePaginator`
+
+Removed symbols: `PaginatedMessageListContext`, `PaginatedMessageListProvider`,
+`usePaginatedMessageListContext`, `PaginatedMessageListContextValue`,
+`useCreatePaginatedMessageListContext`.
+
+The message-list state (messages / hasMore / loading) now lives on the paginator.
+**Direction mapping** (non-obvious): the paginator is bi-directional — `tail` =
+older messages, `head` = newer.
+
+| Removed context field | Replacement |
+|---|---|
+| `messages` | `channel.messagePaginator.state.items` |
+| `hasMore` (older) | `channel.messagePaginator.state.hasMoreTail` |
+| `hasMoreNewer` | `channel.messagePaginator.state.hasMoreHead` |
+| `loading` | `channel.messagePaginator.state.isLoading` |
+| `loadMore()` (older) | `channel.messagePaginator.toTail()` |
+| `loadMoreRecent()` (newer) | `channel.messagePaginator.toHead()` |
+| `loadLatestMessages()` | `channel.messagePaginator.jumpToTheLatestMessage()` |
+
+> `next()` / `prev()` exist on the paginator but are **deprecated** aliases of
+> `toTail()` / `toHead()` — use the `to*` forms.
+
+**Before (v9):**
+
+```tsx
+const { messages, hasMore, loadMore } = usePaginatedMessageListContext();
+```
+
+**After (v10):**
+
+```tsx
+import { useChannelContext, useStateStore } from 'stream-chat-react-native';
+import type { LocalMessage } from 'stream-chat';
+
+const selector = (s: { items?: LocalMessage[]; hasMoreTail: boolean }) => ({
+  messages: s.items,
+  hasMore: s.hasMoreTail,
+});
+
+const { channel } = useChannelContext();
+const { messages, hasMore } = useStateStore(channel.messagePaginator.state, selector) ?? {};
+const loadMore = () => channel.messagePaginator.toTail();
+```
+
+Use `channel.messagePaginator` for the channel message list. For thread replies,
+use `useMessagePaginator()` (thread-aware) — but note the **main** channel list
+must read `channel.messagePaginator` directly so it keeps showing channel
+messages while a thread is open.
+
+---
+
+# Part B — `ChannelContext` value changes
+
+## 4. `ChannelContext` scalar state fields removed → `channel.state.*Store`
 
 `useChannelContext()` no longer returns `members`, `read`, `watchers`, or
 `watcherCount`. Read them from the per-channel stores.
@@ -105,61 +266,312 @@ const { watcherCount } = useStateStore(channel.state.watcherStore, watcherSelect
 ```
 
 Note: `members` remains available on the per-message `MessageContext`
-(`useMessageContext().members`) for message-level consumers such as a custom
-message footer — only the **channel-level** `ChannelContext.members` was removed.
+(`useMessageContext().members`, retyped to `MembersState['members']` — same
+shape) for message-level consumers such as a custom message footer. Only the
+**channel-level** `ChannelContext.members` was removed.
 
-## 4. `PaginatedMessageListContext` removed → `useMessagePaginator()` / `channel.messagePaginator`
+## 5. `ChannelContext.markRead` removed → `useMarkRead(channel)` / `channel.markRead()`
 
-Removed symbols: `PaginatedMessageListContext`, `PaginatedMessageListProvider`,
-`usePaginatedMessageListContext`, `PaginatedMessageListContextValue`,
-`useCreatePaginatedMessageListContext`.
+`markRead` is removed from `ChannelContextValue`. Mark-read now fires
+automatically inside the SDK (the `useMarkRead` hook is wired into `MessageList` /
+`MessageFlashList` / `Channel`), and the read-reporting cadence is owned by the
+`stream-chat` client's `messageDeliveryReporter` — the SDK's own 500ms
+throttle/debounce is gone.
 
-The message-list state (messages / hasMore / loading) now lives on the paginator.
-**Direction mapping** (non-obvious): the paginator is bi-directional — `tail` =
-older messages, `head` = newer.
-
-| Removed context field | Replacement |
-|---|---|
-| `messages` | `channel.messagePaginator.state.items` |
-| `hasMore` (older) | `channel.messagePaginator.state.hasMoreTail` |
-| `hasMoreNewer` | `channel.messagePaginator.state.hasMoreHead` |
-| `loading` | `channel.messagePaginator.state.isLoading` |
-| `loadMore()` (older) | `channel.messagePaginator.toTail()` |
-| `loadMoreRecent()` (newer) | `channel.messagePaginator.toHead()` |
-| `loadLatestMessages()` | `channel.messagePaginator.jumpToTheLatestMessage()` |
+> **Replacement hook: `useMarkRead(channel)`** (exported; new in v10). It returns
+> a stable `markRead(options?)` callback — the drop-in replacement for the old
+> context `markRead`. Most apps can just **drop manual calls** (mark-read is
+> automatic now). `channel.markRead()` also works for a one-off imperative call.
 
 **Before (v9):**
 
 ```tsx
-const { messages, hasMore, loadMore } = usePaginatedMessageListContext();
+const { markRead } = useChannelContext();
+markRead();
 ```
 
 **After (v10):**
 
 ```tsx
-import { useChannelContext, useStateStore } from 'stream-chat-react-native';
-import type { LocalMessage } from 'stream-chat';
-
-const selector = (s: { items?: LocalMessage[]; hasMoreTail: boolean }) => ({
-  messages: s.items,
-  hasMore: s.hasMoreTail,
-});
+import { useChannelContext, useMarkRead } from 'stream-chat-react-native';
 
 const { channel } = useChannelContext();
-const { messages, hasMore } = useStateStore(channel.messagePaginator.state, selector) ?? {};
-const loadMore = () => channel.messagePaginator.toTail();
+const markRead = useMarkRead(channel); // 1:1 replacement for the old context markRead
+markRead();
+// or, imperatively (no hook): await channel.markRead();
 ```
 
-Use `channel.messagePaginator` for the channel message list. For thread replies,
-use `useMessagePaginator()` (thread-aware) — but note the **main** channel list
-must read `channel.messagePaginator` directly so it keeps showing channel
-messages while a thread is open.
+A custom `doMarkReadRequest` handler (passed as a `Channel` prop) is still
+honored — see §13 for its retyped signature.
 
-## 5. Custom `FooterComponent` / `HeaderComponent` receive `loadingMore` as a prop
+## 6. Message targeting / highlight removed → `messagePaginator.messageFocusSignal`
+
+Removed symbols: `ChannelContext.targetedMessage`,
+`ChannelContext.setTargetedMessage`, `MessagesContext.targetedMessage`, and the
+`useTargetedMessage` hook (deleted, no replacement hook). List props
+`targetedMessage` / `setTargetedMessage` are removed too (see §12).
+
+Highlighting is now driven by the paginator's `messageFocusSignal`, which
+auto-clears after `DEFAULT_HIGHLIGHT_DURATION` (3000ms). The current highlight
+is still readable on `ChannelContext.highlightedMessageId`.
+
+**Before (v9):**
+
+```tsx
+const { setTargetedMessage } = useTargetedMessage(); // or from useChannelContext()
+setTargetedMessage(messageId);
+```
+
+**After (v10):**
+
+```tsx
+const { loadChannelAroundMessage, highlightedMessageId } = useChannelContext();
+// Jump to + highlight a message (loads it if not in the current window):
+await loadChannelAroundMessage({ messageId });
+// `highlightedMessageId` reflects the currently-highlighted message and
+// auto-clears after ~3s.
+```
+
+## 7. Unread state moved to the paginator
+
+Removed symbols: `ChannelContext.channelUnreadStateStore`,
+`ChannelContext.setChannelUnreadState`, and the related list /
+notification / button props (`channelUnreadStateStore`, `setChannelUnreadState`
+on `MessageListProps`; `channelUnreadStateStore` on
+`UnreadMessagesNotificationProps`; `unreadCount` on `ScrollToBottomButtonProps`).
+
+The unread snapshot now lives on `channel.messagePaginator.unreadStateSnapshot`
+(a `StateStore`). An internal `getChannelUnreadState(channel)` helper maps it to
+the public `ChannelUnreadState` shape for imperative readers.
+
+| Removed | Replacement |
+|---|---|
+| `channelUnreadStateStore` | `channel.messagePaginator.unreadStateSnapshot` |
+| `setChannelUnreadState` | (managed internally by the paginator) |
+| `ScrollToBottomButtonProps.unreadCount` | self-derived from `channel.state.readStore` (undefined in thread lists) |
+| `UnreadMessagesNotificationProps.channelUnreadStateStore` | count from `channel.messagePaginator.unreadStateSnapshot` |
+
+`UnreadMessagesNotificationProps` also **adds** an optional
+`markRead?: (options?: MarkReadFunctionOptions) => void` (the shared mark-read
+used by the dismiss button). Custom overrides of these components no longer
+receive/need the removed props — the built-ins self-derive their counts.
+
+### 7.1 App-wide unread badge (advisory — app code, no SDK symbol change)
+
+Compute an app-wide unread total from `channel.countUnread()`, **not** from
+`event.total_unread_count`. Under the localized-unread "viewing live" gate, the
+active channel reports `0` locally while the server total may still briefly count
+it, so the server total can transiently over-count.
+
+```tsx
+const total = Object.values(client.activeChannels).reduce(
+  (n, c) => n + c.countUnread(),
+  0,
+);
+```
+
+## 8. `ChannelContext` loader signatures narrowed
+
+The jump/load helpers dropped their old callback arguments; passing them is now
+a TypeScript error.
+
+| v9 signature | v10 signature |
+|---|---|
+| `loadChannelAroundMessage({ messageId, setTargetedMessage })` | `loadChannelAroundMessage({ limit?, messageId? })` |
+| `loadChannelAtFirstUnreadMessage({ channelUnreadState, setChannelUnreadState, setTargetedMessage })` | `loadChannelAtFirstUnreadMessage(options?: { limit?: number })` |
+
+Highlighting/targeting is handled internally by the `messageFocusSignal` (§6),
+so the `set*` callbacks are no longer needed.
+
+---
+
+# Part C — Message operations
+
+## 9. Message operations removed from `MessagesContext`
+
+Removed from `MessagesContextValue`: `deleteMessage`, `deleteReaction`,
+`sendReaction`, `removeMessage`, `retrySendMessage`, `updateMessage` (which also
+lost its `extraState` / `throttled` params), plus `targetedMessage` (§6). They
+moved to the exported `useMessageOperations()` hook (returning a
+`MessageOperations` object).
+
+> **Replacement hook: `useMessageOperations()`** (exported; new in v10). It
+> returns the same six ops with the optimistic + thread-aware behavior the old
+> context methods had — the drop-in replacement for the removed
+> `useMessagesContext()` ops. **Custom `Message` overrides also still receive all
+> six as props** (the built-in `Message` spreads them in), so override users need
+> no change. Prefer the hook over the raw `channel.*` methods below: for
+> **reactions** especially, the hook applies the optimistic paginator ingest that
+> raw `channel.sendReaction` skips (raw `channel.sendReaction` only renders once
+> the WS echo lands).
+
+The hook's op signatures:
+
+```ts
+sendReaction(type: string, messageId: string): Promise<void>;
+deleteReaction(type: string, messageId: string): Promise<void>;
+deleteMessage(message: LocalMessage, options?): Promise<void>;
+retrySendMessage(message: LocalMessage): Promise<void>;
+removeMessage(message: { id: string; parent_id?: string }): Promise<void>;
+updateMessage(updatedMessage: MessageResponse | LocalMessage): void; // single-arg now
+```
+
+`updateMessage` is retyped to a single argument (was
+`(msg, extraState?, throttled?) => void`). This also affects
+`MessageProps.updateMessage` overrides and `useMessageActions` (which dropped its
+`openThread` prop).
+
+> **Note:** optimistic reactions are applied only when `enableOfflineSupport` is
+> on — this is **unchanged from v9** (`develop` gated the same optimistic block
+> on `enableOfflineSupport`), so it is not a v10 regression. With it off,
+> reactions render on the WS echo either way.
+
+**Before (v9):**
+
+```tsx
+const { sendReaction, deleteMessage, updateMessage } = useMessagesContext();
+```
+
+**After (v10) — via the exported hook (preferred):**
+
+```tsx
+import { useMessageOperations } from 'stream-chat-react-native';
+
+const { sendReaction, deleteReaction, deleteMessage, updateMessage } = useMessageOperations();
+await sendReaction(type, messageId); // optimistic + thread-aware
+await deleteReaction(type, messageId);
+await deleteMessage(message);
+```
+
+**After (v10) — from a custom `Message` override (still props):**
+
+```tsx
+const MyMessage = ({ sendReaction, deleteMessage, updateMessage }) => { /* … */ };
+```
+
+**Lower level (non-React call sites):** `channel.deleteMessageWithLocalUpdate`,
+`channel.retrySendMessageWithLocalUpdate`, `channel.sendReaction` /
+`deleteReaction` remain available — but `channel.sendReaction` does **not** apply
+the optimistic update, so use the hook in UI code.
+
+### 9.1 Optimistic lifecycle is LLC-owned (behavioral)
+
+Do **not** hand-roll optimistic message/reaction state. The
+`*WithLocalUpdate` engine + `messagePaginator.ingestItem/removeItem` + the
+offline DB own the pending → received/failed lifecycle. Custom optimistic layers
+will double-apply or conflict.
+
+---
+
+# Part D — Threads
+
+## 10. Thread API: instance-based + prop-driven
+
+This is the largest behavioral shift. `ThreadContextValue` is reduced to **four
+fields** — everything else is derived from the `threadInstance` (a `stream-chat`
+`Thread`), and opening/closing a thread is now **prop-driven** (no imperative
+`openThread` / `closeThread`).
+
+**`ThreadContextValue` now = `{ threadInstance?, allowThreadMessagesInChannel,
+parentMessagePreventPress?, onAlsoSentToChannelHeaderPress? }`.**
+
+Removed fields (all derivable from `threadInstance`):
+
+| Removed `ThreadContext` field | Replacement (off `threadInstance`) |
+|---|---|
+| `thread` (parent message) | `threadInstance.state.getLatestValue().parentMessage` (reactive via `useStateStore`) |
+| `threadMessages` | `threadInstance.messagePaginator.state.items` |
+| `loadMoreThread` | `threadInstance.messagePaginator.toTail()` |
+| `loadMoreRecentThread` | `threadInstance.messagePaginator.toHead()` |
+| `threadHasMore` | `threadInstance.messagePaginator.state.hasMoreTail` |
+| `threadLoadingMore` / `threadLoadingMoreRecent` | `threadInstance.messagePaginator.state.isLoading` |
+| `reloadThread` | `threadInstance.reload()` |
+| `openThread` / `closeThread` / `setThreadLoadingMore` | removed — see prop-driven flow below |
+
+```tsx
+import { useThreadContext, useStateStore } from 'stream-chat-react-native';
+
+const { threadInstance } = useThreadContext();
+const { parentMessage } = useStateStore(threadInstance.state, (s) => ({
+  parentMessage: s.parentMessage,
+}));
+const { replies } = useStateStore(threadInstance.messagePaginator.state, (s) => ({
+  replies: s.items,
+}));
+```
+
+### 10.1 Prop-driven open/close
+
+There is no imperative `openThread` / `closeThread`. Lift the selected thread
+into your own state from a list's `onThreadSelect`, then render
+`<Channel thread={...}>`; set it back to `null` to close.
+
+```tsx
+const [thread, setThread] = useState<LocalMessage | null>(null);
+
+<MessageList onThreadSelect={setThread} />
+<Channel thread={thread} /* thread reply UI renders when set */ />
+```
+
+`<Channel>`'s `thread` prop accepts `LocalMessage | ThreadType | null` (where
+`ThreadType = { thread: LocalMessage; threadInstance: Thread }`).
+
+> **`onThreadSelect` has different signatures per surface** — wire the right one:
+> - `MessageList` / `MessageFlashList`: `(message: LocalMessage | null) => void`
+> - message-level (`MessageProps`): `(message: LocalMessage) => void`
+> - `ThreadList` (`ThreadsContext`): `(thread: ThreadType, channel: Channel) => void`
+
+### 10.2 Removed thread-related props / context fields
+
+- **`ThreadProps`**: removed `thread`, `closeThread`, `loadMoreThread`,
+  `reloadThread`. Supply `threadInstance` instead.
+  - ⚠️ `closeThreadOnDismount?: boolean` **still exists on the type but is
+    inert** (never read — the thread no longer auto-closes on unmount, it only
+    `deactivate()`s). No TS error; silent behavior change.
+- **`MessageComposerContextValue`**: `thread` removed (only `threadInstance`
+  remains).
+- **`ThreadFooterComponentProps`**: `thread` removed (type is now
+  `Partial<Pick<ThreadContextValue, 'parentMessagePreventPress'>>`). Read
+  `threadInstance` via `useThreadContext()` inside a custom footer and get the
+  parent/`replyCount` off `threadInstance.state`.
+- **`MessageProps`**: removed `openThread` (§9).
+
+## 11. `InputMessageInputContextValue.editMessage` return retyped
+
+`editMessage` now returns `Promise<void>` (was
+`ReturnType<StreamChat['updateMessage']>`, i.e. a resolved
+`UpdateMessageAPIResponse`). Callers that read the resolved API response break —
+read the updated state from the paginator/composer after the promise resolves
+instead.
+
+```tsx
+// Before: const { message } = await editMessage(...);
+// After:
+await editMessage({ localMessage, options });
+// message state is already reflected in channel.messagePaginator
+```
+
+---
+
+# Part E — Component props
+
+## 12. `MessageList` / `MessageFlashList` props
+
+Removed props (from both list components): `channelUnreadStateStore`,
+`setChannelUnreadState`, `setTargetedMessage`, `targetedMessage`, `thread`
+(old `ThreadType` prop), `threadHasMore`, `loadMoreThread`,
+`loadMoreRecentThread`. The list now reads thread state from `threadInstance`,
+unread from the paginator snapshot (§7), and targeting from the focus signal
+(§6) — all internally.
+
+`loadMore` / `loadMoreRecent` / `markRead` are still passed but are now inline
+prop types; `loadingMore?` / `loadingMoreRecent?` are **added**.
+
+### 12.1 Custom `FooterComponent` / `HeaderComponent` receive `loadingMore` as a prop
 
 The inline loading indicators no longer read `loadingMore` /
 `loadingMoreRecent` from `PaginatedMessageListContext`; the list owns those flags
-and passes them as props. If you override the message list's loading indicator:
+and passes them as props.
 
 - **`MessageList`** (inverted): custom `FooterComponent` now receives
   `{ loadingMore?: boolean }` as a prop.
@@ -185,9 +597,107 @@ const MyFooter = ({ loadingMore }: { loadingMore?: boolean }) =>
 No-prop override components remain assignable (the prop is optional), so
 overrides that don't read the flag need no change.
 
-## 6. Verify
+## 13. `ChannelProps`
 
-- Typecheck the customer app; the removed symbols surface as
-  "Property does not exist" / "Cannot find name" errors — fix each per §2–§5.
-- Run the app: typing indicator, member/watcher counts, message-list scroll
-  pagination (both directions), and any custom loading-indicator override.
+Removed props: `messages`, `loadingMore`, `loadingMoreRecent`, `threadMessages`,
+`setThreadMessages` — message/thread-reply state now lives in the LLC paginator,
+so these are no longer inputs. Drop them.
+
+`doMarkReadRequest` is retyped — its setter callback param is now
+`(data: ChannelUnreadState | undefined) => void` (`ChannelUnreadState` is a
+public `stream-chat` type, same shape):
+
+```tsx
+doMarkReadRequest?: (
+  channel: Channel,
+  setChannelUnreadUiState?: (data: ChannelUnreadState | undefined) => void,
+) => void;
+```
+
+> Note: `stateUpdateThrottleInterval` and `newMessageStateUpdateThrottleInterval`
+> are **not removed** — they remain declared on `ChannelProps` (the latter is
+> `@deprecated`) but are **inert** (never read in v10; state updates are driven
+> by the reactive stores). Passing them compiles but has no effect; remove them
+> during cleanup.
+
+---
+
+# Part F — Hooks
+
+## 14. `useMutedUsers` signature narrowed
+
+The deprecated `(channel)` overload is removed; the hook takes **no argument**
+and reads `client.mutedUsersStore`.
+
+```tsx
+// Before
+const muted = useMutedUsers(channel);
+// After
+const muted = useMutedUsers(); // Mute[]
+```
+
+## 15. `useCreate*Context` signatures narrowed
+
+If you build custom context values with the `useCreate*Context` hooks, their
+parameter shapes dropped the removed fields:
+
+- `useCreateChannelContext` — no longer accepts the removed `ChannelContext`
+  fields (§4/§5/§6/§7).
+- `useCreateMessagesContext` — no longer accepts the removed `MessagesContext`
+  ops (§9) or `openThread`.
+- `useCreateThreadContext` — accepts only `Pick<ThreadContextValue,
+  'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress' |
+  'threadInstance'>` (§10).
+- `useCreateMessageInputContext` — its thread param changed
+  `Pick<Thread…, 'thread'>` → `'threadInstance'` (derives `threadId` internally).
+- `useCreateTypingContext` and `useCreatePaginatedMessageListContext` are
+  **removed entirely** (§2/§3).
+
+---
+
+# Part G — Behavioral defaults
+
+## 16. Behavioral changes (no symbol removed)
+
+- **16.1 Initial message-list page size 100 → 25.** `Channel` sets
+  `channel.messagePaginator.pageSize = 25` on init (the `stream-chat` default is
+  100). There is no public prop to override it; to change it, re-set
+  `channel.messagePaginator.pageSize` yourself after mount. Apps that assumed
+  ~100 messages loaded on open now get 25 and paginate the rest in.
+- **16.2 `sendMessage` throws on failure** (previously swallowed). The built-in
+  `MessageInput` catches the rejection and shows a notification. Any custom code
+  that calls the context `sendMessage` (or `channel.sendMessageWithLocalUpdate`)
+  directly must handle the rejected promise itself.
+- **16.3 `SendMessageDisallowedIndicator` is gated on `channel.initialized`** —
+  it no longer flashes during the pre-init window (before capabilities resolve).
+  No action needed unless you relied on the pre-init render.
+
+---
+
+# Part H — Dependency (release-time)
+
+## 17. `stream-chat` must be v10
+
+v10 SDK code hard-depends on `stream-chat` v10 APIs (`channel.messagePaginator`,
+`channel.state.{typing,members,read,watcher}Store`, `*WithLocalUpdate`,
+`messageDeliveryReporter`, `channel.messageFocusSignal`, reactive
+`channel.state.unreadCount`). Ensure your app resolves `stream-chat` to `^10.x`.
+
+> Repo note (for SDK maintainers, not integrators): the published `stream-chat`
+> range in `package/package.json` must be bumped to `^10.x`, and the local
+> development wiring removed — the root `resolutions` `portal:` entry and the
+> `streamChatLocalPath` in `examples/SampleApp/metro.config.js`.
+
+---
+
+## 18. Verify
+
+- Typecheck the customer app; removed symbols surface as "Property does not
+  exist" / "Cannot find name" errors — fix each per the section it maps to.
+- Run the app and exercise: typing indicator; member/watcher counts;
+  message-list scroll pagination (both directions); mark-read on scroll-to-bottom
+  and banner dismiss; message send/edit/delete/react (online + offline);
+  thread open/reply/close (prop-driven); jump-to-message highlight (quoted-reply
+  tap) and jump-to-first-unread; the unread separator, scroll-to-bottom button,
+  and unread notification; and any custom overrides of `Message`, the list
+  loading indicators, the thread footer, or the typing indicator.

@@ -87,6 +87,7 @@ export * from './KeyboardCompatibleView/KeyboardCompatibleView';
 export * from './Message/hooks/useCreateMessageContext';
 export * from './Message/hooks/useMessageActions';
 export * from './Message/hooks/useMessageActionHandlers';
+export * from './Message/hooks/useMessageOperations';
 export * from './Message/hooks/useStreamingMessage';
 export * from './Message/hooks/useMessageDeliveredToCount';
 export * from './Message/hooks/useMessageDeliveryData';
@@ -150,6 +151,7 @@ export * from './MessageInput/hooks/useAudioRecorder';
 export * from './MessageInput/hooks/useCooldownRemaining';
 
 export * from './MessageList/DateHeader';
+export * from './MessageList/hooks/useMarkRead';
 export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';
 export * from './MessageList/InlineDateSeparator';
