@@ -2821,7 +2821,7 @@ PODS:
   - SDWebImageWebPCoder (0.15.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - stream-chat-react-native (9.6.1):
+  - stream-chat-react-native (9.7.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3252,7 +3252,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 57270ccc2b77472d7e85c4cbe45972564eff78bb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 26897e4ae07f28dde638ffab1d25a07f556f7e3e
+  hermes-engine: d8f4d6c98c2ea2858468ad58fbf6b3a0b33e4da6
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3270,7 +3270,7 @@ SPEC CHECKSUMS:
   React: e2dc35338068bbd299c66f043ae0d7f25de8499e
   React-callinvoker: 28b25d21b124c26cebaea713ba7d801b9351dc48
   React-Core: 02ed7d2ffb70437bdf2aba074a13078a7b0b9ff0
-  React-Core-prebuilt: 81cf85599e5cd4ab9bbbbdf4db08ab654f52e760
+  React-Core-prebuilt: 07da8c06ca047a4047eb44266cd74e1f422d7655
   React-CoreModules: b3a5a42dadcde3b5d47b325bd912eb2ced89e146
   React-cxxreact: fe8f88dda044e5905e99a00f41b7a874c3908716
   React-debug: 9af1e96a6069c996e3d9f1e493603e74bc9f1593
@@ -3342,7 +3342,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 25c9c516839be2c5e3d3344f95dc7da5f7e63fc2
   ReactCodegen: 7016a2114079361a2f1536b3c91a15ceb8eb7ca4
   ReactCommon: 7dfc3250793bf36cf221096ff59e1179e13eef7f
-  ReactNativeDependencies: 08dba4ab0913ea4d2255e4fc63538742aa3e7ac5
+  ReactNativeDependencies: b494f9d4ef665da25093dffcdd0b1a110475f404
   RNCClipboard: 7a7d4557bfd3370b35c99dfecd92ae7b9fc4948a
   RNFastImage: 14580cef91660b889645fb9e87f58a53621db993
   RNFBApp: 3b942e786ca88524ba17df665a1a360fb3eee525
@@ -3359,7 +3359,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  stream-chat-react-native: fdb9929071f737e85eee5b8dbdb6bc4e120ac5c4
+  stream-chat-react-native: b8f70a8fb5382c4a6a6a6dc16d52dd7243bab3af
   Teleport: 58dccc8594d74a77cdc2a2191b60656f9aaac743
   Yoga: e240fec777ff1f21ef42ccebbb44b6d262125855
 

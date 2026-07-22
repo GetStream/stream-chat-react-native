@@ -508,7 +508,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     if (lastMessage) {
       if (
-        !channel.state.messagePagination.hasPrev &&
+        !channel.messagePaginator.hasMoreTail &&
         processedMessageList[processedMessageList.length - 1].id === lastMessage.id
       ) {
         setStickyHeaderDate(undefined);
@@ -566,7 +566,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const lastItemDate = lastItemCreatedAt.getTime();
 
       if (
-        !channel.state.messagePagination.hasPrev &&
+        !channel.messagePaginator.hasMoreTail &&
         processedMessageList[processedMessageList.length - 1].id === lastItemMessage.id
       ) {
         setIsUnreadNotificationOpen(false);
@@ -767,7 +767,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const notLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
-        channel.state.latestMessages[channel.state.latestMessages.length - 1];
+        channel.messagePaginator.lastMessage ?? undefined;
       setAutoscrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;

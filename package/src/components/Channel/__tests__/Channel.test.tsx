@@ -456,7 +456,9 @@ describe('Channel initial load useEffect', () => {
 
     const loadMessageIntoState = jest.fn(() => {
       const newMessages = getElementsAround(messages, 'id', messageToSearch.id);
-      channel.state.messages = newMessages;
+      newMessages.forEach((m) =>
+        channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
+      );
     });
 
     channel.state = {
@@ -619,11 +621,9 @@ describe('Channel initial load useEffect', () => {
     });
 
     await waitFor(() => {
-      channel.state.addMessagesSorted(
-        Array.from({ length: 10 }, (_, i) =>
-          generateMessage({ status: 'failed', text: `message-${i}` }),
-        ),
-      );
+      Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ status: 'failed', text: `message-${i}` }),
+      ).forEach((m) => channel.messagePaginator.ingestItem(channel.state.formatMessage(m)));
     });
 
     await waitFor(() => {
@@ -631,7 +631,7 @@ describe('Channel initial load useEffect', () => {
     });
 
     await waitFor(() => {
-      expect(channel.state.messages.length).toBe(20);
+      expect(channel.messagePaginator.headItems.length).toBe(20);
     });
   });
 });

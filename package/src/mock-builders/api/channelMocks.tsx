@@ -19,7 +19,7 @@ const mockUser = (data: Partial<UserResponse>) => fromPartial<UserResponse>(data
 const channelName = 'okechukwu';
 const CHANNEL = fromPartial<Channel>({
   data: { name: channelName },
-  state: { messages: [] },
+  state: {},
 });
 
 const CHANNEL_WITH_MESSAGES_TEXT = {

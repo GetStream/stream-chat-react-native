@@ -1,7 +1,13 @@
 import React from 'react';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
+import type {
+  Channel as ChannelType,
+  LocalMessage,
+  MessageResponse,
+  StreamChat,
+} from 'stream-chat';
+import { Thread as ThreadClass } from 'stream-chat';
 import { v5 as uuidv5 } from 'uuid';
 
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
@@ -32,7 +38,7 @@ const renderComponent = ({
   channel: ChannelType;
   chatClient: StreamChat;
   props?: Partial<React.ComponentProps<typeof Thread>>;
-  thread: LocalMessage;
+  thread: LocalMessage | { thread: LocalMessage; threadInstance: ThreadClass };
 }) => {
   return render(
     <OverlayProvider>
@@ -71,11 +77,16 @@ describe('Thread', () => {
       generateMessage({ cid, parent_id }),
     ];
 
-    channel.state.addMessagesSorted(
-      threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
+    // Replies are sourced from the thread instance's paginator now, so seed a Thread with the
+    // replies and pass it through instead of writing to the removed channel.state message store.
+    const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage: thread });
+    threadResponses.forEach((reply) =>
+      threadInstance.messagePaginator.ingestItem(
+        channel.state.formatMessage(reply as unknown as MessageResponse),
+      ),
     );
 
-    renderComponent({ channel, chatClient, thread });
+    renderComponent({ channel, chatClient, thread: { thread, threadInstance } });
 
     const { getAllByText, getByText, queryByText } = screen;
 
@@ -134,8 +145,11 @@ describe('Thread', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.query();
 
-    channel.state.addMessagesSorted(
-      threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
+    const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage: thread });
+    threadResponses.forEach((reply) =>
+      threadInstance.messagePaginator.ingestItem(
+        channel.state.formatMessage(reply as unknown as MessageResponse),
+      ),
     );
 
     const { getByText, toJSON } = render(
@@ -152,7 +166,7 @@ describe('Thread', () => {
             <ImageGalleryProvider
               value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
             >
-              <Channel channel={channel} thread={thread} threadList>
+              <Channel channel={channel} thread={{ thread, threadInstance }} threadList>
                 <Thread />
               </Channel>
             </ImageGalleryProvider>

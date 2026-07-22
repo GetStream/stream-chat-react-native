@@ -2,12 +2,7 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type {
-  AttachmentLoadingState,
-  ChannelState,
-  LocalMessage,
-  MessageResponse,
-} from 'stream-chat';
+import type { AttachmentLoadingState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import { ValueOf } from '../types/types';
@@ -270,7 +265,7 @@ export function escapeRegExp(text: string) {
  * @param targetId
  * @returns number
  */
-export const findInMessagesById = (messages: ChannelState['messages'], targetId: string) => {
+export const findInMessagesById = (messages: LocalMessage[], targetId: string) => {
   const idx = messages.findIndex((message) => message.id === targetId);
   return idx;
 };
@@ -282,7 +277,7 @@ export const findInMessagesById = (messages: ChannelState['messages'], targetId:
  * @returns an object with the index and the message object
  */
 export const findInMessagesByDate = (
-  messages: MessageResponse[] | ChannelState['messages'],
+  messages: MessageResponse[] | LocalMessage[],
   targetDate: Date,
 ) => {
   // Binary search

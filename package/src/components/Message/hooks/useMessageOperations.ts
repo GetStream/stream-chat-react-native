@@ -11,6 +11,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useStableCallback } from '../../../hooks';
 import { addReactionToLocalState } from '../../../utils/addReactionToLocalState';
+import { removeReactionFromLocalState } from '../../../utils/removeReactionFromLocalState';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageOperations = {
@@ -94,7 +95,7 @@ export const useMessageOperations = (): MessageOperations => {
       ];
 
       if (enableOfflineSupport) {
-        await addReactionToLocalState({
+        const messageWithReaction = await addReactionToLocalState({
           channel,
           enforceUniqueReaction,
           messageId,
@@ -102,14 +103,12 @@ export const useMessageOperations = (): MessageOperations => {
           user: client.user,
         });
 
-        const reactedMessage = channel.state.findMessage(messageId);
-        if (reactedMessage) {
-          const formatted = channel.state.formatMessage(reactedMessage);
-          if (!reactedMessage.parent_id || reactedMessage.show_in_channel) {
-            channel.messagePaginator.ingestItem(formatted);
+        if (messageWithReaction) {
+          if (!messageWithReaction.parent_id || messageWithReaction.show_in_channel) {
+            channel.messagePaginator.ingestItem(messageWithReaction);
           }
-          if (reactedMessage.parent_id) {
-            threadInstance?.messagePaginator?.ingestItem(formatted);
+          if (messageWithReaction.parent_id) {
+            threadInstance?.messagePaginator?.ingestItem(messageWithReaction);
           }
         }
       }
@@ -131,21 +130,19 @@ export const useMessageOperations = (): MessageOperations => {
       const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
 
       if (enableOfflineSupport) {
-        channel.state.removeReaction({
-          created_at: '',
-          message_id: messageId,
-          type,
-          updated_at: '',
+        const messageWithoutReaction = removeReactionFromLocalState({
+          channel,
+          messageId,
+          reactionType: type,
+          user: client.user,
         });
 
-        const reactedMessage = channel.state.findMessage(messageId);
-        if (reactedMessage) {
-          const formatted = channel.state.formatMessage(reactedMessage);
-          if (!reactedMessage.parent_id || reactedMessage.show_in_channel) {
-            channel.messagePaginator.ingestItem(formatted);
+        if (messageWithoutReaction) {
+          if (!messageWithoutReaction.parent_id || messageWithoutReaction.show_in_channel) {
+            channel.messagePaginator.ingestItem(messageWithoutReaction);
           }
-          if (reactedMessage.parent_id) {
-            threadInstance?.messagePaginator?.ingestItem(formatted);
+          if (messageWithoutReaction.parent_id) {
+            threadInstance?.messagePaginator?.ingestItem(messageWithoutReaction);
           }
         }
       }
