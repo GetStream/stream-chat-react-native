@@ -596,7 +596,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const notLatestSet = channel.messagePaginator.state.getLatestValue().hasMoreHead;
     if (notLatestSet) {
       latestNonCurrentMessageBeforeUpdateRef.current =
-        channel.state.latestMessages[channel.state.latestMessages.length - 1];
+        channel.messagePaginator.lastMessage ?? undefined;
       setAutoscrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;
@@ -686,10 +686,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     if (!lastItem) return;
 
-    if (
-      !channel.state.messagePagination.hasPrev &&
-      processedMessageList[0].id === lastItem.item.id
-    ) {
+    if (!channel.messagePaginator.hasMoreTail && processedMessageList[0].id === lastItem.item.id) {
       setStickyHeaderDate(undefined);
       return;
     }
@@ -743,7 +740,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const lastItemDate = lastItemCreatedAt.getTime();
 
     if (
-      !channel.state.messagePagination.hasPrev &&
+      !channel.messagePaginator.hasMoreTail &&
       processedMessageList[0].id === lastItemMessage.id
     ) {
       setIsUnreadNotificationOpen(false);

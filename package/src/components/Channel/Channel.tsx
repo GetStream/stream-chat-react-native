@@ -600,7 +600,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // of loaded messages, and the paginator otherwise defaults to a 100-message page.
       channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
 
-      if ((!channel.initialized || !channel.state.isUpToDate) && initializeOnMount) {
+      if (
+        (!channel.initialized || !channel.messagePaginator.isActiveIntervalAtHead) &&
+        initializeOnMount
+      ) {
         try {
           await channel?.watch();
         } catch (err) {
@@ -703,7 +706,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         .filter(
           (message) =>
             message.status === MessageStatusTypes.FAILED &&
-            !channel.state.findMessage(message.id, message.parent_id),
+            !(message.parent_id
+              ? threadInstance?.messagePaginator.getItem(message.id)
+              : channel.messagePaginator.getItem(message.id)),
         )
         .map(parseMessage);
 
@@ -735,7 +740,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         if (atLatest) {
           await markRead();
         }
-        channel.state.setIsUpToDate(atLatest);
       } else if (threadInstance) {
         await threadInstance.reload();
 

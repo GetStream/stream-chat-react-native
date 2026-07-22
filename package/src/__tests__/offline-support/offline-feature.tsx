@@ -81,7 +81,7 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
 const ChannelPreviewComponent = ({ channel }: { channel: ChannelLLC }) => (
   <View accessibilityLabel='list-item' testID={channel.cid}>
     <Text>{channel.data?.name}</Text>
-    <Text>{channel.state?.messages?.[0]?.text}</Text>
+    <Text>{channel.messagePaginator?.headItems?.[0]?.text}</Text>
   </View>
 );
 
@@ -731,7 +731,7 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+          chatClient.activeChannels[hiddenChannel.cid].messagePaginator.headItems.length,
         );
       });
     });
@@ -766,7 +766,7 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+          chatClient.activeChannels[hiddenChannel.cid].messagePaginator.headItems.length,
         );
       });
 
@@ -792,7 +792,7 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeFalsy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.activeChannels[hiddenChannel.cid].state.messages.length,
+          chatClient.activeChannels[hiddenChannel.cid].messagePaginator.headItems.length,
         );
       });
     });

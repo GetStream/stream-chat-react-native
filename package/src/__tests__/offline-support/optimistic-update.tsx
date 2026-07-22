@@ -301,7 +301,7 @@ export const OptimisticUpdates = () => {
     describe('send reaction', () => {
       it('pending task should exist if sendReaction request fails', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.state.messages[0];
+        const targetMessage = channel.messagePaginator.headItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -333,7 +333,7 @@ export const OptimisticUpdates = () => {
 
       it('pending task should be cleared if sendReaction request is successful', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.state.messages[0];
+        const targetMessage = channel.messagePaginator.headItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -429,7 +429,7 @@ export const OptimisticUpdates = () => {
     describe('delete reaction', () => {
       it('pending task should exist if deleteReaction request fails', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.state.messages[0];
+        const targetMessage = channel.messagePaginator.headItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -461,7 +461,7 @@ export const OptimisticUpdates = () => {
 
       it('pending task should be cleared if deleteReaction request is successful', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.state.messages[0];
+        const targetMessage = channel.messagePaginator.headItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -488,7 +488,7 @@ export const OptimisticUpdates = () => {
 
     describe('edit message', () => {
       it('should keep the optimistic edit in state and DB if the LLC queues the edit', async () => {
-        const message = channel.state.messages[0];
+        const message = channel.messagePaginator.headItems[0];
         const editedText = 'edited while offline';
 
         render(
@@ -536,7 +536,7 @@ export const OptimisticUpdates = () => {
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
         await waitFor(async () => {
-          const updatedMessage = channel.state.findMessage(message.id);
+          const updatedMessage = channel.messagePaginator.getItem(message.id);
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
@@ -551,7 +551,7 @@ export const OptimisticUpdates = () => {
       });
 
       it('should keep the optimistic edit if the request fails', async () => {
-        const message = channel.state.messages[0];
+        const message = channel.messagePaginator.headItems[0];
         const editedText = 'should stay optimistic';
 
         render(
@@ -588,7 +588,7 @@ export const OptimisticUpdates = () => {
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
         await waitFor(async () => {
-          const updatedMessage = channel.state.findMessage(message.id);
+          const updatedMessage = channel.messagePaginator.getItem(message.id);
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
@@ -600,7 +600,7 @@ export const OptimisticUpdates = () => {
       });
 
       it('should not set message_text_updated_at during optimistic edit of a failed message', async () => {
-        const message = channel.state.messages[0];
+        const message = channel.messagePaginator.headItems[0];
         const optimisticStateSpy = jest.fn();
 
         render(
@@ -609,7 +609,7 @@ export const OptimisticUpdates = () => {
               channel={channel}
               doUpdateMessageRequest={
                 (() => {
-                  const optimisticMessage = channel.state.findMessage(message.id);
+                  const optimisticMessage = channel.messagePaginator.getItem(message.id);
                   optimisticStateSpy(optimisticMessage);
 
                   return {
@@ -649,7 +649,7 @@ export const OptimisticUpdates = () => {
       });
 
       it('should keep the optimistic edit for attachment updates without auto-queueing', async () => {
-        const message = channel.state.messages[0];
+        const message = channel.messagePaginator.headItems[0];
         const editedText = 'edited attachment message';
         const localUri = 'file://edited-attachment.png';
 
@@ -698,7 +698,7 @@ export const OptimisticUpdates = () => {
         await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
 
         await waitFor(async () => {
-          const updatedMessage = channel.state.findMessage(message.id);
+          const updatedMessage = channel.messagePaginator.getItem(message.id);
           const pendingTasksRows = await BetterSqlite.selectFromTable('pendingTasks');
           const dbMessages = await BetterSqlite.selectFromTable('messages');
           const dbMessage = dbMessages.find((row) => row.id === message.id);
@@ -715,7 +715,7 @@ export const OptimisticUpdates = () => {
 
     describe('pending task execution', () => {
       it('pending task should be executed after connection is recovered', async () => {
-        const message = channel.state.messages[0];
+        const message = channel.messagePaginator.headItems[0];
         const reaction = generateReaction();
 
         render(
@@ -855,14 +855,16 @@ export const OptimisticUpdates = () => {
           pendingTask = pendingTasks[0];
         });
 
-        expect(channel.state.messages.some((message) => message.id === localMessage.id)).toBe(true);
+        expect(
+          channel.messagePaginator.headItems.some((message) => message.id === localMessage.id),
+        ).toBe(true);
 
         jest
           .spyOn(channel, 'watch')
           .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
 
-        channel.state.removeMessage(localMessage);
-        channel.state.addMessageSorted(serverMessage, true);
+        channel.messagePaginator.removeItem({ id: localMessage.id });
+        channel.messagePaginator.ingestItem(channel.state.formatMessage(serverMessage));
         await getOfflineDb(chatClient).deletePendingTask({ id: pendingTask!.id });
 
         await act(async () => {
@@ -870,7 +872,7 @@ export const OptimisticUpdates = () => {
         });
 
         await waitFor(() => {
-          const matchingMessages = channel.state.messages.filter(
+          const matchingMessages = channel.messagePaginator.headItems.filter(
             (message) => message.text === localMessage.text,
           );
 
@@ -922,7 +924,7 @@ export const OptimisticUpdates = () => {
           .spyOn(channel, 'watch')
           .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
 
-        channel.state.removeMessage(localMessage);
+        channel.messagePaginator.removeItem({ id: localMessage.id });
         await getOfflineDb(chatClient).deletePendingTask({ id: pendingTask!.id });
 
         await act(async () => {
@@ -930,7 +932,7 @@ export const OptimisticUpdates = () => {
         });
 
         await waitFor(() => {
-          const matchingMessages = channel.state.messages.filter(
+          const matchingMessages = channel.messagePaginator.headItems.filter(
             (message) => message.id === localMessage.id,
           );
 

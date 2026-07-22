@@ -54,7 +54,7 @@ jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
 const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => (
   <View accessibilityLabel='list-item' testID={channel.id}>
     <Text>{(channel.data as { name?: string } | undefined)?.name}</Text>
-    <Text>{channel.state.messages[0]?.text}</Text>
+    <Text>{channel.messagePaginator.headItems[0]?.text}</Text>
   </View>
 );
 
@@ -261,7 +261,7 @@ describe('ChannelList', () => {
       const channel = generateChannel({
         data: { name: id },
         id,
-        state: { latestMessages: [], members: {}, messages: [], setIsUpToDate: jest.fn() },
+        state: { members: {} },
       } as unknown as Parameters<typeof generateChannel>[0]) as unknown as {
         countUnread: () => number;
         messageComposer: { registerDraftEventSubscriptions: () => () => void };

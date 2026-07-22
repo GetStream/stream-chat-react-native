@@ -66,9 +66,8 @@ const initChannelFromData = async (
 
   channel.countUnread = jest.fn().mockReturnValue(0);
   channel.initialized = true;
-  channel.lastMessage = jest.fn().mockReturnValue(generateMessage());
   channel.muteStatus = jest.fn().mockReturnValue({ muted: false });
-  channel.state.messages = [generateMessage()];
+  channel.messagePaginator.ingestItem(channel.state.formatMessage(generateMessage()));
 
   return channel;
 };

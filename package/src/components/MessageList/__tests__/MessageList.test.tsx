@@ -334,10 +334,9 @@ describe('MessageList', () => {
 
     channel.state = {
       ...channelInitialState,
-      latestMessages: [],
-      messages,
       read: read_data,
     } as unknown as typeof channel.state;
+    channel.messagePaginator.state.partialNext({ items: messages });
 
     const { queryByLabelText } = render(
       <OverlayProvider>
@@ -371,9 +370,8 @@ describe('MessageList', () => {
 
     channel.state = {
       ...channelInitialState,
-      latestMessages: [],
-      messages,
     } as unknown as typeof channel.state;
+    channel.messagePaginator.state.partialNext({ items: messages });
 
     const { queryByLabelText } = render(
       <OverlayProvider>
@@ -442,18 +440,15 @@ describe('MessageList', () => {
 
     channel.state = {
       ...channelInitialState,
-      latestMessages: [],
-      messages,
     } as unknown as typeof channel.state;
+    channel.messagePaginator.state.partialNext({ items: messages });
 
     const flatListRefMock = jest
       .spyOn(FlatList.prototype, 'scrollToIndex')
       .mockImplementation(() => {});
 
     // Targeting is driven by the paginator's messageFocusSignal now (not a prop): emitting it makes
-    // the list scroll to the focused message. NOTE: like the other full-list-render tests here, this
-    // is runtime-stale under the portal (it seeds channel.state.messages, not
-    // channel.messagePaginator.state.items) — the seed needs updating when the portal is removed.
+    // the list scroll to the focused message.
     channel.messagePaginator.emitMessageFocusSignal({
       messageId: targetedMessage,
       reason: 'jump-to-message',
@@ -528,13 +523,14 @@ describe('MessageList pagination', () => {
     if (staleChannelState) {
       channel.state = {
         ...channelInitialState,
-        latestMessages: [],
         members: Object.fromEntries(
           Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
         ),
-        messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
         messageSets: [{ isCurrent: true, isLatest: true }],
       } as unknown as typeof channel.state;
+      channel.messagePaginator.state.partialNext({
+        items: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
+      });
     }
 
     return render(
@@ -649,13 +645,14 @@ describe('MessageList pagination', () => {
 
     channel.state = {
       ...channelInitialState,
-      latestMessages: [],
       members: Object.fromEntries(
         Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
       ),
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
       messageSets: [{ isCurrent: true, isLatest: true }],
     } as unknown as typeof channel.state;
+    channel.messagePaginator.state.partialNext({
+      items: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
+    });
 
     const loadLatestMessages = jest.fn(() => Promise.resolve());
     mockedHook({ loadLatestMessages });

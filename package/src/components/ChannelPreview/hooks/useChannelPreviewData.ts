@@ -1,51 +1,48 @@
-import { type SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import throttle from 'lodash/throttle';
-import type { Channel, Event, LocalMessage, MessageResponse, StreamChat } from 'stream-chat';
+import type {
+  Channel,
+  Event,
+  LocalMessage,
+  MessagePaginatorAggregateState,
+  MessageResponse,
+  StreamChat,
+} from 'stream-chat';
 
 import { useIsChannelMuted } from './useIsChannelMuted';
 import { useIsChannelPinned } from './useIsChannelPinned';
 
 import { useChannelsContext } from '../../../contexts';
-import { useStableCallback } from '../../../hooks';
-
-const setLastMessageThrottleTimeout = 500;
-const setLastMessageThrottleOptions = { leading: true, trailing: true };
+import { useStateStore } from '../../../hooks';
 
 const refreshUnreadCountThrottleTimeout = 400;
-const refreshUnreadCountThrottleOptions = setLastMessageThrottleOptions;
+const refreshUnreadCountThrottleOptions = { leading: true, trailing: true };
 
 export type LastMessageType = LocalMessage | MessageResponse;
+
+// The last message is sourced reactively from the paginator's `aggregateState` — a store kept
+// separate from pagination `state` precisely so it stays reactive when a new message lands in the
+// head interval while an older window is active (a `state`-derived latest would go stale off-window).
+// The preview re-renders whenever the newest message changes (new/edited/deleted) with no manual
+// event plumbing.
+const lastMessageSelector = (state: MessagePaginatorAggregateState) => ({
+  lastMessage: state.lastMessage ?? undefined,
+});
 
 export const useChannelPreviewData = (
   channel: Channel,
   client: StreamChat,
   forceUpdateOverride?: number,
 ) => {
-  const [forceUpdate, setForceUpdate] = useState(0);
-  const [lastMessage, setLastMessageInner] = useState<LastMessageType>(
-    () => channel.state.latestMessages[channel.state.latestMessages.length - 1],
-  );
-  const throttledSetLastMessage = useMemo(
-    () =>
-      throttle(
-        (newLastMessage: SetStateAction<LastMessageType>) => setLastMessageInner(newLastMessage),
-        setLastMessageThrottleTimeout,
-        setLastMessageThrottleOptions,
-      ),
-    [],
-  );
-  const setLastMessage = useStableCallback((newLastMessage: SetStateAction<LastMessageType>) =>
-    throttledSetLastMessage(newLastMessage),
-  );
+  const [, setForceUpdate] = useState(0);
+  const { lastMessage } =
+    useStateStore(channel.messagePaginator.aggregateState, lastMessageSelector) ?? {};
   const [unread, setUnread] = useState(channel.countUnread());
   const { muted } = useIsChannelMuted(channel);
   const pinned = useIsChannelPinned(channel);
   const { forceUpdate: contextForceUpdate } = useChannelsContext();
   const channelListForceUpdate = forceUpdateOverride ?? contextForceUpdate;
-
-  const channelLastMessage = channel.state.latestMessages[channel.state.latestMessages.length - 1];
-  const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
 
   const refreshUnreadCount = useMemo(
     () =>
@@ -74,23 +71,6 @@ export const useChannelPreviewData = (
     });
     return unsubscribe;
   }, [client, refreshUnreadCount]);
-
-  useEffect(() => {
-    setLastMessage((prevLastMessage) =>
-      channelLastMessage &&
-      (channelLastMessage.id !== prevLastMessage?.id ||
-        channelLastMessage.updated_at !== prevLastMessage?.updated_at)
-        ? channelLastMessage
-        : prevLastMessage,
-    );
-    refreshUnreadCount();
-  }, [
-    channelLastMessage,
-    channelLastMessageString,
-    channelListForceUpdate,
-    setLastMessage,
-    refreshUnreadCount,
-  ]);
 
   /**
    * This effect listens for the `notification.mark_read` event and sets the unread count to 0
@@ -140,43 +120,24 @@ export const useChannelPreviewData = (
   }, [client, channel]);
 
   /**
-   * This effect listens for the `message.new`, `message.updated`, `message.deleted`, `message.undeleted`, and `channel.truncated` events
+   * Keep the unread count in sync with events that can change it. The last message itself is sourced
+   * reactively from the paginator (see `lastMessageSelector`), so these listeners only refresh unread.
    */
   useEffect(() => {
     refreshUnreadCount();
 
     const handleEvent = () => {
-      setLastMessage(channel.state.latestMessages[channel.state.latestMessages.length - 1]);
       refreshUnreadCount();
     };
 
-    const handleNewMessageEvent = (event: Event) => {
-      const message = event.message;
-      if (message && (!message.parent_id || message.show_in_channel)) {
-        setLastMessage(message);
-        refreshUnreadCount();
-      }
-    };
-
-    const handleUpdatedOrDeletedMessage = (event: Event) => {
-      setLastMessage((prevLastMessage) => {
-        if (prevLastMessage?.id === event.message?.id) {
-          return event.message;
-        }
-        return prevLastMessage;
-      });
-    };
-
     const listeners = [
-      channel.on('message.new', handleNewMessageEvent),
-      channel.on('message.updated', handleUpdatedOrDeletedMessage),
-      channel.on('message.deleted', handleUpdatedOrDeletedMessage),
+      channel.on('message.new', handleEvent),
       channel.on('message.undeleted', handleEvent),
       channel.on('channel.truncated', handleEvent),
     ];
 
     return () => listeners.forEach((l) => l.unsubscribe());
-  }, [channel, refreshUnreadCount, forceUpdate, channelListForceUpdate, setLastMessage]);
+  }, [channel, refreshUnreadCount, channelListForceUpdate]);
 
   return { lastMessage, muted, pinned, unread };
 };
