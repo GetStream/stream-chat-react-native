@@ -1,20 +1,71 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Dimensions, Platform, View } from 'react-native';
 import { EdgeInsets } from 'react-native-safe-area-context';
+
+type MeasuredRect = { x: number; y: number; w: number; h: number };
+
+/**
+ * How many screen lengths away from the origin a measured coordinate may fall before we treat it as
+ * bogus. Real targets (a view currently on screen) always measure well within one screen and the failure
+ * mode we guard against is off by tens of screens, so a generous multiplier cleanly separates the two
+ * with no risk of false positives on legitimate values.
+ */
+const SCREEN_BOUND_MULTIPLIER = 2;
+
+/**
+ * `measureInWindow` can return wildly out of bounds coordinates on Android when the native window has
+ * been forced edge-to-edge behind React Native's back (i.e a library setting `FLAG_LAYOUT_NO_LIMITS`,
+ * as `react-native-system-navigation-bar` does for a transparent nav bar) while RN's own edge-to-edge
+ * (`edgeToEdgeEnabled`) is off. In that state the window relative measurement is corrupted and would
+ * return a position of the View far offscreen.
+ */
+const isMeasuredRectBogus = (x: number, y: number, w: number, h: number): boolean => {
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) {
+    return true;
+  }
+  if (w <= 0 || h <= 0) {
+    return true;
+  }
+  const { width, height } = Dimensions.get('screen');
+  if (width <= 0 || height <= 0) {
+    // can't reason about bounds, trust the measurement
+    return false;
+  }
+  return (
+    Math.abs(x) > width * SCREEN_BOUND_MULTIPLIER || Math.abs(y) > height * SCREEN_BOUND_MULTIPLIER
+  );
+};
 
 export const measureInWindow = (
   node: React.RefObject<View | null>,
   insets: EdgeInsets,
-): Promise<{ x: number; y: number; w: number; h: number }> => {
+): Promise<MeasuredRect> => {
   return new Promise((resolve, reject) => {
     const handle = node.current;
-    if (!handle)
+    if (!handle) {
       return reject(
         new Error('The native handle could not be found while invoking measureInWindow.'),
       );
+    }
 
-    handle.measureInWindow((x, y, w, h) =>
-      resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) }),
-    );
+    handle.measureInWindow((x, y, w, h) => {
+      if (!isMeasuredRectBogus(x, y, w, h)) {
+        resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) });
+        return;
+      }
+
+      // If `measureInWindow` returned an out of bounds rect, fallback to `measure()`, whose
+      // `pageX`/`pageY` are relative to the app root and are the same coordinate space as the window.
+      // They will stays correct when the window frame has been mutated out from under
+      // React Native.
+      if (typeof handle.measure !== 'function') {
+        resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) });
+        return;
+      }
+
+      handle.measure((_x, _y, width, height, pageX, pageY) => {
+        resolve({ h: height, w: width, x: pageX, y: pageY });
+      });
+    });
   });
 };
