@@ -72,6 +72,13 @@ const initChannelFromData = async (
   return channel;
 };
 
+// TODO(#27/#8): the unread-count assertions below exercise the pre-reactive, mock-driven mechanism
+// (mocking `channel.countUnread()` + dispatching `notification.mark_read`/`mark_unread` so the old WS
+// listeners refreshed). `useChannelPreviewData` now sources unread reactively from
+// `channel.state.readStore` and no longer calls `countUnread()`, so these need reworking to seed
+// `readStore` and dispatch the events that actually mutate it (`message.read`, `message.new`).
+// Deferred with the rest of the portal-blocked test staleness (jest cannot currently run — the local
+// stream-chat-js portal breaks module resolution); fix when the portal is removed.
 describe('ChannelPreview', () => {
   const clientUser = generateUser();
   let chatClient: StreamChat;
