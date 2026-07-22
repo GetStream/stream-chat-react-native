@@ -19,7 +19,7 @@ const SCREEN_BOUND_MULTIPLIER = 2;
  * (`edgeToEdgeEnabled`) is off. In that state the window relative measurement is corrupted and would
  * return a position of the View far offscreen.
  */
-const isMeasuredRectBogus = (x: number, y: number, w: number, h: number): boolean => {
+export const isMeasuredRectBogus = (x: number, y: number, w: number, h: number): boolean => {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) {
     return true;
   }
