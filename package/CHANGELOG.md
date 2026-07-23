@@ -1,5 +1,11 @@
 # Change Log
 
+## [9.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.0...v9.7.1) (2026-07-23)
+
+### Bug Fixes
+
+* guard against bogus `measureInWindow` values ([#3739](https://github.com/GetStream/stream-chat-react-native/issues/3739)) ([edad79f](https://github.com/GetStream/stream-chat-react-native/commit/edad79fe6d1caabcae3fd72db4c9b75b7c0498f0))
+
 ## [9.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.6.1...v9.7.0) (2026-07-17)
 
 ### Bug Fixes
