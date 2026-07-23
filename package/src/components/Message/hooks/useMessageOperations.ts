@@ -1,17 +1,9 @@
-import {
-  Channel as ChannelClass,
-  DeleteMessageOptions,
-  LocalMessage,
-  MessageResponse,
-  Reaction,
-} from 'stream-chat';
+import { DeleteMessageOptions, LocalMessage, MessageResponse, Reaction } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useStableCallback } from '../../../hooks';
-import { addReactionToLocalState } from '../../../utils/addReactionToLocalState';
-import { removeReactionFromLocalState } from '../../../utils/removeReactionFromLocalState';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export type MessageOperations = {
@@ -36,7 +28,7 @@ export type MessageOperations = {
  * action context) so the operations stay co-located with the LLC state they drive.
  */
 export const useMessageOperations = (): MessageOperations => {
-  const { client, enableOfflineSupport } = useChatContext();
+  const { client } = useChatContext();
   const { channel, enforceUniqueReaction } = useChannelContext();
   const { threadInstance } = useThreadContext();
 
@@ -86,38 +78,18 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized');
       }
 
-      const payload: Parameters<ChannelClass['sendReaction']> = [
+      // Route the optimistic update to the paginator that actually holds the message: the open
+      // thread when the message is a reply loaded there (giving pure replies optimism the channel
+      // paginator can't), otherwise the channel. Both instances forward the request through
+      // `channel.sendReaction`, so this only decides the optimistic ingest target — never sending a
+      // channel message's reaction into the thread paginator while a (channel-wide) thread is open.
+      const target = threadInstance?.messagePaginator.getItem(messageId) ? threadInstance : channel;
+
+      await target.addReactionWithLocalUpdate({
         messageId,
-        {
-          type,
-        } as Reaction,
-        { enforce_unique: enforceUniqueReaction },
-      ];
-
-      if (enableOfflineSupport) {
-        const messageWithReaction = await addReactionToLocalState({
-          channel,
-          enforceUniqueReaction,
-          messageId,
-          reactionType: type,
-          user: client.user,
-        });
-
-        if (messageWithReaction) {
-          if (!messageWithReaction.parent_id || messageWithReaction.show_in_channel) {
-            channel.messagePaginator.ingestItem(messageWithReaction);
-          }
-          if (messageWithReaction.parent_id) {
-            threadInstance?.messagePaginator?.ingestItem(messageWithReaction);
-          }
-        }
-      }
-
-      const sendReactionResponse = await channel.sendReaction(...payload);
-
-      if (sendReactionResponse?.message) {
-        threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
-      }
+        options: { enforce_unique: enforceUniqueReaction },
+        reaction: { type } as Reaction,
+      });
     },
   );
 
@@ -127,27 +99,9 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized');
       }
 
-      const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
+      const target = threadInstance?.messagePaginator.getItem(messageId) ? threadInstance : channel;
 
-      if (enableOfflineSupport) {
-        const messageWithoutReaction = removeReactionFromLocalState({
-          channel,
-          messageId,
-          reactionType: type,
-          user: client.user,
-        });
-
-        if (messageWithoutReaction) {
-          if (!messageWithoutReaction.parent_id || messageWithoutReaction.show_in_channel) {
-            channel.messagePaginator.ingestItem(messageWithoutReaction);
-          }
-          if (messageWithoutReaction.parent_id) {
-            threadInstance?.messagePaginator?.ingestItem(messageWithoutReaction);
-          }
-        }
-      }
-
-      await channel.deleteReaction(...payload);
+      await target.deleteReactionWithLocalUpdate({ messageId, type });
     },
   );
 
