@@ -47,6 +47,7 @@ exports[`SendButton should render a SendButton 1`] = `
           onGestureHandlerReanimatedEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
           onGestureHandlerTouchEvent={[Function]}
+          onStartShouldSetResponder={[Function]}
           pointerEvents="box-none"
           style={
             {
@@ -219,6 +220,7 @@ exports[`SendButton should render a SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -366,6 +368,7 @@ exports[`SendButton should render a SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -542,6 +545,7 @@ exports[`SendButton should render a SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -685,6 +689,7 @@ exports[`SendButton should render a SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -961,6 +966,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
           onGestureHandlerReanimatedEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
           onGestureHandlerTouchEvent={[Function]}
+          onStartShouldSetResponder={[Function]}
           pointerEvents="box-none"
           style={
             {
@@ -1133,6 +1139,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1280,6 +1287,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1456,6 +1464,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1599,6 +1608,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {

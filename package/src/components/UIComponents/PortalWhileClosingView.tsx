@@ -1,10 +1,11 @@
 import React, { ReactNode, useEffect, useMemo, useRef } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
+import { measureInWindow } from '../../components/Message/utils/measureInWindow';
 import { useStableCallback } from '../../hooks';
 import {
   clearClosingPortalLayout,
@@ -124,20 +125,14 @@ const useSyncingApi = (portalHostName: string, registrationId: string) => {
       return;
     }
 
-    containerRef.current?.measureInWindow((x, y, width, height) => {
-      const absolute = {
-        x,
-        y: y + (Platform.OS === 'android' ? insets.top : 0),
-      };
-
-      placeholderLayout.value = { h: height, w: width };
-
-      setClosingPortalLayout(portalHostName, registrationId, {
-        ...absolute,
-        h: height,
-        w: width,
+    measureInWindow(containerRef, insets)
+      .then((rect) => {
+        placeholderLayout.value = { h: rect.h, w: rect.w };
+        setClosingPortalLayout(portalHostName, registrationId, rect);
+      })
+      .catch(() => {
+        // the container isn't measurable yet; the next layout/effect pass will retry
       });
-    });
   });
 
   useEffect(() => {
