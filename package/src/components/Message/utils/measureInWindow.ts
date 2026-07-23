@@ -2,7 +2,19 @@ import React from 'react';
 import { Dimensions, Platform, View } from 'react-native';
 import { EdgeInsets } from 'react-native-safe-area-context';
 
+import { isRN86OrGreater } from '../../../utils/react-native-constants';
+
 type MeasuredRect = { x: number; y: number; w: number; h: number };
+
+/**
+ * On Android, `measureInWindow` historically did not account for the top inset, so we added it
+ * ourselves. React Native 0.86 fixed this upstream as part of its edge-to-edge rework and now
+ * returns topInset corrected window coordinates. On >= 0.86 adding it again double counts the
+ * inset and offsets every measured view down by `insets.top`, so we only compensate on Android
+ * running React Native below 0.86.
+ */
+const androidTopInsetCompensation = (insets: EdgeInsets): number =>
+  Platform.OS === 'android' && !isRN86OrGreater ? insets.top : 0;
 
 /**
  * How many screen lengths away from the origin a measured coordinate may fall before we treat it as
@@ -50,7 +62,7 @@ export const measureInWindow = (
 
     handle.measureInWindow((x, y, w, h) => {
       if (!isMeasuredRectBogus(x, y, w, h)) {
-        resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) });
+        resolve({ h, w, x, y: y + androidTopInsetCompensation(insets) });
         return;
       }
 
@@ -59,7 +71,7 @@ export const measureInWindow = (
       // They will stays correct when the window frame has been mutated out from under
       // React Native.
       if (typeof handle.measure !== 'function') {
-        resolve({ h, w, x, y: y + (Platform.OS === 'android' ? insets.top : 0) });
+        resolve({ h, w, x, y: y + androidTopInsetCompensation(insets) });
         return;
       }
 

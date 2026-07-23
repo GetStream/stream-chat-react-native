@@ -8,6 +8,18 @@ import { isMeasuredRectBogus, measureInWindow } from '../measureInWindow';
 // measurement; this suite exercises the real implementation.
 jest.unmock('../measureInWindow');
 
+// measureInWindow reads `isRN86OrGreater` as a live binding at call time, so mocking the constants
+// module with a mutable flag lets us exercise both the "RN handles the inset" and "we compensate"
+// branches without reimporting. (Flag is `mock`-prefixed as jest requires for values referenced
+// inside a mock factory.)
+let mockIsRN86OrGreater = false;
+jest.mock('../../../../utils/react-native-constants', () => ({
+  __esModule: true,
+  get isRN86OrGreater() {
+    return mockIsRN86OrGreater;
+  },
+}));
+
 // screen 400x800 => bogus threshold is |x| > 800 and |y| > 1600 (2x each)
 const SCREEN = { fontScale: 1, height: 800, scale: 2, width: 400 };
 const INSETS: EdgeInsets = { bottom: 10, left: 0, right: 0, top: 24 };
@@ -115,6 +127,7 @@ describe('measureInWindow', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     setPlatform(originalOS);
+    mockIsRN86OrGreater = false;
   });
 
   it('rejects when the node is not mounted', async () => {
@@ -133,14 +146,27 @@ describe('measureInWindow', () => {
       });
     });
 
-    it('compensates by insets.top on Android', async () => {
+    it('compensates by insets.top on Android below RN 0.86', async () => {
       setPlatform('android');
+      mockIsRN86OrGreater = false;
       const node = makeNode({ measureInWindow: [10, 300, 200, 40] });
       await expect(measureInWindow(node, INSETS)).resolves.toEqual({
         h: 40,
         w: 200,
         x: 10,
         y: 324,
+      });
+    });
+
+    it('does not compensate on Android from RN 0.86 onward (RN corrects the inset natively)', async () => {
+      setPlatform('android');
+      mockIsRN86OrGreater = true;
+      const node = makeNode({ measureInWindow: [10, 300, 200, 40] });
+      await expect(measureInWindow(node, INSETS)).resolves.toEqual({
+        h: 40,
+        w: 200,
+        x: 10,
+        y: 300,
       });
     });
   });
@@ -164,14 +190,27 @@ describe('measureInWindow', () => {
       await expect(measureInWindow(node, INSETS)).resolves.toEqual({ h: 36, w: 64, x: 12, y: 717 });
     });
 
-    it('returns the compensated window rect when no measure() fallback is available', async () => {
+    it('returns the compensated window rect when no measure() fallback is available (RN < 0.86)', async () => {
       setPlatform('android');
+      mockIsRN86OrGreater = false;
       const node = makeNode({ measureInWindow: [28903, 29088, 64, 36] });
       await expect(measureInWindow(node, INSETS)).resolves.toEqual({
         h: 36,
         w: 64,
         x: 28903,
         y: 29112,
+      });
+    });
+
+    it('returns the uncompensated window rect when no measure() fallback is available (RN >= 0.86)', async () => {
+      setPlatform('android');
+      mockIsRN86OrGreater = true;
+      const node = makeNode({ measureInWindow: [28903, 29088, 64, 36] });
+      await expect(measureInWindow(node, INSETS)).resolves.toEqual({
+        h: 36,
+        w: 64,
+        x: 28903,
+        y: 29088,
       });
     });
   });
