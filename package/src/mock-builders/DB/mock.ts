@@ -23,6 +23,8 @@ export const sqliteMock = {
   open: () => {
     logDb('open()');
     db = new Sqlite3(testDbName);
+    db.pragma('journal_mode = MEMORY');
+    db.pragma('synchronous = OFF');
     return {
       close: () => {
         db.close();
