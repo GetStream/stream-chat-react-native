@@ -257,14 +257,23 @@ export const Generic = () => {
     } as ChannelFilters;
     const sort: ChannelSort = { last_updated: 1 };
 
-    const renderComponent = () =>
-      render(
+    const renderComponent = async () => {
+      const result = render(
         <Chat client={chatClient} enableOfflineSupport>
           <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
             <ChannelList filters={filters} sort={sort} swipeActionsEnabled={false} />
           </WithComponents>
         </Chat>,
       );
+
+      await waitFor(async () => {
+        const tablesInDb = (await BetterSqlite.getTables()) as Array<{ name: string }>;
+        const tableNamesInDB = tablesInDb.map((table) => table.name);
+        expect(Object.keys(tables).every((name) => tableNamesInDB.includes(name))).toBe(true);
+      });
+
+      return result;
+    };
 
     const expectCIDsOnUIToBeInDB = async (
       queryAllByLabelText: typeof screen.queryAllByLabelText,
@@ -365,7 +374,7 @@ export const Generic = () => {
 
     it('should store filter-sort query and cids on ChannelList in channelQueries table', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
 
       await act(() => dispatchConnectionChangedEvent(chatClient, false));
       // await waiter();
@@ -381,7 +390,7 @@ export const Generic = () => {
     it('should store channels and its state in tables', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
 
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
@@ -400,7 +409,7 @@ export const Generic = () => {
       useMockedApis(chatClient, [queryChannelsApi([emptyChannel])]);
       jest.spyOn(chatClient, 'hydrateActiveChannels');
 
-      renderComponent();
+      await renderComponent();
 
       await waitFor(async () => {
         act(() => dispatchConnectionChangedEvent(chatClient));
@@ -415,7 +424,7 @@ export const Generic = () => {
     it('should add a new message to database', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -444,7 +453,7 @@ export const Generic = () => {
     it('should correctly handle multiple new messages and add them to the database', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -506,7 +515,7 @@ export const Generic = () => {
     it('should correctly handle multiple new messages from our own user', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -568,7 +577,7 @@ export const Generic = () => {
     it('should add a new channel and a new message to database from notification event', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => {
@@ -609,7 +618,7 @@ export const Generic = () => {
     it('should update a message in database', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -637,7 +646,7 @@ export const Generic = () => {
     it('should remove the channel from DB when user is removed as member', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -671,7 +680,7 @@ export const Generic = () => {
     it('should remove the channel from DB if the channel is deleted', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -705,7 +714,7 @@ export const Generic = () => {
     it('should correctly mark the channel as hidden in the db', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -739,7 +748,7 @@ export const Generic = () => {
     it('should correctly mark the channel as visible if it was hidden before in the db', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -800,7 +809,7 @@ export const Generic = () => {
     it('should add the channel to DB when user is added as member', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -838,7 +847,7 @@ export const Generic = () => {
     it('should remove the channel messages from DB when channel is truncated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -874,7 +883,7 @@ export const Generic = () => {
     it('should truncate the correct messages if channel.truncated arrives with truncated_at', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -926,7 +935,7 @@ export const Generic = () => {
     it('should gracefully handle a truncated_at date before each message', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -962,7 +971,7 @@ export const Generic = () => {
     it('should gracefully handle a truncated_at date after each message', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1004,7 +1013,7 @@ export const Generic = () => {
 
     it('should add a reaction to DB when a new reaction is added', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1049,7 +1058,7 @@ export const Generic = () => {
 
     it('should correctly add multiple reactions to the DB', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1136,7 +1145,7 @@ export const Generic = () => {
 
     it('should gracefully handle multiple reaction.new events of the same type for the same user', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1205,7 +1214,7 @@ export const Generic = () => {
     it('should remove a reaction from DB when reaction is deleted', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1259,7 +1268,7 @@ export const Generic = () => {
     it('should update a reaction in DB when reaction is updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1296,7 +1305,7 @@ export const Generic = () => {
 
     it('should correctly upsert reactions when enforce_unique is true', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1396,7 +1405,7 @@ export const Generic = () => {
 
     it('should also update the corresponding message.reaction_groups with reaction.new', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1455,7 +1464,7 @@ export const Generic = () => {
 
     it('should also update the corresponding message.reaction_groups with reaction.updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1512,7 +1521,7 @@ export const Generic = () => {
 
     it('should also update the corresponding message.reaction_groups with reaction.deleted', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1569,7 +1578,7 @@ export const Generic = () => {
 
     it('should add a member to DB when a new member is added to channel', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
-      renderComponent();
+      await renderComponent();
 
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
@@ -1592,7 +1601,7 @@ export const Generic = () => {
     it('should remove a member from DB when a member is removed from channel', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1614,7 +1623,7 @@ export const Generic = () => {
     it('should update the member in DB when a member of a channel is updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1641,7 +1650,7 @@ export const Generic = () => {
     it('should update the channel data in DB when a channel is updated', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1667,7 +1676,7 @@ export const Generic = () => {
     it('should update reads in DB when channel is read', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
@@ -1715,7 +1724,7 @@ export const Generic = () => {
     it('should update reads in DB when a channel is marked as unread', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
 
-      renderComponent();
+      await renderComponent();
       act(() => dispatchConnectionChangedEvent(chatClient));
       await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());

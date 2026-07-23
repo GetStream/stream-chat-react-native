@@ -7,10 +7,6 @@ import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { registerNativeHandlers } from './src/native';
 
-(
-  globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
-).IS_REACT_ACT_ENVIRONMENT = true;
-
 console.warn = () => {};
 
 registerNativeHandlers({
