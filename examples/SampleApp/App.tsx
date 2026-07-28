@@ -34,6 +34,7 @@ import {
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
+  PERF_BENCHMARKING_MODE_STORAGE_KEY,
 } from './src/components/SecretMenu.tsx';
 import { AppContext } from './src/context/AppContext';
 import { StreamChatProvider } from './src/context/StreamChatContext';
@@ -117,6 +118,9 @@ const App = () => {
   const [messageOverlayBackdrop, setMessageOverlayBackdrop] = useState<
     MessageOverlayBackdropConfigItem['value'] | undefined
   >(undefined);
+  const [perfBenchmarkingEnabled, setPerfBenchmarkingEnabledState] = useState<boolean | undefined>(
+    undefined,
+  );
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
   const streami18n = new Streami18n();
@@ -204,6 +208,10 @@ const App = () => {
         '@stream-rn-sampleapp-message-overlay-backdrop',
         { value: 'default' },
       );
+      const perfBenchmarkingModeStoredValue = await AsyncStore.getItem(
+        PERF_BENCHMARKING_MODE_STORAGE_KEY,
+        { value: false },
+      );
       setMessageListImplementation(
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
@@ -217,6 +225,7 @@ const App = () => {
       setMessageOverlayBackdrop(
         messageOverlayBackdropStoredValue?.value as MessageOverlayBackdropConfigItem['value'],
       );
+      setPerfBenchmarkingEnabledState(!!perfBenchmarkingModeStoredValue?.value);
     };
     getAppConfig();
     return () => {
@@ -253,7 +262,12 @@ const App = () => {
     });
   }, [chatClient]);
 
-  if (rtlEnabled === undefined || !messageListImplementation || !messageListMode) {
+  if (
+    rtlEnabled === undefined ||
+    perfBenchmarkingEnabled === undefined ||
+    !messageListImplementation ||
+    !messageListMode
+  ) {
     return;
   }
 
@@ -288,6 +302,7 @@ const App = () => {
                     loginUser,
                     logout,
                     switchUser,
+                    perfBenchmarkingEnabled,
                     rtlEnabled,
                     setRTLEnabled,
                     messageListImplementation,

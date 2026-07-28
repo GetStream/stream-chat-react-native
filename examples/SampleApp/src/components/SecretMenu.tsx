@@ -7,6 +7,7 @@ import {
   Platform,
   StyleSheet,
   ScrollView,
+  Switch,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -38,6 +39,8 @@ export type MessageOverlayBackdropConfigItem = {
   label: string;
   value: 'default' | 'blurview';
 };
+
+export const PERF_BENCHMARKING_MODE_STORAGE_KEY = '@stream-rn-sampleapp-perf-benchmarking-mode';
 
 const messageListImplementationConfigItems: MessageListImplementationConfigItem[] = [
   { label: 'FlatList', id: 'flatlist' },
@@ -279,8 +282,9 @@ export const SecretMenu = ({
   const [selectedMessageOverlayBackdrop, setSelectedMessageOverlayBackdrop] = useState<
     MessageOverlayBackdropConfigItem['value'] | null
   >(null);
+  const [selectedPerfBenchmarkingMode, setSelectedPerfBenchmarkingMode] = useState(false);
   useTheme();
-  const { black, grey } = useLegacyColors();
+  const { black, grey, white } = useLegacyColors();
 
   const notificationConfigItems = useMemo(
     () => [
@@ -316,6 +320,9 @@ export const SecretMenu = ({
         '@stream-rn-sampleapp-message-overlay-backdrop',
         messageOverlayBackdropConfigItems[0],
       );
+      const perfBenchmarkingMode = await AsyncStore.getItem(PERF_BENCHMARKING_MODE_STORAGE_KEY, {
+        value: false,
+      });
       setSelectedProvider(notificationProvider?.id ?? notificationConfigItems[0].id);
       setSelectedMessageListImplementation(
         messageListImplementation?.id ?? messageListImplementationConfigItems[0].id,
@@ -328,6 +335,7 @@ export const SecretMenu = ({
       setSelectedMessageOverlayBackdrop(
         messageOverlayBackdrop?.value ?? messageOverlayBackdropConfigItems[0].value,
       );
+      setSelectedPerfBenchmarkingMode(!!perfBenchmarkingMode?.value);
     };
     getSelectedConfig();
   }, [notificationConfigItems]);
@@ -367,6 +375,11 @@ export const SecretMenu = ({
     },
     [],
   );
+
+  const storePerfBenchmarkingMode = useCallback(async (enabled: boolean) => {
+    await AsyncStore.setItem(PERF_BENCHMARKING_MODE_STORAGE_KEY, { value: enabled });
+    setSelectedPerfBenchmarkingMode(enabled);
+  }, []);
 
   const removeAllDevices = useCallback(async () => {
     const { devices } = await chatClient.getDevices(chatClient.userID);
@@ -484,6 +497,21 @@ export const SecretMenu = ({
             </View>
           </View>
         </View>
+        <View style={[menuDrawerStyles.menuItem, styles.switchMenuItem]}>
+          <Folder height={20} pathFill={grey} width={20} />
+          <Text style={[menuDrawerStyles.menuTitle, styles.switchMenuTitle]}>
+            Perf. Benchmarking mode
+          </Text>
+          <Switch
+            onValueChange={storePerfBenchmarkingMode}
+            thumbColor={white}
+            trackColor={{
+              false: grey,
+              true: black,
+            }}
+            value={selectedPerfBenchmarkingMode}
+          />
+        </View>
         <TouchableOpacity onPress={removeAllDevices} style={menuDrawerStyles.menuItem}>
           <Delete height={24} size={24} pathFill={grey} width={24} />
           <Text
@@ -539,5 +567,11 @@ export const styles = StyleSheet.create({
     backgroundColor: 'lightskyblue',
     padding: 8,
     alignItems: 'center',
+  },
+  switchMenuItem: {
+    justifyContent: 'space-between',
+  },
+  switchMenuTitle: {
+    flex: 1,
   },
 });
