@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { ProfilerOnRenderCallback } from 'react';
 
@@ -7,9 +7,12 @@ import type {
   BenchmarkFrameStats,
   BenchmarkRenderSample,
   BenchmarkTelemetry,
+  BenchmarkTelemetrySnapshot,
+  BenchmarkTelemetrySummary,
 } from './types';
 
 const maxSamples = 160;
+const snapshotUpdateInterval = 25;
 
 const initialFrameStats: BenchmarkFrameStats = {
   averageFrameMs: 0,
@@ -43,31 +46,145 @@ const percentile = (values: number[], percentileValue: number) => {
 const roundMetric = (value?: number) =>
   typeof value === 'number' && Number.isFinite(value) ? Math.round(value * 100) / 100 : undefined;
 
+type BenchmarkTelemetryMetrics = {
+  commitLatencies: number[];
+  committedEvents: number;
+  dispatchStartGaps: number[];
+  dispatchDurations: number[];
+  eventCount: number;
+  lastCommitLatencyMs?: number;
+  lastDispatchStartGapMs?: number;
+  lastRenderDurationMs?: number;
+  lastScheduleDelayMs?: number;
+  renderCommitCount: number;
+  renderDurations: number[];
+  scheduleDelays: number[];
+};
+
+const initialSummary: BenchmarkTelemetrySummary = {
+  committedEvents: 0,
+  eventCount: 0,
+  renderCommitCount: 0,
+};
+
+const createInitialMetrics = (): BenchmarkTelemetryMetrics => ({
+  commitLatencies: [],
+  committedEvents: 0,
+  dispatchStartGaps: [],
+  dispatchDurations: [],
+  eventCount: 0,
+  renderCommitCount: 0,
+  renderDurations: [],
+  scheduleDelays: [],
+});
+
+const buildSummary = (metrics: BenchmarkTelemetryMetrics): BenchmarkTelemetrySummary => ({
+  averageCommitLatencyMs: roundMetric(average(metrics.commitLatencies)),
+  averageDispatchDurationMs: roundMetric(average(metrics.dispatchDurations)),
+  averageDispatchStartGapMs: roundMetric(average(metrics.dispatchStartGaps)),
+  averageRenderDurationMs: roundMetric(average(metrics.renderDurations)),
+  averageScheduleDelayMs: roundMetric(average(metrics.scheduleDelays)),
+  committedEvents: metrics.committedEvents,
+  eventCount: metrics.eventCount,
+  lastCommitLatencyMs: roundMetric(metrics.lastCommitLatencyMs),
+  lastDispatchStartGapMs: roundMetric(metrics.lastDispatchStartGapMs),
+  lastRenderDurationMs: roundMetric(metrics.lastRenderDurationMs),
+  lastScheduleDelayMs: roundMetric(metrics.lastScheduleDelayMs),
+  p95CommitLatencyMs: roundMetric(percentile(metrics.commitLatencies, 0.95)),
+  p95DispatchStartGapMs: roundMetric(percentile(metrics.dispatchStartGaps, 0.95)),
+  p95RenderDurationMs: roundMetric(percentile(metrics.renderDurations, 0.95)),
+  p95ScheduleDelayMs: roundMetric(percentile(metrics.scheduleDelays, 0.95)),
+  renderCommitCount: metrics.renderCommitCount,
+});
+
+const initialSnapshot: BenchmarkTelemetrySnapshot = {
+  dispatchSamples: [],
+  frameStats: initialFrameStats,
+  renderSamples: [],
+  summary: initialSummary,
+};
+
 export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
-  const [dispatchSamples, setDispatchSamples] = useState<BenchmarkDispatchSample[]>([]);
-  const [renderSamples, setRenderSamples] = useState<BenchmarkRenderSample[]>([]);
-  const [frameStats, setFrameStats] = useState<BenchmarkFrameStats>(initialFrameStats);
+  const [snapshot, setSnapshot] = useState<BenchmarkTelemetrySnapshot>(initialSnapshot);
+  const dispatchSamplesRef = useRef<BenchmarkDispatchSample[]>([]);
   const pendingDispatchSamplesRef = useRef<BenchmarkDispatchSample[]>([]);
+  const renderSamplesRef = useRef<BenchmarkRenderSample[]>([]);
   const eventIndexRef = useRef(0);
+  const metricsRef = useRef<BenchmarkTelemetryMetrics>(createInitialMetrics());
   const frameStatsRef = useRef<BenchmarkFrameStats>(initialFrameStats);
   const frameRequestRef = useRef<number | null>(null);
   const lastFrameTimestampRef = useRef<number | null>(null);
+  const lastSnapshotEventCountRef = useRef(0);
+  const lastSnapshotRenderCommitCountRef = useRef(0);
+  const lastDispatchedEventStartedAtRef = useRef<number | null>(null);
+
+  const getSnapshot = useCallback<BenchmarkTelemetry['getSnapshot']>(
+    () => ({
+      dispatchSamples: dispatchSamplesRef.current,
+      frameStats: frameStatsRef.current,
+      renderSamples: renderSamplesRef.current,
+      summary: buildSummary(metricsRef.current),
+    }),
+    [],
+  );
+
+  const flush = useCallback(() => {
+    lastSnapshotEventCountRef.current = metricsRef.current.eventCount;
+    lastSnapshotRenderCommitCountRef.current = metricsRef.current.renderCommitCount;
+    setSnapshot(getSnapshot());
+  }, [getSnapshot]);
+
+  const publishSnapshotIfNeeded = useCallback(() => {
+    const metrics = metricsRef.current;
+    const eventCountDelta = metrics.eventCount - lastSnapshotEventCountRef.current;
+    const renderCommitCountDelta =
+      metrics.renderCommitCount - lastSnapshotRenderCommitCountRef.current;
+
+    if (
+      eventCountDelta < snapshotUpdateInterval &&
+      renderCommitCountDelta < snapshotUpdateInterval
+    ) {
+      return;
+    }
+
+    flush();
+  }, [flush]);
 
   const recordDispatchedEvent = useCallback<BenchmarkTelemetry['recordDispatchedEvent']>(
     (sample) => {
       const eventIndex = eventIndexRef.current + 1;
+      const lastDispatchedEventStartedAt = lastDispatchedEventStartedAtRef.current;
+      const dispatchStartGapMs =
+        typeof lastDispatchedEventStartedAt === 'number'
+          ? sample.startedAt - lastDispatchedEventStartedAt
+          : undefined;
+
       eventIndexRef.current = eventIndex;
+      lastDispatchedEventStartedAtRef.current = sample.startedAt;
       const dispatchSample: BenchmarkDispatchSample = {
         ...sample,
+        dispatchStartGapMs,
         eventIndex,
       };
 
       pendingDispatchSamplesRef.current.push(dispatchSample);
-      setDispatchSamples((currentSamples) =>
-        [dispatchSample, ...currentSamples].slice(0, maxSamples),
+      dispatchSamplesRef.current = [dispatchSample, ...dispatchSamplesRef.current].slice(
+        0,
+        maxSamples,
       );
+      metricsRef.current.eventCount = eventIndex;
+      metricsRef.current.dispatchDurations.push(sample.dispatchDurationMs);
+      metricsRef.current.lastDispatchStartGapMs = dispatchStartGapMs;
+      if (typeof dispatchStartGapMs === 'number') {
+        metricsRef.current.dispatchStartGaps.push(dispatchStartGapMs);
+      }
+      metricsRef.current.lastScheduleDelayMs = sample.scheduleDelayMs;
+      if (typeof sample.scheduleDelayMs === 'number') {
+        metricsRef.current.scheduleDelays.push(sample.scheduleDelayMs);
+      }
+      publishSnapshotIfNeeded();
     },
-    [],
+    [publishSnapshotIfNeeded],
   );
 
   const onMessageListRender = useCallback<ProfilerOnRenderCallback>(
@@ -91,20 +208,32 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
         commitLatencyMs: Math.max(0, commitTime - sample.startedAt),
         commitTime,
       }));
+      const committedSampleByIndex = new Map(
+        committedSamples.map((sample) => [sample.eventIndex, sample]),
+      );
+      const latestCommittedSample = committedSamples[committedSamples.length - 1];
+      const metrics = metricsRef.current;
 
-      setDispatchSamples((currentSamples) => {
-        const committedSampleByIndex = new Map(
-          committedSamples.map((sample) => [sample.eventIndex, sample]),
-        );
+      metrics.committedEvents += committedSamples.length;
+      metrics.renderCommitCount += 1;
+      metrics.renderDurations.push(actualDuration);
+      metrics.lastCommitLatencyMs = latestCommittedSample?.commitLatencyMs;
+      metrics.lastRenderDurationMs = actualDuration;
 
-        return currentSamples.map(
-          (sample) => committedSampleByIndex.get(sample.eventIndex) ?? sample,
-        );
+      committedSamples.forEach((sample) => {
+        if (typeof sample.commitLatencyMs === 'number') {
+          metrics.commitLatencies.push(sample.commitLatencyMs);
+        }
       });
 
-      setRenderSamples((currentSamples) => [renderSample, ...currentSamples].slice(0, maxSamples));
+      dispatchSamplesRef.current = dispatchSamplesRef.current.map(
+        (sample) => committedSampleByIndex.get(sample.eventIndex) ?? sample,
+      );
+
+      renderSamplesRef.current = [renderSample, ...renderSamplesRef.current].slice(0, maxSamples);
+      publishSnapshotIfNeeded();
     },
-    [],
+    [publishSnapshotIfNeeded],
   );
 
   const stopFrameSampler = useCallback(() => {
@@ -119,8 +248,8 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
     }
 
     lastFrameTimestampRef.current = null;
-    setFrameStats(frameStatsRef.current);
-  }, []);
+    flush();
+  }, [flush]);
 
   const startFrameSampler = useCallback(() => {
     stopFrameSampler();
@@ -130,7 +259,7 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
       running: true,
       startedAt: getBenchmarkNow(),
     };
-    setFrameStats(frameStatsRef.current);
+    flush();
 
     const sampleFrame = (timestamp: number) => {
       if (!frameStatsRef.current.running) return;
@@ -155,7 +284,7 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
         };
 
         if (samples % 15 === 0) {
-          setFrameStats(frameStatsRef.current);
+          flush();
         }
       }
 
@@ -163,50 +292,36 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
     };
 
     frameRequestRef.current = requestAnimationFrame(sampleFrame);
-  }, [stopFrameSampler]);
+  }, [flush, stopFrameSampler]);
 
   const clear = useCallback(() => {
+    dispatchSamplesRef.current = [];
     pendingDispatchSamplesRef.current = [];
+    renderSamplesRef.current = [];
     eventIndexRef.current = 0;
-    setDispatchSamples([]);
-    setRenderSamples([]);
+    lastDispatchedEventStartedAtRef.current = null;
+    metricsRef.current = createInitialMetrics();
+    lastSnapshotEventCountRef.current = 0;
+    lastSnapshotRenderCommitCountRef.current = 0;
+    setSnapshot({
+      ...initialSnapshot,
+      frameStats: frameStatsRef.current,
+    });
   }, []);
 
   useEffect(() => stopFrameSampler, [stopFrameSampler]);
 
-  const summary = useMemo(() => {
-    const committedDispatchSamples = dispatchSamples.filter(
-      (sample) => typeof sample.commitLatencyMs === 'number',
-    );
-    const commitLatencies = committedDispatchSamples.flatMap((sample) =>
-      typeof sample.commitLatencyMs === 'number' ? [sample.commitLatencyMs] : [],
-    );
-    const dispatchDurations = dispatchSamples.map((sample) => sample.dispatchDurationMs);
-    const renderDurations = renderSamples.map((sample) => sample.actualDurationMs);
-
-    return {
-      averageCommitLatencyMs: roundMetric(average(commitLatencies)),
-      averageDispatchDurationMs: roundMetric(average(dispatchDurations)),
-      averageRenderDurationMs: roundMetric(average(renderDurations)),
-      committedEvents: committedDispatchSamples.length,
-      eventCount: dispatchSamples.length,
-      lastCommitLatencyMs: roundMetric(commitLatencies[0]),
-      lastRenderDurationMs: roundMetric(renderSamples[0]?.actualDurationMs),
-      p95CommitLatencyMs: roundMetric(percentile(commitLatencies, 0.95)),
-      p95RenderDurationMs: roundMetric(percentile(renderDurations, 0.95)),
-      renderCommitCount: renderSamples.length,
-    };
-  }, [dispatchSamples, renderSamples]);
-
   return {
     clear,
-    dispatchSamples,
-    frameStats,
+    dispatchSamples: snapshot.dispatchSamples,
+    flush,
+    frameStats: snapshot.frameStats,
+    getSnapshot,
     onMessageListRender,
     recordDispatchedEvent,
-    renderSamples,
+    renderSamples: snapshot.renderSamples,
     startFrameSampler,
     stopFrameSampler,
-    summary,
+    summary: snapshot.summary,
   };
 };

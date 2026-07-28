@@ -68,11 +68,14 @@ export type WebSocketEventPayload = Event & {
 export type BenchmarkDispatchSample = {
   commitLatencyMs?: number;
   commitTime?: number;
+  dispatchStartGapMs?: number;
   dispatchDurationMs: number;
   eventIndex: number;
   eventType: SupportedWebSocketEventType;
   messageCount?: number;
   payloadMessageId?: string;
+  scheduleDelayMs?: number;
+  scheduledAt?: number;
   startedAt: number;
 };
 
@@ -98,30 +101,43 @@ export type BenchmarkFrameStats = {
 export type BenchmarkTelemetrySummary = {
   averageCommitLatencyMs?: number;
   averageDispatchDurationMs?: number;
+  averageDispatchStartGapMs?: number;
   averageRenderDurationMs?: number;
+  averageScheduleDelayMs?: number;
   committedEvents: number;
   eventCount: number;
+  lastDispatchStartGapMs?: number;
+  lastScheduleDelayMs?: number;
   lastCommitLatencyMs?: number;
   lastRenderDurationMs?: number;
   p95CommitLatencyMs?: number;
+  p95DispatchStartGapMs?: number;
   p95RenderDurationMs?: number;
+  p95ScheduleDelayMs?: number;
   renderCommitCount: number;
 };
 
-export type BenchmarkTelemetry = {
-  clear: () => void;
+export type BenchmarkTelemetrySnapshot = {
   dispatchSamples: BenchmarkDispatchSample[];
   frameStats: BenchmarkFrameStats;
+  renderSamples: BenchmarkRenderSample[];
+  summary: BenchmarkTelemetrySummary;
+};
+
+export type BenchmarkTelemetry = BenchmarkTelemetrySnapshot & {
+  clear: () => void;
+  flush: () => void;
+  getSnapshot: () => BenchmarkTelemetrySnapshot;
   onMessageListRender: ProfilerOnRenderCallback;
   recordDispatchedEvent: (sample: {
     dispatchDurationMs: number;
     eventType: SupportedWebSocketEventType;
     messageCount?: number;
     payloadMessageId?: string;
+    scheduleDelayMs?: number;
+    scheduledAt?: number;
     startedAt: number;
   }) => void;
-  renderSamples: BenchmarkRenderSample[];
   startFrameSampler: () => void;
   stopFrameSampler: () => void;
-  summary: BenchmarkTelemetrySummary;
 };

@@ -62,9 +62,18 @@ type PreparedScenarioMetadata = {
 
 const actionButtonHitSlop = { bottom: 8, left: 8, right: 8, top: 8 };
 const defaultScenarioSeed = '1729';
+const progressUpdateInterval = 25;
 
 const getSimulationMessageCount = (channel: Channel, state: SimulationState) =>
   state.messageIdsByCid[channel.cid]?.length;
+
+const parseIntervalMs = (value: string) => {
+  const trimmedValue = value.trim();
+  if (!trimmedValue) return 500;
+
+  const parsedValue = Number(trimmedValue);
+  return Number.isFinite(parsedValue) ? Math.max(1, parsedValue) : 500;
+};
 
 const formatMs = (value?: number) => {
   if (typeof value !== 'number') return '-';
@@ -389,6 +398,7 @@ export const WebSocketEventPromptDialog = ({
       eventTypeToEmit,
       messageCount,
       payload,
+      scheduledAt,
       trackState = true,
       updateDraft = true,
       updateStatus = true,
@@ -396,6 +406,7 @@ export const WebSocketEventPromptDialog = ({
       eventTypeToEmit: SupportedWebSocketEventType;
       messageCount?: number;
       payload: WebSocketEventPayload;
+      scheduledAt?: number;
       trackState?: boolean;
       updateDraft?: boolean;
       updateStatus?: boolean;
@@ -425,6 +436,9 @@ export const WebSocketEventPromptDialog = ({
             messageCount ??
             (simulationState ? getSimulationMessageCount(channel, simulationState) : undefined),
           payloadMessageId: emittedPayload.message?.id,
+          scheduleDelayMs:
+            typeof scheduledAt === 'number' ? Math.max(0, startedAt - scheduledAt) : undefined,
+          scheduledAt,
           startedAt,
         });
 
@@ -602,7 +616,7 @@ export const WebSocketEventPromptDialog = ({
     (count: number) => {
       stopInterval();
 
-      const parsedIntervalMs = Math.max(50, Number(intervalMs) || 500);
+      const parsedIntervalMs = parseIntervalMs(intervalMs);
       const numericScenarioSeed = hashSeed(scenarioSeed);
       const preparedScenario = prepareScenarioEvents(count, numericScenarioSeed);
       const startedAt = getBenchmarkNow();
@@ -621,6 +635,7 @@ export const WebSocketEventPromptDialog = ({
 
         const durationMs = getBenchmarkNow() - startedAt;
         simulationStateRef.current = createInitialSimulationState({ channel });
+        telemetry.flush();
         setActiveIntervalMode(null);
         setScenarioProgress({ emitted: emittedCount, total: count });
         setLastStatus(
@@ -644,6 +659,7 @@ export const WebSocketEventPromptDialog = ({
           eventTypeToEmit: preparedEvent.eventType,
           messageCount: preparedEvent.messageCount,
           payload: preparedEvent.payload,
+          scheduledAt: startedAt + emittedCount * parsedIntervalMs,
           trackState: false,
           updateDraft: false,
           updateStatus: false,
@@ -656,7 +672,9 @@ export const WebSocketEventPromptDialog = ({
 
         lastPayload = emittedPayload;
         emittedCount += 1;
-        setScenarioProgress({ emitted: emittedCount, total: count });
+        if (emittedCount % progressUpdateInterval === 0 || emittedCount >= count) {
+          setScenarioProgress({ emitted: emittedCount, total: count });
+        }
 
         if (emittedCount >= count) {
           finishScenario();
@@ -678,13 +696,21 @@ export const WebSocketEventPromptDialog = ({
         intervalIdRef.current = setInterval(emitNextScenarioEvent, parsedIntervalMs);
       }
     },
-    [channel, emitPayload, intervalMs, prepareScenarioEvents, scenarioSeed, stopInterval],
+    [
+      channel,
+      emitPayload,
+      intervalMs,
+      prepareScenarioEvents,
+      scenarioSeed,
+      stopInterval,
+      telemetry,
+    ],
   );
 
   const startInterval = useCallback(() => {
     stopInterval();
 
-    const parsedIntervalMs = Math.max(50, Number(intervalMs) || 500);
+    const parsedIntervalMs = parseIntervalMs(intervalMs);
     intervalIdRef.current = setInterval(() => {
       emitOne({ updateDraft: false, updateStatus: false });
     }, parsedIntervalMs);
@@ -698,13 +724,15 @@ export const WebSocketEventPromptDialog = ({
   const startScenarioInterval = useCallback(() => {
     stopInterval();
 
-    const parsedIntervalMs = Math.max(50, Number(intervalMs) || 500);
+    const parsedIntervalMs = parseIntervalMs(intervalMs);
     const numericScenarioSeed = hashSeed(scenarioSeed);
     scenarioIntervalIndexRef.current = 0;
     intervalIdRef.current = setInterval(() => {
       emitScenarioStep(scenarioIntervalIndexRef.current, numericScenarioSeed);
       scenarioIntervalIndexRef.current += 1;
-      setScenarioProgress({ emitted: scenarioIntervalIndexRef.current });
+      if (scenarioIntervalIndexRef.current % progressUpdateInterval === 0) {
+        setScenarioProgress({ emitted: scenarioIntervalIndexRef.current });
+      }
     }, parsedIntervalMs);
     setPreparedScenarioMetadata(null);
     setActiveIntervalMode('liveScenario');
@@ -720,12 +748,13 @@ export const WebSocketEventPromptDialog = ({
 
   const stopRunningScript = useCallback(() => {
     stopInterval();
+    telemetry.flush();
     setLastStatus(
       scenarioProgress?.total
         ? `Stopped at ${scenarioProgress.emitted}/${scenarioProgress.total}`
         : 'Stopped',
     );
-  }, [scenarioProgress, stopInterval]);
+  }, [scenarioProgress, stopInterval, telemetry]);
 
   useEffect(() => {
     simulationStateRef.current = createInitialSimulationState({ channel });
@@ -782,8 +811,10 @@ export const WebSocketEventPromptDialog = ({
       )
       .join(' | ') || 'none';
 
-  const getBenchmarkReport = useCallback(
-    () => ({
+  const getBenchmarkReport = useCallback(() => {
+    const telemetrySnapshot = telemetry.getSnapshot();
+
+    return {
       channelCid: channel.cid,
       createdAt: new Date().toISOString(),
       latestOwnReactionShape,
@@ -806,36 +837,32 @@ export const WebSocketEventPromptDialog = ({
         scenarioSeed,
       },
       telemetry: {
-        dispatchSamples: telemetry.dispatchSamples.slice(0, 25),
-        frameStats: telemetry.frameStats,
-        renderSamples: telemetry.renderSamples.slice(0, 25),
-        summary: telemetry.summary,
+        dispatchSamples: telemetrySnapshot.dispatchSamples.slice(0, 25),
+        frameStats: telemetrySnapshot.frameStats,
+        renderSamples: telemetrySnapshot.renderSamples.slice(0, 25),
+        summary: telemetrySnapshot.summary,
       },
       tool: 'SampleApp WebSocketEventPromptDialog',
-    }),
-    [
-      activeIntervalMode,
-      actorMode,
-      channel,
-      eventType,
-      intervalMs,
-      lastRunLabel,
-      latestOwnReactionShape,
-      messageListImplementation,
-      messageListMode,
-      messageListPruning,
-      payloadMode,
-      reactionUserShape,
-      preparedScenarioMetadata,
-      scenarioEventTypes,
-      scenarioProgress,
-      scenarioSeed,
-      telemetry.dispatchSamples,
-      telemetry.frameStats,
-      telemetry.renderSamples,
-      telemetry.summary,
-    ],
-  );
+    };
+  }, [
+    activeIntervalMode,
+    actorMode,
+    channel,
+    eventType,
+    intervalMs,
+    lastRunLabel,
+    latestOwnReactionShape,
+    messageListImplementation,
+    messageListMode,
+    messageListPruning,
+    payloadMode,
+    reactionUserShape,
+    preparedScenarioMetadata,
+    scenarioEventTypes,
+    scenarioProgress,
+    scenarioSeed,
+    telemetry,
+  ]);
 
   const copyBenchmarkReport = useCallback(() => {
     Clipboard.setString(JSON.stringify(getBenchmarkReport(), null, 2));
@@ -1055,6 +1082,8 @@ export const WebSocketEventPromptDialog = ({
                   />
                   <Metric label='Avg commit' value={formatMs(summary.averageCommitLatencyMs)} />
                   <Metric label='P95 commit' value={formatMs(summary.p95CommitLatencyMs)} />
+                  <Metric label='P95 schedule' value={formatMs(summary.p95ScheduleDelayMs)} />
+                  <Metric label='P95 start gap' value={formatMs(summary.p95DispatchStartGapMs)} />
                   <Metric label='Avg render' value={formatMs(summary.averageRenderDurationMs)} />
                   <Metric label='P95 render' value={formatMs(summary.p95RenderDurationMs)} />
                   <Metric label='List commits' value={summary.renderCommitCount} />
@@ -1090,6 +1119,10 @@ export const WebSocketEventPromptDialog = ({
                     Last dispatch {formatMs(latestDispatchSample?.dispatchDurationMs)}, commit{' '}
                     {formatMs(latestDispatchSample?.commitLatencyMs)}, messages{' '}
                     {latestDispatchSample?.messageCount ?? getChannelMessages(channel).length}
+                  </Text>
+                  <Text style={styles.statusText}>
+                    Timer delay {formatMs(latestDispatchSample?.scheduleDelayMs)}, start gap{' '}
+                    {formatMs(latestDispatchSample?.dispatchStartGapMs)}
                   </Text>
                   <Text style={styles.statusText}>
                     Last render {formatMs(latestRenderSample?.actualDurationMs)}, base{' '}
