@@ -106,7 +106,11 @@ export type BenchmarkTelemetrySummary = {
   averageScheduleDelayMs?: number;
   committedEvents: number;
   eventCount: number;
+  listChangeCount: number;
+  listLengthChangeCount: number;
+  listSameLengthChangeCount: number;
   lastDispatchStartGapMs?: number;
+  lastListLength?: number;
   lastScheduleDelayMs?: number;
   lastCommitLatencyMs?: number;
   lastRenderDurationMs?: number;
@@ -129,6 +133,7 @@ export type BenchmarkTelemetry = BenchmarkTelemetrySnapshot & {
   flush: () => void;
   getSnapshot: () => BenchmarkTelemetrySnapshot;
   onMessageListRender: ProfilerOnRenderCallback;
+  recordMessageListChange: (sample: { nextLength: number; previousLength: number }) => void;
   recordDispatchedEvent: (sample: {
     dispatchDurationMs: number;
     eventType: SupportedWebSocketEventType;

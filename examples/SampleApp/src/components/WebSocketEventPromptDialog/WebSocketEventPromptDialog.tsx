@@ -1086,7 +1086,11 @@ export const WebSocketEventPromptDialog = ({
                   <Metric label='P95 start gap' value={formatMs(summary.p95DispatchStartGapMs)} />
                   <Metric label='Avg render' value={formatMs(summary.averageRenderDurationMs)} />
                   <Metric label='P95 render' value={formatMs(summary.p95RenderDurationMs)} />
-                  <Metric label='List commits' value={summary.renderCommitCount} />
+                  <Metric label='Event commits' value={summary.renderCommitCount} />
+                  <Metric label='List changes' value={summary.listChangeCount} />
+                  <Metric label='Len changes' value={summary.listLengthChangeCount} />
+                  <Metric label='Same len changes' value={summary.listSameLengthChangeCount} />
+                  <Metric label='List len' value={summary.lastListLength ?? '-'} />
                   <Metric label='Frames' value={frameStats.samples} />
                   <Metric label='Long >32' value={frameStats.longFramesOver32Ms} />
                   <Metric label='Long >50' value={frameStats.longFramesOver50Ms} />

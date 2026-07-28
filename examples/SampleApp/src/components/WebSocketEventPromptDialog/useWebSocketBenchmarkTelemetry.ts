@@ -54,8 +54,12 @@ type BenchmarkTelemetryMetrics = {
   eventCount: number;
   lastCommitLatencyMs?: number;
   lastDispatchStartGapMs?: number;
+  lastListLength?: number;
   lastRenderDurationMs?: number;
   lastScheduleDelayMs?: number;
+  listChangeCount: number;
+  listLengthChangeCount: number;
+  listSameLengthChangeCount: number;
   renderCommitCount: number;
   renderDurations: number[];
   scheduleDelays: number[];
@@ -64,6 +68,9 @@ type BenchmarkTelemetryMetrics = {
 const initialSummary: BenchmarkTelemetrySummary = {
   committedEvents: 0,
   eventCount: 0,
+  listChangeCount: 0,
+  listLengthChangeCount: 0,
+  listSameLengthChangeCount: 0,
   renderCommitCount: 0,
 };
 
@@ -73,6 +80,9 @@ const createInitialMetrics = (): BenchmarkTelemetryMetrics => ({
   dispatchStartGaps: [],
   dispatchDurations: [],
   eventCount: 0,
+  listChangeCount: 0,
+  listLengthChangeCount: 0,
+  listSameLengthChangeCount: 0,
   renderCommitCount: 0,
   renderDurations: [],
   scheduleDelays: [],
@@ -88,8 +98,12 @@ const buildSummary = (metrics: BenchmarkTelemetryMetrics): BenchmarkTelemetrySum
   eventCount: metrics.eventCount,
   lastCommitLatencyMs: roundMetric(metrics.lastCommitLatencyMs),
   lastDispatchStartGapMs: roundMetric(metrics.lastDispatchStartGapMs),
+  lastListLength: metrics.lastListLength,
   lastRenderDurationMs: roundMetric(metrics.lastRenderDurationMs),
   lastScheduleDelayMs: roundMetric(metrics.lastScheduleDelayMs),
+  listChangeCount: metrics.listChangeCount,
+  listLengthChangeCount: metrics.listLengthChangeCount,
+  listSameLengthChangeCount: metrics.listSameLengthChangeCount,
   p95CommitLatencyMs: roundMetric(percentile(metrics.commitLatencies, 0.95)),
   p95DispatchStartGapMs: roundMetric(percentile(metrics.dispatchStartGaps, 0.95)),
   p95RenderDurationMs: roundMetric(percentile(metrics.renderDurations, 0.95)),
@@ -115,6 +129,7 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
   const frameRequestRef = useRef<number | null>(null);
   const lastFrameTimestampRef = useRef<number | null>(null);
   const lastSnapshotEventCountRef = useRef(0);
+  const lastSnapshotListChangeCountRef = useRef(0);
   const lastSnapshotRenderCommitCountRef = useRef(0);
   const lastDispatchedEventStartedAtRef = useRef<number | null>(null);
 
@@ -130,6 +145,7 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
 
   const flush = useCallback(() => {
     lastSnapshotEventCountRef.current = metricsRef.current.eventCount;
+    lastSnapshotListChangeCountRef.current = metricsRef.current.listChangeCount;
     lastSnapshotRenderCommitCountRef.current = metricsRef.current.renderCommitCount;
     setSnapshot(getSnapshot());
   }, [getSnapshot]);
@@ -137,11 +153,13 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
   const publishSnapshotIfNeeded = useCallback(() => {
     const metrics = metricsRef.current;
     const eventCountDelta = metrics.eventCount - lastSnapshotEventCountRef.current;
+    const listChangeCountDelta = metrics.listChangeCount - lastSnapshotListChangeCountRef.current;
     const renderCommitCountDelta =
       metrics.renderCommitCount - lastSnapshotRenderCommitCountRef.current;
 
     if (
       eventCountDelta < snapshotUpdateInterval &&
+      listChangeCountDelta < snapshotUpdateInterval &&
       renderCommitCountDelta < snapshotUpdateInterval
     ) {
       return;
@@ -182,6 +200,23 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
       if (typeof sample.scheduleDelayMs === 'number') {
         metricsRef.current.scheduleDelays.push(sample.scheduleDelayMs);
       }
+      publishSnapshotIfNeeded();
+    },
+    [publishSnapshotIfNeeded],
+  );
+
+  const recordMessageListChange = useCallback<BenchmarkTelemetry['recordMessageListChange']>(
+    ({ nextLength, previousLength }) => {
+      const metrics = metricsRef.current;
+
+      metrics.listChangeCount += 1;
+      metrics.lastListLength = nextLength;
+      if (nextLength === previousLength) {
+        metrics.listSameLengthChangeCount += 1;
+      } else {
+        metrics.listLengthChangeCount += 1;
+      }
+
       publishSnapshotIfNeeded();
     },
     [publishSnapshotIfNeeded],
@@ -302,6 +337,7 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
     lastDispatchedEventStartedAtRef.current = null;
     metricsRef.current = createInitialMetrics();
     lastSnapshotEventCountRef.current = 0;
+    lastSnapshotListChangeCountRef.current = 0;
     lastSnapshotRenderCommitCountRef.current = 0;
     setSnapshot({
       ...initialSnapshot,
@@ -318,6 +354,7 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
     frameStats: snapshot.frameStats,
     getSnapshot,
     onMessageListRender,
+    recordMessageListChange,
     recordDispatchedEvent,
     renderSamples: snapshot.renderSamples,
     startFrameSampler,

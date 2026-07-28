@@ -131,6 +131,22 @@ const MessageListWithBenchmarkTools = ({
   messageListPruning,
 }: MessageListWithBenchmarkToolsProps) => {
   const websocketBenchmarkTelemetry = useWebSocketBenchmarkTelemetry();
+  const { recordMessageListChange } = websocketBenchmarkTelemetry;
+
+  useEffect(() => {
+    const unsubscribe = channel.messagePaginator.state.subscribe((nextState, previousState) => {
+      if (!previousState || nextState.items === previousState.items) {
+        return;
+      }
+
+      recordMessageListChange({
+        nextLength: nextState.items?.length ?? 0,
+        previousLength: previousState.items?.length ?? 0,
+      });
+    });
+
+    return unsubscribe;
+  }, [channel, recordMessageListChange]);
 
   return (
     <>
