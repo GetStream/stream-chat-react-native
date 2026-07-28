@@ -49,8 +49,22 @@ type WebSocketEventPromptDialogProps = {
 
 type ActiveIntervalMode = 'finiteScenario' | 'liveScenario' | 'single';
 
+type PreparedScenarioEvent = {
+  eventType: SupportedWebSocketEventType;
+  messageCount?: number;
+  payload: WebSocketEventPayload;
+};
+
+type PreparedScenarioMetadata = {
+  durationMs: number;
+  eventCount: number;
+};
+
 const actionButtonHitSlop = { bottom: 8, left: 8, right: 8, top: 8 };
 const defaultScenarioSeed = '1729';
+
+const getSimulationMessageCount = (channel: Channel, state: SimulationState) =>
+  state.messageIdsByCid[channel.cid]?.length;
 
 const formatMs = (value?: number) => {
   if (typeof value !== 'number') return '-';
@@ -272,6 +286,8 @@ export const WebSocketEventPromptDialog = ({
     emitted: number;
     total?: number;
   } | null>(null);
+  const [preparedScenarioMetadata, setPreparedScenarioMetadata] =
+    useState<PreparedScenarioMetadata | null>(null);
   const intervalIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scenarioIntervalIndexRef = useRef(0);
   const simulationStateRef = useRef<SimulationState | null>(null);
@@ -297,6 +313,7 @@ export const WebSocketEventPromptDialog = ({
     simulationStateRef.current = createInitialSimulationState({ channel });
     telemetry.clear();
     refreshDraft();
+    setPreparedScenarioMetadata(null);
     setLastStatus('Reset');
   }, [channel, refreshDraft, telemetry]);
 
@@ -337,10 +354,12 @@ export const WebSocketEventPromptDialog = ({
       eventTypeToBuild = eventType,
       forceFresh = false,
       optionsToBuild = buildOptions,
+      stateToBuild,
     }: {
       eventTypeToBuild?: SupportedWebSocketEventType;
       forceFresh?: boolean;
       optionsToBuild?: WebSocketEventBuildOptions;
+      stateToBuild?: SimulationState;
     } = {}): WebSocketEventPayload => {
       if (forceFresh || payloadMode === 'fresh') {
         return buildFreshWebSocketEventPayload({
@@ -348,7 +367,7 @@ export const WebSocketEventPromptDialog = ({
           currentUserId: client.userID,
           eventType: eventTypeToBuild,
           options: optionsToBuild,
-          state: getSimulationState(),
+          state: stateToBuild ?? getSimulationState(),
         });
       }
 
@@ -363,6 +382,69 @@ export const WebSocketEventPromptDialog = ({
       payloadDraft,
       payloadMode,
     ],
+  );
+
+  const emitPayload = useCallback(
+    ({
+      eventTypeToEmit,
+      messageCount,
+      payload,
+      trackState = true,
+      updateDraft = true,
+      updateStatus = true,
+    }: {
+      eventTypeToEmit: SupportedWebSocketEventType;
+      messageCount?: number;
+      payload: WebSocketEventPayload;
+      trackState?: boolean;
+      updateDraft?: boolean;
+      updateStatus?: boolean;
+    }) => {
+      try {
+        const startedAt = getBenchmarkNow();
+        const emittedPayload = emitWebSocketEventPayload({
+          client,
+          eventType: eventTypeToEmit,
+          payload,
+        });
+        const dispatchDurationMs = getBenchmarkNow() - startedAt;
+        const simulationState =
+          trackState || typeof messageCount !== 'number' ? getSimulationState() : undefined;
+
+        if (trackState && simulationState) {
+          trackSimulationStateFromPayload({
+            channel,
+            payload: emittedPayload,
+            state: simulationState,
+          });
+        }
+        telemetry.recordDispatchedEvent({
+          dispatchDurationMs,
+          eventType: eventTypeToEmit,
+          messageCount:
+            messageCount ??
+            (simulationState ? getSimulationMessageCount(channel, simulationState) : undefined),
+          payloadMessageId: emittedPayload.message?.id,
+          startedAt,
+        });
+
+        if (updateDraft) {
+          setPayloadDraft(JSON.stringify(emittedPayload, null, 2));
+        }
+        if (updateStatus) {
+          setPreparedScenarioMetadata(null);
+          setLastRunLabel(`single:${eventTypeToEmit}`);
+          setLastStatus(`Emitted ${eventTypeToEmit}`);
+        }
+
+        return emittedPayload;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to emit event';
+        setLastStatus(message);
+        return undefined;
+      }
+    },
+    [channel, client, getSimulationState, telemetry],
   );
 
   const emitOne = useCallback(
@@ -385,43 +467,20 @@ export const WebSocketEventPromptDialog = ({
           forceFresh,
           optionsToBuild: optionsToEmit,
         });
-        const startedAt = getBenchmarkNow();
-        const emittedPayload = emitWebSocketEventPayload({
-          client,
-          eventType: eventTypeToEmit,
+
+        return emitPayload({
+          eventTypeToEmit,
           payload,
+          updateDraft,
+          updateStatus,
         });
-        const dispatchDurationMs = getBenchmarkNow() - startedAt;
-
-        trackSimulationStateFromPayload({
-          channel,
-          payload: emittedPayload,
-          state: getSimulationState(),
-        });
-        telemetry.recordDispatchedEvent({
-          dispatchDurationMs,
-          eventType: eventTypeToEmit,
-          messageCount: getChannelMessages(channel).length,
-          payloadMessageId: emittedPayload.message?.id,
-          startedAt,
-        });
-
-        if (updateDraft) {
-          setPayloadDraft(JSON.stringify(emittedPayload, null, 2));
-        }
-        if (updateStatus) {
-          setLastRunLabel(`single:${eventTypeToEmit}`);
-          setLastStatus(`Emitted ${eventTypeToEmit}`);
-        }
-
-        return emittedPayload;
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to emit event';
         setLastStatus(message);
         return undefined;
       }
     },
-    [buildOptions, buildPayload, channel, client, eventType, getSimulationState, telemetry],
+    [buildOptions, buildPayload, emitPayload, eventType],
   );
 
   const emitBurst = useCallback(
@@ -441,6 +500,7 @@ export const WebSocketEventPromptDialog = ({
         setPayloadDraft(JSON.stringify(lastPayload, null, 2));
       }
 
+      setPreparedScenarioMetadata(null);
       setLastRunLabel(`burst:${eventType}:${count}`);
       setLastStatus(
         `Emitted ${emittedCount} ${eventType} events in ${formatMs(getBenchmarkNow() - startedAt)}`,
@@ -449,31 +509,103 @@ export const WebSocketEventPromptDialog = ({
     [emitOne, eventType],
   );
 
-  const emitScenarioStep = useCallback(
-    (index: number, numericScenarioSeed: number) => {
+  const buildScenarioEvent = useCallback(
+    ({
+      index,
+      numericScenarioSeed,
+      stateToBuild,
+      trackState = false,
+    }: {
+      index: number;
+      numericScenarioSeed: number;
+      stateToBuild: SimulationState;
+      trackState?: boolean;
+    }): PreparedScenarioEvent => {
       const scenarioStep = getScenarioStep(index, scenarioEventTypes, numericScenarioSeed);
-
-      return emitOne({
-        eventTypeToEmit: scenarioStep.eventType,
+      const payload = buildPayload({
+        eventTypeToBuild: scenarioStep.eventType,
         forceFresh: true,
-        optionsToEmit: {
+        optionsToBuild: {
           actorMode: scenarioStep.actorMode,
           reactionUserShape,
         },
+        stateToBuild,
+      });
+
+      if (trackState) {
+        trackSimulationStateFromPayload({
+          channel,
+          payload: {
+            ...payload,
+            type: scenarioStep.eventType,
+          },
+          state: stateToBuild,
+        });
+      }
+
+      return {
+        eventType: scenarioStep.eventType,
+        messageCount: getSimulationMessageCount(channel, stateToBuild),
+        payload,
+      };
+    },
+    [buildPayload, channel, reactionUserShape, scenarioEventTypes],
+  );
+
+  const prepareScenarioEvents = useCallback(
+    (count: number, numericScenarioSeed: number) => {
+      const startedAt = getBenchmarkNow();
+      const stateToBuild = createInitialSimulationState({ channel });
+      const events = Array.from({ length: count }, (_, index) =>
+        buildScenarioEvent({
+          index,
+          numericScenarioSeed,
+          stateToBuild,
+          trackState: true,
+        }),
+      );
+      const durationMs = getBenchmarkNow() - startedAt;
+
+      setPreparedScenarioMetadata({
+        durationMs,
+        eventCount: events.length,
+      });
+
+      return {
+        durationMs,
+        events,
+      };
+    },
+    [buildScenarioEvent, channel],
+  );
+
+  const emitScenarioStep = useCallback(
+    (index: number, numericScenarioSeed: number) => {
+      const stateToBuild = getSimulationState();
+      const scenarioEvent = buildScenarioEvent({
+        index,
+        numericScenarioSeed,
+        stateToBuild,
+      });
+
+      return emitPayload({
+        eventTypeToEmit: scenarioEvent.eventType,
+        payload: scenarioEvent.payload,
         updateDraft: false,
         updateStatus: false,
       });
     },
-    [emitOne, reactionUserShape, scenarioEventTypes],
+    [buildScenarioEvent, emitPayload, getSimulationState],
   );
 
   const emitScenario = useCallback(
     (count: number) => {
       stopInterval();
 
-      const startedAt = getBenchmarkNow();
       const parsedIntervalMs = Math.max(50, Number(intervalMs) || 500);
       const numericScenarioSeed = hashSeed(scenarioSeed);
+      const preparedScenario = prepareScenarioEvents(count, numericScenarioSeed);
+      const startedAt = getBenchmarkNow();
       let emittedCount = 0;
       let lastPayload: WebSocketEventPayload | undefined;
 
@@ -487,17 +619,35 @@ export const WebSocketEventPromptDialog = ({
           setPayloadDraft(JSON.stringify(lastPayload, null, 2));
         }
 
+        const durationMs = getBenchmarkNow() - startedAt;
+        simulationStateRef.current = createInitialSimulationState({ channel });
         setActiveIntervalMode(null);
         setScenarioProgress({ emitted: emittedCount, total: count });
         setLastStatus(
-          `Scenario emitted ${emittedCount}/${count} events over ${formatMs(
-            getBenchmarkNow() - startedAt,
-          )} (${parsedIntervalMs}ms interval)`,
+          `Scenario emitted ${emittedCount}/${count} prebuilt events over ${formatMs(
+            durationMs,
+          )} (${parsedIntervalMs}ms interval, prepared in ${formatMs(
+            preparedScenario.durationMs,
+          )})`,
         );
       };
 
       const emitNextScenarioEvent = () => {
-        const emittedPayload = emitScenarioStep(emittedCount, numericScenarioSeed);
+        const preparedEvent = preparedScenario.events[emittedCount];
+
+        if (!preparedEvent) {
+          finishScenario();
+          return;
+        }
+
+        const emittedPayload = emitPayload({
+          eventTypeToEmit: preparedEvent.eventType,
+          messageCount: preparedEvent.messageCount,
+          payload: preparedEvent.payload,
+          trackState: false,
+          updateDraft: false,
+          updateStatus: false,
+        });
 
         if (!emittedPayload) {
           finishScenario();
@@ -515,8 +665,12 @@ export const WebSocketEventPromptDialog = ({
 
       setActiveIntervalMode('finiteScenario');
       setScenarioProgress({ emitted: 0, total: count });
-      setLastRunLabel(`scenario:${count}:${parsedIntervalMs}:seed:${scenarioSeed}`);
-      setLastStatus(`Scenario ${count} running every ${parsedIntervalMs}ms`);
+      setLastRunLabel(`scenario:${count}:${parsedIntervalMs}:seed:${scenarioSeed}:prebuilt`);
+      setLastStatus(
+        `Scenario ${count} prepared in ${formatMs(
+          preparedScenario.durationMs,
+        )}; running every ${parsedIntervalMs}ms`,
+      );
       setVisible(false);
 
       emitNextScenarioEvent();
@@ -524,7 +678,7 @@ export const WebSocketEventPromptDialog = ({
         intervalIdRef.current = setInterval(emitNextScenarioEvent, parsedIntervalMs);
       }
     },
-    [emitScenarioStep, intervalMs, scenarioSeed, stopInterval],
+    [channel, emitPayload, intervalMs, prepareScenarioEvents, scenarioSeed, stopInterval],
   );
 
   const startInterval = useCallback(() => {
@@ -534,6 +688,7 @@ export const WebSocketEventPromptDialog = ({
     intervalIdRef.current = setInterval(() => {
       emitOne({ updateDraft: false, updateStatus: false });
     }, parsedIntervalMs);
+    setPreparedScenarioMetadata(null);
     setActiveIntervalMode('single');
     setLastRunLabel(`interval:${eventType}:${parsedIntervalMs}`);
     setLastStatus(`Interval ${eventType} every ${parsedIntervalMs}ms`);
@@ -551,6 +706,7 @@ export const WebSocketEventPromptDialog = ({
       scenarioIntervalIndexRef.current += 1;
       setScenarioProgress({ emitted: scenarioIntervalIndexRef.current });
     }, parsedIntervalMs);
+    setPreparedScenarioMetadata(null);
     setActiveIntervalMode('liveScenario');
     setScenarioProgress({ emitted: 0 });
     setLastRunLabel(`live-scenario:${parsedIntervalMs}:seed:${scenarioSeed}`);
@@ -612,11 +768,12 @@ export const WebSocketEventPromptDialog = ({
       : activeRunLabel
         ? `${summary.eventCount} events`
         : 'Bench';
-  const latestAppliedMessage = latestDispatchSample?.payloadMessageId
-    ? getChannelMessages(channel).find(
-        (message) => message.id === latestDispatchSample.payloadMessageId,
-      )
-    : undefined;
+  const latestAppliedMessage =
+    visible && latestDispatchSample?.payloadMessageId
+      ? getChannelMessages(channel).find(
+          (message) => message.id === latestDispatchSample.payloadMessageId,
+        )
+      : undefined;
   const latestOwnReactionShape =
     latestAppliedMessage?.own_reactions
       ?.map(
@@ -643,6 +800,7 @@ export const WebSocketEventPromptDialog = ({
         messageListPruning,
         payloadMode,
         reactionUserShape,
+        scenarioPreparation: preparedScenarioMetadata,
         scenarioEventTypes,
         scenarioProgress,
         scenarioSeed,
@@ -668,6 +826,7 @@ export const WebSocketEventPromptDialog = ({
       messageListPruning,
       payloadMode,
       reactionUserShape,
+      preparedScenarioMetadata,
       scenarioEventTypes,
       scenarioProgress,
       scenarioSeed,

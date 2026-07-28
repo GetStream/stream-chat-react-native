@@ -52,6 +52,7 @@ export type WebSocketEventBuildOptions = {
 
 export type SimulationState = {
   messageIdsByCid: Record<string, string[]>;
+  messagesByCid: Record<string, MessageResponse[]>;
   messageSequence: number;
   reactionRecordsByCid: Record<string, SimulatedReactionRecord[]>;
   reactionSequence: number;
