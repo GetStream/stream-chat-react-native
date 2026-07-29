@@ -320,7 +320,7 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * <Channel
    *  onPressMessage={({ emitter, additionalInfo, actionHandlers, defaultHandler }) => {
    *    if (emitter === 'reactionList' && additionalInfo?.reactionType) {
-   *      actionHandlers?.toggleReaction(additionalInfo.reactionType);
+   *      actionHandlers?.toggleReaction(additionalInfo.reactionType as string);
    *      return;
    *    }
    *    defaultHandler?.();
