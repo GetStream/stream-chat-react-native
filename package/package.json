@@ -109,7 +109,7 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.6",
     "@babel/runtime": "^7.29.2",
     "@op-engineering/op-sqlite": "^17.1.2",
     "@react-native-community/netinfo": "^12.0.1",
@@ -149,7 +149,7 @@
     "react-test-renderer": "19.2.3",
     "rimraf": "^6.0.1",
     "typescript": "5.9.3",
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   },
   "resolutions": {
     "@types/react": "^19.2.0"
