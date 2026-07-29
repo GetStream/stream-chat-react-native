@@ -25,6 +25,44 @@ const initialFrameStats: BenchmarkFrameStats = {
 
 export const getBenchmarkNow = () => globalThis.performance?.now?.() ?? Date.now();
 
+// PERF INSTRUMENTATION (remove after diagnosis): read Hermes GC/heap counters to tell a GC death
+// spiral (heap runaway + GC-time explosion) from a bounded run. Values are RAW getInstrumentedStats
+// numbers — units are Hermes-version-dependent, so compare TRENDS across checkpoints, not absolute
+// units. Returns undefined fields when Hermes or the stats API is unavailable.
+const readHermesGcStats = () => {
+  const stats = (
+    globalThis as typeof globalThis & {
+      HermesInternal?: { getInstrumentedStats?: () => Record<string, number | string> };
+    }
+  ).HermesInternal?.getInstrumentedStats?.();
+  const num = (value: number | string | undefined) => {
+    const parsed = typeof value === 'string' ? Number(value) : value;
+    return typeof parsed === 'number' && Number.isFinite(parsed) ? parsed : undefined;
+  };
+  return {
+    jsGcTime: num(stats?.js_gcCPUTime ?? stats?.js_gcTime ?? stats?.js_totalGCTime),
+    jsHeapSize: num(stats?.js_heapSize),
+    jsNumGCs: num(stats?.js_numGCs ?? stats?.js_numCollections),
+    jsTotalAllocated: num(stats?.js_totalAllocatedBytes ?? stats?.js_allocatedBytes),
+  };
+};
+
+// PERF INSTRUMENTATION (remove after diagnosis): single-value read of Hermes cumulative allocated
+// bytes, used at dispatch boundaries to attribute per-event allocation to phases WITHOUT attaching a
+// debugger (the DevTools allocation sampler pollutes results with its own backend allocation). Reads
+// the same counter as readHermesGcStats().jsTotalAllocated; kept separate to avoid building the full
+// stats object on the hot path.
+export const readHermesTotalAllocatedBytes = (): number | undefined => {
+  const stats = (
+    globalThis as typeof globalThis & {
+      HermesInternal?: { getInstrumentedStats?: () => Record<string, number | string> };
+    }
+  ).HermesInternal?.getInstrumentedStats?.();
+  const value = stats?.js_totalAllocatedBytes ?? stats?.js_allocatedBytes;
+  const parsed = typeof value === 'string' ? Number(value) : value;
+  return typeof parsed === 'number' && Number.isFinite(parsed) ? parsed : undefined;
+};
+
 const average = (values: number[]) => {
   if (!values.length) return undefined;
 
@@ -229,11 +267,18 @@ export const useWebSocketBenchmarkTelemetry = (): BenchmarkTelemetry => {
         return;
       }
 
+      // PERF INSTRUMENTATION (remove after diagnosis): snapshot Hermes GC/heap per commit.
+      const hermesGc = readHermesGcStats();
+
       const renderSample: BenchmarkRenderSample = {
         actualDurationMs: actualDuration,
         baseDurationMs: baseDuration,
         commitTime,
         eventCount: pendingSamples.length,
+        jsGcTime: hermesGc.jsGcTime,
+        jsHeapSize: hermesGc.jsHeapSize,
+        jsNumGCs: hermesGc.jsNumGCs,
+        jsTotalAllocated: hermesGc.jsTotalAllocated,
         phase,
         startedAt: startTime,
       };

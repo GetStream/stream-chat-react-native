@@ -77,6 +77,12 @@ export type BenchmarkDispatchSample = {
   scheduleDelayMs?: number;
   scheduledAt?: number;
   startedAt: number;
+  // PERF INSTRUMENTATION (remove after diagnosis): Hermes cumulative js_totalAllocatedBytes read just
+  // before/after the synchronous event dispatch. Lets analysis split per-event allocation into the
+  // LLC-dispatch phase (end − start) vs render/commit vs inter-event gap (pair to the render sample by
+  // commitTime; use eventCount===1 samples).
+  allocAtDispatchStartBytes?: number;
+  allocAtDispatchEndBytes?: number;
 };
 
 export type BenchmarkRenderSample = {
@@ -86,6 +92,12 @@ export type BenchmarkRenderSample = {
   eventCount: number;
   phase: Parameters<ProfilerOnRenderCallback>[1];
   startedAt: number;
+  // Hermes GC/heap counters (raw getInstrumentedStats values; units Hermes-version-dependent —
+  // read the TREND across checkpoints: heapSize runaway + gcTime/numGCs explosion = GC death spiral).
+  jsHeapSize?: number;
+  jsNumGCs?: number;
+  jsGcTime?: number;
+  jsTotalAllocated?: number;
 };
 
 export type BenchmarkFrameStats = {
@@ -142,6 +154,8 @@ export type BenchmarkTelemetry = BenchmarkTelemetrySnapshot & {
     scheduleDelayMs?: number;
     scheduledAt?: number;
     startedAt: number;
+    allocAtDispatchStartBytes?: number;
+    allocAtDispatchEndBytes?: number;
   }) => void;
   startFrameSampler: () => void;
   stopFrameSampler: () => void;

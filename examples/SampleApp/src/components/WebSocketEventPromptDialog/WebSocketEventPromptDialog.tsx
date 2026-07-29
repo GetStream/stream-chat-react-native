@@ -25,7 +25,7 @@ import type {
   WebSocketEventPayload,
 } from './types';
 import { supportedWebsocketEventTypes } from './types';
-import { getBenchmarkNow } from './useWebSocketBenchmarkTelemetry';
+import { getBenchmarkNow, readHermesTotalAllocatedBytes } from './useWebSocketBenchmarkTelemetry';
 import {
   buildFreshWebSocketEventPayload,
   createInitialSimulationState,
@@ -412,6 +412,10 @@ export const WebSocketEventPromptDialog = ({
       updateStatus?: boolean;
     }) => {
       try {
+        // PERF INSTRUMENTATION (remove after diagnosis): bracket the synchronous LLC dispatch with
+        // Hermes allocation reads. T0 is read before startedAt and T1 after dispatchDurationMs is
+        // computed, so the reads do NOT inflate dispatchDurationMs.
+        const allocAtDispatchStartBytes = readHermesTotalAllocatedBytes();
         const startedAt = getBenchmarkNow();
         const emittedPayload = emitWebSocketEventPayload({
           client,
@@ -419,6 +423,7 @@ export const WebSocketEventPromptDialog = ({
           payload,
         });
         const dispatchDurationMs = getBenchmarkNow() - startedAt;
+        const allocAtDispatchEndBytes = readHermesTotalAllocatedBytes();
         const simulationState =
           trackState || typeof messageCount !== 'number' ? getSimulationState() : undefined;
 
@@ -430,6 +435,8 @@ export const WebSocketEventPromptDialog = ({
           });
         }
         telemetry.recordDispatchedEvent({
+          allocAtDispatchEndBytes,
+          allocAtDispatchStartBytes,
           dispatchDurationMs,
           eventType: eventTypeToEmit,
           messageCount:
