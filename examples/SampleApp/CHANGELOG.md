@@ -1,5 +1,7 @@
 # Change Log
 
+## [4.14.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.2...sampleapp@v4.14.3) (2026-07-23)
+
 ## [4.14.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.1...sampleapp@v4.14.2) (2026-07-17)
 
 ## [4.14.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.0...sampleapp@v4.14.1) (2026-07-09)

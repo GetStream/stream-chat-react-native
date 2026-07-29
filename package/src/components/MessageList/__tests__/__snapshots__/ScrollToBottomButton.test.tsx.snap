@@ -61,6 +61,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
         onGestureHandlerReanimatedEvent={[Function]}
         onGestureHandlerStateChange={[Function]}
         onGestureHandlerTouchEvent={[Function]}
+        onStartShouldSetResponder={[Function]}
         pointerEvents="box-none"
         style={
           {

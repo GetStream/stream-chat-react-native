@@ -20,7 +20,6 @@ export type ReactionListBottomProps = Partial<
   Pick<
     MessageContextValue,
     | 'alignment'
-    | 'handleReaction'
     | 'hasReactions'
     | 'onLongPress'
     | 'onPress'
@@ -43,7 +42,6 @@ const ItemSeparatorComponent = () => {
 export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const {
     alignment: propAlignment,
-    handleReaction: propHandlerReaction,
     hasReactions: propHasReactions,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
@@ -58,7 +56,6 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
 
   const {
     alignment: contextAlignment,
-    handleReaction: contextHandleReaction,
     hasReactions: contextHasReactions,
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
@@ -72,7 +69,6 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
 
   const alignment = propAlignment || contextAlignment;
-  const handleReaction = propHandlerReaction || contextHandleReaction;
   const hasReactions = propHasReactions || contextHasReactions;
   const onLongPress = propOnLongPress || contextOnLongPress;
   const onPress = propOnPress || contextOnPress;
@@ -85,7 +81,6 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   const renderItem = useCallback(
     ({ index, item }: { index: number; item: ReactionListItemProps }) => (
       <ReactionListItem
-        handleReaction={item.handleReaction}
         key={index}
         onLongPress={item.onLongPress}
         onPress={item.onPress}
@@ -115,7 +110,6 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
   }
 
   const reactionListBottomItemData: ReactionListItemProps[] = reactions.map((reaction) => ({
-    handleReaction,
     onLongPress,
     onPress,
     onPressIn,
