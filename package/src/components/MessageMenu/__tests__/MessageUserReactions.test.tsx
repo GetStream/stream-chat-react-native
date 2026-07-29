@@ -103,6 +103,14 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     expect(reactionButtons[1].props.accessibilityState.selected).toBe(false);
   });
 
+  it('preselects the reaction passed via the selectedReaction prop', () => {
+    const { getAllByRole } = renderComponent({ selectedReaction: 'love' });
+    const reactionButtons = filterReactionButtons(getAllByRole('button'));
+    // reaction_groups order is `like`, `love`
+    expect(reactionButtons[0].props.accessibilityState.selected).toBe(false);
+    expect(reactionButtons[1].props.accessibilityState.selected).toBe(true);
+  });
+
   it('toggles the selected reaction when a reaction button is pressed twice', () => {
     const { getAllByRole } = renderComponent();
     let reactionButtons = filterReactionButtons(getAllByRole('button'));

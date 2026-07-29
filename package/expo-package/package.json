@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-expo",
   "description": "The official Expo SDK for Stream Chat, a service for building chat applications",
-  "version": "9.7.0",
+  "version": "9.7.1",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -80,9 +80,9 @@
     }
   },
   "devDependencies": {
-    "expo": "^56.0.0",
-    "expo-audio": "~56.0.0",
-    "expo-image-manipulator": "~56.0.0"
+    "expo": "^57.0.7",
+    "expo-audio": "patch:expo-audio@npm%3A57.0.2#~/.yarn/patches/expo-audio-npm-57.0.2-7a40cb0b0a.patch",
+    "expo-image-manipulator": "~57.0.5"
   },
   "scripts": {
     "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",

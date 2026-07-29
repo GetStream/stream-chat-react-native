@@ -8,6 +8,8 @@ const testDbName = `foobar-${process.env.JEST_WORKER_ID ?? '0'}.db`;
 export const sqliteMock = {
   open: () => {
     db = new Sqlite3(testDbName);
+    db.pragma('journal_mode = MEMORY');
+    db.pragma('synchronous = OFF');
     return {
       close: () => {
         db.close();

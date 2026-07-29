@@ -47,6 +47,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
           onGestureHandlerReanimatedEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
           onGestureHandlerTouchEvent={[Function]}
+          onStartShouldSetResponder={[Function]}
           pointerEvents="box-none"
           style={
             {
@@ -221,6 +222,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -368,6 +370,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -544,6 +547,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -687,6 +691,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -963,6 +968,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
           onGestureHandlerReanimatedEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
           onGestureHandlerTouchEvent={[Function]}
+          onStartShouldSetResponder={[Function]}
           pointerEvents="box-none"
           style={
             {
@@ -1137,6 +1143,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1284,6 +1291,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1460,6 +1468,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1603,6 +1612,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -1879,6 +1889,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
           onGestureHandlerReanimatedEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
           onGestureHandlerTouchEvent={[Function]}
+          onStartShouldSetResponder={[Function]}
           pointerEvents="box-none"
           style={
             {
@@ -2053,6 +2064,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -2200,6 +2212,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -2376,6 +2389,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {
@@ -2519,6 +2533,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
               onGestureHandlerReanimatedEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onGestureHandlerTouchEvent={[Function]}
+              onStartShouldSetResponder={[Function]}
               pointerEvents="box-none"
               style={
                 {

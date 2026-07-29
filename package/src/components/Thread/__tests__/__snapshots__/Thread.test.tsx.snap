@@ -1846,6 +1846,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         onGestureHandlerReanimatedEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         onGestureHandlerTouchEvent={[Function]}
+                        onStartShouldSetResponder={[Function]}
                         pointerEvents="box-none"
                         style={
                           {
@@ -2224,6 +2225,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             onGestureHandlerReanimatedEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
                             onGestureHandlerTouchEvent={[Function]}
+                            onStartShouldSetResponder={[Function]}
                             pointerEvents="box-none"
                             style={
                               {
@@ -2406,6 +2408,7 @@ exports[`Thread should match thread snapshot 1`] = `
             onGestureHandlerReanimatedEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
             pointerEvents="box-none"
             style={
               {
@@ -2553,6 +2556,7 @@ exports[`Thread should match thread snapshot 1`] = `
             onGestureHandlerReanimatedEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
             pointerEvents="box-none"
             style={
               {
@@ -2729,6 +2733,7 @@ exports[`Thread should match thread snapshot 1`] = `
             onGestureHandlerReanimatedEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
             pointerEvents="box-none"
             style={
               {
@@ -2872,6 +2877,7 @@ exports[`Thread should match thread snapshot 1`] = `
             onGestureHandlerReanimatedEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
             pointerEvents="box-none"
             style={
               {
