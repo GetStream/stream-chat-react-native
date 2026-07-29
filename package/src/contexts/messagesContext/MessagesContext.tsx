@@ -302,12 +302,28 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    *        toggleMuteUser, // () => Promise<void>;
    *        toggleReaction, // (reactionType: string) => Promise<void>;
    *    },
+   *    additionalInfo, // emitter-specific info, e.g. `{ reactionType }` when emitter === 'reactionList'
    *    defaultHandler, // () => void
    *    event, // any event object corresponding to touchable feedback
    *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
    *    message // message object on which longPress occurred
    *  }) => {
    *    // Your custom action
+   *  }}
+   * />
+   * ```
+   *
+   * By default, pressing a reaction opens the reactions bottom sheet. To instead toggle
+   * the reaction (add/remove the current user's reaction), intercept the `reactionList` emitter:
+   *
+   * ```
+   * <Channel
+   *  onPressMessage={({ emitter, additionalInfo, actionHandlers, defaultHandler }) => {
+   *    if (emitter === 'reactionList' && additionalInfo?.reactionType) {
+   *      actionHandlers?.toggleReaction(additionalInfo.reactionType as string);
+   *      return;
+   *    }
+   *    defaultHandler?.();
    *  }}
    * />
    * ```
