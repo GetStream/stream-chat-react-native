@@ -33,12 +33,7 @@ const Icon = ({ size, style, supportedReactions, type }: Props) => {
 export type ReactionListItemProps = Partial<
   Pick<
     MessageContextValue,
-    | 'handleReaction'
-    | 'onLongPress'
-    | 'onPress'
-    | 'onPressIn'
-    | 'preventPress'
-    | 'showReactionsOverlay'
+    'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress' | 'showReactionsOverlay'
   >
 > &
   Partial<Pick<MessagesContextValue, 'supportedReactions'>> & {
@@ -49,7 +44,6 @@ export type ReactionListItemProps = Partial<
 
 export const ReactionListItem = (props: ReactionListItemProps) => {
   const {
-    handleReaction,
     onLongPress,
     onPress,
     onPressIn,
@@ -80,6 +74,7 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
+            additionalInfo: { reactionType: reaction.type },
             defaultHandler: () => {
               if (showReactionsOverlay) {
                 showReactionsOverlay(reaction.type);
@@ -93,9 +88,10 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
       onPress={(event) => {
         if (onPress) {
           onPress({
+            additionalInfo: { reactionType: reaction.type },
             defaultHandler: () => {
-              if (handleReaction) {
-                handleReaction(reaction.type);
+              if (showReactionsOverlay) {
+                showReactionsOverlay(reaction.type);
               }
             },
             emitter: 'reactionList',
@@ -106,9 +102,10 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
+            additionalInfo: { reactionType: reaction.type },
             defaultHandler: () => {
-              if (handleReaction) {
-                handleReaction(reaction.type);
+              if (showReactionsOverlay) {
+                showReactionsOverlay(reaction.type);
               }
             },
             emitter: 'reactionList',
