@@ -94,14 +94,21 @@ const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.ty
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const styles = useStyles();
   const [showMoreReactions, setShowMoreReactions] = useState(false);
-  const { message, reactions: propReactions, supportedReactions: propSupportedReactions } = props;
+  const {
+    message,
+    reactions: propReactions,
+    selectedReaction: propSelectedReaction,
+    supportedReactions: propSupportedReactions,
+  } = props;
   const selectorListRef = useRef<FlatList>(null);
   const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
     () => Object.keys(message?.reaction_groups ?? {}),
     [message?.reaction_groups],
   );
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(
+    propSelectedReaction,
+  );
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
   const { icons, MessageUserReactionsItem } = useComponentsContext();
   const { handleReaction } = useMessageContext();

@@ -136,20 +136,36 @@ export type GalleryThumbnailTouchableHandlerPayload = {
   additionalInfo?: GalleryThumbnailTouchableHandlerAdditionalInfo;
 };
 
+export type ReactionListTouchableHandlerAdditionalInfo = {
+  /**
+   * The reaction type of the pressed reaction. Populated for presses that
+   * originate from a single reaction (segmented list item/clustered pill),
+   * undefined for the "+N more" overflow item.
+   */
+  reactionType?: string;
+};
+
+export type ReactionListTouchableHandlerPayload = {
+  emitter: 'reactionList';
+  additionalInfo?: ReactionListTouchableHandlerAdditionalInfo;
+};
+
 export type PressableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
 } & (
   | {
+      additionalInfo?: Record<string, unknown>;
       emitter?: Exclude<
         TouchableEmitter,
-        'textMention' | 'textLink' | 'urlPreview' | 'fileAttachment' | 'gallery'
+        'textMention' | 'textLink' | 'urlPreview' | 'fileAttachment' | 'gallery' | 'reactionList'
       >;
     }
   | TextMentionTouchableHandlerPayload
   | UrlTouchableHandlerPayload
   | FileAttachmentTouchableHandlerPayload
   | GalleryThumbnailTouchableHandlerPayload
+  | ReactionListTouchableHandlerPayload
 );
 
 export type MessagePressableHandlerPayload = PressableHandlerPayload & {
@@ -741,6 +757,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onLongPress: (payload) => {
       const onLongPressArgs = {
         actionHandlers,
+        additionalInfo: payload?.additionalInfo,
         defaultHandler: payload?.defaultHandler || onLongPress,
         emitter: payload?.emitter || 'message',
         event: payload?.event,
@@ -796,6 +813,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           if (onPressInMessageProp) {
             return onPressInMessageProp({
               actionHandlers,
+              additionalInfo: payload.additionalInfo,
               defaultHandler: payload.defaultHandler,
               emitter: payload.emitter || 'message',
               event: payload.event,

@@ -25,7 +25,6 @@ export type ReactionListTopProps = Partial<
     | 'preventPress'
     | 'reactions'
     | 'showReactionsOverlay'
-    | 'handleReaction'
   > &
     Pick<MessagesContextValue, 'supportedReactions' | 'reactionListType'>
 > & {
@@ -47,7 +46,6 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
     reactions: propReactions,
     showReactionsOverlay: propShowReactionsOverlay,
     supportedReactions: propSupportedReactions,
-    handleReaction: propHandleReaction,
     type,
     showCount = true,
   } = props;
@@ -61,7 +59,6 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
     preventPress: contextPreventPress,
     reactions: contextReactions,
     showReactionsOverlay: contextShowReactionsOverlay,
-    handleReaction: contextHandleReaction,
   } = useMessageContext();
 
   const { ReactionListClustered, ReactionListCountItem, ReactionListItem } = useComponentsContext();
@@ -76,7 +73,6 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
   const reactions = propReactions || contextReactions;
   const showReactionsOverlay = propShowReactionsOverlay || contextShowReactionsOverlay;
   const supportedReactions = propSupportedReactions || contextSupportedReactions;
-  const handleReaction = propHandleReaction || contextHandleReaction;
 
   const styles = useStyles({ alignment });
 
@@ -115,7 +111,6 @@ export const ReactionListTop = (props: ReactionListTopProps) => {
         <ReactionListItem
           key={reaction.type}
           reaction={reaction}
-          handleReaction={handleReaction}
           onLongPress={onLongPress}
           onPress={onPress}
           onPressIn={onPressIn}
