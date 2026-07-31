@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.14.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.3...sampleapp@v4.14.4) (2026-07-31)
+
+### Bug Fixes
+
+* bump rn version to fix hermes memory regression ([#3744](https://github.com/GetStream/stream-chat-react-native/issues/3744)) ([eb23562](https://github.com/GetStream/stream-chat-react-native/commit/eb235621aca68a5608831b5511de9c6958f15f00))
+* segmented reactions on press ([#3746](https://github.com/GetStream/stream-chat-react-native/issues/3746)) ([d8d8a1c](https://github.com/GetStream/stream-chat-react-native/commit/d8d8a1cf69891e951964790e72c54c3710c34388))
+
 ## [4.14.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.2...sampleapp@v4.14.3) (2026-07-23)
 
 ## [4.14.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.1...sampleapp@v4.14.2) (2026-07-17)
