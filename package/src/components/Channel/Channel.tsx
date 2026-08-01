@@ -82,8 +82,15 @@ import {
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import type { ChannelUnreadState } from '../../types/types';
+import { FileTypes } from '../../types/types';
+import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import { MessageStatusTypes, ReactionData } from '../../utils/utils';
+import {
+  getFileNameFromPath,
+  isLocalUrl,
+  MessageStatusTypes,
+  ReactionData,
+} from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
@@ -858,6 +865,66 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * MESSAGE METHODS
    */
+  // TODO(async-uploads): this is a temporary RN-side re-implementation of develop's
+  // `uploadPendingAttachments`. The async-upload lifecycle — show the message optimistically
+  // (pending), await `client.uploadManager` to finish the in-flight uploads, swap the local preview
+  // URLs for the returned CDN URLs, then POST — should live in the LLC
+  // (channel.sendMessageWithLocalUpdate / messageOperations.send) so the SDK stops shipping its own
+  // upload orchestration. Move this (and the optimistic pre-ingest in sendMessage below) there and
+  // delete it here once the LLC owns it.
+  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
+    if (!message.attachments?.length || !channel?.cid) {
+      return;
+    }
+    const channelCid = channel.cid;
+
+    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
+      // Already uploaded to a remote (CDN) URL — nothing to wait for.
+      if (
+        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
+        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
+      ) {
+        return;
+      }
+
+      const originalFile = attachment.custom?.originalFile;
+      const localId = attachment.custom?.localId;
+      if (!originalFile?.uri || !localId) {
+        return;
+      }
+
+      let fileForUpload = originalFile;
+      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
+        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
+        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
+        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
+      }
+
+      // Idempotent by `id`: awaits the picker's in-flight upload for this attachment (or starts one).
+      const response = await client.uploadManager.upload({
+        channelCid,
+        file: fileForUpload,
+        id: localId,
+      });
+
+      if (attachment.type === FileTypes.Image) {
+        attachment.image_url = response.file;
+      } else {
+        attachment.asset_url = response.file;
+        if (response.thumb_url) {
+          attachment.thumb_url = response.thumb_url;
+        }
+      }
+
+      if (attachment.custom) {
+        delete attachment.custom.originalFile;
+        delete attachment.custom.localId;
+      }
+    };
+
+    await Promise.all(message.attachments.map(uploadOne));
+  });
+
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
     async ({ localMessage, message, options }) => {
       if (preSendMessageRequest) {
@@ -871,6 +938,24 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
             text: patchMessageTextCommand(message.text ?? '', message.mentioned_users ?? []),
           }
         : message;
+
+      // Async uploads: ingest the message as pending immediately so it shows in the list with the
+      // upload progress indicator (which tracks client.uploadManager via the attachment's
+      // custom.localId) while the attachments finish uploading. sendMessageWithLocalUpdate below
+      // re-ingests the same message id with the resolved CDN URLs and actually POSTs it.
+      if (channel) {
+        const formatted = channel.state.formatMessage(localMessage);
+        if (!localMessage.parent_id || localMessage.show_in_channel) {
+          channel.messagePaginator.ingestItem(formatted);
+        }
+        if (localMessage.parent_id) {
+          threadInstance?.messagePaginator?.ingestItem(formatted);
+        }
+      }
+
+      // Wait for the uploads to finish and swap the local preview URLs for the CDN URLs (mutates the
+      // shared attachment objects carried on both localMessage and message) BEFORE the actual send.
+      await uploadPendingAttachments(localMessage);
 
       // The stream-chat message-operations engine owns the full optimistic lifecycle (pending ->
       // received/failed), offline-DB persistence and paginator ingest — for both channel messages
