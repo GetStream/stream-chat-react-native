@@ -29,12 +29,38 @@ const localMessage = { id: 'm1', text: 'hi' } as unknown as LocalMessage;
 const message = { text: 'hi' } as unknown as Message;
 
 describe('useChannelRequestHandlers', () => {
-  it('registers no managed handlers when no overrides are provided', () => {
+  it('always registers the send + retry handler, even with no overrides', () => {
     const { channel, getHandlers } = createChannel();
 
     renderHook(() => useChannelRequestHandlers({ channel }));
 
-    expect(getHandlers()).toBeUndefined();
+    // The send handler is unconditional (it also drives attachment uploads); send and retry share it.
+    expect(getHandlers()?.sendMessageRequest).toBeDefined();
+    expect(getHandlers()?.retrySendMessageRequest).toBe(getHandlers()?.sendMessageRequest);
+    // update / mark-read stay unset until their overrides are provided.
+    expect(getHandlers()?.updateMessageRequest).toBeUndefined();
+    expect(getHandlers()?.markReadRequest).toBeUndefined();
+  });
+
+  it('awaits uploadPendingAttachments before the default send', async () => {
+    const { channel, getHandlers, sendMessage } = createChannel();
+    const order: string[] = [];
+    const uploadPendingAttachments = jest.fn(() => {
+      order.push('upload');
+      return Promise.resolve();
+    });
+    sendMessage.mockImplementation(() => {
+      order.push('send');
+      return Promise.resolve({ message: { id: 'fallback' } });
+    });
+
+    renderHook(() => useChannelRequestHandlers({ channel, uploadPendingAttachments }));
+
+    const result = await getHandlers()?.sendMessageRequest?.({ localMessage, message });
+
+    expect(uploadPendingAttachments).toHaveBeenCalledWith(localMessage);
+    expect(order).toEqual(['upload', 'send']);
+    expect(result).toEqual({ message: { id: 'fallback' } });
   });
 
   it('registers send + retry from doSendMessageRequest and returns the override response', async () => {
@@ -59,7 +85,7 @@ describe('useChannelRequestHandlers', () => {
     renderHook(() => useChannelRequestHandlers({ channel, doSendMessageRequest }));
 
     const result = await getHandlers()?.sendMessageRequest?.({ localMessage, message });
-    expect(sendMessage).toHaveBeenCalledWith(message, undefined);
+    expect(sendMessage).toHaveBeenCalledWith({ message });
     expect(result).toEqual({ message: { id: 'fallback' } });
   });
 
@@ -74,23 +100,28 @@ describe('useChannelRequestHandlers', () => {
     expect(result).toEqual({ message: { id: 'updated' } });
   });
 
-  it('clears managed handlers when overrides are removed, preserving unrelated handlers', () => {
+  it('clears the managed update handler when its override is removed, preserving unrelated handlers', () => {
     const { channel, configState, getHandlers } = createChannel();
     const markReadRequest = jest.fn();
     configState.partialNext({ requestHandlers: { markReadRequest } });
 
-    const doSendMessageRequest = jest.fn();
+    const doUpdateMessageRequest = jest.fn();
     const { rerender } = renderHook(
-      ({ send }: { send?: typeof doSendMessageRequest }) =>
-        useChannelRequestHandlers({ channel, doSendMessageRequest: send }),
-      { initialProps: { send: doSendMessageRequest as typeof doSendMessageRequest | undefined } },
+      ({ update }: { update?: typeof doUpdateMessageRequest }) =>
+        useChannelRequestHandlers({ channel, doUpdateMessageRequest: update }),
+      {
+        initialProps: {
+          update: doUpdateMessageRequest as typeof doUpdateMessageRequest | undefined,
+        },
+      },
     );
+    expect(getHandlers()?.updateMessageRequest).toBeDefined();
+
+    rerender({ update: undefined });
+
+    expect(getHandlers()?.updateMessageRequest).toBeUndefined();
+    // the send handler is always registered, independent of overrides.
     expect(getHandlers()?.sendMessageRequest).toBeDefined();
-
-    rerender({ send: undefined });
-
-    expect(getHandlers()?.sendMessageRequest).toBeUndefined();
-    expect(getHandlers()?.retrySendMessageRequest).toBeUndefined();
     // an unrelated handler registered elsewhere must be preserved.
     expect(getHandlers()?.markReadRequest).toBe(markReadRequest);
   });

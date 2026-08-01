@@ -530,15 +530,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
 
-  // Register the integrator's custom message-request overrides into channel.configState so the
-  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
-  useChannelRequestHandlers({
-    channel,
-    doMarkReadRequest,
-    doSendMessageRequest,
-    doUpdateMessageRequest,
-  });
-
   const {
     loadChannelAroundMessage: loadChannelAroundMessageFn,
     loadChannelAtFirstUnreadMessage,
@@ -866,12 +857,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * MESSAGE METHODS
    */
   // TODO(async-uploads): this is a temporary RN-side re-implementation of develop's
-  // `uploadPendingAttachments`. The async-upload lifecycle — show the message optimistically
-  // (pending), await `client.uploadManager` to finish the in-flight uploads, swap the local preview
-  // URLs for the returned CDN URLs, then POST — should live in the LLC
-  // (channel.sendMessageWithLocalUpdate / messageOperations.send) so the SDK stops shipping its own
-  // upload orchestration. Move this (and the optimistic pre-ingest in sendMessage below) there and
-  // delete it here once the LLC owns it.
+  // `uploadPendingAttachments`. It's wired into the registered `sendMessageRequest` handler (see the
+  // useChannelRequestHandlers call below), so it runs inside the LLC send pipeline — after the LLC's
+  // optimistic ingest (message already shows pending), before the POST — awaiting `client.uploadManager`
+  // to finish the in-flight uploads and swapping local preview URLs for the returned CDN URLs. The
+  // remaining cleanup is to make this the LLC's own default (channel.sendMessageWithLocalUpdate /
+  // messageOperations.send) so the SDK stops shipping upload orchestration, then delete it here.
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     if (!message.attachments?.length || !channel?.cid) {
       return;
@@ -925,6 +916,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     await Promise.all(message.attachments.map(uploadOne));
   });
 
+  // Register the integrator's custom message-request overrides into channel.configState so the
+  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
+  useChannelRequestHandlers({
+    channel,
+    uploadPendingAttachments,
+    doMarkReadRequest,
+    doSendMessageRequest,
+    doUpdateMessageRequest,
+  });
+
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
     async ({ localMessage, message, options }) => {
       if (preSendMessageRequest) {
@@ -939,28 +940,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           }
         : message;
 
-      // Async uploads: ingest the message as pending immediately so it shows in the list with the
-      // upload progress indicator (which tracks client.uploadManager via the attachment's
-      // custom.localId) while the attachments finish uploading. sendMessageWithLocalUpdate below
-      // re-ingests the same message id with the resolved CDN URLs and actually POSTs it.
-      if (channel) {
-        const formatted = channel.state.formatMessage(localMessage);
-        if (!localMessage.parent_id || localMessage.show_in_channel) {
-          channel.messagePaginator.ingestItem(formatted);
-        }
-        if (localMessage.parent_id) {
-          threadInstance?.messagePaginator?.ingestItem(formatted);
-        }
-      }
-
-      // Wait for the uploads to finish and swap the local preview URLs for the CDN URLs (mutates the
-      // shared attachment objects carried on both localMessage and message) BEFORE the actual send.
-      await uploadPendingAttachments(localMessage);
-
       // The stream-chat message-operations engine owns the full optimistic lifecycle (pending ->
       // received/failed), offline-DB persistence and paginator ingest — for both channel messages
       // (channel.messagePaginator) and thread replies (thread.messagePaginator, which the thread
-      // instance ingests into directly). It throws on failure, which the MessageInput send flow
+      // instance ingests into directly). Its single optimistic ingest shows the message (pending)
+      // instantly; the registered sendMessageRequest handler then awaits any attachment uploads and
+      // POSTs (see useChannelRequestHandlers). It throws on failure, which the MessageInput send flow
       // catches to surface a notification.
       await (threadInstance ?? channel).sendMessageWithLocalUpdate({
         localMessage,
