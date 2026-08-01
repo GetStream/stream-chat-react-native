@@ -856,13 +856,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * MESSAGE METHODS
    */
-  // TODO(async-uploads): this is a temporary RN-side re-implementation of develop's
-  // `uploadPendingAttachments`. It's wired into the registered `sendMessageRequest` handler (see the
-  // useChannelRequestHandlers call below), so it runs inside the LLC send pipeline — after the LLC's
-  // optimistic ingest (message already shows pending), before the POST — awaiting `client.uploadManager`
-  // to finish the in-flight uploads and swapping local preview URLs for the returned CDN URLs. The
-  // remaining cleanup is to make this the LLC's own default (channel.sendMessageWithLocalUpdate /
-  // messageOperations.send) so the SDK stops shipping upload orchestration, then delete it here.
+  // Async attachment-upload orchestration. Wired into the registered `sendMessageRequest` handler
+  // (see the useChannelRequestHandlers call below) so it runs INSIDE the stream-chat send pipeline —
+  // after the LLC's optimistic ingest (message already shows pending), before the POST — awaiting
+  // `client.uploadManager` to finish the in-flight uploads and swapping local preview URLs for the
+  // returned CDN URLs. This deliberately stays RN-side: native image compression (`compressedImageURI`)
+  // and the integrator's `doFileUploadRequest` must remain reachable, and the sendMessageRequest seam
+  // lets it run in the right place without a pre-ingest or any LLC change. It is NOT slated to move
+  // into the LLC — this handler is its intended home.
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     if (!message.attachments?.length || !channel?.cid) {
       return;
