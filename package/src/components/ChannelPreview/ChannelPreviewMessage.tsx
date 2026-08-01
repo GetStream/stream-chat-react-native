@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { LocalMessage } from 'stream-chat';
+
 import { ChannelPreviewProps } from './ChannelPreview';
 
 import { LastMessageType } from './hooks/useChannelPreviewData';
@@ -52,7 +54,8 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   }, [channel.state.members, client.user?.id]);
 
   const isFailedMessage =
-    lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
+    (lastMessage as LocalMessage)?.status === MessageStatusTypes.FAILED ||
+    lastMessage?.type === 'error';
   const showMessageDeliveryStatus = !isMessageDeleted;
 
   if (usersTyping.length > 0) {
@@ -97,7 +100,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }
 
-  if (channel.data?.name || membersWithoutSelf.length > 1) {
+  if (channel.data?.custom?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
         {showMessageDeliveryStatus ? (

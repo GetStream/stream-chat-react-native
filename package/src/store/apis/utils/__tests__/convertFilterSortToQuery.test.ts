@@ -3,7 +3,7 @@ import { convertFilterSortToQuery } from '../convertFilterSortToQuery';
 describe('convertFilterSortToQuery', () => {
   it('preserves the existing filters and sort key for traditional queries', () => {
     const filters = { members: { $in: ['user-1'] }, type: 'messaging' };
-    const sort = { last_updated: 1 as const };
+    const sort = [{ direction: 1 as const, field: 'last_updated' }];
 
     expect(convertFilterSortToQuery({ filters, sort })).toBe(
       JSON.stringify(`${JSON.stringify(filters)}-${JSON.stringify(sort)}`),

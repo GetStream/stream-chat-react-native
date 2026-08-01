@@ -1,4 +1,9 @@
-import type { ChannelAPIResponse, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type {
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  ChannelStateResponseFields,
+} from 'stream-chat';
 
 import { getChannels } from './getChannels';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
@@ -25,7 +30,7 @@ export const getChannelsForFilterSort = async ({
   filters?: ChannelFilters;
   options?: ChannelOptions;
   sort?: ChannelSort;
-}): Promise<Omit<ChannelAPIResponse, 'duration'>[] | null> => {
+}): Promise<Omit<ChannelStateResponseFields, 'duration'>[] | null> => {
   if (!filters && !sort && !options?.predefined_filter) {
     console.warn(
       'Please provide the query (filters/sort/options.predefined_filter) to fetch channels from the DB.',

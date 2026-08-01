@@ -68,8 +68,8 @@ export const ChannelPreviewTypingIndicator = ({
   const { t } = useTranslationContext();
 
   const userTypingLabel = useMemo(() => {
-    return getTypingString({ usersTyping, channelName: channel.data?.name, t });
-  }, [channel.data?.name, usersTyping, t]);
+    return getTypingString({ usersTyping, channelName: channel.data?.custom?.name, t });
+  }, [channel.data?.custom?.name, usersTyping, t]);
   return (
     <View style={styles.container}>
       <Text numberOfLines={1} style={styles.text}>

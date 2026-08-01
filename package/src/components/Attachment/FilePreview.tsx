@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, VoiceRecordingAttachment } from 'stream-chat';
 
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -44,9 +44,12 @@ export const FilePreview = (props: FilePreviewProps) => {
     },
   } = useTheme();
 
+  // `duration` is only meaningful for voice recordings, where it now lives under `custom`.
+  const duration = (attachment as VoiceRecordingAttachment).custom?.duration;
+
   return (
     <View style={[styles.container, container, stylesProp.container]}>
-      <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentIconSize} />
+      <FileAttachmentIcon mimeType={attachment.custom?.mime_type} size={attachmentIconSize} />
       <View style={[styles.details, details, stylesProp.details]}>
         <Text numberOfLines={titleNumberOfLines} style={[styles.title, title, stylesProp.title]}>
           {attachment.title}
@@ -55,9 +58,9 @@ export const FilePreview = (props: FilePreviewProps) => {
           indicator
         ) : (
           <Text style={[styles.size, fileSize, stylesProp.size]}>
-            {attachment.duration
-              ? getDurationLabelFromDuration(attachment.duration)
-              : getFileSizeDisplayText(attachment.file_size)}
+            {duration
+              ? getDurationLabelFromDuration(duration)
+              : getFileSizeDisplayText(attachment.custom?.file_size)}
           </Text>
         )}
       </View>

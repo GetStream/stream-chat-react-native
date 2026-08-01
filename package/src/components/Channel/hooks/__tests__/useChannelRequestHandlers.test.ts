@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
-import type { Channel, LocalMessage, Message } from 'stream-chat';
+import type { Channel, LocalMessage, MessageRequest as Message } from 'stream-chat';
 
 import { useChannelRequestHandlers } from '../useChannelRequestHandlers';
 

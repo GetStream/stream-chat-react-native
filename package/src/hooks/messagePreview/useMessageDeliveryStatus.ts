@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
+import { Channel, EventPayload, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
@@ -65,7 +65,7 @@ export const useMessageDeliveryStatus = ({
   }, [channel, client.user?.id, isOwnMessage, isReadEventsEnabled, lastMessage]);
 
   useEffect(() => {
-    const handleMessageNew = (event: Event) => {
+    const handleMessageNew = (event: EventPayload<'message.new'>) => {
       // the last message is not mine, so do not show the delivery status
       if (event.message && !isOwnMessage(event.message)) {
         return setStatus(undefined);
@@ -78,7 +78,7 @@ export const useMessageDeliveryStatus = ({
 
   useEffect(() => {
     if (!isOwnMessage(lastMessage)) return;
-    const handleMessageDelivered = (event: Event) => {
+    const handleMessageDelivered = (event: EventPayload<'message.delivered'>) => {
       if (
         event.user?.id !== client.user?.id &&
         lastMessage &&
@@ -87,7 +87,7 @@ export const useMessageDeliveryStatus = ({
         setStatus(MessageDeliveryStatus.DELIVERED);
     };
 
-    const handleMarkRead = (event: Event) => {
+    const handleMarkRead = (event: EventPayload<'message.read'>) => {
       if (event.user?.id !== client.user?.id) setStatus(MessageDeliveryStatus.READ);
     };
 

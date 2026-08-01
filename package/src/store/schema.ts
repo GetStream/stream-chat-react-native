@@ -1,4 +1,4 @@
-import type { MessageLabel, PendingTaskTypes, Role } from 'stream-chat';
+import type { MessageLabel, PendingTaskTypes } from 'stream-chat';
 
 import type { ValueOf } from '../types/types';
 
@@ -402,7 +402,7 @@ export type Schema = {
     archivedAt?: string;
     cid: string;
     banned?: boolean;
-    channelRole?: Role;
+    channelRole?: string;
     createdAt?: string;
     inviteAcceptedAt?: string;
     invited?: boolean;

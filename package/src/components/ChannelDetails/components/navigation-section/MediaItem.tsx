@@ -57,7 +57,9 @@ export const MediaItem = (props: MediaItemProps) => {
     ? getResizedImageUrl({ height: size, resizableCDNHosts, url, width: size })
     : undefined;
   const durationLabel = isVideo
-    ? getDurationLabelFromDuration(attachment.duration ?? 0)
+    ? getDurationLabelFromDuration(
+        (attachment.custom as { duration?: number } | undefined)?.duration ?? 0,
+      )
     : undefined;
 
   return (

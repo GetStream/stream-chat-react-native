@@ -15,8 +15,10 @@ const OTHER_USER_ID = 'other-user-id';
 
 const channel = {} as Channel;
 
-const setMembers = (members: Record<string, ChannelMemberResponse>) => {
-  mockedUseChannelMembersState.mockReturnValue(members);
+const setMembers = (members: Record<string, { user: { id: string } }>) => {
+  mockedUseChannelMembersState.mockReturnValue(
+    members as unknown as Record<string, ChannelMemberResponse>,
+  );
 };
 
 describe('useIsChannelMember', () => {

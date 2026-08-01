@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
-import type { PollAnswer, PollAnswersQueryParams } from 'stream-chat';
+import type { PollAnswersQueryParams, PollVoteResponseData } from 'stream-chat';
 import { isVoteAnswer } from 'stream-chat';
 
 import { useChatContext, usePollContext } from '../../../contexts';
@@ -17,7 +17,7 @@ export type UsePollAnswersReturnType = {
   loading: boolean;
   loadMore: () => void;
   next: string | null | undefined;
-  pollAnswers: PollAnswer[];
+  pollAnswers: PollVoteResponseData[];
 };
 
 /**
@@ -41,7 +41,7 @@ export const usePollAnswersPagination = ({
   const { poll } = usePollContext();
   const { client } = useChatContext();
 
-  const [pollAnswers, setPollAnswers] = useState<PollAnswer[]>([]);
+  const [pollAnswers, setPollAnswers] = useState<PollVoteResponseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
   const cursorRef = useRef<string | null>(undefined);
@@ -59,7 +59,7 @@ export const usePollAnswersPagination = ({
       const { next: newNext, votes: answers } = await poll.queryAnswers({
         filter: paginationParams?.filter,
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
-        sort: { updated_at: -1, ...paginationParams?.sort },
+        sort: [{ direction: -1, field: 'updated_at' }, ...(paginationParams?.sort ?? [])],
       });
       cursorRef.current = newNext || null;
       setPollAnswers((prev) => uniqBy([...prev, ...answers], 'id'));
@@ -78,7 +78,7 @@ export const usePollAnswersPagination = ({
   }, [loadFirstPage, loadMore, pollAnswers]);
 
   useEffect(() => {
-    const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
+    const castedListeners = (['poll.vote_casted', 'poll.vote_changed'] as const).map((eventName) =>
       client.on(eventName, (event) => {
         if (event.poll?.id && event.poll.id !== poll.id) {
           return;

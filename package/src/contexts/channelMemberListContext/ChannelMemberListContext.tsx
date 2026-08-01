@@ -36,7 +36,7 @@ export const ChannelMemberListProvider = ({
         },
       },
     );
-    source.sort = { name: 1 };
+    source.sort = [{ field: 'name', direction: 1 }];
     source.activate();
     return source;
   });

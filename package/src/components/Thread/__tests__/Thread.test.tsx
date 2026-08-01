@@ -6,6 +6,7 @@ import type {
   LocalMessage,
   MessageResponse,
   StreamChat,
+  UserResponse,
 } from 'stream-chat';
 import { Thread as ThreadClass } from 'stream-chat';
 import { v5 as uuidv5 } from 'uuid';
@@ -140,7 +141,7 @@ describe('Thread', () => {
       ],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID2' });
+    const chatClient = await getTestClientWithUser({ id: 'testID2' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.query();

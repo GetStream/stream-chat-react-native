@@ -1,5 +1,7 @@
 import type { UserResponse } from 'stream-chat';
 
+import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+
 import type { TableRow } from '../types';
 
 export const mapUserToStorable = (user: UserResponse): TableRow<'users'> => {
@@ -7,12 +9,12 @@ export const mapUserToStorable = (user: UserResponse): TableRow<'users'> => {
 
   return {
     banned,
-    createdAt: created_at,
+    createdAt: mapDateTimeToStorable(created_at),
     extraData: JSON.stringify(extraData || {}),
     id,
-    lastActive: last_active,
+    lastActive: mapDateTimeToStorable(last_active),
     online,
     role,
-    updatedAt: updated_at,
+    updatedAt: mapDateTimeToStorable(updated_at),
   };
 };

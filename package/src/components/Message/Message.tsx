@@ -1045,8 +1045,8 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
   }
 
   const quotedMessageEqual = checkMessageEquality(
-    prevMessage.quoted_message,
-    nextMessage.quoted_message,
+    prevMessage.quoted_message as LocalMessage | undefined,
+    nextMessage.quoted_message as LocalMessage | undefined,
   );
 
   if (!quotedMessageEqual) {
@@ -1105,8 +1105,8 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const mutedUserSame =
     prevMutedUsers.length === nextMutedUsers.length ||
-    prevMutedUsers.some((mutedUser) => mutedUser.target.id === prevMessage.user?.id) ===
-      nextMutedUsers.some((mutedUser) => mutedUser.target.id === nextMessage.user?.id);
+    prevMutedUsers.some((mutedUser) => mutedUser.target?.id === prevMessage.user?.id) ===
+      nextMutedUsers.some((mutedUser) => mutedUser.target?.id === nextMessage.user?.id);
   if (!mutedUserSame) {
     return false;
   }

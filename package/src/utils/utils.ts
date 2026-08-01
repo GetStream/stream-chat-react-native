@@ -75,11 +75,7 @@ export const getIndicatorTypeForFileState = (
  * @returns boolean
  */
 export const isBlockedMessage = (message: LocalMessage) => {
-  return (
-    message.type === 'error' &&
-    (message.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_REMOVE' ||
-      message.moderation?.action === 'remove')
-  );
+  return message.type === 'error' && message.moderation?.action === 'remove';
 };
 
 /**
@@ -88,9 +84,7 @@ export const isBlockedMessage = (message: LocalMessage) => {
  * @returns boolean
  */
 export const isBouncedMessage = (message: LocalMessage) =>
-  message.type === 'error' &&
-  (message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE' ||
-    message?.moderation?.action === 'bounce');
+  message.type === 'error' && message?.moderation?.action === 'bounce';
 
 /**
  * Utility to check if the message is a edited message.
@@ -160,11 +154,12 @@ export const stringifyMessage = ({
     latest_reactions,
     reaction_groups,
     reply_count,
-    status,
     text,
     type,
     updated_at,
   } = message;
+  // `status` only exists on `LocalMessage`, not on a bare `MessageResponse`.
+  const status = 'status' in message ? message.status : undefined;
   const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}`;
   if (!includeReactions) {
     return baseFieldsString;

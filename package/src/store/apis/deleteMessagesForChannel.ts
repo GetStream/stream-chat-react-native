@@ -6,7 +6,7 @@ export const deleteMessagesForChannel = async ({
   execute = true,
 }: {
   cid: string;
-  truncated_at?: string;
+  truncated_at?: Date;
   execute?: boolean;
 }) => {
   const timestamp = truncated_at ? new Date(truncated_at).toISOString() : new Date().toISOString();

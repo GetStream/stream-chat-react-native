@@ -116,7 +116,7 @@ describe('SendMessageDisallowedIndicator', () => {
 
     act(() => {
       client.dispatchEvent({
-        cid: channel.data!.cid,
+        cid: channel.cid,
         own_capabilities: channel.data!.own_capabilities!.filter(
           (capability) => capability !== 'send-message',
         ),
@@ -159,7 +159,9 @@ describe('SendMessageDisallowedIndicator', () => {
           ),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
-        cid: channel.data!.cid,
+        cid: channel.cid,
+        created_at: new Date(),
+        custom: {},
         type: 'channel.updated',
       });
     });
@@ -196,7 +198,7 @@ describe("SendMessageDisallowedIndicator's edited state", () => {
 
     act(() => {
       chatClient.dispatchEvent({
-        cid: customChannel.data!.cid,
+        cid: customChannel.cid,
         own_capabilities: customChannel.data!.own_capabilities!.filter(
           (capability: string) => capability !== 'send-message',
         ),

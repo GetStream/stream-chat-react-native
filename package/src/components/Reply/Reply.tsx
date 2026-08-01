@@ -86,7 +86,7 @@ const RightContent = React.memo(
     }
 
     if (attachment && isFileAttachment(attachment)) {
-      return <FileIcon mimeType={attachment.mime_type} />;
+      return <FileIcon mimeType={attachment.custom?.mime_type} />;
     }
 
     return null;

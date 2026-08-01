@@ -1,11 +1,11 @@
-import type { SharedLocationResponse } from 'stream-chat';
+import type { SharedLocationResponseData } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
 import type { TableRow } from '../types';
 
 export const mapSharedLocationToStorable = (
-  location: SharedLocationResponse,
+  location: SharedLocationResponseData,
 ): TableRow<'locations'> => {
   const {
     channel_cid,

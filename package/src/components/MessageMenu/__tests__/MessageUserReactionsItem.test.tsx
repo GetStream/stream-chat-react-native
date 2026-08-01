@@ -8,6 +8,7 @@ import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/Ch
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { MessageUserReactionsItem } from '../MessageUserReactionsItem';
 
@@ -34,7 +35,11 @@ const MockOverlayReactionsAvatar = () => null;
 const renderComponent = async (props = {}, clientUserID = 'user2') =>
   render(
     <ChatProvider
-      value={{ client: await getTestClientWithUser({ id: clientUserID }) } as ChatContextValue}
+      value={
+        {
+          client: await getTestClientWithUser(generateUser({ id: clientUserID })),
+        } as ChatContextValue
+      }
     >
       <ThemeProvider theme={defaultTheme}>
         <MessageUserReactionsItem

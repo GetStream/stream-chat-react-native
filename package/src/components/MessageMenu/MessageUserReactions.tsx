@@ -4,7 +4,7 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-import { ReactionSortBase } from 'stream-chat';
+import { ReactionSort } from 'stream-chat';
 
 import { EmojiPickerList } from './EmojiPickerList';
 import { useFetchReactions } from './hooks/useFetchReactions';
@@ -51,9 +51,7 @@ export type MessageUserReactionsProps = Partial<Pick<MessagesContextValue, 'supp
     selectedReaction?: string;
   };
 
-const sort: ReactionSortBase = {
-  created_at: -1,
-};
+const sort: ReactionSort = [{ direction: -1, field: 'created_at' }];
 
 export type ReactionSelectorItemType = ReactionData & {
   onSelectReaction: (type: string) => void;

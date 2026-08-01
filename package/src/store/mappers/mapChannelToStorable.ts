@@ -20,7 +20,6 @@ export const mapChannelToStorable = (channel: Channel): TableRow<'channels'> | u
     frozen,
     hidden,
     id,
-    invites,
     last_message_at,
     member_count,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,7 +29,6 @@ export const mapChannelToStorable = (channel: Channel): TableRow<'channels'> | u
     team,
     truncated_at,
     truncated_by,
-    truncated_by_id,
     type,
     updated_at,
     ...extraData
@@ -49,16 +47,15 @@ export const mapChannelToStorable = (channel: Channel): TableRow<'channels'> | u
     frozen,
     hidden,
     id,
-    invites: invites && JSON.stringify(invites),
     lastMessageAt: mapDateTimeToStorable(last_message_at),
     memberCount: member_count,
     muted,
     ownCapabilities: own_capabilities && JSON.stringify(own_capabilities),
     team,
-    truncatedAt: truncated_at,
+    truncatedAt: mapDateTimeToStorable(truncated_at),
     truncatedBy: truncated_by && JSON.stringify(truncated_by),
-    truncatedById: truncated_by_id,
+    truncatedById: truncated_by?.id,
     type,
-    updatedAt: updated_at,
+    updatedAt: mapDateTimeToStorable(updated_at),
   };
 };

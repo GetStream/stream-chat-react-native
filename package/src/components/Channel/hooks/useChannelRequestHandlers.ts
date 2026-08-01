@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 
-import type {
+import {
   Channel,
   ChannelInstanceConfig,
-  Message,
+  localMessageToNewMessagePayload,
+  MessageRequest as Message,
   SendMessageAPIResponse,
   SendMessageOptions,
   StreamChat,
@@ -74,7 +75,7 @@ export const useChannelRequestHandlers = ({
         if (response?.message) {
           return { message: response.message };
         }
-        const fallback = await channel.sendMessage(message as Message, options);
+        const fallback = await channel.sendMessage({ message: message as Message, ...options });
         return { message: fallback.message };
       };
 
@@ -84,7 +85,13 @@ export const useChannelRequestHandlers = ({
 
     if (doUpdateMessageRequest) {
       nextRequestHandlers.updateMessageRequest = async ({ localMessage, options }) => ({
-        message: (await doUpdateMessageRequest(channel.cid, localMessage, options)).message,
+        message: (
+          await doUpdateMessageRequest(
+            channel.cid,
+            { id: localMessage.id, message: localMessageToNewMessagePayload(localMessage) },
+            options,
+          )
+        ).message,
       });
     }
 

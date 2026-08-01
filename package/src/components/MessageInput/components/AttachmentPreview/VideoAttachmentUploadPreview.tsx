@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LocalImageAttachment, LocalVideoAttachment } from 'stream-chat';
+import { FileReference, LocalImageAttachment, LocalVideoAttachment } from 'stream-chat';
 
 import { FileAttachmentUploadPreview } from './FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview } from './ImageAttachmentUploadPreview';
@@ -43,7 +43,10 @@ export const VideoAttachmentUploadPreview = ({
         removeAttachments={removeAttachments}
       />
       {shouldShowMetadataPill ? (
-        <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+        <VideoAttachmentMetadataPill
+          duration={(attachment.localMetadata.file as FileReference).duration}
+          format={'descriptive'}
+        />
       ) : null}
     </>
   ) : (

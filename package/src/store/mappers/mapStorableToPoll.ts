@@ -1,8 +1,8 @@
-import { PollResponse, VotingVisibility } from 'stream-chat';
+import type { PollResponse_old } from 'stream-chat';
 
 import type { TableRow } from '../types';
 
-export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponse => {
+export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponse_old => {
   const {
     allow_answers,
     allow_user_suggested_options,
@@ -27,13 +27,14 @@ export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponse => {
   } = pollRow;
 
   return {
-    allow_answers,
-    allow_user_suggested_options,
+    allow_answers: Boolean(allow_answers),
+    allow_user_suggested_options: Boolean(allow_user_suggested_options),
     answers_count,
-    created_at,
+    created_at: new Date(created_at),
     created_by: JSON.parse(created_by),
     created_by_id,
-    description,
+    custom: {},
+    description: description ?? '',
     enforce_unique_vote,
     id,
     is_closed,
@@ -43,9 +44,9 @@ export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponse => {
     name,
     options: JSON.parse(options),
     own_votes: own_votes ? JSON.parse(own_votes) : [],
-    updated_at,
+    updated_at: new Date(updated_at),
     vote_count,
     vote_counts_by_option: JSON.parse(vote_counts_by_option),
-    voting_visibility: voting_visibility as VotingVisibility | undefined,
+    voting_visibility: voting_visibility ?? '',
   };
 };

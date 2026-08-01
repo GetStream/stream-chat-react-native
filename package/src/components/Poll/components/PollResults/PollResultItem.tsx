@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import {
+  LocalMessage,
+  Poll,
+  PollOptionResponseData,
+  PollVoteResponseData as PollVoteClass,
+} from 'stream-chat';
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 import { PollVote } from './PollVote';
@@ -20,14 +25,14 @@ import { PollModal } from '../PollModal';
 import { PollModalHeader } from '../PollModalHeader';
 
 export type ShowAllVotesButtonProps = {
-  option: PollOption;
+  option: PollOptionResponseData;
   onPress?: ({
     message,
     option,
     poll,
   }: {
     message: LocalMessage;
-    option: PollOption;
+    option: PollOptionResponseData;
     poll: Poll;
   }) => void;
 };
@@ -75,7 +80,7 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
 };
 
 export type PollResultItemProps = {
-  option: PollOption;
+  option: PollOptionResponseData;
   index: number;
 };
 

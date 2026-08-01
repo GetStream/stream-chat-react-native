@@ -61,7 +61,11 @@ export const ThreadMessagePreviewDeliveryStatus = ({
     isReadEventsEnabled: readEvents,
   });
 
-  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
+  if (
+    !channel.data?.custom?.name &&
+    membersWithoutSelf.length === 1 &&
+    !isLastMessageByCurrentUser
+  ) {
     return null;
   }
 

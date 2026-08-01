@@ -141,7 +141,7 @@ export class ImageGalleryStateStore {
           created_at: message?.created_at,
           id: assetId,
           messageId: message?.id,
-          mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.mime_type,
+          mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.custom?.mime_type,
           original_height: attachment.original_height,
           original_width: attachment.original_width,
           thumb_url: attachment.thumb_url,

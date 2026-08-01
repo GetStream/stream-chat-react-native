@@ -1,4 +1,4 @@
-import type { AppSettingsAPIResponse } from 'stream-chat';
+import type { GetApplicationResponse } from 'stream-chat';
 
 import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -7,7 +7,7 @@ export const getAppSettings = async ({
   currentUserId,
 }: {
   currentUserId: string;
-}): Promise<AppSettingsAPIResponse | null> => {
+}): Promise<GetApplicationResponse | null> => {
   SqliteClient.logger?.('info', 'getAppSettings', {
     currentUserId,
   });

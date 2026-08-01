@@ -18,11 +18,11 @@ export const generateMessage = (options: GenerateMessageOptions = {}): LocalMess
   return fromPartial<LocalMessage>({
     attachments: [],
     created_at: timestamp,
-    deleted_at: null,
+    deleted_at: undefined,
     html: '<p>regular</p>',
     id: uuidv4(),
-    message_text_updated_at: timestamp.toISOString(),
-    pinned_at: null,
+    message_text_updated_at: timestamp,
+    pinned_at: undefined,
     status: 'received',
     text: uuidv4(),
     type: 'regular',
@@ -42,7 +42,7 @@ export const generateStaticMessage = (
   return generateMessage({
     created_at: staticDate,
     id: uuidv5(seed, StreamReactNativeNamespace),
-    message_text_updated_at: staticDate.toISOString(),
+    message_text_updated_at: staticDate,
     text: seed,
     updated_at: staticDate,
     ...options,

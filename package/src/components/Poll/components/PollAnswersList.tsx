@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollAnswer, VotingVisibility } from 'stream-chat';
+import { PollVoteResponseData, VotingVisibility } from 'stream-chat';
 
 import { PollButtonProps } from './Button';
 import { PollInputDialog } from './PollInputDialog';
@@ -64,10 +64,10 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 };
 
 export type PollAnswersListProps = PollContextValue & {
-  additionalFlatListProps?: Partial<FlatListProps<PollAnswer>>;
+  additionalFlatListProps?: Partial<FlatListProps<PollVoteResponseData>>;
 };
 
-export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
+export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData }) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
@@ -122,7 +122,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   );
 };
 
-const renderPollAnswerListItem = ({ item }: { item: PollAnswer }) => (
+const renderPollAnswerListItem = ({ item }: { item: PollVoteResponseData }) => (
   <PollAnswerListItem answer={item} />
 );
 

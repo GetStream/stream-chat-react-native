@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, ChannelData } from 'stream-chat';
 
 import { generateChannelResponse } from '../../mock-builders/generator/channel';
 import { getTestClientWithUser } from '../../mock-builders/mock';
@@ -21,8 +21,13 @@ const file: File = {
 
 const createChannel = async (data: { image?: string; name?: string } = {}) => {
   const client = await getTestClientWithUser({ id: 'me' });
-  const response = generateChannelResponse({ channel: data });
-  return client.channel('messaging', response.channel.id, response.channel) as Channel;
+  // `name`/`image` are custom channel fields, nested under `custom` in v10.
+  const response = generateChannelResponse({ channel: { custom: data } });
+  return client.channel(
+    'messaging',
+    response.channel.id,
+    response.channel as unknown as ChannelData,
+  ) as Channel;
 };
 
 describe('EditChannelDetailsStore', () => {

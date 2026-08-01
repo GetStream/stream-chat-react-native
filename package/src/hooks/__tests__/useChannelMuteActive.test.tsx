@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 
 import { renderHook } from '@testing-library/react-native';
-import type { Channel, ChannelMute, Mute } from 'stream-chat';
+import type { Channel, ChannelMute, UserMuteResponse } from 'stream-chat';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useChannelMuteActive } from '../useChannelMuteActive';
@@ -14,7 +14,7 @@ const CHANNEL_CID = 'messaging:test';
 const createClient = ({
   mutedChannels = [],
   mutedUsers = [],
-}: { mutedChannels?: ChannelMute[]; mutedUsers?: Mute[] } = {}) =>
+}: { mutedChannels?: ChannelMute[]; mutedUsers?: UserMuteResponse[] } = {}) =>
   ({
     mutedChannels,
     mutedUsers,
@@ -47,7 +47,7 @@ const createChannel = (
 const mutedChannelEntry = (cid: string) => ({ channel: { cid } }) as unknown as ChannelMute;
 
 const mutedUserEntry = (userId: string) =>
-  ({ target: { id: userId }, user: { id: CURRENT_USER_ID } }) as unknown as Mute;
+  ({ target: { id: userId }, user: { id: CURRENT_USER_ID } }) as unknown as UserMuteResponse;
 
 const createWrapper =
   (client: unknown) =>

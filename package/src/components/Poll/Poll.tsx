@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PollOption as PollOptionClass } from 'stream-chat';
+import { PollOptionResponseData as PollOptionClass } from 'stream-chat';
 
 import { PollOption, ShowAllOptionsButton } from './components';
 import { PollUIStateProvider } from './contexts/PollUIStateContext';

@@ -1,4 +1,4 @@
-import type { Attachment, UserResponse } from 'stream-chat';
+import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
 
 import {
   generateImageAttachment,
@@ -30,6 +30,7 @@ const { isVideoPlayerAvailable } = jest.requireMock('../../native') as {
 };
 
 const createGiphyAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
+  custom: {},
   giphy: {
     fixed_height: {
       height: '200',
@@ -340,6 +341,7 @@ describe('ImageGalleryStateStore', () => {
       const store = new ImageGalleryStateStore();
       const fileAttachment: Attachment = {
         asset_url: 'https://example.com/file.pdf',
+        custom: {},
         type: 'file',
       };
       const message = generateMessage({ attachments: [fileAttachment], id: '1' });
@@ -476,6 +478,7 @@ describe('ImageGalleryStateStore', () => {
     it('should use custom giphyVersion from options', () => {
       const store = new ImageGalleryStateStore({ giphyVersion: 'original' });
       const giphyAttachment: Attachment = {
+        custom: {},
         giphy: {
           fixed_height: { height: '200', url: 'https://giphy.com/fixed.gif', width: '200' },
           original: { height: '400', url: 'https://giphy.com/original.gif', width: '400' },
@@ -880,7 +883,7 @@ describe('ImageGalleryStateStore', () => {
           id: 'msg-1',
         }),
         user: undefined,
-      };
+      } as unknown as LocalMessage;
 
       store.messages = [message];
 

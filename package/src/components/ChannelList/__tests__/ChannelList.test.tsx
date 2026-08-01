@@ -10,7 +10,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react-native';
-import type { Channel as ChannelType, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, StreamChat, UserResponse } from 'stream-chat';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 import {
@@ -53,7 +53,7 @@ jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
  */
 const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => (
   <View accessibilityLabel='list-item' testID={channel.id}>
-    <Text>{(channel.data as { name?: string } | undefined)?.name}</Text>
+    <Text>{channel.data?.custom?.name}</Text>
     <Text>{channel.messagePaginator.headItems[0]?.text}</Text>
   </View>
 );
@@ -114,7 +114,7 @@ describe('ChannelList', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     expectedChannelDetailsBottomSheetOverride = undefined;
-    chatClient = await getTestClientWithUser({ id: 'dan' });
+    chatClient = await getTestClientWithUser({ id: 'dan' } as UserResponse);
     testChannel1 = generateChannelResponse();
     testChannel2 = generateChannelResponse();
     testChannel3 = generateChannelResponse();
@@ -797,7 +797,7 @@ describe('ChannelList', () => {
         act(() =>
           dispatchChannelUpdatedEvent(chatClient, {
             ...testChannel2.channel,
-            name: 'updated',
+            custom: { name: 'updated' },
           }),
         );
 
@@ -823,7 +823,7 @@ describe('ChannelList', () => {
         act(() =>
           dispatchChannelUpdatedEvent(chatClient, {
             ...testChannel2.channel,
-            name: 'updated',
+            custom: { name: 'updated' },
           }),
         );
 

@@ -5,6 +5,7 @@ import {
   LocalMessage,
   MessageResponse,
   PollState,
+  VoiceRecordingAttachment,
 } from 'stream-chat';
 
 import { useGroupedAttachments } from './useGroupedAttachments';
@@ -91,7 +92,12 @@ export const useMessagePreviewText = ({
   if (onlyVoiceRecordings) {
     if (voiceRecordings?.length === 1) {
       return t(`Voice message ({{duration}})`, {
-        duration: dayjs.duration(voiceRecordings?.[0]?.duration ?? 0, 'seconds').format('m:ss'),
+        duration: dayjs
+          .duration(
+            (voiceRecordings?.[0] as VoiceRecordingAttachment)?.custom?.duration ?? 0,
+            'seconds',
+          )
+          .format('m:ss'),
       });
     } else {
       return t('{{count}} Voice messages', { count: voiceRecordings?.length });

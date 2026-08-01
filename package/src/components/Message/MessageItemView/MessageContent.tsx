@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { ColorValue, Platform, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 
+import type { LocalMessage } from 'stream-chat';
+
 import { MessageTextContainer } from './MessageTextContainer';
 
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
@@ -507,8 +509,8 @@ const areEqual = (
   }
 
   const quotedMessageEqual = checkQuotedMessageEquality(
-    prevMessage.quoted_message,
-    nextMessage.quoted_message,
+    prevMessage.quoted_message as LocalMessage | undefined,
+    nextMessage.quoted_message as LocalMessage | undefined,
   );
 
   if (!quotedMessageEqual) {

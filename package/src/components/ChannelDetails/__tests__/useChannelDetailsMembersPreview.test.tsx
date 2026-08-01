@@ -24,7 +24,10 @@ const buildChannel = ({
   }) as unknown as Channel;
 
 const buildMember = (id: string, created_at?: string) =>
-  generateMember({ created_at, user: generateUser({ id, name: id }) });
+  generateMember({
+    created_at: created_at ? new Date(created_at) : undefined,
+    user: generateUser({ id, name: id }),
+  });
 
 describe('useChannelDetailsMembersPreview', () => {
   it('preserves the order of members from channel state', () => {

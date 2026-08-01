@@ -1,4 +1,4 @@
-import type { ChannelAPIResponse } from 'stream-chat';
+import type { ChannelStateResponseFields } from 'stream-chat';
 
 import { getChannelActiveLocations } from './getChannelActiveLocations';
 import { getChannelMessages } from './getChannelMessages';
@@ -25,7 +25,7 @@ export const getChannels = async ({
 }: {
   channelIds: string[];
   currentUserId: string;
-}): Promise<Omit<ChannelAPIResponse, 'duration'>[]> => {
+}): Promise<Omit<ChannelStateResponseFields, 'duration'>[]> => {
   SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
 
   const [channels, cidVsDraft, cidVsMembers, cidVsReads, cidVsMessages, cidVsActiveLocations] =
@@ -51,5 +51,6 @@ export const getChannels = async ({
     messages: cidVsMessages[c.cid] || [],
     pinned_messages: [],
     read: cidVsReads[c.cid] || [],
+    threads: [],
   }));
 };

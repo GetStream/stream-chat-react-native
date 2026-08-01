@@ -65,9 +65,10 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   });
 
   const statusLabel = useA11yLabel(
-    message.status === MessageStatusTypes.SENDING
+    (message as LocalMessage).status === MessageStatusTypes.SENDING
       ? 'a11y/Sending'
-      : message.status === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
+      : (message as LocalMessage).status === MessageStatusTypes.RECEIVED &&
+          status === MessageDeliveryStatus.READ
         ? 'a11y/Read, sent by you'
         : status === MessageDeliveryStatus.DELIVERED
           ? 'a11y/Delivered, sent by you'
@@ -76,7 +77,11 @@ export const ChannelMessagePreviewDeliveryStatus = ({
             : 'a11y/Sending',
   );
 
-  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
+  if (
+    !channel.data?.custom?.name &&
+    membersWithoutSelf.length === 1 &&
+    !isLastMessageByCurrentUser
+  ) {
     return null;
   }
 
@@ -87,9 +92,9 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   return (
     <CompositeAccessibilityProbe label={statusLabel}>
       <View style={styles.container}>
-        {message.status === MessageStatusTypes.SENDING ? (
+        {(message as LocalMessage).status === MessageStatusTypes.SENDING ? (
           <icons.Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
-        ) : message.status === MessageStatusTypes.RECEIVED &&
+        ) : (message as LocalMessage).status === MessageStatusTypes.RECEIVED &&
           status === MessageDeliveryStatus.READ ? (
           <icons.CheckAll
             stroke={semantics.accentPrimary}

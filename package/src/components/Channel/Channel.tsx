@@ -10,7 +10,7 @@ import {
   SendMessageOptions,
   StreamChat,
   Event as StreamEvent,
-  Message as StreamMessage,
+  MessageRequest as StreamMessage,
   Thread,
   UpdateMessageOptions,
 } from 'stream-chat';
@@ -670,9 +670,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const channelData = channel.data;
     if (channelData?.own_capabilities?.includes('send-typing-events')) {
       channel.sendEvent({
-        parent_id: thread?.id,
-        type: 'typing.stop',
-      } as StreamEvent);
+        event: {
+          parent_id: thread?.id,
+          type: 'typing.stop',
+        },
+      } as { event: StreamEvent });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread?.id, channelId]);

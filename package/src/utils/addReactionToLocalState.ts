@@ -70,6 +70,7 @@ const getMessageWithReaction = ({
         count: 1,
         first_reaction_at: reaction.created_at,
         last_reaction_at: reaction.created_at,
+        latest_reactions_by: [],
         sum_scores: score,
       };
 
@@ -114,10 +115,12 @@ export const addReactionToLocalState = async ({
   }
 
   const reaction: ReactionResponse = {
-    created_at: new Date().toISOString(),
+    created_at: new Date(),
+    custom: {},
     message_id: messageId,
+    score: 1,
     type: reactionType,
-    updated_at: new Date().toISOString(),
+    updated_at: new Date(),
     user,
     user_id: user?.id,
   };
