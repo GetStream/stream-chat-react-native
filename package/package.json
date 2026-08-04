@@ -134,7 +134,7 @@
     "babel-jest": "30.0.0",
     "babel-loader": "10.1.1",
     "babel-plugin-module-resolver": "5.0.3",
-    "better-sqlite3": "11.10.0",
+    "better-sqlite3": "12.11.1",
     "i18next-cli": "^1.31.0",
     "jest": "^30.4.2",
     "moment-timezone": "^0.6.0",
