@@ -85,6 +85,22 @@ jobs:
       - name: Setup Android SDK
         uses: amyu/setup-android@v5
 
+      # AGP 8.12 (RN 0.86) does not auto provision the API 37 platform and the
+      # auto-detected install can land under a name Gradle's `android-37` lookup
+      # misses. Install it explicitly into the SDK root Gradle resolves from
+      # (ANDROID_SDK_ROOT/ANDROID_HOME since there is no local.properties here),
+      # otherwise every RN module fails with:
+      # "Failed to find target with hash string 'android-37'".
+      - name: Ensure Android 37 SDK platform & build-tools
+        run: |
+          set -e
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/.android/sdk}}"
+          SDKMANAGER="$(command -v sdkmanager || echo "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager")"
+          echo "sdkmanager=$SDKMANAGER SDK_ROOT=$SDK_ROOT"
+          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses >/dev/null 2>&1 || true
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" "platforms;android-37" "build-tools;37.0.0"
+          ls "$SDK_ROOT/platforms"
+
       - uses: ./.github/actions/ruby-cache
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
