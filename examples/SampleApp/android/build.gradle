@@ -3,10 +3,10 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
     ext {
-        buildToolsVersion = "36.0.0"
+        buildToolsVersion = "37.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 36
-        targetSdkVersion = 36
+        compileSdkVersion = 37
+        targetSdkVersion = 37
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.1.20"
         androidXCore = "1.0.2"
