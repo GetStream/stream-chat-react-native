@@ -33,7 +33,7 @@ export const mapStorableToDraft = ({
   return {
     channel: channel.channel,
     channel_cid: cid,
-    created_at: createdAt,
+    created_at: new Date(createdAt),
     message,
     parent_id: parentId,
     quoted_message: quotedMessage,

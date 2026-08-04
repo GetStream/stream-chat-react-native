@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
+import { PollVoteResponseData as PollVoteClass, VotingVisibility } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
 import { primitives } from '../../../../theme';

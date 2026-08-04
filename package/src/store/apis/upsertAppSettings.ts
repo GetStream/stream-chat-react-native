@@ -1,4 +1,4 @@
-import type { AppSettingsAPIResponse } from 'stream-chat';
+import type { GetApplicationResponse } from 'stream-chat';
 
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -8,7 +8,7 @@ export const upsertAppSettings = async ({
   currentUserId,
   execute = true,
 }: {
-  appSettings: AppSettingsAPIResponse;
+  appSettings: GetApplicationResponse;
   currentUserId: string;
   execute?: boolean;
 }) => {

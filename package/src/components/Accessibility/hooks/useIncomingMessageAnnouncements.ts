@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import type { Channel, Event, MessageResponse } from 'stream-chat';
+import type { Channel, EventPayload, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useAccessibilityContext } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -8,16 +8,21 @@ import { useAccessibilityAnnouncer } from '../useAccessibilityAnnouncer';
 
 const MESSAGE_ANNOUNCEMENT_THROTTLE_MS = 1000;
 
-const isAnnounceableIncomingMessage = (message: MessageResponse, ownUserId?: string): boolean => {
+const isAnnounceableIncomingMessage = (
+  message: MessageResponse | LocalMessage,
+  ownUserId?: string,
+): boolean => {
   const messageUserId = message.user?.id;
   if (!message.id || !messageUserId || messageUserId === ownUserId) return false;
+  // `status` only exists on `LocalMessage`, not on a bare `MessageResponse`.
+  const status = 'status' in message ? message.status : undefined;
   return (
     message.type !== 'deleted' &&
     message.type !== 'ephemeral' &&
     message.type !== 'error' &&
     message.type !== 'system' &&
-    message.status !== 'failed' &&
-    message.status !== 'sending'
+    status !== 'failed' &&
+    status !== 'sending'
   );
 };
 
@@ -104,7 +109,7 @@ export const useIncomingMessageAnnouncements = ({
   useEffect(() => {
     if (!enabled || !announceNewMessages || !channel) return;
 
-    const handleMessageNew = (event: Event) => {
+    const handleMessageNew = (event: EventPayload<'message.new'>) => {
       const message = event.message;
       if (!message) return;
       if (

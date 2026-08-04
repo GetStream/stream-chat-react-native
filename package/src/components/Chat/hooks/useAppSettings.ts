@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
+import type { GetApplicationResponse, StreamChat } from 'stream-chat';
 
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
@@ -9,9 +9,9 @@ export const useAppSettings = (
   isOnline: boolean | null,
   enableOfflineSupport: boolean,
   initialisedDatabase: boolean,
-): AppSettingsAPIResponse | null => {
-  const [appSettings, setAppSettings] = useState<AppSettingsAPIResponse | null>(null);
-  const appSettingsPromise = useRef<Promise<AppSettingsAPIResponse | null>>(null);
+): GetApplicationResponse | null => {
+  const [appSettings, setAppSettings] = useState<GetApplicationResponse | null>(null);
+  const appSettingsPromise = useRef<Promise<GetApplicationResponse | null>>(null);
   const fetchedAppSettings = useRef(false);
   const isMounted = useIsMountedRef();
 

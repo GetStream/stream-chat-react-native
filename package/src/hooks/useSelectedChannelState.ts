@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import type { Channel, EventTypes } from 'stream-chat';
+import type { Channel, EventType } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 const noop = () => {};
@@ -8,12 +8,12 @@ const noop = () => {};
 export function useSelectedChannelState<O>(_: {
   channel: Channel;
   selector: (channel: Channel) => O;
-  stateChangeEventKeys?: EventTypes[];
+  stateChangeEventKeys?: EventType[];
 }): O;
 export function useSelectedChannelState<O>(_: {
   selector: (channel: Channel) => O;
   channel?: Channel | undefined;
-  stateChangeEventKeys?: EventTypes[];
+  stateChangeEventKeys?: EventType[];
 }): O | undefined;
 export function useSelectedChannelState<O>({
   channel,
@@ -22,7 +22,7 @@ export function useSelectedChannelState<O>({
 }: {
   selector: (channel: Channel) => O;
   channel?: Channel;
-  stateChangeEventKeys?: EventTypes[];
+  stateChangeEventKeys?: EventType[];
 }): O | undefined {
   const subscribe = useCallback(
     (onStoreChange: (value: O) => void) => {

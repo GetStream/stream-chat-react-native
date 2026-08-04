@@ -1,4 +1,4 @@
-import type { LocalMessage, MessageResponse } from 'stream-chat';
+import type { LocalMessage, MessageLabel, MessageResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
@@ -46,7 +46,7 @@ export const mapMessageToStorable = (
     reactionGroups: JSON.stringify(reaction_groups),
     shared_location: JSON.stringify(shared_location),
     text,
-    type,
+    type: type as MessageLabel,
     updatedAt: mapDateTimeToStorable(updated_at),
     userId: user?.id,
   };

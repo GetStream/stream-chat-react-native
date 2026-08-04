@@ -6736,6 +6736,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stream-io/logger@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@stream-io/logger@npm:2.0.0"
+  checksum: 10c0/b12b1a8005b99b7fbdcfd91dbda08b5021da9044f861bb574005975d43dcfe9f406795015c6ddadc3a18cb9dda0c949e303b6c454b9f5139fa24701bed5a0bd7
+  languageName: node
+  linkType: hard
+
 "@swc/core-darwin-arm64@npm:1.15.33":
   version: 1.15.33
   resolution: "@swc/core-darwin-arm64@npm:1.15.33"
@@ -19962,6 +19969,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A."
   dependencies:
+    "@stream-io/logger": "npm:^2.0.0"
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
     axios: "npm:^1.16.1"

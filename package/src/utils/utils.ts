@@ -75,11 +75,7 @@ export const getIndicatorTypeForFileState = (
  * @returns boolean
  */
 export const isBlockedMessage = (message: LocalMessage) => {
-  return (
-    message.type === 'error' &&
-    (message.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_REMOVE' ||
-      message.moderation?.action === 'remove')
-  );
+  return message.type === 'error' && message.moderation?.action === 'remove';
 };
 
 /**
@@ -88,9 +84,7 @@ export const isBlockedMessage = (message: LocalMessage) => {
  * @returns boolean
  */
 export const isBouncedMessage = (message: LocalMessage) =>
-  message.type === 'error' &&
-  (message?.moderation_details?.action === 'MESSAGE_RESPONSE_ACTION_BOUNCE' ||
-    message?.moderation?.action === 'bounce');
+  message.type === 'error' && message?.moderation?.action === 'bounce';
 
 /**
  * Utility to check if the message is a edited message.
@@ -160,11 +154,12 @@ export const stringifyMessage = ({
     latest_reactions,
     reaction_groups,
     reply_count,
-    status,
     text,
     type,
     updated_at,
   } = message;
+  // `status` only exists on `LocalMessage`, not on a bare `MessageResponse`.
+  const status = 'status' in message ? message.status : undefined;
   const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}`;
   if (!includeReactions) {
     return baseFieldsString;
@@ -320,8 +315,8 @@ export const findInMessagesByDate = (
  * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
  */
 export const checkMessageEquality = (
-  prevMessage?: LocalMessage | null,
-  nextMessage?: LocalMessage | null,
+  prevMessage?: LocalMessage | MessageResponse | null,
+  nextMessage?: LocalMessage | MessageResponse | null,
 ): boolean => {
   const prevMessageExists = !!prevMessage;
   const nextMessageExists = !!nextMessage;
@@ -331,8 +326,12 @@ export const checkMessageEquality = (
   if (prevMessageExists !== nextMessageExists) {
     return false;
   }
+  // `status` only exists on optimistic/local messages (`LocalMessage`); a quoted
+  // `MessageResponse` won't carry it, so read it through a guard instead of a cast.
+  const prevStatus = prevMessage && 'status' in prevMessage ? prevMessage.status : undefined;
+  const nextStatus = nextMessage && 'status' in nextMessage ? nextMessage.status : undefined;
   const messageEqual =
-    prevMessage?.status === nextMessage?.status &&
+    prevStatus === nextStatus &&
     prevMessage?.type === nextMessage?.type &&
     prevMessage?.text === nextMessage?.text &&
     prevMessage?.pinned === nextMessage?.pinned &&
@@ -352,8 +351,8 @@ export const checkMessageEquality = (
  * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
  */
 export const checkQuotedMessageEquality = (
-  prevQuotedMessage?: LocalMessage | null,
-  nextQuotedMessage?: LocalMessage | null,
+  prevQuotedMessage?: LocalMessage | MessageResponse | null,
+  nextQuotedMessage?: LocalMessage | MessageResponse | null,
 ): boolean => {
   const prevQuotedMessageExists = !!prevQuotedMessage;
   const nextQuotedMessageExists = !!nextQuotedMessage;

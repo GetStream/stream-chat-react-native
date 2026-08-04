@@ -67,7 +67,7 @@ export const FileAttachmentUploadPreview = ({
         <FileUploadInProgressIndicator
           localId={attachment.localMetadata.id}
           sourceUrl={sourceUrl}
-          totalBytes={attachment.file_size}
+          totalBytes={attachment.custom?.file_size}
         />
       );
     }
@@ -83,7 +83,7 @@ export const FileAttachmentUploadPreview = ({
     FileUploadNotSupportedIndicator,
     FileUploadRetryIndicator,
     attachment.localMetadata,
-    attachment.file_size,
+    attachment.custom?.file_size,
     indicatorType,
     onRetryHandler,
     sourceUrl,

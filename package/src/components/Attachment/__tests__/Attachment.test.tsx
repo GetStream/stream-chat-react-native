@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import type { ReactTestInstance } from 'react-test-renderer';
 
 import { render, waitFor } from '@testing-library/react-native';
+import type { Attachment as AttachmentType } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { AudioPlayerProvider } from '../../../contexts/audioPlayerContext/AudioPlayerContext';
@@ -118,9 +119,8 @@ describe('Attachment', () => {
     const { isSoundPackageAvailable } = require('../../../native');
     isSoundPackageAvailable.mockReturnValue(true);
     const attachment = generateAudioAttachment({
-      duration: 10,
-      waveform_data: [0.2, 0.6, 0.4],
-    });
+      custom: { duration: 10, waveform_data: [0.2, 0.6, 0.4] },
+    } as Partial<AttachmentType>);
     const { getByLabelText, root } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -134,9 +134,8 @@ describe('Attachment', () => {
     const { isSoundPackageAvailable } = require('../../../native');
     isSoundPackageAvailable.mockReturnValue(true);
     const attachment = generateAudioAttachment({
-      duration: 10,
-      waveform_data: [0.2, 0.6, 0.4],
-    });
+      custom: { duration: 10, waveform_data: [0.2, 0.6, 0.4] },
+    } as Partial<AttachmentType>);
     const quotedMessage = generateMessage();
     const message = generateMessage({
       attachments: [attachment],
@@ -163,10 +162,9 @@ describe('Attachment', () => {
     const { isSoundPackageAvailable } = require('../../../native');
     isSoundPackageAvailable.mockReturnValue(true);
     const attachment = generateAudioAttachment({
-      duration: 10,
+      custom: { duration: 10, waveform_data: [0.2, 0.6, 0.4] },
       type: FileTypes.VoiceRecording,
-      waveform_data: [0.2, 0.6, 0.4],
-    });
+    } as Partial<AttachmentType>);
     const quotedMessage = generateMessage();
     const message = generateMessage({
       attachments: [attachment],
@@ -193,9 +191,8 @@ describe('Attachment', () => {
     const { isSoundPackageAvailable } = require('../../../native');
     isSoundPackageAvailable.mockReturnValue(true);
     const attachment = generateAudioAttachment({
-      duration: 10,
-      waveform_data: [0.2, 0.6, 0.4],
-    });
+      custom: { duration: 10, waveform_data: [0.2, 0.6, 0.4] },
+    } as Partial<AttachmentType>);
     const quotedMessage = generateMessage();
     const message = generateMessage({
       attachments: [attachment, generateAudioAttachment()],

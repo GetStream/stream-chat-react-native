@@ -26,6 +26,10 @@ export const VideoAttachmentUploadPreview = ({
   const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const shouldShowMetadataPill =
     allowSendBeforeAttachmentsUpload || attachment.localMetadata.uploadState !== 'uploading';
+  // `localMetadata.file` is `File | FileReference`; only the RN `FileReference` carries a
+  // `duration` (and a required `uri` to discriminate on), so read it through a guard.
+  const localFile = attachment.localMetadata.file;
+  const duration = 'uri' in localFile ? localFile.duration : undefined;
 
   return previewUri ? (
     <>
@@ -43,7 +47,7 @@ export const VideoAttachmentUploadPreview = ({
         removeAttachments={removeAttachments}
       />
       {shouldShowMetadataPill ? (
-        <VideoAttachmentMetadataPill duration={attachment.duration} format={'descriptive'} />
+        <VideoAttachmentMetadataPill duration={duration} format={'descriptive'} />
       ) : null}
     </>
   ) : (

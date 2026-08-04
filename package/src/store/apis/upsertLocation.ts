@@ -1,4 +1,4 @@
-import type { SharedLocationResponse } from 'stream-chat';
+import type { SharedLocationResponseData } from 'stream-chat';
 
 import { mapSharedLocationToStorable } from '../mappers/mapSharedLocationToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
@@ -9,7 +9,7 @@ export const upsertLocation = async ({
   execute = true,
   location,
 }: {
-  location: SharedLocationResponse;
+  location: SharedLocationResponseData;
   execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

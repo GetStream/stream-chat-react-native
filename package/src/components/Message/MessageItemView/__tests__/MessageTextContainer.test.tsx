@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
+import type { UserResponse } from 'stream-chat';
 
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
@@ -74,7 +75,7 @@ describe('MessageTextContainer', () => {
   });
 
   it('should display a translated message if applicable', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' });
+    const chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' } as UserResponse);
 
     const message = {
       i18n: {

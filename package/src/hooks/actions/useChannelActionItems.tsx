@@ -230,7 +230,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   }
 
   const leaveWithConfirmation = (...args: Parameters<ChannelActionHandler>) => {
-    const channelName = channel.data?.name;
+    const channelName = channel.data?.custom?.name;
     let name: string;
     if (channelName) {
       name = channelName;

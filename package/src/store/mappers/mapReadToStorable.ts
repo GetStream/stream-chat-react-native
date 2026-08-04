@@ -1,4 +1,4 @@
-import type { ReadResponse } from 'stream-chat';
+import type { ReadStateResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
@@ -9,7 +9,7 @@ export const mapReadToStorable = ({
   read,
 }: {
   cid: string;
-  read: ReadResponse;
+  read: ReadStateResponse;
 }): TableRow<'reads'> => {
   const {
     last_read,

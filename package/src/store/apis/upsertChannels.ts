@@ -1,4 +1,4 @@
-import type { ChannelAPIResponse, ChannelMemberResponse } from 'stream-chat';
+import type { ChannelMemberResponse, ChannelStateResponseFields } from 'stream-chat';
 
 import { upsertDraft } from './upsertDraft';
 import { upsertLocation } from './upsertLocation';
@@ -17,26 +17,30 @@ export const upsertChannels = async ({
   execute = true,
   isLatestMessagesSet,
 }: {
-  channels: ChannelAPIResponse[];
+  channels: ChannelStateResponseFields[];
   execute?: boolean;
   isLatestMessagesSet?: boolean;
 }) => {
   // Update the database only if the query is provided.
   let queries: PreparedQueries[] = [];
 
-  const channelIds = channels.map((channel) => channel.channel.cid);
+  const channelIds = channels.map((channel) => channel.channel?.cid);
 
   SqliteClient.logger?.('info', 'upsertChannels', {
     channelIds,
   });
 
   for (const channel of channels) {
-    queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
+    const channelData = channel.channel;
+    if (!channelData) {
+      continue;
+    }
+    queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channelData)));
 
     const { active_live_locations, draft, members, membership, messages, read } = channel;
     if (
       membership &&
-      !members.includes((m: ChannelMemberResponse) => m.user?.id === membership.user?.id)
+      !members.some((m: ChannelMemberResponse) => m.user?.id === membership.user?.id)
     ) {
       members.push({ ...membership, user_id: membership.user?.id });
     }
@@ -58,7 +62,7 @@ export const upsertChannels = async ({
 
     queries = queries.concat(
       await upsertMembers({
-        cid: channel.channel.cid,
+        cid: channelData.cid,
         execute: false,
         members,
       }),
@@ -67,7 +71,7 @@ export const upsertChannels = async ({
     if (read) {
       queries = queries.concat(
         await upsertReads({
-          cid: channel.channel.cid,
+          cid: channelData.cid,
           execute: false,
           reads: read,
         }),

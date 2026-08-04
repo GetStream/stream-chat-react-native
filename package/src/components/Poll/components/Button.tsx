@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { LocalMessage, Poll, PollOption } from 'stream-chat';
+import { LocalMessage, Poll, PollOptionResponseData } from 'stream-chat';
 
 import { Button, ButtonProps } from '../../ui';
 
@@ -10,7 +10,7 @@ export type PollButtonProps = {
 };
 
 export type PollVoteButtonProps = {
-  option: PollOption;
+  option: PollOptionResponseData;
   style?: StyleProp<ViewStyle>;
 } & Pick<PollButtonProps, 'onPress'>;
 

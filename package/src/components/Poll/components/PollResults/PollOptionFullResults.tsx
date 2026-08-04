@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import { PollOptionResponseData, PollVoteResponseData as PollVoteClass } from 'stream-chat';
 
 import { PollVote } from './PollVote';
 
@@ -18,7 +18,7 @@ import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagi
 import { usePollState } from '../../hooks/usePollState';
 
 export type PollOptionFullResultsProps = PollContextValue & {
-  option: PollOption;
+  option: PollOptionResponseData;
   additionalFlatListProps?: Partial<FlatListProps<PollVoteClass>>;
 };
 

@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel, StreamChat, UserResponse, UserResponseCommonFields } from 'stream-chat';
 
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
@@ -269,7 +269,7 @@ describe('ChannelPreview', () => {
           {
             unread_channels: 2,
             unread_messages: 5,
-            user: { id: 'random-id' },
+            user: { id: 'random-id' } as UserResponseCommonFields,
           },
         );
       });
@@ -304,7 +304,7 @@ describe('ChannelPreview', () => {
           {
             unread_channels: 2,
             unread_messages: 5,
-            user: { id: clientUser.id },
+            user: { id: clientUser.id } as UserResponseCommonFields,
           },
         );
       });
@@ -348,7 +348,7 @@ describe('ChannelPreview', () => {
         {
           unread_channels: 2,
           unread_messages: 5,
-          user: { id: clientUser.id },
+          user: { id: clientUser.id } as UserResponseCommonFields,
         },
       );
     });
@@ -405,7 +405,7 @@ describe('ChannelPreview', () => {
   });
 
   it('displays messages translated if applicable', async () => {
-    chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' });
+    chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' } as UserResponse);
 
     const message = {
       i18n: {

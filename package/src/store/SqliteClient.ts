@@ -16,7 +16,7 @@ try {
   // 2. Offline support is disabled, in which case this library is not installed.
 }
 
-import { Logger } from 'stream-chat';
+import type { Sink } from 'stream-chat';
 
 import { DB_LOCATION, DB_NAME } from './constants';
 import { tables } from './schema';
@@ -32,7 +32,7 @@ export class SqliteClient {
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
-  static logger: Logger | undefined;
+  static logger: Sink | undefined;
   static db: _InternalDB | undefined;
 
   static getDbVersion = () => SqliteClient.dbVersion;

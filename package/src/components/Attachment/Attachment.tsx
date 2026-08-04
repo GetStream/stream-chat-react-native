@@ -30,7 +30,6 @@ import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUplo
 import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
-import type { DefaultAttachmentData } from '../../types/types';
 import { FileTypes } from '../../types/types';
 import { isLocalUrl } from '../../utils/utils';
 
@@ -189,15 +188,15 @@ const MessageAudioAttachment = ({
   index,
   message,
 }: MessageAudioAttachmentProps) => {
-  const localId = (attachment as DefaultAttachmentData).localId;
-  const sourceUrl = attachment.asset_url ?? attachment.originalFile?.uri;
+  const localId = attachment.custom?.localId;
+  const sourceUrl = attachment.asset_url ?? attachment.custom?.originalFile?.uri;
   const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
   const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
   const indicator = pendingUpload.isUploading ? (
     <AttachmentFileUploadProgressIndicator
       localId={localId}
       sourceUrl={sourceUrl}
-      totalBytes={attachment.file_size}
+      totalBytes={attachment.custom?.file_size}
     />
   ) : undefined;
 

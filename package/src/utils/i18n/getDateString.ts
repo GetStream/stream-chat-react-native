@@ -1,4 +1,4 @@
-import type { TranslationLanguages } from 'stream-chat';
+import type { TranslationLanguage } from 'stream-chat';
 
 import { calendarFormats } from './calendarFormats';
 import { TimestampFormatterOptions } from './types';
@@ -95,7 +95,7 @@ type DateStringForA11yOptions = {
   }>;
   date?: string | Date;
   tDateTimeParser?: TranslatorFunctions['tDateTimeParser'];
-  userLanguage?: TranslationLanguages;
+  userLanguage?: TranslationLanguage;
 };
 
 /**

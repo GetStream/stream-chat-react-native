@@ -1,10 +1,13 @@
-import type { ChannelAPIResponse } from 'stream-chat';
+import type { ChannelStateResponseFields } from 'stream-chat';
 
 import type { TableRow } from '../types';
 
 export const mapStorableToChannel = (
   channelRow: TableRow<'channels'>,
-): Omit<ChannelAPIResponse, 'duration' | 'messages' | 'members' | 'pinned_messages'> => {
+): Omit<
+  ChannelStateResponseFields,
+  'duration' | 'messages' | 'members' | 'pinned_messages' | 'threads'
+> => {
   const {
     autoTranslationEnabled,
     autoTranslationLanguage,

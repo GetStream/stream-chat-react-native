@@ -298,7 +298,7 @@ PODS:
     - React-utils
     - ReactNativeDependencies
     - Yoga
-  - React-Core-prebuilt (0.86.0):
+  - React-Core-prebuilt (0.86.2):
     - ReactNativeDependencies
   - React-Core/CoreModulesHeaders (0.86.2):
     - hermes-engine
@@ -2355,9 +2355,9 @@ PODS:
     - React-runtimeexecutor
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-  - ReactAppDependencyProvider (0.86.0):
+  - ReactAppDependencyProvider (0.86.2):
     - ReactCodegen
-  - ReactCodegen (0.86.0):
+  - ReactCodegen (0.86.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2857,7 +2857,7 @@ PODS:
   - SDWebImageWebPCoder (0.15.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - stream-chat-react-native (9.7.1):
+  - stream-chat-react-native (9.7.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3291,7 +3291,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 57270ccc2b77472d7e85c4cbe45972564eff78bb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 766ace00c6b10d8148408f329d10c4f051931850
-  hermes-engine: 188393eb43a0cce2dfbf912e6d22c7bb6469957d
+  hermes-engine: 38b6a452e40fa51e26047d362f132f386320507b
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3309,7 +3309,7 @@ SPEC CHECKSUMS:
   React: 4b2532a459d15e1adf6c22d3e399e5c85a94220f
   React-callinvoker: 0b8ce4057e02a0bd15cf0532596e8eb8c0392e92
   React-Core: 5af045531a540ba3f65f07de1e3f585ddfb27948
-  React-Core-prebuilt: 13924a267683b3d6fa4bde9c80380becf83a9c5c
+  React-Core-prebuilt: 39eb00d8ba4922167a3a70e2039b102fe42b6fe1
   React-CoreModules: 99b194a721de84ccfc1be149a0de52647dc38c0e
   React-cxxreact: b7e8e254074fd8111d147202b391ccf7816946a6
   React-debug: 3281bfefe5ece9a9d8b28bec3f871db229f9d8d8
@@ -3379,8 +3379,8 @@ SPEC CHECKSUMS:
   React-utils: 25a0beadc5eacbffeb965c7024826b1233dbedc6
   React-viewtransitionnativemodule: 8f1d4895e081e0b2f0a98069c098eb40be032138
   React-webperformancenativemodule: 5bddf6c7eecda8a3ce48b82609008965cc9d94c2
-  ReactAppDependencyProvider: dcdd0e1b9559a6d8d8aea05286f4ed085091978e
-  ReactCodegen: cd296de5e1c422deebafff34134d1721b5c29704
+  ReactAppDependencyProvider: 0e13d430eadac8a2ef18515a860d5c59df05b475
+  ReactCodegen: b4e2c5f0d9415b8fe2faf163fca6f40c62f9666a
   ReactCommon: 9002f006f571256348994183f7d4387aa7cf84e8
   ReactNativeDependencies: 2bd6854ade79bf1b60586d1ab7813a389df1b6bf
   RNCClipboard: 7a7d4557bfd3370b35c99dfecd92ae7b9fc4948a
@@ -3399,7 +3399,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  stream-chat-react-native: b3a7450925e3744152f7a5ee008310274debd6c7
+  stream-chat-react-native: e97f6d3ed0c2828b20610ffc0023ad7f9c90738d
   Teleport: c56b30b08bd20d10da1efb0f21c6bc50c269ee6a
   Yoga: 542a30dafe5b0f5f1d9f185ea7b2a3811ac54801
 

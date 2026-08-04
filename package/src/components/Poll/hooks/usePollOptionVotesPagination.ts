@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
-import { isVoteAnswer, PollOption, PollOptionVotesQueryParams, PollVote } from 'stream-chat';
+import {
+  isVoteAnswer,
+  PollOptionResponseData,
+  PollOptionVotesQueryParams,
+  PollVoteResponseData,
+} from 'stream-chat';
 
 import { useChatContext, usePollContext } from '../../../contexts';
 
 export type UsePollOptionVotesPaginationParams = {
-  option: PollOption;
+  option: PollOptionResponseData;
   loadFirstPage?: boolean;
   paginationParams?: PollOptionVotesQueryParams;
 };
@@ -17,7 +22,7 @@ export type UsePollVotesReturnType = {
   loading: boolean;
   loadMore: () => void;
   next: string | null | undefined;
-  votes: PollVote[];
+  votes: PollVoteResponseData[];
 };
 
 /**
@@ -27,7 +32,7 @@ export type UsePollVotesReturnType = {
  * automatically be updated and trigger a state change when paginating further. Querying for votes
  * can only be done on an option by option basis.
  *
- * @param option {PollOption} The option for which we want to load the votes.
+ * @param option {PollOptionResponseData} The option for which we want to load the votes.
  * @param loadFirstPage {boolean} Signifies whether the first page should be automatically loaded whenever
  * the hook is first called.
  * @param paginationParams {PollOptionVotesQueryParams} The pagination params we might want to use for our custom
@@ -45,7 +50,7 @@ export const usePollOptionVotesPagination = ({
   const { poll } = usePollContext();
   const { client } = useChatContext();
 
-  const [votes, setVotes] = useState<PollVote[]>([]);
+  const [votes, setVotes] = useState<PollVoteResponseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
   const cursorRef = useRef<string | null>(undefined);
@@ -64,7 +69,7 @@ export const usePollOptionVotesPagination = ({
       const { next: newNext, votes } = await poll.queryOptionVotes({
         filter: { ...optionFilter, ...paginationParams?.filter },
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
-        sort: { created_at: -1, ...paginationParams?.sort },
+        sort: [{ direction: -1, field: 'created_at' }, ...(paginationParams?.sort ?? [])],
       });
       cursorRef.current = newNext || null;
       setVotes((prev) => uniqBy([...prev, ...votes], 'id'));
@@ -84,7 +89,7 @@ export const usePollOptionVotesPagination = ({
 
   // TODO: Possibly generalize these in a utility hook.
   useEffect(() => {
-    const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
+    const castedListeners = (['poll.vote_casted', 'poll.vote_changed'] as const).map((eventName) =>
       client.on(eventName, (event) => {
         if (event.poll?.id && event.poll.id !== poll.id) {
           return;

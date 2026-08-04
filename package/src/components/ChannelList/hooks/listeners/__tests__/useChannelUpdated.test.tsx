@@ -23,8 +23,8 @@ describe('useChannelUpdated', () => {
       channel: {
         cid: mockChannel.cid,
       } as ChannelResponse,
-      type: 'channel.updated' as Event['type'],
-    };
+      type: 'channel.updated',
+    } as unknown as Event;
 
     const mockClient = {
       off: jest.fn(),

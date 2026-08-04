@@ -18,7 +18,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { DefaultAttachmentData } from '../../types/types';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
@@ -52,7 +51,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   } = props;
   const { FilePreview } = useComponentsContext();
 
-  const localId = (attachment as DefaultAttachmentData).localId;
+  const localId = attachment.custom?.localId;
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -98,8 +97,8 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           indicator={
             <AttachmentFileUploadProgressIndicator
               localId={localId}
-              sourceUrl={attachment.asset_url ?? attachment.originalFile?.uri}
-              totalBytes={attachment.file_size}
+              sourceUrl={attachment.asset_url ?? attachment.custom?.originalFile?.uri}
+              totalBytes={attachment.custom?.file_size}
             />
           }
           styles={stylesProp}

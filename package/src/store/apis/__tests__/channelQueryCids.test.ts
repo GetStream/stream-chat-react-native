@@ -22,7 +22,7 @@ describe('channel query cids', () => {
       options: {
         predefined_filter: 'user_messaging',
       },
-      sort: {},
+      sort: [],
     });
     await upsertCidsForQuery({
       cids: ['messaging:channel-2'],
@@ -30,7 +30,7 @@ describe('channel query cids', () => {
       options: {
         predefined_filter: 'team_channels',
       },
-      sort: {},
+      sort: [],
     });
 
     await expect(
@@ -39,7 +39,7 @@ describe('channel query cids', () => {
         options: {
           predefined_filter: 'user_messaging',
         },
-        sort: {},
+        sort: [],
       }),
     ).resolves.toEqual(['messaging:channel-1']);
     await expect(
@@ -48,7 +48,7 @@ describe('channel query cids', () => {
         options: {
           predefined_filter: 'team_channels',
         },
-        sort: {},
+        sort: [],
       }),
     ).resolves.toEqual(['messaging:channel-2']);
   });

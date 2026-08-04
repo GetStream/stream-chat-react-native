@@ -13,8 +13,8 @@ import { lookup as lookupMimeType } from 'mime-types';
 import {
   LocalMessage,
   MessageComposer,
+  MessageRequest as StreamMessage,
   SendMessageOptions,
-  Message as StreamMessage,
   UpdateMessageOptions,
   UploadRequestFn,
 } from 'stream-chat';
@@ -456,7 +456,7 @@ export const MessageInputProvider = ({
           }
           await value.sendMessage({
             localMessage,
-            message,
+            message: message as StreamMessage,
             options: sendOptions,
           });
         } catch (error) {
@@ -510,7 +510,10 @@ export const MessageInputProvider = ({
           file.type ||
           (typeof fallbackMimeType === 'string' ? fallbackMimeType : 'application/octet-stream'),
       };
-      uploadAbortControllerRef.current.set(file.name, client.createAbortControllerForNextRequest());
+      uploadAbortControllerRef.current.set(
+        file.name,
+        client.api.createAbortControllerForNextRequest(),
+      );
       const fileURI = normalizedFile.type.includes('image')
         ? await compressedImageURI(normalizedFile, value.compressImageQuality)
         : normalizedFile.uri;

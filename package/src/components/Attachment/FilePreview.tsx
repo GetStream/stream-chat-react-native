@@ -44,9 +44,13 @@ export const FilePreview = (props: FilePreviewProps) => {
     },
   } = useTheme();
 
+  // `duration` is only populated for audio / voice-recording attachments, where it lives under
+  // `custom` (untyped on the base `Attachment`, hence the narrow field read).
+  const duration = (attachment.custom as { duration?: number } | undefined)?.duration;
+
   return (
     <View style={[styles.container, container, stylesProp.container]}>
-      <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentIconSize} />
+      <FileAttachmentIcon mimeType={attachment.custom?.mime_type} size={attachmentIconSize} />
       <View style={[styles.details, details, stylesProp.details]}>
         <Text numberOfLines={titleNumberOfLines} style={[styles.title, title, stylesProp.title]}>
           {attachment.title}
@@ -55,9 +59,9 @@ export const FilePreview = (props: FilePreviewProps) => {
           indicator
         ) : (
           <Text style={[styles.size, fileSize, stylesProp.size]}>
-            {attachment.duration
-              ? getDurationLabelFromDuration(attachment.duration)
-              : getFileSizeDisplayText(attachment.file_size)}
+            {duration
+              ? getDurationLabelFromDuration(duration)
+              : getFileSizeDisplayText(attachment.custom?.file_size)}
           </Text>
         )}
       </View>

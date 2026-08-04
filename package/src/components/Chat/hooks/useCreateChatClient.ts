@@ -33,7 +33,7 @@ export const useCreateChatClient = ({
   const [cachedOptions] = useState(options);
 
   useEffect(() => {
-    const client = new StreamChat(apiKey, undefined, cachedOptions);
+    const client = new StreamChat(apiKey, cachedOptions);
     let didUserConnectInterrupt = false;
 
     const connectionPromise = client.connectUser(cachedUserData, tokenOrProvider).then(() => {

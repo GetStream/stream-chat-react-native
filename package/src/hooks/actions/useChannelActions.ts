@@ -477,7 +477,8 @@ export const useChannelActions = (channel: Channel) => {
         } else {
           const { file } = doFileUploadRequest
             ? await doFileUploadRequest(image)
-            : await client.uploadImage(image.uri, image.name, image.type);
+            : // eslint-disable-next-line no-underscore-dangle -- LLC's positional RN image-upload helper
+              await client.uploadImage_(image.uri, image.name, image.type);
           await channel.updatePartial({ set: { image: file } });
         }
         addNotification({
@@ -510,7 +511,7 @@ export const useChannelActions = (channel: Channel) => {
 
     try {
       if (otherUser?.user?.id) {
-        await client.unBlockUser(otherUser.user.id);
+        await client.unblockUser(otherUser.user.id);
         addNotification({
           message: t('User unblocked'),
           options: { severity: 'success', type: 'api:user:unblock:success' },

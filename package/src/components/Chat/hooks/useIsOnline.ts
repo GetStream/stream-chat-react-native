@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import NetInfo, { NetInfoSubscription } from '@react-native-community/netinfo';
 
-import type { StreamChat, Event as StreamEvent } from 'stream-chat';
+import type { EventPayload, StreamChat } from 'stream-chat';
 
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
@@ -40,7 +40,7 @@ export const useIsOnline = (client: StreamChat, closeConnectionOnBackground = tr
   useAppStateListener(onForeground, onBackground);
 
   useEffect(() => {
-    const handleChangedEvent = (event: StreamEvent) => {
+    const handleChangedEvent = (event: EventPayload<'connection.changed'>) => {
       setConnectionRecovering(!event.online);
       setIsOnline(event.online || false);
     };

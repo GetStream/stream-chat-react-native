@@ -109,7 +109,7 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     }
 
     try {
-      await client.unBlockUser(user.id);
+      await client.unblockUser(user.id);
       addNotification({
         message: t('User unblocked'),
         options: { severity: 'success', type: 'api:user:unblock:success' },

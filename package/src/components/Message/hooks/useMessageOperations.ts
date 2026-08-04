@@ -1,4 +1,4 @@
-import { DeleteMessageOptions, LocalMessage, MessageResponse, Reaction } from 'stream-chat';
+import { DeleteMessageOptions, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -88,7 +88,7 @@ export const useMessageOperations = (): MessageOperations => {
       await target.addReactionWithLocalUpdate({
         messageId,
         options: { enforce_unique: enforceUniqueReaction },
-        reaction: { type } as Reaction,
+        reaction: { type },
       });
     },
   );
@@ -119,11 +119,11 @@ export const useMessageOperations = (): MessageOperations => {
 
       let options: DeleteMessageOptions = {};
       if (typeof optionsOrHardDelete === 'boolean') {
-        options = optionsOrHardDelete ? { hardDelete: true } : {};
-      } else if (optionsOrHardDelete?.deleteForMe) {
-        options = { deleteForMe: true };
-      } else if (optionsOrHardDelete?.hardDelete) {
-        options = { hardDelete: true };
+        options = optionsOrHardDelete ? { hard: true } : {};
+      } else if (optionsOrHardDelete?.delete_for_me) {
+        options = { delete_for_me: true };
+      } else if (optionsOrHardDelete?.hard) {
+        options = { hard: true };
       }
 
       // The LLC performs the delete request (honoring any configState delete handler) and ingests

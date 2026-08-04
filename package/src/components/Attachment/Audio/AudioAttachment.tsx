@@ -49,10 +49,8 @@ const getAudioDurationLabel = (durationInMilliseconds: number) => {
 };
 
 export type AudioAttachmentType = AudioConfig &
-  Pick<
-    StreamAudioAttachment | StreamVoiceRecordingAttachment,
-    'waveform_data' | 'asset_url' | 'title' | 'mime_type'
-  > & {
+  Pick<StreamAudioAttachment | StreamVoiceRecordingAttachment, 'asset_url' | 'title'> & {
+    custom: StreamVoiceRecordingAttachment['custom'];
     id: string;
     type: 'audio' | 'voiceRecording';
   };
@@ -110,10 +108,11 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     indicator,
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
+  const waveformData = item.custom?.waveform_data;
 
   const audioPlayer = useAudioPlayer({
-    duration: item.duration ?? 0,
-    mimeType: item.mime_type ?? '',
+    duration: item.duration ?? item.custom?.duration ?? 0,
+    mimeType: item.custom?.mime_type ?? '',
     requester: isPreview
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
@@ -265,13 +264,13 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             />
             {!hideProgressBar && (
               <View style={[styles.progressControlContainer, progressControlContainer]}>
-                {item.waveform_data ? (
+                {waveformData ? (
                   <WaveProgressBar
                     isPlaying={isPlaying}
                     onEndDrag={dragEnd}
                     onStartDrag={dragStart}
                     progress={progress}
-                    waveformData={item.waveform_data}
+                    waveformData={waveformData}
                   />
                 ) : (
                   <ProgressControl

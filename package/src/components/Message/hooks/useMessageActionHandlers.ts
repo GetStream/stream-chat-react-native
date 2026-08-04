@@ -135,7 +135,7 @@ export const useMessageActionHandlers = ({
       return;
     }
 
-    await deleteMessage(message, { deleteForMe: true });
+    await deleteMessage(message, { delete_for_me: true });
   });
 
   const handleToggleMuteUser = useStableCallback(async () => {
@@ -332,7 +332,7 @@ export const useMessageActionHandlers = ({
       }
       const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(user?.id ?? '');
       if (isBlocked) {
-        await client.unBlockUser(user.id);
+        await client.unblockUser(user.id);
       } else {
         await client.blockUser(user.id);
       }

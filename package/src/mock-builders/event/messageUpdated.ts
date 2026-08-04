@@ -14,7 +14,6 @@ export default (
 ) => {
   client.dispatchEvent(
     fromPartial<Event>({
-      channel,
       cid: channel.cid,
       message: newMessage as MessageResponse,
       type: 'message.updated',

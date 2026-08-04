@@ -3,6 +3,7 @@ import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { render, waitFor } from '@testing-library/react-native';
+import type { UserResponse } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -18,7 +19,7 @@ describe('<Reply/>', () => {
     const oldEnvironment = process.env;
     process.env.NODE_ENV = 'not_test';
 
-    const chatClient = await getTestClientWithUser({ id: 'neil' });
+    const chatClient = await getTestClientWithUser({ id: 'neil' } as UserResponse);
 
     const mockedChannel = generateChannelResponse();
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);

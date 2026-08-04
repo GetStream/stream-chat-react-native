@@ -67,7 +67,7 @@ export const AudioAttachmentUploadPreview = ({
         <FileUploadInProgressIndicator
           localId={attachment.localMetadata.id}
           sourceUrl={assetUrl}
-          totalBytes={attachment.file_size}
+          totalBytes={attachment.custom?.file_size}
         />
       );
     }
@@ -78,7 +78,13 @@ export const AudioAttachmentUploadPreview = ({
       return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
-  }, [assetUrl, attachment.file_size, attachment.localMetadata, indicatorType, onRetryHandler]);
+  }, [
+    assetUrl,
+    attachment.custom?.file_size,
+    attachment.localMetadata,
+    indicatorType,
+    onRetryHandler,
+  ]);
 
   return (
     <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>

@@ -1,5 +1,11 @@
 # Change Log
 
+## [9.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.1...v9.7.2) (2026-07-31)
+
+### Bug Fixes
+
+* segmented reactions on press ([#3746](https://github.com/GetStream/stream-chat-react-native/issues/3746)) ([d8d8a1c](https://github.com/GetStream/stream-chat-react-native/commit/d8d8a1cf69891e951964790e72c54c3710c34388))
+
 ## [9.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.0...v9.7.1) (2026-07-23)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { Channel, Event, UserResponse } from 'stream-chat';
+import { Channel, EventPayload, UserResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
@@ -14,7 +14,7 @@ export const useChannelTypingState = ({ channel }: UseChannelTypingStateProps) =
   const [usersTyping, setUsersTyping] = useState<UserResponse[]>([]);
 
   const handleTypingStart = useCallback(
-    (event: Event) => {
+    (event: EventPayload<'typing.start'>) => {
       if (channel.cid !== event.cid || event.user?.id === client?.user?.id) return;
       setUsersTyping((prev) => {
         if (!event.user) return prev;
@@ -26,7 +26,7 @@ export const useChannelTypingState = ({ channel }: UseChannelTypingStateProps) =
   );
 
   const handleTypingStop = useCallback(
-    (event: Event) => {
+    (event: EventPayload<'typing.stop'>) => {
       if (channel.cid !== event.cid || event.user?.id === client?.user?.id) return;
       setUsersTyping((prev) => prev.filter((user) => user.id !== event.user?.id));
     },

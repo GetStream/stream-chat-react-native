@@ -6,13 +6,16 @@ const image_url = 'http://www.jackblack.com/tenac_iousd.bmp';
 export const generateAttachmentAction = (a?: Partial<Action>): Action => ({
   name: uuidv4(),
   text: uuidv4(),
+  type: 'button',
   value: uuidv4(),
   ...a,
 });
 
 export const generateVideoAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-  mime_type: 'video/mp4',
+  custom: {
+    mime_type: 'video/mp4',
+  },
   thumb_url:
     'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
   title: uuidv4(),
@@ -21,6 +24,7 @@ export const generateVideoAttachment = (a?: Partial<Attachment>): Attachment => 
 });
 
 export const generateImageAttachment = (a?: Partial<Attachment>): Attachment => ({
+  custom: {},
   image_url: uuidv4(),
   title: uuidv4(),
   type: 'image',
@@ -44,6 +48,7 @@ export const generateImageUploadPreview = (a?: Partial<UploadPreview>): UploadPr
 
 export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'http://www.jackblack.com/tribute.mp3',
+  custom: {},
   image_url,
   text: uuidv4(),
   title: uuidv4(),
@@ -53,8 +58,10 @@ export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => 
 
 export const generateFileAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-  file_size: 1337,
-  mime_type: uuidv4(),
+  custom: {
+    file_size: 1337,
+    mime_type: uuidv4(),
+  },
   text: uuidv4(),
   title: uuidv4(),
   type: 'file',
@@ -73,6 +80,7 @@ export const generateFileUploadPreview = (a?: Partial<UploadPreview>): UploadPre
 });
 
 export const generateCardAttachment = (a?: Partial<Attachment>): Attachment => ({
+  custom: {},
   image_url,
   og_scrape_url: uuidv4(),
   text: uuidv4(),

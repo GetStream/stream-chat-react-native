@@ -41,7 +41,7 @@ export const usePaginatedChannels = ({
   enableOfflineSupport,
   filters = {},
   options = {},
-  sort = {},
+  sort = [],
 }: Parameters) => {
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
@@ -111,9 +111,12 @@ export const usePaginatedChannels = ({
       if (queryType === 'loadChannels') {
         await channelManager.loadNext();
       } else {
-        await channelManager.queryChannels(filters, sort, newOptions, {
-          skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
-        });
+        await channelManager.queryChannels(
+          { ...newOptions, filter_conditions: filters, sort },
+          {
+            skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
+          },
+        );
       }
 
       setStaticChannelsActive(false);
