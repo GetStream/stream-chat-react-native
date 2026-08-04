@@ -10,13 +10,14 @@ import {
   View,
 } from 'react-native';
 
-import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import { Channel } from 'stream-chat';
+import { NavigationProp, useNavigation, useScrollToTop } from '@react-navigation/native';
+import { Channel, MessageResponse } from 'stream-chat';
 import {
   ChannelList,
   useTheme,
   useStableCallback,
   ChannelActionItem,
+  GetChannelActionItems,
 } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -29,6 +30,7 @@ import { ChannelInfo } from '../icons/ChannelInfo.tsx';
 import { CircleClose } from '../icons/CircleClose.tsx';
 import { Search } from '../icons/Search';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -76,7 +78,7 @@ const baseOptions = {
 
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   useTheme();
   const { black, grey, grey_gainsboro, grey_whisper, white, white_snow } = useLegacyColors();
   const { setChannel } = useStreamChatContext();
@@ -142,28 +144,30 @@ export const ChannelListScreen: React.FC = () => {
     [],
   );
 
-  const getChannelActionItems = useStableCallback(({ context: { channel }, defaultItems }) => {
-    const viewInfo = () => {
-      if (!channel) {
-        return;
-      }
-      if (navigation) {
-        navigation.navigate('ChannelDetailsScreen', {
-          channel,
-        });
-      }
-    };
+  const getChannelActionItems = useStableCallback(
+    ({ context: { channel }, defaultItems }: Parameters<GetChannelActionItems>[0]) => {
+      const viewInfo = () => {
+        if (!channel) {
+          return;
+        }
+        if (navigation) {
+          navigation.navigate('ChannelDetailsScreen', {
+            channel,
+          });
+        }
+      };
 
-    const viewInfoItem: ChannelActionItem = {
-      action: viewInfo,
-      Icon: ChannelInfo,
-      id: 'info',
-      label: 'View Info',
-      placement: 'sheet',
-      type: 'standard',
-    };
-    return [viewInfoItem, ...defaultItems];
-  });
+      const viewInfoItem: ChannelActionItem = {
+        action: viewInfo,
+        Icon: ChannelInfo,
+        id: 'info',
+        label: 'View Info',
+        placement: 'sheet',
+        type: 'standard',
+      };
+      return [viewInfoItem, ...defaultItems];
+    },
+  );
 
   if (!chatClient) {
     return null;
@@ -230,7 +234,11 @@ export const ChannelListScreen: React.FC = () => {
             loading={loading}
             loadMore={loadMore}
             messages={messages}
-            ref={scrollRef}
+            // The search list and the channel list never mount at the same time,
+            // so this single ref holder is reused for both. It is declared as a
+            // `FlatList<Channel>` ref for the `ChannelList`/`useScrollToTop` usage,
+            // hence the cast for the message-typed search list here.
+            ref={scrollRef as unknown as RefObject<FlatList<MessageResponse> | null>}
             refreshing={refreshing}
             refreshList={refreshList}
             showResultCount

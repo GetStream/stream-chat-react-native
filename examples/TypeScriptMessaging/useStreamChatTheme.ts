@@ -3,7 +3,9 @@ import { useColorScheme } from 'react-native';
 
 import type { DeepPartial, Theme } from 'stream-chat-react-native';
 
-const getChatStyle = (colorScheme: string | null | undefined): DeepPartial<Theme> => ({
+const getChatStyle = (
+  colorScheme: string | null | undefined,
+): DeepPartial<Theme> & { colors: Record<string, string> } => ({
   avatar: {
     image: {
       height: 32,

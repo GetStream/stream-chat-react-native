@@ -4,7 +4,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "./jest-globals.d.ts"],
   "exclude": [
     "./src/components/docs/*",
     "./src/emoji-data/*.js",

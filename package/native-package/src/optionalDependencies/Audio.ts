@@ -150,7 +150,7 @@ class _Audio {
         await verifyAndroidPermissions();
       } catch (err) {
         console.warn('Audio Recording Permissions error', err);
-        return;
+        return { accessGranted: false, recording: null };
       }
     }
     try {

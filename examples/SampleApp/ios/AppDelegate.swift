@@ -7,11 +7,16 @@ import FirebaseMessaging
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+  // Unused with the scene lifecycle (SceneDelegate owns the window), but Firebase's
+  // app delegate proxy (GULAppDelegateSwizzler) exposes the optional `window` selector,
+  // so UIKit calls it and crashes if the property is missing.
   var window: UIWindow?
-  
+
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
-  
+  // Kept for SceneDelegate, which starts React Native once the scene connects
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+
   func application(
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -23,14 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
    
       reactNativeDelegate = delegate
       reactNativeFactory = factory
-   
-      window = UIWindow(frame: UIScreen.main.bounds)
-   
-      factory.startReactNative(
-        withModuleName: "SampleApp",
-        in: window,
-        launchOptions: launchOptions
-      )
+      self.launchOptions = launchOptions
    
       return true
     }

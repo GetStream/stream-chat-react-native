@@ -1,5 +1,5 @@
 {
-  "extends": "@react-native/typescript-config",
+  "extends": ["@react-native/typescript-config", "@stream-io/typescript-config/base.json"],
   "compilerOptions": {
     "types": []
   }
