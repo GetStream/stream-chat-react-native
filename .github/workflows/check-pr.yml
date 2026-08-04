@@ -38,4 +38,8 @@ jobs:
       - name: Typecheck packages and example apps
         run: yarn typecheck
       - name: Test
-        run: yarn test:coverage
+        # TEMP DIAGNOSTIC (revert after): run all suites in a single process with
+        # heap logging to classify the flaky worker SIGABRTs. If this run passes,
+        # the crash needs the 2-worker pool (memory/concurrency). If it still
+        # aborts, it's a deterministic native/OOM issue and this log pinpoints it.
+        run: yarn test:coverage --runInBand --logHeapUsage
