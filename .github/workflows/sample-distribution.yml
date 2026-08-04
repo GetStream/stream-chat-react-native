@@ -11,6 +11,10 @@ on:
       - 'package/**'
       - 'examples/SampleApp/**'
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
@@ -90,3 +94,39 @@ jobs:
         env:
           ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
           FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
+      # Publish the same APK to S3 for the public download link. Reuses the
+      # artifact the Fastlane step above already built (app-build/), no rebuild.
+      - name: Ensure AWS CLI is available
+        if: github.ref == 'refs/heads/develop'
+        # The self-hosted `public` runner does not ship the AWS CLI. Install v2
+        # only when missing, to a user-writable dir (no sudo), then expose it.
+        run: |
+          if command -v aws >/dev/null 2>&1; then
+            echo "AWS CLI already installed: $(aws --version)"
+            exit 0
+          fi
+          echo "AWS CLI not found; installing v2..."
+          case "$(uname -m)" in
+            x86_64) zip="awscli-exe-linux-x86_64.zip" ;;
+            aarch64|arm64) zip="awscli-exe-linux-aarch64.zip" ;;
+            *) echo "Unsupported architecture: $(uname -m)"; exit 1 ;;
+          esac
+          curl -fsSL "https://awscli.amazonaws.com/${zip}" -o /tmp/awscliv2.zip
+          unzip -q /tmp/awscliv2.zip -d /tmp
+          /tmp/aws/install --bin-dir "$HOME/.local/bin" --install-dir "$HOME/.local/aws-cli" --update
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/aws" --version
+      - name: Configure AWS credentials
+        if: github.ref == 'refs/heads/develop'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Upload APK to S3
+        if: github.ref == 'refs/heads/develop'
+        working-directory: examples/SampleApp
+        # Public download link: https://getstream.io/downloads/rn-sample-app.apk
+        run: |
+          cp app-build/reactnativesampleapp.apk rn-sample-app.apk
+          aws s3 cp rn-sample-app.apk s3://${{ secrets.AWS_S3_BUCKET }} --sse AES256

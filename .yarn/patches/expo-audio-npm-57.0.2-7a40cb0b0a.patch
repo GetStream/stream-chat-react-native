@@ -27,7 +27,7 @@ index 992239ba7631ce0c97c0b41c5fbf61cc842386fe..ebc0933beaf40414887ff634029ca8eb
      }.createMediaSource(mediaItem)
    }
 diff --git a/expo-module.config.json b/expo-module.config.json
-index 9ee5fdcd7a6e698c8cdcf42ee137239220aec190..9a131dd948d2eb5adf3cf9b759829a0e8fed15a1 100644
+index 778d6dfb16571238eaaca6ac87e1aab155605c2f..9a131dd948d2eb5adf3cf9b759829a0e8fed15a1 100644
 --- a/expo-module.config.json
 +++ b/expo-module.config.json
 @@ -4,12 +4,6 @@
@@ -38,7 +38,7 @@ index 9ee5fdcd7a6e698c8cdcf42ee137239220aec190..9a131dd948d2eb5adf3cf9b759829a0e
 -    "publication": {
 -      "groupId": "expo.modules.audio",
 -      "artifactId": "expo.modules.audio",
--      "version": "56.0.11",
+-      "version": "57.0.2",
 -      "repository": "local-maven-repo"
 -    }
 +    "modules": ["expo.modules.audio.AudioModule"]

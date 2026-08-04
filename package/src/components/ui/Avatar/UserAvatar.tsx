@@ -13,8 +13,8 @@ import {
   numberOfInitials,
 } from './constants';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { PeopleIcon } from '../../../icons/users';
 import { getInitialsFromName, hashStringToNumber } from '../../../utils/utils';
 import { OnlineIndicator } from '../Badge';
 
@@ -28,6 +28,7 @@ export type UserAvatarProps = {
 
 export const UserAvatar = (props: UserAvatarProps) => {
   const { user, size, showBorder = !!user.image, showOnlineIndicator, style } = props;
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -46,10 +47,14 @@ export const UserAvatar = (props: UserAvatarProps) => {
       );
     } else {
       return (
-        <PeopleIcon height={iconSizes[size]} stroke={avatarTextColor} width={iconSizes[size]} />
+        <icons.PeopleIcon
+          height={iconSizes[size]}
+          stroke={avatarTextColor}
+          width={iconSizes[size]}
+        />
       );
     }
-  }, [user?.name, size, avatarTextColor]);
+  }, [user?.name, size, avatarTextColor, icons]);
 
   return (
     <View testID='user-avatar'>

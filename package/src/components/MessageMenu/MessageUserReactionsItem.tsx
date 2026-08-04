@@ -8,7 +8,6 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
-import { Unknown } from '../../icons';
 
 import { primitives } from '../../theme';
 import type { Reaction } from '../../types/types';
@@ -29,7 +28,7 @@ export const MessageUserReactionsItem = ({
   reaction,
   supportedReactions,
 }: MessageUserReactionsItemProps) => {
-  const { MessageUserReactionsAvatar } = useComponentsContext();
+  const { icons, MessageUserReactionsAvatar } = useComponentsContext();
   const { id, name, type } = reaction;
   const {
     theme: {
@@ -52,7 +51,7 @@ export const MessageUserReactionsItem = ({
     }
   });
 
-  const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon ?? Unknown;
+  const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon ?? icons.Unknown;
 
   return (
     <Pressable

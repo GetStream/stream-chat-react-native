@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Checkmark } from '../../icons/checkmark-1';
 import { primitives } from '../../theme';
 
 export type SelectionCircleProps = {
@@ -10,6 +10,7 @@ export type SelectionCircleProps = {
 };
 
 export const SelectionCircle = ({ selected }: SelectionCircleProps) => {
+  const { icons } = useComponentsContext();
   const {
     theme: {
       selectionCircle: { circle, circleSelected },
@@ -26,7 +27,7 @@ export const SelectionCircle = ({ selected }: SelectionCircleProps) => {
           circleSelected,
         ]}
       >
-        <Checkmark height={14} pathFill={semantics.textOnAccent} width={14} />
+        <icons.Checkmark height={14} pathFill={semantics.textOnAccent} width={14} />
       </View>
     );
   }

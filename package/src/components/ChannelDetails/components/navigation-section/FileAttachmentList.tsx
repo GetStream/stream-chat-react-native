@@ -22,7 +22,6 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Folder } from '../../../../icons/folder';
 import { primitives } from '../../../../theme';
 import { useNotificationApi } from '../../../Notifications/hooks/useNotificationApi';
 import { NotificationList } from '../../../Notifications/NotificationList';
@@ -67,7 +66,7 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
     },
   } = useTheme();
   const styles = useStyles();
-  const { FileAttachmentItem } = useComponentsContext();
+  const { FileAttachmentItem, icons } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
 
@@ -140,7 +139,11 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
     loading || isEmpty === undefined ? (
       <FileAttachmentListLoadingSkeleton />
     ) : (
-      <EmptyList icon={Folder} subtitle={t('Share a file to see it here')} title={t('No files')} />
+      <EmptyList
+        icon={icons.Folder}
+        subtitle={t('Share a file to see it here')}
+        title={t('No files')}
+      />
     );
 
   const loadingMoreIndicator = (

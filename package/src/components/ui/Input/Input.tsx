@@ -14,8 +14,7 @@ import {
 } from 'react-native';
 
 import { useTheme } from '../../../contexts';
-import { Checkmark } from '../../../icons/checkmark-1';
-import { InfoTooltip } from '../../../icons/info';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../theme';
 import { IconRenderer } from '../Button';
 
@@ -73,6 +72,7 @@ export const Input = React.forwardRef<TextInput, InputProps>(function Input(
   ref,
 ) {
   const [isFocused, setIsFocused] = useState(false);
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -162,9 +162,9 @@ export const Input = React.forwardRef<TextInput, InputProps>(function Input(
       {helperText ? (
         <View style={styles.helperContainer}>
           {state === 'success' ? (
-            <Checkmark height={20} width={20} stroke={semantics.accentSuccess} />
+            <icons.Checkmark height={20} width={20} stroke={semantics.accentSuccess} />
           ) : (
-            <InfoTooltip
+            <icons.InfoTooltip
               height={20}
               width={20}
               fill={state === 'error' ? semantics.accentError : semantics.textTertiary}

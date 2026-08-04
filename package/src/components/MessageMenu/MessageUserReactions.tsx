@@ -24,7 +24,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
 import { IconProps } from '../../icons';
-import { MoreEmojis } from '../../icons/emoji-add-1';
 import { primitives } from '../../theme';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
@@ -95,16 +94,23 @@ const reactionSelectorKeyExtractor = (item: ReactionSelectorItemType) => item.ty
 export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const styles = useStyles();
   const [showMoreReactions, setShowMoreReactions] = useState(false);
-  const { message, reactions: propReactions, supportedReactions: propSupportedReactions } = props;
+  const {
+    message,
+    reactions: propReactions,
+    selectedReaction: propSelectedReaction,
+    supportedReactions: propSupportedReactions,
+  } = props;
   const selectorListRef = useRef<FlatList>(null);
   const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
     () => Object.keys(message?.reaction_groups ?? {}),
     [message?.reaction_groups],
   );
-  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
+  const [selectedReaction, setSelectedReaction] = useState<string | undefined>(
+    propSelectedReaction,
+  );
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
-  const { MessageUserReactionsItem } = useComponentsContext();
+  const { icons, MessageUserReactionsItem } = useComponentsContext();
   const { handleReaction } = useMessageContext();
   const supportedReactions = propSupportedReactions ?? contextSupportedReactions;
 
@@ -226,10 +232,10 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
   const MoreEmojisIcon = useCallback(
     (props: IconProps) => (
       <View style={styles.showMoreReactionsButton}>
-        <MoreEmojis {...props} />
+        <icons.MoreEmojis {...props} />
       </View>
     ),
-    [styles.showMoreReactionsButton],
+    [icons, styles.showMoreReactionsButton],
   );
 
   const ShowMoreReactionsButton = useCallback(

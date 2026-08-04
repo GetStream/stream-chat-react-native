@@ -4,9 +4,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ThreadManagerState } from 'stream-chat';
 
 import { useChatContext, useTheme, useTranslationContext } from '../../contexts';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useStateStore } from '../../hooks';
-import { Loading, Reload } from '../../icons';
-import { ExclamationCircle } from '../../icons/exclamation-circle-fill';
 import { primitives } from '../../theme';
 
 const selector = (nextValue: ThreadManagerState) =>
@@ -16,6 +15,7 @@ export const ThreadListUnreadBanner = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { client } = useChatContext();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
     theme: { semantics },
@@ -40,7 +40,7 @@ export const ThreadListUnreadBanner = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Loading height={20} width={20} />
+        <icons.Loading height={20} width={20} />
         <Text style={styles.text}>{t('Loading...')}</Text>
       </View>
     );
@@ -49,7 +49,7 @@ export const ThreadListUnreadBanner = () => {
   if (error) {
     return (
       <View style={styles.container}>
-        <ExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
+        <icons.ExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
         <Text style={styles.text}>{t("Couldn't load new threads. Tap to retry")}</Text>
       </View>
     );
@@ -67,7 +67,7 @@ export const ThreadListUnreadBanner = () => {
         },
       ]}
     >
-      <Reload stroke={semantics.textSecondary} height={20} width={20} />
+      <icons.Reload stroke={semantics.textSecondary} height={20} width={20} />
       <Text style={styles.text}>
         {t('{{count}} new threads', { count: unseenThreadIds.length })}
       </Text>

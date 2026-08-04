@@ -4,10 +4,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Channel, LocalMessage } from 'stream-chat';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { MessageDeliveryStatus, useMessageDeliveryStatus } from '../../hooks';
-import { Check, CheckAll, Time } from '../../icons';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 
@@ -21,6 +21,7 @@ export const ThreadMessagePreviewDeliveryStatus = ({
   message,
 }: ThreadMessagePreviewDeliveryStatusProps) => {
   const { client } = useChatContext();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const channelConfigExists = typeof channel?.getConfig === 'function';
   const styles = useStyles();
@@ -71,14 +72,19 @@ export const ThreadMessagePreviewDeliveryStatus = ({
   return (
     <View style={styles.container}>
       {message.status === MessageStatusTypes.SENDING ? (
-        <Time stroke={semantics.chatTextTimestamp} height={20} width={20} {...timeIcon} />
+        <icons.Time stroke={semantics.chatTextTimestamp} height={20} width={20} {...timeIcon} />
       ) : message.status === MessageStatusTypes.RECEIVED &&
         status === MessageDeliveryStatus.READ ? (
-        <CheckAll stroke={semantics.accentPrimary} height={20} width={20} {...checkAllIcon} />
+        <icons.CheckAll stroke={semantics.accentPrimary} height={20} width={20} {...checkAllIcon} />
       ) : status === MessageDeliveryStatus.DELIVERED ? (
-        <CheckAll stroke={semantics.chatTextTimestamp} height={20} width={20} {...checkAllIcon} />
+        <icons.CheckAll
+          stroke={semantics.chatTextTimestamp}
+          height={20}
+          width={20}
+          {...checkAllIcon}
+        />
       ) : status === MessageDeliveryStatus.SENT ? (
-        <Check stroke={semantics.chatTextTimestamp} height={20} width={20} {...checkIcon} />
+        <icons.Check stroke={semantics.chatTextTimestamp} height={20} width={20} {...checkIcon} />
       ) : null}
       <Text style={styles.text}>{t('You')}:</Text>
     </View>

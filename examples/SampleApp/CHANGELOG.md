@@ -1,5 +1,24 @@
 # Change Log
 
+## [4.14.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.3...sampleapp@v4.14.4) (2026-07-31)
+
+### Bug Fixes
+
+* bump rn version to fix hermes memory regression ([#3744](https://github.com/GetStream/stream-chat-react-native/issues/3744)) ([eb23562](https://github.com/GetStream/stream-chat-react-native/commit/eb235621aca68a5608831b5511de9c6958f15f00))
+* segmented reactions on press ([#3746](https://github.com/GetStream/stream-chat-react-native/issues/3746)) ([d8d8a1c](https://github.com/GetStream/stream-chat-react-native/commit/d8d8a1cf69891e951964790e72c54c3710c34388))
+
+## [4.14.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.2...sampleapp@v4.14.3) (2026-07-23)
+
+## [4.14.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.1...sampleapp@v4.14.2) (2026-07-17)
+
+## [4.14.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.0...sampleapp@v4.14.1) (2026-07-09)
+
+### Bug Fixes
+
+* keyboard jump on samsung non edge-to-edge devices ([#3718](https://github.com/GetStream/stream-chat-react-native/issues/3718)) ([07e5554](https://github.com/GetStream/stream-chat-react-native/commit/07e555400a15fd2ac6ae057e00a417f94c03b47f))
+* orientation awareness in bottom sheet ([#3711](https://github.com/GetStream/stream-chat-react-native/issues/3711)) ([372255a](https://github.com/GetStream/stream-chat-react-native/commit/372255a1fea86b2c68eba64d6402f030dc055faf))
+* thread_manager reload before activation ([#3720](https://github.com/GetStream/stream-chat-react-native/issues/3720)) ([2ff90d5](https://github.com/GetStream/stream-chat-react-native/commit/2ff90d518a2d6cb2f961bbb8b2c4f0853da80f23))
+
 ## [4.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.0.0...sampleapp@v4.1.0) (2025-07-09)
 
 

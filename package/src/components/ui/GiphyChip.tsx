@@ -3,11 +3,10 @@ import { StyleSheet, View, Text, Pressable } from 'react-native';
 
 import { TextComposerState } from 'stream-chat';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { Lightning } from '../../icons/bolt';
-import { Cross } from '../../icons/xmark-1';
 import { primitives } from '../../theme';
 
 const textComposerStateSelector = (state: TextComposerState) => ({
@@ -15,6 +14,7 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 });
 
 export const GiphyChip = () => {
+  const { icons } = useComponentsContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -32,10 +32,10 @@ export const GiphyChip = () => {
 
   return (
     <View style={styles.container}>
-      <Lightning fill={semantics.textOnInverse} height={16} width={16} />
+      <icons.Lightning fill={semantics.textOnInverse} height={16} width={16} />
       <Text style={styles.text}>{commandName}</Text>
       <Pressable onPress={onPressHandler}>
-        <Cross stroke={semantics.textOnInverse} height={16} width={16} />
+        <icons.Cross stroke={semantics.textOnInverse} height={16} width={16} />
       </Pressable>
     </View>
   );

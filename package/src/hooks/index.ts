@@ -15,6 +15,7 @@ export * from './useSelectedChannelState';
 export * from './useStreami18n';
 export * from './useViewport';
 export * from './useScreenDimensions';
+export * from './useScreenOrientation';
 export * from './useStateStore';
 export * from './usePendingAttachmentUpload';
 export * from './useStableCallback';

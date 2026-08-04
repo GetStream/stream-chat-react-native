@@ -3,10 +3,10 @@ import React, { useCallback, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 import { useChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks/useStableCallback';
-import { Checkmark } from '../../../../icons/checkmark-1';
 import { useIsSelectionEmpty } from '../../../../state-store/selection-store';
 import { Button } from '../../../ui/Button/Button';
 import { ModalHeader } from '../modal/ModalHeader';
@@ -23,6 +23,7 @@ export type ChannelAddMembersFormHeaderProps = {
 
 export const ChannelAddMembersFormHeader = ({ onClose }: ChannelAddMembersFormHeaderProps) => {
   const { selectionStore, submit } = useChannelAddMembersContext();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -63,7 +64,7 @@ export const ChannelAddMembersFormHeader = ({ onClose }: ChannelAddMembersFormHe
           variant='primary'
           onPress={handleConfirm}
           type='solid'
-          LeadingIcon={addingMembers ? LoadingButtonIcon : Checkmark}
+          LeadingIcon={addingMembers ? LoadingButtonIcon : icons.Checkmark}
           iconOnly
           testID='channel-details-add-members-confirm-button'
           style={confirmButtonOverride}

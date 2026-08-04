@@ -8,6 +8,10 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+*beta*'
     types: [opened, synchronize]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   check_pr:
     runs-on: public

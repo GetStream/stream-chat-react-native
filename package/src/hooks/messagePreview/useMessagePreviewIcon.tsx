@@ -1,15 +1,8 @@
 import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
 
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useGroupedAttachments } from '../../hooks/messagePreview/useGroupedAttachments';
 
-import { File } from '../../icons/file';
-import { PhotoIcon } from '../../icons/image';
-import { Link } from '../../icons/link';
-import { MapPin } from '../../icons/location';
-import { CircleBan } from '../../icons/no-sign';
-import { PollIcon } from '../../icons/poll';
-import { VideoIcon } from '../../icons/video';
-import { Mic } from '../../icons/voice';
 import { FileTypes } from '../../types/types';
 
 export const useMessagePreviewIcon = ({
@@ -17,6 +10,7 @@ export const useMessagePreviewIcon = ({
 }: {
   message?: LocalMessage | MessageResponse | DraftMessage | null;
 }) => {
+  const { icons } = useComponentsContext();
   const { giphys, audios, images, videos, files, voiceRecordings } = useGroupedAttachments(
     message?.attachments,
   );
@@ -36,39 +30,39 @@ export const useMessagePreviewIcon = ({
   );
 
   if (message.type === 'deleted') {
-    return CircleBan;
+    return icons.CircleBan;
   }
 
   if (message.poll_id) {
-    return PollIcon;
+    return icons.PollIcon;
   }
 
   if (message.shared_location) {
-    return MapPin;
+    return icons.MapPin;
   }
 
   if (hasLink) {
-    return Link;
+    return icons.Link;
   }
 
   if (onlyAudio || onlyVoiceRecordings) {
-    return Mic;
+    return icons.Mic;
   }
 
   if (onlyVideos) {
-    return VideoIcon;
+    return icons.VideoIcon;
   }
 
   if (onlyImages) {
-    return PhotoIcon;
+    return icons.PhotoIcon;
   }
 
   if (giphys?.length) {
-    return File;
+    return icons.File;
   }
 
   if (files?.length || images?.length || videos?.length || audios?.length) {
-    return File;
+    return icons.File;
   }
 
   return null;

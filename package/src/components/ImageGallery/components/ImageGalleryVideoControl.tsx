@@ -3,12 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { ImageGalleryVideoControlProps } from './types';
 
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { Pause } from '../../../icons/pause-fill';
-import { Play } from '../../../icons/play-fill';
 import { IconProps } from '../../../icons/utils/base';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { primitives } from '../../../theme';
@@ -43,6 +42,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
 
   const progressDuration = getDurationLabelFromDuration(progressValueInSeconds);
 
+  const { icons } = useComponentsContext();
   const {
     theme: {
       imageGallery: {
@@ -56,11 +56,11 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
   const renderPlayPauseIcon = useCallback(
     (props: IconProps) =>
       isPlaying ? (
-        <Pause {...props} fill={semantics.textSecondary} />
+        <icons.Pause {...props} fill={semantics.textSecondary} />
       ) : (
-        <Play {...props} fill={semantics.textSecondary} />
+        <icons.Play {...props} fill={semantics.textSecondary} />
       ),
-    [isPlaying, semantics.textSecondary],
+    [icons, isPlaying, semantics.textSecondary],
   );
 
   const handlePlayPause = async () => {

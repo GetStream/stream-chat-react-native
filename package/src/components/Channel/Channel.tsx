@@ -218,6 +218,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'compressImageQuality'
       | 'createPollOptionGap'
       | 'doFileUploadRequest'
+      | 'focusInputOnPickerClose'
       | 'handleAttachButtonPress'
       | 'hasCameraPicker'
       | 'hasCommands'
@@ -423,6 +424,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FlatList = NativeHandlers.FlatList,
+    focusInputOnPickerClose = true,
     forceAlignMessages,
     getMessageGroupStyle,
     handleAttachButtonPress,
@@ -466,8 +468,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       'poll',
       'ai_text',
       'attachments',
-      'text',
       'location',
+      'text',
     ],
     messageOverlayTargetId,
     messageInputFloating = false,
@@ -511,12 +513,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
   const [error, setError] = useState<Error | boolean>(false);
-  const [lastRead, setLastRead] = useState<Date | undefined>();
+  const lastReadRef = useRef<Date | undefined>(undefined);
   const [thread, setThread] = useState<LocalMessage | null>(threadProps || null);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [channelUnreadStateStore] = useState(new ChannelUnreadStateStore());
-  const [messageInputHeightStore] = useState(new MessageInputHeightStore());
+  const [channelUnreadStateStore] = useState(() => new ChannelUnreadStateStore());
+  const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   // TODO: Think if we can remove this and just rely on the channelUnreadStateStore everywhere.
   const setChannelUnreadState = useCallback(
     (data: ChannelUnreadStateStoreType['channelUnreadState']) => {
@@ -690,6 +692,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           return;
         }
 
+        if (event.type === 'message.read_locally') {
+          // When local unread reset happens, the count is already updated in the client state,
+          // and the preview badge / unread divider are handled elsewhere, so there is nothing
+          // to copy into channel state here. Thus, we skip it.
+          return;
+        }
+
         if (event.type === 'message.read' || event.type === 'notification.mark_read') {
           setReadThrottled();
           return;
@@ -703,7 +712,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   useEffect(() => {
     let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
-      setLastRead(new Date());
+      lastReadRef.current = new Date();
       const unreadCount = channel.countUnread();
       const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
       if (!channel || !shouldSyncChannel) {
@@ -812,7 +821,25 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const markReadInternal: ChannelContextValue['markRead'] = throttle(
     async (options?: MarkReadFunctionOptions) => {
       const { updateChannelUnreadState = true } = options ?? {};
-      if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
+      if (!channel || channel?.disconnected) {
+        return;
+      }
+
+      // When read events are disabled (e.g. livestreams) we cannot mark read on the backend. If the
+      // client opted into a local unread count, reset it locally instead so the user's "caught up"
+      // state is reflected without a server round trip.
+      if (!clientChannelConfig?.read_events) {
+        if (client.options.isLocalUnreadCountEnabled) {
+          const event = channel.markReadLocally();
+          if (updateChannelUnreadState && event && lastReadRef.current) {
+            setChannelUnreadState({
+              last_read: lastReadRef.current,
+              last_read_message_id: event.last_read_message_id,
+              unread_messages: 0,
+            });
+            lastReadRef.current = new Date();
+          }
+        }
         return;
       }
 
@@ -821,13 +848,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       } else {
         try {
           const response = await channel.markRead();
-          if (updateChannelUnreadState && response && lastRead) {
+          if (updateChannelUnreadState && response && lastReadRef.current) {
             setChannelUnreadState({
-              last_read: lastRead,
+              last_read: lastReadRef.current,
               last_read_message_id: response?.event.last_read_message_id,
               unread_messages: 0,
             });
-            setLastRead(new Date());
+            lastReadRef.current = new Date();
           }
         } catch (err) {
           console.log('Error marking channel as read:', err);
@@ -1578,7 +1605,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader,
     highlightedMessageId,
     isChannelActive: shouldSyncChannel,
-    lastRead,
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
@@ -1590,7 +1616,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setChannelUnreadState,
-    setLastRead,
     setTargetedMessage,
     hasPendingInitialTargetLoad,
     targetedMessage,
@@ -1628,6 +1653,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     createPollOptionGap,
     doFileUploadRequest,
     editMessage,
+    focusInputOnPickerClose,
     handleAttachButtonPress,
     hasCameraPicker,
     hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,

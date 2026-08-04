@@ -5,13 +5,13 @@ import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
 } from '../../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useStableCallback } from '../../../../hooks';
 import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
-import { Plus } from '../../../../icons/plus';
 import { Button } from '../../../ui/';
 
 type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttachButtonPress'> &
@@ -23,6 +23,7 @@ type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttach
   } & { toggleAttachmentPicker: () => void };
 
 const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
+  const { icons } = useComponentsContext();
   const {
     disabled = false,
     handleAttachButtonPress,
@@ -55,7 +56,7 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
       type='outline'
       size='lg'
       iconOnly
-      LeadingIcon={Plus}
+      LeadingIcon={icons.Plus}
       onPress={onPressHandler}
       disabled={disabled}
       testID='attach-button'
@@ -92,13 +93,23 @@ export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
  */
 export const AttachButton = (props: AttachButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
-  const { inputBoxRef, handleAttachButtonPress, openAttachmentPicker } = useMessageInputContext();
+  const {
+    closeAttachmentPicker,
+    focusInputOnPickerClose,
+    handleAttachButtonPress,
+    inputBoxRef,
+    openAttachmentPicker,
+  } = useMessageInputContext();
   const { attachmentPickerStore } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const toggleAttachmentPicker = useStableCallback(() => {
     if (attachmentPickerStore.state.getLatestValue().selectedPicker) {
-      inputBoxRef.current?.focus();
+      if (focusInputOnPickerClose) {
+        inputBoxRef.current?.focus();
+      } else {
+        closeAttachmentPicker();
+      }
     } else {
       openAttachmentPicker();
     }

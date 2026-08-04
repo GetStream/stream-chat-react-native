@@ -215,7 +215,8 @@ describe('MessageOverlayHostLayer', () => {
       left: MESSAGE_RECT.x,
       position: 'absolute',
       top: MESSAGE_RECT.y,
-      transform: [{ translateY: 38 }],
+      // First transform = springed open/close position; second = scroll offset (0 here).
+      transform: [{ translateY: 38 }, { translateY: 0 }],
       width: MESSAGE_RECT.w,
     });
     expect(StyleSheet.flatten(bottomSlot.props.style)).toMatchObject({
@@ -228,7 +229,7 @@ describe('MessageOverlayHostLayer', () => {
     });
   });
 
-  it('resets host geometry after finalizeCloseOverlay clears the registered rects', () => {
+  it('keeps the hosts mounted but resets their geometry after finalizeCloseOverlay', () => {
     const renderTree = () => (
       <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
         <MessageOverlayHostLayer />
@@ -260,18 +261,73 @@ describe('MessageOverlayHostLayer', () => {
 
     rerender(renderTree());
 
+    // The hosts stay mounted (not gated on isActive) so the native teleport target is stable
+    // across opens; only their geometry resets to 0. The backdrop press target is gated.
     expect(StyleSheet.flatten(screen.getByTestId('message-overlay-top').props.style)).toMatchObject(
-      {
-        height: 0,
-      },
+      { height: 0 },
     );
     expect(
       StyleSheet.flatten(screen.getByTestId('message-overlay-message').props.style),
     ).toMatchObject({ height: 0 });
     expect(
       StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
+    ).toMatchObject({ height: 0 });
+    expect(screen.queryByTestId('message-overlay-backdrop')).toBeNull();
+  });
+
+  it('pins the top item, leaves the message unclipped (behind the items), and sticks the bottom item when the content overflows', () => {
+    // window height 200, insets top 10 / bottom 15, padding 8 => minY 18, maxY 177.
+    // Available height is 159; the rects below sum to 190 so scrolling kicks in.
+    const SCROLL_TOP_RECT = { h: 20, w: 90, x: 5, y: 20 };
+    const SCROLL_MESSAGE_RECT = { h: 140, w: 180, x: 10, y: 40 };
+    const SCROLL_BOTTOM_RECT = { h: 30, w: 140, x: 20, y: 180 };
+
+    const renderTree = () => (
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>
+    );
+    const { rerender } = render(renderTree());
+
+    act(() => {});
+
+    act(() => {
+      setOverlayTopH(SCROLL_TOP_RECT);
+      setOverlayMessageH(SCROLL_MESSAGE_RECT);
+      setOverlayBottomH(SCROLL_BOTTOM_RECT);
+      openOverlay('message-1');
+    });
+
+    rerender(renderTree());
+
+    // Top item pinned to minY (18): 20 + (-2) = 18.
+    expect(StyleSheet.flatten(screen.getByTestId('message-overlay-top').props.style)).toMatchObject(
+      {
+        top: SCROLL_TOP_RECT.y,
+        transform: [{ scale: 1 }, { translateY: -2 }],
+      },
+    );
+
+    // Message host keeps its natural height and is NOT clipped (no overflow:hidden). It is
+    // pinned under the top item (top 40 + first translateY -2 = contentTop 38); the second
+    // translateY is the scroll offset (0 at rest). It renders behind the opaque items.
+    const messageStyle = StyleSheet.flatten(
+      screen.getByTestId('message-overlay-message').props.style,
+    );
+    expect(messageStyle).toMatchObject({
+      height: SCROLL_MESSAGE_RECT.h,
+      left: SCROLL_MESSAGE_RECT.x,
+      top: SCROLL_MESSAGE_RECT.y,
+      transform: [{ translateY: -2 }, { translateY: 0 }],
+    });
+    expect(messageStyle.overflow).toBeUndefined();
+
+    // Bottom item sticks to the bottom of the usable area (maxY - bottomH) = 147: 180 + (-33).
+    expect(
+      StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
     ).toMatchObject({
-      height: 0,
+      top: SCROLL_BOTTOM_RECT.y,
+      transform: [{ scale: 1 }, { translateY: -33 }],
     });
   });
 

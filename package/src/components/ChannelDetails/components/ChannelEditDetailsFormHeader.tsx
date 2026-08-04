@@ -5,9 +5,9 @@ import { ActivityIndicator, Keyboard } from 'react-native';
 import { ModalHeader } from './modal/ModalHeader';
 
 import { useChannelEditDetailsContext } from '../../../contexts/channelEditDetailsContext/ChannelEditDetailsContext';
+import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks/useStableCallback';
-import { Checkmark } from '../../../icons/checkmark-1';
 import { useAreChannelDetailsEdited } from '../../../state-store/edit-channel-details-store';
 import { Button } from '../../ui/Button/Button';
 
@@ -23,6 +23,7 @@ export type ChannelEditDetailsFormHeaderProps = {
 
 export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsFormHeaderProps) => {
   const { store, submit } = useChannelEditDetailsContext();
+  const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
   const [saving, setSaving] = useState(false);
   const channelDetailsEdited = useAreChannelDetailsEdited(store);
@@ -52,7 +53,7 @@ export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsForm
           accessibilityState={{ busy: saving, disabled: !confirmEnabled }}
           disabled={!confirmEnabled}
           iconOnly
-          LeadingIcon={saving ? LoadingButtonIcon : Checkmark}
+          LeadingIcon={saving ? LoadingButtonIcon : icons.Checkmark}
           onPress={handleConfirm}
           testID='channel-details-edit-confirm-button'
           type='solid'

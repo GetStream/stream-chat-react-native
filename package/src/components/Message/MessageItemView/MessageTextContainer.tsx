@@ -21,7 +21,7 @@ import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 import { primitives } from '../../../theme';
 
 const styles = StyleSheet.create({
-  textContainer: { maxWidth: 256, paddingHorizontal: primitives.spacingSm },
+  textContainer: { maxWidth: 256, paddingHorizontal: primitives.spacingXxs },
 });
 
 export type MessageTextProps = MessageTextContainerProps & {

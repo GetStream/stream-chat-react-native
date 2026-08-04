@@ -3,14 +3,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
+import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../../../hooks';
 import { useAudioPlayer } from '../../../../hooks/useAudioPlayer';
 import { useStateStore } from '../../../../hooks/useStateStore';
 
-import { Pause } from '../../../../icons/pause-fill';
-import { Play } from '../../../../icons/play-fill';
 import { AudioPlayerState } from '../../../../state-store/audio-player';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
@@ -48,6 +47,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
  */
 export const AudioRecordingPreview = () => {
   const { audioRecorderManager } = useMessageInputContext();
+  const { icons } = useComponentsContext();
   const styles = useStyles();
 
   const {
@@ -122,9 +122,9 @@ export const AudioRecordingPreview = () => {
       <View style={[styles.infoContainer, infoContainer]}>
         <Pressable onPress={handlePlayPause} hitSlop={15}>
           {!isPlaying ? (
-            <Play fill={semantics.textPrimary} height={20} width={20} {...playIcon} />
+            <icons.Play fill={semantics.textPrimary} height={20} width={20} {...playIcon} />
           ) : (
-            <Pause fill={semantics.textPrimary} height={20} width={20} {...pauseIcon} />
+            <icons.Pause fill={semantics.textPrimary} height={20} width={20} {...pauseIcon} />
           )}
         </Pressable>
         {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}

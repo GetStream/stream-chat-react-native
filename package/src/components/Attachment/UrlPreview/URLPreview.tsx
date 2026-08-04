@@ -25,7 +25,6 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { Link } from '../../../icons/link';
 import { primitives } from '../../../theme';
 import { FileTypes } from '../../../types/types';
 import { makeImageCompatibleUrl } from '../../../utils/utils';
@@ -66,6 +65,8 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
     preventPress,
     styles: stylesProp = {},
   } = props;
+
+  const { icons } = useComponentsContext();
 
   const {
     theme: { semantics },
@@ -155,7 +156,7 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
           </Text>
         ) : null}
         <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
-          <Link height={12} width={12} stroke={semantics.chatTextIncoming} />
+          <icons.Link height={12} width={12} stroke={semantics.chatTextIncoming} />
           <Text
             numberOfLines={1}
             style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}

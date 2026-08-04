@@ -10,7 +10,6 @@ import {
 } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../../../hooks/useStateStore';
-import { Mic } from '../../../../icons/voice';
 import { AudioRecorderManagerState } from '../../../../state-store/audio-recorder-manager';
 import { primitives } from '../../../../theme';
 
@@ -27,7 +26,7 @@ type AudioRecordingInProgressPropsWithContext = Pick<
 
 const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressPropsWithContext) => {
   const { maxDataPointsDrawn = 60, duration, waveformData } = props;
-  const { AudioRecordingWaveform } = useComponentsContext();
+  const { AudioRecordingWaveform, icons } = useComponentsContext();
 
   const styles = useStyles();
 
@@ -44,7 +43,7 @@ const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressProp
     <View style={[styles.container, container]}>
       {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
       <View style={styles.micContainer}>
-        <Mic height={20} width={20} stroke={semantics.accentError} />
+        <icons.Mic height={20} width={20} stroke={semantics.accentError} />
         <Text style={[styles.durationText, durationText]}>
           {duration ? dayjs.duration(duration).format('mm:ss') : null}
         </Text>

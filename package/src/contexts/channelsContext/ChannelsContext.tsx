@@ -69,7 +69,7 @@ export type ChannelsContextValue = {
    */
   maxUnreadCount: number;
   /**
-   * Number of skeletons that should show when loading. Default: 6
+   * Number of skeletons that should show when loading. Default: 8
    */
   numberOfSkeletons: number;
   /**

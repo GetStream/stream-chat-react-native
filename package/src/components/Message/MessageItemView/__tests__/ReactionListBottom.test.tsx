@@ -149,7 +149,10 @@ describe('ReactionListBottom', () => {
   //   });
   // });
 
-  it('call handleReaction on press', () => {
+  it('does not toggle the reaction on press but opens the reactions bottom sheet instead', () => {
+    // Tapping a segmented reaction must mirror the clustered flow: it opens the
+    // reactions bottom sheet (preselecting the tapped reaction) rather than
+    // adding/removing the current user's reaction.
     const handleReactionMock = jest.fn();
     const user = generateUser();
     const reaction = generateReaction();
@@ -172,6 +175,43 @@ describe('ReactionListBottom', () => {
 
     fireEvent(reactionListBottomItem, 'onPress');
 
-    expect(handleReactionMock).toHaveBeenCalledTimes(1);
+    expect(handleReactionMock).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('User Reactions on long press message')).toBeTruthy();
+  });
+
+  it('exposes the pressed reaction type via onPressMessage so integrators can toggle', () => {
+    // Integrators that want the old toggle-on-tap behavior can intercept the
+    // `reactionList` emitter and call `actionHandlers.toggleReaction(reactionType)`.
+    const onPressMessageMock = jest.fn();
+    const user = generateUser();
+    const reaction = generateReaction();
+    const message = generateMessage({
+      reaction_groups: { [reaction.type]: reaction } as unknown as ReturnType<
+        typeof generateMessage
+      >['reaction_groups'],
+      user,
+    });
+
+    renderMessage(
+      { message },
+      {
+        onPressMessage: onPressMessageMock,
+        reactionListPosition: 'bottom',
+        reactionListType: 'segmented',
+      },
+    );
+
+    const reactionListBottomItem = screen.getByTestId('reaction-list-item');
+
+    fireEvent(reactionListBottomItem, 'onPress');
+
+    expect(onPressMessageMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        additionalInfo: { reactionType: reaction.type },
+        emitter: 'reactionList',
+      }),
+    );
+    // onPressMessage replaces the default handler, so the sheet must NOT open here.
+    expect(screen.queryByLabelText('User Reactions on long press message')).toBeNull();
   });
 });

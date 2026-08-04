@@ -13,7 +13,6 @@ export const useCreateChannelContext = ({
   hideStickyDateHeader,
   highlightedMessageId,
   isChannelActive,
-  lastRead,
   loadChannelAroundMessage,
   loadChannelAtFirstUnreadMessage,
   loading,
@@ -25,7 +24,6 @@ export const useCreateChannelContext = ({
   reloadChannel,
   scrollToFirstUnreadThreshold,
   setChannelUnreadState,
-  setLastRead,
   setTargetedMessage,
   hasPendingInitialTargetLoad,
   targetedMessage,
@@ -35,7 +33,6 @@ export const useCreateChannelContext = ({
   watchers,
 }: ChannelContextValue) => {
   const channelId = channel?.id;
-  const lastReadTime = lastRead?.getTime();
   const membersLength = Object.keys(members).length;
 
   const readUsers = Object.values(read);
@@ -56,7 +53,6 @@ export const useCreateChannelContext = ({
       hideStickyDateHeader,
       highlightedMessageId,
       isChannelActive,
-      lastRead,
       loadChannelAroundMessage,
       loadChannelAtFirstUnreadMessage,
       loading,
@@ -68,7 +64,6 @@ export const useCreateChannelContext = ({
       reloadChannel,
       scrollToFirstUnreadThreshold,
       setChannelUnreadState,
-      setLastRead,
       setTargetedMessage,
       hasPendingInitialTargetLoad,
       targetedMessage,
@@ -84,7 +79,6 @@ export const useCreateChannelContext = ({
       error,
       isChannelActive,
       highlightedMessageId,
-      lastReadTime,
       loading,
       membersLength,
       readUsersLength,
