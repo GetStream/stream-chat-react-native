@@ -19,6 +19,7 @@
 - [Stream Chat API](https://getstream.io/chat/) product overview
 - [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
+- [AI Agent Skills](#-build-with-ai-agents) for Claude Code, Cursor, and Codex
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Documentation](https://getstream.io/chat/docs/sdk/reactnative)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
@@ -28,6 +29,7 @@
 - [Official React Native SDK for Stream Chat](#official-react-native-sdk-for-stream-chat)
   - [Contents](#contents)
   - [📖 React Native Chat Tutorial](#-react-native-chat-tutorial)
+  - [🤖 Build with AI Agents](#-build-with-ai-agents)
   - [Free for Makers](#free-for-makers)
   - [🔮 Example Apps](#-example-apps)
   - [💬 Keep in mind](#-keep-in-mind)
@@ -38,6 +40,26 @@
 ## 📖 React Native Chat Tutorial
 
 The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make frequently required changes.
+
+## 🤖 Build with AI Agents
+
+If you build with an AI coding agent, our [agent skills](https://getstream.io/agent-skills/docs/installation/) teach it how to use this SDK correctly. Install them once:
+
+```bash
+curl -fsSL https://getstream.io/cli.sh | bash
+getstream init
+```
+
+Then reach for the [`/stream-react-native`](https://getstream.io/agent-skills/docs/skills/stream-react-native/) skill:
+
+```
+/stream-react-native create a new Expo chat app
+/stream-react-native upgrade stream-chat-react-native to v9
+```
+
+It can scaffold a new Expo or React Native CLI app with the SDK wired up, add Stream to an app you already have, audit an existing integration, or migrate between SDK major versions (including from Sendbird). Works with Claude Code, Cursor, Codex, and any other agent that reads the universal `.agents` location.
+
+Contributing to this repository with an agent instead? See [AGENTS.md](./AGENTS.md) for repository structure, commands, and conventions.
 
 ## Free for Makers
 
