@@ -61,7 +61,7 @@ describe('ChannelPreviewView', () => {
     await initializeChannel(
       generateChannelResponse({
         channel: {
-          name: channelName,
+          custom: { name: channelName },
         },
       }),
     );

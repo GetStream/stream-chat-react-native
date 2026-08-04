@@ -1,4 +1,4 @@
-import type { Channel, EventTypes, StreamChat } from 'stream-chat';
+import type { Channel, EventType, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
@@ -21,7 +21,7 @@ const selector = (channel: Channel, client: StreamChat) => {
   return otherMember?.user?.online ?? false;
 };
 
-const keys: EventTypes[] = ['user.presence.changed', 'user.updated'];
+const keys: EventType[] = ['user.presence.changed', 'user.updated'];
 
 /**
  * Hook to set the display avatar presence for channel preview

@@ -296,8 +296,8 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
       ],
       user,
     });
@@ -426,9 +426,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { title: 'file', type: 'file' },
-        { title: 'audio', type: 'audio' },
-        { title: 'video', type: 'video' },
+        { custom: {}, title: 'file', type: 'file' },
+        { custom: {}, title: 'audio', type: 'audio' },
+        { custom: {}, title: 'video', type: 'video' },
       ],
       user,
     });
@@ -469,8 +469,8 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
       ],
       text: 'a caption',
       user,
@@ -495,8 +495,8 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
       ],
       text: 'a caption',
       user,

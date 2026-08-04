@@ -216,7 +216,7 @@ export const useMessageActions = ({
   const onRetry = useStableCallback(async () => {
     const messageWithoutReservedFields = removeReservedFields(message);
     if (handleRetry) {
-      handleRetry(messageWithoutReservedFields as LocalMessage);
+      handleRetry(messageWithoutReservedFields);
     }
 
     await handleResendMessage();

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle -- the LLC's positional RN image-upload helper is `uploadImage_` */
 import React, { PropsWithChildren } from 'react';
 
 import { act, renderHook } from '@testing-library/react-native';
@@ -28,9 +29,9 @@ const createClient = () => ({
     startTimeout: jest.fn(),
   },
   muteUser: jest.fn(),
-  unBlockUser: jest.fn(),
+  unblockUser: jest.fn(),
   unmuteUser: jest.fn(),
-  uploadImage: jest.fn().mockResolvedValue({ file: 'https://cdn.example.com/uploaded.png' }),
+  uploadImage_: jest.fn().mockResolvedValue({ file: 'https://cdn.example.com/uploaded.png' }),
   userID: 'current-user-id',
 });
 
@@ -509,7 +510,7 @@ describe('useChannelActions', () => {
       await result.current.updateImage(imageFile);
     });
 
-    expect(client.uploadImage).toHaveBeenCalledWith(
+    expect(client.uploadImage_).toHaveBeenCalledWith(
       'file:///tmp/avatar.png',
       'avatar.png',
       'image/png',
@@ -530,7 +531,7 @@ describe('useChannelActions', () => {
     });
   });
 
-  it('uses doFileUploadRequest instead of client.uploadImage when provided', async () => {
+  it('uses doFileUploadRequest instead of client.uploadImage_ when provided', async () => {
     const client = createClient();
     const channel = createChannel(client);
     const doFileUploadRequest = jest
@@ -545,7 +546,7 @@ describe('useChannelActions', () => {
     });
 
     expect(doFileUploadRequest).toHaveBeenCalledWith(imageFile);
-    expect(client.uploadImage).not.toHaveBeenCalled();
+    expect(client.uploadImage_).not.toHaveBeenCalled();
     expect(channel.updatePartial).toHaveBeenCalledWith({
       set: { image: 'https://cdn.custom.com/avatar.png' },
     });
@@ -554,7 +555,7 @@ describe('useChannelActions', () => {
   it('notifies and skips channel.updatePartial when uploadImage rejects', async () => {
     const error = new Error('upload failed');
     const client = createClient();
-    client.uploadImage.mockRejectedValueOnce(error);
+    client.uploadImage_.mockRejectedValueOnce(error);
     const channel = createChannel(client);
     const { result } = renderHook(() => useChannelActions(channel), {
       wrapper: createWrapper(client),
@@ -592,7 +593,7 @@ describe('useChannelActions', () => {
       await result.current.updateImage(imageFile);
     });
 
-    expect(client.uploadImage).toHaveBeenCalledTimes(1);
+    expect(client.uploadImage_).toHaveBeenCalledTimes(1);
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: 'Failed to update channel image',
       options: {
@@ -618,7 +619,7 @@ describe('useChannelActions', () => {
       await result.current.updateImage(null);
     });
 
-    expect(client.uploadImage).not.toHaveBeenCalled();
+    expect(client.uploadImage_).not.toHaveBeenCalled();
     expect(channel.updatePartial).toHaveBeenCalledWith({ unset: ['image'] });
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: 'Channel image updated',
@@ -646,7 +647,7 @@ describe('useChannelActions', () => {
       await result.current.updateImage(null);
     });
 
-    expect(client.uploadImage).not.toHaveBeenCalled();
+    expect(client.uploadImage_).not.toHaveBeenCalled();
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: 'Failed to update channel image',
       options: {
@@ -694,7 +695,7 @@ describe('useChannelActions', () => {
     });
     expect(onSuccess).toHaveBeenCalledTimes(1);
 
-    client.uploadImage.mockRejectedValueOnce(new Error('nope'));
+    client.uploadImage_.mockRejectedValueOnce(new Error('nope'));
     await act(async () => {
       await result.current.updateImage(imageFile, { onSuccess });
     });

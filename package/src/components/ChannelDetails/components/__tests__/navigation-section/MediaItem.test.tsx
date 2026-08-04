@@ -61,7 +61,9 @@ describe('MediaItem', () => {
 
   it('renders the duration badge for video attachments', () => {
     renderItem({
-      attachment: generateVideoAttachment({ duration: 8000 }),
+      attachment: generateVideoAttachment({
+        custom: { duration: 8000 } as unknown as Attachment['custom'],
+      }),
     });
 
     expect(screen.getByText('0:08')).toBeTruthy();

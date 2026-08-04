@@ -25,9 +25,12 @@ export const localAttachmentToAttachment = (localAttachment: LocalAttachment) =>
 
     return {
       ...attachment,
+      custom: {
+        ...attachment.custom,
+        localId: localMetadata?.id,
+        originalFile: localMetadata.file,
+      },
       image_url: localMetadata?.previewUri,
-      localId: localMetadata?.id,
-      originalFile: localMetadata.file,
     } as Attachment;
   } else {
     const isRemoteUri = !!attachment.asset_url && !isLocalUrl(attachment.asset_url);
@@ -36,8 +39,11 @@ export const localAttachmentToAttachment = (localAttachment: LocalAttachment) =>
     return {
       ...attachment,
       asset_url: (localMetadata.file as FileReference).uri,
-      localId: localMetadata?.id,
-      originalFile: localMetadata.file,
+      custom: {
+        ...attachment.custom,
+        localId: localMetadata?.id,
+        originalFile: localMetadata.file,
+      },
     } as Attachment;
   }
 };

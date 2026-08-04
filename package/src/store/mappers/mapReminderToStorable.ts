@@ -1,10 +1,10 @@
-import type { ReminderResponseBase } from 'stream-chat';
+import type { ReminderResponseData } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
 import type { TableRow } from '../types';
 
-export const mapReminderToStorable = (reminder: ReminderResponseBase): TableRow<'reminders'> => {
+export const mapReminderToStorable = (reminder: ReminderResponseData): TableRow<'reminders'> => {
   const { channel_cid, created_at, message_id, remind_at, updated_at, user_id } = reminder;
 
   return {

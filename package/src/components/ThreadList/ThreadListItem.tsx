@@ -192,6 +192,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
 
     return {
       attachments,
+      custom: {},
       id: thread.messageComposer.id,
       text: draftText ?? '',
     };

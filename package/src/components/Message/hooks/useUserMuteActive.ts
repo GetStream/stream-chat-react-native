@@ -11,5 +11,7 @@ export const useUserMuteActive = (user: UserResponse | null | undefined) => {
     return false;
   }
 
-  return !!mutedUsers.find((mute) => mute.user.id === client.userID && user.id === mute.target.id);
+  return !!mutedUsers.find(
+    (mute) => mute.user?.id === client.userID && user.id === mute.target?.id,
+  );
 };

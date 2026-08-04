@@ -3,6 +3,7 @@ import React from 'react';
 import { FlatList } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import type { UserResponse } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -53,7 +54,7 @@ describe('MessageList', () => {
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -88,7 +89,7 @@ describe('MessageList', () => {
       ],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -120,7 +121,7 @@ describe('MessageList', () => {
       ],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -148,7 +149,7 @@ describe('MessageList', () => {
       messages: [generateMessage({ user: user1 })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -180,7 +181,7 @@ describe('MessageList', () => {
       messages: [],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -207,7 +208,7 @@ describe('MessageList', () => {
       messages: [generateMessage({ user: user1 })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -242,7 +243,7 @@ describe('MessageList', () => {
       messages: [generateMessage({ user: user1 })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -283,7 +284,7 @@ describe('MessageList', () => {
       messages: mockedLongMessagesList,
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -327,7 +328,7 @@ describe('MessageList', () => {
       members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: user1.id });
+    const chatClient = await getTestClientWithUser({ id: user1.id } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -363,7 +364,7 @@ describe('MessageList', () => {
       members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: user1.id });
+    const chatClient = await getTestClientWithUser({ id: user1.id } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -394,7 +395,7 @@ describe('MessageList', () => {
       members: [generateMember({ user })],
     });
 
-    const chatClient = await getTestClientWithUser({ id: user.id });
+    const chatClient = await getTestClientWithUser({ id: user.id } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -431,7 +432,7 @@ describe('MessageList', () => {
       generateMessage({ id: `${i}`, text: `message-${i}` }),
     );
 
-    const chatClient = await getTestClientWithUser({ id: user.id });
+    const chatClient = await getTestClientWithUser({ id: user.id } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -515,7 +516,7 @@ describe('MessageList pagination', () => {
       messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -551,7 +552,7 @@ describe('MessageList pagination', () => {
       messages: Array.from({ length: 100 }, (_, i) => generateMessage({ text: `message-${i}` })),
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -593,7 +594,7 @@ describe('MessageList pagination', () => {
       messages: Array.from({ length: 100 }, (_, i) => generateMessage({ text: `message-${i}` })),
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
@@ -638,7 +639,7 @@ describe('MessageList pagination', () => {
       messages,
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();

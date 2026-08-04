@@ -282,7 +282,10 @@ describe('MessageItemView', () => {
 
   it('noBorder true when only other attachments is present', async () => {
     const user = generateUser();
-    const message = generateMessage({ attachments: [{ title: 'other', type: 'other' }], user });
+    const message = generateMessage({
+      attachments: [{ custom: {}, title: 'other', type: 'other' }],
+      user,
+    });
 
     renderMessage({ message });
 

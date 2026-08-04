@@ -51,8 +51,11 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }, [channel.state.members, client.user?.id]);
 
+  // `status` only exists on optimistic/local messages (`LocalMessage`), so read it via a
+  // guard rather than asserting `lastMessage` (a `LocalMessage | MessageResponse`) is local.
+  const lastMessageStatus = lastMessage && 'status' in lastMessage ? lastMessage.status : undefined;
   const isFailedMessage =
-    lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
+    lastMessageStatus === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
   const showMessageDeliveryStatus = !isMessageDeleted;
 
   if (usersTyping.length > 0) {
@@ -97,7 +100,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }
 
-  if (channel.data?.name || membersWithoutSelf.length > 1) {
+  if (channel.data?.custom?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
         {showMessageDeliveryStatus ? (

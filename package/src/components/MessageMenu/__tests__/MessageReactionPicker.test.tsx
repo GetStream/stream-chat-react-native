@@ -17,6 +17,7 @@ import {
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { NativeHandlers } from '../../../native';
 import { Chat } from '../../Chat/Chat';
@@ -47,7 +48,7 @@ describe('MessageReactionPicker', () => {
   ) => ReturnType<typeof render>;
 
   beforeEach(async () => {
-    client = await getTestClientWithUser({ id: 'reaction-test-user' });
+    client = await getTestClientWithUser(generateUser({ id: 'reaction-test-user' }));
     renderComponent = (props = {}, ownCapabilities = { sendReaction: true }) =>
       render(
         <Chat client={client}>

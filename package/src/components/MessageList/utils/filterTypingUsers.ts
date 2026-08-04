@@ -1,4 +1,4 @@
-import { TypingUsersState, UserResponse } from 'stream-chat';
+import { EventPayload, TypingUsersState, UserResponse } from 'stream-chat';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 
@@ -17,24 +17,25 @@ export const filterTypingUsers = ({ client, threadId, typing }: FilterTypingUser
   const typingKeys = Object.keys(typing);
 
   typingKeys.forEach((typingKey) => {
-    if (!typing[typingKey]) {
+    const typingEvent = typing[typingKey] as EventPayload<'typing.start' | 'typing.stop'>;
+    if (!typingEvent) {
       return;
     }
 
     /** removes own typing events */
-    if (client.user?.id === typing[typingKey].user?.id) {
+    if (client.user?.id === typingEvent.user?.id) {
       return;
     }
 
-    const isRegularEvent = !typing[typingKey].parent_id && !threadId;
-    const isCurrentThreadEvent = typing[typingKey].parent_id === threadId;
+    const isRegularEvent = !typingEvent.parent_id && !threadId;
+    const isCurrentThreadEvent = typingEvent.parent_id === threadId;
 
     /** filters different threads events */
     if (!isRegularEvent && !isCurrentThreadEvent) {
       return;
     }
 
-    const user = typing[typingKey].user;
+    const user = typingEvent.user;
     if (user) {
       nonSelfUsers.push(user);
     }

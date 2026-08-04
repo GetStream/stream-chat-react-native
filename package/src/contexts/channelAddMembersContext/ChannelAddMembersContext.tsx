@@ -75,7 +75,7 @@ const ChannelAddMembersContextProviderInner = ({
       },
     );
     source.activate();
-    source.sort = [{ name: 1 }];
+    source.sort = [{ field: 'name', direction: 1 }];
     return source;
   });
 

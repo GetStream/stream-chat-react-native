@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Channel, Event, SharedLocationResponse } from 'stream-chat';
+import { Channel, EventPayload, SharedLocationResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
@@ -35,17 +35,17 @@ export const useHandleLiveLocationEvents = ({
   const [isLiveLocationStopped, setIsLiveLocationStopped] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const handleMessageUpdate = (event: Event) => {
+    const handleMessageUpdate = (event: EventPayload<'message.updated'>) => {
       const { message } = event;
       if (!message || !message.shared_location) {
         return;
       }
       const { shared_location } = message;
       if (message.id === messageId) {
-        setLocationResponse(message.shared_location);
-        onLocationUpdate?.(message.shared_location);
+        setLocationResponse(message.shared_location as SharedLocationResponse);
+        onLocationUpdate?.(message.shared_location as SharedLocationResponse);
       }
-      if (shared_location.end_at && shared_location.end_at <= new Date().toISOString()) {
+      if (shared_location.end_at && shared_location.end_at <= new Date()) {
         setIsLiveLocationStopped(true);
       }
     };

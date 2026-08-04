@@ -1,4 +1,4 @@
-import { Channel, ChannelSortBase } from 'stream-chat';
+import { Channel, SortParamRequest } from 'stream-chat';
 
 import { ChannelListProps } from '../../ChannelList';
 
@@ -36,35 +36,20 @@ export const extractSortValue = ({
   targetKey,
 }: {
   atIndex: number;
-  targetKey: keyof ChannelSortBase;
+  targetKey: string;
   sort?: ChannelListProps['sort'];
 }) => {
   if (!sort) {
     return null;
   }
-  let option: null | ChannelSortBase = null;
 
-  if (Array.isArray(sort)) {
-    option = sort[atIndex] ?? null;
-  } else {
-    let index = 0;
-    for (const key in sort) {
-      if (index !== atIndex) {
-        index++;
-        continue;
-      }
+  const option: SortParamRequest | null = sort[atIndex] ?? null;
 
-      if (key !== targetKey) {
-        return null;
-      }
-
-      option = sort;
-
-      break;
-    }
+  if (!option || option.field !== targetKey) {
+    return null;
   }
 
-  return option?.[targetKey] ?? null;
+  return option.direction ?? null;
 };
 
 /**
@@ -89,21 +74,13 @@ export function findPinnedAtSortOrder({ sort }: { sort: ChannelListProps['sort']
     return null;
   }
 
-  if (Array.isArray(sort)) {
-    const [option] = sort;
+  const [option] = sort;
 
-    if (!option?.pinned_at) {
-      return null;
-    }
-
-    return option.pinned_at;
-  } else {
-    if (!sort.pinned_at) {
-      return null;
-    }
-
-    return sort.pinned_at;
+  if (!option || option.field !== 'pinned_at') {
+    return null;
   }
+
+  return option.direction ?? null;
 }
 
 export function findLastPinnedChannelIndex({ channels }: { channels: Channel[] }) {

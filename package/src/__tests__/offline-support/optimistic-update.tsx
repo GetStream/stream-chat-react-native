@@ -5,7 +5,6 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react-na
 
 import type {
   Channel as ChannelLLC,
-  ChannelAPIResponse,
   ChannelMemberResponse,
   LocalMessage,
   ReactionResponse,
@@ -167,7 +166,7 @@ export const OptimisticUpdates = () => {
       await SqliteClient.initializeDatabase();
       await BetterSqlite.openDB();
       await upsertChannels({
-        channels: [channelResponse] as unknown as ChannelAPIResponse[],
+        channels: [channelResponse] as unknown as Parameters<typeof upsertChannels>[0]['channels'],
         isLatestMessagesSet: true,
       });
       chatClient.wsConnection = {
@@ -670,11 +669,13 @@ export const OptimisticUpdates = () => {
                         attachments: [
                           {
                             asset_url: localUri,
-                            originalFile: generateFileReference({
-                              name: 'edited-attachment.png',
-                              type: 'image/png',
-                              uri: localUri,
-                            }),
+                            custom: {
+                              originalFile: generateFileReference({
+                                name: 'edited-attachment.png',
+                                type: 'image/png',
+                                uri: localUri,
+                              }),
+                            },
                             type: 'file',
                           },
                         ],
@@ -815,13 +816,13 @@ export const OptimisticUpdates = () => {
         const localMessage = generateMessage({
           status: MessageStatusTypes.SENDING,
           text: 'offline resend',
-          user: chatClient.user,
+          user: chatClient.user as UserResponse,
           user_id: chatClient.userID,
         });
         const serverMessage = generateMessage({
           id: localMessage.id,
           text: localMessage.text,
-          user: chatClient.user,
+          user: chatClient.user as UserResponse,
           user_id: chatClient.userID,
         });
 
@@ -886,7 +887,7 @@ export const OptimisticUpdates = () => {
         const localMessage = generateMessage({
           status: MessageStatusTypes.SENDING,
           text: 'offline resend unresolved',
-          user: chatClient.user,
+          user: chatClient.user as UserResponse,
           user_id: chatClient.userID,
         });
 

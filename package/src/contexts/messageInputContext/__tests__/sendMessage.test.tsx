@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react-native';
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Attachment, Channel, StreamChat } from 'stream-chat';
 
 import { Chat } from '../../../components';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -301,7 +301,7 @@ describe("MessageInputContext's editMessage", () => {
     } as unknown as MessageComposerAPIContextValue);
 
     const message = generateMessage({
-      attachments: [generateLocalFileUploadAttachmentData()],
+      attachments: [generateLocalFileUploadAttachmentData() as unknown as Attachment],
       cid: 'messaging:channel-id',
       text: 'test',
     });

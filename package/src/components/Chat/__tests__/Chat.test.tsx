@@ -250,7 +250,9 @@ describe('TranslationContext', () => {
         chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
         'unsubscribe' as never,
       );
-      listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+      listenersAfterInitialMount = [
+        ...(chatClientWithUser.listeners.get('connection.changed') ?? []),
+      ];
     });
 
     // remount
@@ -259,7 +261,7 @@ describe('TranslationContext', () => {
     await waitFor(() => {
       expect(initSpy).toHaveBeenCalledTimes(1);
       expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
-      expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+      expect([...(chatClientWithUser.listeners.get('connection.changed') ?? [])].length).toBe(
         listenersAfterInitialMount.length,
       );
     });
@@ -281,7 +283,9 @@ describe('TranslationContext', () => {
         chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
         'unsubscribe' as never,
       );
-      listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+      listenersAfterInitialMount = [
+        ...(chatClientWithUser.listeners.get('connection.changed') ?? []),
+      ];
     });
 
     await act(async () => {
@@ -294,7 +298,7 @@ describe('TranslationContext', () => {
     await waitFor(() => {
       expect(initSpy).toHaveBeenCalledTimes(2);
       expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
-      expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+      expect([...(chatClientWithUser.listeners.get('connection.changed') ?? [])].length).toBe(
         listenersAfterInitialMount.length,
       );
     });
@@ -317,7 +321,9 @@ describe('TranslationContext', () => {
       );
     });
 
-    const listenersAfterInitialMount = chatClientWithUser.listeners['connection.changed'];
+    const listenersAfterInitialMount = [
+      ...(chatClientWithUser.listeners.get('connection.changed') ?? []),
+    ];
 
     // rerender
     rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
@@ -325,7 +331,7 @@ describe('TranslationContext', () => {
     await waitFor(() => {
       expect(initSpy).toHaveBeenCalledTimes(1);
       expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
-      expect(chatClientWithUser.listeners['connection.changed'].length).toBe(
+      expect([...(chatClientWithUser.listeners.get('connection.changed') ?? [])].length).toBe(
         listenersAfterInitialMount.length,
       );
     });

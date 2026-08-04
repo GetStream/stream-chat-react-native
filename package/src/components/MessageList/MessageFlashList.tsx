@@ -12,7 +12,7 @@ import {
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
-import type { Channel, Event, LocalMessage } from 'stream-chat';
+import type { Channel, EventPayload, LocalMessage } from 'stream-chat';
 
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
@@ -663,7 +663,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       );
     };
 
-    const handleEvent = (event: Event) => {
+    const handleEvent = (event: EventPayload<'message.new'>) => {
       const mainChannelUpdated = !event.message?.parent_id || event.message?.show_in_channel;
       if (mainChannelUpdated && shouldMarkRead()) {
         markRead();

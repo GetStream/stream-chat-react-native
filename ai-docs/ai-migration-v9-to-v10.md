@@ -690,6 +690,75 @@ v10 SDK code hard-depends on `stream-chat` v10 APIs (`channel.messagePaginator`,
 
 ---
 
+# Part I — stream-chat v10 type-surface (OpenAPI overhaul)
+
+The v10 bump brings the OpenAPI type overhaul. Most of it is internal to the SDK (already
+migrated); the items below are the ones that reach **integrator** code — custom components,
+`<Channel>` override props, and any direct `stream-chat` client/channel usage.
+
+## 17.1 Custom fields moved under `.custom`
+
+v10 drops the custom-overlay pattern: custom fields live under a `.custom` bag, not at the object
+root. Relevant only if you authored a custom component/override that reads them at the root — the
+SDK's own reads are already migrated.
+
+- `channel.data.name` / `channel.data.image` → `channel.data.custom?.name` / `.custom?.image`
+- Attachment metadata: `attachment.mime_type` / `file_size` / `duration` / `originalFile` →
+  `attachment.custom?.<same>` (`duration` is now `voiceRecording`-only)
+
+The RN SDK augments `CustomChannelData` (`name`, `image`) and `CustomAttachmentData`
+(`originalFile`, `localId`). Add your own custom keys the same way (`declare module 'stream-chat'`).
+
+## 17.2 `deleteMessage` options are snake_case
+
+`useMessageOperations().deleteMessage(message, options)` (and the `MessageContext` value) now takes
+the LLC's `DeleteMessageOptions` (`{ hard?, delete_for_me?, deleted_by? }`) instead of the v9 RN
+shape (`{ hardDelete?, deleteForMe? }`). The `boolean` shorthand (`deleteMessage(msg, true)` = hard
+delete) still works.
+
+- `deleteMessage(msg, { hardDelete: true })` → `deleteMessage(msg, { hard: true })`
+- `deleteMessage(msg, { deleteForMe: true })` → `deleteMessage(msg, { delete_for_me: true })`
+
+## 17.3 `<Channel doUpdateMessageRequest>` override signature
+
+The override now receives a request object, not a `LocalMessage`:
+
+- v9: `doUpdateMessageRequest(channelId, localMessage, options)`
+- v10: `doUpdateMessageRequest(channelId, { id, message }, options)` — `message` is a
+  `MessageRequest` (derived via `localMessageToNewMessagePayload`), matching the LLC's default
+  update path.
+
+`doSendMessageRequest`'s `message` argument is now typed `MessageRequest` (rename only; no shape change).
+
+## 17.4 `message.moderation_details` → `message.moderation`
+
+v10 uses V2 moderation: `message.moderation` (`ChatModerationV2Response`, `action: 'remove' |
+'bounce'`). `message.moderation_details` (V1) is gone. The SDK's `isBlockedMessage` /
+`isBouncedMessage` read only V2 — **if your backend still emits V1 payloads, blocked/bounced
+detection won't fire.**
+
+## 17.5 Underlying `stream-chat` type changes (renames / Date / method sigs)
+
+If you call the `stream-chat` client/channel directly or annotate with its types, see the LLC's own
+guides in `stream-chat-js`: `v9-to-v10-migration-guide-{type-renames,other,sort,methods,logging,client-construction}.md`.
+Highlights that hit integrator code:
+
+- **Dates are `Date` objects** (not ISO strings) on response types (`created_at`, `updated_at`, …).
+- **Type renames** — `EventTypes`→`EventType`, `Mute`→`UserMuteResponse`,
+  `PollOption`→`PollOptionResponseData`, `ReadResponse`→`ReadStateResponse`,
+  `AppSettingsAPIResponse`→`GetApplicationResponse`, `FormatMessageResponse`→`LocalMessage`,
+  `Role`→`RoleName`, `Logger`→`Sink`, `*SortBase`→`*Sort`, `TranslationLanguages`→`TranslationLanguage`.
+- **`Event` is a discriminated union** — narrow with `EventPayload<'the.type'>`, or drop the `: Event`
+  annotation so `client.on('x', cb)` narrows automatically.
+- **Method signatures collapsed to single objects** — `channel.sendReaction({ id, reaction, ... })`,
+  `deleteReaction({ id, type })`, `sendMessage({ message, ... })`, `queryChannels(request)`;
+  `client.uploadImage_(uri, name, type)` for RN image upload (the object-form `uploadImage` is
+  web/server-shaped); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
+  `createAbortControllerForNextRequest` moved to `client.api`.
+- **Sort is `SortParamRequest[]`** — `{ last_message_at: -1 }` → `[{ field: 'last_message_at', direction: -1 }]`.
+
+---
+
 ## 18. Verify
 
 - Typecheck the customer app; removed symbols surface as "Property does not

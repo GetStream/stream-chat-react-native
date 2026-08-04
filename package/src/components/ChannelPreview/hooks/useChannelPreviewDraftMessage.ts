@@ -38,6 +38,7 @@ export const useChannelPreviewDraftMessage = ({ channel }: UseChannelPreviewDraf
         ? attachments && draftText
           ? {
               attachments,
+              custom: {},
               id: channel.messageComposer.id,
               text: draftText,
             }

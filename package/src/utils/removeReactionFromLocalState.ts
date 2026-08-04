@@ -70,11 +70,15 @@ export const removeReactionFromLocalState = ({
     return;
   }
 
+  // created_at/updated_at are placeholders — this throwaway reaction is only used to locate and
+  // back out the current user's reaction of `reactionType` (only `type`/`user_id` are read).
   const reaction: ReactionResponse = {
-    created_at: '',
+    created_at: new Date(0),
+    custom: {},
     message_id: messageId,
+    score: 1,
     type: reactionType,
-    updated_at: '',
+    updated_at: new Date(0),
     user,
     user_id: user?.id,
   };

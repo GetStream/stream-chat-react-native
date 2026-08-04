@@ -72,7 +72,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const channelName = useChannelName(channel) ?? channel.cid;
 
   const memberCount = Object.keys(members).length;
-  const isGroup = !!channel.data?.name || memberCount > 2;
+  const isGroup = !!channel.data?.custom?.name || memberCount > 2;
   const otherUserName = usersWithoutSelf[0]?.name || usersWithoutSelf[0]?.id;
   const labelParams = useMemo(
     () => ({ count: memberCount, name: otherUserName ?? '' }),

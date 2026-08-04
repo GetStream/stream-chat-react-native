@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import { Alert } from 'react-native';
 
 import { renderHook } from '@testing-library/react-native';
-import type { Channel, ChannelMemberResponse, Mute } from 'stream-chat';
+import type { Channel, ChannelMemberResponse, UserMuteResponse } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
@@ -60,7 +60,7 @@ describe('useChannelMemberActionItems', () => {
       .mockImplementation(
         () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
       );
-    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
     jest.spyOn(useUserActionsModule, 'useUserActions').mockReturnValue(userActions);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
     jest.spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities').mockReturnValue([]);
@@ -98,7 +98,7 @@ describe('useChannelMemberActionItems', () => {
       .spyOn(useMutedUsersModule, 'useMutedUsers')
       .mockReturnValue([
         { target: { id: 'target-user-id' }, user: { id: 'current-user-id' } },
-      ] as Mute[]);
+      ] as UserMuteResponse[]);
 
     const wrapper = ({ children }: PropsWithChildren) => (
       <ChatProvider value={{ client: { userID: 'current-user-id' } } as never}>

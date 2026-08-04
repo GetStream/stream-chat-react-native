@@ -18,7 +18,7 @@ const mockUser = (data: Partial<UserResponse>) => fromPartial<UserResponse>(data
 
 const channelName = 'okechukwu';
 const CHANNEL = fromPartial<Channel>({
-  data: { name: channelName },
+  data: { custom: { name: channelName } },
   state: {},
 });
 
@@ -108,13 +108,15 @@ const CHANNEL_WITH_MESSAGES_ATTACHMENTS = {
           author_link: 'string',
           author_name: 'string',
           color: 'string',
+          custom: {
+            file_size: 25,
+            mime_type: 'string',
+          },
           fallback: 'string',
           fields: [],
-          file_size: 25,
           footer: 'string',
           footer_icon: 'string',
           image_url: 'string',
-          mime_type: 'string',
           og_scrape_url: 'string',
           original_height: 5,
           original_width: 4,
@@ -151,15 +153,15 @@ const LATEST_MESSAGE = mockMessage({
   user: mockUser({ id: 'okechukwu' }),
 });
 
-const FORMATTED_MESSAGE: LocalMessage = {
+const FORMATTED_MESSAGE = fromPartial<LocalMessage>({
   created_at: new Date('2021-02-12T12:12:35.862282Z'),
-  deleted_at: null,
+  deleted_at: undefined,
   id: '',
   pinned_at: new Date('2021-02-12T12:12:35.862282Z'),
   status: 'received',
   type: 'regular',
   updated_at: new Date('2021-02-12T12:12:35.862282Z'),
-};
+});
 
 const CHANNEL_WITH_MENTIONED_USERS = {
   members: ONE_MEMBER_WITH_EMPTY_USER,

@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { CommandSuggestion, MentionSuggestion, TextComposerSuggestion } from 'stream-chat';
+import type {
+  CommandSuggestion,
+  CommandVariants,
+  MentionSuggestion,
+  TextComposerSuggestion,
+} from 'stream-chat';
 
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
 import {
@@ -88,7 +93,7 @@ export const CommandSuggestionItem = (item: CommandSuggestion) => {
 
   return (
     <View style={[styles.commandContainer, commandContainer]}>
-      {name ? <AutoCompleteSuggestionCommandIcon name={name} /> : null}
+      {name ? <AutoCompleteSuggestionCommandIcon name={name as CommandVariants} /> : null}
       <Text
         style={[
           styles.title,

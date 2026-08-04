@@ -87,17 +87,19 @@ export const useAudioRecorder = ({
         const audioFile: LocalVoiceRecordingAttachment = {
           asset_url:
             typeof recording !== 'string' ? (recording?.getURI() as string) : (recording as string),
-          duration: durationInSeconds,
-          file_size: 0,
+          custom: {
+            duration: durationInSeconds,
+            file_size: 0,
+            mime_type: 'audio/aac',
+            waveform_data: resampledWaveformData,
+          },
           localMetadata: {
             file,
             id: generateRandomId(),
             uploadState: 'pending',
           },
-          mime_type: 'audio/aac',
           title: `audio_recording_${date}.aac`,
           type: FileTypes.VoiceRecording,
-          waveform_data: resampledWaveformData,
         };
 
         audioRecorderManager.reset();

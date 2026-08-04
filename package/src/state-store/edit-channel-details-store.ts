@@ -34,8 +34,8 @@ export class EditChannelDetailsStore {
   public state: StateStore<EditChannelDetailsState>;
 
   constructor(channel: Channel) {
-    const initialName = channel.data?.name ?? '';
-    const initialImage = channel.data?.image;
+    const initialName = channel.data?.custom?.name ?? '';
+    const initialImage = channel.data?.custom?.image;
 
     this.state = new StateStore<EditChannelDetailsState>({
       currentName: initialName,

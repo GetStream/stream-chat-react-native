@@ -80,7 +80,7 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
  */
 const ChannelPreviewComponent = ({ channel }: { channel: ChannelLLC }) => (
   <View accessibilityLabel='list-item' testID={channel.cid}>
-    <Text>{channel.data?.name}</Text>
+    <Text>{channel.data?.custom?.name}</Text>
     <Text>{channel.messagePaginator?.headItems?.[0]?.text}</Text>
   </View>
 );
@@ -255,7 +255,7 @@ export const Generic = () => {
       foo: 'bar',
       type: 'messaging',
     } as ChannelFilters;
-    const sort: ChannelSort = { last_updated: 1 };
+    const sort: ChannelSort = [{ direction: 1, field: 'last_updated' }];
 
     const renderComponent = async () => {
       const result = render(
@@ -535,15 +535,15 @@ export const Generic = () => {
       const newMessages = [
         generateMessage({
           cid: targetChannel.cid,
-          user: chatClient.user,
+          user: chatClient.user as UserResponse,
         }),
         generateMessage({
           cid: targetChannel.cid,
-          user: chatClient.user,
+          user: chatClient.user as UserResponse,
         }),
         generateMessage({
           cid: targetChannel.cid,
-          user: chatClient.user,
+          user: chatClient.user as UserResponse,
         }),
       ];
 
@@ -897,7 +897,7 @@ export const Generic = () => {
           new Date(b.created_at as string | Date).getTime(),
       );
       // truncate at the middle
-      const truncatedAt = messages[Number(messages.length / 2)].created_at as string | undefined;
+      const truncatedAt = messages[Number(messages.length / 2)].created_at as Date | undefined;
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -942,7 +942,7 @@ export const Generic = () => {
 
       const channelResponse = channels[getRandomInt(0, channels.length - 1)];
       const channelToTruncate = channelResponse.channel;
-      const truncatedAt = new Date(0).toISOString();
+      const truncatedAt = new Date(0);
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -985,7 +985,7 @@ export const Generic = () => {
         ),
       );
       // truncate at the middle
-      const truncatedAt = new Date(latestTimestamp + 1).toISOString();
+      const truncatedAt = new Date(latestTimestamp + 1);
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -1608,7 +1608,13 @@ export const Generic = () => {
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
-      act(() => dispatchMemberRemovedEvent(chatClient, targetMember, targetChannel.channel));
+      act(() =>
+        dispatchMemberRemovedEvent(
+          chatClient,
+          targetMember as ChannelMemberResponse,
+          targetChannel.channel,
+        ),
+      );
 
       await waitFor(async () => {
         const membersRows = await BetterSqlite.selectFromTable('members');
@@ -1631,7 +1637,13 @@ export const Generic = () => {
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
       targetMember.role = 'admin';
-      act(() => dispatchMemberUpdatedEvent(chatClient, targetMember, targetChannel.channel));
+      act(() =>
+        dispatchMemberUpdatedEvent(
+          chatClient,
+          targetMember as ChannelMemberResponse,
+          targetChannel.channel,
+        ),
+      );
 
       await waitFor(async () => {
         const membersRows = await BetterSqlite.selectFromTable('members');
@@ -1656,7 +1668,8 @@ export const Generic = () => {
       await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
 
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
-      targetChannel.channel.name = uuidv4();
+      // `name` is a custom channel field in v10 (`channel.custom.name`), not a root field.
+      targetChannel.channel.custom = { ...targetChannel.channel.custom, name: uuidv4() };
       act(() => dispatchChannelUpdatedEvent(chatClient, targetChannel.channel));
 
       await waitFor(async () => {
@@ -1669,7 +1682,7 @@ export const Generic = () => {
 
         const extraData = JSON.parse(matchingChannelsRows[0].extraData as string);
 
-        expect(extraData.name).toBe(targetChannel.channel.name);
+        expect(extraData.custom.name).toBe(targetChannel.channel.custom?.name);
       });
     });
 
@@ -1731,7 +1744,7 @@ export const Generic = () => {
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 
-      chatClient.userID = targetMember.user!.id;
+      // `userID` is now a read-only getter derived from `user.id`; setting `user` is enough.
       chatClient.user = targetMember.user;
 
       const readTimestamp = new Date().toISOString();

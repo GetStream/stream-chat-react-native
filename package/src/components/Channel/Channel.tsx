@@ -10,7 +10,7 @@ import {
   SendMessageOptions,
   StreamChat,
   Event as StreamEvent,
-  Message as StreamMessage,
+  MessageRequest as StreamMessage,
   Thread,
   UpdateMessageOptions,
 } from 'stream-chat';
@@ -82,8 +82,15 @@ import {
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 import type { ChannelUnreadState } from '../../types/types';
+import { FileTypes } from '../../types/types';
+import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import { MessageStatusTypes, ReactionData } from '../../utils/utils';
+import {
+  getFileNameFromPath,
+  isLocalUrl,
+  MessageStatusTypes,
+  ReactionData,
+} from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
@@ -523,15 +530,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const channelId = channel?.id || '';
   const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
 
-  // Register the integrator's custom message-request overrides into channel.configState so the
-  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
-  useChannelRequestHandlers({
-    channel,
-    doMarkReadRequest,
-    doSendMessageRequest,
-    doUpdateMessageRequest,
-  });
-
   const {
     loadChannelAroundMessage: loadChannelAroundMessageFn,
     loadChannelAtFirstUnreadMessage,
@@ -670,9 +668,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const channelData = channel.data;
     if (channelData?.own_capabilities?.includes('send-typing-events')) {
       channel.sendEvent({
-        parent_id: thread?.id,
-        type: 'typing.stop',
-      } as StreamEvent);
+        event: {
+          parent_id: thread?.id,
+          type: 'typing.stop',
+        },
+      } as { event: StreamEvent });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thread?.id, channelId]);
@@ -856,6 +856,77 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * MESSAGE METHODS
    */
+  // Async attachment-upload orchestration. Wired into the registered `sendMessageRequest` handler
+  // (see the useChannelRequestHandlers call below) so it runs INSIDE the stream-chat send pipeline —
+  // after the LLC's optimistic ingest (message already shows pending), before the POST — awaiting
+  // `client.uploadManager` to finish the in-flight uploads and swapping local preview URLs for the
+  // returned CDN URLs. This deliberately stays RN-side: native image compression (`compressedImageURI`)
+  // and the integrator's `doFileUploadRequest` must remain reachable, and the sendMessageRequest seam
+  // lets it run in the right place without a pre-ingest or any LLC change. It is NOT slated to move
+  // into the LLC — this handler is its intended home.
+  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
+    if (!message.attachments?.length || !channel?.cid) {
+      return;
+    }
+    const channelCid = channel.cid;
+
+    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
+      // Already uploaded to a remote (CDN) URL — nothing to wait for.
+      if (
+        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
+        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
+      ) {
+        return;
+      }
+
+      const originalFile = attachment.custom?.originalFile;
+      const localId = attachment.custom?.localId;
+      if (!originalFile?.uri || !localId) {
+        return;
+      }
+
+      let fileForUpload = originalFile;
+      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
+        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
+        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
+        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
+      }
+
+      // Idempotent by `id`: awaits the picker's in-flight upload for this attachment (or starts one).
+      const response = await client.uploadManager.upload({
+        channelCid,
+        file: fileForUpload,
+        id: localId,
+      });
+
+      if (attachment.type === FileTypes.Image) {
+        attachment.image_url = response.file;
+      } else {
+        attachment.asset_url = response.file;
+        if (response.thumb_url) {
+          attachment.thumb_url = response.thumb_url;
+        }
+      }
+
+      if (attachment.custom) {
+        delete attachment.custom.originalFile;
+        delete attachment.custom.localId;
+      }
+    };
+
+    await Promise.all(message.attachments.map(uploadOne));
+  });
+
+  // Register the integrator's custom message-request overrides into channel.configState so the
+  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
+  useChannelRequestHandlers({
+    channel,
+    uploadPendingAttachments,
+    doMarkReadRequest,
+    doSendMessageRequest,
+    doUpdateMessageRequest,
+  });
+
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
     async ({ localMessage, message, options }) => {
       if (preSendMessageRequest) {
@@ -873,7 +944,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // The stream-chat message-operations engine owns the full optimistic lifecycle (pending ->
       // received/failed), offline-DB persistence and paginator ingest — for both channel messages
       // (channel.messagePaginator) and thread replies (thread.messagePaginator, which the thread
-      // instance ingests into directly). It throws on failure, which the MessageInput send flow
+      // instance ingests into directly). Its single optimistic ingest shows the message (pending)
+      // instantly; the registered sendMessageRequest handler then awaits any attachment uploads and
+      // POSTs (see useChannelRequestHandlers). It throws on failure, which the MessageInput send flow
       // catches to surface a notification.
       await (threadInstance ?? channel).sendMessageWithLocalUpdate({
         localMessage,

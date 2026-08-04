@@ -2,7 +2,7 @@ import type { ReactionFilters, ReactionSort } from 'stream-chat';
 
 import { tables } from '../../schema';
 import { SqliteClient } from '../../SqliteClient';
-import type { TableRowJoinedUser } from '../../types';
+import type { Scalar, TableRowJoinedUser } from '../../types';
 
 /**
  * Fetches reactions for a message from the database for messageIds.
@@ -27,9 +27,7 @@ export const selectReactionsForMessages = async (
   const filterValue = filters?.type
     ? [typeof filters.type === 'string' ? filters.type : filters.type.$eq]
     : [];
-  const createdAtSort = Array.isArray(sort)
-    ? sort.find((s) => !!s.created_at)?.created_at
-    : sort?.created_at;
+  const createdAtSort = sort?.find((s) => s.field === 'created_at')?.direction;
   const orderByClause = createdAtSort
     ? `ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ${createdAtSort === 1 ? 'ASC' : 'DESC'}`
     : '';
@@ -53,7 +51,7 @@ export const selectReactionsForMessages = async (
     WHERE a.messageId in (${questionMarks}) ${filters?.type ? `AND a.type = ?` : ''}
     ${orderByClause}
     ${limit ? 'LIMIT ?' : ''}`,
-    [...messageIds, ...filterValue, ...(limit ? [limit] : [])],
+    [...messageIds, ...filterValue, ...(limit ? [limit] : [])] as Scalar[],
   );
 
   return result.map((r) => JSON.parse(r.value));

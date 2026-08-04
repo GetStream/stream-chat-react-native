@@ -1,7 +1,7 @@
 import { Alert, AlertButton } from 'react-native';
 
 import { renderHook } from '@testing-library/react-native';
-import type { Channel, Mute } from 'stream-chat';
+import type { Channel, UserMuteResponse } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../../components/ChannelPreview/hooks/useIsChannelMuted';
@@ -90,7 +90,7 @@ describe('useChannelActionItems', () => {
       expiresAt: null,
       muted: false,
     });
-    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
   });
@@ -155,7 +155,7 @@ describe('useChannelActionItems', () => {
       expiresAt: null,
       muted: true,
     });
-    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
 
     const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 

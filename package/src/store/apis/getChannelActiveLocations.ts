@@ -1,4 +1,4 @@
-import { SharedLocationResponse } from 'stream-chat';
+import { SharedLocationResponseData } from 'stream-chat';
 
 import { selectActiveLocationsForChannels } from './queries/selectActiveLocationsForChannels';
 
@@ -8,8 +8,8 @@ export const getChannelActiveLocations = async ({
   channelIds,
 }: {
   channelIds: string[];
-}): Promise<Record<string, SharedLocationResponse[]>> => {
-  const cidVsLiveLocations: Record<string, SharedLocationResponse[]> = {};
+}): Promise<Record<string, SharedLocationResponseData[]>> => {
+  const cidVsLiveLocations: Record<string, SharedLocationResponseData[]> = {};
 
   // Query to select active live locations for the given channel ids where the end_at is not empty and it is greater than the current date.
   const locations = await selectActiveLocationsForChannels(channelIds);

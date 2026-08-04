@@ -2,17 +2,17 @@ import React, { useContext } from 'react';
 
 import Dayjs from 'dayjs';
 
-import type { TranslationLanguages } from 'stream-chat';
+import type { TranslationLanguage } from 'stream-chat';
 
 import { TranslatorFunctions } from './types';
 
 import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
+export const DEFAULT_USER_LANGUAGE: TranslationLanguage = 'en';
 
 export type TranslationContextValue = TranslatorFunctions & {
-  userLanguage: TranslationLanguages;
+  userLanguage: TranslationLanguage;
 };
 
 const defaultTranslationContextValue: TranslationContextValue = {

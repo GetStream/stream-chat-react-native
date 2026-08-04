@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import type { Channel, QueryChannelsRequestType, StreamChat } from 'stream-chat';
+import type { Channel, QueryChannelsRequestType, StreamChat, UserResponse } from 'stream-chat';
 
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
@@ -92,7 +92,7 @@ const ComponentWithContextOverrides = ({
 
 describe('ChannelListView', () => {
   beforeAll(async () => {
-    chatClient = await getTestClientWithUser({ id: 'vishal' });
+    chatClient = await getTestClientWithUser({ id: 'vishal' } as UserResponse);
     const c1 = generateChannelResponse();
     const c2 = generateChannelResponse();
     useMockedApis(chatClient, [getOrCreateChannelApi(c1)]);

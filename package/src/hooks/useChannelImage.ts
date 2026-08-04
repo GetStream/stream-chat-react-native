@@ -1,9 +1,9 @@
-import { Channel, EventTypes } from 'stream-chat';
+import { Channel, EventType } from 'stream-chat';
 
 import { useSelectedChannelState } from './useSelectedChannelState';
 
-const selector = (channel: Channel) => channel.data?.image;
-const keys: EventTypes[] = ['channel.updated'];
+const selector = (channel: Channel) => channel.data?.custom?.image;
+const keys: EventType[] = ['channel.updated'];
 
 export function useChannelImage(channel: Channel): string | undefined;
 export function useChannelImage(channel?: Channel): string | undefined;

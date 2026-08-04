@@ -152,7 +152,7 @@ describe('ChannelMemberItem activity status', () => {
 
   it('shows a "Last seen ..." string for an offline member with last_active', () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-05-13T12:00:00Z'));
-    const tenMinutesAgo = new Date('2026-05-13T11:50:00Z').toISOString();
+    const tenMinutesAgo = new Date('2026-05-13T11:50:00Z');
 
     renderRow({ member: memberFor({ last_active: tenMinutesAgo, online: false }) });
 

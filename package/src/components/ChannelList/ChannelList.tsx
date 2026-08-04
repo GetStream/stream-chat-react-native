@@ -217,7 +217,7 @@ export type ChannelListProps = Partial<
 
 const DEFAULT_FILTERS = {};
 const DEFAULT_OPTIONS = {};
-const DEFAULT_SORT = {};
+const DEFAULT_SORT: ChannelSort = [];
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.

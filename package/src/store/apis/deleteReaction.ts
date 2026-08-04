@@ -1,4 +1,4 @@
-import { FormatMessageResponse, MessageResponse, ReactionResponse } from 'stream-chat';
+import { LocalMessage, MessageResponse, ReactionResponse } from 'stream-chat';
 
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
@@ -11,7 +11,7 @@ export const deleteReaction = async ({
   reaction,
 }: {
   reaction: ReactionResponse;
-  message?: MessageResponse | FormatMessageResponse;
+  message?: MessageResponse | LocalMessage;
   execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

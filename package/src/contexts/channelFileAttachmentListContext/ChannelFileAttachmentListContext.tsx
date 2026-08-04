@@ -31,7 +31,7 @@ export const ChannelFileAttachmentListProvider = ({
       $or: [{ 'attachments.type': 'file' }, { 'attachments.type': 'audio' }],
     };
     // Newest first so the list groups cleanly under month section headers.
-    source.messageSearchSort = { created_at: -1 };
+    source.messageSearchSort = [{ field: 'created_at', direction: -1 }];
     source.activate();
     return source;
   });

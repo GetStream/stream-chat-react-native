@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { render } from '@testing-library/react-native';
+import type { UserResponse } from 'stream-chat';
 
 import { generateGiphyAttachment } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -11,7 +12,7 @@ import { ChannelLastMessagePreview } from '../ChannelLastMessagePreview';
 
 describe('ChannelLastMessagePreview', () => {
   it('shows Giphy instead of slash-command text for giphy attachments with quoted replies', async () => {
-    const client = await getTestClientWithUser({ id: 'preview-user' });
+    const client = await getTestClientWithUser({ id: 'preview-user' } as UserResponse);
     const user = generateUser();
     const message = generateMessage({
       attachments: [generateGiphyAttachment()],

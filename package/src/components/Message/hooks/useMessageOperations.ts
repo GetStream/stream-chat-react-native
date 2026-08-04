@@ -1,10 +1,4 @@
-import {
-  Channel as ChannelClass,
-  DeleteMessageOptions,
-  LocalMessage,
-  MessageResponse,
-  Reaction,
-} from 'stream-chat';
+import { DeleteMessageOptions, LocalMessage, MessageResponse, UserResponse } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -86,21 +80,13 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized');
       }
 
-      const payload: Parameters<ChannelClass['sendReaction']> = [
-        messageId,
-        {
-          type,
-        } as Reaction,
-        { enforce_unique: enforceUniqueReaction },
-      ];
-
       if (enableOfflineSupport) {
         const messageWithReaction = await addReactionToLocalState({
           channel,
           enforceUniqueReaction,
           messageId,
           reactionType: type,
-          user: client.user,
+          user: client.user as UserResponse,
         });
 
         if (messageWithReaction) {
@@ -113,7 +99,11 @@ export const useMessageOperations = (): MessageOperations => {
         }
       }
 
-      const sendReactionResponse = await channel.sendReaction(...payload);
+      const sendReactionResponse = await channel.sendReaction({
+        enforce_unique: enforceUniqueReaction,
+        id: messageId,
+        reaction: { type },
+      });
 
       if (sendReactionResponse?.message) {
         threadInstance?.upsertReplyLocally?.({ message: sendReactionResponse.message });
@@ -127,14 +117,12 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized');
       }
 
-      const payload: Parameters<ChannelClass['deleteReaction']> = [messageId, type];
-
       if (enableOfflineSupport) {
         const messageWithoutReaction = removeReactionFromLocalState({
           channel,
           messageId,
           reactionType: type,
-          user: client.user,
+          user: client.user as UserResponse,
         });
 
         if (messageWithoutReaction) {
@@ -147,7 +135,7 @@ export const useMessageOperations = (): MessageOperations => {
         }
       }
 
-      await channel.deleteReaction(...payload);
+      await channel.deleteReaction({ id: messageId, type });
     },
   );
 
@@ -165,11 +153,11 @@ export const useMessageOperations = (): MessageOperations => {
 
       let options: DeleteMessageOptions = {};
       if (typeof optionsOrHardDelete === 'boolean') {
-        options = optionsOrHardDelete ? { hardDelete: true } : {};
-      } else if (optionsOrHardDelete?.deleteForMe) {
-        options = { deleteForMe: true };
-      } else if (optionsOrHardDelete?.hardDelete) {
-        options = { hardDelete: true };
+        options = optionsOrHardDelete ? { hard: true } : {};
+      } else if (optionsOrHardDelete?.delete_for_me) {
+        options = { delete_for_me: true };
+      } else if (optionsOrHardDelete?.hard) {
+        options = { hard: true };
       }
 
       // The LLC performs the delete request (honoring any configState delete handler) and ingests

@@ -38,7 +38,7 @@ export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
 
   return (
     <View style={[styles.container, container]}>
-      <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentIconSize} />
+      <FileAttachmentIcon mimeType={attachment.custom?.mime_type} size={attachmentIconSize} />
       <View style={[styles.details, details]}>
         <Text numberOfLines={2} style={[styles.title, title]}>
           {attachment.title ?? t('Unsupported Attachment')}

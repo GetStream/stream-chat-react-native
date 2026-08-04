@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, Event, EventPayload } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -16,7 +16,7 @@ export const useChannelUpdated = ({ onChannelUpdated, setChannels }: Parameters)
   const { client } = useChatContext();
 
   useEffect(() => {
-    const handleEvent = (event: Event) => {
+    const handleEvent = (event: EventPayload<'channel.updated'>) => {
       if (typeof onChannelUpdated === 'function') {
         onChannelUpdated(setChannels, event);
       } else {

@@ -58,16 +58,20 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     return read_events;
   }, [channelConfigExists, channel]);
 
+  // `status` only exists on optimistic/local messages (`LocalMessage`); a delivered
+  // `MessageResponse` won't carry it. Read it through a guard instead of asserting the shape.
+  const messageStatus = 'status' in message ? message.status : undefined;
+
   const { status } = useMessageDeliveryStatus({
     channel,
-    lastMessage: message as LocalMessage,
+    lastMessage: message,
     isReadEventsEnabled: readEvents,
   });
 
   const statusLabel = useA11yLabel(
-    message.status === MessageStatusTypes.SENDING
+    messageStatus === MessageStatusTypes.SENDING
       ? 'a11y/Sending'
-      : message.status === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
+      : messageStatus === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
         ? 'a11y/Read, sent by you'
         : status === MessageDeliveryStatus.DELIVERED
           ? 'a11y/Delivered, sent by you'
@@ -76,7 +80,11 @@ export const ChannelMessagePreviewDeliveryStatus = ({
             : 'a11y/Sending',
   );
 
-  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
+  if (
+    !channel.data?.custom?.name &&
+    membersWithoutSelf.length === 1 &&
+    !isLastMessageByCurrentUser
+  ) {
     return null;
   }
 
@@ -87,9 +95,9 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   return (
     <CompositeAccessibilityProbe label={statusLabel}>
       <View style={styles.container}>
-        {message.status === MessageStatusTypes.SENDING ? (
+        {messageStatus === MessageStatusTypes.SENDING ? (
           <icons.Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
-        ) : message.status === MessageStatusTypes.RECEIVED &&
+        ) : messageStatus === MessageStatusTypes.RECEIVED &&
           status === MessageDeliveryStatus.READ ? (
           <icons.CheckAll
             stroke={semantics.accentPrimary}
