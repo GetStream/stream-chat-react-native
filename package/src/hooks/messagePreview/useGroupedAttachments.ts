@@ -8,6 +8,7 @@ import {
   isVideoAttachment,
   isFileAttachment,
   isVoiceRecordingAttachment,
+  VoiceRecordingAttachment,
 } from 'stream-chat';
 
 type GroupedAttachments = {
@@ -16,7 +17,9 @@ type GroupedAttachments = {
   images: Attachment[];
   videos: Attachment[];
   files: Attachment[];
-  voiceRecordings: Attachment[];
+  // Narrowed by `isVoiceRecordingAttachment` below so consumers can read `.custom.duration`
+  // without re-asserting the subtype.
+  voiceRecordings: VoiceRecordingAttachment[];
 };
 
 /**

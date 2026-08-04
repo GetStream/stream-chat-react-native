@@ -13,7 +13,10 @@ export enum MessageDeliveryStatus {
 
 type MessageDeliveryStatusProps = {
   channel: Channel;
-  lastMessage: LocalMessage;
+  // Only `created_at`/`id` are read here (never the LocalMessage-only `status`), so a
+  // plain `MessageResponse` is accepted too — lets callers pass the channel's last message
+  // without asserting it is a `LocalMessage`.
+  lastMessage: LocalMessage | MessageResponse;
   isReadEventsEnabled: boolean;
 };
 

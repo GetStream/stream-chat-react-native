@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 
-import type { LocalMessage } from 'stream-chat';
-
 import { SwipableMessageWrapper } from './MessageBubble';
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -324,8 +322,8 @@ const areEqual = (
   }
 
   const quotedMessageEqual = checkQuotedMessageEquality(
-    prevMessage.quoted_message as LocalMessage | undefined,
-    nextMessage.quoted_message as LocalMessage | undefined,
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
   );
 
   if (!quotedMessageEqual) {

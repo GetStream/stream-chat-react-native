@@ -1045,8 +1045,8 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
   }
 
   const quotedMessageEqual = checkMessageEquality(
-    prevMessage.quoted_message as LocalMessage | undefined,
-    nextMessage.quoted_message as LocalMessage | undefined,
+    prevMessage.quoted_message,
+    nextMessage.quoted_message,
   );
 
   if (!quotedMessageEqual) {

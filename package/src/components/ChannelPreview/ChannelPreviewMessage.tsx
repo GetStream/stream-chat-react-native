@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import { ChannelPreviewProps } from './ChannelPreview';
 
 import { LastMessageType } from './hooks/useChannelPreviewData';
@@ -53,9 +51,11 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }, [channel.state.members, client.user?.id]);
 
+  // `status` only exists on optimistic/local messages (`LocalMessage`), so read it via a
+  // guard rather than asserting `lastMessage` (a `LocalMessage | MessageResponse`) is local.
+  const lastMessageStatus = lastMessage && 'status' in lastMessage ? lastMessage.status : undefined;
   const isFailedMessage =
-    (lastMessage as LocalMessage)?.status === MessageStatusTypes.FAILED ||
-    lastMessage?.type === 'error';
+    lastMessageStatus === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
   const showMessageDeliveryStatus = !isMessageDeleted;
 
   if (usersTyping.length > 0) {

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
-import type { Attachment, VoiceRecordingAttachment } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -44,8 +44,9 @@ export const FilePreview = (props: FilePreviewProps) => {
     },
   } = useTheme();
 
-  // `duration` is only meaningful for voice recordings, where it now lives under `custom`.
-  const duration = (attachment as VoiceRecordingAttachment).custom?.duration;
+  // `duration` is only populated for audio / voice-recording attachments, where it lives under
+  // `custom` (untyped on the base `Attachment`, hence the narrow field read).
+  const duration = (attachment.custom as { duration?: number } | undefined)?.duration;
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>

@@ -57,7 +57,7 @@ export const ThreadMessagePreviewDeliveryStatus = ({
 
   const { status } = useMessageDeliveryStatus({
     channel,
-    lastMessage: message as LocalMessage,
+    lastMessage: message,
     isReadEventsEnabled: readEvents,
   });
 

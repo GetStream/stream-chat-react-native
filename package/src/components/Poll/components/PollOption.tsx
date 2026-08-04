@@ -138,7 +138,9 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
           <View style={[styles.votesContainer, votesContainer]}>
             {relevantVotes.length > 0 ? (
               <UserAvatarStack
-                users={relevantVotes.map((vote: PollVoteResponseData) => vote.user as UserResponse)}
+                users={relevantVotes
+                  .map((vote: PollVoteResponseData) => vote.user)
+                  .filter((user): user is UserResponse => Boolean(user))}
                 overlap={0.2}
                 maxVisible={3}
                 avatarSize='xs'
