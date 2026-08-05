@@ -22,7 +22,12 @@ public final class StreamVideoThumbnailResult: NSObject {
 @objcMembers
 public final class StreamVideoThumbnailGenerator: NSObject {
   private static let compressionQuality: CGFloat = 0.8
-  private static let maxDimension: CGFloat = 512
+  // iOS uses 256: its high-quality PhotoKit scaler stays crisp at the picker cell
+  // at that size, for ~1/4 the decoded RAM of 512. The Android counterpart
+  // (shared-native/android) intentionally keeps 512 — its `getScaledFrameAtTime`
+  // scaler is cruder and needs more source pixels. The per-platform values differ
+  // on purpose; don't "align" them.
+  private static let maxDimension: CGFloat = 256
   private static let cacheVersion = "v1"
   private static let cacheDirectoryName = "@stream-io-stream-video-thumbnails"
   private static let maxConcurrentGenerations = 5
@@ -205,19 +210,13 @@ public final class StreamVideoThumbnailGenerator: NSObject {
       throw thumbnailError(code: 7, message: "Failed to find photo library asset for \(url)")
     }
 
-    // Request a thumbnail sized image instead of the full AVAsset: PhotoKit
-    // serves a locally cached thumbnail even for iCloud only assets, so this
-    // avoids downloading the entire video the way requestAVAsset(forVideo:) would.
+    // `.highQualityFormat` (not `.fastFormat`): fastFormat returns a fixed, small
+    // pre-cached rendition (~120px on the long side, ignores targetSize entirely)
+    // and returns nothing (PHPhotosError 3303) for assets with no cached
+    // derivative yet — e.g. videos added to a Simulator via `simctl addmedia`.
+    // highQualityFormat renders the poster on demand at the requested targetSize
+    // and only fetches the poster frame, not the whole video.
     let options = PHImageRequestOptions()
-    // `.highQualityFormat` instead of `.fastFormat` here, as the latter only serves
-    // an already cached poster derivative and will NOT generate one on demand, so
-    // it fails (PHPhotosError 3303) for assets that have no cached thumbnail yet,
-    // i.e videos added to a Simulator via `simctl addmedia`, which never get
-    // their derivatives generated. `.highQualityFormat` still delivers a single
-    // final image (matching the "accept the first delivered image" logic below)
-    // and only fetches the poster frame, not the whole video. If a poster frame does
-    // not exist, it will generate one on the fly (only the first time, all subsequent
-    // request will return the cached one).
     options.deliveryMode = .highQualityFormat
     options.resizeMode = .fast
     options.isNetworkAccessAllowed = true
