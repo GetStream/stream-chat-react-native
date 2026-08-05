@@ -42,17 +42,10 @@ export const useMessageList = (params: UseMessageListParams) => {
   });
   const messageList = messages ?? EMPTY_MESSAGES;
 
-  const processedMessageList = useMemo<LocalMessage[]>(() => {
-    const newMessageList: LocalMessage[] = [];
-    for (const message of messageList) {
-      if (isFlashList) {
-        newMessageList.push(message);
-      } else {
-        newMessageList.unshift(message);
-      }
-    }
-    return newMessageList;
-  }, [messageList, isFlashList]);
+  const processedMessageList = useMemo<LocalMessage[]>(
+    () => (isFlashList ? messageList.slice() : messageList.slice().reverse()),
+    [messageList, isFlashList],
+  );
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 

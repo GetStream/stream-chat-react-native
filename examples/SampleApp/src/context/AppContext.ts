@@ -15,6 +15,7 @@ type AppContextType = {
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
   switchUser: (userId?: string) => void;
+  perfBenchmarkingEnabled: boolean;
   rtlEnabled: boolean;
   setRTLEnabled: (enabled: boolean) => Promise<void>;
   messageListImplementation: MessageListImplementationConfigItem['id'];

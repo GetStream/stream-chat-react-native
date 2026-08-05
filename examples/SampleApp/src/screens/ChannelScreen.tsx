@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Profiler, useCallback, useEffect, useState } from 'react';
 
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
+import type { LocalMessage, Channel as StreamChatChannel, StreamChat } from 'stream-chat';
 import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
@@ -27,6 +27,10 @@ import { ThreadType } from 'stream-chat-react-native-core';
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { ScreenHeader } from '../components/ScreenHeader';
+import {
+  useWebSocketBenchmarkTelemetry,
+  WebSocketEventPromptDialog,
+} from '../components/WebSocketEventPromptDialog';
 import { useAppContext } from '../context/AppContext';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
@@ -109,6 +113,61 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   );
 };
 
+type MessageListWithBenchmarkToolsProps = {
+  channel: StreamChatChannel;
+  children: React.ReactNode;
+  client: StreamChat;
+  messageListImplementation: string;
+  messageListMode: string;
+  messageListPruning?: number;
+};
+
+const MessageListWithBenchmarkTools = ({
+  channel,
+  children,
+  client,
+  messageListImplementation,
+  messageListMode,
+  messageListPruning,
+}: MessageListWithBenchmarkToolsProps) => {
+  const websocketBenchmarkTelemetry = useWebSocketBenchmarkTelemetry();
+  const { recordMessageListChange } = websocketBenchmarkTelemetry;
+
+  useEffect(() => {
+    const unsubscribe = channel.messagePaginator.state.subscribe((nextState, previousState) => {
+      if (!previousState || nextState.items === previousState.items) {
+        return;
+      }
+
+      recordMessageListChange({
+        nextLength: nextState.items?.length ?? 0,
+        previousLength: previousState.items?.length ?? 0,
+      });
+    });
+
+    return unsubscribe;
+  }, [channel, recordMessageListChange]);
+
+  return (
+    <>
+      <Profiler
+        id={`SampleAppMessageList:${messageListImplementation}`}
+        onRender={websocketBenchmarkTelemetry.onMessageListRender}
+      >
+        {children}
+      </Profiler>
+      <WebSocketEventPromptDialog
+        channel={channel}
+        client={client}
+        messageListImplementation={messageListImplementation}
+        messageListMode={messageListMode}
+        messageListPruning={messageListPruning}
+        telemetry={websocketBenchmarkTelemetry}
+      />
+    </>
+  );
+};
+
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route }) => {
   const { channel: channelFromProp, channelId, messageId } = route.params;
@@ -118,6 +177,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     messageListMode,
     messageListPruning,
     messageInputFloating,
+    perfBenchmarkingEnabled,
   } = useAppContext();
   const {
     theme: { semantics, colors },
@@ -260,6 +320,33 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     return null;
   }
 
+  const messageList =
+    messageListImplementation === 'flashlist' ? (
+      <MessageFlashList
+        onThreadSelect={onThreadSelect}
+        isLiveStreaming={messageListMode === 'livestream'}
+      />
+    ) : (
+      <MessageList
+        onThreadSelect={onThreadSelect}
+        isLiveStreaming={messageListMode === 'livestream'}
+      />
+    );
+
+  const messageListElement = perfBenchmarkingEnabled ? (
+    <MessageListWithBenchmarkTools
+      channel={channel}
+      client={chatClient}
+      messageListImplementation={messageListImplementation}
+      messageListMode={messageListMode}
+      messageListPruning={messageListPruning}
+    >
+      {messageList}
+    </MessageListWithBenchmarkTools>
+  ) : (
+    messageList
+  );
+
   return (
     <View
       collapsable={false}
@@ -283,17 +370,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />
         </PortalWhileClosingView>
-        {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        ) : (
-          <MessageList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        )}
+        {messageListElement}
         <AITypingIndicatorView channel={channel} />
         <MessageComposer />
         {modalVisible && (
