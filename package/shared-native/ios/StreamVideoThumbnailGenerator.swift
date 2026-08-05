@@ -22,7 +22,11 @@ public final class StreamVideoThumbnailResult: NSObject {
 @objcMembers
 public final class StreamVideoThumbnailGenerator: NSObject {
   private static let compressionQuality: CGFloat = 0.8
-  private static let maxDimension: CGFloat = 512
+  // We intentionally use a lower maxDimension for iOS, as we are trying to mimic
+  // what a .fastFormat delivery type of the image would do. Although theoretically
+  // smaller (around 120px) after some benchmarking we figured that 256 was perfectly
+  // fine and adds just a tiny bit of overhead for a visible quality increase.
+  private static let maxDimension: CGFloat = 256
   private static let cacheVersion = "v1"
   private static let cacheDirectoryName = "@stream-io-stream-video-thumbnails"
   private static let maxConcurrentGenerations = 5
@@ -209,7 +213,16 @@ public final class StreamVideoThumbnailGenerator: NSObject {
     // serves a locally cached thumbnail even for iCloud only assets, so this
     // avoids downloading the entire video the way requestAVAsset(forVideo:) would.
     let options = PHImageRequestOptions()
-    options.deliveryMode = .fastFormat
+    // `.highQualityFormat` instead of `.fastFormat` here, as the latter only serves
+    // an already cached poster derivative and will NOT generate one on demand, so
+    // it fails (PHPhotosError 3303) for assets that have no cached thumbnail yet,
+    // i.e videos added to a Simulator via `simctl addmedia`, which never get
+    // their derivatives generated. `.highQualityFormat` still delivers a single
+    // final image (matching the "accept the first delivered image" logic below)
+    // and only fetches the poster frame, not the whole video. If a poster frame does
+    // not exist, it will generate one on the fly (only the first time, all subsequent
+    // request will return the cached one).
+    options.deliveryMode = .highQualityFormat
     options.resizeMode = .fast
     options.isNetworkAccessAllowed = true
     options.isSynchronous = false
@@ -262,8 +275,8 @@ public final class StreamVideoThumbnailGenerator: NSObject {
           contentMode: .aspectFit,
           options: options
         ) { image, info in
-          // Accept the first delivered image (.fastFormat sends exactly one,
-          // thumbnail quality, possibly flagged degraded and that's what we want).
+          // Accept the first delivered image (.highQualityFormat sends exactly
+          // one and we still guard against any extra deliveries).
           state.lock.lock()
           if state.didResume {
             state.lock.unlock()
