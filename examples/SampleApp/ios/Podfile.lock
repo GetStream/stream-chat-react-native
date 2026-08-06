@@ -184,7 +184,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - NitroModules (0.31.3):
+  - NitroModules (0.36.5):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -207,7 +207,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - NitroSound (0.2.9):
+  - NitroSound (0.2.17):
     - hermes-engine
     - NitroModules
     - RCTRequired
@@ -3296,8 +3296,8 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  NitroModules: e2c4f7166ca860e21959433f70818e97be498b88
-  NitroSound: cb3c7c6b9d9d4329cc0fed7e566bb58842a1f895
+  NitroModules: e0ac5f9a04e23cb2f378b51810ebc07ed63aeae9
+  NitroSound: a18e2d59d0d60c291586e622ce4752c53da73086
   op-sqlite: d8d5eae2bddb0b55d6f48cf7ac356b63d26cb4f0
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b

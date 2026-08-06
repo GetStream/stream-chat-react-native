@@ -5076,7 +5076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/slider@npm:^5.0.1":
+"@react-native-community/slider@npm:^5.2.0":
   version: 5.2.0
   resolution: "@react-native-community/slider@npm:5.2.0"
   checksum: 10c0/58ec6a47b5aafefd98a61c79aeae05f1ab8371782eb497d9af665bf2f62a1c372da8fed6dead30e1d6c9e01bfb12bfdbafcde7890736f4f5d55502dabf2e01ad
@@ -17139,26 +17139,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:0.31.3":
-  version: 0.31.3
-  resolution: "react-native-nitro-modules@npm:0.31.3"
+"react-native-nitro-modules@npm:0.36.5":
+  version: 0.36.5
+  resolution: "react-native-nitro-modules@npm:0.36.5"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/ec37750c9ae0a1c433c307cfba78474cb1c2593f6b4780d00250755688ed049602e28fa3c4e2b9f922a815353b6ed8c74db580973e736a4d8aba4f06eed7c91b
+  checksum: 10c0/c7b2133f924967b68c0f0f678b5a5dce1a784a7e22f57ebf203ef5803a5c9c745b6d4dda8c9bcedd13f7c5ca53a8707784e98572a2ca8a864fe0b905163a34b5
   languageName: node
   linkType: hard
 
-"react-native-nitro-sound@npm:0.2.9":
-  version: 0.2.9
-  resolution: "react-native-nitro-sound@npm:0.2.9"
+"react-native-nitro-sound@npm:0.2.17":
+  version: 0.2.17
+  resolution: "react-native-nitro-sound@npm:0.2.17"
   dependencies:
-    "@react-native-community/slider": "npm:^5.0.1"
+    "@react-native-community/slider": "npm:^5.2.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-    react-native-nitro-modules: "*"
-  checksum: 10c0/10fdb135ef226b0de845ae91d4cfb88fec8a55ee5350919b8005589fa08750b934c76b5ccd0265ae38e7d9aa14b28f83d156d3d3582cfef15e9b9f93873a2505
+    react-native-nitro-modules: ">=0.36.5"
+  checksum: 10c0/1ceef5bc67d5807b1bbf16b939cd5eae5e9ec5d5f61b24728190d77e11c9159a102117d34a443067a982f980ba91b006f01122aad99c76a2015b7ef2d5c8a11f
   languageName: node
   linkType: hard
 
@@ -18091,8 +18091,8 @@ __metadata:
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:^1.29.0"
-    react-native-nitro-modules: "npm:0.31.3"
-    react-native-nitro-sound: "npm:0.2.9"
+    react-native-nitro-modules: "npm:0.36.5"
+    react-native-nitro-sound: "npm:0.2.17"
     react-native-reanimated: "npm:4.5.2"
     react-native-safe-area-context: "npm:^5.8.0"
     react-native-screens: "npm:^4.26.2"
