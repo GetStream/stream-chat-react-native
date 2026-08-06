@@ -135,7 +135,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       },
     },
   } = useTheme();
-  const styles = useStyles();
+  const styles = useStyles({ isMyMessage });
 
   const title = useMemo(
     () =>
@@ -289,7 +289,9 @@ export const Reply = (props: ReplyProps) => {
     ? (messageFromContext.quoted_message as MessagesContextValue['quotedMessage'])
     : quotedMessageFromComposer;
 
-  const isMyMessage = client.user?.id === quotedMessage?.user?.id;
+  // `mode='edit'` supplies the edited message via `props.quotedMessage` and leaves
+  // the composer's quoted message empty, so ownership must consider both.
+  const isMyMessage = client.user?.id === (props.quotedMessage ?? quotedMessage)?.user?.id;
 
   // Composer header passes `onDismiss`; the in-message quoted-reply renderer
   // does not. Only the composer-preview path pays for announcement work.
@@ -313,18 +315,10 @@ export const Reply = (props: ReplyProps) => {
   );
 };
 
-const useStyles = () => {
+const useStyles = ({ isMyMessage = false }: { isMyMessage?: boolean } = {}) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const messageComposer = useMessageComposer();
-  const { quotedMessage: quotedMessageFromComposer } = useStateStore(
-    messageComposer.state,
-    messageComposerStateStoreSelector,
-  );
-  const { client } = useChatContext();
-
-  const isMyMessage = client.user?.id === quotedMessageFromComposer?.user?.id;
   const isRTL = I18nManager.isRTL;
 
   return useMemo(
