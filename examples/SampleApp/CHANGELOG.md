@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.14.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.4...sampleapp@v4.14.5) (2026-08-06)
+
+### Bug Fixes
+
+* bump nitro-sound to latest on SampleApp ([#3757](https://github.com/GetStream/stream-chat-react-native/issues/3757)) ([f9848f5](https://github.com/GetStream/stream-chat-react-native/commit/f9848f53300abbe3007a37e2bb3f336afed34811))
+* expo clipboard and extend with cb api ([#3758](https://github.com/GetStream/stream-chat-react-native/issues/3758)) ([2534581](https://github.com/GetStream/stream-chat-react-native/commit/253458114aa1bd23b17ad3a920813ce6149e6388))
+
 ## [4.14.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.3...sampleapp@v4.14.4) (2026-07-31)
 
 ### Bug Fixes
