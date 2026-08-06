@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Вы перестанете получать сообщения от {{ name }}. Вы можете присоединиться снова в любое время.",
   "group": "группы",
   "No members found": "Участники не найдены",
-  "a11y/Search members": "Поиск участников"
+  "a11y/Search members": "Поиск участников",
+  "Message copied to clipboard": "Сообщение скопировано в буфер обмена",
+  "Failed to copy message": "Не удалось скопировать сообщение"
 }

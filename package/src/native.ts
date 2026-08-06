@@ -88,7 +88,13 @@ type SaveFileOptions = {
 };
 type SaveFile = (options: SaveFileOptions) => Promise<string> | never;
 
-type SetClipboardString = (text: string) => Promise<void> | never;
+type SetClipboardStringOptions = {
+  /** Invoked when writing to the clipboard fails. */
+  onFailure?: (error: unknown) => void;
+  /** Invoked after the text has been handed to the clipboard successfully. */
+  onSuccess?: () => void;
+};
+type SetClipboardString = (text: string, options?: SetClipboardStringOptions) => void;
 
 type ShareOptions = {
   type?: string;

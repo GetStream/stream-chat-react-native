@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "ستتوقف عن تلقي الرسائل من {{ name }}. يمكنك الانضمام مجددًا في أي وقت.",
   "group": "المجموعة",
   "No members found": "لم يتم العثور على أعضاء",
-  "a11y/Search members": "البحث عن الأعضاء"
+  "a11y/Search members": "البحث عن الأعضاء",
+  "Message copied to clipboard": "تم نسخ الرسالة إلى الحافظة",
+  "Failed to copy message": "فشل نسخ الرسالة"
 }
