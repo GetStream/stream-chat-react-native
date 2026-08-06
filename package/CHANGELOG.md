@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.2...v9.7.3) (2026-08-06)
+
+### Bug Fixes
+
+* expo clipboard and extend with cb api ([#3758](https://github.com/GetStream/stream-chat-react-native/issues/3758)) ([2534581](https://github.com/GetStream/stream-chat-react-native/commit/253458114aa1bd23b17ad3a920813ce6149e6388))
+* missing poster image bailing on thumbnails ([#3754](https://github.com/GetStream/stream-chat-react-native/issues/3754)) ([e1b8966](https://github.com/GetStream/stream-chat-react-native/commit/e1b8966061ea40e83b246591185fe861beb0af67))
+
 ## [9.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.1...v9.7.2) (2026-07-31)
 
 ### Bug Fixes
