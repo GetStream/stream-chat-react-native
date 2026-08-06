@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
@@ -6,16 +6,20 @@ import type { FlatList } from 'react-native-gesture-handler';
 import {
   Channel,
   ChannelFilters,
+  ChannelManager,
+  ChannelManagerEventHandlerContext,
   ChannelOptions,
   ChannelSort,
-  Event,
-  QueryChannelsRequestType,
+  EventHandlerPipelineHandler,
+  EventType,
 } from 'stream-chat';
 
 import { ChannelListView } from './ChannelListView';
-import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import { usePaginatedChannels } from './hooks/usePaginatedChannels';
+import {
+  ChannelListQueryChannelsOverride,
+  usePaginatedChannels,
+} from './hooks/usePaginatedChannels';
 
 import {
   ChannelsContextValue,
@@ -25,9 +29,23 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useLazyRef } from '../../hooks/useLazyRef';
-import type { ChannelListEventListenerOptions } from '../../types/types';
 import { generateRandomId } from '../../utils/utils';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
+
+/**
+ * A `ChannelList` event handler. It is registered on the shared `ChannelManager`'s
+ * `EventHandlerPipeline` for its event type and REPLACES the SDK's default handler for that event
+ * (matching the previous "override" semantics). It receives the routed `event` plus a `ctx` exposing
+ * the `channelManager` — from which the relevant `ChannelPaginator`(s) can be read/mutated
+ * (`ingestItem`, `removeItem`, `setItems`, `boost`, …). Returning `{ action: 'stop' }` cancels the rest
+ * of the pipeline for that event.
+ *
+ * NOTE (breaking change vs v9): these handlers previously received `(setChannels, event, options?)`.
+ * The `setChannels` dispatcher no longer exists — list mutation now goes through the paginator obtained
+ * from `ctx.channelManager`.
+ */
+export type ChannelListEventHandler =
+  EventHandlerPipelineHandler<ChannelManagerEventHandlerContext>;
 
 export type ChannelListProps = Partial<
   Pick<
@@ -59,140 +77,69 @@ export type ChannelListProps = Partial<
    */
   lockChannelOrder?: boolean;
   /**
-   * Function that overrides default behavior when a user gets added to a channel
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
-   * @param filters Channel filters
-   * @param sort Channel sort options
+   * Overrides the default handler for the `notification.added_to_channel` event on the shared
+   * `ChannelManager`. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onAddedToChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-    options?: ChannelListEventListenerOptions,
-  ) => void;
+  onAddedToChannel?: ChannelListEventHandler;
   /**
-   * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+   * Overrides the default handler for the `channel.deleted` event. In its absence the channel is
+   * removed from the list. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onChannelDeleted?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-  ) => void;
+  onChannelDeleted?: ChannelListEventHandler;
   /**
-   * Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+   * Overrides the default handler for the `channel.hidden` event. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onChannelHidden?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-  ) => void;
+  onChannelHidden?: ChannelListEventHandler;
   /**
-   * Function that overrides default behavior when a channel member.updated event is triggered
-   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `member.updated` event
-   * @param filters Channel filters
-   * @param sort Channel sort options
+   * Overrides the default handler for the `member.updated` event. See {@link ChannelListEventHandler}.
+   *
    * @overrideType Function
    */
-  onChannelMemberUpdated?: (
-    lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-    options?: ChannelListEventListenerOptions,
-  ) => void;
+  onChannelMemberUpdated?: ChannelListEventHandler;
   /**
-   * Function to customize behavior when a channel gets truncated
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+   * Overrides the default handler for the `channel.truncated` event. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onChannelTruncated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-  ) => void;
+  onChannelTruncated?: ChannelListEventHandler;
   /**
-   * Function that overrides default behavior when a channel gets updated
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+   * Overrides the default handler for the `channel.updated` event. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onChannelUpdated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-  ) => void;
+  onChannelUpdated?: ChannelListEventHandler;
   /**
-   * Function that overrides default behavior when a channel gets visible. In absence of this prop, the channel will be added to the list.
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.visible` event
+   * Overrides the default handler for the `channel.visible` event. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onChannelVisible?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-  ) => void;
+  onChannelVisible?: ChannelListEventHandler;
   /**
-   * Override the default listener/handler for event `message.new`
-   * This event is received on channel, when a new message is added on a channel.
-   *
-   * @param lockChannelOrder If set to true, channels won't dynamically sort by most recent message, defaults to false
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `message.new` event
-   * @param considerArchivedChannels If set to true, archived channels will be considered while updating the list of channels
-   * @param filters Channel filters
-   * @param sort Channel sort options
-   * @overrideType Function
-   * */
-  onNewMessage?: (
-    lockChannelOrder: boolean,
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-    options?: ChannelListEventListenerOptions,
-  ) => void;
-  /**
-   * Override the default listener/handler for event `notification.message_new`
-   * This event is received on channel, which is not being watched.
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
-   * @param filters Channel filters
-   * @overrideType Function
-   * */
-  onNewMessageNotification?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-    options?: ChannelListEventListenerOptions,
-  ) => void;
-
-  /**
-   * Function that overrides default behavior when a user gets removed from a channel
-   *
-   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
-   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   * Overrides the default handler for the `message.new` event. See {@link ChannelListEventHandler}.
    *
    * @overrideType Function
    * */
-  onRemovedFromChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel[]>>,
-    event: Event,
-  ) => void;
+  onNewMessage?: ChannelListEventHandler;
+  /**
+   * Overrides the default handler for the `notification.message_new` event (received for a channel that
+   * is not being watched). See {@link ChannelListEventHandler}.
+   *
+   * @overrideType Function
+   * */
+  onNewMessageNotification?: ChannelListEventHandler;
+  /**
+   * Overrides the default handler for the `notification.removed_from_channel` event.
+   * See {@link ChannelListEventHandler}.
+   *
+   * @overrideType Function
+   * */
+  onRemovedFromChannel?: ChannelListEventHandler;
   /**
    * Object containing channel query options
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available option fields
@@ -205,19 +152,23 @@ export type ChannelListProps = Partial<
   sort?: ChannelSort;
 
   /**
-   * A function that overrides the default ChannelManager queryChannels method, which is StreamChat.queryChannels.
-   * It is particularly useful whenever we want to pass specific cids that we want to query but also want to
-   * paginate over them (which is not possible through normal filters). It comes with with several rules/assumptions:
-   * - StreamChat.queryChannels has to be called inside of queryChannelsOverride (as it updates important client state)
-   * - The return type has to be Channel[] (which is the return type of StreamChat.queryChannels)
+   * A custom request implementation for this list's `ChannelPaginator` (its `doRequest`). Use it to
+   * query a specific set of channels while still paginating over them. Call `client.queryChannels(...)`
+   * inside so client state stays in sync, and return `{ items }`.
+   *
+   * NOTE (breaking change vs v9): this replaces the previous `queryChannelsOverride` typed as the
+   * removed `QueryChannelsRequestType` (which returned `Channel[]`).
    */
-  queryChannelsOverride?: QueryChannelsRequestType;
+  queryChannelsOverride?: ChannelListQueryChannelsOverride;
   notificationHostId?: string;
 };
 
 const DEFAULT_FILTERS = {};
 const DEFAULT_OPTIONS = {};
 const DEFAULT_SORT: ChannelSort = [];
+
+/** The event types whose default handlers a `ChannelList` prop can override, mapped to the prop. */
+const OVERRIDE_HANDLER_ID_PREFIX = 'stream-chat-react-native:channel-list';
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
@@ -257,75 +208,71 @@ export const ChannelList = (props: ChannelListProps) => {
     swipeActionsEnabled = true,
   } = props;
 
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [forceUpdate] = useState(0);
   const fallbackNotificationHostIdRef = useLazyRef(() => `channel-list:${generateRandomId()}`);
   const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
-  const { client, enableOfflineSupport } = useChatContext();
+  const { channelManager, enableOfflineSupport } = useChatContext();
   const { NotificationList } = useComponentsContext();
-  const channelManager = useMemo(() => client.createChannelManager({}), [client]);
 
   /**
-   * This hook sets the event handler overrides in the channelManager internally
-   * whenever they change. We do this to avoid recreating the channelManager instance
-   * every time these change, as we want to keep it as static as possible.
-   * This protects us from something like defining the overrides as inline functions
-   * causing the manager instance to be recreated over and over again.
+   * Register this list's event-handler overrides on the shared `ChannelManager`. Each provided prop
+   * replaces the SDK default handler for that event type; on unmount / prop change we restore the
+   * default. Handlers are manager-global: with multiple mounted `<ChannelList>`s the last-registered
+   * override for a given event wins (single-list is the common case).
    */
   useEffect(() => {
-    channelManager.setEventHandlerOverrides({
-      channelDeletedHandler: onChannelDeleted,
-      channelHiddenHandler: onChannelHidden,
-      channelTruncatedHandler: onChannelTruncated,
-      channelVisibleHandler: onChannelVisible,
-      memberUpdatedHandler: onChannelMemberUpdated
-        ? (setChannels, event) =>
-            onChannelMemberUpdated(lockChannelOrder, setChannels, event, { filters, sort })
-        : undefined,
-      newMessageHandler: onNewMessage
-        ? (setChannels, event) =>
-            onNewMessage(lockChannelOrder, setChannels, event, { filters, sort })
-        : undefined,
-      notificationAddedToChannelHandler: onAddedToChannel
-        ? (setChannels, event) => onAddedToChannel(setChannels, event, { filters, sort })
-        : undefined,
-      notificationNewMessageHandler: onNewMessageNotification
-        ? (setChannels, event) => onNewMessageNotification(setChannels, event, { filters, sort })
-        : undefined,
-      notificationRemovedFromChannelHandler: onRemovedFromChannel,
-    });
+    const overrides: Array<[EventType, ChannelListEventHandler | undefined]> = [
+      ['channel.deleted', onChannelDeleted],
+      ['channel.hidden', onChannelHidden],
+      ['channel.truncated', onChannelTruncated],
+      ['channel.updated', onChannelUpdated],
+      ['channel.visible', onChannelVisible],
+      ['member.updated', onChannelMemberUpdated],
+      ['message.new', onNewMessage],
+      ['notification.added_to_channel', onAddedToChannel],
+      ['notification.message_new', onNewMessageNotification],
+      ['notification.removed_from_channel', onRemovedFromChannel],
+    ];
+
+    const overriddenEventTypes = overrides
+      .filter(([, handle]) => typeof handle === 'function')
+      .map(([eventType, handle]) => {
+        channelManager.setEventHandlers({
+          eventType,
+          handlers: [{ handle: handle!, id: `${OVERRIDE_HANDLER_ID_PREFIX}:${eventType}` }],
+        });
+        return eventType;
+      });
+
+    if (overriddenEventTypes.length === 0) {
+      return;
+    }
+
+    const defaultHandlers = ChannelManager.getDefaultHandlers();
+    return () => {
+      overriddenEventTypes.forEach((eventType) => {
+        channelManager.setEventHandlers({
+          eventType,
+          handlers: defaultHandlers[eventType] ?? [],
+        });
+      });
+    };
   }, [
     channelManager,
-    filters,
-    lockChannelOrder,
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
     onChannelMemberUpdated,
     onChannelTruncated,
+    onChannelUpdated,
     onChannelVisible,
     onNewMessage,
     onNewMessageNotification,
     onRemovedFromChannel,
-    sort,
   ]);
 
-  useEffect(() => {
-    if (queryChannelsOverride) {
-      channelManager.setQueryChannelsRequest(queryChannelsOverride);
-    }
-  }, [channelManager, queryChannelsOverride]);
-
-  useEffect(() => {
-    channelManager.setOptions({ abortInFlightQuery: false, lockChannelOrder });
-  }, [channelManager, lockChannelOrder]);
-
-  useEffect(() => {
-    channelManager.registerSubscriptions();
-
-    return () => {
-      channelManager.unregisterSubscriptions();
-    };
-  }, [channelManager]);
+  // Ref-counted on the shared manager: subscriptions live only while at least one ChannelList is mounted.
+  useEffect(() => channelManager.registerSubscriptions(), [channelManager]);
 
   const {
     channelListInitialized,
@@ -342,20 +289,16 @@ export const ChannelList = (props: ChannelListProps) => {
     channelManager,
     enableOfflineSupport,
     filters,
+    lockChannelOrder,
     options,
-    setForceUpdate,
+    queryChannelsOverride,
     sort,
-  });
-
-  useChannelUpdated({
-    onChannelUpdated,
-    setChannels: channelManager.setChannels,
   });
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,
     channelListInitialized,
-    channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : channels,
+    channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : (channels ?? null),
     error,
     forceUpdate,
     hasNextPage,

@@ -5,6 +5,7 @@ import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext
 export const useCreateChatContext = ({
   appSettings,
   channel,
+  channelManager,
   client,
   connectionRecovering,
   enableOfflineSupport,
@@ -25,6 +26,7 @@ export const useCreateChatContext = ({
     () => ({
       appSettings,
       channel,
+      channelManager,
       client,
       connectionRecovering,
       enableOfflineSupport,
@@ -34,7 +36,15 @@ export const useCreateChatContext = ({
       setActiveChannel,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [appSettings, channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
+    [
+      appSettings,
+      channelId,
+      channelManager,
+      clientValues,
+      connectionRecovering,
+      isOnline,
+      mutedUsersLength,
+    ],
   );
 
   return chatContext;

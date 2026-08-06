@@ -32,7 +32,7 @@ import { version } from '../../version.json';
 init();
 
 export type ChatProps = Pick<ChatContextValue, 'client'> &
-  Partial<Pick<ChatContextValue, 'isMessageAIGenerated'>> & {
+  Partial<Pick<ChatContextValue, 'isMessageAIGenerated' | 'channelManager'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -145,6 +145,7 @@ const selector = (nextValue: OfflineDBState) =>
 
 const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const {
+    channelManager: customChannelManager,
     children,
     client,
     closeConnectionOnBackground = true,
@@ -167,6 +168,18 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       userLanguage: (client.user?.language || DEFAULT_USER_LANGUAGE) as TranslationLanguage,
     }),
     [client.user?.language, translators],
+  );
+
+  /**
+   * The shared channel-list orchestrator. Created once per client (or supplied by the integrator via
+   * the `channelManager` prop). It holds no paginators here — each `<ChannelList>` contributes and
+   * removes its own `ChannelPaginator`, and registers/unregisters the manager's WS subscriptions while
+   * it is mounted. Kept as static as possible so the paginators/subscriptions are not torn down on
+   * unrelated Chat re-renders.
+   */
+  const channelManager = useMemo(
+    () => customChannelManager ?? client.createChannelManager({}),
+    [client, customChannelManager],
   );
 
   /**
@@ -271,6 +284,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const chatContext = useCreateChatContext({
     appSettings,
     channel,
+    channelManager,
     client,
     connectionRecovering,
     enableOfflineSupport,

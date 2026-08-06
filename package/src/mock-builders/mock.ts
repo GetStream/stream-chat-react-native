@@ -40,10 +40,11 @@ function mockClient(client: StreamChat, options: MockClientOptions = {}): Stream
   const { disableAppSettings = true } = options;
   const c = client as MockableStreamChat;
 
-  type WithPrivates = { _setToken: () => void; _setupConnection: () => void };
+  type WithPrivates = { _setToken: () => void; openConnection: () => void };
   const withPrivates = c as unknown as WithPrivates;
   jest.spyOn(withPrivates, '_setToken').mockImplementation();
-  jest.spyOn(withPrivates, '_setupConnection').mockImplementation();
+  // v10 renamed the private `_setupConnection` to the public `openConnection`.
+  jest.spyOn(withPrivates, 'openConnection').mockImplementation();
   c.tokenManager = {
     getToken: jest.fn(() => token),
     tokenReady: jest.fn(() => true),

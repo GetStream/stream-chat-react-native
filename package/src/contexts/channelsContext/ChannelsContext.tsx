@@ -5,7 +5,6 @@ import type { FlatList } from 'react-native-gesture-handler';
 
 import type { Channel } from 'stream-chat';
 
-import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -63,7 +62,7 @@ export type ChannelsContextValue = {
   /**
    * Loads the next page of `channels`, which is present as a required prop
    */
-  loadNextPage: QueryChannels;
+  loadNextPage: () => Promise<void>;
   /**
    * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
    */

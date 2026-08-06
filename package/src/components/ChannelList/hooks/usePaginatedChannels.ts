@@ -1,210 +1,247 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
+  Channel,
   ChannelFilters,
   ChannelManager,
-  ChannelManagerState,
   ChannelOptions,
+  ChannelPaginator,
+  ChannelPaginatorState,
+  ChannelQueryShape,
   ChannelSort,
+  PaginatorOptions,
 } from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks';
-import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
+import { useLazyRef } from '../../../hooks/useLazyRef';
+import { useStableCallback } from '../../../hooks/useStableCallback';
+import { generateRandomId } from '../../../utils/utils';
+
+/**
+ * Custom `queryChannels` implementation for a `ChannelList`. Mapped straight onto the paginator's
+ * `doRequest`: it receives the request the paginator would have sent and must return the resolved
+ * channels (call `client.queryChannels(...)` inside so client state stays in sync). It supersedes the
+ * legacy `queryChannelsOverride` (which was typed as the now-removed `QueryChannelsRequestType`).
+ */
+export type ChannelListQueryChannelsOverride = PaginatorOptions<
+  Channel,
+  ChannelQueryShape
+>['doRequest'];
 
 type Parameters = {
   channelManager: ChannelManager;
   enableOfflineSupport: boolean;
   filters: ChannelFilters;
   options: ChannelOptions;
-  setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
   sort: ChannelSort;
+  lockChannelOrder?: boolean;
+  queryChannelsOverride?: ChannelListQueryChannelsOverride;
 };
 
 const RETRY_INTERVAL_IN_MS = 5000;
 
-type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels' | 'backgroundRefresh';
+type QueryType = 'reload' | 'refresh' | 'loadChannels' | 'backgroundRefresh';
 
-export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
-
-const selector = (nextValue: ChannelManagerState) =>
+const selector = (nextValue: ChannelPaginatorState) =>
   ({
-    channelListInitialized: nextValue.initialized,
-    channels: nextValue.channels,
-    error: nextValue.error,
-    pagination: nextValue.pagination,
+    channels: nextValue.items,
+    hasNextPage: nextValue.hasMoreTail,
+    isLoading: nextValue.isLoading,
+    lastQueryError: nextValue.lastQueryError,
   }) as const;
 
 export const usePaginatedChannels = ({
   channelManager,
   enableOfflineSupport,
   filters = {},
+  lockChannelOrder = false,
   options = {},
+  queryChannelsOverride,
   sort = [],
 }: Parameters) => {
-  const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(false);
-  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>(null);
   const activeChannels = useActiveChannelsRefContext();
-  const isMountedRef = useIsMountedRef();
   const { client } = useChatContext();
-  const { channelListInitialized, channels, pagination, error } =
-    useStateStore(channelManager?.state, selector) ?? {};
-  const hasNextPage = pagination?.hasNext;
-
-  const filtersRef = useRef<typeof filters | null>(null);
-  const optionsRef = useRef<typeof options | null>(null);
-  const sortRef = useRef<typeof sort | null>(null);
-  const activeRequestId = useRef<number>(0);
-  const isQueryingRef = useRef(false);
-  const lastRefresh = useRef(Date.now());
-
-  const queryChannels: QueryChannels = async (
-    queryType: QueryType = 'loadChannels',
-  ): Promise<void> => {
-    if (!client || !isMountedRef.current) {
-      return;
-    }
-
-    const hasUpdatedData =
-      queryType === 'loadChannels' ||
-      queryType === 'refresh' ||
-      queryType === 'backgroundRefresh' ||
-      JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
-      JSON.stringify(optionsRef.current) !== JSON.stringify(options) ||
-      JSON.stringify(sortRef.current) !== JSON.stringify(sort);
-
-    const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
-
-    /**
-     * We don't need to make another call to query channels if we don't
-     * have new data for the query to include
-     * */
-    if (!hasUpdatedData) {
-      if (activeQueryType === null) {
-        return;
-      }
-    }
-
-    filtersRef.current = filters;
-    optionsRef.current = options;
-    sortRef.current = sort;
-    isQueryingRef.current = true;
-    activeRequestId.current++;
-    const currentRequestId = activeRequestId.current;
-    setActiveQueryType(queryType);
-
-    const newOptions = {
-      offset: 0,
-      ...options,
-    };
-
-    try {
-      if (isQueryStale() || !isMountedRef.current) {
-        return;
-      }
-      /**
-       * We skipInitialization here for handling race condition between ChannelList, Channel (and Thread)
-       * when they all (may) update the channel state at the same time (when connection state recovers)
-       * TODO: if we move the channel state to a single context and share it between ChannelList, Channel and Thread we can remove this
-       */
-      if (queryType === 'loadChannels') {
-        await channelManager.loadNext();
-      } else {
-        await channelManager.queryChannels(
-          { ...newOptions, filter_conditions: filters, sort },
-          {
-            skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
-          },
-        );
-      }
-
-      setStaticChannelsActive(false);
-      isQueryingRef.current = false;
-    } catch (err: unknown) {
-      isQueryingRef.current = false;
-
-      if (isQueryStale()) {
-        return;
-      }
-
-      console.warn(err);
-    }
-
-    setActiveQueryType(null);
-  };
-
-  const refreshList = async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
-    const now = Date.now();
-    // Only allow pull-to-refresh 5 seconds after last successful refresh.
-    if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
-      return;
-    }
-
-    lastRefresh.current = Date.now();
-    await queryChannels(isBackground ? 'backgroundRefresh' : 'refresh');
-  };
-
-  const reloadList = async () => {
-    await queryChannels('reload');
-  };
 
   /**
-   * Equality check using stringified filters/options/sort ensure that we don't make un-necessary queryChannels api calls
-   * for the scenario:
-   *
-   * <ChannelList
-   *    filters={{
-   *      members: { $in: ['vishal'] }
-   *    }}
-   *    ...
-   * />
-   *
-   * Here we have passed filters as inline object, which means on every re-render of
-   * parent component, ChannelList will receive new object reference (even though value is same), which
-   * in return will trigger useEffect. To avoid this, we can add a value check.
+   * One `ChannelPaginator` per `<ChannelList>` instance, contributed to the shared `ChannelManager`.
+   * The id is stable for the component's lifetime so the manager routes events to it and we can remove
+   * it on unmount. Filters/sort/options are updated in place via setters when props change (the setters
+   * do NOT reset the paginator, so the list is not blanked on a re-query — matching the legacy behavior).
+   */
+  const paginatorIdRef = useLazyRef(() => `channels:${generateRandomId()}`);
+  const paginator = useMemo(() => {
+    const existing = channelManager.getPaginatorById(paginatorIdRef.current);
+    if (existing) {
+      return existing as ChannelPaginator;
+    }
+    const { limit, offset: _offset, ...requestOptions } = options;
+    return new ChannelPaginator({
+      channelStateOptions: {
+        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
+      },
+      client,
+      filters,
+      id: paginatorIdRef.current,
+      paginatorOptions: {
+        doRequest: queryChannelsOverride,
+        lockItemOrder: lockChannelOrder,
+        ...(typeof limit === 'number' ? { pageSize: limit } : {}),
+      },
+      requestOptions,
+      sort,
+    });
+    // Only (re)create when the manager or client identity changes. Prop changes are applied via
+    // setters below; recreating would blank the list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelManager, client]);
+
+  const { channels, hasNextPage, isLoading, lastQueryError } =
+    useStateStore(paginator.state, selector) ?? {};
+
+  const channelListInitialized = channels !== undefined;
+  const error = lastQueryError;
+
+  const isMountedRef = useRef(true);
+  const lastRefresh = useRef(Date.now());
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  /**
+   * Insert the paginator into the shared manager on mount and remove it on unmount. `ChannelManager`
+   * has no `removePaginator`, so removal is done through its public `StateStore` plus `dispose()` to
+   * unlink the paginator from the shared item store (otherwise it lingers and keeps handling events).
+   */
+  useEffect(() => {
+    channelManager.insertPaginator({ paginator });
+
+    return () => {
+      channelManager.state.partialNext({
+        paginators: channelManager.paginators.filter((p) => p !== paginator),
+      });
+      paginator.dispose();
+    };
+  }, [channelManager, paginator]);
+
+  const queryChannels = useStableCallback(
+    async (queryType: QueryType = 'loadChannels'): Promise<void> => {
+      if (!client || !isMountedRef.current) {
+        return;
+      }
+
+      // Keep `skipInitialization` current for the online query (avoids clobbering the state of already
+      // active channels on reconnect). Only relevant when offline support is disabled.
+      paginator.channelStateOptions = {
+        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
+      };
+
+      setActiveQueryType(queryType);
+
+      try {
+        if (queryType === 'loadChannels') {
+          // Next page — append toward the tail, keeping the current list.
+          await paginator.toTail();
+        } else if (queryType === 'backgroundRefresh') {
+          // Reconnect refresh — refresh without blanking the visible list.
+          await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
+        } else if (queryType === 'refresh') {
+          // Pull-to-refresh — keep the list visible; the RefreshControl spinner conveys progress.
+          await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
+        } else {
+          // Reload (initial load / filters-sort-options change) — fresh first page.
+          await paginator.reload();
+        }
+      } catch (err: unknown) {
+        console.warn(err);
+      }
+
+      if (isMountedRef.current) {
+        setActiveQueryType(null);
+      }
+    },
+  );
+
+  const refreshList = useStableCallback(
+    async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
+      const now = Date.now();
+      // Only allow pull-to-refresh 5 seconds after the last successful refresh.
+      if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
+        return;
+      }
+
+      lastRefresh.current = Date.now();
+      await queryChannels(isBackground ? 'backgroundRefresh' : 'refresh');
+    },
+  );
+
+  const reloadList = useStableCallback(() => queryChannels('reload'));
+
+  const loadNextPage = useStableCallback(() => queryChannels('loadChannels'));
+
+  /**
+   * Equality check using stringified filters/options/sort ensures we don't run unnecessary queries
+   * when a parent re-render passes new object references with the same value.
    */
   const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
   const optionsStr = useMemo(() => JSON.stringify(options), [options]);
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
+    // Sync the paginator config with the current props (setters don't reset state → no blank flash),
+    // then reload with the new query shape.
+    paginator.staticFilters = filters;
+    paginator.sort = sort;
+    const { limit, offset: _offset, ...requestOptions } = options;
+    paginator.options = requestOptions;
+    if (typeof limit === 'number') {
+      paginator.pageSize = limit;
+    }
+
+    reloadList();
+
     const listener: ReturnType<typeof client.on> = client.on(
       'connection.changed',
       async (event) => {
         if (event.online) {
-          // Reconnection refreshes should stay silent, but still share the same debounce
-          // path as pull-to-refresh.
+          // Reconnection refreshes stay silent but share the pull-to-refresh debounce path.
           await refreshList({ isBackground: true });
         }
       },
     );
-    reloadList();
 
     return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStr, optionsStr, sortStr, channelManager]);
+  }, [filterStr, optionsStr, sortStr, paginator]);
+
+  // Propagate runtime `lockChannelOrder` changes without a re-query (matches the legacy `setOptions`
+  // effect). Only affects how subsequent event-driven ingests reorder the list.
+  useEffect(() => {
+    paginator.config.lockItemOrder = lockChannelOrder;
+  }, [paginator, lockChannelOrder]);
+
+  // Propagate a runtime `queryChannelsOverride` swap (matches the legacy `setQueryChannelsRequest`
+  // effect). The next query picks it up; no immediate reload needed.
+  useEffect(() => {
+    paginator.config.doRequest = queryChannelsOverride;
+  }, [paginator, queryChannelsOverride]);
 
   return {
     channelListInitialized,
     channels,
     error,
     hasNextPage,
-    loadingChannels:
-      activeQueryType === 'queryLocalDB'
-        ? true
-        : // Although channels.length === 0 should come as a given when we have !channelListInitialized,
-          // due to the way offline storage works currently we have to do this additional
-          // check to make sure channels were not populated before the reactive list becomes
-          // ready. I do not like providing a way to set the ready state, as it should be managed
-          // in the LLC entirely. Once we move offline support to the LLC, we can remove this check
-          // too as it'll be redundant.
-          pagination?.isLoading || (!channelListInitialized && channels.length === 0 && !error),
-    loadingNextPage: pagination?.isLoadingNext,
-    loadNextPage: channelManager.loadNext,
+    loadingChannels: channels === undefined && !error,
+    loadingNextPage: activeQueryType === 'loadChannels' && !!isLoading,
+    loadNextPage,
     refreshing: activeQueryType === 'refresh',
     refreshList: () => refreshList(),
     reloadList,
-    staticChannelsActive,
   };
 };
