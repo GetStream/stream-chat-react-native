@@ -62,7 +62,9 @@ type SaveFileOptions = {
 };
 type SaveFile = (options: SaveFileOptions) => Promise<string> | never;
 
-type SetClipboardString = (text: string) => Promise<void> | never;
+// Kept synchronous (void return) for backwards compatibility. The expo
+// implementation fires the async clipboard write without awaiting it.
+type SetClipboardString = (text: string) => void;
 
 type ShareOptions = {
   type?: string;
