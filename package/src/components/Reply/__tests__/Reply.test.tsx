@@ -71,16 +71,23 @@ describe('<Reply/>', () => {
     const titleColor = (title: string) =>
       StyleSheet.flatten(screen.getByText(title).props.style)?.color;
 
-    it('styles an in-message quoted reply from the quoted message, not the composer', async () => {
-      const { chatClient, channel } = await setup();
-
-      // The quoted message is ours, so the reply preview must read as outgoing
-      // even though the composer holds no quoted message at all.
-      const quotedMessage = generateMessage({ user: { id: 'neil' } });
+    // An in-message quoted reply is painted inside the parent bubble, whose
+    // background `MessageContent` resolves from the parent message. The colours
+    // must follow that surface; only the title *copy* describes the quoted author.
+    // The composer holds no quoted message in either case, so these also pin that
+    // the block never styles itself from composer state.
+    const renderInMessageQuotedReply = (
+      { chatClient, channel }: Awaited<ReturnType<typeof setup>>,
+      {
+        isMyMessage,
+        quotedMessageUser,
+      }: { isMyMessage: boolean; quotedMessageUser: { id: string; name?: string } },
+    ) => {
+      const quotedMessage = generateMessage({ user: quotedMessageUser });
       const message = generateMessage({
         quoted_message: quotedMessage,
         quoted_message_id: quotedMessage.id,
-        user: generateUser(),
+        user: isMyMessage ? { id: 'neil' } : generateUser(),
       });
 
       render(
@@ -88,9 +95,7 @@ describe('<Reply/>', () => {
           <OverlayProvider>
             <Chat client={chatClient}>
               <Channel channel={channel} client={chatClient}>
-                <MessageProvider
-                  value={{ isMyMessage: false, message } as unknown as MessageContextValue}
-                >
+                <MessageProvider value={{ isMyMessage, message } as unknown as MessageContextValue}>
                   <Reply mode='reply' />
                 </MessageProvider>
               </Channel>
@@ -98,9 +103,35 @@ describe('<Reply/>', () => {
           </OverlayProvider>
         </GestureHandlerRootView>,
       );
+    };
+
+    it('styles an in-message quoted reply from the parent message, not the quoted author', async () => {
+      const setupResult = await setup();
+
+      // Our own message quoting somebody else: outgoing surface, so outgoing text
+      // even though the quoted author is not us.
+      renderInMessageQuotedReply(setupResult, {
+        isMyMessage: true,
+        quotedMessageUser: { id: 'other-user', name: 'Other User' },
+      });
 
       await waitFor(() => {
-        expect(titleColor('You')).toBe(lightTheme.semantics.chatTextOutgoing);
+        expect(titleColor('Reply to Other User')).toBe(lightTheme.semantics.chatTextOutgoing);
+      });
+    });
+
+    it('keeps the title copy on the quoted author while the colours follow the parent', async () => {
+      const setupResult = await setup();
+
+      // Somebody else's message quoting us: incoming surface, so incoming text -
+      // but the title still reads "You", because that describes the quoted author.
+      renderInMessageQuotedReply(setupResult, {
+        isMyMessage: false,
+        quotedMessageUser: { id: 'neil' },
+      });
+
+      await waitFor(() => {
+        expect(titleColor('You')).toBe(lightTheme.semantics.chatTextIncoming);
       });
     });
 
