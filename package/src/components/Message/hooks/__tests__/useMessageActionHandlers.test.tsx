@@ -5,6 +5,7 @@ import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
 
 import { ChannelProvider } from '../../../../contexts/channelContext/ChannelContext';
 import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
+import { NativeHandlers } from '../../../../native';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { useMessageActionHandlers } from '../useMessageActionHandlers';
 
@@ -127,5 +128,75 @@ describe('useMessageActionHandlers notifications', () => {
         emitter: 'MessageActions',
       },
     });
+  });
+});
+
+describe('useMessageActionHandlers copy', () => {
+  const originalSetClipboardString = NativeHandlers.setClipboardString;
+
+  afterEach(() => {
+    NativeHandlers.setClipboardString = originalSetClipboardString;
+  });
+
+  it('notifies when copying a message succeeds', () => {
+    NativeHandlers.setClipboardString = jest.fn((_text, options) => options?.onSuccess?.());
+    const client = createClient();
+    const message = createMessage();
+    const { result } = renderUseMessageActionHandlers({ client, message });
+
+    act(() => {
+      result.current.handleCopyMessage();
+    });
+
+    expect(NativeHandlers.setClipboardString).toHaveBeenCalledWith(
+      'Message text',
+      expect.objectContaining({ onFailure: expect.any(Function), onSuccess: expect.any(Function) }),
+    );
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Message copied to clipboard',
+      options: {
+        severity: 'success',
+        tags: ['target:channel:channel:messaging:general'],
+        type: 'clipboard:message:copy:success',
+      },
+      origin: { context: { message }, emitter: 'MessageActions' },
+    });
+  });
+
+  it('notifies when copying a message fails', () => {
+    const error = new Error('Clipboard unavailable');
+    NativeHandlers.setClipboardString = jest.fn((_text, options) => options?.onFailure?.(error));
+    const client = createClient();
+    const message = createMessage();
+    const { result } = renderUseMessageActionHandlers({ client, message });
+
+    act(() => {
+      result.current.handleCopyMessage();
+    });
+
+    expect(client.notifications.add).toHaveBeenCalledWith({
+      message: 'Failed to copy message',
+      options: {
+        originalError: error,
+        severity: 'error',
+        tags: ['target:channel:channel:messaging:general'],
+        type: 'clipboard:message:copy:failed',
+      },
+      origin: { context: { message }, emitter: 'MessageActions' },
+    });
+  });
+
+  it('does not copy or notify when the message has no text', () => {
+    NativeHandlers.setClipboardString = jest.fn();
+    const client = createClient();
+    const message = createMessage({ text: '' });
+    const { result } = renderUseMessageActionHandlers({ client, message });
+
+    act(() => {
+      result.current.handleCopyMessage();
+    });
+
+    expect(NativeHandlers.setClipboardString).not.toHaveBeenCalled();
+    expect(client.notifications.add).not.toHaveBeenCalled();
   });
 });
