@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import { ChannelResponse, DraftMessage, DraftResponse, MessageResponseBase } from 'stream-chat';
+import {
+  ChannelResponse,
+  DraftMessage,
+  DraftResponse,
+  LocalMessage,
+  MessageResponseBase,
+} from 'stream-chat';
 import {
   useChatContext,
   useStateStore,
@@ -14,6 +20,7 @@ import {
 import { DraftsIcon } from '../icons/DraftIcon';
 
 import { useLegacyColors } from '../theme/useLegacyColors';
+import type { StackNavigatorParamList } from '../types';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
 
 export type DraftItemProps = {
@@ -28,7 +35,7 @@ export type DraftItemProps = {
 export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
   useTheme();
   const { grey } = useLegacyColors();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const { client } = useChatContext();
   const messagePreviewText = useMessagePreviewText({ message });
   const channelName = channel?.name ? channel.name : 'Channel';
@@ -40,7 +47,12 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
 
       if (type === 'thread' && thread?.id) {
         navigation.navigate('ThreadScreen', {
-          thread,
+          // `thread` is a draft's `parent_message` (`MessageResponseBase`, with
+          // string timestamps). ThreadScreen consumes it as a thread root typed
+          // as `LocalMessage | ThreadType`; the shapes only differ in date field
+          // types, so a targeted cast preserves the existing behavior. See the
+          // `DraftItemProps.thread` TODO about tightening this type upstream.
+          thread: thread as unknown as LocalMessage,
           channel: resultChannel,
         });
       } else if (type === 'channel') {

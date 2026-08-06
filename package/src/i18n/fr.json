@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Vous ne recevrez plus de messages de {{ name }}. Vous pouvez rejoindre à tout moment.",
   "group": "ce groupe",
   "No members found": "Aucun membre trouvé",
-  "a11y/Search members": "Rechercher des membres"
+  "a11y/Search members": "Rechercher des membres",
+  "Message copied to clipboard": "Message copié dans le presse-papiers",
+  "Failed to copy message": "Échec de la copie du message"
 }

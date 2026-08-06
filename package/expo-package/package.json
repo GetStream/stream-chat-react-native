@@ -80,11 +80,14 @@
     }
   },
   "devDependencies": {
+    "@stream-io/typescript-config": "workspace:^",
     "expo": "^57.0.7",
     "expo-audio": "patch:expo-audio@npm%3A57.0.2#~/.yarn/patches/expo-audio-npm-57.0.2-7a40cb0b0a.patch",
-    "expo-image-manipulator": "~57.0.5"
+    "expo-image-manipulator": "~57.0.5",
+    "typescript": "6.0.3"
   },
   "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "prepack": "bash ../scripts/sync-shared-native.sh expo-package && cp ../../README.md .",
     "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh expo-package"
   },

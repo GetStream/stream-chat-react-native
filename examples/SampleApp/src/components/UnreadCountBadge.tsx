@@ -16,7 +16,7 @@ export const ThreadsUnreadCountBadge: React.FC = () => {
     return null;
   }
 
-  return <BadgeNotification count={unreadCount} size='md' type='primary' />;
+  return <BadgeNotification count={unreadCount} size='sm' type='primary' />;
 };
 
 export const ChannelsUnreadCountBadge: React.FC = () => {
@@ -52,5 +52,5 @@ export const ChannelsUnreadCountBadge: React.FC = () => {
     return null;
   }
 
-  return <BadgeNotification count={unreadCount} size='md' type='primary' />;
+  return <BadgeNotification count={unreadCount} size='sm' type='primary' />;
 };

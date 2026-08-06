@@ -1,0 +1,16 @@
+{
+  "name": "@stream-io/typescript-config",
+  "version": "0.0.0",
+  "description": "Shared TypeScript config presets for the Stream Chat React Native SDK monorepo.",
+  "license": "SEE LICENSE IN LICENSE",
+  "private": true,
+  "files": [
+    "base.json",
+    "library.json"
+  ],
+  "exports": {
+    "./base.json": "./base.json",
+    "./library.json": "./library.json",
+    "./package.json": "./package.json"
+  }
+}

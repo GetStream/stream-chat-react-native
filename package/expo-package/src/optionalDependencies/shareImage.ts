@@ -19,6 +19,7 @@ export const shareImage = Sharing
         return true;
       } catch (error) {
         console.warn('Sharing failed or cancelled...');
+        return false;
       }
     }
   : null;

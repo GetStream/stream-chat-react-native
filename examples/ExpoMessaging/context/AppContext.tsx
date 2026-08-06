@@ -12,8 +12,8 @@ export type AppContextType = {
 
 export const AppContext = createContext<AppContextType>({
   channel: undefined,
-  setChannel: undefined,
-  setThread: undefined,
+  setChannel: () => {},
+  setThread: () => {},
   thread: undefined,
 });
 

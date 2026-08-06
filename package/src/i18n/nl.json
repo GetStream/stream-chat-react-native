@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "Je ontvangt geen berichten meer van {{ name }}. Je kunt op elk moment opnieuw deelnemen.",
   "group": "de groep",
   "No members found": "Geen leden gevonden",
-  "a11y/Search members": "Zoek leden"
+  "a11y/Search members": "Zoek leden",
+  "Message copied to clipboard": "Bericht gekopieerd naar klembord",
+  "Failed to copy message": "Kopiëren van bericht mislukt"
 }

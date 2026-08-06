@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "{{ name }}에서 더 이상 메시지를 받지 않게 됩니다. 언제든지 다시 참여할 수 있습니다.",
   "group": "그룹",
   "No members found": "멤버를 찾을 수 없습니다",
-  "a11y/Search members": "멤버 검색"
+  "a11y/Search members": "멤버 검색",
+  "Message copied to clipboard": "메시지가 클립보드에 복사되었습니다",
+  "Failed to copy message": "메시지 복사에 실패했습니다"
 }

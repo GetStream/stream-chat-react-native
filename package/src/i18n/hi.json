@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "आपको {{ name }} से संदेश मिलना बंद हो जाएंगे। आप कभी भी दोबारा जुड़ सकते हैं।",
   "group": "ग्रुप",
   "No members found": "कोई सदस्य नहीं मिला",
-  "a11y/Search members": "सदस्य खोजें"
+  "a11y/Search members": "सदस्य खोजें",
+  "Message copied to clipboard": "संदेश क्लिपबोर्ड पर कॉपी किया गया",
+  "Failed to copy message": "संदेश कॉपी करने में विफल रहा"
 }
