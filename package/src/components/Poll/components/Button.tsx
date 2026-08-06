@@ -10,6 +10,11 @@ export type PollButtonProps = {
 };
 
 export type PollVoteButtonProps = {
+  /**
+   * Render with the incoming chat tokens regardless of poll ownership. Set on
+   * surfaces that are not a message bubble, such as the full-options list.
+   */
+  forceIncoming?: boolean;
   option: PollOption;
   style?: StyleProp<ViewStyle>;
 } & Pick<PollButtonProps, 'onPress'>;
