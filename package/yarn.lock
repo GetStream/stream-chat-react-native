@@ -3295,10 +3295,10 @@ base64-js@^1.3.1, base64-js@^1.5.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
-better-sqlite3@11.10.0:
-  version "11.10.0"
-  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-11.10.0.tgz#2b1b14c5acd75a43fd84d12cc291ea98cef57d98"
-  integrity sha512-EwhOpyXiOEL/lKzHz9AW1msWFNzGc/z+LzeB3/jnFJpxu+th2yqvzsSWas1v9jgs9+xiXJcD5A8CJxAG2TaghQ==
+better-sqlite3@12.11.1:
+  version "12.11.1"
+  resolved "https://registry.yarnpkg.com/better-sqlite3/-/better-sqlite3-12.11.1.tgz#067846efabf7671957fc8a9e8df3be39c6cc0b84"
+  integrity sha512-dq9AtApgg5PGFtBzPFSBl3HZQjHok5gaQCM6zh2Yk0aSmDCs1CbnVI8/HgASQkNKsWFpseIO9beg5xxpYhbIfA==
   dependencies:
     bindings "^1.5.0"
     prebuild-install "^7.1.1"
@@ -8341,14 +8341,14 @@ stream-chat@^9.50.1:
   integrity sha512-Jb+ZAXNfwg2BeZhD4HFvq5OE7SGGBqr1Aq24im1E8yzcgCrRKiSflkNZe3VMZmm/lSryomsEBTycTD5jZJswUA==
   dependencies:
     "@types/jsonwebtoken" "^9.0.8"
-    "@types/ws" "^8.5.14"
-    axios "^1.12.2"
+    "@types/ws" "^8.18.1"
+    axios "^1.16.1"
     base64-js "^1.5.1"
-    form-data "^4.0.4"
+    form-data "^4.0.5"
     isomorphic-ws "^5.0.0"
     jsonwebtoken "^9.0.3"
-    linkifyjs "^4.3.2"
-    ws "^8.18.1"
+    linkifyjs "^4.3.3"
+    ws "^8.20.1"
 
 string-length@^4.0.2:
   version "4.0.2"
