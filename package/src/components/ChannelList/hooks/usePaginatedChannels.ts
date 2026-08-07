@@ -115,17 +115,18 @@ export const usePaginatedChannels = ({
   }, []);
 
   /**
-   * Insert the paginator into the shared manager on mount and remove it on unmount. `ChannelManager`
-   * has no `removePaginator`, so removal is done through its public `StateStore` plus `dispose()` to
-   * unlink the paginator from the shared item store (otherwise it lingers and keeps handling events).
+   * Insert the paginator into the shared manager on mount and remove it on unmount. `removePaginator`
+   * detaches it from the manager (restores its own query filtering and cancels any scheduled query);
+   * `dispose()` then releases the paginator's own throttles and index so it stops handling events.
    */
   useEffect(() => {
     channelManager.insertPaginator({ paginator });
 
     return () => {
-      channelManager.state.partialNext({
-        paginators: channelManager.paginators.filter((p) => p !== paginator),
-      });
+      // TODO: Figure out if we really want to dispose of paginators. Why would we want to create a new
+      //       paginator each time this mounts and then dispose it ? Perhaps a better way is to keep the
+      //       state stable and perhaps only dispose on user disconnect or something like that.
+      channelManager.removePaginator(paginator);
       paginator.dispose();
     };
   }, [channelManager, paginator]);

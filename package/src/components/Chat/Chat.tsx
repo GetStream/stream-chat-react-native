@@ -177,8 +177,11 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
    * it is mounted. Kept as static as possible so the paginators/subscriptions are not torn down on
    * unrelated Chat re-renders.
    */
+  // TODO: This will do for now for the purposes of going ahead, but let's think of a better way to
+  //       attach the manager to our client and not just propagate it through context. It is not
+  //       necessary at all.
   const channelManager = useMemo(
-    () => customChannelManager ?? client.createChannelManager({}),
+    () => customChannelManager ?? client.channelManager,
     [client, customChannelManager],
   );
 
