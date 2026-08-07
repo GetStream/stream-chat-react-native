@@ -136,10 +136,16 @@ export const usePaginatedChannels = ({
         return;
       }
 
-      // Keep `skipInitialization` current for the online query (avoids clobbering the state of already
-      // active channels on reconnect). Only relevant when offline support is disabled.
+      // Do NOT skip state initialization on the (re)query. `activeChannels.current` is
+      // `Object.keys(channelsState)` — every channel ever MOUNTED, and it is never cleared on
+      // navigate-back — so passing it as `skipInitialization` made `hydrateActiveChannels` skip
+      // `seedFirstPageSync`/`_initializeState` for every previously-opened channel on each reconnect.
+      // Those channels' `messagePaginator.aggregateState` then never re-seeds on the fresh socket, so
+      // their list-row preview (last message / unread, sourced from that aggregate) freezes while the
+      // list still reorders. Re-initializing matches the offline-enabled path; the client still guards a
+      // scrolled-up open channel from being clobbered via the `isActiveIntervalAtHead` check.
       paginator.channelStateOptions = {
-        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
+        skipInitialization: undefined,
       };
 
       setActiveQueryType(queryType);
@@ -168,10 +174,19 @@ export const usePaginatedChannels = ({
   );
 
   const refreshList = useStableCallback(
-    async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
+    async ({
+      force = false,
+      isBackground = false,
+    }: { force?: boolean; isBackground?: boolean } = {}) => {
       const now = Date.now();
-      // Only allow pull-to-refresh 5 seconds after the last successful refresh.
-      if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
+      // Only allow pull-to-refresh 5 seconds after the last successful refresh. A reconnect (`force`)
+      // must bypass this throttle: it is the sole trigger that re-establishes channel watches after the
+      // socket reopens (the JS client's own recovery is disabled via `recoverStateOnReconnect = false`),
+      // so debouncing it leaves the channels un-watched — the list still reorders on member-level
+      // `notification.message_new`, but per-channel state (last message / unread) stays frozen until the
+      // next reconnect > 5s later or an app reload. This bites both a reconnect < 5s after launch
+      // (`lastRefresh` is seeded to mount time) and two reconnects < 5s apart.
+      if (!force && now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
         return;
       }
 
@@ -209,8 +224,10 @@ export const usePaginatedChannels = ({
       'connection.changed',
       async (event) => {
         if (event.online) {
-          // Reconnection refreshes stay silent but share the pull-to-refresh debounce path.
-          await refreshList({ isBackground: true });
+          // Reconnection refreshes stay silent (`isBackground`) but must NOT be throttled by the
+          // pull-to-refresh debounce (`force`) — this is the query that re-watches the channels on the
+          // fresh socket. See the `force` note in `refreshList`.
+          await refreshList({ force: true, isBackground: true });
         }
       },
     );
