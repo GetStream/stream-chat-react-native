@@ -247,6 +247,8 @@ const useStyles = () => {
           ? semantics.chatBorderOnChatOutgoing
           : semantics.chatBorderOnChatIncoming,
       },
+      // NOTE: PollButtons only ever renders on the in-bubble surface (it is what
+      // opens the full-options modal), so it needs no `forceIncoming` handling.
     });
   }, [semantics, isPollCreatedByClient]);
 };

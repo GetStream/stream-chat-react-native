@@ -65,7 +65,7 @@ const useStyles = () => {
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: semantics.chatBorderOnChatIncoming,
+        borderColor: semantics.controlPlaybackToggleBorder,
       },
     });
   }, [semantics]);
