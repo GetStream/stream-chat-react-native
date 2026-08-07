@@ -8,6 +8,7 @@
 * add reminders implementation ([#3141](https://github.com/GetStream/stream-chat-react-native/issues/3141)) ([11c3307](https://github.com/GetStream/stream-chat-react-native/commit/11c33075954be074a702ac84a96c83b6e299b9b5))
 
 
+
 ### Bug Fixes
 
 * add export for message composer api context ([#3153](https://github.com/GetStream/stream-chat-react-native/issues/3153)) ([ed4d6ae](https://github.com/GetStream/stream-chat-react-native/commit/ed4d6aed3074d42b9b2124a598f7df90d33bcbaf))
