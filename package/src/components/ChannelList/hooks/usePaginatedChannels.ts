@@ -148,15 +148,14 @@ export const usePaginatedChannels = ({
         if (queryType === 'loadChannels') {
           // Next page — append toward the tail, keeping the current list.
           await paginator.toTail();
-        } else if (queryType === 'backgroundRefresh') {
-          // Reconnect refresh — refresh without blanking the visible list.
-          await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
-        } else if (queryType === 'refresh') {
-          // Pull-to-refresh — keep the list visible; the RefreshControl spinner conveys progress.
-          await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
-        } else {
-          // Reload (initial load / filters-sort-options change) — fresh first page.
+        } else if (queryType === 'reload') {
+          // Initial load / filters-sort-options change — fresh first page (blanks to the skeleton).
           await paginator.reload();
+        } else {
+          // Pull-to-refresh / reconnect — first-page reset that REPLACES the list, but keeps the current
+          // channels visible during the fetch (no skeleton flash). `reset: 'yes'` re-establishes the
+          // window from page 1; `keepPreviousItems` keeps the list visible until the fresh page swaps in.
+          await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
         }
       } catch (err: unknown) {
         console.warn(err);
