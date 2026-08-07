@@ -1,5 +1,11 @@
 # Change Log
 
+## [9.7.4](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.3...v9.7.4) (2026-08-07)
+
+### Bug Fixes
+
+* advanced theming of message (myMessageTheme) ([#3759](https://github.com/GetStream/stream-chat-react-native/issues/3759)) ([58b3dbe](https://github.com/GetStream/stream-chat-react-native/commit/58b3dbe25d0a150f4602fbeddc315513eec5c726)), closes [#3755](https://github.com/GetStream/stream-chat-react-native/issues/3755)
+
 ## [9.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.2...v9.7.3) (2026-08-06)
 
 ### Bug Fixes
