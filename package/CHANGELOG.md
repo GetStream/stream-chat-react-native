@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.7.5](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.4...v9.7.5) (2026-08-10)
+
+### Bug Fixes
+
+* reconnection debounce refreshing issues ([#3765](https://github.com/GetStream/stream-chat-react-native/issues/3765)) ([7f08741](https://github.com/GetStream/stream-chat-react-native/commit/7f08741adf7306a9ec40188b9f146d32fe49688a))
+* recover db gracefully on errors ([#3764](https://github.com/GetStream/stream-chat-react-native/issues/3764)) ([e8c917c](https://github.com/GetStream/stream-chat-react-native/commit/e8c917c05a0567a9b0d3f60e5e7c5e9763d948b4))
+
 ## [9.7.4](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.3...v9.7.4) (2026-08-07)
 
 ### Bug Fixes
