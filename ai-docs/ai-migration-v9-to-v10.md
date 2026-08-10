@@ -86,6 +86,11 @@ rg '\b(useMutedUsers|useCreateChannelContext|useCreateMessagesContext|useCreateT
 
 # §16 — behavioral (no symbol; review if you rely on send/mark-read/page-size behavior)
 rg '\b(sendMessage|SendMessageDisallowedIndicator)\b' src/
+
+# §18 — ChannelList event-override props + channelManager (orchestrator)
+rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|ChannelListEventHandler|useChannelUpdated|queryChannelsOverride)\b' src/
+rg 'useChatContext\(\)' -A6 src/ | rg '\bchannelManager\b'
+rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
 ```
 
 ---
@@ -127,6 +132,11 @@ means changed. Details in the linked section.
 | initial message-list page size ~100 | 25 — override via `channel.messagePaginator.pageSize` | §16.1 |
 | `sendMessage` errors swallowed | `sendMessage` throws — handle the rejection | §16.2 |
 | `stream-chat` v9 | `stream-chat` `^10.x` required | §17 |
+| `<ChannelList onNewMessage / onAddedToChannel / …>` event callbacks | `client.channelManager.addEventHandler(...)` / `client.on(...)`; membership+order via `filters`/`sort` | §18 |
+| `queryChannelsOverride` returning `Channel[]` | now the paginator `doRequest` → `return { items }` | §18.1 |
+| `useChannelUpdated()` | removed — `channel.updated` is handled by the orchestrator | §18.2 |
+| `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
+| `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
 
 ---
 
@@ -759,7 +769,116 @@ Highlights that hit integrator code:
 
 ---
 
-## 18. Verify
+# Part J — `ChannelList` & `ChannelManager` (orchestrator)
+
+`<ChannelList>` now runs on `stream-chat` v10's client-owned orchestrator: `client.channelManager`
+(one instance per client) plus one `ChannelPaginator` per list. The list is a **deterministic
+projection of its `filters` + `sort`** — every query (initial load, pagination, pull-to-refresh,
+reconnect) re-asserts them, so the list can no longer silently drift from, or be forced to
+contradict, its own query. Most of the removed API below existed to make the list disagree with its
+query; that is intentionally gone (a footgun removed). What you actually need is served by `filters`,
+`sort`, and — for transient surfacing — the paginator's `boost` primitive.
+
+## 18. `<ChannelList>` per-event override props removed
+
+Removed props (and the exported `ChannelListEventHandler` type):
+`onAddedToChannel`, `onRemovedFromChannel`, `onChannelDeleted`, `onChannelHidden`,
+`onChannelVisible`, `onChannelUpdated`, `onChannelTruncated`, `onChannelMemberUpdated`,
+`onNewMessage`, `onNewMessageNotification`.
+
+In v9 these callbacks let you imperatively rewrite the list on each WS event. In v10 that is
+redundant: the list is a projection of `filters` + `sort` that re-asserts on every query, so a
+membership/order change you made by hand was either wiped by the next refresh/reconnect or is already
+expressible declaratively. Map what each override did to its v10 equivalent:
+
+| The override did… | v10 |
+|---|---|
+| decide membership (keep/drop a channel) | `filters` — the query is the source of truth |
+| decide order | `sort` (+ `lockChannelOrder` to freeze order across events) |
+| filter what renders without changing the query | `channelRenderFilterFn` (unchanged prop) |
+| briefly float a channel to the top | `paginator.boost(cid, { ttlMs })` (survives queries) |
+| genuinely global event handling (new event type, SDK-bug hotfix, side effect) | `client.channelManager.addEventHandler(...)` or `client.on(...)` |
+
+Global handler (replaces the old per-list callbacks):
+
+```tsx
+const unsubscribe = client.channelManager.addEventHandler({
+  eventType: 'message.new',
+  id: 'my-app:on-new-message',
+  handle: ({ event, ctx: { channelManager } }) => {
+    // side effects, or drive the list via channelManager / its paginators
+  },
+});
+// call unsubscribe() on cleanup
+```
+
+> Why they're gone as per-list props: the manager is a single client-owned instance shared by every
+> list, so per-list handlers pooled into it (last-writer-wins) and unmounting one `<ChannelList>`
+> restored the default — clobbering a still-mounted sibling. Global handlers belong on
+> `client.channelManager`; per-list shaping stays in each list's `filters` / `sort`.
+
+## 18.1 `queryChannelsOverride` retyped
+
+Still a prop, but it is now the paginator's `doRequest` rather than a `Channel[]`-returning function.
+It receives the query params the paginator would have sent and must return `{ items }` — call
+`client.queryChannels(...)` inside so client state stays in sync:
+
+```tsx
+// v9: queryChannelsOverride = (filters, sort, options) => Promise<Channel[]>
+// v10:
+queryChannelsOverride={async (queryParams) => {
+  const items = await client.queryChannels(queryParams);
+  return { items };
+}}
+```
+
+## 18.2 `useChannelUpdated` removed
+
+The public `useChannelUpdated` hook is gone (it patched a `useState`-backed channel array that no
+longer exists). `channel.updated` is handled by the orchestrator; there is nothing to wire — delete
+the usage.
+
+## 18.3 `ChannelsContextValue.loadNextPage` retyped
+
+`loadNextPage` is now `() => Promise<void>` (it dropped its optional query-type arguments):
+
+```tsx
+// Before: loadNextPage(filters, sort, options)
+// After:
+loadNextPage();
+```
+
+## 18.4 `<Chat channelManager>` prop + `ChatContext.channelManager` removed
+
+`ChannelManager` is a singleton per client, so `<Chat>` no longer accepts a `channelManager` prop and
+`useChatContext()` no longer returns one. Read `client.channelManager` directly:
+
+```tsx
+// Before
+const { channelManager } = useChatContext();
+// After
+const { client } = useChatContext();
+const channelManager = client.channelManager;
+```
+
+Configure the shared manager through its own API (`client.channelManager.setEventHandlers(...)`,
+`setOwnershipResolver(...)`) instead of the removed prop.
+
+## 18.5 Behavioral: channel-list ordering & watch defaults
+
+- **No default "float to top" on events.** The manager no longer boosts a channel on any event —
+  order is driven purely by `sort`. A new/edited message, an added-to-channel, or an unhidden channel
+  now relocates by its sort key (e.g. `last_message_at`) instead of jumping to the very top. This also
+  means a new message no longer overrides a pinned-first `sort` (pinned channels stay pinned). To keep
+  the old jump-to-top, boost it yourself: `paginator.boost(channel.cid)`.
+- **Watch-on-notification narrowed.** On `notification.*` events (e.g. added to a channel) v10 watches
+  only channels it does not already know; v9 re-watched unconditionally. Deliberate change — the SDK's
+  own reconnect/query flow re-establishes watches, and blanket auto-watch risks the watch limit. To
+  watch a specific channel, call `channel.watch()`.
+
+---
+
+## 19. Verify
 
 - Typecheck the customer app; removed symbols surface as "Property does not
   exist" / "Cannot find name" errors — fix each per the section it maps to.
@@ -770,3 +889,8 @@ Highlights that hit integrator code:
   tap) and jump-to-first-unread; the unread separator, scroll-to-bottom button,
   and unread notification; and any custom overrides of `Message`, the list
   loading indicators, the thread footer, or the typing indicator.
+- Exercise the **channel list**: initial load + skeleton; scroll pagination;
+  new-message reorder; add/remove-from-channel, hide/unhide, delete, truncate,
+  `channel.updated`; pull-to-refresh and reconnect (the list re-queries, no
+  blank); and confirm a pinned-first `sort` keeps pinned channels on top when
+  other channels receive messages.
