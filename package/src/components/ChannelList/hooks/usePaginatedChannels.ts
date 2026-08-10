@@ -130,10 +130,14 @@ export const usePaginatedChannels = ({
     setActiveQueryType(null);
   };
 
-  const refreshList = async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
+  const refreshList = async ({
+    force = false,
+    isBackground = false,
+  }: { force?: boolean; isBackground?: boolean } = {}) => {
     const now = Date.now();
-    // Only allow pull-to-refresh 5 seconds after last successful refresh.
-    if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
+    // Only allow pull-to-refresh 5 seconds after last successful refresh, unless the request
+    // is invoked with force: true.
+    if (!force && now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
       return;
     }
 
@@ -168,9 +172,10 @@ export const usePaginatedChannels = ({
       'connection.changed',
       async (event) => {
         if (event.online) {
-          // Reconnection refreshes should stay silent, but still share the same debounce
-          // path as pull-to-refresh.
-          await refreshList({ isBackground: true });
+          // Reconnection refreshes stay silent but must NOT be throttled by the
+          // pull-to-refresh debounce. This is the query that rewatches the
+          // channels on the fresh socket.
+          await refreshList({ force: true, isBackground: true });
         }
       },
     );
