@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.14.6](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.5...sampleapp@v4.14.6) (2026-08-10)
+
+### Bug Fixes
+
+* recover db gracefully on errors ([#3764](https://github.com/GetStream/stream-chat-react-native/issues/3764)) ([e8c917c](https://github.com/GetStream/stream-chat-react-native/commit/e8c917c05a0567a9b0d3f60e5e7c5e9763d948b4))
+
 ## [4.14.5](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.4...sampleapp@v4.14.5) (2026-08-06)
 
 ### Bug Fixes
