@@ -1,12 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type {
-  Channel,
-  ChannelManager,
-  GetApplicationResponse,
-  StreamChat,
-  UserMuteResponse,
-} from 'stream-chat';
+import type { Channel, GetApplicationResponse, StreamChat, UserMuteResponse } from 'stream-chat';
 
 import { MessageContextValue } from '../messageContext/MessageContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -18,15 +12,6 @@ export type ChatContextValue = {
    * Object of application settings returned from Stream.
    * */
   appSettings: GetApplicationResponse | null;
-  /**
-   * The shared `ChannelManager` instance that orchestrates the channel-list paginators and keeps
-   * them in sync with WS events. It is created by `<Chat>` (or supplied via the `channelManager`
-   * prop) and consumed by `<ChannelList>`. Exposed here so it can be inspected/driven directly for
-   * advanced / multi-list use cases.
-   *
-   * @overrideType ChannelManager
-   */
-  channelManager: ChannelManager;
   /**
    * The StreamChat client object
    *

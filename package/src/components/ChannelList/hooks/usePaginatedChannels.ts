@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Channel,
   ChannelFilters,
-  ChannelManager,
   ChannelOptions,
   ChannelPaginator,
   ChannelPaginatorState,
@@ -12,7 +11,6 @@ import {
   PaginatorOptions,
 } from 'stream-chat';
 
-import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks';
 import { useLazyRef } from '../../../hooks/useLazyRef';
@@ -31,8 +29,6 @@ export type ChannelListQueryChannelsOverride = PaginatorOptions<
 >['doRequest'];
 
 type Parameters = {
-  channelManager: ChannelManager;
-  enableOfflineSupport: boolean;
   filters: ChannelFilters;
   options: ChannelOptions;
   sort: ChannelSort;
@@ -53,8 +49,6 @@ const selector = (nextValue: ChannelPaginatorState) =>
   }) as const;
 
 export const usePaginatedChannels = ({
-  channelManager,
-  enableOfflineSupport,
   filters = {},
   lockChannelOrder = false,
   options = {},
@@ -62,8 +56,8 @@ export const usePaginatedChannels = ({
   sort = [],
 }: Parameters) => {
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>(null);
-  const activeChannels = useActiveChannelsRefContext();
   const { client } = useChatContext();
+  const channelManager = client.channelManager;
 
   /**
    * One `ChannelPaginator` per `<ChannelList>` instance, contributed to the shared `ChannelManager`.
@@ -80,7 +74,7 @@ export const usePaginatedChannels = ({
     const { limit, offset: _offset, ...requestOptions } = options;
     return new ChannelPaginator({
       channelStateOptions: {
-        skipInitialization: enableOfflineSupport ? undefined : activeChannels.current,
+        skipInitialization: undefined,
       },
       client,
       filters,

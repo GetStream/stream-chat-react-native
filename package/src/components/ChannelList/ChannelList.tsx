@@ -110,7 +110,8 @@ export const ChannelList = (props: ChannelListProps) => {
   const [forceUpdate] = useState(0);
   const fallbackNotificationHostIdRef = useLazyRef(() => `channel-list:${generateRandomId()}`);
   const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
-  const { channelManager, enableOfflineSupport } = useChatContext();
+  const { client } = useChatContext();
+  const channelManager = client.channelManager;
   const { NotificationList } = useComponentsContext();
 
   // Ref-counted on the shared manager: subscriptions live only while at least one ChannelList is mounted.
@@ -128,8 +129,6 @@ export const ChannelList = (props: ChannelListProps) => {
     refreshList,
     reloadList,
   } = usePaginatedChannels({
-    channelManager,
-    enableOfflineSupport,
     filters,
     lockChannelOrder,
     options,

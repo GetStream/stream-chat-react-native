@@ -8,7 +8,6 @@ import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
-import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
@@ -32,7 +31,7 @@ import { version } from '../../version.json';
 init();
 
 export type ChatProps = Pick<ChatContextValue, 'client'> &
-  Partial<Pick<ChatContextValue, 'isMessageAIGenerated' | 'channelManager'>> & {
+  Partial<Pick<ChatContextValue, 'isMessageAIGenerated'>> & {
     /**
      * When false, ws connection won't be disconnection upon backgrounding the app.
      * To receive push notifications, its necessary that user doesn't have active
@@ -145,7 +144,6 @@ const selector = (nextValue: OfflineDBState) =>
 
 const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const {
-    channelManager: customChannelManager,
     children,
     client,
     closeConnectionOnBackground = true,
@@ -168,21 +166,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       userLanguage: (client.user?.language || DEFAULT_USER_LANGUAGE) as TranslationLanguage,
     }),
     [client.user?.language, translators],
-  );
-
-  /**
-   * The shared channel-list orchestrator. Created once per client (or supplied by the integrator via
-   * the `channelManager` prop). It holds no paginators here — each `<ChannelList>` contributes and
-   * removes its own `ChannelPaginator`, and registers/unregisters the manager's WS subscriptions while
-   * it is mounted. Kept as static as possible so the paginators/subscriptions are not torn down on
-   * unrelated Chat re-renders.
-   */
-  // TODO: This will do for now for the purposes of going ahead, but let's think of a better way to
-  //       attach the manager to our client and not just propagate it through context. It is not
-  //       necessary at all.
-  const channelManager = useMemo(
-    () => customChannelManager ?? client.channelManager,
-    [client, customChannelManager],
   );
 
   /**
@@ -287,7 +270,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const chatContext = useCreateChatContext({
     appSettings,
     channel,
-    channelManager,
     client,
     connectionRecovering,
     enableOfflineSupport,
@@ -305,9 +287,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   return (
     <ChatProvider value={chatContext}>
       <TranslationProvider value={translationContextValue}>
-        <ThemeProvider style={style}>
-          <ChannelsStateProvider>{children}</ChannelsStateProvider>
-        </ThemeProvider>
+        <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
   );

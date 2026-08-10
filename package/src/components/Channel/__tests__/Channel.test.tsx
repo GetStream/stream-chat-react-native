@@ -7,7 +7,6 @@ import { StreamChat } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import {
   MessagesContext,
@@ -96,14 +95,12 @@ const renderComponent = (
   context: React.Context<unknown> = ChannelContext as React.Context<unknown>,
 ) =>
   render(
-    <ChannelsStateProvider>
-      <Chat client={chatClient}>
-        <Channel {...(props as React.ComponentProps<typeof Channel>)}>
-          {props.children}
-          <CallbackEffectWithContext {...{ callback, context }} />
-        </Channel>
-      </Chat>
-    </ChannelsStateProvider>,
+    <Chat client={chatClient}>
+      <Channel {...(props as React.ComponentProps<typeof Channel>)}>
+        {props.children}
+        <CallbackEffectWithContext {...{ callback, context }} />
+      </Channel>
+    </Chat>,
   );
 
 describe('Channel', () => {

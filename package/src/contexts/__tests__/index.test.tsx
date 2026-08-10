@@ -16,7 +16,6 @@ import {
   useTheme,
   useThreadContext,
 } from '../';
-import { useChannelsStateContext } from '../channelsStateContext/ChannelsStateContext';
 
 jest.mock('../utils/isTestEnvironment', () => ({ isTestEnvironment: jest.fn(() => false) }));
 jest.spyOn(console, 'error').mockImplementation();
@@ -30,10 +29,6 @@ describe('contexts hooks in a component throws an error with message when not wr
     [
       useOverlayContext,
       'The useOverlayContext hook was called outside the OverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
-    ],
-    [
-      useChannelsStateContext,
-      'The useChannelsStateContext hook was called outside the ChannelStateContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
     ],
     [
       useOwnCapabilitiesContext,

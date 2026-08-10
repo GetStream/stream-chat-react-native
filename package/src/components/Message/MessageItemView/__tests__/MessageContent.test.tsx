@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
-import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
@@ -124,15 +123,13 @@ describe('MessageContent', () => {
     );
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -150,15 +147,13 @@ describe('MessageContent', () => {
     );
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -172,20 +167,18 @@ describe('MessageContent', () => {
     const message = generateMessage({ user });
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentBottomView: () => <View testID='message-content-bottom-view' />,
-              MessageContentTopView: () => <View testID='message-content-top-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentBottomView: () => <View testID='message-content-bottom-view' />,
+            MessageContentTopView: () => <View testID='message-content-top-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -200,20 +193,18 @@ describe('MessageContent', () => {
     const message = generateMessage({ user });
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
-              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+            MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -229,20 +220,18 @@ describe('MessageContent', () => {
     const rightAlignedMessage = generateMessage({ user });
 
     const { rerender } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
-              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={leftAlignedMessage} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+            MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={leftAlignedMessage} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -254,20 +243,18 @@ describe('MessageContent', () => {
     expect(contentRowStyle?.flexDirection).toBe('row');
 
     rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
-              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={rightAlignedMessage} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+            MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={rightAlignedMessage} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -572,13 +559,11 @@ describe('MessageContent', () => {
     });
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <Message groupStyles={['bottom']} message={message} />
+        </Channel>
+      </Chat>,
     );
 
     await waitFor(() => {

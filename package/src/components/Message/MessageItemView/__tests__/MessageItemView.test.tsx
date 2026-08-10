@@ -6,7 +6,6 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
-import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 import type { ComponentOverrides } from '../../../../contexts/componentsContext/ComponentsContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
@@ -52,21 +51,19 @@ describe('MessageItemView', () => {
 
     renderMessage = (options, channelProps, componentOverrides) =>
       render(
-        <ChannelsStateProvider>
-          <Chat client={chatClient}>
-            {componentOverrides ? (
-              <WithComponents overrides={componentOverrides}>
-                <Channel channel={channel} {...channelProps}>
-                  <Message groupStyles={['bottom']} {...options} />
-                </Channel>
-              </WithComponents>
-            ) : (
+        <Chat client={chatClient}>
+          {componentOverrides ? (
+            <WithComponents overrides={componentOverrides}>
               <Channel channel={channel} {...channelProps}>
                 <Message groupStyles={['bottom']} {...options} />
               </Channel>
-            )}
-          </Chat>
-        </ChannelsStateProvider>,
+            </WithComponents>
+          ) : (
+            <Channel channel={channel} {...channelProps}>
+              <Message groupStyles={['bottom']} {...options} />
+            </Channel>
+          )}
+        </Chat>,
       );
   });
 

@@ -41,7 +41,6 @@ import {
 } from '../../contexts/audioPlayerContext/AudioPlayerContext';
 
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
-import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
@@ -1211,8 +1210,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   };
 
   const shouldSyncChannel = threadMessage?.id ? !!props.threadList : true;
-
-  useChannelState(props.channel);
 
   const channelWithContext = (
     <ChannelWithContext
