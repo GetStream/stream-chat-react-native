@@ -712,43 +712,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         .map(parseMessage);
 
     try {
-      let watchResponse;
-      // Read the loaded window BEFORE the fetch await: its size is the limit we request, and its ids
-      // are the reconciliation snapshot. Both must be captured pre-await so a message that arrives
-      // live during the fetch is not mistaken for a hard-deleted one when we reconcile below.
-      const requestedMessageLimit = channelMessagesState?.messages?.length;
-      const reconcileCandidateIds = new Set(
-        (channelMessagesState?.messages ?? []).map((message) => message.id),
-      );
-      if (channelMessagesState?.messages) {
-        watchResponse = await channel?.watch({
-          messages: {
-            limit: requestedMessageLimit,
-          },
-        });
-        channel.offlineMode = false;
-      }
-
       if (!thread) {
-        const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
-        const newestWindow = (watchResponse?.messages ?? []).map((message) =>
-          channel.state.formatMessage(message),
-        );
-        // Merge the authoritative newest window AND drop any loaded message it proves was hard-deleted
-        // while offline (hard deletes reach other clients via no event, and the merge is additive).
-        // `requestedLimit` + the pre-fetch `candidateIds` snapshot bound the reconciliation to exactly
-        // what the page covers — see MessagePaginator.mergeNewestPage.
-        channel.messagePaginator.mergeNewestPage(newestWindow, {
-          candidateIds: reconcileCandidateIds,
-          requestedLimit: requestedMessageLimit,
-        });
-        if (failedMessages?.length) {
-          failedMessages.forEach((m) =>
-            channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
-          );
-        }
-        // The merge no-ops if the user had jumped away from the head; only claim up-to-date / mark
-        // read when it actually left us at the newest, otherwise keep their position untouched.
+        // The LLC owns the reconnect refresh now: channel.reload() re-watches, folds the newest page,
+        // and reconciles messages hard-deleted while offline — capturing the pre-fetch snapshot + the
+        // requested limit itself, so this no longer passes them (see Channel.reload /
+        // MessagePaginator.mergeNewestPage).
+        await channel.reload();
+        // Only mark read when the refreshed window is at the newest (hasMoreHead false); if the user
+        // has paginated up into older history, leave their read state untouched.
         const atLatest = !channel.messagePaginator.hasMoreHead;
         if (atLatest) {
           await markRead();
