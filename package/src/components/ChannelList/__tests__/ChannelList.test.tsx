@@ -23,7 +23,6 @@ import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import dispatchChannelHiddenEvent from '../../../mock-builders/event/channelHidden';
-import dispatchChannelTruncatedEvent from '../../../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
@@ -561,31 +560,6 @@ describe('ChannelList', () => {
           expect(within(items[2]).getByText(newMessage.text as string)).toBeTruthy();
         });
       });
-      it('should call the `onNewMessage` function prop, if provided', async () => {
-        const onNewMessage = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onNewMessage={onNewMessage} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchMessageNewEvent(
-            chatClient,
-            testChannel2.channel as unknown as Parameters<typeof dispatchMessageNewEvent>[1],
-          ),
-        );
-
-        await waitFor(() => {
-          expect(onNewMessage).toHaveBeenCalledTimes(1);
-        });
-      });
     });
 
     describe('notification.message_new', () => {
@@ -616,53 +590,6 @@ describe('ChannelList', () => {
         const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
           expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
-        });
-      });
-
-      it('should call the `onNewMessage` function prop, if provided', async () => {
-        const onNewMessage = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onNewMessage={onNewMessage} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchMessageNewEvent(
-            chatClient,
-            testChannel2.channel as unknown as Parameters<typeof dispatchMessageNewEvent>[1],
-          ),
-        );
-
-        await waitFor(() => {
-          expect(onNewMessage).toHaveBeenCalledTimes(1);
-        });
-      });
-
-      it('should call the `onNewMessageNotification` function prop, if provided', async () => {
-        const onNewMessageNotification = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onNewMessageNotification={onNewMessageNotification} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel));
-
-        await waitFor(() => {
-          expect(onNewMessageNotification).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -700,27 +627,6 @@ describe('ChannelList', () => {
           expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
       });
-
-      it('should call the `onAddedToChannel` function prop, if provided', async () => {
-        const onAddedToChannel = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchNotificationAddedToChannelEvent(chatClient, testChannel3.channel));
-
-        await waitFor(() => {
-          expect(onAddedToChannel).toHaveBeenCalledTimes(1);
-        });
-      });
     });
 
     describe('notification.removed_from_channel', () => {
@@ -753,27 +659,6 @@ describe('ChannelList', () => {
           expect(newItems).toHaveLength(2);
         });
       });
-
-      it('should call the `onRemovedFromChannel` function prop, if provided', async () => {
-        const onRemovedFromChannel = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
-
-        await waitFor(() => {
-          expect(onRemovedFromChannel).toHaveBeenCalledTimes(1);
-        });
-      });
     });
 
     describe('channel.updated', () => {
@@ -803,32 +688,6 @@ describe('ChannelList', () => {
 
         await waitFor(() => {
           expect(screen.getByText('updated')).toBeTruthy();
-        });
-      });
-
-      it('should call the `onChannelUpdated` function prop, if provided', async () => {
-        const onChannelUpdated = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchChannelUpdatedEvent(chatClient, {
-            ...testChannel2.channel,
-            custom: { name: 'updated' },
-          }),
-        );
-
-        await waitFor(() => {
-          expect(onChannelUpdated).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -863,27 +722,6 @@ describe('ChannelList', () => {
           expect(newItems).toHaveLength(1);
         });
       });
-
-      it('should call the `onChannelDeleted` function prop, if provided', async () => {
-        const onChannelDeleted = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
-
-        await waitFor(() => {
-          expect(onChannelDeleted).toHaveBeenCalledTimes(1);
-        });
-      });
     });
 
     describe('channel.hidden', () => {
@@ -914,27 +752,6 @@ describe('ChannelList', () => {
         const newItems = screen.getAllByLabelText('list-item');
         await waitFor(() => {
           expect(newItems).toHaveLength(1);
-        });
-      });
-
-      it('should call the `onChannelHidden` function prop, if provided', async () => {
-        const onChannelHidden = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelHidden={onChannelHidden} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
-
-        await waitFor(() => {
-          expect(onChannelHidden).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -1002,30 +819,6 @@ describe('ChannelList', () => {
 
         deferredPromise.resolve([testChannel1]);
         dateNowSpy.mockRestore();
-      });
-    });
-
-    describe('channel.truncated', () => {
-      it('should call the `onChannelTruncated` function prop, if provided', async () => {
-        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const onChannelTruncated = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchChannelTruncatedEvent(chatClient, testChannel1.channel));
-
-        await waitFor(() => {
-          expect(onChannelTruncated).toHaveBeenCalledTimes(1);
-        });
       });
     });
   });

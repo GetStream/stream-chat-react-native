@@ -12,7 +12,6 @@ import { Thread as ThreadClass } from 'stream-chat';
 import { v5 as uuidv5 } from 'uuid';
 
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -154,26 +153,24 @@ describe('Thread', () => {
     );
 
     const { getByText, toJSON } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <AttachmentPickerProvider
-            value={
-              {
-                closePicker: jest.fn(),
-                openPicker: jest.fn(),
-              } as unknown as React.ComponentProps<typeof AttachmentPickerProvider>['value']
-            }
+      <Chat client={chatClient} i18nInstance={i18nInstance}>
+        <AttachmentPickerProvider
+          value={
+            {
+              closePicker: jest.fn(),
+              openPicker: jest.fn(),
+            } as unknown as React.ComponentProps<typeof AttachmentPickerProvider>['value']
+          }
+        >
+          <ImageGalleryProvider
+            value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
           >
-            <ImageGalleryProvider
-              value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
-            >
-              <Channel channel={channel} thread={{ thread, threadInstance }} threadList>
-                <Thread />
-              </Channel>
-            </ImageGalleryProvider>
-          </AttachmentPickerProvider>
-        </Chat>
-      </ChannelsStateProvider>,
+            <Channel channel={channel} thread={{ thread, threadInstance }} threadList>
+              <Thread />
+            </Channel>
+          </ImageGalleryProvider>
+        </AttachmentPickerProvider>
+      </Chat>,
     );
 
     await waitFor(() => {

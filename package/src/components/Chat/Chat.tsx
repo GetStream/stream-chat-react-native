@@ -8,7 +8,6 @@ import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
-import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
@@ -288,9 +287,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   return (
     <ChatProvider value={chatContext}>
       <TranslationProvider value={translationContextValue}>
-        <ThemeProvider style={style}>
-          <ChannelsStateProvider>{children}</ChannelsStateProvider>
-        </ThemeProvider>
+        <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
   );

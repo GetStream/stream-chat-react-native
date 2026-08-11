@@ -4,7 +4,6 @@ import { cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { Channel } from '../../..';
-import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
@@ -56,13 +55,11 @@ describe('MessageStatus', () => {
   ) =>
     render(
       <OverlayProvider accessibility={{ enabled: true }}>
-        <ChannelsStateProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} {...channelProps}>
-              <MessageStatus {...options} />
-            </Channel>
-          </Chat>
-        </ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} {...channelProps}>
+            <MessageStatus {...options} />
+          </Channel>
+        </Chat>
       </OverlayProvider>,
     );
 
@@ -90,13 +87,11 @@ describe('MessageStatus', () => {
     const staticMessage = generateMessage({ user: staticUser });
 
     rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <Channel channel={channel}>
-            <MessageStatus message={staticMessage} readBy={readBy} />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient} i18nInstance={i18nInstance}>
+        <Channel channel={channel}>
+          <MessageStatus message={staticMessage} readBy={readBy} />
+        </Channel>
+      </Chat>,
     );
 
     await waitFor(() => {

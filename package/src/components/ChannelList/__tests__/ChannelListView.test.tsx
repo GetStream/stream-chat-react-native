@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import type { Channel, QueryChannelsRequestType, StreamChat, UserResponse } from 'stream-chat';
+import type { Channel, StreamChat, UserResponse } from 'stream-chat';
 
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
@@ -13,13 +13,14 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 import { ChannelListView } from '../ChannelListView';
+import type { ChannelListQueryChannelsOverride } from '../hooks/usePaginatedChannels';
 
 let chatClient: StreamChat;
 let defaultChannels: Channel[];
 let queryChannelsResponse: Channel[];
 
-const queryChannelsOverride: QueryChannelsRequestType = () =>
-  Promise.resolve(queryChannelsResponse);
+const queryChannelsOverride: ChannelListQueryChannelsOverride = () =>
+  Promise.resolve({ items: queryChannelsResponse });
 
 /**
  * Renders the full ChannelList (which now always uses ChannelListView internally).
