@@ -1,12 +1,17 @@
-import { Channel, EventType } from 'stream-chat';
+import { Channel } from 'stream-chat';
 
-import { useSelectedChannelState } from './useSelectedChannelState';
+import { useStateStore } from './useStateStore';
 
-const selector = (channel: Channel) => channel.data?.member_count ?? 0;
-const keys: EventType[] = ['channel.updated'];
+const selector = (state: { memberCount: number }) => ({
+  memberCount: state.memberCount,
+});
 
+/**
+ * Returns the channel's member count, sourced reactively from `channel.state` (updates on
+ * `channel.updated`).
+ */
 export function useChannelMemberCount(channel: Channel): number;
 export function useChannelMemberCount(channel?: Channel): number | undefined;
 export function useChannelMemberCount(channel?: Channel) {
-  return useSelectedChannelState({ channel, selector, stateChangeEventKeys: keys });
+  return useStateStore(channel?.state, selector)?.memberCount;
 }

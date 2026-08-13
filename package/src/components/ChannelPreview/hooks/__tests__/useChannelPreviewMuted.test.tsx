@@ -1,61 +1,34 @@
-import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { Channel, StreamChat } from 'stream-chat';
+import { act, renderHook } from '@testing-library/react-native';
+import { Channel, StateStore } from 'stream-chat';
 
-import * as ChatContext from '../../../../contexts/chatContext/ChatContext';
-import dispatchNotificationChannelMutesUpdated from '../../../../mock-builders/event/notificationChannelMutesUpdated';
-import { generateUser } from '../../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { useIsChannelMuted } from '../useIsChannelMuted';
 
 describe('useChannelPreviewMuted', () => {
-  const clientUser = generateUser();
-  let chatClient: StreamChat;
+  const makeChannel = (muted = false) =>
+    ({
+      initialized: true,
+      state: new StateStore({
+        muteStatus: { createdAt: null, expiresAt: null, muted },
+      }),
+    }) as unknown as Channel;
 
-  beforeEach(async () => {
-    chatClient = await getTestClientWithUser(clientUser);
-    jest.spyOn(ChatContext, 'useChatContext').mockImplementation(
-      jest.fn(
-        () =>
-          ({
-            client: chatClient,
-          }) as unknown as ChatContext.ChatContextValue,
-      ),
-    );
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  const mockChannel = {
-    initialized: true,
-    muteStatus: jest.fn().mockReturnValue({
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 5000,
-      muted: false,
-    }),
-  } as unknown as Channel;
-
-  it('should return the correct mute status', () => {
-    const { result } = renderHook(() => useIsChannelMuted(mockChannel));
+  it('returns the current mute status from channel.state', () => {
+    const channel = makeChannel(false);
+    const { result } = renderHook(() => useIsChannelMuted(channel));
     expect(result.current.muted).toBe(false);
   });
 
-  it("should update the mute status when the notification.channel_mutes_updated event is emitted'", () => {
-    renderHook(() => useIsChannelMuted(mockChannel));
+  it('updates reactively when channel.state.muteStatus changes', () => {
+    const channel = makeChannel(false);
+    const { result } = renderHook(() => useIsChannelMuted(channel));
+    expect(result.current.muted).toBe(false);
 
-    act(() => dispatchNotificationChannelMutesUpdated(chatClient, mockChannel));
-
-    expect(mockChannel.muteStatus).toHaveBeenCalledTimes(2);
-  });
-
-  it('should clean up the event listener when the component is unmounted', async () => {
-    const { unmount } = renderHook(() => useIsChannelMuted(mockChannel));
-
-    unmount();
-
-    await waitFor(() => {
-      expect(mockChannel.muteStatus).toHaveBeenCalledTimes(1);
+    act(() => {
+      channel.state.partialNext({
+        muteStatus: { createdAt: new Date(), expiresAt: null, muted: true },
+      });
     });
+
+    expect(result.current.muted).toBe(true);
   });
 });

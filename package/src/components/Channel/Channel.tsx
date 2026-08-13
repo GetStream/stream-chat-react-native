@@ -652,6 +652,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel.cid, messageId, shouldSyncChannel]);
 
+  // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
+  // Channel instance shared with the channel-list preview or a thread stays active until the last
+  // mount unmounts. Being active enables auto-mark-read-on-focus and suppresses destructive
+  // channel-list re-seeding of the open channel's message list on reconnect. Keyed on `channel` and
+  // balanced (the cleanup deactivates the exact instance the effect activated), so swapping the
+  // `channel` prop deactivates the previous instance before activating the new one.
+  useEffect(() => {
+    channel?.activate?.();
+    return () => {
+      channel?.deactivate?.();
+    };
+  }, [channel]);
+
   // subscribe to channel.deleted event
   useEffect(() => {
     const { unsubscribe } = client.on('channel.deleted', (event) => {
