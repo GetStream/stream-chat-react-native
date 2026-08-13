@@ -12,7 +12,7 @@ export const useTypingUsers = () => {
   const { client } = useChatContext();
   const { channel } = useChannelContext();
   const { threadInstance } = useThreadContext();
-  const { typing } = useStateStore(channel.state.typingStore, selector) ?? { typing: {} };
+  const { typing } = useStateStore(channel.state, selector) ?? { typing: {} };
 
   return useMemo(
     () => filterTypingUsers({ client, threadId: threadInstance?.id, typing }),

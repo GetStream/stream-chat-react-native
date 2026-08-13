@@ -424,7 +424,7 @@ describe('Channel initial load useEffect', () => {
     renderComponent({ channel });
 
     await waitFor(() => expect(watchSpy).toHaveBeenCalled());
-    // members now come reactively from channel.state.membersStore (via the shim getter).
+    // members now come reactively from channel.state (via the shim getter).
     await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 

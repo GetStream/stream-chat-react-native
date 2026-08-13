@@ -618,8 +618,8 @@ export const MessageComposer = (props: MessageComposerProps) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel } = useChannelContext();
-  const { members } = useStateStore(channel.state.membersStore, membersSelector) ?? { members: {} };
-  const { watchers } = useStateStore(channel.state.watcherStore, watchersSelector) ?? {
+  const { members } = useStateStore(channel.state, membersSelector) ?? { members: {} };
+  const { watchers } = useStateStore(channel.state, watchersSelector) ?? {
     watchers: {},
   };
 

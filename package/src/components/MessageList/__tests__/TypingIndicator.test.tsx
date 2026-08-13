@@ -22,7 +22,7 @@ describe('TypingIndicator', () => {
       channels: [channel],
       client,
     } = await initiateClientWithChannels({ customUser: user0 });
-    channel.state.typingStore.partialNext({
+    channel.state.partialNext({
       typing: {
         user1: { user: user1 },
         user2: { user: user2 },
@@ -50,7 +50,7 @@ describe('TypingIndicator', () => {
       channels: [channel],
       client,
     } = await initiateClientWithChannels({ customUser: user0 });
-    channel.state.typingStore.partialNext({
+    channel.state.partialNext({
       typing: { user1: { user: user1 } } as unknown as TypingUsersState['typing'],
     });
 
@@ -76,7 +76,7 @@ describe('TypingIndicator', () => {
       channels: [channel],
       client,
     } = await initiateClientWithChannels({ customUser: user0 });
-    channel.state.typingStore.partialNext({
+    channel.state.partialNext({
       typing: {
         user1: { user: user1 },
         user2: { user: user2 },

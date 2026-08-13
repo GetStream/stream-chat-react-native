@@ -1166,7 +1166,7 @@ export type MessageProps = Partial<
 export const Message = (props: MessageProps) => {
   const { message } = props;
   const { channel, enforceUniqueReaction } = useChannelContext();
-  const { members } = useStateStore(channel.state.membersStore, messageMembersSelector) ?? {
+  const { members } = useStateStore(channel.state, messageMembersSelector) ?? {
     members: {},
   };
   const chatContext = useChatContext();

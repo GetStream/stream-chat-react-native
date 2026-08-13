@@ -565,7 +565,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         return;
       }
 
-      // Typing state is sourced reactively from channel.state.typingStore; nothing to copy here.
+      // Typing state is sourced reactively from channel.state; nothing to copy here.
       if (event.type === 'typing.start' || event.type === 'typing.stop') {
         return;
       }

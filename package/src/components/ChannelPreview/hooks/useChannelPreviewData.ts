@@ -40,7 +40,7 @@ export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
     [userId],
   );
   const { unread: reactiveUnread } =
-    useStateStore(channel.state.readStore, ownUnreadSelector) ?? {};
+    useStateStore(channel.state, ownUnreadSelector) ?? {};
   // muted channels always render a zeroed unread count
   const unread = muted ? 0 : (reactiveUnread ?? 0);
 

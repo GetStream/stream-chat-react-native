@@ -20,10 +20,10 @@ export const useCreateOwnCapabilitiesContext = ({
   channel: Channel;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
-  // Sourced reactively from channel.state.ownCapabilitiesStore (kept up to date by the client
+  // Sourced reactively from channel.state (kept up to date by the client
   // on watch/query and `capabilities.changed`).
   const { ownCapabilities = [] } =
-    useStateStore(channel.state.ownCapabilitiesStore, selector) ?? {};
+    useStateStore(channel.state, selector) ?? {};
 
   const overrideCapabilitiesStr = overrideCapabilities
     ? JSON.stringify(Object.values(overrideCapabilities))

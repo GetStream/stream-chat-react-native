@@ -40,7 +40,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
     }),
     [userId],
   );
-  const ownRead = useStateStore(channel?.state?.readStore, ownUnreadSelector);
+  const ownRead = useStateStore(channel?.state, ownUnreadSelector);
   const unreadCount = threadList ? undefined : ownRead?.unreadCount;
   const accessibilityLabelParams = useMemo(
     () => (unreadCount ? { count: unreadCount } : undefined),
