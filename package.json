@@ -10,7 +10,8 @@
     "examples/ExpoMessaging"
   ],
   "resolutions": {
-    "@types/react": "^19.2.0"
+    "@types/react": "^19.2.0",
+    "stream-chat": "portal:/Users/isekovanic/Projects/stream-chat-js-temp"
   },
   "engines": {
     "node": ">=20.19.4"
