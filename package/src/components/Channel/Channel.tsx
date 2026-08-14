@@ -712,29 +712,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         .map(parseMessage);
 
     try {
-      let watchResponse;
-      if (channelMessagesState?.messages) {
-        watchResponse = await channel?.watch({
-          messages: {
-            limit: channelMessagesState.messages.length,
-          },
-        });
-        channel.offlineMode = false;
-      }
-
       if (!thread) {
-        const failedMessages = getRecoverableFailedMessages(channelMessagesState.messages);
-        const newestWindow = (watchResponse?.messages ?? []).map((message) =>
-          channel.state.formatMessage(message),
-        );
-        channel.messagePaginator.mergeNewestPage(newestWindow);
-        if (failedMessages?.length) {
-          failedMessages.forEach((m) =>
-            channel.messagePaginator.ingestItem(channel.state.formatMessage(m)),
-          );
-        }
-        // The merge no-ops if the user had jumped away from the head; only claim up-to-date / mark
-        // read when it actually left us at the newest, otherwise keep their position untouched.
+        // The LLC owns the reconnect refresh now: channel.reload() re-watches, folds the newest page,
+        // and reconciles messages hard-deleted while offline — capturing the pre-fetch snapshot + the
+        // requested limit itself, so this no longer passes them (see Channel.reload /
+        // MessagePaginator.mergeNewestPage).
+        await channel.reload();
+        // Only mark read when the refreshed window is at the newest (hasMoreHead false); if the user
+        // has paginated up into older history, leave their read state untouched.
         const atLatest = !channel.messagePaginator.hasMoreHead;
         if (atLatest) {
           await markRead();
