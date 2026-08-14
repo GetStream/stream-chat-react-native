@@ -59,15 +59,14 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * channels; inactive channels are hydrated on their next explicit query. The
      * last-sync timestamp is still advanced so the same payload is not retried.
      *
-     * Defaults to {@link DEFAULT_MAX_SYNC_EVENTS_LIMIT} (250). Pass a larger number
-     * to raise the cap, or any non-positive value (e.g. `0`) for no limit — i.e.
-     * replay every event (the historical behavior).
+     * Defaults to {@link DEFAULT_MAX_SYNC_EVENTS_LIMIT} (250). Pass `false` to
+     * disable the limit entirely (replay every event — the historical behavior).
      *
      * Only relevant when `enableOfflineSupport` is enabled.
      *
      * @default 250
      */
-    maxSyncEventsLimit?: number;
+    maxSyncEventsLimit?: number | false;
     /**
      * When true, multipart uploads use the SDK's native upload adapter when available.
      * When false, uploads stay on the default axios adapter.

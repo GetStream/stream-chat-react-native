@@ -355,4 +355,16 @@ describe('TranslationContext', () => {
     );
     expect(DEFAULT_MAX_SYNC_EVENTS_LIMIT).toBe(250);
   });
+
+  it('disables the sync event limit when maxSyncEventsLimit is false', async () => {
+    const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
+
+    render(<Chat client={chatClientWithUser} enableOfflineSupport maxSyncEventsLimit={false} />);
+
+    await waitFor(() => {
+      expect(chatClientWithUser.offlineDb).toBeDefined();
+    });
+    // `false` opts out: the client stores no limit (undefined), so replay always runs.
+    expect(chatClientWithUser.offlineDb!.syncManager.syncMaxEventCount).toBeUndefined();
+  });
 });

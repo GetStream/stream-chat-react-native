@@ -12,8 +12,17 @@ import * as api from './apis';
 import { SqliteClient } from './SqliteClient';
 
 export class OfflineDB extends AbstractOfflineDB {
-  constructor({ client, maxSyncEventsLimit }: { client: StreamChat; maxSyncEventsLimit?: number }) {
-    super({ client, syncMaxEventCount: maxSyncEventsLimit });
+  constructor({
+    client,
+    maxSyncEventsLimit,
+  }: {
+    client: StreamChat;
+    maxSyncEventsLimit?: number | false;
+  }) {
+    super({
+      client,
+      syncMaxEventCount: maxSyncEventsLimit === false ? undefined : maxSyncEventsLimit,
+    });
   }
 
   upsertCidsForQuery = api.upsertCidsForQuery;
