@@ -288,6 +288,9 @@ describe('AttachmentUploadPreviewList', () => {
         }),
         generateVideoAttachment({
           localMetadata: {
+            file: {
+              uri: 'file://video-attachment.mp4',
+            },
             id: 'video-attachment',
             uploadState: FileState.FINISHED,
           },
@@ -320,6 +323,9 @@ describe('AttachmentUploadPreviewList', () => {
         }),
         generateVideoAttachment({
           localMetadata: {
+            file: {
+              uri: 'file://video-attachment.mp4',
+            },
             id: 'video-attachment',
             uploadState: FileState.FAILED,
           },
@@ -361,6 +367,9 @@ describe('AttachmentUploadPreviewList', () => {
         }),
         generateVideoAttachment({
           localMetadata: {
+            file: {
+              uri: 'file://video-attachment.mp4',
+            },
             id: 'video-attachment',
             uploadState: FileState.BLOCKED,
           },

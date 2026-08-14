@@ -14,6 +14,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { ChannelEditDetailsForm } from '../components/ChannelEditDetailsForm';
 
 jest.mock('../../../hooks/actions/useChannelActions');
@@ -44,13 +45,15 @@ const EditDetailsProbe = () => {
   );
 };
 
-const buildChannel = (overrides?: { name?: string; cid?: string }): Channel =>
-  ({
+const buildChannel = (overrides?: { name?: string; cid?: string }): Channel => {
+  const name = overrides?.name ?? 'Original';
+  return {
     cid: overrides?.cid ?? 'messaging:test',
-    data: { name: overrides?.name ?? 'Original' },
+    data: { custom: { name } },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
-  }) as unknown as Channel;
+    state: generateChannelState({ data: { custom: { name } } }),
+  } as unknown as Channel;
+};
 
 const renderForm = ({ channel, onClose = jest.fn() }: { channel: Channel; onClose?: () => void }) =>
   render(

@@ -77,14 +77,17 @@ describe('Thread', () => {
       generateMessage({ cid, parent_id }),
     ];
 
-    // Replies are sourced from the thread instance's paginator now, so seed a Thread with the
-    // replies and pass it through instead of writing to the removed channel.state message store.
+    // Replies are sourced from the thread instance's reply paginator now, so seed a Thread with the
+    // replies (mirroring how the constructor seeds from `latest_replies`) instead of writing to the
+    // removed channel.state message store. `setItems` publishes the first, complete reply page.
     const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage: thread });
-    threadResponses.forEach((reply) =>
-      threadInstance.messagePaginator.ingestItem(
+    threadInstance.messagePaginator.setItems({
+      valueOrFactory: threadResponses.map((reply) =>
         channel.state.formatMessage(reply as unknown as MessageResponse),
       ),
-    );
+      isFirstPage: true,
+      isLastPage: true,
+    });
 
     renderComponent({ channel, chatClient, thread: { thread, threadInstance } });
 
@@ -104,7 +107,7 @@ describe('Thread', () => {
     const user2 = generateStaticUser(3);
     const thread = generateStaticMessage(
       'Message3',
-      { cid, user: user2 },
+      { cid, reply_count: 3, user: user2 },
       '2020-05-05T14:50:00.000Z',
     );
     const parent_id = thread.id;
@@ -146,11 +149,13 @@ describe('Thread', () => {
     await channel.query();
 
     const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage: thread });
-    threadResponses.forEach((reply) =>
-      threadInstance.messagePaginator.ingestItem(
+    threadInstance.messagePaginator.setItems({
+      valueOrFactory: threadResponses.map((reply) =>
         channel.state.formatMessage(reply as unknown as MessageResponse),
       ),
-    );
+      isFirstPage: true,
+      isLastPage: true,
+    });
 
     const { getByText, toJSON } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>

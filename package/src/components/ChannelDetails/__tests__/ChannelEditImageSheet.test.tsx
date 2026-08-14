@@ -9,6 +9,7 @@ import { WithComponents } from '../../../contexts/componentsContext/ComponentsCo
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
 import { ChannelEditImageSheet } from '../components/ChannelEditImageSheet';
@@ -68,15 +69,17 @@ const ActionItemProbe = (props: Probe) => {
   );
 };
 
-const buildChannel = (overrides?: { image?: string }): Channel =>
-  ({
+const buildChannel = (overrides?: { image?: string }): Channel => {
+  const custom = {
+    ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+  };
+  return {
     cid: 'messaging:test',
-    data: {
-      ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
-    },
+    data: { custom },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
-  }) as unknown as Channel;
+    state: generateChannelState({ data: { custom } }),
+  } as unknown as Channel;
+};
 
 const renderSheet = ({
   channel = buildChannel(),

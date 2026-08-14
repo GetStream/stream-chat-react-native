@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FlatList } from 'react-native';
 
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 import type { UserResponse } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -49,9 +49,15 @@ describe('MessageList', () => {
   it('should add new message at bottom of the list', async () => {
     const user1 = generateUser();
     const user2 = generateUser();
+    // Time-ordered seed so the channel opens at its latest set (hasMoreHead=false) and the
+    // scroll-to-bottom button stays hidden — a random-order page can leave it unsettled.
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
-      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
+      messages: [
+        generateMessage({ timestamp: new Date(base), user: user1 }),
+        generateMessage({ timestamp: new Date(base + 1000), user: user1 }),
+      ],
     });
 
     const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
@@ -69,7 +75,9 @@ describe('MessageList', () => {
       </OverlayProvider>,
     );
 
-    const newMessage = generateMessage({ user: user2 });
+    // The message paginator's ingest filter keys on the message's `cid`, so a cid-less message.new
+    // is dropped and never reaches the list. Stamp the channel cid onto the new message.
+    const newMessage = generateMessage({ cid: channel.cid, user: user2 });
     act(() => dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel));
 
     await waitFor(() => {
@@ -269,15 +277,21 @@ describe('MessageList', () => {
   it('should scroll to a message even if out of the loaded window', async () => {
     const user1 = generateUser();
 
-    const mockedLongMessagesList: ReturnType<typeof generateMessage>[] = [];
-    // we need a long enough list to make sure elements aren't preloaded by the underlying FlatList
-    for (let i = 0; i <= 150; i += 1) {
-      mockedLongMessagesList.push(generateMessage({ timestamp: new Date(), user: user1 }));
-    }
-    // could be any message that is not within the initially processed ones
-    const latestMessageText = mockedLongMessagesList[0].text;
-    const { id: targetedMessageId, text: targetedMessageText } =
-      mockedLongMessagesList[mockedLongMessagesList.length - 4];
+    // A long, time-ordered list so a target near the oldest end sits far outside the FlatList's
+    // initially rendered window. Ordered timestamps keep the paginator's position deterministic (a
+    // tight `new Date()` loop yields near-identical timestamps and a scrambled sort order).
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const mockedLongMessagesList = Array.from({ length: 151 }, (_, i) =>
+      generateMessage({
+        id: `${i}`,
+        text: `message-${i}`,
+        timestamp: new Date(base + i * 1000),
+        user: user1,
+      }),
+    );
+    // An old message (near the oldest end) — index 3 lands at index 147 of the newest-first list,
+    // deep outside the ~10 rows the headless FlatList renders on mount.
+    const targetedMessageId = mockedLongMessagesList[3].id;
 
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
@@ -288,6 +302,14 @@ describe('MessageList', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
+
+    // The paginator's focus signal (emitted by jump-to-message) drives the scroll. Spy on the
+    // FlatList's scrollToIndex — a no-op in the headless renderer — to assert the list positions
+    // itself on the far-off target rather than checking rendered rows (v10 scrolls to the target
+    // after render; it no longer seeds it into the initial window).
+    const scrollToIndexMock = jest
+      .spyOn(FlatList.prototype, 'scrollToIndex')
+      .mockImplementation(() => {});
 
     channel.messagePaginator.emitMessageFocusSignal({
       messageId: targetedMessageId,
@@ -306,26 +328,36 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(targetedMessageText as string)).toBeOnTheScreen();
-      expect(() => screen.getByText(latestMessageText as string)).toThrow();
+      expect(scrollToIndexMock).toHaveBeenCalledWith({
+        animated: true,
+        index: 147,
+        viewPosition: 0.5,
+      });
     });
   });
 
-  it("should render the InlineUnreadIndicator when there's unread messages", async () => {
+  it("should render the unread messages notification when there's unread messages", async () => {
     const user1 = generateUser();
     const user2 = generateUser();
+    // Time-ordered messages so the paginator seed reaches its own head/tail (matching a real server
+    // response); a randomly-ordered page leaves hasMore* flags unsettled.
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
     const messages = Array.from({ length: 10 }, (_, i) =>
-      generateMessage({ id: `${i}`, text: `message-${i}` }),
+      generateMessage({ id: `${i}`, text: `message-${i}`, timestamp: new Date(base + i * 1000) }),
     );
-    const read_data = {
-      [user1.id]: {
-        last_read: new Date(),
-        last_read_message_id: '5',
-        unread_messages: 5,
-      },
-    };
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+      messages,
+      // Own read boundary: last read at message '5', five messages unread. The paginator derives its
+      // `unreadStateSnapshot` (the v10 source of truth for unread UI) from this on channel open.
+      read: [
+        {
+          user: user1,
+          last_read: new Date(base + 5000).toISOString(),
+          last_read_message_id: '5',
+          unread_messages: 5,
+        },
+      ] as unknown as NonNullable<Parameters<typeof generateChannelResponse>[0]>['read'],
     });
 
     const chatClient = await getTestClientWithUser({ id: user1.id } as UserResponse);
@@ -333,11 +365,66 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    channel.state = {
-      ...channelInitialState,
-      read: read_data,
-    } as unknown as typeof channel.state;
-    channel.messagePaginator.state.partialNext({ items: messages });
+    // Accessibility enabled so the notification's affordances expose their a11y labels (the SDK skips
+    // the i18n lookup for those when accessibility is off).
+    const { getByTestId, queryByLabelText } = render(
+      <OverlayProvider accessibility={{ enabled: true }}>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    // The sticky unread notification opens from viewability (the last-read message scrolled out of
+    // view with newer messages below). The headless FlatList never fires viewability on its own, so
+    // drive it directly with a window of messages newer than the last-read boundary.
+    act(() => {
+      getByTestId('message-flat-list').props.onViewableItemsChanged({
+        viewableItems: [
+          { item: { message: messages[6] } },
+          { item: { message: messages[7] } },
+          { item: { message: messages[8] } },
+        ],
+      });
+    });
+
+    await waitFor(() => {
+      expect(queryByLabelText('Dismiss unread messages')).toBeTruthy();
+    });
+  });
+
+  it("should render the InlineUnreadIndicator when there's unread messages", async () => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    // Time-ordered messages so the paginator seeds a settled head/tail and the unread boundary is
+    // derived from real created_at ordering (matching a server response).
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const messages = Array.from({ length: 10 }, (_, i) =>
+      generateMessage({ id: `${i}`, text: `message-${i}`, timestamp: new Date(base + i * 1000) }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+      messages,
+      // Own read boundary at message '5': everything created after it is unread-from-another. The
+      // paginator derives its `unreadStateSnapshot` from this on channel open, which drives the
+      // inline separator above the first unread row — independent of viewability (unlike the floating
+      // notification test above, which must scroll the last-read message out of view).
+      read: [
+        {
+          user: user1,
+          last_read: new Date(base + 5000).toISOString(),
+          last_read_message_id: '5',
+          unread_messages: 4,
+        },
+      ] as unknown as NonNullable<Parameters<typeof generateChannelResponse>[0]>['read'],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: user1.id } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
 
     const { queryByLabelText } = render(
       <OverlayProvider>
@@ -369,9 +456,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    channel.state = {
-      ...channelInitialState,
-    } as unknown as typeof channel.state;
+    channel.state.partialNext({ read: {} });
     channel.messagePaginator.state.partialNext({ items: messages });
 
     const { queryByLabelText } = render(
@@ -391,8 +476,14 @@ describe('MessageList', () => {
 
   it('should call markRead function when message.new event is dispatched and new messages are received', async () => {
     const user = generateUser();
+    // Seed a small initial page so the paginator has a live head interval; the source's markRead gate
+    // (`!hasReadLastMessage`) compares the latest loaded message id against the own read boundary.
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user })],
+      messages: Array.from({ length: 3 }, (_, i) =>
+        generateMessage({ id: `${i}`, timestamp: new Date(base + i * 1000), user }),
+      ),
     });
 
     const chatClient = await getTestClientWithUser({ id: user.id } as UserResponse);
@@ -415,6 +506,11 @@ describe('MessageList', () => {
       </OverlayProvider>,
     );
 
+    // Auto-mark-read only fires while the user is viewing the live (latest) window. Viewability — the
+    // signal that sets this — never fires in the headless renderer, so mark it explicitly.
+    act(() => {
+      channel.messagePaginator.setViewingLive(true);
+    });
     act(() => dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel));
 
     await waitFor(() => {
@@ -439,9 +535,7 @@ describe('MessageList', () => {
 
     const targetedMessage = messages[15].id;
 
-    channel.state = {
-      ...channelInitialState,
-    } as unknown as typeof channel.state;
+    channel.state.partialNext({ read: {} });
     channel.messagePaginator.state.partialNext({ items: messages });
 
     const flatListRefMock = jest
@@ -511,9 +605,15 @@ describe('MessageList pagination', () => {
     staleChannelState?: boolean;
   } = {}) => {
     const user1 = generateUser();
+    // Time-ordered so the seeded page reaches its own head (hasMoreHead=false): the channel opens at
+    // the latest set, so the scroll-to-bottom button starts hidden (a random-order page leaves
+    // hasMoreHead unsettled and the button would show on open).
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+      messages: Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ text: `message-${i}`, timestamp: new Date(base + i * 1000) }),
+      ),
     });
 
     const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
@@ -522,14 +622,16 @@ describe('MessageList pagination', () => {
     await channel.watch();
 
     if (staleChannelState) {
-      channel.state = {
-        ...channelInitialState,
+      channel.state.partialNext({
         members: Object.fromEntries(
           Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
         ),
-        messageSets: [{ isCurrent: true, isLatest: true }],
-      } as unknown as typeof channel.state;
+      });
+      // hasMoreHead:true = the loaded window is NOT the latest set (the user jumped to an older
+      // window), so "go to latest" reloads the channel (loadLatestMessages) instead of just
+      // scrolling — that reload is what these accessibility-action tests assert.
       channel.messagePaginator.state.partialNext({
+        hasMoreHead: true,
         items: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
       });
     }
@@ -644,13 +746,11 @@ describe('MessageList pagination', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    channel.state = {
-      ...channelInitialState,
+    channel.state.partialNext({
       members: Object.fromEntries(
         Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
       ),
-      messageSets: [{ isCurrent: true, isLatest: true }],
-    } as unknown as typeof channel.state;
+    });
     channel.messagePaginator.state.partialNext({
       items: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
     });

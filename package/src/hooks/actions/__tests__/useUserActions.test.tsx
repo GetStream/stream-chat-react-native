@@ -18,14 +18,14 @@ describe('useUserActions', () => {
   const muteUser = jest.fn();
   const unmuteUser = jest.fn();
   const blockUser = jest.fn();
-  const unBlockUser = jest.fn();
+  const unblockUser = jest.fn();
   const addNotification = jest.fn();
 
   const setUpMocks = () => {
     muteUser.mockResolvedValue(undefined);
     unmuteUser.mockResolvedValue(undefined);
     blockUser.mockResolvedValue(undefined);
-    unBlockUser.mockResolvedValue(undefined);
+    unblockUser.mockResolvedValue(undefined);
 
     jest.spyOn(ChatContext, 'useChatContext').mockImplementation(
       () =>
@@ -33,7 +33,7 @@ describe('useUserActions', () => {
           client: {
             blockUser,
             muteUser,
-            unBlockUser,
+            unblockUser,
             unmuteUser,
           },
         }) as unknown as ChatContext.ChatContextValue,
@@ -199,7 +199,7 @@ describe('useUserActions', () => {
 
       await result.current.unblockUser({ onSuccess });
 
-      expect(unBlockUser).toHaveBeenCalledWith('target-user-id');
+      expect(unblockUser).toHaveBeenCalledWith('target-user-id');
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(addNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -213,7 +213,7 @@ describe('useUserActions', () => {
     });
 
     it('emits an error notification when the client rejects', async () => {
-      unBlockUser.mockRejectedValueOnce(new Error('boom'));
+      unblockUser.mockRejectedValueOnce(new Error('boom'));
       const user = createUser();
       const { result } = renderHook(() => useUserActions(user));
 
@@ -244,7 +244,7 @@ describe('useUserActions', () => {
       expect(muteUser).not.toHaveBeenCalled();
       expect(unmuteUser).not.toHaveBeenCalled();
       expect(blockUser).not.toHaveBeenCalled();
-      expect(unBlockUser).not.toHaveBeenCalled();
+      expect(unblockUser).not.toHaveBeenCalled();
       expect(addNotification).not.toHaveBeenCalled();
     });
   });

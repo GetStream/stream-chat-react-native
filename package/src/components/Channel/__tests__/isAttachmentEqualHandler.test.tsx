@@ -107,6 +107,9 @@ describe('isAttachmentEqualHandler', () => {
         chatClient,
         {
           ...messages[0],
+          // v10 routes message.updated through channel.messagePaginator.ingestItem, whose match
+          // filter keys on cid; the event message must carry it or the update is dropped.
+          cid: channel.cid,
           attachments: [
             { customField: 'custom-field-2', type: 'test' } as AttachmentWithCustomField,
           ],

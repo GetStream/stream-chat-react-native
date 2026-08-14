@@ -155,6 +155,10 @@ describe('AutoCompleteInput', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('auto-complete-text-input').props.value).toBe(text);
+      // onChangeText defers the textComposer sync via setTimeout(0); wait for it to fully settle
+      // before clearing, otherwise a still-pending flush re-syncs the display after clearState
+      // (an order-dependent flake that only surfaces when earlier tests shift the timing).
+      expect(channel.messageComposer.textComposer.text).toBe(text);
     });
 
     act(() => {

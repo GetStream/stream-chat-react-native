@@ -96,14 +96,22 @@ describe('useChannelRequestHandlers', () => {
     renderHook(() => useChannelRequestHandlers({ channel, doUpdateMessageRequest }));
 
     const result = await getHandlers()?.updateMessageRequest?.({ localMessage });
-    expect(doUpdateMessageRequest).toHaveBeenCalledWith('messaging:test', localMessage, undefined);
+    // The handler now forwards the update-message payload (id + the new-message payload derived
+    // from the local message) rather than the raw LocalMessage.
+    expect(doUpdateMessageRequest).toHaveBeenCalledWith(
+      'messaging:test',
+      { id: 'm1', message: { id: 'm1', text: 'hi' } },
+      undefined,
+    );
     expect(result).toEqual({ message: { id: 'updated' } });
   });
 
   it('clears the managed update handler when its override is removed, preserving unrelated handlers', () => {
     const { channel, configState, getHandlers } = createChannel();
-    const markReadRequest = jest.fn();
-    configState.partialNext({ requestHandlers: { markReadRequest } });
+    // mark-read is now a hook-managed handler, so use delete (which the hook never touches) as the
+    // "registered elsewhere" handler that must survive a re-run.
+    const deleteMessageRequest = jest.fn();
+    configState.partialNext({ requestHandlers: { deleteMessageRequest } });
 
     const doUpdateMessageRequest = jest.fn();
     const { rerender } = renderHook(
@@ -123,6 +131,6 @@ describe('useChannelRequestHandlers', () => {
     // the send handler is always registered, independent of overrides.
     expect(getHandlers()?.sendMessageRequest).toBeDefined();
     // an unrelated handler registered elsewhere must be preserved.
-    expect(getHandlers()?.markReadRequest).toBe(markReadRequest);
+    expect(getHandlers()?.deleteMessageRequest).toBe(deleteMessageRequest);
   });
 });

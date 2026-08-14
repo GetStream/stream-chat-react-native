@@ -3,6 +3,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { StateStore } from 'stream-chat';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../../contexts';
@@ -63,7 +64,7 @@ const renderRow = ({
           value={
             {
               client: {
-                mutedUsers,
+                mutedUsersStore: new StateStore({ mutedUsers }),
                 on: () => ({ unsubscribe: () => undefined }),
                 userID: currentUserId,
               },
