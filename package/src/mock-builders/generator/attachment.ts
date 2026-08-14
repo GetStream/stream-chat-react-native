@@ -46,7 +46,9 @@ export const generateImageUploadPreview = (a?: Partial<UploadPreview>): UploadPr
   ...a,
 });
 
-export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => ({
+export const generateAudioAttachment = (
+  a?: Partial<Attachment> & { duration?: number; waveform_data?: number[] },
+): Attachment => ({
   asset_url: 'http://www.jackblack.com/tribute.mp3',
   custom: {},
   image_url,

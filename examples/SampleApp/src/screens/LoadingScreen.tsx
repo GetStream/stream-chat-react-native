@@ -3,6 +3,8 @@ import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-nativ
 
 import { useTheme } from 'stream-chat-react-native';
 
+import type { StreamThemeWithColors } from '../theme/AppTheme';
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -13,7 +15,7 @@ const styles = StyleSheet.create({
 
 export const LoadingScreen: React.FC = () => {
   const colorScheme = useColorScheme();
-  const { theme } = useTheme();
+  const { theme } = useTheme() as unknown as { theme: StreamThemeWithColors };
 
   return (
     <View

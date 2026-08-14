@@ -1,12 +1,12 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 import type { UserResponse } from 'stream-chat';
 
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
-import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { mergeThemes, ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
@@ -23,6 +23,8 @@ import { MessageList } from '../../../MessageList/MessageList';
 import { MessageTextContainer } from '../MessageTextContainer';
 
 describe('MessageTextContainer', () => {
+  const lightTheme = mergeThemes({ scheme: 'light' });
+
   afterEach(cleanup);
 
   it('should render message text container', async () => {
@@ -109,6 +111,22 @@ describe('MessageTextContainer', () => {
 
     await waitFor(() => {
       expect(getByText(message.i18n.no_text)).toBeTruthy();
+    });
+  });
+
+  it('renders our own message text with the outgoing chat text colour', async () => {
+    const message = generateMessage({ user: generateStaticUser(1) });
+
+    const { getByText } = render(
+      <ThemeProvider>
+        <MessageTextContainer isMyMessage message={message} />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(StyleSheet.flatten(getByText(message.text as string).props.style)?.color).toBe(
+        lightTheme.semantics.chatTextOutgoing,
+      );
     });
   });
 });

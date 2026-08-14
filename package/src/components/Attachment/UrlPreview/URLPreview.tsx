@@ -68,10 +68,6 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
 
   const { icons } = useComponentsContext();
 
-  const {
-    theme: { semantics },
-  } = useTheme();
-
   const { image_url, og_scrape_url, text, thumb_url, title, type } = attachment;
 
   const {
@@ -156,7 +152,7 @@ const URLPreviewWithContext = (props: URLPreviewPropsWithContext) => {
           </Text>
         ) : null}
         <View style={[styles.linkPreview, linkPreview, stylesProp.linkPreview]}>
-          <icons.Link height={12} width={12} stroke={semantics.chatTextIncoming} />
+          <icons.Link height={12} width={12} stroke={styles.linkPreviewText.color} />
           <Text
             numberOfLines={1}
             style={[styles.linkPreviewText, linkPreviewText, stylesProp.linkPreviewText]}
@@ -267,13 +263,13 @@ const useStyles = () => {
           padding: primitives.spacingSm,
         },
         title: {
-          color: semantics.chatTextIncoming,
+          color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
           fontSize: primitives.typographyFontSizeSm,
           fontWeight: primitives.typographyFontWeightSemiBold,
           lineHeight: primitives.typographyLineHeightTight,
         },
         description: {
-          color: semantics.chatTextIncoming,
+          color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
           fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightTight,
@@ -284,7 +280,7 @@ const useStyles = () => {
           gap: primitives.spacingXxs,
         },
         linkPreviewText: {
-          color: semantics.chatTextIncoming,
+          color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
           fontSize: primitives.typographyFontSizeXs,
           fontWeight: primitives.typographyFontWeightRegular,
           lineHeight: primitives.typographyLineHeightTight,

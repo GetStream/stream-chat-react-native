@@ -96,7 +96,11 @@ export const PollAllOptions = ({
 export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
   const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
   const { t } = useTranslationContext();
-  const styles = useStyles();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
+  // `forceIncoming` is set on the full-options surface, which is a neutral card
+  // rather than a bubble - so it wins over poll ownership.
+  const isIncoming = !isPollCreatedByClient || !!forceIncoming;
+  const styles = useStyles({ isIncoming });
 
   const relevantVotes = useMemo(
     () => latestVotesByOption?.[option.id] || [],
@@ -115,21 +119,17 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
       semantics,
     },
   } = useTheme();
-  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
+  const unFilledColor = isIncoming
+    ? semantics.chatPollProgressTrackIncoming
+    : semantics.chatPollProgressTrackOutgoing;
 
-  const unFilledColor =
-    isPollCreatedByClient && !forceIncoming
-      ? semantics.chatPollProgressTrackOutgoing
-      : semantics.chatPollProgressTrackIncoming;
-
-  const filledColor =
-    isPollCreatedByClient && !forceIncoming
-      ? semantics.chatPollProgressFillOutgoing
-      : semantics.chatPollProgressFillIncoming;
+  const filledColor = isIncoming
+    ? semantics.chatPollProgressFillIncoming
+    : semantics.chatPollProgressFillOutgoing;
 
   return (
     <View style={[styles.container, container]}>
-      <VoteButton option={option} />
+      <VoteButton forceIncoming={forceIncoming} option={option} />
       <View style={[styles.info, info]}>
         <View style={[styles.header, header]}>
           <Text ellipsizeMode='tail' numberOfLines={2} style={[styles.text, text]}>
@@ -169,7 +169,7 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
   );
 };
 
-export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
+export const VoteButton = ({ forceIncoming, onPress, option }: PollVoteButtonProps) => {
   const { icons } = useComponentsContext();
   const { message, poll } = usePollContext();
   const { isClosed, ownVotesByOptionId } = usePollState();
@@ -178,7 +178,8 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
     theme: { semantics },
   } = useTheme();
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
-  const styles = useStyles();
+  const isIncoming = !isPollCreatedByClient || !!forceIncoming;
+  const styles = useStyles({ isIncoming });
 
   const {
     theme: {
@@ -218,9 +219,9 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
         {
           borderWidth: hasVote ? 0 : 1,
           backgroundColor: hasVote ? semantics.accentPrimary : 'transparent',
-          borderColor: isPollCreatedByClient
-            ? semantics.chatBorderOnChatOutgoing
-            : semantics.chatBorderOnChatIncoming,
+          borderColor: isIncoming
+            ? semantics.chatBorderOnChatIncoming
+            : semantics.chatBorderOnChatOutgoing,
         },
         voteButtonContainer,
       ]}
@@ -230,7 +231,7 @@ export const VoteButton = ({ onPress, option }: PollVoteButtonProps) => {
   ) : null;
 };
 
-const useStyles = () => {
+const useStyles = ({ isIncoming }: { isIncoming: boolean }) => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -248,7 +249,7 @@ const useStyles = () => {
         minWidth: 0,
       },
       text: {
-        color: semantics.chatTextIncoming,
+        color: isIncoming ? semantics.chatTextIncoming : semantics.chatTextOutgoing,
         flexGrow: 1,
         flexShrink: 1,
         fontSize: primitives.typographyFontSizeSm,
@@ -270,7 +271,7 @@ const useStyles = () => {
         minHeight: 20,
       },
       votesText: {
-        color: semantics.chatTextIncoming,
+        color: isIncoming ? semantics.chatTextIncoming : semantics.chatTextOutgoing,
         fontSize: primitives.typographyFontSizeXs,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
@@ -287,7 +288,7 @@ const useStyles = () => {
         width: 24,
       },
     });
-  }, [semantics]);
+  }, [isIncoming, semantics]);
 };
 
 const useAllOptionStyles = () => {

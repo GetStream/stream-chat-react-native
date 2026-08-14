@@ -99,6 +99,7 @@ export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageP
 > &
   Pick<MessagesContextValue, 'quotedMessage'> & {
     isMyMessage: boolean;
+    isParentMessageMine?: boolean;
     onDismiss?: () => void;
     mode: 'reply' | 'edit';
     // This is temporary for the MessageContent Component to style the Reply component
@@ -116,6 +117,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   const { t } = useTranslationContext();
   const {
     isMyMessage,
+    isParentMessageMine = isMyMessage,
     ImageComponent,
     message: messageFromContext,
     mode,
@@ -135,7 +137,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       },
     },
   } = useTheme();
-  const styles = useStyles();
+  const styles = useStyles({ isMyMessage: isParentMessageMine });
 
   const title = useMemo(
     () =>
@@ -165,7 +167,8 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
             {title}
           </Text>
 
-          <ReplyMessageView message={quotedMessage} isMyMessage={isMyMessage} />
+          {/* `isMyMessage` here selects which side to paint, so it takes the surface. */}
+          <ReplyMessageView message={quotedMessage} isMyMessage={isParentMessageMine} />
         </View>
         <View style={[styles.rightContainer, rightContainer, stylesProp?.rightContainer]}>
           <RightContent ImageComponent={ImageComponent} message={quotedMessage} />
@@ -187,6 +190,7 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
   const {
     styles: prevStyles,
     isMyMessage: prevIsMyMessage,
+    isParentMessageMine: prevIsParentMessageMine,
     mode: prevMode,
     quotedMessage: prevQuotedMessage,
     onDismiss: prevOnDismiss,
@@ -194,6 +198,7 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
   const {
     styles: nextStyles,
     isMyMessage: nextIsMyMessage,
+    isParentMessageMine: nextIsParentMessageMine,
     mode: nextMode,
     quotedMessage: nextQuotedMessage,
     onDismiss: nextOnDismiss,
@@ -206,6 +211,12 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
   const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
 
   if (!isMyMessageEqual) {
+    return false;
+  }
+
+  const isParentMessageMineEqual = prevIsParentMessageMine === nextIsParentMessageMine;
+
+  if (!isParentMessageMineEqual) {
     return false;
   }
 
@@ -275,7 +286,7 @@ const ReplyComposerAnnouncer = ({
 };
 
 export const Reply = (props: ReplyProps) => {
-  const { message: messageFromContext } = useMessageContext();
+  const { isMyMessage: isMyMessageFromContext, message: messageFromContext } = useMessageContext();
   const { client } = useChatContext();
   const { ImageComponent } = useComponentsContext();
 
@@ -289,7 +300,10 @@ export const Reply = (props: ReplyProps) => {
     ? (messageFromContext.quoted_message as MessagesContextValue['quotedMessage'])
     : quotedMessageFromComposer;
 
-  const isMyMessage = client.user?.id === quotedMessage?.user?.id;
+  // `mode='edit'` supplies the edited message via `props.quotedMessage` and leaves
+  // the composer's quoted message empty, so ownership must consider both.
+  const isMyMessage = client.user?.id === (props.quotedMessage ?? quotedMessage)?.user?.id;
+  const isParentMessageMine = messageFromContext ? !!isMyMessageFromContext : undefined;
 
   // Composer header passes `onDismiss`; the in-message quoted-reply renderer
   // does not. Only the composer-preview path pays for announcement work.
@@ -305,6 +319,7 @@ export const Reply = (props: ReplyProps) => {
       <MemoizedReply
         ImageComponent={ImageComponent}
         isMyMessage={isMyMessage}
+        isParentMessageMine={isParentMessageMine}
         message={messageFromContext}
         quotedMessage={quotedMessage}
         {...props}
@@ -313,18 +328,10 @@ export const Reply = (props: ReplyProps) => {
   );
 };
 
-const useStyles = () => {
+const useStyles = ({ isMyMessage = false }: { isMyMessage?: boolean } = {}) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const messageComposer = useMessageComposer();
-  const { quotedMessage: quotedMessageFromComposer } = useStateStore(
-    messageComposer.state,
-    messageComposerStateStoreSelector,
-  );
-  const { client } = useChatContext();
-
-  const isMyMessage = client.user?.id === quotedMessageFromComposer?.user?.id;
   const isRTL = I18nManager.isRTL;
 
   return useMemo(

@@ -215,6 +215,54 @@ describe('Attachment', () => {
     isSoundPackageAvailable.mockReturnValue(false);
   });
 
+  it('uses the outgoing audio player background on our own message', async () => {
+    const { isSoundPackageAvailable } = require('../../../native');
+    isSoundPackageAvailable.mockReturnValue(true);
+    const attachment = generateAudioAttachment({ duration: 10, waveform_data: [0.2, 0.6] });
+    const message = generateMessage({ attachments: [attachment, generateAudioAttachment()] });
+
+    const { getByLabelText } = render(
+      getAttachmentComponent(
+        { attachment },
+        { isMyMessage: true, message, messageHasOnlySingleAttachment: false },
+      ),
+    );
+
+    await waitFor(() => {
+      const style = StyleSheet.flatten(getByLabelText('audio-attachment-preview').props.style);
+      expect(style.backgroundColor).toBe(lightTheme.semantics.chatBgAttachmentOutgoing);
+    });
+    isSoundPackageAvailable.mockReturnValue(false);
+  });
+
+  it('resolves the audio duration label colour from the message side', async () => {
+    const { isSoundPackageAvailable } = require('../../../native');
+    isSoundPackageAvailable.mockReturnValue(true);
+    const attachment = generateAudioAttachment({ duration: 10, waveform_data: [0.2, 0.6] });
+    const message = generateMessage({ attachments: [attachment] });
+
+    const { getByLabelText } = render(
+      getAttachmentComponent(
+        { attachment },
+        { isMyMessage: true, message, messageHasOnlySingleAttachment: false },
+      ),
+    );
+
+    // NOTE: `StableDurationLabel` applies its own `visibleStyle` last, which
+    // always sets `color` from the playback state - so this asserts the wiring
+    // reaching the label, not the final rendered pixel. See the reserve label.
+    await waitFor(() => {
+      expect(getByLabelText('Progress Duration').props.style).toEqual(
+        expect.arrayContaining([
+          expect.arrayContaining([
+            expect.objectContaining({ color: lightTheme.semantics.chatTextOutgoing }),
+          ]),
+        ]),
+      );
+    });
+    isSoundPackageAvailable.mockReturnValue(false);
+  });
+
   it('should render UrlPreview component if attachment has title_link or og_scrape_url', async () => {
     const attachment = generateImageAttachment({
       og_scrape_url: uuidv4(),

@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "תפסיק/תפסיקי לקבל הודעות מ-{{ name }}. ניתן להצטרף בחזרה בכל עת.",
   "group": "הקבוצה",
   "No members found": "לא נמצאו חברים",
-  "a11y/Search members": "חיפוש חברים"
+  "a11y/Search members": "חיפוש חברים",
+  "Message copied to clipboard": "ההודעה הועתקה ללוח",
+  "Failed to copy message": "העתקת ההודעה נכשלה"
 }

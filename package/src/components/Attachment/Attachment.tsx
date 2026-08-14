@@ -256,7 +256,7 @@ const useAudioAttachmentStyles = () => {
           : semantics.chatBorderOnChatIncoming,
       },
       durationText: {
-        color: semantics.chatTextIncoming,
+        color: isMyMessage ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
         fontWeight: primitives.typographyFontWeightSemiBold,
       },
       leftContainer: {

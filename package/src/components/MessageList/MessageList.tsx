@@ -8,6 +8,7 @@ import {
   ScrollViewProps,
   StyleSheet,
   View,
+  useColorScheme,
   ViewabilityConfig,
   ViewToken,
 } from 'react-native';
@@ -382,11 +383,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   });
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
+  const scheme = useColorScheme();
 
   const modifiedTheme = useMemo(
-    () => mergeThemes({ style: myMessageTheme, theme }),
+    () => mergeThemes({ scheme, style: myMessageTheme, theme }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [myMessageThemeString, theme],
+    [myMessageThemeString, scheme, theme],
   );
 
   /**

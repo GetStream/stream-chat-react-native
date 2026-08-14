@@ -22,10 +22,10 @@ exports[`MessageAuthor should render message author 1`] = `
             "width": 32,
           },
           {
-            "backgroundColor": "#006970",
+            "backgroundColor": "#a9e4ea",
           },
           {
-            "borderColor": "rgba(255, 255, 255, 0.2)",
+            "borderColor": "rgba(26, 27, 37, 0.1)",
             "borderWidth": 1,
           },
           undefined,

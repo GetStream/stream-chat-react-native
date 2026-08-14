@@ -89,7 +89,26 @@ export const useMessageActionHandlers = ({
     if (!message.text) {
       return;
     }
-    NativeHandlers.setClipboardString(translatedMessage?.text ?? message.text);
+    NativeHandlers.setClipboardString(translatedMessage?.text ?? message.text, {
+      onFailure: (error) => {
+        addNotification({
+          message: t('Failed to copy message'),
+          options: {
+            ...getNotificationErrorOptions(error),
+            severity: 'error',
+            type: 'clipboard:message:copy:failed',
+          },
+          origin: { context: { message }, emitter: 'MessageActions' },
+        });
+      },
+      onSuccess: () => {
+        addNotification({
+          message: t('Message copied to clipboard'),
+          options: { severity: 'success', type: 'clipboard:message:copy:success' },
+          origin: { context: { message }, emitter: 'MessageActions' },
+        });
+      },
+    });
   });
 
   const handleDeleteMessage = useStableCallback(() => {

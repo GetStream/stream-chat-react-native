@@ -5,7 +5,7 @@ import type { DeepPartial, Theme } from 'stream-chat-expo';
 
 export const useStreamChatTheme = () => {
   const colorScheme = useColorScheme();
-  const getChatStyle = (): DeepPartial<Theme> => ({
+  const getChatStyle = (): DeepPartial<Theme> & { colors: Record<string, string> } => ({
     avatar: {
       image: {
         height: 32,
