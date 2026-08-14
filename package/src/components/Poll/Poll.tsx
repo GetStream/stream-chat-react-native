@@ -6,6 +6,7 @@ import { PollOptionResponseData as PollOptionClass } from 'stream-chat';
 import { PollOption, ShowAllOptionsButton } from './components';
 import { PollUIStateProvider } from './contexts/PollUIStateContext';
 
+import { useIsPollCreatedByCurrentUser } from './hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from './hooks/usePollState';
 
 import {
@@ -105,6 +106,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
@@ -114,14 +116,14 @@ const useStyles = () => {
       },
       headerContainer: { gap: primitives.spacingXxs },
       headerSubtitle: {
-        color: semantics.chatTextIncoming,
+        color: isPollCreatedByClient ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
         fontSize: primitives.typographyFontSizeSm,
         fontWeight: primitives.typographyFontWeightRegular,
         lineHeight: primitives.typographyLineHeightTight,
         textAlign: 'left',
       },
       headerTitle: {
-        color: semantics.chatTextIncoming,
+        color: isPollCreatedByClient ? semantics.chatTextOutgoing : semantics.chatTextIncoming,
         fontSize: primitives.typographyFontSizeMd,
         fontWeight: primitives.typographyFontWeightSemiBold,
         lineHeight: primitives.typographyLineHeightNormal,
@@ -131,5 +133,5 @@ const useStyles = () => {
         gap: primitives.spacingMd,
       },
     });
-  }, [semantics]);
+  }, [isPollCreatedByClient, semantics]);
 };

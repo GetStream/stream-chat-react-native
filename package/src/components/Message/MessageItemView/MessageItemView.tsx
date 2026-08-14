@@ -171,7 +171,6 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
 
   const {
     isMessageErrorType,
-    isMessageReceivedOrErrorType,
     isMessageTypeDeleted,
     isVeryLastMessage,
     messageGroupedSingleOrBottom,
@@ -200,7 +199,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     backgroundColor = 'transparent';
   } else if (hasStandaloneGiphyOrImgur) {
     backgroundColor = 'transparent';
-  } else if (isMessageReceivedOrErrorType) {
+  } else if (!isMyMessage) {
     backgroundColor = semantics.chatBgIncoming;
   }
 

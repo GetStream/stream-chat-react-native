@@ -75,6 +75,17 @@ const RefreshingProbe = () => {
   return <Text testID='refreshing'>{`${refreshing}`}</Text>;
 };
 
+/**
+ * Probe that captures the context `refreshList` (the public, non-forced pull-to-refresh handler) so a
+ * test can invoke it directly.
+ */
+let capturedRefreshList: (() => void | Promise<void>) | undefined;
+const RefreshListProbe = () => {
+  const { refreshing, refreshList } = useChannelsContext();
+  capturedRefreshList = refreshList;
+  return <Text testID='refreshing'>{`${refreshing}`}</Text>;
+};
+
 const ChannelPreviewContent = ({ unread }: { unread?: number }) => (
   <Text testID='preview-unread'>{`${unread}`}</Text>
 );
@@ -819,12 +830,15 @@ describe('ChannelList', () => {
     });
 
     describe('connection.changed', () => {
-      it('should keep background reconnection refreshes debounced and out of pull-to-refresh UI', async () => {
+      it('should force reconnection refreshes past the pull-to-refresh debounce while keeping them out of the refreshing UI', async () => {
+        // Regression guard: a reconnect is the sole trigger that re-watches channels on the fresh
+        // socket, so it must bypass the 5s pull-to-refresh throttle (`force`). Without the bypass a
+        // second reconnect landing inside the debounce window is dropped and its channels stay
+        // un-watched (frozen last message / unread) until the next reconnect > 5s later.
         useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const deferredPromise = new DeferredPromise();
-        const dateNowSpy = jest.spyOn(Date, 'now');
-        dateNowSpy.mockReturnValueOnce(0);
-        dateNowSpy.mockReturnValue(6000);
+        // Freeze the clock at t=0 for the whole mount so `lastRefresh` is seeded to 0 regardless of
+        // how many `Date.now()` calls the render makes.
+        const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(0);
 
         render(
           <Chat client={chatClient}>
@@ -834,27 +848,96 @@ describe('ChannelList', () => {
           </Chat>,
         );
 
+        // The probe only renders once the mount query populates the list.
         await waitFor(() => {
           expect(screen.getByTestId('refreshing').children[0]).toBe('false');
         });
 
-        chatClient.queryChannels = jest.fn(
-          () => deferredPromise.promise,
-        ) as typeof chatClient.queryChannels;
+        // Advance the clock 6s past mount so both reconnects observe t=6000.
+        dateNowSpy.mockReturnValue(6000);
 
+        const channelManager = chatClient.channelManager;
+        // Spy (not replace) so reconnect queries still hydrate through the mocked axios response and
+        // keep the list — and therefore the refreshing probe — mounted.
+        const querySpy = jest.spyOn(chatClient, 'queryChannels');
+
+        // Reconnect #1 at t=6000, i.e. 6s after mount → outside the debounce window.
         act(() => dispatchConnectionChangedEvent(chatClient, false));
         act(() => dispatchConnectionChangedEvent(chatClient, true));
-
         await waitFor(() => {
-          expect(chatClient.queryChannels).toHaveBeenCalled();
+          expect(querySpy).toHaveBeenCalledTimes(1);
+        });
+        // Let query #1 settle so the ChannelManager's in-flight guard (isLoading) clears; otherwise it,
+        // not the debounce, would be what drops the second query.
+        await waitFor(() => {
+          expect(
+            channelManager.state.getLatestValue().paginators[0].state.getLatestValue().isLoading,
+          ).toBe(false);
         });
 
+        // Reconnect #2 at t=6000, i.e. 0ms after reconnect #1 → inside the debounce window. It fires a
+        // fresh query only because reconnection refreshes are forced past the throttle.
+        act(() => dispatchConnectionChangedEvent(chatClient, false));
         act(() => dispatchConnectionChangedEvent(chatClient, true));
+        await waitFor(() => {
+          expect(querySpy).toHaveBeenCalledTimes(2);
+        });
 
-        expect(chatClient.queryChannels).toHaveBeenCalledTimes(1);
+        // Background reconnection refreshes never surface in the pull-to-refresh UI.
         expect(screen.getByTestId('refreshing').children[0]).toBe('false');
 
-        deferredPromise.resolve([testChannel1]);
+        await waitFor(() => {
+          expect(
+            channelManager.state.getLatestValue().paginators[0].state.getLatestValue().isLoading,
+          ).toBe(false);
+        });
+        dateNowSpy.mockRestore();
+      });
+    });
+
+    describe('refreshList (pull-to-refresh)', () => {
+      it('should throttle a non-forced refresh that lands within the retry interval', async () => {
+        // Counterpart to the forced reconnect above: the public `refreshList` is NOT forced, so its
+        // 5s debounce must still hold — a second pull within the window of the last successful refresh
+        // is a no-op and fires no query.
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+        const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(0); // mount seeds `lastRefresh` to 0
+
+        render(
+          <Chat client={chatClient}>
+            <WithComponents overrides={{ ChannelPreview: RefreshListProbe }}>
+              <ChannelList {...props} />
+            </WithComponents>
+          </Chat>,
+        );
+
+        await waitFor(() => {
+          expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+        });
+
+        const channelManager = chatClient.channelManager;
+        const querySpy = jest.spyOn(chatClient, 'queryChannels');
+
+        // First pull at t=6000 (6s after mount → outside the window) fires a query.
+        dateNowSpy.mockReturnValue(6000);
+        await act(async () => {
+          await capturedRefreshList?.();
+        });
+        await waitFor(() => {
+          expect(querySpy).toHaveBeenCalledTimes(1);
+        });
+        await waitFor(() => {
+          expect(
+            channelManager.state.getLatestValue().paginators[0].state.getLatestValue().isLoading,
+          ).toBe(false);
+        });
+
+        // Second pull at t=6000 (0ms later → inside the window) is throttled: no additional query.
+        await act(async () => {
+          await capturedRefreshList?.();
+        });
+        expect(querySpy).toHaveBeenCalledTimes(1);
+
         dateNowSpy.mockRestore();
       });
     });

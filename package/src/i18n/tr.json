@@ -465,5 +465,7 @@
   "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": "{{ name }} kanalından mesaj almayı bırakacaksınız. İstediğiniz zaman tekrar katılabilirsiniz.",
   "group": "grup",
   "No members found": "Üye bulunamadı",
-  "a11y/Search members": "Üye ara"
+  "a11y/Search members": "Üye ara",
+  "Message copied to clipboard": "Mesaj panoya kopyalandı",
+  "Failed to copy message": "Mesaj kopyalanamadı"
 }

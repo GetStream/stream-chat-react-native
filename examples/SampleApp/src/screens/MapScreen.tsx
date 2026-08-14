@@ -145,7 +145,11 @@ export const MapScreen = ({ route }: MapScreenProps) => {
   );
 
   const { isLiveLocationStopped, locationResponse } = useHandleLiveLocationEvents({
-    channel,
+    // `channel` is guaranteed to be set in context before navigating to this
+    // screen (the map is opened from a message's shared location), and the hook
+    // dereferences it directly, so a non-null assertion matches the runtime
+    // contract here.
+    channel: channel!,
     messageId: shared_location.message_id,
     onLocationUpdate,
   });
@@ -198,7 +202,7 @@ export const MapScreen = ({ route }: MapScreenProps) => {
             </View>
           </Marker>
         ) : (
-          <Marker coordinate={initialRegion} ref={markerRef} pinColor={accent_blue} />
+          <Marker coordinate={initialRegion} ref={markerRef} pinColor={accent_blue as string} />
         )}
       </MapView>
       <MapScreenFooter

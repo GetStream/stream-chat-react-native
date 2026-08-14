@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native",
   "description": "The official React Native SDK for Stream Chat, a service for building chat applications",
-  "version": "9.7.2",
+  "version": "9.7.6",
   "homepage": "https://www.npmjs.com/package/stream-chat-react-native",
   "author": {
     "company": "Stream.io Inc",
@@ -78,11 +78,14 @@
     }
   },
   "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "prepack": "bash ../scripts/sync-shared-native.sh native-package && cp ../../README.md .",
     "postpack": "rm README.md && bash ../scripts/clean-shared-native-copies.sh native-package"
   },
   "devDependencies": {
-    "react-native": "0.86.0"
+    "@stream-io/typescript-config": "workspace:^",
+    "react-native": "0.86.0",
+    "typescript": "6.0.3"
   },
   "codegenConfig": {
     "name": "StreamChatReactNativeSpec",

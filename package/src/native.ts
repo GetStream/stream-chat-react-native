@@ -88,7 +88,16 @@ type SaveFileOptions = {
 };
 type SaveFile = (options: SaveFileOptions) => Promise<string> | never;
 
-type SetClipboardString = (text: string) => Promise<void> | never;
+type SetClipboardStringOptions = {
+  /** Invoked when writing to the clipboard fails. */
+  onFailure?: (error: unknown) => void;
+  /** Invoked after the text has been handed to the clipboard successfully. */
+  onSuccess?: () => void;
+};
+// TODO(next-major): make this handler async and return the write outcome directly.
+// It's kept synchronous (void) for backwards compatibility, so success/failure are
+// reported via the `onSuccess`/`onFailure` callbacks instead of a Promise.
+type SetClipboardString = (text: string, options?: SetClipboardStringOptions) => void;
 
 type ShareOptions = {
   type?: string;

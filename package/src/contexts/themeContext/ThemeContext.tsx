@@ -39,7 +39,11 @@ export const mergeThemes = (params: MergedThemesParams) => {
       : JSON.parse(JSON.stringify(theme))
   ) as Theme;
 
-  const semantics = resolveTokensTopologically(scheme === 'dark' ? darkSemantics : lightSemantics);
+  let semantics = scheme === 'dark' ? darkSemantics : lightSemantics;
+  if (theme?.semantics) {
+    semantics = { ...semantics, ...theme.semantics };
+  }
+  semantics = resolveTokensTopologically(semantics);
 
   const finalTheme = { ...baseTheme, semantics };
 

@@ -116,6 +116,11 @@ jest.mock('react-native/Libraries/Components/RefreshControl/RefreshControl', () 
   __esModule: true,
   default: require('./__mocks__/RefreshControlMock'),
 }));
+jest.mock('react-native/Libraries/Utilities/Appearance', () => ({
+  addChangeListener: () => ({ remove: () => {} }),
+  getColorScheme: () => 'light',
+  setColorScheme: () => {},
+}));
 
 jest.mock('@shopify/flash-list', () => ({
   FlashList: undefined,

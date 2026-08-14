@@ -61,130 +61,132 @@ export type MessageSearchListProps = {
   refreshList?: () => void;
   showResultCount?: boolean;
 };
-export const MessageSearchList: React.FC<MessageSearchListProps> = React.forwardRef(
-  (props, scrollRef: React.Ref<FlatList<MessageResponse> | null>) => {
-    const {
-      EmptySearchIndicator,
-      loading,
-      loadMore,
-      messages,
-      refreshing,
-      refreshList,
-      showResultCount = false,
-    } = props;
-    const {
-      theme: { semantics },
-    } = useTheme();
-    const { black, grey, white_snow } = useLegacyColors();
-    const { vw } = useViewport();
-    const navigation =
-      useNavigation<NavigationProp<StackNavigatorParamList, 'ChannelListScreen'>>();
+export const MessageSearchList = React.forwardRef<
+  FlatList<MessageResponse> | null,
+  MessageSearchListProps
+>((props, scrollRef) => {
+  const {
+    EmptySearchIndicator,
+    loading,
+    loadMore,
+    messages,
+    refreshing,
+    refreshList,
+    showResultCount = false,
+  } = props;
+  const {
+    theme: { semantics },
+  } = useTheme();
+  const { black, grey, white_snow } = useLegacyColors();
+  const { vw } = useViewport();
+  const navigation = useNavigation<NavigationProp<StackNavigatorParamList, 'ChannelListScreen'>>();
 
-    if (!messages && !refreshing) {
-      return null;
-    }
+  if (!messages && !refreshing) {
+    return null;
+  }
 
-    return (
-      <>
-        {messages && showResultCount && (
-          <View
-            style={{
-              backgroundColor: white_snow,
-              paddingHorizontal: 10,
-              paddingVertical: 2,
+  return (
+    <>
+      {messages && showResultCount && (
+        <View
+          style={{
+            backgroundColor: white_snow,
+            paddingHorizontal: 10,
+            paddingVertical: 2,
+          }}
+        >
+          <Text style={{ color: grey }}>
+            {`${
+              messages.length >= DEFAULT_PAGINATION_LIMIT
+                ? DEFAULT_PAGINATION_LIMIT
+                : messages.length
+            }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${
+              messages.length === 1 ? '' : 's'
+            }`}
+          </Text>
+        </View>
+      )}
+      <FlatList
+        contentContainerStyle={styles.contentContainer}
+        // TODO: Remove the following filter once we have two way scroll functionality on threads.
+        data={messages ? messages.filter(({ parent_id }) => !parent_id) : []}
+        keyboardDismissMode='on-drag'
+        ListEmptyComponent={
+          loading && !refreshing && (!messages || messages.length === 0) ? (
+            <View style={styles.indicatorContainer}>
+              <Spinner />
+            </View>
+          ) : (
+            EmptySearchIndicator
+          )
+        }
+        onEndReached={loadMore}
+        onRefresh={refreshList}
+        ref={scrollRef}
+        refreshing={refreshing}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelScreen', {
+                channelId: item.channel?.id,
+                messageId: item.id,
+              });
             }}
+            style={[styles.itemContainer, { borderBottomColor: semantics.borderCoreDefault }]}
+            testID='channel-preview-button'
           >
-            <Text style={{ color: grey }}>
-              {`${
-                messages.length >= DEFAULT_PAGINATION_LIMIT
-                  ? DEFAULT_PAGINATION_LIMIT
-                  : messages.length
-              }${messages.length >= DEFAULT_PAGINATION_LIMIT ? '+ ' : ' '} result${
-                messages.length === 1 ? '' : 's'
-              }`}
-            </Text>
-          </View>
-        )}
-        <FlatList
-          contentContainerStyle={styles.contentContainer}
-          // TODO: Remove the following filter once we have two way scroll functionality on threads.
-          data={messages ? messages.filter(({ parent_id }) => !parent_id) : []}
-          keyboardDismissMode='on-drag'
-          ListEmptyComponent={
-            loading && !refreshing && (!messages || messages.length === 0) ? (
-              <View style={styles.indicatorContainer}>
-                <Spinner />
-              </View>
-            ) : (
-              EmptySearchIndicator
-            )
-          }
-          onEndReached={loadMore}
-          onRefresh={refreshList}
-          ref={scrollRef}
-          refreshing={refreshing}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ChannelScreen', {
-                  channelId: item.channel?.id,
-                  messageId: item.id,
-                });
-              }}
-              style={[styles.itemContainer, { borderBottomColor: semantics.borderCoreDefault }]}
-              testID='channel-preview-button'
-            >
-              {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}
+            {item.user ? <UserAvatar user={item.user} size={'lg'} /> : null}
 
-              <View style={styles.flex}>
-                <View style={styles.row}>
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.titleContainer, { color: black, maxWidth: vw(80) - 16 - 40 }]}
-                  >
-                    <Text style={styles.title}>{`${item.user?.name} `}</Text>
-                    {!!item.channel?.name && (
-                      <Text style={styles.detailsText}>
-                        in
-                        <Text style={styles.title}>{` ${item.channel?.name}`}</Text>
-                      </Text>
-                    )}
-                  </Text>
-                </View>
-                <View style={styles.row}>
-                  <Text
-                    numberOfLines={1}
-                    style={[
-                      styles.message,
-                      {
-                        color: grey,
-                      },
-                    ]}
-                  >
-                    {item.text}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.date,
-                      {
-                        color: grey,
-                      },
-                    ]}
-                  >
-                    {dayjs(item.created_at).calendar(undefined, {
-                      lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
-                      lastWeek: 'DD/MM', // Last week ( Last Monday at 2:30 AM )
-                      sameDay: 'h:mm A', // The same day ( Today at 2:30 AM )
-                      sameElse: 'DD/MM/YYYY', // Everything else ( 17/10/2011 )
-                    })}
-                  </Text>
-                </View>
+            <View style={styles.flex}>
+              <View style={styles.row}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.titleContainer, { color: black, maxWidth: vw(80) - 16 - 40 }]}
+                >
+                  <Text style={styles.title}>{`${item.user?.name} `}</Text>
+                  {!!item.channel?.name && (
+                    <Text style={styles.detailsText}>
+                      in
+                      <Text style={styles.title}>{` ${item.channel?.name}`}</Text>
+                    </Text>
+                  )}
+                </Text>
               </View>
-            </TouchableOpacity>
-          )}
-          style={styles.flex}
-        />
-      </>
-    );
-  },
-);
+              <View style={styles.row}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.message,
+                    {
+                      color: grey,
+                    },
+                  ]}
+                >
+                  {item.text}
+                </Text>
+                <Text
+                  style={[
+                    styles.date,
+                    {
+                      color: grey,
+                    },
+                  ]}
+                >
+                  {dayjs(item.created_at).calendar(undefined, {
+                    lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
+                    lastWeek: 'DD/MM', // Last week ( Last Monday at 2:30 AM )
+                    sameDay: 'h:mm A', // The same day ( Today at 2:30 AM )
+                    sameElse: 'DD/MM/YYYY', // Everything else ( 17/10/2011 )
+                  })}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+        style={styles.flex}
+      />
+    </>
+  );
+});
+
+MessageSearchList.displayName = 'MessageSearchList';

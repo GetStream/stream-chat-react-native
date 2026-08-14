@@ -2,7 +2,7 @@ import React from 'react';
 
 import Svg, { Path } from 'react-native-svg';
 
-import { IconProps } from './utils/base';
+import { IconProps } from '../utils/base';
 
 export const MenuPointHorizontal = (props: IconProps) => (
   <Svg viewBox='0 0 17 4' fill='none' {...props} width={20} height={20}>

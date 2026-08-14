@@ -31,9 +31,11 @@ jobs:
           cache-dependency-path: 'yarn.lock'
       - name: Install && Build - SDK and Sample App
         uses: ./.github/actions/install-and-build-sdk
+      - name: Build SDK
+        run: yarn build
       - name: Lint
         run: yarn lint
-      - name: Typecheck tests
-        run: yarn workspace stream-chat-react-native-core test:typecheck
+      - name: Typecheck packages and example apps
+        run: yarn typecheck
       - name: Test
         run: yarn test:coverage
