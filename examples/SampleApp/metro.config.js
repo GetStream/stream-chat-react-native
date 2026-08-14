@@ -19,9 +19,6 @@ const metroExclusionList = require(
 const exclusionList = metroExclusionList.default || metroExclusionList;
 const packageDirPath = PATH.resolve(__dirname, '../../package');
 const nativePackageDirPath = PATH.resolve(__dirname, '../../package/native-package');
-// Local portaled checkout of stream-chat-js. Metro doesn't honor Yarn's portal
-// symlink for native bundling, so it must be pointed at the absolute path explicitly.
-const streamChatLocalPath = '/Users/isekovanic/Projects/stream-chat-js-temp';
 
 const symlinked = {
   'stream-chat-react-native': nativePackageDirPath,
@@ -68,14 +65,10 @@ const uniqueModules = dependencyPackageNames.map((packageName) => {
 const blockList = uniqueModules.map(({ blockPattern }) => blockPattern);
 
 // provide the path for the unique modules
-const extraNodeModules = uniqueModules.reduce(
-  (acc, item) => {
-    acc[item.packageName] = item.modulePath;
-    return acc;
-  },
-  // Seed the local stream-chat portal so the uniqueModules reduce doesn't overwrite it.
-  { 'stream-chat': streamChatLocalPath },
-);
+const extraNodeModules = uniqueModules.reduce((acc, item) => {
+  acc[item.packageName] = item.modulePath;
+  return acc;
+}, {});
 
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;
@@ -83,6 +76,6 @@ config.resolver.extraNodeModules = extraNodeModules;
 config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
 
 // add the package dir for metro to access the package folder
-config.watchFolders = [packageDirPath, streamChatLocalPath];
+config.watchFolders = [packageDirPath];
 
 module.exports = config;
