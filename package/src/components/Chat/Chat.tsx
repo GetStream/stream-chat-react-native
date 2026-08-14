@@ -23,7 +23,6 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { NativeHandlers } from '../../native';
-import { DEFAULT_MAX_SYNC_EVENTS_LIMIT } from '../../store/constants';
 import { OfflineDB } from '../../store/OfflineDB';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
@@ -45,29 +44,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * Enables offline storage and loading for chat data.
      */
     enableOfflineSupport?: boolean;
-    /**
-     * Optional positive cap on the number of events a single `/sync` response may
-     * contain before the offline sync manager skips replaying those events into
-     * local storage.
-     *
-     * On reconnect the SDK downloads the events missed while offline and writes
-     * them to the offline DB. For a very large payload this replay is both costly
-     * on-device and unnecessary for what the user is looking at — the active
-     * channel list and any open channel are refreshed independently on reconnect
-     * (via `queryChannels` + `channel.watch()`). When the payload exceeds this
-     * limit the replay is skipped and that reconnect refresh covers the visible
-     * channels; inactive channels are hydrated on their next explicit query. The
-     * last-sync timestamp is still advanced so the same payload is not retried.
-     *
-     * Defaults to {@link DEFAULT_MAX_SYNC_EVENTS_LIMIT} (250). Pass a larger number
-     * to raise the cap, or any non-positive value (e.g. `0`) for no limit — i.e.
-     * replay every event (the historical behavior).
-     *
-     * Only relevant when `enableOfflineSupport` is enabled.
-     *
-     * @default 250
-     */
-    maxSyncEventsLimit?: number;
     /**
      * When true, multipart uploads use the SDK's native upload adapter when available.
      * When false, uploads stay on the default axios adapter.
@@ -175,7 +151,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     enableOfflineSupport = false,
     i18nInstance,
     isMessageAIGenerated,
-    maxSyncEventsLimit = DEFAULT_MAX_SYNC_EVENTS_LIMIT,
     style,
     useNativeMultipartUpload = false,
   } = props;
@@ -249,7 +224,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
     const initializeDatabase = async () => {
       if (!client.offlineDb) {
-        client.setOfflineDBApi(new OfflineDB({ client, maxSyncEventsLimit }));
+        client.setOfflineDBApi(new OfflineDB({ client }));
       }
 
       if (client.offlineDb) {
@@ -258,7 +233,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     };
 
     initializeDatabase();
-  }, [userID, enableOfflineSupport, client, maxSyncEventsLimit]);
+  }, [userID, enableOfflineSupport, client]);
 
   useEffect(() => {
     if (!client) {

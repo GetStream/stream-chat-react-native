@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -12,7 +13,6 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient, getTestClientWithUser, setUser } from '../../../mock-builders/mock';
-import { DEFAULT_MAX_SYNC_EVENTS_LIMIT } from '../../../store/constants';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../Chat';
 
@@ -329,30 +329,5 @@ describe('TranslationContext', () => {
         listenersAfterInitialMount.length,
       );
     });
-  });
-
-  it('forwards maxSyncEventsLimit to the offline DB sync manager', async () => {
-    const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
-
-    render(<Chat client={chatClientWithUser} enableOfflineSupport maxSyncEventsLimit={42} />);
-
-    await waitFor(() => {
-      expect(chatClientWithUser.offlineDb).toBeDefined();
-    });
-    expect(chatClientWithUser.offlineDb!.syncManager.syncMaxEventCount).toBe(42);
-  });
-
-  it('defaults maxSyncEventsLimit to 250 when not provided', async () => {
-    const chatClientWithUser = await getTestClientWithUser({ id: 'testID' });
-
-    render(<Chat client={chatClientWithUser} enableOfflineSupport />);
-
-    await waitFor(() => {
-      expect(chatClientWithUser.offlineDb).toBeDefined();
-    });
-    expect(chatClientWithUser.offlineDb!.syncManager.syncMaxEventCount).toBe(
-      DEFAULT_MAX_SYNC_EVENTS_LIMIT,
-    );
-    expect(DEFAULT_MAX_SYNC_EVENTS_LIMIT).toBe(250);
   });
 });
