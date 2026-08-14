@@ -1,5 +1,20 @@
 # Change Log
 
+## [9.7.6](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.5...v9.7.6) (2026-08-14)
+
+### Bug Fixes
+
+* provide a sensible way to disable sync limit ([#3775](https://github.com/GetStream/stream-chat-react-native/issues/3775)) ([50590e1](https://github.com/GetStream/stream-chat-react-native/commit/50590e126ff6fc7d1024beccd0a1d815a0bc4dd9))
+
+### Performance Improvements
+
+* introduce offline sync event limit ([#3773](https://github.com/GetStream/stream-chat-react-native/issues/3773)) ([3e56a09](https://github.com/GetStream/stream-chat-react-native/commit/3e56a09bd7acef8b4acbd0c1b69dd4f001697da5))
+
+### Reverts
+
+* Revert "chore: bump stream-chat-js" ([251eb79](https://github.com/GetStream/stream-chat-react-native/commit/251eb79067968f10d9b2f7d46f1dbf0be7b06287))
+* Revert "perf: sync event count" ([eb1022e](https://github.com/GetStream/stream-chat-react-native/commit/eb1022e2550f53dd30ab0185daf53504deaa896f))
+
 ## [9.7.5](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.4...v9.7.5) (2026-08-10)
 
 ### Bug Fixes
