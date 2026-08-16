@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+
 import {
   I18nManager,
   LayoutChangeEvent,
@@ -28,6 +29,7 @@ import { useCreatePollContentContext, useTheme, useTranslationContext } from '..
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
+import { translateExternalString } from '../../../i18n/externalStrings';
 import { primitives } from '../../../theme';
 
 export type CurrentOptionPositionsCache = {
@@ -531,7 +533,7 @@ export const CreatePollOption = ({
         >
           <icons.InfoTooltip height={20} width={20} fill={semantics.accentError} />
           <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
-            {t(error)}
+            {translateExternalString(t, error)}
           </Text>
         </View>
       ) : null}

@@ -121,7 +121,9 @@ export const useMessagePreviewText = ({
   }
 
   return t('messagePreview.files.label', {
-    count: attachmentsLength,
+    // `attachments` may be absent on this fall-through path. It used to render a literal
+    // `{{count}}` placeholder there; 0 at least pluralises.
+    count: attachmentsLength ?? 0,
     defaultValue_one: '{{count}} File',
     defaultValue_other: '{{count}} Files',
   });

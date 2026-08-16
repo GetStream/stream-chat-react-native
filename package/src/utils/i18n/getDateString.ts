@@ -5,6 +5,7 @@ import { TimestampFormatterOptions } from './types';
 
 import { TranslatorFunctions } from '../../contexts/translationContext';
 import { isDayOrMoment } from '../../contexts/translationContext/isDayOrMoment';
+import { asDynamicKey } from '../../i18n/utils';
 
 type DateFormatterOptions = TimestampFormatterOptions &
   Partial<TranslatorFunctions> & {
@@ -53,7 +54,8 @@ export function getDateString({
     if (typeof format !== 'undefined' && format !== null) {
       options.format = format;
     }
-    const translatedTimestamp = t(timestampTranslationKey, {
+    // The key arrives as a prop value, so it is only known at runtime.
+    const translatedTimestamp = t(asDynamicKey(timestampTranslationKey), {
       ...options,
       timestamp: new Date(date),
     });

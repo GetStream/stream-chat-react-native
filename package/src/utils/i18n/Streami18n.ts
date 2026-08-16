@@ -6,7 +6,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
-import i18n, { type i18n as I18nInstance, FallbackLng, TFunction } from 'i18next';
+import i18n, { type i18n as I18nInstance, FallbackLng } from 'i18next';
 
 import type momentTimezone from 'moment-timezone';
 
@@ -15,39 +15,16 @@ import { predefinedFormatters } from './predefinedFormatters';
 import { CustomFormatters, PredefinedFormatters } from './types';
 
 import type { TDateTimeParser } from '../../contexts/translationContext/types';
-import arTranslations from '../../i18n/ar.json';
-import enTranslations from '../../i18n/en.json';
-import esTranslations from '../../i18n/es.json';
-import frTranslations from '../../i18n/fr.json';
-import heTranslations from '../../i18n/he.json';
-import hiTranslations from '../../i18n/hi.json';
-import itTranslations from '../../i18n/it.json';
-import jaTranslations from '../../i18n/ja.json';
-import koTranslations from '../../i18n/ko.json';
-import nlTranslations from '../../i18n/nl.json';
-import ptBRTranslations from '../../i18n/pt-br.json';
-import ruTranslations from '../../i18n/ru.json';
 import { runtimeDefaults } from '../../i18n/runtimeDefaults';
-import trTranslations from '../../i18n/tr.json';
+import type {
+  LooseTranslationDictionary,
+  StreamTFunction,
+  TranslationDictionary,
+} from '../../i18n/types';
 
-import 'dayjs/locale/ar';
-import 'dayjs/locale/es';
-import 'dayjs/locale/fr';
-import 'dayjs/locale/he';
-import 'dayjs/locale/hi';
-import 'dayjs/locale/it';
-import 'dayjs/locale/ja';
-import 'dayjs/locale/ko';
-import 'dayjs/locale/nl';
-import 'dayjs/locale/pt-br';
-import 'dayjs/locale/ru';
-import 'dayjs/locale/tr';
-
-/**
- * These locale imports also set these locales globally.
- * So as a last step we import the english locale to make
- * sure we don't mess up languages in other places in the app.
- */
+// Only the English locale ships. Integrators registering another language import their own
+// `dayjs/locale/xx` and pass `dayjsLocaleConfigForLanguage` (or `registerTranslation`'s third
+// argument).
 import 'dayjs/locale/en';
 
 const defaultNS = 'translation';
@@ -68,84 +45,16 @@ Dayjs.updateLocale('en', {
   },
 });
 
-Dayjs.updateLocale('ar', {
-  calendar: calendarFormats.ar,
-});
-Dayjs.updateLocale('es', {
-  calendar: calendarFormats.es,
-});
-Dayjs.updateLocale('fr', {
-  calendar: calendarFormats.fr,
-});
-Dayjs.updateLocale('he', {
-  calendar: calendarFormats.he,
-});
-
-Dayjs.updateLocale('hi', {
-  calendar: calendarFormats.hi,
-
-  /**
-   * Hindi notation for meridiems are quite fuzzy in practice. While there exists
-   * a rigid notion of a 'Pahar' it is not used as rigidly in modern Hindi.
-   */
-  meridiem(hour: number) {
-    if (hour < 4) {
-      return 'रात';
-    }
-    if (hour < 10) {
-      return 'सुबह';
-    }
-    if (hour < 17) {
-      return 'दोपहर';
-    }
-    if (hour < 20) {
-      return 'शाम';
-    }
-    return 'रात';
-  },
-
-  meridiemHour(hour: number, meridiem: string) {
-    if (hour === 12) {
-      hour = 0;
-    }
-    if (meridiem === 'रात') {
-      return hour < 4 ? hour : hour + 12;
-    }
-    if (meridiem === 'सुबह') {
-      return hour;
-    }
-    if (meridiem === 'दोपहर') {
-      return hour >= 10 ? hour : hour + 12;
-    }
-    if (meridiem === 'शाम') {
-      return hour + 12;
-    }
-    return hour;
-  },
-
-  meridiemParse: /रात|सुबह|दोपहर|शाम/,
-});
-Dayjs.updateLocale('it', {
-  calendar: calendarFormats.it,
-});
-Dayjs.updateLocale('ja', {
-  calendar: calendarFormats.ja,
-});
-Dayjs.updateLocale('ko', {
-  calendar: calendarFormats.ko,
-});
-Dayjs.updateLocale('nl', {
-  calendar: calendarFormats.nl,
-});
-Dayjs.updateLocale('pt-br', {
-  calendar: calendarFormats['pt-br'],
-});
-Dayjs.updateLocale('ru', {
-  calendar: calendarFormats.ru,
-});
-Dayjs.updateLocale('tr', {
-  calendar: calendarFormats.tr,
-});
+/**
+ * A dayjs locale config, as accepted by `dayjsLocaleConfigForLanguage` and by
+ * `registerTranslation`'s third argument.
+ *
+ * `calendar` is not part of dayjs's own `ILocale` — it comes from the calendar plugin — so it has
+ * to be added here. Typing this as a bare `Partial<ILocale>` makes passing a calendar config a
+ * TS2345 "no properties in common" error, which is exactly the wording an integrator hits first.
+ * Supplying `calendar` is how relative wording ("heute um", "ieri alle") gets localized.
+ */
+export type DayjsLocaleConfig = Partial<ILocale> & { calendar?: CalendarFormats };
 
 export type CalendarFormats = {
   lastDay: string;
@@ -191,14 +100,14 @@ const supportsTz = (dateTimeParser: unknown): dateTimeParser is TimezoneParser =
 
 type Streami18nOptions = {
   DateTimeParser?: DateTimeParserModule;
-  dayjsLocaleConfigForLanguage?: Partial<ILocale & { calendar: CalendarFormats }>;
+  dayjsLocaleConfigForLanguage?: DayjsLocaleConfig;
   debug?: boolean;
   disableDateTimeTranslations?: boolean;
   formatters?: Partial<PredefinedFormatters> & CustomFormatters;
   language?: string;
   logger?: (msg?: string) => void;
   timezone?: string;
-  translationsForLanguage?: Partial<typeof enTranslations>;
+  translationsForLanguage?: TranslationDictionary;
 };
 
 type I18NextConfig = {
@@ -212,156 +121,94 @@ type I18NextConfig = {
 };
 
 /**
- * Wrapper around [i18next](https://www.i18next.com/) class for Stream related translations.
- * Instance of this class should be provided to Chat component to handle translations.
- * Stream provides following list of in-built translations:
- * 1. English (en)
- * 2. Spanish (es)
- * 3. French (fr)
- * 4. Hebrew (he)
- * 5. Hindi (hi)
- * 6. Italian (it)
- * 7. Japanese (ja)
- * 8. Korean (ko)
- * 9. Dutch (nl)
- * 10. Russian (ru)
- * 11. Turkish (tr)
+ * Wrapper around [i18next](https://www.i18next.com/) for Stream's translations. Pass an instance to
+ * `<Chat>` to control language and copy.
  *
- * Simplest way to start using chat components in one of the in-built languages would be following:
+ * Only English ships with the SDK, and only as much of it as has to: prose renders from the inline
+ * `defaultValue` at each call site, so the bundled data is just the formatter expressions and the
+ * handful of keys resolved by name at runtime. Every other language comes from the integrator.
  *
- * ```
- * const i18n = new Streami18n({ language 'nl' });
- * <Chat client={chatClient} i18nInstance={i18n}>
- *  ...
- * </Chat>
- * ```
+ * ## Overriding some of the English copy
  *
- * If you would like to override certain keys in in-built translation.
- * UI will be automatically updated in this case.
+ * Anything not mentioned is untouched.
  *
- * ```
- * const i18n = new Streami18n({
- *  language: 'nl',
- *  translationsForLanguage: {
- *    'Nothing yet...': 'Nog Niet ...',
- *    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
- *  }
- * });
- *
- * If you would like to register additional languages, use registerTranslation. You can add as many languages as you want:
- *
- * i18n.registerTranslation('zh', {
- *  'Nothing yet...': 'Nog Niet ...',
- *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
- * });
- *
- * <Chat client={chatClient} i18nInstance={i18n}>
- *  ...
- * </Chat>
- * ```
- *
- * You can use the same function to add whole new language as well.
- *
- * ```
- * const i18n = new Streami18n();
- *
- * i18n.registerTranslation('mr', {
- *  'Nothing yet...': 'काहीही नाही  ...',
- *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
- * });
- *
- * // Make sure to call setLanguage to reflect new language in UI.
- * i18n.setLanguage('it');
- * <Chat client={chatClient} i18nInstance={i18n}>
- *  ...
- * </Chat>
- * ```
- *
- * ## Datetime translations
- *
- * Stream react chat components uses [dayjs](https://day.js.org/en/) internally by default to format datetime stamp.
- * e.g., in ChannelPreview, MessageContent components.
- * Dayjs has locale support as well - https://day.js.org/docs/en/i18n/i18n
- * Dayjs is a lightweight alternative to Momentjs with the same modern API.
- *
- * Dayjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
- * https://github.com/iamkun/dayjs/tree/dev/src/locale
- *
- * You can either provide the dayjs locale config while registering
- * language with Streami18n (either via constructor or registerTranslation()) or you can provide your own Dayjs or Moment instance
- * to Streami18n constructor, which will be then used internally (using the language locale) in components.
- *
- * 1. Via language registration
- *
- * e.g.,
- * ```
- * const i18n = new Streami18n({
- *  language: 'nl',
- *  dayjsLocaleConfigForLanguage: {
- *    months: [...],
- *    monthsShort: [...],
- *    calendar: {
- *      sameDay: ...'
- *    }
- *  }
- * });
- * ```
- *
- * Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
- *
- * e.g.,
- * ```
- * const i18n = new Streami18n();
- *
- * i18n.registerTranslation(
- *  'mr',
- *  {
- *    'Nothing yet...': 'काहीही नाही  ...',
- *    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
- *  },
- *  {
- *    months: [...],
- *    monthsShort: [...],
- *    calendar: {
- *      sameDay: ...'
- *    }
- *  }
- * );
- *```
- * 2. Provide your own Moment object
- *
- * ```js
- * import 'moment/locale/nl';
- * import 'moment/locale/it';
- * // or if you want to include all locales
- * import 'moment/min/locales';
- *
- * import Moment from moment
+ * ```ts
+ * import { Streami18n, type TranslationDictionary } from 'stream-chat-react-native';
  *
  * const i18n = new Streami18n({
- *  language: 'nl',
- *  DateTimeParser: Moment
- * })
+ *   translationsForLanguage: {
+ *     'autoCompleteInput.placeholder': 'Write something…',
+ *   } satisfies TranslationDictionary,
+ * });
+ *
+ * <Chat client={client} i18nInstance={i18n}>…</Chat>
  * ```
  *
- * 3. Provide your own Dayjs object
+ * Keys are checked against the generated catalog, so a typo or a leftover v9 key is a compile
+ * error rather than an override that silently never applies. Run `yarn i18n:export` to dump every
+ * key with its English copy.
  *
- * ```js
- * import Dayjs from 'dayjs'
+ * ## Registering a new language
  *
+ * ```ts
+ * import { Streami18n, type TranslationDictionary } from 'stream-chat-react-native';
+ * import 'dayjs/locale/de';
+ *
+ * const de: TranslationDictionary = {
+ *   'common.cancel.label': 'Abbrechen',
+ *   'channelDetails.memberSection.title_one': '{{count}} Mitglied',
+ *   'channelDetails.memberSection.title_other': '{{count}} Mitglieder',
+ * };
+ *
+ * const i18n = new Streami18n({ language: 'de' });
+ * i18n.registerTranslation('de', de, {
+ *   calendar: { sameDay: '[heute um] LT', lastDay: '[gestern um] LT' /* … *\/ },
+ * });
+ * ```
+ *
+ * A partial dictionary is safe: keys you do not supply render their English copy, never a raw
+ * dotted path. Every language is layered over the bundled defaults — however it was selected, and
+ * even with no dictionary at all — so overriding one string cannot knock out timestamps.
+ *
+ * Plurals are stored as `<key>_one` / `<key>_other`; supply whichever categories your language
+ * needs and `Intl.PluralRules` selects between them, so Arabic, Hebrew and Russian can add
+ * `_zero` / `_few` / `_many` and stay type-checked.
+ *
+ * ## Dates and times
+ *
+ * Only the `en` dayjs locale is bundled. Import your own locale and pass
+ * `dayjsLocaleConfigForLanguage` (or `registerTranslation`'s third argument), or supply a
+ * preconfigured `DateTimeParser`:
+ *
+ * ```ts
+ * import Dayjs from 'dayjs';
  * import 'dayjs/locale/nl';
- * import 'dayjs/locale/it';
- * // or if you want to include all locales
- * import 'dayjs/min/locales';
  *
- * const i18n = new Streami18n({
- *  language: 'nl',
- *  DateTimeParser: Dayjs
- * })
+ * const i18n = new Streami18n({ language: 'nl', DateTimeParser: Dayjs });
  * ```
- * If you would like to stick with english language for date-times in Stream components, you can set `disableDateTimeTranslations` to true.
  *
+ * Two `timestamp.*` keys carry their own `calendarFormats` with English day words baked in —
+ * `timestamp.ChannelPreviewStatus` and `timestamp.ThreadListItem`. A per-key `calendarFormats`
+ * replaces the locale's calendar wholesale, so `dayjsLocaleConfigForLanguage` never reaches them;
+ * override the two keys directly. See `ai-docs/i18n-v10-migration.md`.
+ *
+ * Set `disableDateTimeTranslations` to keep dates in English regardless of language.
  */
+/**
+ * Wraps an integrator's `parseMissingKeyHandler` so it only sees genuinely missing translations.
+ *
+ * i18next counts every prose key as missing — they render from the inline `defaultValue`, not from
+ * a resource bundle — and lets the handler's return value replace the rendered string. An
+ * unguarded handler therefore blanks out most of the UI. A resolved default arrives as the second
+ * argument, which is how the two cases are told apart.
+ */
+const guardMissingKeyHandler =
+  (handler: (key: string, defaultValue?: string) => string) =>
+  (key: string, defaultValue?: string) => {
+    if (typeof defaultValue === 'string') return defaultValue;
+    return handler(key, defaultValue);
+  };
+
 const defaultStreami18nOptions = {
   DateTimeParser: Dayjs,
   dayjsLocaleConfigForLanguage: null,
@@ -407,7 +254,7 @@ export const defaultTranslatorFunction = ((
   }
 
   return key;
-}) as unknown as TFunction;
+}) as unknown as StreamTFunction;
 
 export class Streami18n {
   i18nInstance: I18nInstance = i18n.createInstance();
@@ -416,39 +263,42 @@ export class Streami18n {
   /* this promise is used to prevent simultaneous calls to init (happens in Overlay and Chat) */
   private waitForInitializing: Promise<void> | undefined;
   /* This is the callback to be fired when the language is changed */
-  private onLanguageChangeListeners: ((t: TFunction) => void)[] = [];
+  private onLanguageChangeListeners: ((t: StreamTFunction) => void)[] = [];
   /* This is the callback to be fired when the tFunc is overridden
    * This is useful when a different i18n library needs to be used
    * The SDK uses this in useStreami18n hook to set the tFunc in the context
    */
-  private onTFunctionOverrideListeners: ((t: TFunction) => void)[] = [];
+  private onTFunctionOverrideListeners: ((t: StreamTFunction) => void)[] = [];
   /* We need to queue the overridden tFunction
    * if the tFunction is overridden before the SDK has initialized the translations
    */
-  private queuedTFunctionOverride: TFunction | undefined;
+  private queuedTFunctionOverride: StreamTFunction | undefined;
 
-  t: TFunction = defaultTranslatorFunction;
+  t: StreamTFunction = defaultTranslatorFunction;
   tDateTimeParser: TDateTimeParser;
 
+  /**
+   * The resource dictionaries handed to i18next, keyed by language.
+   *
+   * Not the full English catalog: prose keys are never bundled — they render from the inline
+   * `defaultValue` at their call site — so `en` holds `runtimeDefaults` plus whatever has been
+   * registered. To enumerate every key with its copy use {@link TranslationCatalog} or
+   * `yarn i18n:export`.
+   */
   translations: {
     [key: string]: {
-      [key: string]: Partial<typeof enTranslations>;
+      [key: string]: LooseTranslationDictionary;
     };
-  } = {
-    ar: { [defaultNS]: arTranslations },
-    en: { [defaultNS]: enTranslations },
-    es: { [defaultNS]: esTranslations },
-    fr: { [defaultNS]: frTranslations },
-    he: { [defaultNS]: heTranslations },
-    hi: { [defaultNS]: hiTranslations },
-    it: { [defaultNS]: itTranslations },
-    ja: { [defaultNS]: jaTranslations },
-    ko: { [defaultNS]: koTranslations },
-    nl: { [defaultNS]: nlTranslations },
-    'pt-BR': { [defaultNS]: ptBRTranslations },
-    ru: { [defaultNS]: ruTranslations },
-    tr: { [defaultNS]: trTranslations },
-  };
+  } = {};
+
+  /**
+   * Languages an integrator actually supplied a dictionary for.
+   *
+   * Deliberately narrower than `Object.keys(this.translations)`, which also contains every language
+   * `ensureLanguage` created to carry `runtimeDefaults`. Without the distinction the
+   * unregistered-language warning could never fire.
+   */
+  registeredLanguages = new Set<string>([defaultLng]);
 
   /**
    * A dictionary layered over `runtimeDefaults`. Every write into `this.translations` goes through
@@ -457,8 +307,8 @@ export class Streami18n {
    */
   private mergeWithRuntimeDefaults = (
     language: string,
-    translation?: Partial<typeof enTranslations>,
-  ): Partial<typeof enTranslations> => ({
+    translation?: LooseTranslationDictionary,
+  ): LooseTranslationDictionary => ({
     ...runtimeDefaults,
     ...this.translations[language]?.[defaultNS],
     ...translation,
@@ -484,7 +334,7 @@ export class Streami18n {
    * locale configs given to the registerTranslation() function in `dayjsLocales` object,
    * and register the required locale with moment when setLanguage is called.
    */
-  dayjsLocales: { [key: string]: Partial<ILocale> } = {};
+  dayjsLocales: { [key: string]: DayjsLocaleConfig } = {};
 
   /**
    * Initialize properties used in constructor
@@ -563,23 +413,17 @@ export class Streami18n {
     this.isCustomDateTimeParser = !!options.DateTimeParser;
     const translationsForLanguage = finalOptions.translationsForLanguage;
 
-    // Every bundled language is layered over `runtimeDefaults`, not just the active one: the
-    // formatter keys have no inline default anywhere, and `fallbackLng` is false, so a language
-    // that lacks them renders raw keys.
-    for (const language of Object.keys(this.translations)) {
-      this.translations[language] = {
-        [defaultNS]: this.mergeWithRuntimeDefaults(language),
-      };
-    }
-
-    // Guarantees the active language exists — including one nobody registered, which then renders
-    // the SDK's English copy from the inline defaults rather than dotted key paths.
+    // `en` always exists so the bundled formatter keys resolve, and so does the active language —
+    // including one nobody registered, which then renders the SDK's English copy from the inline
+    // defaults rather than dotted key paths.
+    this.ensureLanguage(defaultLng);
     this.ensureLanguage(this.currentLanguage);
 
     if (translationsForLanguage) {
       this.translations[this.currentLanguage] = {
         [defaultNS]: this.mergeWithRuntimeDefaults(this.currentLanguage, translationsForLanguage),
       };
+      this.registeredLanguages.add(this.currentLanguage);
     }
 
     this.i18nextConfig = {
@@ -604,6 +448,14 @@ export class Streami18n {
       },
       ...i18nextConfig,
     };
+
+    // An integrator handler replaces ours wholesale, so it has to be guarded too — otherwise
+    // supplying one silently blanks every prose key.
+    if (i18nextConfig.parseMissingKeyHandler) {
+      this.i18nextConfig.parseMissingKeyHandler = guardMissingKeyHandler(
+        i18nextConfig.parseMissingKeyHandler,
+      );
+    }
 
     this.validateCurrentLanguage();
 
@@ -645,11 +497,13 @@ export class Streami18n {
     this.validateCurrentLanguage();
 
     try {
-      this.t = await this.i18nInstance.init({
+      // i18next hands back its own `TFunction`; the SDK's narrower signature is what call
+      // sites are checked against, so the cast happens once, here.
+      this.t = (await this.i18nInstance.init({
         ...this.i18nextConfig,
         lng: this.currentLanguage,
         resources: this.translations,
-      });
+      })) as unknown as StreamTFunction;
       if (this.queuedTFunctionOverride) {
         // special case where we have a override for tFunc before initialization
         this.t = this.queuedTFunctionOverride;
@@ -679,17 +533,23 @@ export class Streami18n {
     return Object.keys(Dayjs.Ls).indexOf(language) > -1;
   };
 
+  /**
+   * Warns when the active language has no registered dictionary.
+   *
+   * Not an error, and not a reason to fall back to `en`: the language renders the SDK's English
+   * copy from the inline defaults while keeping its own date formats. Silently resetting the
+   * language instead — as this used to — discarded the integrator's choice and made the cause very
+   * hard to see.
+   */
   validateCurrentLanguage = () => {
-    const availableLanguages = Object.keys(this.translations);
-    if (availableLanguages.indexOf(this.currentLanguage) === -1) {
-      this.logger(
-        `Streami18n: '${this.currentLanguage}' language is not registered.` +
-          ` Please make sure to call streami18n.registerTranslation('${this.currentLanguage}', {...}) or ` +
-          `use one the built-in supported languages - ${this.getAvailableLanguages()}`,
-      );
+    if (this.registeredLanguages.has(this.currentLanguage)) return;
 
-      this.currentLanguage = defaultLng;
-    }
+    this.logger(
+      `Streami18n: no translation dictionary is registered for '${this.currentLanguage}', so the ` +
+        `SDK's copy renders in English. Call ` +
+        `streami18n.registerTranslation('${this.currentLanguage}', {...}) to translate it. ` +
+        `Registered: ${[...this.registeredLanguages].join(', ')}`,
+    );
   };
 
   /** Returns an instance of i18next used within this class instance */
@@ -728,8 +588,8 @@ export class Streami18n {
    */
   registerTranslation(
     language: string,
-    translation: Partial<typeof enTranslations>,
-    customDayjsLocale?: Partial<ILocale>,
+    translation: TranslationDictionary,
+    customDayjsLocale?: DayjsLocaleConfig,
   ) {
     if (!translation) {
       this.logger(
@@ -742,6 +602,7 @@ export class Streami18n {
     // formatter keys survive a partial dictionary.
     const merged = this.mergeWithRuntimeDefaults(language, translation);
     this.translations[language] = { [defaultNS]: merged };
+    this.registeredLanguages.add(language);
 
     if (customDayjsLocale) {
       this.dayjsLocales[language] = { ...customDayjsLocale };
@@ -761,7 +622,7 @@ export class Streami18n {
     }
   }
 
-  addOrUpdateLocale(key: string, config: Partial<ILocale>) {
+  addOrUpdateLocale(key: string, config: DayjsLocaleConfig) {
     if (this.localeExists(key)) {
       Dayjs.updateLocale(key, { ...config });
     } else {
@@ -776,13 +637,16 @@ export class Streami18n {
    */
   async setLanguage(language: string) {
     this.currentLanguage = language;
+    this.ensureLanguage(language);
 
     if (!this.initialized) {
       return;
     }
 
+    this.validateCurrentLanguage();
+
     try {
-      const t = await this.i18nInstance.changeLanguage(language);
+      const t = (await this.i18nInstance.changeLanguage(language)) as unknown as StreamTFunction;
       if (this.dayjsLocales[language]) {
         this.addOrUpdateLocale(this.currentLanguage, this.dayjsLocales[this.currentLanguage]);
       }
@@ -796,7 +660,7 @@ export class Streami18n {
     }
   }
 
-  addOnLanguageChangeListener(callback: (t: TFunction) => void) {
+  addOnLanguageChangeListener(callback: (t: StreamTFunction) => void) {
     this.onLanguageChangeListeners.push(callback);
     return {
       unsubscribe: () => {
@@ -807,7 +671,7 @@ export class Streami18n {
     };
   }
 
-  addOnTFunctionOverrideListener(callback: (t: TFunction) => void) {
+  addOnTFunctionOverrideListener(callback: (t: StreamTFunction) => void) {
     this.onTFunctionOverrideListeners.push(callback);
     return {
       unsubscribe: () => {
@@ -818,7 +682,7 @@ export class Streami18n {
     };
   }
 
-  overrideTFunction(tFunction: TFunction) {
+  overrideTFunction(tFunction: StreamTFunction) {
     if (!this.initialized) {
       this.queuedTFunctionOverride = tFunction;
     } else {

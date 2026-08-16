@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { asDynamicKey } from '../../../i18n/utils';
 import type { IconProps } from '../../../icons/utils/base';
 
 /**
@@ -92,7 +93,8 @@ export const useChannelDetailsNavigationItems = ({
     () =>
       SECTIONS.map((section) => {
         const { icon, label } = SECTION_CONFIG[section];
-        return { Icon: icons[icon], label: t(label), section };
+        // `label` comes from SECTION_CONFIG, so the key is a runtime value here.
+        return { Icon: icons[icon], label: t(asDynamicKey(label)), section };
       }),
     [icons, t],
   );

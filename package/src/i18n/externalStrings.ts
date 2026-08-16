@@ -22,10 +22,8 @@ import { asDynamicKey } from './utils';
  * `REPHRASED_EXTERNAL_STRINGS` in `scripts/generate-i18n-keys.mts`.
  */
 export const EXTERNAL_STRING_KEYS: Record<string, TranslationKey> = {
-  // Populated once the call sites carry dotted keys — the values have to exist in the generated
-  // catalog for `TranslationKey` to accept them. The three strings this SDK currently receives
-  // from the LLC ('Option', 'Option already exists', 'Type a number from 2 to 10') all come from
-  // the poll composer and land here with the poll call sites.
+  'Option already exists': 'poll.createPoll.options.duplicate.error',
+  'Type a number from 2 to 10': 'poll.createPoll.maxVotes.range.error',
 };
 
 /**

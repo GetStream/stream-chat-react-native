@@ -238,6 +238,25 @@ for (const key of keys) {
   lines.push(`  ${JSON.stringify(key)}: ${JSON.stringify(catalog.get(key))};`);
 }
 lines.push('};', '');
+
+// The bundled subset, so `StreamTFunction` can let these be called without an inline default.
+// Prefix-matching `timestamp.`/`duration.` is not enough: screen-reader labels and lookup-table
+// entries are ordinary prose that happens to be resolved by name at runtime.
+lines.push(
+  '/**',
+  ' * Keys whose copy is bundled in `runtimeDefaults` rather than passed inline at the call site.',
+  ' *',
+  ' * They reach `t()` as runtime values — a JSX prop, a ternary branch, a lookup table — so there',
+  ' * is nowhere to write a `defaultValue`. Call sites pass the key alone.',
+  ' */',
+  'export type BundledTranslationKey =',
+);
+const bundledKeys = [...runtimeDefaults.keys()].sort();
+for (const key of bundledKeys) {
+  lines.push(`  | ${JSON.stringify(key)}`);
+}
+lines.push(';', '');
+
 fs.writeFileSync(KEYS_OUT, lines.join('\n'));
 
 console.log(

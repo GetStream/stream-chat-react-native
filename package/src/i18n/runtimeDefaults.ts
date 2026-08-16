@@ -123,6 +123,10 @@ export const runtimeDefaults = {
   'notifications.pollCreateFailed.error': 'Failed to create the poll',
   'notifications.pollCreateFailed.withReason.error': 'Failed to create the poll due to {{reason}}',
   'notifications.pollEndFailed.withReason.error': 'Failed to end the poll due to {{reason}}',
+  // Emitted by `stream-chat`'s poll composer and mapped in `externalStrings.ts`. They arrive as
+  // English at runtime, so there is no call site to carry the copy.
+  'poll.createPoll.maxVotes.range.error': 'Type a number from 2 to 10',
+  'poll.createPoll.options.duplicate.error': 'Option already exists',
   'poll.createPoll.close.accessibilityLabel': 'Close poll creation',
   'poll.createPoll.maxVotes.decrease.accessibilityLabel': 'Decrease maximum votes',
   'poll.createPoll.maxVotes.increase.accessibilityLabel': 'Increase maximum votes',

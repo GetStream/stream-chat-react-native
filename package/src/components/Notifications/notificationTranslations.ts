@@ -1,5 +1,8 @@
-import type { TFunction } from 'i18next';
 import type { Notification } from 'stream-chat';
+
+import { translateExternalString } from '../../i18n/externalStrings';
+import type { StreamTFunction } from '../../i18n/types';
+import { asDynamicKey } from '../../i18n/utils';
 
 const normalizeReason = (notification?: Notification) => {
   const reason = notification?.metadata?.reason;
@@ -17,12 +20,12 @@ const withReasonFallback = ({
   fallbackTranslationKey: string;
   notification?: Notification;
   reasonTranslationKey: string;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const reason = normalizeReason(notification);
-  if (!reason) return t(fallbackTranslationKey);
+  if (!reason) return t(asDynamicKey(fallbackTranslationKey));
 
-  return t(reasonTranslationKey, { reason });
+  return t(asDynamicKey(reasonTranslationKey), { reason });
 };
 
 const translateAttachmentUploadBlocked = ({
@@ -30,7 +33,7 @@ const translateAttachmentUploadBlocked = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const rawReason = notification?.metadata?.reason;
   let reason = t(
@@ -54,7 +57,7 @@ const translateAttachmentUploadFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
     fallbackTranslationKey: 'notifications.attachmentUploadFailed.error',
@@ -68,7 +71,7 @@ const translatePollCreateFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
     fallbackTranslationKey: 'notifications.pollCreateFailed.error',
@@ -82,7 +85,7 @@ const translatePollEndFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
     fallbackTranslationKey: 'poll.endVote.error',
@@ -96,7 +99,7 @@ const translateCommandDisabled = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const reason = normalizeReason(notification);
 
@@ -114,12 +117,12 @@ const translateCommandDisabled = ({
     );
   }
 
-  return t(notification?.message || 'notifications.commandUnavailable.error');
+  return t(asDynamicKey(notification?.message || 'notifications.commandUnavailable.error'));
 };
 
 const notificationTranslatorsByType: Record<
   string,
-  (options: { notification: Notification; t: TFunction }) => string
+  (options: { notification: Notification; t: StreamTFunction }) => string
 > = {
   'api:attachment:upload:failed': translateAttachmentUploadFailed,
   'api:location:create:failed': ({ t }) =>
@@ -133,7 +136,7 @@ const notificationTranslatorsByType: Record<
     t('notifications.threadNotFound.error', 'Thread has not been found'),
   'browser:audio:playback:error': ({ notification, t }) =>
     notification.message
-      ? t(notification.message)
+      ? translateExternalString(t, notification.message)
       : t('notifications.recordingPlaybackFailed.error', 'Error reproducing the recording'),
   'browser:location:get:failed': ({ t }) =>
     t('notifications.locationRetrieveFailed.error', 'Failed to retrieve location'),
@@ -159,11 +162,15 @@ export const getNotificationDisplayMessage = ({
   t,
 }: {
   notification: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const translator = notification.type
     ? notificationTranslatorsByType[notification.type]
     : undefined;
 
-  return translator ? translator({ notification, t }) : t(notification.message);
+  // `notification.message` can be English emitted by `stream-chat`; the map resolves the ones
+  // we recognise and passes anything else through unchanged.
+  return translator
+    ? translator({ notification, t })
+    : translateExternalString(t, notification.message);
 };

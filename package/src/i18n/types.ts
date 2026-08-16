@@ -1,6 +1,6 @@
 import type { TOptions } from 'i18next';
 
-import type { TranslationCatalog } from './keys';
+import type { BundledTranslationKey, TranslationCatalog } from './keys';
 
 type Whitespace = ' ' | '\n' | '\t';
 type Trim<S extends string> = S extends `${Whitespace}${infer R}`
@@ -107,11 +107,14 @@ type CopyFor<K extends string> = K extends CatalogKey
     : string;
 
 /**
- * Keys whose value is a formatter expression rather than English copy. They resolve from the
- * bundled `runtimeDefaults`, so call sites pass no inline default. Matched by prefix pattern
- * rather than by enumerating the union, which keeps the overload resolution cheap.
+ * Keys resolved from the bundled `runtimeDefaults`, so call sites pass no inline default.
+ *
+ * Two kinds live here: formatter expressions (`timestamp.*`, `duration.*`), matched by prefix so
+ * overload resolution stays cheap; and the generated {@link BundledTranslationKey} union — screen
+ * reader labels and lookup-table entries that are ordinary prose but reach `t()` as runtime
+ * values, leaving nowhere to write a default.
  */
-type FormatterKey = `timestamp.${string}` | `duration.${string}`;
+type FormatterKey = `timestamp.${string}` | `duration.${string}` | BundledTranslationKey;
 
 /** Keys whose value is English copy, passed inline as the `defaultValue`. */
 type ProseKey = Exclude<TranslationKey, FormatterKey | PluralTranslationKey>;

@@ -2,6 +2,7 @@ import { useContext } from 'react';
 
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { TranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { asDynamicKey } from '../../i18n/utils';
 
 /**
  * Returns the translated `a11y/...` label when the AccessibilityContext is enabled,
@@ -18,5 +19,6 @@ export const useA11yLabel = (key: string, params?: Record<string, unknown>): str
   const { enabled } = useAccessibilityContext();
   const { t } = useContext(TranslationContext);
   if (!enabled || !key) return undefined;
-  return t(key, params);
+  // `key` is a caller-supplied string, so this is the deliberate runtime-key escape hatch.
+  return t(asDynamicKey(key), params);
 };

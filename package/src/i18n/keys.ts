@@ -362,8 +362,10 @@ export type TranslationCatalog = {
   'poll.createPoll.maxVotes.description': 'Choose between 2–10 options';
   'poll.createPoll.maxVotes.increase.accessibilityLabel': 'Increase maximum votes';
   'poll.createPoll.maxVotes.label': 'Limit votes per person';
+  'poll.createPoll.maxVotes.range.error': 'Type a number from 2 to 10';
   'poll.createPoll.multipleVotes.description': 'Select more than one option';
   'poll.createPoll.multipleVotes.label': 'Multiple votes';
+  'poll.createPoll.options.duplicate.error': 'Option already exists';
   'poll.createPoll.options.label': 'Options';
   'poll.createPoll.options.placeholder': 'Add an option';
   'poll.createPoll.question.label': 'Questions';
@@ -417,3 +419,108 @@ export type TranslationCatalog = {
   'uiComponents.searchInput.clear.accessibilityLabel': 'Clear search';
   'uiComponents.searchInput.placeholder': 'Search';
 };
+
+/**
+ * Keys whose copy is bundled in `runtimeDefaults` rather than passed inline at the call site.
+ *
+ * They reach `t()` as runtime values — a JSX prop, a ternary branch, a lookup table — so there
+ * is nowhere to write a `defaultValue`. Call sites pass the key alone.
+ */
+export type BundledTranslationKey =
+  | 'attachment.gallery.doubleTapToOpen.accessibilityLabel'
+  | 'attachment.gallery.image.accessibilityLabel'
+  | 'attachment.gallery.video.accessibilityLabel'
+  | 'attachmentPicker.image.deselect.accessibilityLabel'
+  | 'attachmentPicker.image.select.accessibilityLabel'
+  | 'attachmentPicker.typeButton.camera.accessibilityLabel'
+  | 'attachmentPicker.typeButton.commands.accessibilityLabel'
+  | 'attachmentPicker.typeButton.files.accessibilityLabel'
+  | 'attachmentPicker.typeButton.images.accessibilityLabel'
+  | 'attachmentPicker.typeButton.poll.accessibilityLabel'
+  | 'attachmentPicker.typeButton.videoRecorder.accessibilityLabel'
+  | 'attachmentPicker.video.deselect.accessibilityLabel'
+  | 'attachmentPicker.video.select.accessibilityLabel'
+  | 'autoCompleteInput.mention.channel.description'
+  | 'autoCompleteInput.mention.here.description'
+  | 'autoCompleteInput.suggestions.commandsAvailable.accessibilityLabel'
+  | 'autoCompleteInput.suggestions.emojisAvailable.accessibilityLabel'
+  | 'autoCompleteInput.suggestions.mentionsAvailable.accessibilityLabel'
+  | 'avatar.accessibilityLabel'
+  | 'avatar.channel.direct.accessibilityLabel'
+  | 'avatar.channel.group.accessibilityLabel'
+  | 'channelDetails.addMembers.accessibilityLabel'
+  | 'channelDetails.editChannel.accessibilityLabel'
+  | 'channelDetails.editChannel.upload.accessibilityLabel'
+  | 'channelDetails.editImageSheet.close.accessibilityLabel'
+  | 'channelDetails.header.back.accessibilityLabel'
+  | 'channelDetails.navigation.files.label'
+  | 'channelDetails.navigation.photosAndVideos.label'
+  | 'channelDetails.navigation.pinnedMessages.label'
+  | 'channelPreview.deliveryStatus.delivered.accessibilityLabel'
+  | 'channelPreview.deliveryStatus.read.accessibilityLabel'
+  | 'channelPreview.deliveryStatus.sent.accessibilityLabel'
+  | 'channelPreview.lastMessage.accessibilityLabel'
+  | 'channelPreview.muted.accessibilityLabel'
+  | 'channelPreview.pinned.accessibilityLabel'
+  | 'channelPreview.unreadCount.accessibilityLabel'
+  | 'common.close.accessibilityLabel'
+  | 'common.messageOverlay.swipeHint.accessibilityLabel'
+  | 'duration.messageReminder'
+  | 'imageGallery.footer.grid.accessibilityLabel'
+  | 'imageGallery.footer.share.accessibilityLabel'
+  | 'imageGallery.header.hideOverlay.accessibilityLabel'
+  | 'imageGallery.position.accessibilityLabel'
+  | 'imageGallery.videoControl.playPause.accessibilityLabel'
+  | 'message.content.contextMenuHint.accessibilityLabel'
+  | 'message.content.fromSender.accessibilityLabel'
+  | 'message.content.fromYou.accessibilityLabel'
+  | 'message.reactionList.more.accessibilityLabel'
+  | 'message.reactionList.viewHint.accessibilityLabel'
+  | 'message.reactionList.youReacted.accessibilityLabel'
+  | 'message.status.delivered.accessibilityLabel'
+  | 'message.status.read.accessibilityLabel'
+  | 'message.status.sending.accessibilityLabel'
+  | 'message.status.sent.accessibilityLabel'
+  | 'messageInput.addAttachment.accessibilityLabel'
+  | 'messageInput.audioRecorder.delete.accessibilityLabel'
+  | 'messageInput.audioRecorder.holdToRecord.text'
+  | 'messageInput.audioRecorder.permissionDenied.text'
+  | 'messageInput.audioRecorder.send.accessibilityLabel'
+  | 'messageInput.audioRecorder.start.accessibilityLabel'
+  | 'messageInput.audioRecorder.stop.accessibilityLabel'
+  | 'messageInput.closeAttachments.accessibilityLabel'
+  | 'messageInput.removeAttachment.accessibilityLabel'
+  | 'messageInput.saveEdit.accessibilityLabel'
+  | 'messageInput.sendMessage.accessibilityLabel'
+  | 'messageList.dismissUnread.accessibilityLabel'
+  | 'messageList.scrollToBottom.accessibilityLabel'
+  | 'messageList.scrollToBottom.withCount.accessibilityLabel'
+  | 'messageMenu.actionList.accessibilityLabel'
+  | 'messageMenu.reactionPicker.moreReactions.accessibilityLabel'
+  | 'notifications.attachmentUploadFailed.error'
+  | 'notifications.attachmentUploadFailed.withReason.error'
+  | 'notifications.commandUnavailable.error'
+  | 'notifications.pollCreateFailed.error'
+  | 'notifications.pollCreateFailed.withReason.error'
+  | 'notifications.pollEndFailed.withReason.error'
+  | 'poll.createPoll.close.accessibilityLabel'
+  | 'poll.createPoll.maxVotes.decrease.accessibilityLabel'
+  | 'poll.createPoll.maxVotes.increase.accessibilityLabel'
+  | 'poll.createPoll.maxVotes.range.error'
+  | 'poll.createPoll.options.duplicate.error'
+  | 'poll.createPoll.submit.accessibilityLabel'
+  | 'poll.endVote.error'
+  | 'poll.modalHeader.close.accessibilityLabel'
+  | 'reply.removeEdit.accessibilityLabel'
+  | 'reply.removeReply.accessibilityLabel'
+  | 'timestamp.ChannelPreviewStatus'
+  | 'timestamp.FileAttachmentListSection'
+  | 'timestamp.ImageGalleryHeader'
+  | 'timestamp.InlineDateSeparator'
+  | 'timestamp.MessageSystem'
+  | 'timestamp.MessageTimestamp'
+  | 'timestamp.PollVote'
+  | 'timestamp.StickyHeader'
+  | 'timestamp.ThreadListItem'
+  | 'timestamp.UserActivityStatus'
+  | 'uiComponents.bottomSheetModal.opened.accessibilityLabel';
