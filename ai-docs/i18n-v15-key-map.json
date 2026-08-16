@@ -1,0 +1,1961 @@
+{
+  "$comment": "v9 -> v10 translation key map for stream-chat-react-native. The left-hand side is the old key, which was the English copy itself; the right-hand side is the stable dotted key that replaces it. `plural` entries live in the catalog as <key>_one / <key>_other, while call sites use the bare key and pass `count`. Keys not listed here were dead in v9 and have been removed. Generated keys and their English copy: `yarn i18n:export`.",
+  "count": 391,
+  "keys": {
+    "+{{count}}": {
+      "key": "attachment.gallery.moreImages.label",
+      "prose": true,
+      "plural": true
+    },
+    "+{{count}} More Options": {
+      "key": "poll.moreOptions.label",
+      "prose": true,
+      "plural": true
+    },
+    "1 Reply": {
+      "key": "message.replies.one.label",
+      "prose": true,
+      "plural": false
+    },
+    "Add": {
+      "key": "channelDetails.addMembers.label",
+      "prose": true,
+      "plural": false
+    },
+    "Add Members": {
+      "key": "channelDetails.addMembers.title",
+      "prose": true,
+      "plural": false
+    },
+    "Add a comment": {
+      "key": "poll.addComment.label",
+      "prose": true,
+      "plural": false
+    },
+    "Add a comment to the poll": {
+      "key": "poll.addComment.description",
+      "prose": true,
+      "plural": false
+    },
+    "Add an option": {
+      "key": "poll.createPoll.options.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Add more": {
+      "key": "attachmentPicker.photoLibrary.addMore.label",
+      "prose": true,
+      "plural": false
+    },
+    "Admin": {
+      "key": "channelDetails.memberRoles.admin.label",
+      "prose": true,
+      "plural": false
+    },
+    "Allow access to your Gallery": {
+      "key": "common.galleryPermission.title",
+      "prose": true,
+      "plural": false
+    },
+    "Allow camera access in device settings": {
+      "key": "common.cameraPermission.title",
+      "prose": true,
+      "plural": false
+    },
+    "Already a member": {
+      "key": "channelDetails.addMembers.alreadyMember.text",
+      "prose": true,
+      "plural": false
+    },
+    "Also send to channel": {
+      "key": "messageInput.alsoSendToChannel.label",
+      "prose": true,
+      "plural": false
+    },
+    "Also sent in channel": {
+      "key": "message.sentToChannelHeader.alsoSent.text",
+      "prose": true,
+      "plural": false
+    },
+    "Anonymous": {
+      "key": "common.anonymousUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Anonymous voting": {
+      "key": "poll.createPoll.anonymousVoting.label",
+      "prose": true,
+      "plural": false
+    },
+    "Are you sure you want to delete this chat? This can't be undone.": {
+      "key": "channel.deleteChat.confirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Are you sure you want to delete this group? This can't be undone.": {
+      "key": "channel.deleteGroup.confirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Are you sure you want to permanently delete this message?": {
+      "key": "message.deleteMessageConfirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Are you sure you want to remove this member from the channel?": {
+      "key": "channel.removeUser.confirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Are you sure?": {
+      "key": "message.bounce.title",
+      "prose": true,
+      "plural": false
+    },
+    "Ask a question": {
+      "key": "poll.createPoll.question.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Attachment upload blocked due to {{reason}}": {
+      "key": "notifications.attachmentUploadBlocked.error",
+      "prose": true,
+      "plural": false
+    },
+    "Attachment upload failed due to {{reason}}": {
+      "key": "notifications.attachmentUploadFailed.withReason.error",
+      "prose": true,
+      "plural": false
+    },
+    "Audio": {
+      "key": "messagePreview.audio.label",
+      "prose": true,
+      "plural": false
+    },
+    "Ban User": {
+      "key": "message.banUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Block": {
+      "key": "message.blockUserConfirm.label",
+      "prose": true,
+      "plural": false
+    },
+    "Block User": {
+      "key": "message.blockUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Block {{ name }}": {
+      "key": "message.blockUserConfirm.title",
+      "prose": true,
+      "plural": false
+    },
+    "Cancel": {
+      "key": "common.cancel.label",
+      "prose": true,
+      "plural": false
+    },
+    "Cannot seek in the recording": {
+      "key": "audioPlayer.seekUnsupported.error",
+      "prose": true,
+      "plural": false
+    },
+    "Change in Settings": {
+      "key": "attachmentPicker.openSettings.label",
+      "prose": true,
+      "plural": false
+    },
+    "Channel archived": {
+      "key": "channel.archived.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel deleted": {
+      "key": "channel.deleted.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel image updated": {
+      "key": "channel.imageUpdated.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel muted": {
+      "key": "channel.muted.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel name": {
+      "key": "channelDetails.editChannel.name.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Channel name updated": {
+      "key": "channel.nameUpdated.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel pinned": {
+      "key": "channel.pinned.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel unarchived": {
+      "key": "channel.unarchived.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel unmuted": {
+      "key": "channel.unmuted.text",
+      "prose": true,
+      "plural": false
+    },
+    "Channel unpinned": {
+      "key": "channel.unpinned.text",
+      "prose": true,
+      "plural": false
+    },
+    "Choose Image": {
+      "key": "channelDetails.editImageSheet.chooseImage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Choose between 2–10 options": {
+      "key": "poll.createPoll.maxVotes.description",
+      "prose": true,
+      "plural": false
+    },
+    "Command not available": {
+      "key": "notifications.commandUnavailable.error",
+      "prose": true,
+      "plural": false
+    },
+    "Command not available while editing": {
+      "key": "notifications.commandUnavailable.whileEditing.error",
+      "prose": true,
+      "plural": false
+    },
+    "Command not available while replying": {
+      "key": "notifications.commandUnavailable.whileReplying.error",
+      "prose": true,
+      "plural": false
+    },
+    "Consider how your comment might make others feel and be sure to follow our Community Guidelines": {
+      "key": "message.bounce.text",
+      "prose": true,
+      "plural": false
+    },
+    "Contact Info": {
+      "key": "channelDetails.header.contactInfo.title",
+      "prose": true,
+      "plural": false
+    },
+    "Copy Message": {
+      "key": "message.copyMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Couldn't load new threads. Tap to retry": {
+      "key": "threadList.unreadBanner.loadFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Create Poll": {
+      "key": "attachmentPicker.poll.label",
+      "prose": true,
+      "plural": false
+    },
+    "Create a poll and let everyone vote": {
+      "key": "attachmentPicker.poll.description",
+      "prose": true,
+      "plural": false
+    },
+    "Delete": {
+      "key": "message.deleteMessageConfirm.label",
+      "prose": true,
+      "plural": false
+    },
+    "Delete Chat": {
+      "key": "channel.deleteChat.label",
+      "prose": true,
+      "plural": false
+    },
+    "Delete Group": {
+      "key": "channel.deleteGroup.label",
+      "prose": true,
+      "plural": false
+    },
+    "Delete Message": {
+      "key": "message.deleteMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Delete chat": {
+      "key": "channel.deleteChat.title",
+      "prose": true,
+      "plural": false
+    },
+    "Delete for me": {
+      "key": "message.deleteForMe.label",
+      "prose": true,
+      "plural": false
+    },
+    "Delete group": {
+      "key": "channel.deleteGroup.title",
+      "prose": true,
+      "plural": false
+    },
+    "Device camera is used to take photos or videos.": {
+      "key": "common.cameraPermission.text",
+      "prose": true,
+      "plural": false
+    },
+    "Device gallery permissions is used to take photos or videos.": {
+      "key": "common.galleryPermission.text",
+      "prose": true,
+      "plural": false
+    },
+    "Do you want to send a copy of this message to a moderator for further investigation?": {
+      "key": "message.flagMessageConfirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Draft": {
+      "key": "common.draft.label",
+      "prose": true,
+      "plural": false
+    },
+    "Edit": {
+      "key": "channelDetails.editChannel.label",
+      "prose": true,
+      "plural": false
+    },
+    "Edit Group Picture": {
+      "key": "channelDetails.editImageSheet.title",
+      "prose": true,
+      "plural": false
+    },
+    "Edit Message": {
+      "key": "message.editMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Edit message request failed": {
+      "key": "common.editMessageFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Edited": {
+      "key": "message.edited.text",
+      "prose": true,
+      "plural": false
+    },
+    "End Vote": {
+      "key": "poll.endVote.label",
+      "prose": true,
+      "plural": false
+    },
+    "Enter a new option": {
+      "key": "poll.suggestOption.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Error adding flag": {
+      "key": "message.flagMessage.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error deleting message": {
+      "key": "message.deleteMessage.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error fetching reactions": {
+      "key": "messageMenu.userReactions.fetchFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error loading": {
+      "key": "indicators.loading.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error loading channel list...": {
+      "key": "indicators.loading.channels.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error loading messages for this channel...": {
+      "key": "indicators.loading.messages.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error marking message unread. Cannot mark unread messages older than the newest 100 channel messages.": {
+      "key": "message.markUnreadTooOld.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error muting a user ...": {
+      "key": "message.muteUser.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error pinning message": {
+      "key": "message.pinMessage.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error removing message pin": {
+      "key": "message.unpinMessage.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error reproducing the recording": {
+      "key": "notifications.recordingPlaybackFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error unmuting a user ...": {
+      "key": "message.unmuteUser.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error uploading attachment": {
+      "key": "notifications.attachmentUploadFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Error while loading, please reload/refresh": {
+      "key": "channelList.header.loadFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to add members": {
+      "key": "channel.addMembersFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to block user": {
+      "key": "channel.blockUserFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to copy message": {
+      "key": "message.copyMessage.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to create the poll": {
+      "key": "notifications.pollCreateFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to create the poll due to {{reason}}": {
+      "key": "notifications.pollCreateFailed.withReason.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to delete channel": {
+      "key": "channel.deleteFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to end the poll": {
+      "key": "poll.endVote.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to end the poll due to {{reason}}": {
+      "key": "notifications.pollEndFailed.withReason.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to jump to the first unread message": {
+      "key": "channel.jumpToFirstUnreadFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to leave channel": {
+      "key": "channel.leaveFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to load files": {
+      "key": "channelDetails.fileAttachmentList.load.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to load media": {
+      "key": "channelDetails.mediaList.load.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to load members": {
+      "key": "channelDetails.memberList.load.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to load pinned messages": {
+      "key": "channelDetails.pinnedMessageList.load.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to load users": {
+      "key": "channelDetails.addMembers.load.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to play the recording": {
+      "key": "audioPlayer.playbackFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to remove members": {
+      "key": "channel.removeMembersFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to retrieve location": {
+      "key": "notifications.locationRetrieveFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to share location": {
+      "key": "notifications.locationShareFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to update channel archive status": {
+      "key": "channel.archiveUpdateFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to update channel image": {
+      "key": "channel.imageUpdateFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to update channel mute status": {
+      "key": "channel.muteUpdateFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to update channel name": {
+      "key": "channel.nameUpdateFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Failed to update channel pinned status": {
+      "key": "channel.pinUpdateFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "File is required for upload attachment": {
+      "key": "notifications.attachmentFileMissing.error",
+      "prose": true,
+      "plural": false
+    },
+    "File too large": {
+      "key": "messageInput.attachmentUpload.tooLarge.error",
+      "prose": true,
+      "plural": false
+    },
+    "Files": {
+      "key": "channelDetails.navigation.files.label",
+      "prose": true,
+      "plural": false
+    },
+    "Flag": {
+      "key": "message.flagMessageConfirm.label",
+      "prose": true,
+      "plural": false
+    },
+    "Flag Message": {
+      "key": "message.flagMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Generating...": {
+      "key": "aiTypingIndicator.generating.label",
+      "prose": true,
+      "plural": false
+    },
+    "Giphy": {
+      "key": "messagePreview.giphy.label",
+      "prose": true,
+      "plural": false
+    },
+    "Group Info": {
+      "key": "channelDetails.header.groupInfo.title",
+      "prose": true,
+      "plural": false
+    },
+    "Hide who voted": {
+      "key": "poll.createPoll.anonymousVoting.description",
+      "prose": true,
+      "plural": false
+    },
+    "Hold to record. Release to save.": {
+      "key": "messageInput.audioRecorder.holdToRecord.text",
+      "prose": true,
+      "plural": false
+    },
+    "Instant Commands": {
+      "key": "attachmentPicker.commands.title",
+      "prose": true,
+      "plural": false
+    },
+    "Leave": {
+      "key": "channel.leave.confirm.label",
+      "prose": true,
+      "plural": false
+    },
+    "Leave Chat": {
+      "key": "channel.leaveChat.label",
+      "prose": true,
+      "plural": false
+    },
+    "Leave Group": {
+      "key": "channel.leaveGroup.label",
+      "prose": true,
+      "plural": false
+    },
+    "Left channel": {
+      "key": "channel.left.text",
+      "prose": true,
+      "plural": false
+    },
+    "Let others add options": {
+      "key": "poll.suggestOption.description",
+      "prose": true,
+      "plural": false
+    },
+    "Limit votes per person": {
+      "key": "poll.createPoll.maxVotes.label",
+      "prose": true,
+      "plural": false
+    },
+    "Links are disabled": {
+      "key": "common.linksDisabled.title",
+      "prose": true,
+      "plural": false
+    },
+    "Live Location": {
+      "key": "messagePreview.liveLocation.label",
+      "prose": true,
+      "plural": false
+    },
+    "Loading channels...": {
+      "key": "indicators.loading.channels.text",
+      "prose": true,
+      "plural": false
+    },
+    "Loading messages...": {
+      "key": "indicators.loading.messages.text",
+      "prose": true,
+      "plural": false
+    },
+    "Loading...": {
+      "key": "common.loading.text",
+      "prose": true,
+      "plural": false
+    },
+    "Local upload attachment missing local id": {
+      "key": "notifications.attachmentIdMissing.error",
+      "prose": true,
+      "plural": false
+    },
+    "Location": {
+      "key": "messagePreview.location.label",
+      "prose": true,
+      "plural": false
+    },
+    "Long-press a message to pin it to the chat": {
+      "key": "channelDetails.pinnedMessageList.empty.description",
+      "prose": true,
+      "plural": false
+    },
+    "Mark as Unread": {
+      "key": "message.markUnread.label",
+      "prose": true,
+      "plural": false
+    },
+    "Maximum number of files reached": {
+      "key": "attachmentPicker.maxFiles.error",
+      "prose": true,
+      "plural": false
+    },
+    "Message copied to clipboard": {
+      "key": "message.copied.text",
+      "prose": true,
+      "plural": false
+    },
+    "Message deleted": {
+      "key": "message.deleted.text",
+      "prose": true,
+      "plural": false
+    },
+    "Message failed to send": {
+      "key": "channelPreview.messageFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Message has been successfully flagged": {
+      "key": "message.flagged.text",
+      "prose": true,
+      "plural": false
+    },
+    "Message marked as unread": {
+      "key": "message.markedUnread.text",
+      "prose": true,
+      "plural": false
+    },
+    "Message pinned": {
+      "key": "message.pinned.text",
+      "prose": true,
+      "plural": false
+    },
+    "Message unpinned": {
+      "key": "message.unpinned.text",
+      "prose": true,
+      "plural": false
+    },
+    "Moderator": {
+      "key": "channelDetails.memberRoles.moderator.label",
+      "prose": true,
+      "plural": false
+    },
+    "Multiple votes": {
+      "key": "poll.createPoll.multipleVotes.label",
+      "prose": true,
+      "plural": false
+    },
+    "Mute Chat": {
+      "key": "channel.muteChat.label",
+      "prose": true,
+      "plural": false
+    },
+    "Mute Group": {
+      "key": "channel.muteGroup.label",
+      "prose": true,
+      "plural": false
+    },
+    "Mute User": {
+      "key": "message.muteUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Muted": {
+      "key": "channelDetails.muted.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "Network error": {
+      "key": "messageInput.attachmentUpload.network.error",
+      "prose": true,
+      "plural": false
+    },
+    "No chats here yet…": {
+      "key": "indicators.emptyState.noChats.text",
+      "prose": true,
+      "plural": false
+    },
+    "No conversations yet": {
+      "key": "indicators.emptyState.noConversations.text",
+      "prose": true,
+      "plural": false
+    },
+    "No files": {
+      "key": "channelDetails.fileAttachmentList.empty.title",
+      "prose": true,
+      "plural": false
+    },
+    "No items exist": {
+      "key": "indicators.emptyState.noItems.text",
+      "prose": true,
+      "plural": false
+    },
+    "No members found": {
+      "key": "channelDetails.memberList.noMembersFound.label",
+      "prose": true,
+      "plural": false
+    },
+    "No messages yet": {
+      "key": "channelPreview.noMessages.text",
+      "prose": true,
+      "plural": false
+    },
+    "No photos or videos": {
+      "key": "channelDetails.mediaList.empty.title",
+      "prose": true,
+      "plural": false
+    },
+    "No pinned messages": {
+      "key": "channelDetails.pinnedMessageList.empty.title",
+      "prose": true,
+      "plural": false
+    },
+    "No user found": {
+      "key": "channelDetails.addMembers.noUserFound.label",
+      "prose": true,
+      "plural": false
+    },
+    "Not supported": {
+      "key": "messageInput.attachmentUpload.notSupported.error",
+      "prose": true,
+      "plural": false
+    },
+    "Notify all {{ role }} members": {
+      "key": "autoCompleteInput.mention.role.description",
+      "prose": true,
+      "plural": false
+    },
+    "Offline": {
+      "key": "common.presence.offline.label",
+      "prose": true,
+      "plural": false
+    },
+    "Online": {
+      "key": "common.presence.online.label",
+      "prose": true,
+      "plural": false
+    },
+    "Only visible to you": {
+      "key": "attachment.giphy.onlyVisibleToYou.text",
+      "prose": true,
+      "plural": false
+    },
+    "Open Camera": {
+      "key": "attachmentPicker.camera.label",
+      "prose": true,
+      "plural": false
+    },
+    "Open Files": {
+      "key": "attachmentPicker.files.label",
+      "prose": true,
+      "plural": false
+    },
+    "Open Settings": {
+      "key": "common.openSettings.label",
+      "prose": true,
+      "plural": false
+    },
+    "Option {{count}}": {
+      "key": "poll.results.optionNumber.text",
+      "prose": true,
+      "plural": false
+    },
+    "Options": {
+      "key": "poll.createPoll.options.label",
+      "prose": true,
+      "plural": false
+    },
+    "Owner": {
+      "key": "channelDetails.memberRoles.owner.label",
+      "prose": true,
+      "plural": false
+    },
+    "Photo": {
+      "key": "messagePreview.photo.label",
+      "prose": true,
+      "plural": false
+    },
+    "Photos & Videos": {
+      "key": "channelDetails.navigation.photosAndVideos.label",
+      "prose": true,
+      "plural": false
+    },
+    "Pin Chat": {
+      "key": "channel.pinChat.label",
+      "prose": true,
+      "plural": false
+    },
+    "Pin Group": {
+      "key": "channel.pinGroup.label",
+      "prose": true,
+      "plural": false
+    },
+    "Pin to Conversation": {
+      "key": "message.pinMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Pinned Messages": {
+      "key": "channelDetails.navigation.pinnedMessages.label",
+      "prose": true,
+      "plural": false
+    },
+    "Pinned by": {
+      "key": "message.pinnedBy.text",
+      "prose": true,
+      "plural": false
+    },
+    "Please allow Audio permissions in settings.": {
+      "key": "messageInput.audioRecorder.permissionDenied.text",
+      "prose": true,
+      "plural": false
+    },
+    "Please select a channel first": {
+      "key": "channel.noneSelected.text",
+      "prose": true,
+      "plural": false
+    },
+    "Poll Comments": {
+      "key": "poll.comments.title",
+      "prose": true,
+      "plural": false
+    },
+    "Poll Options": {
+      "key": "poll.allOptions.title",
+      "prose": true,
+      "plural": false
+    },
+    "Poll Results": {
+      "key": "poll.results.title",
+      "prose": true,
+      "plural": false
+    },
+    "Poll ended": {
+      "key": "notifications.pollEnded.text",
+      "prose": true,
+      "plural": false
+    },
+    "Poll has ended": {
+      "key": "poll.subtitle.ended.text",
+      "prose": true,
+      "plural": false
+    },
+    "Question": {
+      "key": "poll.question.label",
+      "prose": true,
+      "plural": false
+    },
+    "Questions": {
+      "key": "poll.createPoll.question.label",
+      "prose": true,
+      "plural": false
+    },
+    "Reached the vote limit. Remove an existing vote first.": {
+      "key": "notifications.voteLimitReached.error",
+      "prose": true,
+      "plural": false
+    },
+    "Reconnecting...": {
+      "key": "common.reconnecting.text",
+      "prose": true,
+      "plural": false
+    },
+    "Recording format is not supported and cannot be reproduced": {
+      "key": "audioPlayer.formatUnsupported.error",
+      "prose": true,
+      "plural": false
+    },
+    "Reminder overdue": {
+      "key": "message.reminderOverdue.text",
+      "prose": true,
+      "plural": false
+    },
+    "Reminder set": {
+      "key": "message.reminderSet.text",
+      "prose": true,
+      "plural": false
+    },
+    "Remove": {
+      "key": "channel.removeUser.confirm.label",
+      "prose": true,
+      "plural": false
+    },
+    "Remove User": {
+      "key": "channel.removeUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Replied to a thread": {
+      "key": "message.sentToChannelHeader.repliedToThread.text",
+      "prose": true,
+      "plural": false
+    },
+    "Reply": {
+      "key": "message.reply.label",
+      "prose": true,
+      "plural": false
+    },
+    "Reply to a message to start a thread": {
+      "key": "indicators.emptyState.noThreads.text",
+      "prose": true,
+      "plural": false
+    },
+    "Reply to {{name}}": {
+      "key": "reply.replyTo.title",
+      "prose": true,
+      "plural": false
+    },
+    "Resend": {
+      "key": "message.resend.label",
+      "prose": true,
+      "plural": false
+    },
+    "Reset Picture": {
+      "key": "channelDetails.editImageSheet.resetPicture.label",
+      "prose": true,
+      "plural": false
+    },
+    "Retry Upload": {
+      "key": "messageInput.attachmentUpload.retry.label",
+      "prose": true,
+      "plural": false
+    },
+    "Saved For Later": {
+      "key": "message.savedForLater.text",
+      "prose": true,
+      "plural": false
+    },
+    "Search": {
+      "key": "uiComponents.searchInput.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Select files to share": {
+      "key": "attachmentPicker.files.description",
+      "prose": true,
+      "plural": false
+    },
+    "Select more than one option": {
+      "key": "poll.createPoll.multipleVotes.description",
+      "prose": true,
+      "plural": false
+    },
+    "Select one": {
+      "key": "poll.subtitle.selectOne.text",
+      "prose": true,
+      "plural": false
+    },
+    "Select one or more": {
+      "key": "poll.subtitle.selectAny.text",
+      "prose": true,
+      "plural": false
+    },
+    "Select up to {{count}}": {
+      "key": "poll.subtitle.selectUpTo.text",
+      "prose": true,
+      "plural": true
+    },
+    "Send": {
+      "key": "poll.inputDialog.send.label",
+      "prose": true,
+      "plural": false
+    },
+    "Send Anyway": {
+      "key": "message.bounce.sendAnyway.label",
+      "prose": true,
+      "plural": false
+    },
+    "Send a message": {
+      "key": "autoCompleteInput.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Send message request failed": {
+      "key": "common.sendMessageFailed.error",
+      "prose": true,
+      "plural": false
+    },
+    "Sending links is not allowed in this conversation": {
+      "key": "common.linksDisabled.text",
+      "prose": true,
+      "plural": false
+    },
+    "Share a file to see it here": {
+      "key": "channelDetails.fileAttachmentList.empty.description",
+      "prose": true,
+      "plural": false
+    },
+    "Share a photo or video to see it here": {
+      "key": "channelDetails.mediaList.empty.description",
+      "prose": true,
+      "plural": false
+    },
+    "Show All": {
+      "key": "poll.results.showAll.label",
+      "prose": true,
+      "plural": false
+    },
+    "Slide to Cancel": {
+      "key": "messageInput.audioRecorder.slideToCancel.text",
+      "prose": true,
+      "plural": false
+    },
+    "Slow mode, wait {{seconds}}s...": {
+      "key": "autoCompleteInput.slowMode.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "Suggest an option": {
+      "key": "poll.suggestOption.label",
+      "prose": true,
+      "plural": false
+    },
+    "Take Photo": {
+      "key": "channelDetails.editImageSheet.takePhoto.label",
+      "prose": true,
+      "plural": false
+    },
+    "Take a photo and share": {
+      "key": "attachmentPicker.camera.description",
+      "prose": true,
+      "plural": false
+    },
+    "Take a video and share": {
+      "key": "attachmentPicker.camera.videoOnly.description",
+      "prose": true,
+      "plural": false
+    },
+    "Tap to remove": {
+      "key": "messageMenu.userReactions.tapToRemove.description",
+      "prose": true,
+      "plural": false
+    },
+    "They won't be able to message or call you. You can unblock them later.": {
+      "key": "message.blockUserConfirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Thinking...": {
+      "key": "aiTypingIndicator.thinking.label",
+      "prose": true,
+      "plural": false
+    },
+    "Thread Reply": {
+      "key": "message.threadReply.label",
+      "prose": true,
+      "plural": false
+    },
+    "Thread has not been found": {
+      "key": "notifications.threadNotFound.error",
+      "prose": true,
+      "plural": false
+    },
+    "Typing": {
+      "key": "channelPreview.typing.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unban User": {
+      "key": "message.unbanUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unblock User": {
+      "key": "message.unblockUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unknown User": {
+      "key": "common.unknownUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unmute Chat": {
+      "key": "channel.unmuteChat.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unmute Group": {
+      "key": "channel.unmuteGroup.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unmute User": {
+      "key": "message.unmuteUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unpin Chat": {
+      "key": "channel.unpinChat.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unpin Group": {
+      "key": "channel.unpinGroup.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unpin from Conversation": {
+      "key": "message.unpinMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unread Messages": {
+      "key": "messageList.unreadMessages.label",
+      "prose": true,
+      "plural": false
+    },
+    "Unsupported Attachment": {
+      "key": "attachment.unsupported.title",
+      "prose": true,
+      "plural": false
+    },
+    "Update your comment": {
+      "key": "poll.updateComment.label",
+      "prose": true,
+      "plural": false
+    },
+    "Upload": {
+      "key": "channelDetails.editChannel.upload.label",
+      "prose": true,
+      "plural": false
+    },
+    "User blocked": {
+      "key": "channel.userBlocked.text",
+      "prose": true,
+      "plural": false
+    },
+    "User unblocked": {
+      "key": "channel.userUnblocked.text",
+      "prose": true,
+      "plural": false
+    },
+    "Video": {
+      "key": "messagePreview.video.label",
+      "prose": true,
+      "plural": false
+    },
+    "View": {
+      "key": "message.sentToChannelHeader.view.label",
+      "prose": true,
+      "plural": false
+    },
+    "View Results": {
+      "key": "poll.viewResults.label",
+      "prose": true,
+      "plural": false
+    },
+    "View all": {
+      "key": "channelDetails.memberSection.viewAll.label",
+      "prose": true,
+      "plural": false
+    },
+    "View {{count}} comments": {
+      "key": "poll.viewComments.label",
+      "prose": true,
+      "plural": true
+    },
+    "Voice message ({{duration}})": {
+      "key": "messagePreview.voiceMessage.label",
+      "prose": true,
+      "plural": false
+    },
+    "Voice message deleted": {
+      "key": "messageInput.audioRecorder.recordingDeleted.text",
+      "prose": true,
+      "plural": false
+    },
+    "Votes": {
+      "key": "poll.votes.title",
+      "prose": true,
+      "plural": false
+    },
+    "Wait until all attachments have uploaded": {
+      "key": "notifications.attachmentUploadInProgress.error",
+      "prose": true,
+      "plural": false
+    },
+    "You": {
+      "key": "common.you.label",
+      "prose": true,
+      "plural": false
+    },
+    "You can't send messages in this channel": {
+      "key": "messageInput.sendMessageDisallowed.text",
+      "prose": true,
+      "plural": false
+    },
+    "You have not granted access to the photo library.": {
+      "key": "attachmentPicker.photoLibrary.denied.description",
+      "prose": true,
+      "plural": false
+    },
+    "You have not granted access to your camera": {
+      "key": "attachmentPicker.camera.denied.description",
+      "prose": true,
+      "plural": false
+    },
+    "You voted: {{ option }}": {
+      "key": "channelPreview.pollVote.byYou.label",
+      "prose": true,
+      "plural": false
+    },
+    "You'll stop receiving messages from {{ name }}. You can rejoin anytime.": {
+      "key": "channel.leave.confirm.text",
+      "prose": true,
+      "plural": false
+    },
+    "Your comment": {
+      "key": "poll.addComment.placeholder",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Add attachment": {
+      "key": "messageInput.addAttachment.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Add members": {
+      "key": "channelDetails.addMembers.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Avatar of {{name}}": {
+      "key": "avatar.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Back": {
+      "key": "channelDetails.header.back.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.": {
+      "key": "uiComponents.bottomSheetModal.opened.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Channel name": {
+      "key": "channelDetails.editChannel.name.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Channel with {{count}} members": {
+      "key": "avatar.channel.group.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Clear search": {
+      "key": "uiComponents.searchInput.clear.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Close": {
+      "key": "common.close.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Close attachments": {
+      "key": "messageInput.closeAttachments.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Close edit picture sheet": {
+      "key": "channelDetails.editImageSheet.close.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Close poll": {
+      "key": "poll.modalHeader.close.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Close poll creation": {
+      "key": "poll.createPoll.close.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Command suggestions available": {
+      "key": "autoCompleteInput.suggestions.commandsAvailable.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Confirm add members": {
+      "key": "channelDetails.addMembers.confirm.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Confirm edit channel": {
+      "key": "channelDetails.editChannel.confirm.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Connected": {
+      "key": "a11y.connection.connected.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Create poll": {
+      "key": "poll.createPoll.submit.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Decrease maximum votes": {
+      "key": "poll.createPoll.maxVotes.decrease.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Delete voice recording": {
+      "key": "messageInput.audioRecorder.delete.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Delivered": {
+      "key": "message.status.delivered.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Delivered, sent by you": {
+      "key": "channelPreview.deliveryStatus.delivered.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Deselect image": {
+      "key": "attachmentPicker.image.deselect.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Deselect video": {
+      "key": "attachmentPicker.video.deselect.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Direct chat with {{name}}": {
+      "key": "avatar.channel.direct.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Dismiss notification": {
+      "key": "notifications.dismiss.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Dismiss unread messages": {
+      "key": "messageList.dismissUnread.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Double tap and hold to activate contextual menu": {
+      "key": "message.content.contextMenuHint.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Double tap to open": {
+      "key": "attachment.gallery.doubleTapToOpen.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Double tap to view reactions": {
+      "key": "message.reactionList.viewHint.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Double tap to view thread": {
+      "key": "message.replies.viewHint.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Edit channel": {
+      "key": "channelDetails.editChannel.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Editing message": {
+      "key": "reply.editingMessage.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Editing message: {{text}}": {
+      "key": "reply.editingMessage.withText.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Emoji suggestions available": {
+      "key": "autoCompleteInput.suggestions.emojisAvailable.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Gallery Image": {
+      "key": "attachment.gallery.image.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Gallery Video": {
+      "key": "attachment.gallery.video.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Grid Icon": {
+      "key": "imageGallery.footer.grid.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Hide Overlay": {
+      "key": "imageGallery.header.hideOverlay.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Increase maximum votes": {
+      "key": "poll.createPoll.maxVotes.increase.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Last message {{date}}": {
+      "key": "channelPreview.lastMessage.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Mention suggestions available": {
+      "key": "autoCompleteInput.suggestions.mentionsAvailable.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Message actions": {
+      "key": "messageMenu.actionList.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Message from you": {
+      "key": "message.content.fromYou.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Message from {{sender}}": {
+      "key": "message.content.fromSender.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Muted": {
+      "key": "channelPreview.muted.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/New message from {{user}}": {
+      "key": "a11y.newMessage.withUser.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Notifications": {
+      "key": "notifications.list.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Offline": {
+      "key": "a11y.connection.offline.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open camera": {
+      "key": "attachmentPicker.typeButton.camera.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open commands": {
+      "key": "attachmentPicker.typeButton.commands.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open file picker": {
+      "key": "attachmentPicker.typeButton.files.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open more reactions": {
+      "key": "messageMenu.reactionPicker.moreReactions.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open photo picker": {
+      "key": "attachmentPicker.typeButton.images.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open poll creation": {
+      "key": "attachmentPicker.typeButton.poll.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Open video recorder": {
+      "key": "attachmentPicker.typeButton.videoRecorder.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Pinned": {
+      "key": "channelPreview.pinned.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Play Pause Button": {
+      "key": "imageGallery.videoControl.playPause.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Read": {
+      "key": "message.status.read.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Read, sent by you": {
+      "key": "channelPreview.deliveryStatus.read.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Reconnecting": {
+      "key": "a11y.connection.reconnecting.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Remove attachment": {
+      "key": "messageInput.removeAttachment.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Remove edit": {
+      "key": "reply.removeEdit.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Remove reply": {
+      "key": "reply.removeReply.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Replying to {{user}}": {
+      "key": "reply.replying.withUser.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Replying to {{user}}: {{text}}": {
+      "key": "reply.replying.withUserAndText.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Save edited message": {
+      "key": "messageInput.saveEdit.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Scroll to bottom": {
+      "key": "messageList.scrollToBottom.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Scroll to bottom, {{count}} new messages": {
+      "key": "messageList.scrollToBottom.withCount.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Search members": {
+      "key": "channelDetails.memberList.search.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Search pinned messages": {
+      "key": "channelDetails.pinnedMessageList.search.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Search users to add": {
+      "key": "channelDetails.addMembers.search.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Select image": {
+      "key": "attachmentPicker.image.select.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Select video": {
+      "key": "attachmentPicker.video.select.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Select {{name}}": {
+      "key": "channelDetails.addMembers.selectUser.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Send message": {
+      "key": "messageInput.sendMessage.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Send voice recording": {
+      "key": "messageInput.audioRecorder.send.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Sending": {
+      "key": "message.status.sending.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Sent": {
+      "key": "message.status.sent.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Sent by you": {
+      "key": "channelPreview.deliveryStatus.sent.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Share Button": {
+      "key": "imageGallery.footer.share.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Start voice recording": {
+      "key": "messageInput.audioRecorder.start.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Stop voice recording": {
+      "key": "messageInput.audioRecorder.stop.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Swipe right to go through different actions": {
+      "key": "common.messageOverlay.swipeHint.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/Upload channel image": {
+      "key": "channelDetails.editChannel.upload.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/and {{count}} more reactions": {
+      "key": "message.reactionList.more.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/you reacted": {
+      "key": "message.reactionList.youReacted.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/{{count}} new messages": {
+      "key": "a11y.newMessages.withCount.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/{{count}} unread messages": {
+      "key": "channelPreview.unreadCount.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/{{name}} is already a member": {
+      "key": "channelDetails.addMembers.alreadyMember.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "a11y/{{position}} of {{count}}": {
+      "key": "imageGallery.position.accessibilityLabel",
+      "prose": true,
+      "plural": false
+    },
+    "and {{ count }} others": {
+      "key": "channelPreview.displayName.others.label",
+      "prose": true,
+      "plural": false
+    },
+    "duration/Message reminder": {
+      "key": "duration.messageReminder",
+      "prose": false,
+      "plural": false
+    },
+    "group": {
+      "key": "channel.leave.confirm.groupName.text",
+      "prose": true,
+      "plural": false
+    },
+    "mention/Channel Description": {
+      "key": "autoCompleteInput.mention.channel.description",
+      "prose": true,
+      "plural": false
+    },
+    "mention/Here Description": {
+      "key": "autoCompleteInput.mention.here.description",
+      "prose": true,
+      "plural": false
+    },
+    "size limit": {
+      "key": "notifications.attachmentUploadBlocked.reason.sizeLimit.text",
+      "prose": true,
+      "plural": false
+    },
+    "timestamp/ChannelPreviewStatus": {
+      "key": "timestamp.ChannelPreviewStatus",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/FileAttachmentListSection": {
+      "key": "timestamp.FileAttachmentListSection",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/ImageGalleryHeader": {
+      "key": "timestamp.ImageGalleryHeader",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/InlineDateSeparator": {
+      "key": "timestamp.InlineDateSeparator",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/MessageSystem": {
+      "key": "timestamp.MessageSystem",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/MessageTimestamp": {
+      "key": "timestamp.MessageTimestamp",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/PollVote": {
+      "key": "timestamp.PollVote",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/StickyHeader": {
+      "key": "timestamp.StickyHeader",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/ThreadListItem": {
+      "key": "timestamp.ThreadListItem",
+      "prose": false,
+      "plural": false
+    },
+    "timestamp/UserActivityStatus": {
+      "key": "timestamp.UserActivityStatus",
+      "prose": false,
+      "plural": false
+    },
+    "unknown error": {
+      "key": "notifications.attachmentUploadBlocked.reason.unknownError.text",
+      "prose": true,
+      "plural": false
+    },
+    "unsupported file type": {
+      "key": "notifications.attachmentUploadBlocked.reason.unsupportedFileType.text",
+      "prose": true,
+      "plural": false
+    },
+    "{{ firstUser }} and {{ nonSelfUserLength }} more are typing": {
+      "key": "messageList.typing.withMoreUsers.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{ firstUser }} and {{ secondUser }} are typing": {
+      "key": "channelPreview.typing.withTwoUsers.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{ index }} of {{ photoLength }}": {
+      "key": "imageGallery.footer.position.text",
+      "prose": true,
+      "plural": false
+    },
+    "{{ numberOfUsers }} people are typing": {
+      "key": "channelPreview.typing.withUserCount.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{ replyCount }} Replies": {
+      "key": "message.replies.many.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{ user }} has been muted": {
+      "key": "message.userMuted.text",
+      "prose": true,
+      "plural": false
+    },
+    "{{ user }} has been unmuted": {
+      "key": "message.userUnmuted.text",
+      "prose": true,
+      "plural": false
+    },
+    "{{ user }} is typing": {
+      "key": "channelPreview.typing.withUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{ user }} voted: {{ option }}": {
+      "key": "channelPreview.pollVote.withUser.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{count}} Audios": {
+      "key": "messagePreview.audios.label",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} Files": {
+      "key": "messagePreview.files.label",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} Photos": {
+      "key": "messagePreview.photos.label",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} Reactions": {
+      "key": "messageMenu.userReactions.title",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} Videos": {
+      "key": "messagePreview.videos.label",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} Voice messages": {
+      "key": "messagePreview.voiceMessages.label",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} members": {
+      "key": "channelDetails.memberSection.title",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} members added": {
+      "key": "channel.membersAdded.text",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} members removed": {
+      "key": "channel.membersRemoved.text",
+      "prose": true,
+      "plural": true
+    },
+    "{{count}} new messages": {
+      "key": "messageList.newMessages.text",
+      "prose": true,
+      "plural": false
+    },
+    "{{count}} new threads": {
+      "key": "threadList.unreadBanner.newThreads.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{count}} unread": {
+      "key": "messageList.unreadMessages.withCount.label",
+      "prose": true,
+      "plural": false
+    },
+    "{{count}} votes": {
+      "key": "poll.votes.text",
+      "prose": true,
+      "plural": true
+    },
+    "{{memberCount}} members, {{onlineCount}} online": {
+      "key": "channelDetails.presence.membersOnline.label",
+      "prose": true,
+      "plural": true
+    }
+  }
+}
