@@ -17,12 +17,17 @@
  * `yarn build-translations` joins this file with the inline defaults to generate
  * `src/i18n/keys.ts`; `yarn i18n:export` writes the joined catalog as JSON.
  *
- * Two entries carry English day words inside their `calendarFormats` argument —
- * `timestamp.ChannelPreviewStatus` and `timestamp.ThreadListItem`. Integrators translate those by
- * overriding the key; `dayjsLocaleConfigForLanguage` does not reach them, because `getDateString`
- * short-circuits to `t()` before the Day.js calendar path and `timestampFormatter` then parses the
- * calendar config out of the translation value itself. Adding a third fails a guard in
- * `__tests__/Streami18n.test.ts` that keeps `ai-docs/i18n-v15-migration.md` in sync.
+ * Three entries hide English inside a formatter expression, so `dayjsLocaleConfigForLanguage`
+ * cannot reach them and an integrator has to override the key itself:
+ *
+ * - `timestamp.ChannelPreviewStatus` and `timestamp.ThreadListItem` carry day words inside their
+ *   own `calendarFormats` argument. A per-key `calendarFormats` replaces the locale's calendar
+ *   wholesale — `getDateString` short-circuits to `t()` before the Day.js calendar path, and
+ *   `timestampFormatter` then parses the calendar config out of the translation value itself.
+ * - `timestamp.UserActivityStatus` puts prose (`Last seen`) beside the interpolation.
+ *
+ * Adding a fourth fails a guard in `__tests__/Streami18n.test.ts` that keeps
+ * `ai-docs/i18n-v10-migration.md` in sync.
  */
 export const runtimeDefaults = {
   'duration.messageReminder': '{{ milliseconds | durationFormatter(withSuffix: true) }}',

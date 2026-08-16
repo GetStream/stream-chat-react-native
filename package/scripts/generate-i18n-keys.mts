@@ -22,6 +22,7 @@
 // Run by `yarn build-translations`, from the `package` workspace root — every path below is
 // relative to it.
 import fs from 'node:fs';
+import path from 'node:path';
 import ts from 'typescript';
 import { readCallSiteCopy } from './i18n-call-sites.mts';
 
@@ -259,6 +260,16 @@ lines.push(';', '');
 
 fs.writeFileSync(KEYS_OUT, lines.join('\n'));
 
+// `keys.ts` is type-only, so tests cannot iterate it. This is its data twin: same content, JSON,
+// used by `src/i18n/__tests__/catalogRenders.test.ts` to render every key. It lives under
+// `__tests__` so it never reaches the published build.
+const FIXTURE_OUT = 'src/i18n/__tests__/catalog.fixture.json';
+fs.mkdirSync(path.dirname(FIXTURE_OUT), { recursive: true });
+fs.writeFileSync(
+  FIXTURE_OUT,
+  `${JSON.stringify(Object.fromEntries(keys.map((k) => [k, catalog.get(k)])), null, 2)}\n`,
+);
+
 console.log(
   `generated ${KEYS_OUT} (${keys.length} entries, type-only) — ` +
     `${inlineCopy.size} from inline defaults, ${runtimeDefaults.size} bundled`,
@@ -284,7 +295,7 @@ if (JSON_OUT) {
         `not copy, and\n  a TMS that translates them breaks date rendering. ` +
         `Pass --all to include them.\n  ${withEnglish.length} of them do carry English day words; ` +
         `those are translated by overriding the key —\n  see ` +
-        `ai-docs/i18n-v15-migration.md#date-and-time.`,
+        `ai-docs/i18n-v10-migration.md#date-and-time.`,
     );
   }
 }

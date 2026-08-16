@@ -317,6 +317,35 @@ describe('runtimeDefaults', () => {
       'timestamp.ThreadListItem',
     ]);
   });
+
+  it('holds English inside a formatter expression for exactly the three documented keys', () => {
+    // The broader version of the guard above. A bundled formatter value can hide English in two
+    // places: inside a `calendarFormats` bracket literal (`[Yesterday]`), or as prose sitting
+    // beside the interpolation (`Last seen {{ … }}`). Either way `dayjsLocaleConfigForLanguage`
+    // cannot reach it and the key has to be overridden by hand, so the set has to stay closed.
+    // A formatter value pipes through a named formatter. Matched by substring rather than a
+    // balanced-brace regex, because `calendarFormats:` embeds a JSON object and the inner braces
+    // defeat the obvious pattern.
+    const isFormatterExpression = (value: string) => value.includes('{{') && value.includes('|');
+
+    const englishInsideFormatter = Object.entries(runtimeDefaults)
+      // Only formatter values. Ordinary bundled prose like 'Avatar of {{name}}' is translated by
+      // overriding the key like any other string; these are format specs that happen to embed copy.
+      .filter(([, value]) => isFormatterExpression(value))
+      .filter(([, value]) => {
+        const outsideInterpolation = value.replace(/\{\{[^}]*\}\}/g, '');
+        const insideBrackets = [...value.matchAll(/\[([A-Za-z][^\]]*)\]/g)].map((m) => m[1]);
+        return /[A-Za-z]/.test(outsideInterpolation) || insideBrackets.length > 0;
+      })
+      .map(([key]) => key)
+      .sort();
+
+    expect(englishInsideFormatter).toStrictEqual([
+      'timestamp.ChannelPreviewStatus',
+      'timestamp.ThreadListItem',
+      'timestamp.UserActivityStatus',
+    ]);
+  });
 });
 
 describe('Streami18n timezone', () => {
