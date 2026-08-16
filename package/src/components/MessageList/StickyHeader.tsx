@@ -32,7 +32,7 @@ export const StickyHeader = ({ date, dateString }: StickyHeaderProps) => {
       date,
       t,
       tDateTimeParser,
-      timestampTranslationKey: 'timestamp/StickyHeader',
+      timestampTranslationKey: 'timestamp.StickyHeader',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);

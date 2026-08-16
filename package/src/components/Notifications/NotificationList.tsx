@@ -90,7 +90,7 @@ export const NotificationList = ({
 
   return (
     <Animated.View
-      accessibilityLabel={t('a11y/Notifications')}
+      accessibilityLabel={t('notifications.list.accessibilityLabel', 'Notifications')}
       pointerEvents='box-none'
       layout={transitions.layout200}
       style={styles.container}

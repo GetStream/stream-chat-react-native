@@ -17,7 +17,10 @@ export type ChannelPreviewUnreadCountProps = Pick<ChannelsContextValue, 'maxUnre
 export const ChannelPreviewUnreadCount = (props: ChannelPreviewUnreadCountProps) => {
   const { maxUnreadCount, unread } = props;
   const labelParams = useMemo(() => ({ count: unread ?? 0 }), [unread]);
-  const accessibilityLabel = useA11yLabel('a11y/{{count}} unread messages', labelParams);
+  const accessibilityLabel = useA11yLabel(
+    'channelPreview.unreadCount.accessibilityLabel',
+    labelParams,
+  );
   if (!unread) {
     return null;
   }

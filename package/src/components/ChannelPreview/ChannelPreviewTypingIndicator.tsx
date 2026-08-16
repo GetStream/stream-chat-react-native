@@ -31,27 +31,43 @@ const getTypingString = ({
 }) => {
   if (channelName && usersTyping.length > 0) {
     if (usersTyping.length === 1) {
-      return t('{{ user }} is typing', { user: getFirstName(usersTyping[0]?.name) });
-    } else if (usersTyping.length === 2) {
-      return t('{{ firstUser }} and {{ secondUser }} are typing', {
-        firstUser: getFirstName(usersTyping[0]?.name),
-        secondUser: getFirstName(usersTyping[1]?.name),
+      return t('channelPreview.typing.withUser.label', '{{ user }} is typing', {
+        user: getFirstName(usersTyping[0]?.name),
       });
+    } else if (usersTyping.length === 2) {
+      return t(
+        'channelPreview.typing.withTwoUsers.label',
+        '{{ firstUser }} and {{ secondUser }} are typing',
+        {
+          firstUser: getFirstName(usersTyping[0]?.name),
+          secondUser: getFirstName(usersTyping[1]?.name),
+        },
+      );
     }
-    return t('{{ numberOfUsers }} people are typing', { numberOfUsers: usersTyping.length });
+    return t('channelPreview.typing.withUserCount.label', '{{ numberOfUsers }} people are typing', {
+      numberOfUsers: usersTyping.length,
+    });
   } else {
     if (!usersTyping.length) {
       return null;
     }
     if (usersTyping.length === 1) {
-      return t('Typing');
+      return t('channelPreview.typing.label', 'Typing');
     } else if (usersTyping.length === 2) {
-      return t('{{ firstUser }} and {{ secondUser }} are typing', {
-        firstUser: getFirstName(usersTyping[0]?.name),
-        secondUser: getFirstName(usersTyping[1]?.name),
-      });
+      return t(
+        'channelPreview.typing.withTwoUsers.label',
+        '{{ firstUser }} and {{ secondUser }} are typing',
+        {
+          firstUser: getFirstName(usersTyping[0]?.name),
+          secondUser: getFirstName(usersTyping[1]?.name),
+        },
+      );
     } else {
-      return t('{{ numberOfUsers }} people are typing', { numberOfUsers: usersTyping.length });
+      return t(
+        'channelPreview.typing.withUserCount.label',
+        '{{ numberOfUsers }} people are typing',
+        { numberOfUsers: usersTyping.length },
+      );
     }
   }
 };

@@ -85,21 +85,21 @@ describe('MentionSuggestionItem', () => {
   it('renders a broadcast row for @channel with description subtitle', () => {
     const { getByText } = wrap(<MentionSuggestionItem {...channelEntity} />);
     expect(getByText('@channel')).toBeTruthy();
-    expect(getByText('mention/Channel Description')).toBeTruthy();
+    expect(getByText('autoCompleteInput.mention.channel.description')).toBeTruthy();
   });
 
   it('renders a broadcast row for @here with description subtitle', () => {
     const { getByText } = wrap(<MentionSuggestionItem {...hereEntity} />);
     expect(getByText('@here')).toBeTruthy();
-    expect(getByText('mention/Here Description')).toBeTruthy();
+    expect(getByText('autoCompleteInput.mention.here.description')).toBeTruthy();
   });
 
   it('renders a role row with the role name and the notify subtitle', () => {
     const { getByText } = wrap(<MentionSuggestionItem {...roleEntity} />);
     expect(getByText('@admin')).toBeTruthy();
-    // The test translation context echoes the i18n key; the {{ role }}
-    // interpolation is left as-is, which is enough to assert the right key
-    // was selected with the right argument.
+    // The test translation context renders the call site's inline default; the
+    // {{ role }} interpolation is left as-is, which is enough to assert the
+    // right key was selected with the right argument.
     expect(getByText(/Notify all .* members/)).toBeTruthy();
   });
 

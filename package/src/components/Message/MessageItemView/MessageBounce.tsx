@@ -49,14 +49,18 @@ export const MessageBounceWithContext = (props: MessageBouncePropsWithContext) =
   return (
     <>
       {Alert.alert(
-        t('Are you sure?'),
+        t('message.bounce.title', 'Are you sure?'),
         t(
+          'message.bounce.text',
           'Consider how your comment might make others feel and be sure to follow our Community Guidelines',
         ),
         [
-          { onPress: handleResend, text: t('Send Anyway') },
-          { onPress: handleEditMessage, text: t('Edit Message') },
-          { onPress: handleRemoveMessage, text: t('Delete Message') },
+          { onPress: handleResend, text: t('message.bounce.sendAnyway.label', 'Send Anyway') },
+          { onPress: handleEditMessage, text: t('message.editMessage.label', 'Edit Message') },
+          {
+            onPress: handleRemoveMessage,
+            text: t('message.deleteMessage.label', 'Delete Message'),
+          },
         ],
         { cancelable: true },
       )}

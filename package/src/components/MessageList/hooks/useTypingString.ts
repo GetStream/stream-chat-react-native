@@ -15,7 +15,9 @@ export const useTypingString = () => {
   );
 
   if (typingUsernames.length === 1) {
-    return t('{{ user }} is typing', { user: typingUsernames[0] });
+    return t('channelPreview.typing.withUser.label', '{{ user }} is typing', {
+      user: typingUsernames[0],
+    });
   }
 
   if (typingUsernames.length > 1) {
@@ -23,10 +25,14 @@ export const useTypingString = () => {
      * Joins the multiple names with number after first name
      * example: "Dan and Neil"
      */
-    return t('{{ firstUser }} and {{ nonSelfUserLength }} more are typing', {
-      firstUser: typingUsernames[0],
-      nonSelfUserLength: typingUsernames.length - 1,
-    });
+    return t(
+      'messageList.typing.withMoreUsers.label',
+      '{{ firstUser }} and {{ nonSelfUserLength }} more are typing',
+      {
+        firstUser: typingUsernames[0],
+        nonSelfUserLength: typingUsernames.length - 1,
+      },
+    );
   }
 
   return '';

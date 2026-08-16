@@ -1128,7 +1128,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   if (!channel?.cid || !channel.watch) {
     return (
       <Text style={styles.selectChannel} testID='no-channel'>
-        {t('Please select a channel first')}
+        {t('channel.noneSelected.text', 'Please select a channel first')}
       </Text>
     );
   }

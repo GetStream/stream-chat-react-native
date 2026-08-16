@@ -13,7 +13,7 @@ type AttachmentRemoveControlProps = PressableProps & {
 };
 
 export const AttachmentRemoveControl = ({
-  accessibilityLabelKey = 'a11y/Remove attachment',
+  accessibilityLabelKey = 'messageInput.removeAttachment.accessibilityLabel',
   accessibilityLabelParams,
   onPress,
   ...rest

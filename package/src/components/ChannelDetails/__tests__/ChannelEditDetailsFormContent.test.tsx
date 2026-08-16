@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel } from 'stream-chat';
+import { StateStore, type Channel } from 'stream-chat';
 
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
@@ -50,12 +50,17 @@ const SheetProbe = (props: ChannelEditImageSheetProps) => {
 const buildChannel = (overrides?: { image?: string; name?: string }): Channel =>
   ({
     cid: 'messaging:test',
+    // Channel name/image live under `data.custom` since the OpenAPI migration — that is where
+    // `useChannelName` / `useChannelImage` and `EditChannelDetailsStore` read them from.
     data: {
-      name: overrides && 'name' in overrides ? overrides.name : 'Original',
-      ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+      custom: {
+        name: overrides && 'name' in overrides ? overrides.name : 'Original',
+        ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+      },
     },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
+    // `useChannelMembersState` reads the members reactively off `channel.state.membersStore`.
+    state: { members: {}, membersStore: new StateStore({ members: {} }) },
   }) as unknown as Channel;
 
 // The avatar renders its image through the default `SvgAwareImage`, which for a
@@ -70,7 +75,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
@@ -118,7 +123,7 @@ describe('ChannelEditDetailsFormContent', () => {
       <ThemeProvider theme={defaultTheme}>
         <TranslationProvider
           value={{
-            t: ((key: string) => key) as never,
+            t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
             tDateTimeParser: ((input: unknown) => input) as never,
             userLanguage: 'en',
           }}

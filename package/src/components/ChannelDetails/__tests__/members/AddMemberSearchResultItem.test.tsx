@@ -42,14 +42,24 @@ const renderRow = ({
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string, options?: Record<string, unknown>) => {
+          // Renders the call site's inline `defaultValue` (falling back to the key) and fills in
+          // `{{…}}` placeholders from the options, as i18next would.
+          t: ((
+            key: string,
+            defaultValueOrOptions?: string | Record<string, unknown>,
+            maybeOptions?: Record<string, unknown>,
+          ) => {
+            const options =
+              typeof defaultValueOrOptions === 'string' ? maybeOptions : defaultValueOrOptions;
+            const template =
+              typeof defaultValueOrOptions === 'string' ? defaultValueOrOptions : key;
             if (options && typeof options === 'object') {
               return Object.entries(options).reduce(
                 (acc, [k, v]) => acc.replace(`{{${k}}}`, String(v)),
-                key,
+                template,
               );
             }
-            return key;
+            return template;
           }) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
@@ -74,7 +84,7 @@ describe('AddMemberSearchResultItem', () => {
 
     const row = screen.getByTestId('channel-add-members-row-u-1');
     expect(row.props.accessibilityState).toMatchObject({ disabled: false, selected: false });
-    expect(screen.getByLabelText('a11y/Select Alice')).toBeTruthy();
+    expect(screen.getByLabelText('Select Alice')).toBeTruthy();
     expect(screen.queryByTestId('channel-add-members-row-u-1-member-label')).toBeNull();
   });
 
@@ -101,7 +111,7 @@ describe('AddMemberSearchResultItem', () => {
     const user = generateUser({ id: 'u-no-name', name: undefined });
     renderRow({ user });
 
-    expect(screen.getByLabelText('a11y/Select u-no-name')).toBeTruthy();
+    expect(screen.getByLabelText('Select u-no-name')).toBeTruthy();
     expect(screen.getByText('u-no-name')).toBeTruthy();
   });
 
@@ -115,7 +125,7 @@ describe('AddMemberSearchResultItem', () => {
       expect(row.props.accessibilityRole).toBeUndefined();
       expect(screen.getByTestId('channel-add-members-row-u-2-member-label')).toBeTruthy();
       expect(screen.getByText('Already a member')).toBeTruthy();
-      expect(screen.getByLabelText('a11y/Bob is already a member')).toBeTruthy();
+      expect(screen.getByLabelText('Bob is already a member')).toBeTruthy();
     });
   });
 });

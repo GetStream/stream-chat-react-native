@@ -65,7 +65,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (draftMessage) {
     return (
       <View style={styles.container}>
-        <Text style={styles.draftText}>{t('Draft')}:</Text>
+        <Text style={styles.draftText}>{t('common.draft.label', 'Draft')}:</Text>
         <ChannelPreviewLastMessage message={draftMessage} />
       </View>
     );
@@ -75,7 +75,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (!lastMessage) {
     return (
       <Text style={[styles.subtitle, { color: semantics.textTertiary }]}>
-        {t('No messages yet')}
+        {t('channelPreview.noMessages.text', 'No messages yet')}
       </Text>
     );
   }
@@ -95,7 +95,9 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <ErrorBadge size='xs' />
-        <Text style={styles.errorText}>{t('Message failed to send')}</Text>
+        <Text style={styles.errorText}>
+          {t('channelPreview.messageFailed.error', 'Message failed to send')}
+        </Text>
       </View>
     );
   }

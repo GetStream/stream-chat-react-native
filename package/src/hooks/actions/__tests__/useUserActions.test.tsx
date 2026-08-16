@@ -41,11 +41,12 @@ describe('useUserActions', () => {
     jest
       .spyOn(useNotificationApiModule, 'useNotificationApi')
       .mockReturnValue({ addNotification } as unknown as useNotificationApiModule.NotificationApi);
-    jest
-      .spyOn(TranslationContext, 'useTranslationContext')
-      .mockImplementation(
-        () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
-      );
+    jest.spyOn(TranslationContext, 'useTranslationContext').mockImplementation(
+      () =>
+        ({
+          t: (value: string, d?: unknown) => (typeof d === 'string' ? d : value),
+        }) as unknown as TranslationContextValue,
+    );
   };
 
   beforeEach(() => {

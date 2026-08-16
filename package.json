@@ -67,7 +67,7 @@
     "release-next": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run extract-changelog",
     "eslint": "eslint .",
-    "lint": "prettier --list-different . && eslint . --max-warnings 0",
+    "lint": "prettier --list-different . && eslint . --max-warnings 0 && yarn workspace stream-chat-react-native-core validate-translations",
     "lint-fix": "prettier --write . && eslint . --fix --max-warnings 0",
     "prettier": "prettier --list-different .",
     "prettier-fix": "prettier --write .",

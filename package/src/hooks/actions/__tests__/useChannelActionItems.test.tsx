@@ -76,11 +76,12 @@ describe('useChannelActionItems', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .spyOn(TranslationContext, 'useTranslationContext')
-      .mockImplementation(
-        () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
-      );
+    jest.spyOn(TranslationContext, 'useTranslationContext').mockImplementation(
+      () =>
+        ({
+          t: (value: string, d?: unknown) => (typeof d === 'string' ? d : value),
+        }) as unknown as TranslationContextValue,
+    );
     jest.spyOn(useChannelMembershipStateModule, 'useChannelMembershipState').mockReturnValue({
       archived_at: undefined,
       pinned_at: undefined,
@@ -249,7 +250,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
     const actionItems = getChannelActionItems({
@@ -263,7 +265,8 @@ describe('getChannelActionItems', () => {
         isPinned: false,
         surface: 'list',
         icons: defaultIcons,
-        t: ((value: string) => value) as TranslationContextValue['t'],
+        t: ((value: string, d?: unknown) =>
+          typeof d === 'string' ? d : value) as TranslationContextValue['t'],
         userMuteActive: false,
       },
       defaultItems,
@@ -296,7 +299,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
 
@@ -345,7 +349,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -363,7 +368,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -382,7 +388,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -408,7 +415,8 @@ describe('getChannelActionItems', () => {
       isPinned: true,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -430,7 +438,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -450,7 +459,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'details',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -468,7 +478,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -485,7 +496,8 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -504,7 +516,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
 
@@ -531,7 +544,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 

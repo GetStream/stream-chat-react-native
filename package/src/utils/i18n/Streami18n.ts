@@ -27,6 +27,7 @@ import koTranslations from '../../i18n/ko.json';
 import nlTranslations from '../../i18n/nl.json';
 import ptBRTranslations from '../../i18n/pt-br.json';
 import ruTranslations from '../../i18n/ru.json';
+import { runtimeDefaults } from '../../i18n/runtimeDefaults';
 import trTranslations from '../../i18n/tr.json';
 
 import 'dayjs/locale/ar';
@@ -207,7 +208,7 @@ type I18NextConfig = {
   keySeparator: false | string;
   lng: string;
   nsSeparator: false | string;
-  parseMissingKeyHandler: (key: string) => string;
+  parseMissingKeyHandler: (key: string, defaultValue?: string) => string;
 };
 
 /**
@@ -370,7 +371,43 @@ const defaultStreami18nOptions = {
   logger: (msg?: string) => console.warn(msg),
 };
 
-export const defaultTranslatorFunction = ((key: string) => key) as TFunction;
+/**
+ * The `t` used before `Streami18n` has finished initializing, and the default value of the
+ * translation context.
+ *
+ * It has to honour the inline `defaultValue`: every prose call site now passes its English copy as
+ * the second argument, so echoing the key back would flash raw dotted paths on the first frame and
+ * would render them permanently anywhere the context default is in play.
+ */
+export const defaultTranslatorFunction = ((
+  key: string,
+  defaultValueOrOptions?: string | Record<string, unknown>,
+  maybeOptions?: Record<string, unknown>,
+) => {
+  if (typeof defaultValueOrOptions === 'string') return defaultValueOrOptions;
+
+  // Plural call sites pass their copy as `defaultValue_one` / `defaultValue_other` inside the
+  // options object, so a bare `defaultValue` check would still leak the raw key for them. English
+  // only distinguishes one vs. other; a registered language's own categories are irrelevant here,
+  // since this function is only ever in play before i18next has initialized.
+  const options = (
+    typeof defaultValueOrOptions === 'object' ? defaultValueOrOptions : maybeOptions
+  ) as Record<string, unknown> | undefined;
+  if (options) {
+    const count = options.count;
+    const form = count === 1 ? options.defaultValue_one : options.defaultValue_other;
+    const resolved = form ?? options.defaultValue;
+    if (typeof resolved === 'string') {
+      // Interpolate the placeholders the copy declares, so `{{count}} members` does not render
+      // with a literal `{{count}}`.
+      return resolved.replace(/\{\{\s*(\w+)\s*\}\}/g, (whole, name) =>
+        options[name] === undefined ? whole : String(options[name]),
+      );
+    }
+  }
+
+  return key;
+}) as unknown as TFunction;
 
 export class Streami18n {
   i18nInstance: I18nInstance = i18n.createInstance();
@@ -411,6 +448,34 @@ export class Streami18n {
     'pt-BR': { [defaultNS]: ptBRTranslations },
     ru: { [defaultNS]: ruTranslations },
     tr: { [defaultNS]: trTranslations },
+  };
+
+  /**
+   * A dictionary layered over `runtimeDefaults`. Every write into `this.translations` goes through
+   * here: those keys have no inline `defaultValue` at their call site and `fallbackLng` is false,
+   * so a language missing them renders raw dotted keys and unformatted ISO timestamps.
+   */
+  private mergeWithRuntimeDefaults = (
+    language: string,
+    translation?: Partial<typeof enTranslations>,
+  ): Partial<typeof enTranslations> => ({
+    ...runtimeDefaults,
+    ...this.translations[language]?.[defaultNS],
+    ...translation,
+  });
+
+  /**
+   * Guarantees `language` has a dictionary, so a language nobody registered still formats dates and
+   * renders the SDK's copy in English. Writes into i18next's store too when already initialized —
+   * the only route for a language added after `init()`.
+   */
+  private ensureLanguage = (language: string) => {
+    const translation = this.mergeWithRuntimeDefaults(language);
+    this.translations[language] = { [defaultNS]: translation };
+
+    if (this.initialized) {
+      this.i18nInstance.addResources(language, defaultNS, translation);
+    }
   };
 
   /**
@@ -498,23 +563,22 @@ export class Streami18n {
     this.isCustomDateTimeParser = !!options.DateTimeParser;
     const translationsForLanguage = finalOptions.translationsForLanguage;
 
-    if (translationsForLanguage) {
-      this.translations[this.currentLanguage] = {
-        [defaultNS]:
-          this.translations[this.currentLanguage] &&
-          this.translations[this.currentLanguage][defaultNS]
-            ? {
-                ...this.translations[this.currentLanguage][defaultNS],
-                ...translationsForLanguage,
-              }
-            : translationsForLanguage,
+    // Every bundled language is layered over `runtimeDefaults`, not just the active one: the
+    // formatter keys have no inline default anywhere, and `fallbackLng` is false, so a language
+    // that lacks them renders raw keys.
+    for (const language of Object.keys(this.translations)) {
+      this.translations[language] = {
+        [defaultNS]: this.mergeWithRuntimeDefaults(language),
       };
     }
 
-    // If translations don't exist for given language, then set it as empty object.
-    if (!this.translations[this.currentLanguage]) {
+    // Guarantees the active language exists — including one nobody registered, which then renders
+    // the SDK's English copy from the inline defaults rather than dotted key paths.
+    this.ensureLanguage(this.currentLanguage);
+
+    if (translationsForLanguage) {
       this.translations[this.currentLanguage] = {
-        [defaultNS]: {},
+        [defaultNS]: this.mergeWithRuntimeDefaults(this.currentLanguage, translationsForLanguage),
       };
     }
 
@@ -526,7 +590,14 @@ export class Streami18n {
       lng: this.currentLanguage,
       nsSeparator: false,
 
-      parseMissingKeyHandler: (key: string) => {
+      parseMissingKeyHandler: (key: string, defaultValue?: string) => {
+        // i18next counts every prose key as "missing" — they render from the inline `defaultValue`
+        // at the call site, not from a resource bundle — and lets this handler's return value
+        // replace the rendered string. Returning the key unconditionally would therefore render a
+        // raw dotted path for most of the UI. A resolved default arrives as the second argument,
+        // which is how a genuinely missing key is told apart from one that simply is not bundled.
+        if (typeof defaultValue === 'string') return defaultValue;
+
         this.logger(`Streami18n: Missing translation for key: ${key}`);
 
         return key;
@@ -667,11 +738,10 @@ export class Streami18n {
       return;
     }
 
-    if (!this.translations[language]) {
-      this.translations[language] = { [defaultNS]: translation };
-    } else {
-      this.translations[language][defaultNS] = translation;
-    }
+    // Merged, not replaced, so repeated calls for one language accumulate and the bundled
+    // formatter keys survive a partial dictionary.
+    const merged = this.mergeWithRuntimeDefaults(language, translation);
+    this.translations[language] = { [defaultNS]: merged };
 
     if (customDayjsLocale) {
       this.dayjsLocales[language] = { ...customDayjsLocale };
@@ -685,7 +755,9 @@ export class Streami18n {
     }
 
     if (this.initialized) {
-      this.i18nInstance.addResources(language, defaultNS, translation);
+      // `merged`, not `translation`: for a language registered after init this is the only write
+      // into i18next's store, so passing the partial would leave `runtimeDefaults` absent there.
+      this.i18nInstance.addResources(language, defaultNS, merged);
     }
   }
 

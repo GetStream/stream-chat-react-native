@@ -81,7 +81,9 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
       ) : null}
       {showMessageStatus ? <MessageStatus /> : null}
       <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
-      {isEdited ? <Text style={[styles.editedText, editedText]}>{t('Edited')}</Text> : null}
+      {isEdited ? (
+        <Text style={[styles.editedText, editedText]}>{t('message.edited.text', 'Edited')}</Text>
+      ) : null}
     </View>
   );
 };

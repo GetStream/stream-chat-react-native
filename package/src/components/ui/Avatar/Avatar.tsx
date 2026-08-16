@@ -47,7 +47,7 @@ export const Avatar = (props: AvatarProps) => {
   } = props;
   const styles = useStyles();
   const accessibilityLabelParams = useMemo(() => ({ name: name ?? '' }), [name]);
-  const composedLabel = useA11yLabel('a11y/Avatar of {{name}}', accessibilityLabelParams);
+  const composedLabel = useA11yLabel('avatar.accessibilityLabel', accessibilityLabelParams);
   const accessibilityLabel = accessibilityLabelOverride ?? (name ? composedLabel : undefined);
 
   const onHandleError = useCallback(() => {

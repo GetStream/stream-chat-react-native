@@ -68,7 +68,7 @@ describe('ScrollToBottomButton', () => {
   });
 
   it('should display the unread count', async () => {
-    const t = jest.fn((key: string) => key);
+    const t = jest.fn((key: string, d?: unknown) => (typeof d === 'string' ? d : key));
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     // The button reads OUR user's count from the channel read store (see ScrollToBottomButton),

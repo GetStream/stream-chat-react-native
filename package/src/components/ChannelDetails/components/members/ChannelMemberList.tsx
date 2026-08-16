@@ -92,7 +92,7 @@ const ChannelMemberListContent = ({
       return;
     }
     addNotification({
-      message: t('Failed to load members'),
+      message: t('channelDetails.memberList.load.error', 'Failed to load members'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -127,13 +127,18 @@ const ChannelMemberListContent = ({
     loading && !members ? (
       <MemberListLoadingSkeleton />
     ) : (
-      <EmptySearchResult label={t('No members found')} />
+      <EmptySearchResult
+        label={t('channelDetails.memberList.noMembersFound.label', 'No members found')}
+      />
     );
 
   return (
     <View style={[styles.container, memberList.container]}>
       <SearchInput
-        accessibilityLabel={t('a11y/Search members')}
+        accessibilityLabel={t(
+          'channelDetails.memberList.search.accessibilityLabel',
+          'Search members',
+        )}
         onChangeText={(text) => {
           searchSource.state.partialNext({ searchQuery: text });
           searchSource.search(text);

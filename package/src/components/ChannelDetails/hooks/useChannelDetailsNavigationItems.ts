@@ -42,9 +42,12 @@ const SECTION_CONFIG: Record<
   'pinned-messages' | 'photos-and-videos' | 'files',
   { icon: 'Pin' | 'Picture' | 'Folder'; label: string }
 > = {
-  'pinned-messages': { icon: 'Pin', label: 'Pinned Messages' },
-  'photos-and-videos': { icon: 'Picture', label: 'Photos & Videos' },
-  files: { icon: 'Folder', label: 'Files' },
+  'pinned-messages': { icon: 'Pin', label: 'channelDetails.navigation.pinnedMessages.label' },
+  'photos-and-videos': {
+    icon: 'Picture',
+    label: 'channelDetails.navigation.photosAndVideos.label',
+  },
+  files: { icon: 'Folder', label: 'channelDetails.navigation.files.label' },
 };
 
 const SECTIONS = Object.keys(SECTION_CONFIG) as Array<keyof typeof SECTION_CONFIG>;

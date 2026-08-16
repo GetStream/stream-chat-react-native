@@ -31,7 +31,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
         date: vote.created_at,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/PollVote',
+        timestampTranslationKey: 'timestamp.PollVote',
       }),
     [vote.created_at, t, tDateTimeParser],
   );
@@ -46,7 +46,9 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
       <View style={styles.userContainer}>
         {!isAnonymous && vote.user ? <UserAvatar user={vote.user} size='md' showBorder /> : null}
         <Text style={[styles.voteUserName, userName]}>
-          {isAnonymous ? t('Anonymous') : (vote.user?.name ?? vote.user?.id)}
+          {isAnonymous
+            ? t('common.anonymousUser.label', 'Anonymous')
+            : (vote.user?.name ?? vote.user?.id)}
         </Text>
       </View>
       <Text style={[styles.voteDate, dateText]}>{dateString}</Text>

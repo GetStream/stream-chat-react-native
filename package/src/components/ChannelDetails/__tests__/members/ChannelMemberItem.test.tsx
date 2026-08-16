@@ -3,7 +3,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
+import { StateStore, type Channel, type ChannelMemberResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../../contexts';
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -49,11 +49,18 @@ const renderRow = ({
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string, options?: Record<string, unknown>) => {
-            if (key === 'timestamp/UserActivityStatus' && options && 'timestamp' in options) {
+          t: ((
+            key: string,
+            defaultValueOrOptions?: string | Record<string, unknown>,
+            maybeOptions?: Record<string, unknown>,
+          ) => {
+            const options =
+              typeof defaultValueOrOptions === 'string' ? maybeOptions : defaultValueOrOptions;
+            if (key === 'timestamp.UserActivityStatus' && options && 'timestamp' in options) {
               return `Last seen ${Dayjs(options.timestamp as Date).fromNow()}`;
             }
-            return key;
+            // Prose keys pass their English copy inline as the second argument.
+            return typeof defaultValueOrOptions === 'string' ? defaultValueOrOptions : key;
           }) as never,
           tDateTimeParser: (input) => Dayjs(input),
           userLanguage: 'en',
@@ -63,7 +70,8 @@ const renderRow = ({
           value={
             {
               client: {
-                mutedUsers,
+                // `useMutedUsers` reads the mutes reactively off `client.mutedUsersStore`.
+                mutedUsersStore: new StateStore({ mutedUsers }),
                 on: () => ({ unsubscribe: () => undefined }),
                 userID: currentUserId,
               },

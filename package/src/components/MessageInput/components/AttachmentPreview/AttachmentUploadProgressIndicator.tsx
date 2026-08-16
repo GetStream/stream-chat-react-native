@@ -65,7 +65,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
           width={16}
         />
         <Text style={[styles.networkErrorText, fileUploadRetryIndicator.networkErrorText]}>
-          {t('Network error')}
+          {t('messageInput.attachmentUpload.network.error', 'Network error')}
         </Text>
       </View>
       <Pressable
@@ -76,7 +76,7 @@ export const FileUploadRetryIndicator = ({ onPress }: FileUploadRetryIndicatorPr
         ]}
       >
         <Text style={[styles.retryText, fileUploadRetryIndicator.retryText]}>
-          {t('Retry Upload')}
+          {t('messageInput.attachmentUpload.retry.label', 'Retry Upload')}
         </Text>
       </Pressable>
     </View>
@@ -101,7 +101,9 @@ export const FileUploadNotSupportedIndicator = ({
   const { t } = useTranslationContext();
 
   const reason = localMetadata.uploadPermissionCheck?.reason === 'size_limit';
-  const message = reason ? t('File too large') : t('Not supported');
+  const message = reason
+    ? t('messageInput.attachmentUpload.tooLarge.error', 'File too large')
+    : t('messageInput.attachmentUpload.notSupported.error', 'Not supported');
 
   return (
     <View

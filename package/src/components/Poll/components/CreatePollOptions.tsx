@@ -515,7 +515,7 @@ export const CreatePollOption = ({
         <TextInput
           onBlur={handleBlur}
           onChangeText={onChangeTextHandler}
-          placeholder={t('Add an option')}
+          placeholder={t('poll.createPoll.options.placeholder', 'Add an option')}
           placeholderTextColor={semantics.inputTextPlaceholder}
           style={[styles.optionInput, optionStyle.input]}
         />
@@ -712,7 +712,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.title, title]}>{t('Options')}</Text>
+      <Text style={[styles.title, title]}>{t('poll.createPoll.options.label', 'Options')}</Text>
       <Animated.View layout={LinearTransition.duration(200)} style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption

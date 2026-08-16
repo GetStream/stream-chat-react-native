@@ -73,14 +73,18 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           variant='secondary'
           type='ghost'
           LeadingIcon={icons.ArrowUp}
-          label={count ? t('{{count}} unread', { count }) : t('Unread Messages')}
+          label={
+            count
+              ? t('messageList.unreadMessages.withCount.label', '{{count}} unread', { count })
+              : t('messageList.unreadMessages.label', 'Unread Messages')
+          }
           onPress={handleOnPress}
           size='md'
         />
       </View>
       <View style={styles.rightButtonContainer}>
         <Button
-          accessibilityLabelKey='a11y/Dismiss unread messages'
+          accessibilityLabelKey='messageList.dismissUnread.accessibilityLabel'
           variant='secondary'
           type='ghost'
           iconOnly

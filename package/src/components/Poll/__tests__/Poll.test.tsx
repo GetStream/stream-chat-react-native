@@ -34,7 +34,9 @@ describe('PollHeader chat text side', () => {
   const renderHeader = () =>
     render(
       <ThemeProvider>
-        <TranslationProvider value={{ t: (key: string) => key } as never}>
+        <TranslationProvider
+          value={{ t: (key: string, d?: unknown) => (typeof d === 'string' ? d : key) } as never}
+        >
           <OwnCapabilitiesProvider value={{} as never}>
             <PollContextProvider
               value={{ message: generateMessage(), poll: { data: {} } as never }}

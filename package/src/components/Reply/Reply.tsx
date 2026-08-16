@@ -142,12 +142,12 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
   const title = useMemo(
     () =>
       mode === 'edit'
-        ? t('Edit Message')
+        ? t('message.editMessage.label', 'Edit Message')
         : isMyMessage
-          ? t('You')
+          ? t('common.you.label', 'You')
           : quotedMessage?.user?.name
-            ? t('Reply to {{name}}', { name: quotedMessage?.user?.name })
-            : t('Reply'),
+            ? t('reply.replyTo.title', 'Reply to {{name}}', { name: quotedMessage?.user?.name })
+            : t('message.reply.label', 'Reply'),
     [mode, isMyMessage, quotedMessage?.user?.name, t],
   );
 
@@ -177,7 +177,11 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       {onDismiss ? (
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
           <AttachmentRemoveControl
-            accessibilityLabelKey={mode === 'edit' ? 'a11y/Remove edit' : 'a11y/Remove reply'}
+            accessibilityLabelKey={
+              mode === 'edit'
+                ? 'reply.removeEdit.accessibilityLabel'
+                : 'reply.removeReply.accessibilityLabel'
+            }
             onPress={onDismiss}
           />
         </View>
@@ -271,14 +275,19 @@ const ReplyComposerAnnouncer = ({
   const announcement = useMemo(() => {
     if (mode === 'edit') {
       return truncatedText
-        ? t('a11y/Editing message: {{text}}', { text: truncatedText })
-        : t('a11y/Editing message');
+        ? t('reply.editingMessage.withText.accessibilityLabel', 'Editing message: {{text}}', {
+            text: truncatedText,
+          })
+        : t('reply.editingMessage.accessibilityLabel', 'Editing message');
     }
     const name = message?.user?.name;
     if (!name) return undefined;
     return truncatedText
-      ? t('a11y/Replying to {{user}}: {{text}}', { text: truncatedText, user: name })
-      : t('a11y/Replying to {{user}}', { user: name });
+      ? t('reply.replying.withUserAndText.accessibilityLabel', 'Replying to {{user}}: {{text}}', {
+          text: truncatedText,
+          user: name,
+        })
+      : t('reply.replying.withUser.accessibilityLabel', 'Replying to {{user}}', { user: name });
   }, [mode, message?.user?.name, truncatedText, t]);
 
   useAnnounceOnShow(true, announcement);

@@ -16,7 +16,7 @@ export const ChannelListHeaderErrorIndicator = ({ onPress = () => null }: Header
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <Text style={styles.errorText} testID='channel-loading-error'>
-        {t('Error while loading, please reload/refresh')}
+        {t('channelList.header.loadFailed.error', 'Error while loading, please reload/refresh')}
       </Text>
     </TouchableOpacity>
   );

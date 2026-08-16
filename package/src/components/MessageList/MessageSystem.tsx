@@ -47,7 +47,7 @@ export const MessageSystem = (props: MessageSystemProps) => {
         date: createdAt,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/MessageSystem',
+        timestampTranslationKey: 'timestamp.MessageSystem',
       }),
     [createdAt, t, tDateTimeParser],
   );

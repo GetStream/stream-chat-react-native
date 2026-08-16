@@ -88,7 +88,7 @@ export const MessageOverlayHostLayer = () => {
   const isActive = !!id;
 
   const announce = useAccessibilityAnnouncer();
-  const overlayOpenHint = useA11yLabel('a11y/Swipe right to go through different actions');
+  const overlayOpenHint = useA11yLabel('common.messageOverlay.swipeHint.accessibilityLabel');
   const announcedOpenRef = useRef(false);
   useEffect(() => {
     if (isActive) {

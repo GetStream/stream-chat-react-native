@@ -149,11 +149,11 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       id: 'mute',
       label: isDirectChat
         ? channelMuteActive
-          ? t('Unmute Chat')
-          : t('Mute Chat')
+          ? t('channel.unmuteChat.label', 'Unmute Chat')
+          : t('channel.muteChat.label', 'Mute Chat')
         : channelMuteActive
-          ? t('Unmute Group')
-          : t('Mute Group'),
+          ? t('channel.unmuteGroup.label', 'Unmute Group')
+          : t('channel.muteGroup.label', 'Mute Group'),
       placement: 'swipe',
       type: 'standard',
     },
@@ -166,11 +166,11 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       id: 'pin',
       label: isDirectChat
         ? isPinned
-          ? t('Unpin Chat')
-          : t('Pin Chat')
+          ? t('channel.unpinChat.label', 'Unpin Chat')
+          : t('channel.pinChat.label', 'Pin Chat')
         : isPinned
-          ? t('Unpin Group')
-          : t('Pin Group'),
+          ? t('channel.unpinGroup.label', 'Unpin Group')
+          : t('channel.pinGroup.label', 'Pin Group'),
       placement: 'sheet',
       type: 'standard',
     });
@@ -191,7 +191,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           />
         ),
       id: 'muteUser',
-      label: userMuteActive ? t('Unmute User') : t('Mute User'),
+      label: userMuteActive
+        ? t('message.unmuteUser.label', 'Unmute User')
+        : t('message.muteUser.label', 'Mute User'),
       placement: 'sheet',
       type: 'standard',
     });
@@ -201,19 +203,22 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       const name = otherUser?.name || otherUser?.id || '';
 
       Alert.alert(
-        t('Block {{ name }}', { name }),
-        t("They won't be able to message or call you. You can unblock them later."),
+        t('message.blockUserConfirm.title', 'Block {{ name }}', { name }),
+        t(
+          'message.blockUserConfirm.text',
+          "They won't be able to message or call you. You can unblock them later.",
+        ),
         [
           {
             style: 'cancel',
-            text: t('Cancel'),
+            text: t('common.cancel.label', 'Cancel'),
           },
           {
             onPress: async () => {
               await blockUser(...args);
             },
             style: 'destructive',
-            text: t('Block'),
+            text: t('message.blockUserConfirm.label', 'Block'),
           },
         ],
       );
@@ -223,7 +228,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       action: isBlocked ? unblockUser : blockUserWithConfirmation,
       Icon: (props) => <ChannelActionsIcon Icon={icons.BlockUser} {...props} />,
       id: 'block',
-      label: isBlocked ? t('Unblock User') : t('Block User'),
+      label: isBlocked
+        ? t('message.unblockUser.label', 'Unblock User')
+        : t('message.blockUser.label', 'Block User'),
       placement: 'sheet',
       type: isBlocked ? 'standard' : 'destructive',
     });
@@ -238,23 +245,29 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       const otherUser = getOtherUserInDirectChannel(channel)?.user;
       name = otherUser?.name || otherUser?.id || '';
     } else {
-      name = t('group');
+      name = t('channel.leave.confirm.groupName.text', 'this group');
     }
 
     Alert.alert(
-      isDirectChat ? t('Leave Chat') : t('Leave Group'),
-      t("You'll stop receiving messages from {{ name }}. You can rejoin anytime.", { name }),
+      isDirectChat
+        ? t('channel.leaveChat.label', 'Leave Chat')
+        : t('channel.leaveGroup.label', 'Leave Group'),
+      t(
+        'channel.leave.confirm.text',
+        "You'll stop receiving messages from {{ name }}. You can rejoin anytime.",
+        { name },
+      ),
       [
         {
           style: 'cancel',
-          text: t('Cancel'),
+          text: t('common.cancel.label', 'Cancel'),
         },
         {
           onPress: async () => {
             await leave(...args);
           },
           style: 'destructive',
-          text: t('Leave'),
+          text: t('channel.leave.confirm.label', 'Leave'),
         },
       ],
     );
@@ -264,7 +277,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     action: leaveWithConfirmation,
     Icon: (props) => <ChannelActionsIcon Icon={icons.ArrowBoxLeft} {...props} />,
     id: 'leave',
-    label: isDirectChat ? t('Leave Chat') : t('Leave Group'),
+    label: isDirectChat
+      ? t('channel.leaveChat.label', 'Leave Chat')
+      : t('channel.leaveGroup.label', 'Leave Group'),
     placement: 'sheet',
     type: 'destructive',
   });
@@ -272,28 +287,38 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   if (channel.data?.created_by?.id === ownUserId) {
     actionItems.push({
       action: (...args: Parameters<ChannelActionHandler>) => {
-        const title = isDirectChat ? t('Delete chat') : t('Delete group');
+        const title = isDirectChat
+          ? t('channel.deleteChat.title', 'Delete chat')
+          : t('channel.deleteGroup.title', 'Delete group');
         const message = isDirectChat
-          ? t("Are you sure you want to delete this chat? This can't be undone.")
-          : t("Are you sure you want to delete this group? This can't be undone.");
+          ? t(
+              'channel.deleteChat.confirm.text',
+              "Are you sure you want to delete this chat? This can't be undone.",
+            )
+          : t(
+              'channel.deleteGroup.confirm.text',
+              "Are you sure you want to delete this group? This can't be undone.",
+            );
 
         Alert.alert(title, message, [
           {
             style: 'cancel',
-            text: t('Cancel'),
+            text: t('common.cancel.label', 'Cancel'),
           },
           {
             onPress: async () => {
               await deleteChannel(...args);
             },
             style: 'destructive',
-            text: t('Delete'),
+            text: t('message.deleteMessageConfirm.label', 'Delete'),
           },
         ]);
       },
       Icon: (props) => <ChannelActionsIcon Icon={icons.Delete} {...props} />,
       id: 'deleteChannel',
-      label: isDirectChat ? t('Delete Chat') : t('Delete Group'),
+      label: isDirectChat
+        ? t('channel.deleteChat.label', 'Delete Chat')
+        : t('channel.deleteGroup.label', 'Delete Group'),
       placement: 'sheet',
       type: 'destructive',
     });

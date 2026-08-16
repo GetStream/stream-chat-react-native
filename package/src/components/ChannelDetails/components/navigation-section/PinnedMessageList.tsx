@@ -93,7 +93,7 @@ const PinnedMessageListContent = ({
       return;
     }
     addNotification({
-      message: t('Failed to load pinned messages'),
+      message: t('channelDetails.pinnedMessageList.load.error', 'Failed to load pinned messages'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -120,11 +120,16 @@ const PinnedMessageListContent = ({
   ) : isEmpty ? (
     <EmptyList
       icon={icons.Pin}
-      subtitle={t('Long-press a message to pin it to the chat')}
-      title={t('No pinned messages')}
+      subtitle={t(
+        'channelDetails.pinnedMessageList.empty.description',
+        'Long-press a message to pin it to the chat',
+      )}
+      title={t('channelDetails.pinnedMessageList.empty.title', 'No pinned messages')}
     />
   ) : (
-    <EmptySearchResult label={t('No pinned messages')} />
+    <EmptySearchResult
+      label={t('channelDetails.pinnedMessageList.empty.title', 'No pinned messages')}
+    />
   );
 
   const loadingMoreIndicator = (
@@ -136,7 +141,10 @@ const PinnedMessageListContent = ({
       {!isEmpty && (
         <SearchInput
           value={searchQuery}
-          accessibilityLabel={t('a11y/Search pinned messages')}
+          accessibilityLabel={t(
+            'channelDetails.pinnedMessageList.search.accessibilityLabel',
+            'Search pinned messages',
+          )}
           onChangeText={(text) => {
             searchSource.state.partialNext({ searchQuery: text });
             searchSource.search(text);

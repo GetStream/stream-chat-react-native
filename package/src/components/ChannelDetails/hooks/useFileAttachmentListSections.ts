@@ -63,7 +63,7 @@ export const useFileAttachmentListSections = (
         date: message.created_at as string | Date | undefined,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/FileAttachmentListSection',
+        timestampTranslationKey: 'timestamp.FileAttachmentListSection',
       });
       const title = typeof formatted === 'string' ? formatted : String(formatted ?? '');
       const tiles = fileAttachments.map((attachment) => ({ attachment, message }));

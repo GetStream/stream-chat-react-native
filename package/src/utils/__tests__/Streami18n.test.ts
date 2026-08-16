@@ -5,6 +5,7 @@ import moment, { type Moment } from 'moment-timezone';
 
 import frTranslations from '../../i18n/fr.json';
 import nlTranslations from '../../i18n/nl.json';
+import { runtimeDefaults } from '../../i18n/runtimeDefaults';
 import { Streami18n } from '../i18n/Streami18n';
 
 Dayjs.extend(localeData);
@@ -183,8 +184,21 @@ describe('registerTranslation - register new language `mr` (Marathi)', () => {
 
   it('should add Marathi translations object to list of translations', () => {
     expect(streami18n.getTranslations()).toHaveProperty(languageCode, {
-      translation: translations,
+      // `runtimeDefaults` is layered under every language and `registerTranslation` merges over
+      // it, so the registered dictionary is a subset of the resulting bundle rather than all of it.
+      translation: expect.objectContaining(translations),
     });
+  });
+
+  it('should layer the bundled runtime defaults under the registered Marathi translations', () => {
+    const registered = streami18n.getTranslations()[languageCode].translation as Record<
+      string,
+      string
+    >;
+
+    for (const [key, value] of Object.entries(runtimeDefaults)) {
+      expect(registered[key]).toBe(value);
+    }
   });
 
   it('should register dayjs locale config for Marathi translations', async () => {

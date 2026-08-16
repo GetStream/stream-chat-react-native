@@ -5,6 +5,7 @@ import { act, renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import type { File } from '../../../types/types';
 import { useChannelActions } from '../useChannelActions';
 
@@ -15,10 +16,36 @@ const imageFile: File = {
   uri: 'file:///tmp/avatar.png',
 };
 
+// Prose keys pass their English copy inline: a bare second argument, or — for plurals —
+// `defaultValue_one` / `defaultValue_other` inside the options, selected by `count`. Without a
+// provider the context default (`defaultTranslatorFunction`) resolves bare defaults but not the
+// plural shape, so the notification messages asserted below need a real translator.
+const t = ((key: string, defaultValueOrOptions?: string | Record<string, unknown>) => {
+  if (typeof defaultValueOrOptions === 'string') {
+    return defaultValueOrOptions;
+  }
+  if (defaultValueOrOptions) {
+    const pluralDefault =
+      defaultValueOrOptions.count === 1
+        ? defaultValueOrOptions.defaultValue_one
+        : defaultValueOrOptions.defaultValue_other;
+    if (typeof pluralDefault === 'string') {
+      return pluralDefault;
+    }
+  }
+  return key;
+}) as never;
+
 const createWrapper =
   (client: unknown) =>
   ({ children }: PropsWithChildren) => (
-    <ChatProvider value={{ client } as never}>{children}</ChatProvider>
+    <ChatProvider value={{ client } as never}>
+      <TranslationProvider
+        value={{ t, tDateTimeParser: ((input: unknown) => input) as never, userLanguage: 'en' }}
+      >
+        {children}
+      </TranslationProvider>
+    </ChatProvider>
   );
 
 const createClient = () => ({

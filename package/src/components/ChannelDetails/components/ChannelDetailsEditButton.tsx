@@ -47,8 +47,8 @@ export const ChannelDetailsEditButton = ({
   return (
     <>
       <Button
-        accessibilityLabelKey='a11y/Edit channel'
-        label={t('Edit')}
+        accessibilityLabelKey='channelDetails.editChannel.accessibilityLabel'
+        label={t('channelDetails.editChannel.label', 'Edit')}
         onPress={handleEditPress}
         size='md'
         style={style}

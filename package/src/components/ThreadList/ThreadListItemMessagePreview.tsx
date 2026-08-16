@@ -27,7 +27,7 @@ export const ThreadListItemMessagePreview = ({ message }: ThreadListItemMessageP
 
   return (
     <View style={[styles.container]}>
-      {isDraft ? <Text style={styles.draftText}>{t('Draft')}:</Text> : null}
+      {isDraft ? <Text style={styles.draftText}>{t('common.draft.label', 'Draft')}:</Text> : null}
       {MessagePreviewIcon ? (
         <MessagePreviewIcon height={20} stroke={semantics.textPrimary} width={20} />
       ) : null}

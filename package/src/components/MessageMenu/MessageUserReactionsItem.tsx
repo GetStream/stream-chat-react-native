@@ -63,11 +63,11 @@ export const MessageUserReactionsItem = ({
       <MessageUserReactionsAvatar reaction={reaction} size={'md'} />
       <View style={[styles.avatarNameContainer, avatarNameContainer]}>
         <Text numberOfLines={1} style={[styles.avatarName, avatarName]}>
-          {isOwnReaction ? t('You') : name}
+          {isOwnReaction ? t('common.you.label', 'You') : name}
         </Text>
         {isOwnReaction ? (
           <Text numberOfLines={1} style={[styles.avatarSubtitle, null]}>
-            {t('Tap to remove')}
+            {t('messageMenu.userReactions.tapToRemove.description', 'Tap to remove')}
           </Text>
         ) : null}
       </View>

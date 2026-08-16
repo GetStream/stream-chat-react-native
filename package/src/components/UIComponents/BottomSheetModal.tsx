@@ -560,12 +560,10 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
 
   const modalA11yProps = useResolvedModalAccessibilityProps();
 
-  const openAnnouncement = useA11yLabel(
-    'a11y/Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.',
-  );
+  const openAnnouncement = useA11yLabel('uiComponents.bottomSheetModal.opened.accessibilityLabel');
   useAnnounceOnShow(visible, openAnnouncement, { delayMs: 800 });
 
-  const closeLabel = useA11yLabel('a11y/Close');
+  const closeLabel = useA11yLabel('common.close.accessibilityLabel');
   const closeAccessibilityActions = useMemo(
     () => (closeLabel ? [{ label: closeLabel, name: 'activate' }] : undefined),
     [closeLabel],

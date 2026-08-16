@@ -50,7 +50,7 @@ export const PollResultsContent = ({
       {...additionalScrollViewProps}
     >
       <View style={[styles.container, container]}>
-        <Text style={[styles.titleMeta, titleMeta]}>{t('Question')}</Text>
+        <Text style={[styles.titleMeta, titleMeta]}>{t('poll.question.label', 'Question')}</Text>
         <Text style={[styles.title, title]}>{name}</Text>
       </View>
       <View style={styles.resultsContainer}>

@@ -53,7 +53,11 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
-  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect video' : 'a11y/Select video');
+  const accessibilityLabel = useA11yLabel(
+    selected
+      ? 'attachmentPicker.video.deselect.accessibilityLabel'
+      : 'attachmentPicker.video.select.accessibilityLabel',
+  );
 
   const onPressVideo = async () => {
     if (selected) {
@@ -63,7 +67,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
       }
     } else {
       if (!availableUploadSlots) {
-        Alert.alert(t('Maximum number of files reached'));
+        Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
         return;
       }
       await uploadNewFile(asset);
@@ -117,7 +121,11 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
-  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect image' : 'a11y/Select image');
+  const accessibilityLabel = useA11yLabel(
+    selected
+      ? 'attachmentPicker.image.deselect.accessibilityLabel'
+      : 'attachmentPicker.image.select.accessibilityLabel',
+  );
 
   const { uri } = asset;
 
@@ -129,7 +137,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
       }
     } else {
       if (!availableUploadSlots) {
-        Alert.alert(t('Maximum number of files reached'));
+        Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
         return;
       }
       await uploadNewFile(asset);
@@ -179,7 +187,9 @@ const AttachmentIosLimited = () => {
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
     >
       <icons.Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
-      <Text style={styles.iosLimitedText}>{t('Add more')}</Text>
+      <Text style={styles.iosLimitedText}>
+        {t('attachmentPicker.photoLibrary.addMore.label', 'Add more')}
+      </Text>
     </BottomSheetTouchableOpacity>
   );
 };

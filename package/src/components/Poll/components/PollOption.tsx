@@ -66,7 +66,7 @@ export const PollAllOptionsContent = ({
       {...additionalScrollViewProps}
     >
       <View style={[styles.allOptionsTitleContainer, titleContainer]}>
-        <Text style={styles.allOptionsTitleMeta}>{t('Question')}</Text>
+        <Text style={styles.allOptionsTitleMeta}>{t('poll.question.label', 'Question')}</Text>
         <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
       </View>
       <View style={[styles.allOptionsListContainer, listContainer]}>
@@ -148,7 +148,11 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
             ) : null}
 
             <Text
-              accessibilityLabel={t('{{count}} votes', { count: votes })}
+              accessibilityLabel={t('poll.votes.text', {
+                count: votes,
+                defaultValue_one: '{{count}} vote',
+                defaultValue_other: '{{count}} votes',
+              })}
               style={[styles.votesText, votesText]}
             >
               {votes}

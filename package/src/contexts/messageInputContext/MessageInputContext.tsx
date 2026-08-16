@@ -278,7 +278,7 @@ export const MessageInputProvider = ({
    */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
     if (!attachmentManager.availableUploadSlots) {
-      Alert.alert(t('Maximum number of files reached'));
+      Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
       return;
     }
 
@@ -289,11 +289,15 @@ export const MessageInputProvider = ({
 
     if (file.askToOpenSettings && disableAttachmentPicker) {
       Alert.alert(
-        t('Allow camera access in device settings'),
-        t('Device camera is used to take photos or videos.'),
+        t('common.cameraPermission.title', 'Allow camera access in device settings'),
+        t('common.cameraPermission.text', 'Device camera is used to take photos or videos.'),
         [
-          { style: 'cancel', text: t('Cancel') },
-          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+          { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
+          {
+            onPress: () => Linking.openSettings(),
+            style: 'default',
+            text: t('common.openSettings.label', 'Open Settings'),
+          },
         ],
       );
     }
@@ -312,7 +316,7 @@ export const MessageInputProvider = ({
    */
   const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
     if (!attachmentManager.availableUploadSlots) {
-      Alert.alert(t('Maximum number of files reached'));
+      Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
       return;
     }
 
@@ -321,11 +325,18 @@ export const MessageInputProvider = ({
     });
     if (result.askToOpenSettings) {
       Alert.alert(
-        t('Allow access to your Gallery'),
-        t('Device gallery permissions is used to take photos or videos.'),
+        t('common.galleryPermission.title', 'Allow access to your Gallery'),
+        t(
+          'common.galleryPermission.text',
+          'Device gallery permissions is used to take photos or videos.',
+        ),
         [
-          { style: 'cancel', text: t('Cancel') },
-          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+          { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
+          {
+            onPress: () => Linking.openSettings(),
+            style: 'default',
+            text: t('common.openSettings.label', 'Open Settings'),
+          },
         ],
       );
     }
@@ -348,7 +359,7 @@ export const MessageInputProvider = ({
     }
 
     if (!attachmentManager.availableUploadSlots) {
-      Alert.alert(t('Maximum number of files reached'));
+      Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
       return;
     }
 
@@ -401,8 +412,8 @@ export const MessageInputProvider = ({
 
       if (!channelCapabilities.sendLinks && linkInfos.length > 0) {
         Alert.alert(
-          t('Links are disabled'),
-          t('Sending links is not allowed in this conversation'),
+          t('common.linksDisabled.title', 'Links are disabled'),
+          t('common.linksDisabled.text', 'Sending links is not allowed in this conversation'),
         );
 
         inputBoxRef.current?.restoreState(textToRestore);
@@ -419,7 +430,7 @@ export const MessageInputProvider = ({
         } catch (error) {
           addNotification(
             {
-              message: t('Edit message request failed'),
+              message: t('common.editMessageFailed.error', 'Edit message request failed'),
               options: {
                 ...(error instanceof Error ? { originalError: error } : {}),
                 severity: 'error',
@@ -462,7 +473,7 @@ export const MessageInputProvider = ({
         } catch (error) {
           addNotification(
             {
-              message: t('Send message request failed'),
+              message: t('common.sendMessageFailed.error', 'Send message request failed'),
               options: {
                 ...(error instanceof Error ? { originalError: error } : {}),
                 severity: 'error',
