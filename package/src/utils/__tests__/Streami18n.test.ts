@@ -279,7 +279,11 @@ describe('Streami18n timezone', () => {
           >,
         });
         await (i18n as unknown as { init: () => Promise<void> }).init();
-        expect(i18n.t('abc')).toBe('custom');
+        // `value` has to be supplied: since i18next 26 an interpolation whose value is missing or
+        // `undefined` short-circuits before the formatter runs. Every SDK call site passes one
+        // (`timestamp` for timestampFormatter, `milliseconds` for durationFormatter), so this
+        // matches the real path — previously the assertion passed only by accident.
+        expect(i18n.t('abc', { value: new Date() })).toBe('custom');
       });
       it('allows to add new custom formatter', async () => {
         const i18n = new Streami18n({
@@ -290,7 +294,7 @@ describe('Streami18n timezone', () => {
           >,
         });
         await (i18n as unknown as { init: () => Promise<void> }).init();
-        expect(i18n.t('abc')).toBe('custom');
+        expect(i18n.t('abc', { value: new Date() })).toBe('custom');
       });
     });
   });

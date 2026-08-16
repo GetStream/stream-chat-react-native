@@ -1,8 +1,15 @@
 # Task: port the v15 i18n architecture from `stream-chat-react` to `stream-chat-react-native`
 
 You are working in `stream-chat-react-native`. Your job is to replace this SDK's i18n system with
-the architecture already shipped in the React (web) SDK, so that both SDKs behave identically and,
-wherever the two SDKs render the same concept, **use the same translation key**.
+the architecture already shipped in the React (web) SDK, so that both SDKs follow the same rules
+and behave the same way.
+
+**Scope note — the two SDKs do not share a key catalog.** Each SDK owns its own keys, and no
+integrator is expected to reuse one SDK's dictionary with the other. What transfers is the
+*architecture*: the key grammar, the resolution order, the type surface, the generator guards and
+the tooling. Where this document points you at the web catalog, it is as a **naming precedent** —
+how a key is shaped, which modality suffixes exist, how plurals are stored — never as a list of
+literal keys to copy across. Derive RN's keys from RN's own component tree.
 
 This is a port, not a redesign. The design decisions below are settled — they were made, reviewed
 and shipped in the web SDK. Do not re-litigate them. Where the RN platform genuinely forces a
@@ -13,8 +20,18 @@ description.
 
 ## 1. The reference implementation — read it first
 
-The web implementation is on branch `sdk-i18n-refactor-8925a7` (PR #3261, targeting `release-v15`)
-in the sibling repo `../stream-chat-react`, at commit `4cf2e6cbf`.
+The web implementation shipped in **PR #3261**, squash-merged as commit **`17c91bc70`** on branch
+**`release-v15`** of the sibling repo `../stream-chat-react`. The PR branch was deleted on merge —
+read `origin/release-v15`, not the PR branch:
+
+```bash
+cd ../stream-chat-react && git fetch origin release-v15
+git show origin/release-v15:src/i18n/types.ts
+git log -1 17c91bc70          # the whole change as one commit
+```
+
+Also worth reading for the *rationale* behind specific choices: the PR review discussion on #3261
+(`gh pr view 3261 --comments`), which is where several of the guarantees in §6 came from.
 
 Read these before writing any code. They are the specification; this document is only a summary.
 
@@ -26,11 +43,11 @@ Read these before writing any code. They are the specification; this document is
 | `src/i18n/externalStrings.ts` | Bridge for strings emitted by `stream-chat` (the LLC) |
 | `src/i18n/Streami18n.ts` | Layering, `registerTranslation`, `setLanguage`, dayjs config |
 | `src/i18n/utils.ts` | `asDynamicKey`, `defaultTranslatorFunction` |
-| `scripts/generate-i18n-keys.mts` | The catalog generator and its four hard-fail guards |
+| `scripts/generate-i18n-keys.mts` | The catalog generator and its hard-fail guards (web has 4; you add a 5th — §9) |
 | `scripts/i18n-call-sites.mts` | The `t()` call-site parser |
 | `src/i18n/__tests__/Streami18n.test.ts` | ~62 tests; port the behavioural ones |
 | `ai-docs/i18n-v15-migration.md` | The integrator-facing guide you must produce an RN analogue of |
-| `ai-docs/i18n-v15-key-map.json` | 603-row v14→v15 key mapping — **your cross-SDK key source** |
+| `ai-docs/i18n-v15-key-map.json` | 603-entry v14→v15 mapping — a **naming precedent only**, not keys to copy (§8.2) |
 
 To obtain the web SDK's full key catalog with English copy, run in that repo:
 
@@ -66,7 +83,7 @@ yarn i18n:export
 | Distinct literal keys at call sites | 288 |
 | `t('…')` **literals in tests** | 2 |
 | English-text assertions in tests | 231 (`getByText` / `toHaveTextContent` / …) |
-| i18next | `^25.2.1` |
+| i18next | `^25.2.1` → **must become `^26.3.6`**, see §11.6 |
 | Test runner | `jest` (`TZ=UTC jest`) |
 | `build-translations` | `i18next-cli sync` |
 | `validate-translations` | `node bin/validate-translations.js` |
@@ -97,7 +114,12 @@ path into a nested object.
 - `<namespace>` mirrors the source tree (`src/components/MessageInput/` → `messageInput.*`), so a
   key is predictable from the component that renders it.
 - `<modality>` is the leaf and is drawn from a closed set:
-  `.label`, `.ariaLabel`, `.placeholder`, `.title`, `.description`, `.text`, `.error`
+  `.label`, `.accessibilityLabel`, `.placeholder`, `.title`, `.description`, `.text`, `.error`
+
+  > **`.accessibilityLabel`, not `.ariaLabel`.** This is a settled deviation from the web SDK,
+  > which uses `.ariaLabel`. RN's prop is `accessibilityLabel` and the key should read the way an
+  > RN developer reads the component. The two catalogs are independent (see the scope note), so
+  > there is no key-sharing cost. Apply it uniformly — do not mix the two spellings.
 - Genuinely shared copy — words reused across unrelated components — goes in `common.*`.
 
 ### Hard invariants (enforce these in the generator, not by convention)
@@ -230,11 +252,26 @@ instantiations and ~1.2s of `tsc`. Measure before and after anyway and report it
 The real work is naming ~470 keys. Make that **one reviewable artifact**, not 101 scattered diffs.
 
 1. **Generate a draft mapping** `old English key → new dotted key`, deriving the namespace from the
-   file path and the modality from the surrounding prop (`accessibilityLabel=` → `.ariaLabel`).
-2. **Cross-reference `../stream-chat-react/ai-docs/i18n-v15-key-map.json` and the web catalog.**
-   For any string that is conceptually the same as one the web SDK renders, **reuse the web SDK's
-   key verbatim.** Report the hit rate. This is the single highest-value part of the task — an
-   integrator shipping both SDKs should be able to share one dictionary for the overlap.
+   file path and the modality from the surrounding prop (`accessibilityLabel=` →
+   `.accessibilityLabel`, `placeholder=` → `.placeholder`, and so on).
+2. **Use `../stream-chat-react/ai-docs/i18n-v15-key-map.json` as a naming precedent, not a source
+   of keys.** It is a hand-reviewed 603-entry object — `{ $comment, count, keys }`, where each
+   entry maps the old v14 English key to `{ key, prose, plural }`:
+
+   ```json
+   "aria/{{ count }} unread message": {
+     "key": "a11y.accessibleLabel.unreadMessage.ariaLabel", "prose": true, "plural": true
+   }
+   ```
+
+   (That sample is web's own key, so it ends in `.ariaLabel`. RN's equivalent leaf is
+   `.accessibilityLabel` — see §4.)
+
+   Read it to calibrate *how* strings of each kind were named — granularity, when a string was
+   promoted to `common.*`, how qualifiers like `.withUser` / `.withTitle` were used. **Do not copy
+   keys across.** RN's namespaces come from RN's own source tree, and RN has components web does
+   not (and vice versa). Where RN and web happen to converge on the same key for the same concept,
+   that is a welcome coincidence, not a goal to engineer toward.
 3. **Review the mapping by hand.** This is where naming judgment belongs.
 4. **Classify all ~181 non-literal keys** before deleting: dead (delete), runtime-reachable via a
    dynamic key (keep, move to `runtimeDefaults`), or LLC-emitted (keep, add to `externalStrings`).
@@ -305,7 +342,8 @@ the `preservePatterns` footgun that nearly deleted the web SDK's 57 `language.*`
 
 ## 11. RN-specific items the web port did not face
 
-1. **`accessibilityLabel`, not `aria-label`.** See Decision A below — do not choose unilaterally.
+1. **`accessibilityLabel`, not `aria-label`.** The modality leaf is `.accessibilityLabel`
+   throughout — settled, see §4.
 2. **RTL.** `ar` and `he` ship today and `I18nManager` / `isRTL` is used across many components.
    Removing the bundled locales must not disturb RTL layout behaviour, which is driven by
    `I18nManager`, not by the translation catalog. Verify explicitly and say so in the PR.
@@ -314,9 +352,26 @@ the `preservePatterns` footgun that nearly deleted the web SDK's 57 `language.*`
 4. **Metro does not tree-shake** — state this in the PR as the bundle-size rationale.
 5. **jest, not vitest.** Note that vitest does not typecheck; jest via babel does not either. Type
    errors surface only from `tsc`, so run it explicitly (see §12).
-6. **i18next `^25.2.1`** vs web's 26.3.6. Check the features you rely on
-   (`parseMissingKeyHandler`, `addResources`, `services.formatter.add()`, postProcessors) exist at
-   25.x. Upgrade only if genuinely required, and say so.
+6. **Upgrade i18next to the latest version — this is required, not optional.** RN currently pins
+   `^25.2.1`; the latest is **`26.3.6`**, which is exactly what the web SDK pins, so this also
+   brings the two SDKs onto one major.
+
+   It is a major bump (25 → 26). Before porting anything, read the i18next v26 release notes and
+   confirm the APIs this architecture depends on are intact:
+   `parseMissingKeyHandler`, `addResources`, `changeLanguage`, `services.formatter.add()`,
+   postProcessors, `keySeparator: false`, `nsSeparator: false`, `fallbackLng: false`, and the
+   `defaultValue_one` / `_other` plural resolution via `Intl.PluralRules`.
+
+   i18next 26 is expected to work fine under Metro — do not spend time proving that. Just run the
+   suite and the SampleApp; if something does break there, treat it as an ordinary bug.
+
+   One check that *is* worth doing explicitly, and is about the plural architecture rather than
+   about i18next: **`Intl.PluralRules` on Hermes.** Plural selection for `ar` and `he` depends on
+   it, Hermes' `Intl` support differs from V8's, and this SDK now asks integrators to supply
+   `_few` / `_many` / `_zero`. Verify on both Android and iOS that a locale supplying those
+   categories resolves correctly on-device, not just in jest under Node.
+
+   Report the before/after i18next versions and the Hermes plural result in the PR.
 7. **`copy-translations`** in the build script copies `src/i18n` into `lib/typescript/i18n`. Rework
    or delete it — after this change the catalog is a generated *type-only* module.
 
@@ -357,17 +412,17 @@ Beyond green CI, produce evidence for each of these:
 
 Stop and ask before committing to any of these:
 
-- **A. `.ariaLabel` vs `.accessibilityLabel` as the modality leaf.** The web SDK uses `.ariaLabel`.
-  RN's prop is `accessibilityLabel`, so `.accessibilityLabel` is the idiomatic choice — but it
-  breaks key sharing for *every* accessibility string across the two SDKs, which is a large share
-  of the catalog. Recommendation: keep `.ariaLabel` for cross-SDK parity, on the grounds that the
-  key is an identifier and not an RN API name. Confirm before proceeding — this is expensive to
-  reverse.
-- **B. How far to push cross-SDK key reuse** when the RN component tree diverges from web's.
-  Report the overlap you found and propose a line.
-- **C. Any i18next upgrade** (§11.6).
-- **D. Copy changes.** Renaming keys is free in an unreleased major; *changing English wording* is
+- **A. Copy changes.** Renaming keys is free in an unreleased major; *changing English wording* is
   not, and is out of scope. If a rename tempts you to reword, don't — flag it.
+- **B. The reviewed key mapping** (§8, step 3) before you run the codemod over 101 files. This is
+  the one artifact where naming judgment lives, and it is far cheaper to review as ~470 lines than
+  as a 101-file diff.
+- **C. Any namespace that does not fall out of the source tree cleanly** — e.g. a string rendered
+  by a shared primitive under `src/components/ui/` but only ever used by one feature. Propose a
+  placement rather than inventing a namespace silently.
+
+Already decided, do **not** reopen: `.accessibilityLabel` as the modality leaf (§4); the i18next 26
+upgrade (§11.6); independent key catalogs per SDK (scope note).
 
 ---
 
@@ -375,7 +430,7 @@ Stop and ask before committing to any of these:
 
 - Namespacing `stream-chat`'s notification strings at the source (separate LLC ticket).
 - Re-adding any locale, in-repo or as a separate package.
-- Changing English copy (see Decision D).
+- Changing English copy (see Decision A in §13).
 
 ---
 
