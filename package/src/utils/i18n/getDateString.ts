@@ -1,5 +1,3 @@
-import type { TranslationLanguage } from 'stream-chat';
-
 import { calendarFormats } from './calendarFormats';
 import { TimestampFormatterOptions } from './types';
 
@@ -97,7 +95,12 @@ type DateStringForA11yOptions = {
   }>;
   date?: string | Date;
   tDateTimeParser?: TranslatorFunctions['tDateTimeParser'];
-  userLanguage?: TranslationLanguage;
+  /**
+   * The UI language, used to pick calendar wording. Plain `string`: this indexes
+   * `calendarFormats`, which an integrator extends for whatever language they registered — it is
+   * not `stream-chat`'s auto-translation union.
+   */
+  userLanguage?: string;
 };
 
 /**
