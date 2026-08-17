@@ -130,13 +130,10 @@ export const MessageStatus = (props: MessageStatusProps) => {
   const { channel } = useChannelContext();
   const { deliveredToCount, message, readBy } = useMessageContext();
 
-  const channelMembersCount = Object.keys(channel?.state.members).length;
-
   return (
     <MemoizedMessageStatus
       {...{
         channel,
-        channelMembersCount,
         deliveredToCount,
         message,
         readBy,

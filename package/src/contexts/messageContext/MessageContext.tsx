@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useContext } from 'react';
 import type { View } from 'react-native';
 
-import type { Attachment, ChannelState, LocalMessage } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import type { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
@@ -157,10 +157,8 @@ export type MessageContextValue = {
    * TODO: V9: Change function params to an object
    */
   onThreadSelect?: (message: LocalMessage, targetedMessageId?: string) => void;
-} & Pick<ChannelContextValue, 'channel'> & { members: ChannelState['members'] } & Pick<
-    MessageComposerAPIContextValue,
-    'setQuotedMessage'
-  >;
+} & Pick<ChannelContextValue, 'channel'> &
+  Pick<MessageComposerAPIContextValue, 'setQuotedMessage'>;
 
 export const MessageContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,

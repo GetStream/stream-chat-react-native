@@ -35,7 +35,6 @@ export const useCreateMessageContext = ({
   isMessageAIGenerated,
   isMyMessage,
   lastGroupMessage,
-  members,
   message,
   messageOverlayId,
   messageContentOrder,
@@ -64,7 +63,6 @@ export const useCreateMessageContext = ({
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage({ message });
 
-  const membersValue = JSON.stringify(members);
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
   const stringifiedQuotedMessage = message.quoted_message
@@ -101,7 +99,6 @@ export const useCreateMessageContext = ({
       isMessageAIGenerated,
       isMyMessage,
       lastGroupMessage,
-      members,
       message,
       messageOverlayId,
       messageContentOrder,
@@ -137,7 +134,6 @@ export const useCreateMessageContext = ({
       hasReactions,
       messageHasOnlySingleAttachment,
       lastGroupMessage,
-      membersValue,
       myMessageThemeString,
       messageOverlayId,
       reactionsValue,

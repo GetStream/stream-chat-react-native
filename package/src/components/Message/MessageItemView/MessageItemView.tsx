@@ -113,7 +113,6 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'setQuotedMessage'
   | 'lastGroupMessage'
   | 'contextMenuAnchorRef'
-  | 'members'
   | 'threadList'
 > &
   Pick<
@@ -287,7 +286,6 @@ const areEqual = (
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     lastGroupMessage: prevLastGroupMessage,
-    members: prevMembers,
   } = prevProps;
   const {
     channel: nextChannel,
@@ -297,7 +295,6 @@ const areEqual = (
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     lastGroupMessage: nextLastGroupMessage,
-    members: nextMembers,
   } = nextProps;
 
   const groupStylesEqual = prevGroupStyles === nextGroupStyles;
@@ -307,11 +304,6 @@ const areEqual = (
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) {
-    return false;
-  }
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) {
     return false;
   }
 
@@ -419,7 +411,6 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     otherAttachments,
     setQuotedMessage,
     lastGroupMessage,
-    members,
     threadList,
   } = useMessageContext();
 
@@ -454,7 +445,6 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         reactionListType,
         setQuotedMessage,
         lastGroupMessage,
-        members,
         threadList,
       }}
       {...props}
