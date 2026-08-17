@@ -71,7 +71,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   const { aiState } = useAIState(channel);
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
   const shouldDisplayStopAIGeneration =
-    [AIStates.Thinking, AIStates.Generating].includes(aiState) && !!StopMessageStreamingButton;
+    [AIStates.Thinking, AIStates.Generating].some((state) => state === aiState) &&
+    !!StopMessageStreamingButton;
 
   if (shouldDisplayStopAIGeneration) {
     return <StopMessageStreamingButton onPress={stopGenerating} />;
