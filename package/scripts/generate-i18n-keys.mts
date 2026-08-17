@@ -38,15 +38,17 @@ const isFormatterKey = (key: string) => FORMATTER_PREFIXES.some((prefix) => key.
 // Some formatter values embed English day words in their `calendarFormats` (dayjs escapes literal
 // text in brackets), so excluding them from the export does drop translatable text. It is not
 // translatable *as copy* — the format string has to be rewritten — so the guide routes it through a
-// key override instead. Counted rather than hardcoded so the note below cannot go stale.
+// key override instead. Detected rather than hardcoded so the list below cannot go stale.
 // Two different ways English hides inside a formatter expression, and both have to be reported —
 // a translator working from the JSON export never sees these keys otherwise.
 const hasEnglishWords = (value: string) =>
   // Day words baked into a `calendarFormats` argument, e.g. `[Yesterday]`.
   [...value.matchAll(/\[([^\]]+)\]/g)].some(([, literal]) => /[A-Za-z]{2}/.test(literal)) ||
-  // Prose sitting beside the interpolation, e.g. `Last seen {{ timestamp | … }}`. Greedy on
-  // purpose: `calendarFormats` embeds its own braces, so a lazy match would stop inside one.
-  /[A-Za-z]{2}/.test(value.replace(/\{\{[\s\S]*\}\}/g, ''));
+  // Prose sitting beside the interpolation, e.g. `Last seen {{ timestamp | … }}`. Each expression
+  // is matched individually — a greedy `{{[\s\S]*}}` would span from the first `{{` to the last
+  // `}}` and swallow the prose between two of them. Stopping at `}}` rather than any `}` is what
+  // keeps the nested braces of a `calendarFormats` argument inside the match.
+  /[A-Za-z]{2}/.test(value.replace(/\{\{(?:[^}]|\}(?!\}))*\}\}/g, ''));
 
 // `EXTERNAL_STRING_KEYS` entries whose low-level-client wording deliberately differs from the SDK's
 // own copy for the same concept. Everything else must match, so a copy edit cannot silently
