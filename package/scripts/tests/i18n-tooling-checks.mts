@@ -98,8 +98,11 @@ test('records every recognised t() call form and ignores the rest', () => {
   });
 
   assert.equal(result.status, 0, result.stderr);
+  // Sliced to the catalog block rather than compared against the whole tail of the file, so the
+  // prose of the `BundledTranslationKey` doc comment is not load-bearing for this assertion.
+  const catalogStart = result.keys!.indexOf('export type TranslationCatalog');
   assert.equal(
-    result.keys?.slice(result.keys.indexOf('export type')),
+    result.keys!.slice(catalogStart, result.keys!.indexOf('};', catalogStart) + 3),
     [
       'export type TranslationCatalog = {',
       '  "duration.widget": "mm:ss";',
@@ -114,6 +117,12 @@ test('records every recognised t() call form and ignores the rest', () => {
       '',
     ].join('\n'),
   );
+  // The two keys with no inline copy are also emitted as the bundled union, which is what the
+  // `t()` overloads use to tell a key that needs a `defaultValue` from one that does not.
+  const bundled = result.keys!.slice(result.keys!.indexOf('export type BundledTranslationKey'));
+  assert.match(bundled, /\|\s+"duration\.widget"/);
+  assert.match(bundled, /\|\s+"timestamp\.WidgetTimestamp"/);
+  assert.doesNotMatch(bundled, /widget\.close\.ariaLabel/);
   // Conditional keys are invisible to the scanner — neither branch is recorded, and it is not
   // reported as an error.
   assert.ok(!result.keys?.includes('widget.ignored'));
@@ -332,7 +341,10 @@ test('--json writes the joined catalog, excluding formatter keys unless --all is
   assert.equal(translatable.status, 0, translatable.stderr);
   assert.deepEqual(JSON.parse(translatable.read('out.json')), { 'widget.close.label': 'Close' });
   assert.match(translatable.stdout, /excluded 1 formatter expressions \(timestamp\., duration\.\)/);
-  assert.match(translatable.stdout, /1 of them do carry English day words/);
+  assert.match(translatable.stdout, /1 of them do carry English copy/);
+  // The excluded keys are named, not just counted — a translator working from the JSON export
+  // never sees them otherwise.
+  assert.match(translatable.stdout, /^ {4}timestamp\.Foo$/m);
 
   const all = run(files, ['--json', 'out.json', '--all']);
   assert.equal(all.status, 0, all.stderr);
@@ -344,4 +356,26 @@ test('--json writes the joined catalog, excluding formatter keys unless --all is
   const noPath = run(files, ['--json']);
   assert.equal(noPath.status, 1);
   assert.match(noPath.stderr, /--json requires an output path/);
+});
+
+test('--json reports English prose beside an interpolation, not just bracketed day words', () => {
+  // The real case is `timestamp.UserActivityStatus`: 'Last seen {{ timestamp | fromNowFormatter }}'.
+  // Its English sits outside the brackets, so a bracket-only check misses it and the string ships
+  // untranslated — invisible, because the key is excluded from the export a translator works from.
+  const files = {
+    'src/a.tsx': `t('widget.close.label', 'Close');\nt('timestamp.Seen', { t: 1 });\nt('timestamp.Plain', { t: 1 });\n`,
+    'src/i18n/runtimeDefaults.ts': `
+      export const runtimeDefaults = {
+        'timestamp.Seen': 'Last seen {{ timestamp | fromNowFormatter }}',
+        'timestamp.Plain': '{{ timestamp | timestampFormatter(format: LT) }}',
+      };
+    `,
+  };
+
+  const result = run(files, ['--json', 'out.json']);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /1 of them do carry English copy/);
+  assert.match(result.stdout, /^ {4}timestamp\.Seen$/m);
+  // A pure formatter expression has no copy in it and must not be reported.
+  assert.doesNotMatch(result.stdout, /timestamp\.Plain/);
 });

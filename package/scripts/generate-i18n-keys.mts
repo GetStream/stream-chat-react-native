@@ -39,8 +39,14 @@ const isFormatterKey = (key: string) => FORMATTER_PREFIXES.some((prefix) => key.
 // text in brackets), so excluding them from the export does drop translatable text. It is not
 // translatable *as copy* — the format string has to be rewritten — so the guide routes it through a
 // key override instead. Counted rather than hardcoded so the note below cannot go stale.
+// Two different ways English hides inside a formatter expression, and both have to be reported —
+// a translator working from the JSON export never sees these keys otherwise.
 const hasEnglishWords = (value: string) =>
-  [...value.matchAll(/\[([^\]]+)\]/g)].some(([, literal]) => /[A-Za-z]{2}/.test(literal));
+  // Day words baked into a `calendarFormats` argument, e.g. `[Yesterday]`.
+  [...value.matchAll(/\[([^\]]+)\]/g)].some(([, literal]) => /[A-Za-z]{2}/.test(literal)) ||
+  // Prose sitting beside the interpolation, e.g. `Last seen {{ timestamp | … }}`. Greedy on
+  // purpose: `calendarFormats` embeds its own braces, so a lazy match would stop inside one.
+  /[A-Za-z]{2}/.test(value.replace(/\{\{[\s\S]*\}\}/g, ''));
 
 // `EXTERNAL_STRING_KEYS` entries whose low-level-client wording deliberately differs from the SDK's
 // own copy for the same concept. Everything else must match, so a copy edit cannot silently
@@ -293,9 +299,10 @@ if (JSON_OUT) {
     console.log(
       `  excluded ${excludedKeys.length} formatter expressions (${FORMATTER_PREFIXES.join(', ')}) — ` +
         `not copy, and\n  a TMS that translates them breaks date rendering. ` +
-        `Pass --all to include them.\n  ${withEnglish.length} of them do carry English day words; ` +
-        `those are translated by overriding the key —\n  see ` +
-        `ai-docs/i18n-v10-migration.md#date-and-time.`,
+        `Pass --all to include them.\n  ${withEnglish.length} of them do carry English copy and ` +
+        `must be translated by overriding the key:\n` +
+        withEnglish.map((key) => `    ${key}`).join('\n') +
+        `\n  see ai-docs/i18n-v10-migration.md#date-and-time.`,
     );
   }
 }
