@@ -996,6 +996,34 @@ needed unless you mock `channel.state` in tests (it must be a real `StateStore` 
 `useIsChannelMuted`, `useChannelMuteActive`. `useMutedChannels` intentionally stays event-based
 (it returns the client-global muted-channel **list**, not this channel's `muteStatus`).
 
+## K.7 AI-indicator state → `channel.state.aiState` (additive slice; soft-breaking enum)
+
+The per-channel AI-indicator state (thinking / generating / …) is now a reactive slice on
+`channel.state`, owned by the LLC and driven from the `ai_indicator.update` / `.clear` / `.stop`
+events in `Channel._handleChannelEvent`. Previously the UI SDK kept it in `useAIState` via local
+`useState` + `channel.on('ai_indicator.*')` listeners.
+
+- **Subscribe:** `useStateStore(channel.state, s => ({ aiState: s.aiState }))`, seeded
+  `AIStates.Idle`. If you ran your own `ai_indicator.*` listeners, drop them and read the slice.
+- **`useAIState(channel)` is unchanged** — same `{ aiState }` return, now a thin `useStateStore`
+  reader internally. It additionally honors `ai_indicator.stop` (→ `AIStates.Stop`), which the RN
+  hook previously ignored.
+- **`AIState` reconciled + `AIStates` const now exported from `stream-chat`** (soft-breaking):
+  `AI_STATE_CHECKING_SOURCES` → `AI_STATE_EXTERNAL_SOURCES`, plus `AI_STATE_IDLE` and
+  `AI_STATE_STOP` added. `(string & {})` keeps any string assignable, so this is a literal-set / DX
+  change, not a hard compile break. Import `AIStates` from `stream-chat` (also re-exported from the
+  SDK) instead of hand-writing the literals.
+- **Connection-loss reset is automatic (LLC-owned).** `aiState` resets to `Idle` whenever the WS
+  goes away — a transient / internet drop (via the channel cleaning sweep, gated on connection
+  health) or a deliberate close such as mobile backgrounding (via `client.closeConnection()`) — so a
+  stuck "Generating" can't outlive a lost socket. No app code needed; the terminal
+  `ai_indicator.clear` / `.stop` that would otherwise be missed offline is not replayed on reconnect.
+
+```tsx
+// read the AI indicator anywhere (or just use useAIState)
+const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState }));
+```
+
 ---
 
 ## 19. Verify
