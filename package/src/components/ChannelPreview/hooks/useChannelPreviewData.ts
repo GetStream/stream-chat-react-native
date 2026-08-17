@@ -3,14 +3,13 @@ import { useCallback, useEffect } from 'react';
 import type {
   Channel,
   LocalMessage,
+  MembershipState,
   MessagePaginatorAggregateState,
   MessageResponse,
+  MuteStatusState,
   ReadState,
   StreamChat,
 } from 'stream-chat';
-
-import { useIsChannelMuted } from './useIsChannelMuted';
-import { useIsChannelPinned } from './useIsChannelPinned';
 
 import { useStateStore } from '../../../hooks';
 
@@ -29,17 +28,28 @@ export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
   const userId = client.userID;
   const { lastMessage } =
     useStateStore(channel.messagePaginator.aggregateState, lastMessageSelector) ?? {};
-  const { muted } = useIsChannelMuted(channel);
-  const pinned = useIsChannelPinned(channel);
 
-  // unread
-  const ownUnreadSelector = useCallback(
-    (state: ReadState) => ({
+  // One `channel.state` subscription for the whole preview row — mute status, membership (for pin)
+  // and own unread — instead of one subscription per concern. Fewer subscribers means the
+  // `channel.state` notify fan-out runs fewer selectors per publish, and fewer `useSyncExternalStore`
+  // instances per mounted row. The public `useIsChannelMuted` / `useIsChannelPinned` hooks are
+  // unchanged for every other caller; this aggregator just reads the combined slice directly.
+  const previewStateSelector = useCallback(
+    (state: MembershipState & MuteStatusState & ReadState) => ({
+      membership: state.membership,
+      muteStatus: state.muteStatus,
       unread: userId ? (state.read[userId]?.unread_messages ?? 0) : 0,
     }),
     [userId],
   );
-  const { unread: reactiveUnread } = useStateStore(channel.state, ownUnreadSelector) ?? {};
+  const {
+    membership,
+    muteStatus,
+    unread: reactiveUnread,
+  } = useStateStore(channel.state, previewStateSelector) ?? {};
+
+  const muted = muteStatus?.muted ?? false;
+  const pinned = Boolean(membership?.pinned_at);
   // muted channels always render a zeroed unread count
   const unread = muted ? 0 : (reactiveUnread ?? 0);
 
