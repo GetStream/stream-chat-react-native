@@ -178,9 +178,16 @@ Two steps, and the second is the one that gets missed.
 
 ### Step 1 — the dayjs locale
 
-Only the `en` dayjs locale is bundled. Import your own and pass `dayjsLocaleConfigForLanguage`. `calendar` is not part
-of dayjs's own `ILocale` — it comes from the calendar plugin — which is why `DayjsLocaleConfig` is exported: typing the
-argument as a bare `Partial<ILocale>` makes passing a calendar config a TS2345 "no properties in common" error.
+Only the `en` dayjs locale is bundled. Import your own **and** pass `dayjsLocaleConfigForLanguage`. Both halves are
+required: `calendar` is not part of dayjs's own `ILocale` — it comes from the calendar plugin — and **no dayjs locale
+file defines it**, `en` included. Import `dayjs/locale/de` on its own and you get German month and day names, but every
+relative date renders the plugin's built-in English scaffolding around a translated day name:
+
+> Last **Mittwoch** at 5:10 PM
+
+The SDK applies its own `calendar` block to `en` internally for exactly this reason. That the field is plugin-owned is
+also why `DayjsLocaleConfig` is exported: typing the argument as a bare `Partial<ILocale>` makes passing a calendar
+config a TS2345 "no properties in common" error.
 
 ```ts
 import { Streami18n, type DayjsLocaleConfig } from 'stream-chat-react-native';
@@ -200,7 +207,8 @@ const deLocale: DayjsLocaleConfig = {
 const i18n = new Streami18n({ language: 'de', dayjsLocaleConfigForLanguage: deLocale });
 ```
 
-Or pass your own preconfigured `DateTimeParser` (dayjs or moment) with the locales already loaded:
+Or pass your own preconfigured `DateTimeParser` (dayjs or moment) with the locales already loaded — in which case the
+calendar wording is yours to apply too, via `Dayjs.updateLocale`:
 
 ```ts
 import Dayjs from 'dayjs';
