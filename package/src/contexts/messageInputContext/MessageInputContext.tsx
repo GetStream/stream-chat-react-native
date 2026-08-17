@@ -39,8 +39,6 @@ import { MessageInputHeightStore } from '../../state-store/message-input-height-
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
-import { useChannelContext } from '../channelContext/ChannelContext';
-import { useChatContext } from '../chatContext/ChatContext';
 import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
@@ -221,11 +219,9 @@ export const MessageInputProvider = ({
 }>) => {
   const { closePicker, openPicker, attachmentPickerStore, disableAttachmentPicker } =
     useAttachmentPickerContext();
-  const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
   const [audioRecorderManager] = useState(new AudioRecorderManager());
 
-  const { uploadAbortControllerRef } = useChannelContext();
   const { clearEditingState } = useMessageComposerAPIContext();
   const { threadInstance } = useThreadContext();
   const { t } = useTranslationContext();
@@ -510,10 +506,6 @@ export const MessageInputProvider = ({
           file.type ||
           (typeof fallbackMimeType === 'string' ? fallbackMimeType : 'application/octet-stream'),
       };
-      uploadAbortControllerRef.current.set(
-        file.name,
-        client.api.createAbortControllerForNextRequest(),
-      );
       const fileURI = normalizedFile.type.includes('image')
         ? await compressedImageURI(normalizedFile, value.compressImageQuality)
         : normalizedFile.uri;
@@ -531,13 +523,11 @@ export const MessageInputProvider = ({
       if (blockedAttachmentIds.length) {
         attachmentManager.removeAttachments(blockedAttachmentIds);
       }
-      uploadAbortControllerRef.current.delete(normalizedFile.name);
     } catch (error) {
       if (
         error instanceof Error &&
         (error.name === 'AbortError' || error.name === 'CanceledError')
       ) {
-        uploadAbortControllerRef.current.delete(file.name);
         return;
       }
     }

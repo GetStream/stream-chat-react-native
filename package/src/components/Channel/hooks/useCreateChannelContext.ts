@@ -21,7 +21,6 @@ export const useCreateChannelContext = ({
   scrollToFirstUnreadThreshold,
   hasPendingInitialTargetLoad,
   threadList,
-  uploadAbortControllerRef,
 }: ChannelContextValue) => {
   const channelId = channel?.id;
 
@@ -45,7 +44,6 @@ export const useCreateChannelContext = ({
       scrollToFirstUnreadThreshold,
       hasPendingInitialTargetLoad,
       threadList,
-      uploadAbortControllerRef,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

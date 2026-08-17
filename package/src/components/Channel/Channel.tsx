@@ -514,12 +514,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 
   /**
-   * This ref will hold the abort controllers for
-   * requests made for uploading images/files in the messageInputContext
-   * Its a map of filename to AbortController
-   */
-  const uploadAbortControllerRef = useRef<Map<string, AbortController>>(new Map());
-  /**
    * This ref keeps track of message IDs which have already been optimistically updated.
    * We need it to make sure we don't react on message.new/notification.message_new events
    * if this is indeed the case, as it's a full list update for nothing.
@@ -1007,7 +1001,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
-    uploadAbortControllerRef,
   });
 
   // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
