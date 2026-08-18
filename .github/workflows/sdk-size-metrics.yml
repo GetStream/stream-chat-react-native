@@ -9,6 +9,10 @@ on:
     branches:
       - develop
       - main
+      # Needed for the same reason as in check-pr.yml, and specifically for this initiative: moving the
+      # i18n runtime out of `lib/` changes both numbers in the migration guide's size table, and this
+      # workflow is what measures them.
+      - V10
 
 env:
   HOMEBREW_NO_INSTALL_CLEANUP: 1 # Disable cleanup for homebrew, we don't need it on CI

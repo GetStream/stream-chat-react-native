@@ -79,7 +79,7 @@
     "path": "0.12.7",
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^2.0.0",
-    "stream-chat": "^9.51.0",
+    "stream-chat": "^10.0.0-rc.3",
     "use-sync-external-store": "^1.5.0"
   },
   "peerDependencies": {
@@ -88,7 +88,7 @@
     "@react-native-community/netinfo": ">=11.3.1",
     "@shopify/flash-list": ">=2.1.0",
     "emoji-mart": ">=5.4.0",
-    "react-native": ">=0.76.0",
+    "react-native": ">=0.79.0",
     "react-native-gesture-handler": ">=2.18.0",
     "react-native-reanimated": ">=3.16.0",
     "react-native-safe-area-context": ">=5.4.1",
