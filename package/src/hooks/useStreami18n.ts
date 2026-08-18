@@ -25,12 +25,16 @@ type SDKStreami18nState = Streami18nState<TranslationCatalog, BundledTranslation
  * physical `stream-chat` copies, and an integrator's app can easily resolve another — in which case an
  * `instanceof` check fails and the instance they configured is *silently discarded* for a fresh English
  * default. Every registered dictionary, formatter and language goes with it, with no error anywhere. A
- * branded static survives across copies.
+ * branded static survives across copies, because `Symbol.for` returns the same symbol in every one.
+ *
+ * Compared against `Streami18n.brand` rather than tested for truthiness: `brand` is a common static
+ * name, and accepting any truthy one would let an unrelated class through to `init()` and throw at
+ * render instead of taking the warn-and-fall-back path below.
  */
 const isStreami18n = (value: unknown): value is Streami18n =>
   typeof value === 'object' &&
   value !== null &&
-  Boolean((value.constructor as typeof Streami18n | undefined)?.brand);
+  (value.constructor as typeof Streami18n | undefined)?.brand === Streami18n.brand;
 
 /** Module-scope so the subscription is not torn down and rebuilt on every render. */
 const selector = ({ t, tDateTimeParser }: SDKStreami18nState) => ({ t, tDateTimeParser });

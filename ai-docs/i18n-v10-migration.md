@@ -363,7 +363,7 @@ timestampFormatter(...) }}` breaks date rendering outright. Pass `--all` for the
 
 ## The old→new key table
 
-Every old key maps to exactly one new key. The full table (391 rows) is
+Every old key maps to exactly one new key. The full table (389 rows) is
 [`i18n-v10-key-map.json`](./i18n-v10-key-map.json). Keys absent from it were dead in v9 and have been removed.
 
 Shape — `key` is the replacement, `prose` is `false` for the formatter expressions, and `plural` marks the keys that

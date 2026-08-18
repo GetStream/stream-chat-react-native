@@ -1,6 +1,6 @@
 {
-  "$comment": "v9 -> v10 translation key map for stream-chat-react-native. The left-hand side is the old key, which was the English copy itself; the right-hand side is the stable dotted key that replaces it. `plural` entries live in the catalog as <key>_one / <key>_other, while call sites use the bare key and pass `count`. Keys not listed here were dead in v9 and have been removed. Generated keys and their English copy: `yarn i18n:export`.",
-  "count": 391,
+  "$comment": "v9 -> v10 translation key map for stream-chat-react-native. The left-hand side is the old key, which was the English copy itself; the right-hand side is the stable dotted key that replaces it. `plural` entries live in the catalog as <key>_one / <key>_other, while call sites use the bare key and pass `count`. Keys not listed here have no v10 equivalent -- either they were dead in v9, or the component/notification that rendered them is gone; see the \"Removed keys\" table in i18n-v10-migration.md. Generated keys and their English copy: `yarn i18n:export`.",
+  "count": 389,
   "keys": {
     "+{{count}}": {
       "key": "attachment.gallery.moreImages.label",
@@ -514,11 +514,6 @@
     },
     "Failed to remove members": {
       "key": "channel.removeMembersFailed.error",
-      "prose": true,
-      "plural": false
-    },
-    "Failed to retrieve location": {
-      "key": "notifications.locationRetrieveFailed.error",
       "prose": true,
       "plural": false
     },
@@ -1129,11 +1124,6 @@
     },
     "Thread Reply": {
       "key": "message.threadReply.label",
-      "prose": true,
-      "plural": false
-    },
-    "Thread has not been found": {
-      "key": "notifications.threadNotFound.error",
       "prose": true,
       "plural": false
     },

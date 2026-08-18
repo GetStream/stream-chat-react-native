@@ -923,7 +923,7 @@ Configure the shared manager through its own API (`client.channelManager.setEven
 agent grepping this file finds i18n at all, and knows the three shapes of change:
 
 1. **Keys are stable dotted identifiers**, not the English copy, with the English inline as i18next's
-   `defaultValue`. The reviewed old→new table is `ai-docs/i18n-v10-key-map.json` (391 rows). Renaming is not
+   `defaultValue`. The reviewed old→new table is `ai-docs/i18n-v10-key-map.json` (389 rows). Renaming is not
    optional and **it fails silently** — an old key simply never matches, so the override stops applying and
    English renders with no error. Type your dictionary as `TranslationDictionary` to turn that into a compile
    error.
