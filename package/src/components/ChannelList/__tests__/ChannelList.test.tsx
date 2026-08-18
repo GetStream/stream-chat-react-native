@@ -219,7 +219,9 @@ describe('ChannelList', () => {
 
     // v10: the orchestrator's `ChannelPaginator` issues a single v10-shaped request object to
     // `client.queryChannels(request)` (was the legacy `(filters, sort, options, ...)` positional form).
-    // `filter_values` / `predefined_filter` now travel inside that one request object.
+    // `filter_values` / `predefined_filter` now travel inside that one request object. The trailing
+    // `undefined` is the optional per-request `requestOptions` (abort signal) arg the paginator threads
+    // through `queryChannelsAndHydrate` (LLC #1828); the channel list never passes one.
     expect(queryChannelsSpy).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -228,6 +230,7 @@ describe('ChannelList', () => {
         offset: 0,
         predefined_filter: 'user_messaging',
       }),
+      undefined,
     );
 
     useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
@@ -259,6 +262,7 @@ describe('ChannelList', () => {
         offset: 0,
         predefined_filter: 'user_messaging',
       }),
+      undefined,
     );
   });
 
@@ -300,6 +304,7 @@ describe('ChannelList', () => {
       expect(spy).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({ filter_conditions: staleFilter }),
+        undefined,
       );
     });
 
@@ -330,6 +335,7 @@ describe('ChannelList', () => {
       expect(spy).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({ filter_conditions: freshFilter }),
+        undefined,
       );
     });
 
