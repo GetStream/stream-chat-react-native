@@ -8,7 +8,7 @@ import type {
   DynamicTranslationKey,
   LooseTranslationDictionary,
   PredefinedFormatters,
-  StreamI18nOptions,
+  Streami18nOptions,
   StreamTFunction,
   TDateTimeParser,
   TDateTimeParserInput,
@@ -44,7 +44,7 @@ describe('i18n public exports', () => {
       'isNumberOrString',
       'predefinedFormatters',
       'runtimeDefaults',
-      'StreamI18n',
+      'Streami18n',
       // `@deprecated` alias kept for one release cycle; removing it is a breaking change.
       'Streami18n',
     ];
@@ -64,7 +64,7 @@ describe('i18n public exports', () => {
       DynamicTranslationKey,
       LooseTranslationDictionary,
       PredefinedFormatters,
-      StreamI18nOptions,
+      Streami18nOptions,
       StreamTFunction,
       TDateTimeParser,
       TDateTimeParserInput,

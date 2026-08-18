@@ -50,11 +50,11 @@ For RN-specific gesture-alternative toggles, the enum semantics are:
 
 ## Localization
 
-All a11y strings flow through the `StreamI18n` translation pipeline, the same one every other string uses.
+All a11y strings flow through the `Streami18n` translation pipeline, the same one every other string uses.
 Integrators override per key:
 
 ```ts
-const i18n = new StreamI18n({ language: 'nl' });
+const i18n = new Streami18n({ language: 'nl' });
 i18n.registerTranslation('nl', {
   'avatar.accessibilityLabel': 'Avatar van {{name}}',
   'messageList.scrollToBottom.withCount.accessibilityLabel': '{{count}} nieuwe berichten',

@@ -17,8 +17,8 @@ export const defaultTranslatorFunction: StreamTFunction =
  *
  * Re-exported from here rather than rewritten at ~15 call sites, so the internal module path stays
  * stable. `getDateString` and the type guards behave identically; `predefinedFormatters` gains
- * `fromNowFormatter`, and `relativeCompactDateFormatter` is now an alias of
- * `timestampFormatter({ relativeCompact: true })` whose wording goes through `t()` rather than being
+ * `fromNowFormatter` and loses `relativeCompactDateFormatter` — that behaviour is
+ * `timestampFormatter` with `relativeCompact: true`, whose wording goes through `t()` rather than being
  * hardcoded English as it was here.
  */
 export {

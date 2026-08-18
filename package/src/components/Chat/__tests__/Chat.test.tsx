@@ -166,7 +166,7 @@ describe('TranslationContext', () => {
   it('uses the i18nInstance provided in props', async () => {
     let context: TranslationContextValue = {} as TranslationContextValue;
     const i18nInstance = new Streami18n();
-    const { t, tDateTimeParser } = await i18nInstance.getTranslators();
+    const { t, tDateTimeParser } = await i18nInstance.init();
 
     // `t` and `tDateTimeParser` are getters over the state store now, so the sentinels go in through
     // the store rather than being assigned onto the instance.

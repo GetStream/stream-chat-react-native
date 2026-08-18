@@ -67,7 +67,7 @@ describe('Streami18n instance - default', () => {
   const streami18n = new Streami18n(silent);
 
   it('should render english copy from the inline defaults', async () => {
-    const { t: _t } = await streami18n.getTranslators();
+    const { t: _t } = await streami18n.init();
 
     expect(_t('common.cancel.label', 'Cancel')).toBe('Cancel');
     expect(_t('channelDetails.memberSection.title', memberSectionPluralOptions(2))).toBe(
@@ -76,7 +76,7 @@ describe('Streami18n instance - default', () => {
   });
 
   it('should echo back a key it has no translation for', async () => {
-    const { t: _t } = await streami18n.getTranslators();
+    const { t: _t } = await streami18n.init();
     // A key only known at runtime, with no bundled value and no inline default — the one case where
     // rendering the key itself is the correct outcome.
     const text = Date.now().toString();
@@ -85,7 +85,7 @@ describe('Streami18n instance - default', () => {
   });
 
   it('should provide dayjs with default en locale', async () => {
-    const { tDateTimeParser } = await streami18n.getTranslators();
+    const { tDateTimeParser } = await streami18n.init();
     expect(tDateTimeParser() instanceof Dayjs).toBe(true);
     expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('en');
   });
@@ -100,12 +100,12 @@ describe('Streami18n instance - with a registered language', () => {
     });
 
     it('should provide dutch translator', async () => {
-      const { t: _t } = await streami18n.getTranslators();
+      const { t: _t } = await streami18n.init();
       expectDutchDictionaryResolves(_t);
     });
 
     it('should provide dayjs with `nl` locale', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
+      const { tDateTimeParser } = await streami18n.init();
       expect(tDateTimeParser() instanceof Dayjs).toBe(true);
       expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('nl');
     });
@@ -120,12 +120,12 @@ describe('Streami18n instance - with a registered language', () => {
     });
 
     it('should provide dutch translator', async () => {
-      const { t: _t } = await streami18n.getTranslators();
+      const { t: _t } = await streami18n.init();
       expectDutchDictionaryResolves(_t);
     });
 
     it('should provide dayjs with default `en` locale', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
+      const { tDateTimeParser } = await streami18n.init();
       expect(tDateTimeParser() instanceof Dayjs).toBe(true);
       expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('en');
     });
@@ -142,7 +142,7 @@ describe('Streami18n instance - with a registered language', () => {
     );
 
     it('should provide dayjs with given custom locale config', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
+      const { tDateTimeParser } = await streami18n.init();
       expect(tDateTimeParser() instanceof Dayjs).toBe(true);
       const localeConfig = (tDateTimeParser() as Dayjs.Dayjs).localeData() as unknown as Record<
         string,
@@ -176,7 +176,7 @@ describe('Streami18n instance - with custom translations', () => {
     });
 
     it('should provide given (chinese in this case) translator', async () => {
-      const { t: _t } = await streami18n.getTranslators();
+      const { t: _t } = await streami18n.init();
 
       expect(_t('common.cancel.label', 'Cancel')).toBe('取消');
       expect(_t('attachment.unsupported.title', 'Unsupported Attachment')).toBe('不支持的附件');
@@ -184,7 +184,7 @@ describe('Streami18n instance - with custom translations', () => {
     });
 
     it('should provide dayjs with default `en` locale', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
+      const { tDateTimeParser } = await streami18n.init();
       expect(tDateTimeParser() instanceof Dayjs).toBe(true);
       expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('en');
     });
@@ -227,7 +227,7 @@ describe('registerTranslation - register new language `mr` (Marathi)', () => {
   it('should resolve the registered Marathi dictionary once initialized', async () => {
     // `registerTranslation` + `setLanguage` both ran before `init()`, so this also covers the
     // pre-initialization path into i18next's resource store.
-    const { t: _t } = await streami18n.getTranslators();
+    const { t: _t } = await streami18n.init();
 
     expect(_t('common.cancel.label', 'Cancel')).toBe('रद्द करा');
     expect(_t('common.loading.text', 'Loading...')).toBe('लोड करत आहे...');
@@ -235,7 +235,7 @@ describe('registerTranslation - register new language `mr` (Marathi)', () => {
   });
 
   it('should register dayjs locale config for Marathi translations', async () => {
-    const { tDateTimeParser } = await streami18n.getTranslators();
+    const { tDateTimeParser } = await streami18n.init();
     expect(tDateTimeParser() instanceof Dayjs).toBe(true);
 
     const localeConfig = (tDateTimeParser() as Dayjs.Dayjs).localeData() as unknown as Record<
@@ -267,7 +267,7 @@ describe('setLanguage - switch to french', () => {
     const streami18n = new Streami18n(silent);
     streami18n.registerTranslation('fr', frDictionary);
     // Initialize on `en` first, so the switch goes through `i18nInstance.changeLanguage`.
-    await streami18n.getTranslators();
+    await streami18n.init();
     return streami18n;
   };
 
@@ -275,7 +275,7 @@ describe('setLanguage - switch to french', () => {
     const streami18n = await initializedInstance();
     await streami18n.setLanguage('fr');
 
-    const { t: _t } = await streami18n.getTranslators();
+    const { t: _t } = await streami18n.init();
 
     expect(streami18n.currentLanguage).toBe('fr');
     expect(_t('common.cancel.label', 'Cancel')).toBe('Annuler');
@@ -294,7 +294,7 @@ describe('setLanguage - switch to french', () => {
     await streami18n.setLanguage('fr');
     await streami18n.setLanguage('en');
 
-    const { t: _t } = await streami18n.getTranslators();
+    const { t: _t } = await streami18n.init();
 
     expect(streami18n.currentLanguage).toBe('en');
     expect(_t('common.cancel.label', 'Cancel')).toBe('Cancel');
@@ -351,20 +351,20 @@ describe('runtimeDefaults', () => {
 describe('Streami18n timezone', () => {
   describe.each([['moment', moment]])('%s', (moduleName, module) => {
     it('is by default the local timezone', () => {
-      const streamI18n = new Streami18n({ DateTimeParser: module });
+      const streami18n = new Streami18n({ DateTimeParser: module });
       const date = new Date();
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).toBe(
+      expect((streami18n.tDateTimeParser(date) as Moment).format('H')).toBe(
         date.getHours().toString(),
       );
     });
 
     it('can be set to different timezone on init', () => {
-      const streamI18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
+      const streami18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
       const date = new Date();
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).not.toBe(
+      expect((streami18n.tDateTimeParser(date) as Moment).format('H')).not.toBe(
         date.getHours().toString(),
       );
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).not.toBe(
+      expect((streami18n.tDateTimeParser(date) as Moment).format('H')).not.toBe(
         (date.getUTCHours() - 2).toString(),
       );
     });
@@ -374,9 +374,9 @@ describe('Streami18n timezone', () => {
       const tz = mutableModule.tz;
       delete (mutableModule as { tz?: unknown }).tz;
 
-      const streamI18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
+      const streami18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
       const date = new Date();
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).toBe(
+      expect((streami18n.tDateTimeParser(date) as Moment).format('H')).toBe(
         date.getHours().toString(),
       );
 
@@ -394,7 +394,7 @@ describe('Streami18n timezone', () => {
             'timestamp.MessageTimestamp': '{{ value | timestampFormatter }}',
           },
         });
-        await i18n.getTranslators();
+        await i18n.init();
         // `value` has to be supplied: since i18next 26 an interpolation whose value is missing or
         // `undefined` short-circuits before the formatter runs. Every SDK call site passes one
         // (`timestamp` for timestampFormatter, `milliseconds` for durationFormatter), so this
@@ -409,7 +409,7 @@ describe('Streami18n timezone', () => {
             'timestamp.MessageTimestamp': '{{ value | customFormatter }}',
           },
         });
-        await i18n.getTranslators();
+        await i18n.init();
         expect(i18n.t('timestamp.MessageTimestamp', { value: new Date() })).toBe('custom');
       });
     });

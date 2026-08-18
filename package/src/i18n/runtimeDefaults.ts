@@ -12,9 +12,10 @@
  *
  * Two namespaces are typed into the catalog but supplied by `stream-chat/i18n` rather than declared
  * here. `language.*` (ISO language names, generated from core's `TranslationLanguage` union) is
- * merged in by the `StreamI18n` subclass in `utils/i18n/Streami18n.ts`, underneath this file, so an
+ * merged in by the `Streami18n` subclass in `utils/i18n/Streami18n.ts`, underneath this file, so an
  * individual name stays overridable. `relativeTime.*` needs no data at all: core's
- * `relativeCompactDateFormatter` passes its English inline the same way a call site does. There is
+ * `timestampFormatter(relativeCompact: true)` passes its English inline the same way a call site
+ * does. There is
  * no `translationBuilderTopic.*` — this SDK registers no i18next postProcessor; the formatter
  * registry in `stream-chat/i18n` is the whole extension surface.
  *
@@ -42,7 +43,7 @@ export const runtimeDefaults = {
   'timestamp.InlineDateSeparator': '{{ timestamp | timestampFormatter(calendar: true) }}',
   'timestamp.MessageSystem': '{{ timestamp | timestampFormatter(calendar: true) }}',
   'timestamp.MessageTimestamp': '{{ timestamp | timestampFormatter(format: LT) }}',
-  'timestamp.PollVote': '{{ timestamp | relativeCompactDateFormatter }}',
+  'timestamp.PollVote': '{{ timestamp | timestampFormatter(relativeCompact: true) }}',
   'timestamp.StickyHeader': '{{ timestamp | timestampFormatter(calendar: true) }}',
   'timestamp.ThreadListItem':
     '{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {"lastDay":"[Yesterday]", "lastWeek":"dddd", "nextDay":"[Tomorrow]", "nextWeek":"dddd [at] LT", "sameDay":"LT", "sameElse":"L"}) }}',

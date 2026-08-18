@@ -20,7 +20,7 @@ describe('language codes', () => {
       i18n.registerTranslation(language, {
         'common.cancel.label': `cancel-${language}`,
       } as TranslationDictionary);
-      const { t } = await i18n.getTranslators();
+      const { t } = await i18n.init();
 
       expect(t('common.cancel.label', 'Cancel')).toBe(`cancel-${language}`);
       // The hyphen must not have been read as a separator of any kind.
@@ -37,14 +37,14 @@ describe('language codes', () => {
     i18n.registerTranslation('pt-BR', {
       'common.cancel.label': 'Cancelar-ptBR',
     } as TranslationDictionary);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t('common.cancel.label', 'Cancel')).toBe('Cancelar-ptBR');
   });
 
   it('still renders bundled formatter keys under a region-coded language', async () => {
     const i18n = new Streami18n({ ...silent, language: 'pt-BR' });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     // Would be the raw key if runtimeDefaults had not been layered under `pt-BR`.
     expect(t('timestamp.MessageTimestamp', { timestamp: new Date(0) })).not.toBe(
@@ -58,14 +58,14 @@ describe('setLanguage', () => {
     const i18n = new Streami18n({ ...silent, language: 'en' });
     i18n.registerTranslation('de', { 'common.cancel.label': 'Abbrechen' } as TranslationDictionary);
 
-    const { t: before } = await i18n.getTranslators();
+    const { t: before } = await i18n.init();
     expect(before('common.cancel.label', 'Cancel')).toBe('Cancel');
 
     await i18n.setLanguage('de');
 
     // The instance identity is unchanged — the SDK swaps language in place rather than requiring a
     // new `Streami18n` (which would mean remounting `<Chat>`).
-    const { t: after } = await i18n.getTranslators();
+    const { t: after } = await i18n.init();
     expect(i18n.currentLanguage).toBe('de');
     expect(after('common.cancel.label', 'Cancel')).toBe('Abbrechen');
   });
@@ -94,7 +94,7 @@ describe('setLanguage', () => {
   it('warns but keeps the language when it has no dictionary', async () => {
     const logger = jest.fn();
     const i18n = new Streami18n({ language: 'en', logger });
-    await i18n.getTranslators();
+    await i18n.init();
 
     await i18n.setLanguage('ja');
 

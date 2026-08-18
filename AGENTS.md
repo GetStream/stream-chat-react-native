@@ -278,7 +278,7 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   `package/src/i18n/runtimeDefaults.ts` — the only translation data that ships. `runtimeDefaults`
   holds just the keys with no inline copy to fall back on: `timestamp.*` / `duration.*` formatter
   expressions passed around as prop values, and keys built from a runtime value.
-- **The runtime is `stream-chat/i18n`**, shared with the React SDK — one `StreamI18n`, one set of
+- **The runtime is `stream-chat/i18n`**, shared with the React SDK — one `Streami18n`, one set of
   formatters, one date layer. `package/src/utils/i18n/Streami18n.ts` is a ~30-line subclass that
   injects this package's `runtimeDefaults` (core cannot import them: the catalog is generated from
   *this* package's call sites). A behavioural fix belongs in `stream-chat`, not here. Access `t` via
@@ -287,7 +287,10 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
 - **Reactivity is a `StateStore`,** not listeners. `i18n.state` publishes
   `{ t, tDateTimeParser, language, initialized }`; `useStreami18n` subscribes with a module-scope
   selector. `setLanguage()` returns `void` — the new `t` arrives through the store. There is no
-  `addOnLanguageChangeListener`.
+  `addOnLanguageChangeListener`, and `getTranslators()` is now `init()`. **Nothing is kept as a
+  deprecated alias** — v10 is a breaking release, so an old name is removed rather than carried with a
+  countdown on it. `relativeCompactDateFormatter` is gone the same way: use `timestampFormatter` with
+  `relativeCompact: true`, whose wording goes through `t()`.
 - `language.*` (ISO language names) and `relativeTime.*` are typed into the catalog but come from
   core, which owns the code that renders them. Neither is declared in `runtimeDefaults`.
 - Notification copy is keyed on `stream-chat`'s `CORE_NOTIFICATION_TYPE`, in

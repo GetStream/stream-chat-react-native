@@ -415,17 +415,12 @@ the `timestamp/<Component>` keys it replaces.
 `Streami18n` is no longer implemented here. The class, the formatters and the whole date layer live in
 `stream-chat/i18n`, shared with the React SDK, and this package exports a thin subclass that injects its own
 bundled copy. **Your imports do not change** — `Streami18n`, `getDateString`, `predefinedFormatters` and every
-type are still exported from `stream-chat-react-native` / `stream-chat-expo`. What changes is behaviour and a
-handful of signatures.
+type are still exported from `stream-chat-react-native` / `stream-chat-expo`, and the class keeps its name.
+What changes is behaviour and a handful of signatures.
 
 Why: both UI SDKs carried ~1,300 lines of near-duplicate runtime that had drifted, each reverse-mapping
 `stream-chat`'s English notification prose against its own hand-maintained table. A fix landed in one SDK and
 not the other. One implementation ends that.
-
-### Renamed: `StreamI18n`, with `Streami18n` kept for one cycle
-
-The class is now spelled `StreamI18n`, matching what the two SDKs share. `Streami18n` remains exported as a
-`@deprecated` alias — usable as both a value and a type — so nothing breaks on this alone.
 
 ### `setLanguage()` returns `void`
 
@@ -454,11 +449,19 @@ const unsubscribe = i18n.state.subscribeWithSelector(
 
 `addOnLanguageChangeListener` and the other listener registrations are removed; the store replaces all of them.
 
-### `getTranslators()` → `init()`
+### `getTranslators()` is now `init()`
 
-Same return value, and `getTranslators()` still works as a `@deprecated` alias. `init()` is idempotent and safe
-to call concurrently — the promise is memoized, which closes a re-entry window the old
-`waitForInitializing` flag left open.
+**Removed, not aliased.** Same return value; `init()` is the better name because it initializes rather than
+gets, and it is idempotent and safe to call concurrently — the promise is memoized, which closes a re-entry
+window the old `waitForInitializing` flag left open.
+
+```ts
+// Before
+const { t, tDateTimeParser } = await i18n.getTranslators();
+
+// After
+const { t, tDateTimeParser } = await i18n.init();
+```
 
 ### i18next config: one options object
 
@@ -470,8 +473,26 @@ accepts the whole of `InitOptions` rather than a curated subset:
 new Streami18n({ language: 'de' }, { parseMissingKeyHandler: myHandler });
 
 // After
-new StreamI18n({ language: 'de', i18nextConfigOverrides: { parseMissingKeyHandler: myHandler } });
+new Streami18n({ language: 'de', i18nextConfigOverrides: { parseMissingKeyHandler: myHandler } });
 ```
+
+### `relativeCompactDateFormatter` is removed
+
+Its behaviour is `timestampFormatter` with `relativeCompact: true`, and that version routes its wording
+through `t()` — the standalone one hardcoded `'Today'` and `` `${n}d ago` ``, which no dictionary could
+reach. It is removed rather than aliased, so a `timestamp.*` expression that used it needs rewriting:
+
+```
+# Before
+{{ timestamp | relativeCompactDateFormatter }}
+
+# After
+{{ timestamp | timestampFormatter(relativeCompact: true) }}
+```
+
+The SDK's own `timestamp.PollVote` is updated. If you overrode that key — or any key whose value used this
+formatter — update your dictionary too: an unknown formatter name does not throw, so the timestamp simply
+renders wrong. The four `relativeTime.*` keys are what you translate to change the wording.
 
 ### `getDateString`: `date` → `messageCreatedAt`
 
@@ -550,7 +571,7 @@ formats with — dates stay English with no error anywhere. Don't declare `i18ne
 | `DayjsLocaleConfig`           | `dayjsLocaleConfigForLanguage` and `registerTranslation`'s third argument            |
 | `CalendarFormats`             | the six calendar slots inside a `DayjsLocaleConfig`                                  |
 | `DynamicTranslationKey`       | a key only known at runtime; brand one with `asDynamicKey()`                         |
-| `StreamI18nOptions`           | the constructor options — newly exported, though `options.formatters` always referenced it |
+| `Streami18nOptions`           | the constructor options — newly exported, though `options.formatters` always referenced it |
 | `PredefinedFormatters` / `CustomFormatters` | `options.formatters`; also newly exported                              |
 | `FormatterFactory`            | writing your own formatter                                                           |
 | `TimestampFormatterOptions`   | the `timestampFormatter` arguments inside a `timestamp.*` expression                 |

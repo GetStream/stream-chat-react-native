@@ -146,11 +146,12 @@ means changed. Details in the linked section.
 | `t('Send Message')` — the key *was* the English copy | `t('messageInput.sendMessage.accessibilityLabel', 'Send Message')` — stable dotted key, copy inline | §19 |
 | `t('a11y/Send message')` | the `.accessibilityLabel` leaf of the owning component's key | §19 |
 | `import { deTranslations } from 'stream-chat-react-native'` | removed — English is the only bundled language; supply your own dictionary | §19 |
-| `new Streami18n('nl')` | `new StreamI18n({ language: 'nl' })` — options object; `Streami18n` is a `@deprecated` alias | §19 |
-| `new Streami18n(opts, i18nextConfig)` | `new StreamI18n({ ...opts, i18nextConfigOverrides: i18nextConfig })` | §19 |
+| `new Streami18n('nl')` | `new Streami18n({ language: 'nl' })` — options object; the class name is unchanged | §19 |
+| `new Streami18n(opts, i18nextConfig)` | `new Streami18n({ ...opts, i18nextConfigOverrides: i18nextConfig })` | §19 |
 | `const t = await i18n.setLanguage('de')` | `await i18n.setLanguage('de')` → `void`; read `i18n.t` or subscribe to `i18n.state` | §19 |
 | `i18n.addOnLanguageChangeListener(fn)` | `i18n.state.subscribeWithSelector(({ t }) => ({ t }), fn)` | §19 |
-| `i18n.getTranslators()` | `i18n.init()` (same return; the old name is a `@deprecated` alias) | §19 |
+| `i18n.getTranslators()` | `i18n.init()` — removed, not aliased; same return value | §19 |
+| `{{ timestamp \| relativeCompactDateFormatter }}` | `{{ timestamp \| timestampFormatter(relativeCompact: true) }}` | §19 |
 | `getDateString({ date, … })` | `getDateString({ messageCreatedAt, … })`; returns `null`, not `undefined`, when unrenderable | §19 |
 | `getDateStringForA11y({ date, … })` | `getCalendarDateStringForA11y({ messageCreatedAt, … })` — same behaviour under a new name | §19 |
 | poll `state.errors.x` as an English string | a `PollValidationError` — key your copy on `error.code`, fall back to `error.message` | §19 |
@@ -929,9 +930,10 @@ agent grepping this file finds i18n at all, and knows the three shapes of change
 2. **English is the only bundled language.** The 12 non-English dictionaries and the `*Translations` exports
    are gone. An integrator supplies their own, additively; a key they omit still renders English.
 3. **The runtime moved to `stream-chat/i18n`**, shared with the React SDK. Imports are unchanged — everything
-   is still exported from `stream-chat-react-native` / `stream-chat-expo` — but `StreamI18n` is the new
-   spelling, reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`, and a few
-   date-helper parameters were renamed to the one name both SDKs now use. See the quick-reference rows above.
+   is still exported from `stream-chat-react-native` / `stream-chat-expo`, and `Streami18n` keeps its name
+   — but reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`,
+   `getTranslators()` is now `init()`, and a few date-helper parameters were renamed to the one name both
+   SDKs use. Nothing is kept as a deprecated alias. See the quick-reference rows above.
 
 Two dependency rules that produce silent breakage rather than errors:
 

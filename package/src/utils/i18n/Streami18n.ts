@@ -1,17 +1,17 @@
-import { languageNameDefaults, StreamI18n as CoreStreamI18n } from 'stream-chat/i18n';
-import type { StreamI18nOptions as CoreStreamI18nOptions } from 'stream-chat/i18n';
+import { languageNameDefaults, Streami18n as CoreStreami18n } from 'stream-chat/i18n';
+import type { Streami18nOptions as CoreStreami18nOptions } from 'stream-chat/i18n';
 
 import type { BundledTranslationKey } from '../../i18n/keys';
 import { runtimeDefaults } from '../../i18n/runtimeDefaults';
 import type { TranslationCatalog } from '../../i18n/types';
 
 /**
- * Options for {@link StreamI18n}.
+ * Options for {@link Streami18n}.
  *
  * `runtimeDefaults` is accepted and *merged* over the SDK's own, so supplying it adds to rather than
  * replaces what the SDK ships.
  */
-export type StreamI18nOptions = CoreStreamI18nOptions<TranslationCatalog>;
+export type Streami18nOptions = CoreStreami18nOptions<TranslationCatalog>;
 
 /**
  * Wrapper around [i18next](https://www.i18next.com/) for this SDK's translations. Pass an instance to
@@ -24,7 +24,7 @@ export type StreamI18nOptions = CoreStreamI18nOptions<TranslationCatalog>;
  * ## Overriding some of the English copy
  *
  * ```ts
- * const i18n = new StreamI18n({
+ * const i18n = new Streami18n({
  *   translationsForLanguage: { 'autoCompleteInput.placeholder': 'Write something…' },
  * });
  * ```
@@ -34,7 +34,7 @@ export type StreamI18nOptions = CoreStreamI18nOptions<TranslationCatalog>;
  * ```ts
  * import 'dayjs/locale/de';
  *
- * const i18n = new StreamI18n({ language: 'de' });
+ * const i18n = new Streami18n({ language: 'de' });
  * i18n.registerTranslation('de', de, {
  *   calendar: { sameDay: '[heute um] LT', lastDay: '[gestern um] LT' },
  * });
@@ -48,8 +48,8 @@ export type StreamI18nOptions = CoreStreamI18nOptions<TranslationCatalog>;
  * Reactivity goes through `i18n.state`, a `StateStore`. `setLanguage()` returns nothing — the new `t` is
  * published to that store, which `<Chat>` subscribes to.
  */
-export class StreamI18n extends CoreStreamI18n<TranslationCatalog, BundledTranslationKey> {
-  constructor(options: StreamI18nOptions = {}) {
+export class Streami18n extends CoreStreami18n<TranslationCatalog, BundledTranslationKey> {
+  constructor(options: Streami18nOptions = {}) {
     super({
       ...options,
       // Core owns the `language.*` names, since it owns the `TranslationLanguage` union they describe.
@@ -62,13 +62,3 @@ export class StreamI18n extends CoreStreamI18n<TranslationCatalog, BundledTransl
     });
   }
 }
-
-/**
- * @deprecated Renamed to {@link StreamI18n}, matching the class the SDKs now share. Kept for one
- * release cycle. Exported via `export { X as Y }` rather than `const Y = X` so it stays usable as both a
- * value and a type — `i18nInstance?: Streami18n` is the common form.
- */
-export { StreamI18n as Streami18n };
-
-/** @deprecated Renamed to {@link StreamI18nOptions}. */
-export type Streami18nOptions = StreamI18nOptions;

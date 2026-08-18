@@ -21,7 +21,7 @@ const FORMATTER_KEY = 'timestamp.MessageTimestamp';
 describe('G1 — runtimeDefaults are layered under every language', () => {
   it('applies to a language selected via the `language` option', async () => {
     const i18n = new Streami18n({ ...silent, language: 'de' });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t(FORMATTER_KEY)).not.toBe(FORMATTER_KEY);
   });
@@ -32,14 +32,14 @@ describe('G1 — runtimeDefaults are layered under every language', () => {
       'common.cancel.label': 'Abbrechen',
     } satisfies TranslationDictionary);
     await i18n.setLanguage('de');
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t(FORMATTER_KEY)).not.toBe(FORMATTER_KEY);
   });
 
   it('applies to `en` when no dictionary is supplied at all', async () => {
     const i18n = new Streami18n(silent);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t(FORMATTER_KEY)).not.toBe(FORMATTER_KEY);
   });
@@ -50,7 +50,7 @@ describe('G1 — runtimeDefaults are layered under every language', () => {
       'common.cancel.label': 'Abbrechen',
     } satisfies TranslationDictionary);
     i18n.registerTranslation('de', { 'common.draft.label': 'Entwurf' });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     // Registering twice must accumulate, and must not knock out the bundled formatter keys.
     expect(t(FORMATTER_KEY)).not.toBe(FORMATTER_KEY);
@@ -62,7 +62,7 @@ describe('G1 — runtimeDefaults are layered under every language', () => {
       language: 'de',
       translationsForLanguage: { 'common.cancel.label': 'Abbrechen' },
     });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t(FORMATTER_KEY)).toBe(runtimeDefaults[FORMATTER_KEY]);
   });
@@ -74,7 +74,7 @@ describe('G2 — a partial dictionary renders English, not a dotted path', () =>
     i18n.registerTranslation('de', {
       'common.cancel.label': 'Abbrechen',
     } satisfies TranslationDictionary);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t('common.loading.text', 'Loading...')).toBe('Loading...');
   });
@@ -84,14 +84,14 @@ describe('G2 — a partial dictionary renders English, not a dotted path', () =>
     i18n.registerTranslation('de', {
       'common.cancel.label': 'Abbrechen',
     } satisfies TranslationDictionary);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t('common.cancel.label', 'Cancel')).toBe('Abbrechen');
   });
 
   it('never renders a raw dotted key for a prose key', async () => {
     const i18n = new Streami18n({ ...silent, language: 'de' });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     const rendered = t('common.loading.text', 'Loading...');
     expect(rendered).not.toMatch(/^[a-z][a-zA-Z]*(\.[a-zA-Z]+)+$/);
@@ -102,7 +102,7 @@ describe('G2 — a partial dictionary renders English, not a dotted path', () =>
       ...silent,
       i18nextConfigOverrides: { parseMissingKeyHandler: () => '' },
     });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     // Every prose key looks "missing" to i18next — it resolves from the inline default, not from
     // the resource bundle. An unguarded handler therefore blanks out most of the UI.
@@ -114,7 +114,7 @@ describe('G3 — an unregistered language warns and continues', () => {
   it('does not silently reset the language to en', async () => {
     const logger = jest.fn();
     const i18n = new Streami18n({ language: 'de', logger });
-    await i18n.getTranslators();
+    await i18n.init();
 
     expect(i18n.currentLanguage).toBe('de');
   });
@@ -122,7 +122,7 @@ describe('G3 — an unregistered language warns and continues', () => {
   it('warns that the language has no dictionary', async () => {
     const logger = jest.fn();
     const i18n = new Streami18n({ language: 'de', logger });
-    await i18n.getTranslators();
+    await i18n.init();
 
     // Specifically the *translation* warning — not the unrelated dayjs "locale config for de does
     // not exist" message, which the pre-port code already emits and which would let this pass for
@@ -136,7 +136,7 @@ describe('G3 — an unregistered language warns and continues', () => {
   it('keeps the language after setLanguage to an unregistered one', async () => {
     const logger = jest.fn();
     const i18n = new Streami18n({ logger });
-    await i18n.getTranslators();
+    await i18n.init();
     await i18n.setLanguage('de');
 
     expect(i18n.currentLanguage).toBe('de');
@@ -144,7 +144,7 @@ describe('G3 — an unregistered language warns and continues', () => {
 
   it('still renders English copy in the unregistered language', async () => {
     const i18n = new Streami18n({ ...silent, language: 'de' });
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t('common.loading.text', 'Loading...')).toBe('Loading...');
   });

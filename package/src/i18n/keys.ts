@@ -412,7 +412,7 @@ export type TranslationCatalog = {
   'timestamp.InlineDateSeparator': '{{ timestamp | timestampFormatter(calendar: true) }}';
   'timestamp.MessageSystem': '{{ timestamp | timestampFormatter(calendar: true) }}';
   'timestamp.MessageTimestamp': '{{ timestamp | timestampFormatter(format: LT) }}';
-  'timestamp.PollVote': '{{ timestamp | relativeCompactDateFormatter }}';
+  'timestamp.PollVote': '{{ timestamp | timestampFormatter(relativeCompact: true) }}';
   'timestamp.StickyHeader': '{{ timestamp | timestampFormatter(calendar: true) }}';
   'timestamp.ThreadListItem': '{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {"lastDay":"[Yesterday]", "lastWeek":"dddd", "nextDay":"[Tomorrow]", "nextWeek":"dddd [at] LT", "sameDay":"LT", "sameElse":"L"}) }}';
   'timestamp.UserActivityStatus': 'Last seen {{ timestamp | fromNowFormatter }}';

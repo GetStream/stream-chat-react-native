@@ -22,7 +22,7 @@ describe('ScrollToBottomButton', () => {
 
   it('should render nothing if showNotification is false', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { queryByTestId } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
@@ -38,7 +38,7 @@ describe('ScrollToBottomButton', () => {
 
   it('should render if showNotification is true', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { queryByTestId } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
@@ -54,7 +54,7 @@ describe('ScrollToBottomButton', () => {
 
   it('should trigger onPress when pressed', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const onPress = jest.fn();
     const { getByTestId } = render(
       <ThemeProvider>
@@ -70,7 +70,7 @@ describe('ScrollToBottomButton', () => {
   it('should display the unread count', async () => {
     const t = jest.fn((key: string, d?: unknown) => (typeof d === 'string' ? d : key));
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     // The button reads OUR user's count from the channel read store (see ScrollToBottomButton),
     // keyed by the chat client's userID. Provide a minimal fake client + channel read store
     // reporting 3 unread for that user. Hand-rolled to avoid a runtime `stream-chat` import (which
@@ -113,7 +113,7 @@ describe('ScrollToBottomButton', () => {
 
   it('should render the message notification and match snapshot', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { toJSON } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
