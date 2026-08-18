@@ -40,7 +40,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
         date: asset?.created_at,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/ImageGalleryHeader',
+        timestampTranslationKey: 'timestamp.ImageGalleryHeader',
       }),
     [asset?.created_at, t, tDateTimeParser],
   );
@@ -73,7 +73,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
         <View style={styles.innerContainer}>
           <View style={styles.leftContainer}>
             <Button
-              accessibilityLabelKey='a11y/Hide Overlay'
+              accessibilityLabelKey='imageGallery.header.hideOverlay.accessibilityLabel'
               variant='secondary'
               type='ghost'
               size='md'
@@ -84,7 +84,9 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
           </View>
           <View style={styles.centerContainer} accessibilityLabel='Center element'>
             <Text style={styles.userName}>
-              {asset?.user?.name || asset?.user?.id || t('Unknown User')}
+              {asset?.user?.name ||
+                asset?.user?.id ||
+                t('common.unknownUser.label', 'Unknown User')}
             </Text>
             {date ? <Text style={styles.date}>{date}</Text> : null}
           </View>

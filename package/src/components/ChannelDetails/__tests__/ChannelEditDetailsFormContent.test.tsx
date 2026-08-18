@@ -73,7 +73,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
@@ -121,7 +121,7 @@ describe('ChannelEditDetailsFormContent', () => {
       <ThemeProvider theme={defaultTheme}>
         <TranslationProvider
           value={{
-            t: ((key: string) => key) as never,
+            t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
             tDateTimeParser: ((input: unknown) => input) as never,
             userLanguage: 'en',
           }}

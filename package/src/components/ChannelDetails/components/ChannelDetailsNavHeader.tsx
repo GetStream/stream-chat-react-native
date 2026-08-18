@@ -39,7 +39,11 @@ export const ChannelDetailsNavHeader = ({
   const isDirect = useIsDirectChat(channel);
   const styles = useStyles();
 
-  const resolvedTitle = title ?? (isDirect ? t('Contact Info') : t('Group Info'));
+  const resolvedTitle =
+    title ??
+    (isDirect
+      ? t('channelDetails.header.contactInfo.title', 'Contact Info')
+      : t('channelDetails.header.groupInfo.title', 'Group Info'));
 
   return (
     <View
@@ -53,7 +57,7 @@ export const ChannelDetailsNavHeader = ({
       <View style={styles.sideContainer}>
         {onBack ? (
           <Button
-            accessibilityLabelKey='a11y/Back'
+            accessibilityLabelKey='channelDetails.header.back.accessibilityLabel'
             iconOnly
             LeadingIcon={icons.ChevronLeft}
             onPress={onBack}

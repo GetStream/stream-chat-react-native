@@ -32,15 +32,7 @@ const Wrapper = ({
 }) => {
   return (
     <Chat client={client}>
-      <ChannelProvider
-        value={
-          {
-            uploadAbortControllerRef: {
-              current: new Map(),
-            },
-          } as ChannelContextValue
-        }
-      >
+      <ChannelProvider value={{} as ChannelContextValue}>
         <AttachmentPickerProvider
           value={
             { disableAttachmentPicker: true } as unknown as React.ComponentProps<

@@ -120,7 +120,7 @@ const makeSearchSource = (
 });
 
 const fakeTranslators = {
-  t: ((key: string) => key) as never,
+  t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
   tDateTimeParser: ((input: unknown) => Dayjs(input as string)) as never,
   userLanguage: 'en',
 } as unknown as TranslationContextValue;

@@ -47,13 +47,13 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
 
   const accessibilityLabel = useA11yLabel(
     read
-      ? 'a11y/Read'
+      ? 'message.status.read.accessibilityLabel'
       : delivered
-        ? 'a11y/Delivered'
+        ? 'message.status.delivered.accessibilityLabel'
         : sending
-          ? 'a11y/Sending'
+          ? 'message.status.sending.accessibilityLabel'
           : sent
-            ? 'a11y/Sent'
+            ? 'message.status.sent.accessibilityLabel'
             : '',
   );
 

@@ -125,14 +125,14 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
           <ShareButton savingInProgress={savingInProgress} share={share} />
           <View style={styles.centerContainer} accessibilityLabel='Center element'>
             <Text style={styles.imageCountText}>
-              {t('{{ index }} of {{ photoLength }}', {
+              {t('imageGallery.footer.position.text', '{{ index }} of {{ photoLength }}', {
                 index: currentIndex + 1,
                 photoLength: imageGalleryStateStore.assets.length,
               })}
             </Text>
           </View>
           <Button
-            accessibilityLabelKey='a11y/Grid Icon'
+            accessibilityLabelKey='imageGallery.footer.grid.accessibilityLabel'
             variant='secondary'
             type='ghost'
             size='md'
@@ -165,7 +165,7 @@ const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
     </View>
   ) : (
     <Button
-      accessibilityLabelKey='a11y/Share Button'
+      accessibilityLabelKey='imageGallery.footer.share.accessibilityLabel'
       variant='secondary'
       type='ghost'
       size='md'

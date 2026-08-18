@@ -74,8 +74,8 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
       <View style={styles.newThread}>
         <Text style={styles.text}>
           {replyCount === 1
-            ? t('1 Reply')
-            : t('{{ replyCount }} Replies', {
+            ? t('message.replies.one.label', '1 Reply')
+            : t('message.replies.many.label', '{{ replyCount }} Replies', {
                 replyCount,
               })}
         </Text>

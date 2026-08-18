@@ -41,7 +41,7 @@ export const ThreadListUnreadBanner = () => {
     return (
       <View style={styles.container}>
         <icons.Loading height={20} width={20} />
-        <Text style={styles.text}>{t('Loading...')}</Text>
+        <Text style={styles.text}>{t('common.loading.text', 'Loading...')}</Text>
       </View>
     );
   }
@@ -50,7 +50,9 @@ export const ThreadListUnreadBanner = () => {
     return (
       <View style={styles.container}>
         <icons.ExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
-        <Text style={styles.text}>{t("Couldn't load new threads. Tap to retry")}</Text>
+        <Text style={styles.text}>
+          {t('threadList.unreadBanner.loadFailed.error', "Couldn't load new threads. Tap to retry")}
+        </Text>
       </View>
     );
   }
@@ -69,7 +71,9 @@ export const ThreadListUnreadBanner = () => {
     >
       <icons.Reload stroke={semantics.textSecondary} height={20} width={20} />
       <Text style={styles.text}>
-        {t('{{count}} new threads', { count: unseenThreadIds.length })}
+        {t('threadList.unreadBanner.newThreads.label', '{{count}} new threads', {
+          count: unseenThreadIds.length,
+        })}
       </Text>
     </Pressable>
   );

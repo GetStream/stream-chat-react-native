@@ -102,7 +102,7 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
       return;
     }
     addNotification({
-      message: t('Failed to load files'),
+      message: t('channelDetails.fileAttachmentList.load.error', 'Failed to load files'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -141,8 +141,11 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
     ) : (
       <EmptyList
         icon={icons.Folder}
-        subtitle={t('Share a file to see it here')}
-        title={t('No files')}
+        subtitle={t(
+          'channelDetails.fileAttachmentList.empty.description',
+          'Share a file to see it here',
+        )}
+        title={t('channelDetails.fileAttachmentList.empty.title', 'No files')}
       />
     );
 

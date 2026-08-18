@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { Channel, OfflineDBState, type TranslationLanguage } from 'stream-chat';
+import { Channel, OfflineDBState } from 'stream-chat';
 
 import { useClientMutedUsers } from './hooks';
 import { useAppSettings } from './hooks/useAppSettings';
@@ -187,7 +187,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const translationContextValue = useMemo(
     () => ({
       ...translators,
-      userLanguage: (client.user?.language || DEFAULT_USER_LANGUAGE) as TranslationLanguage,
+      userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE,
     }),
     [client.user?.language, translators],
   );

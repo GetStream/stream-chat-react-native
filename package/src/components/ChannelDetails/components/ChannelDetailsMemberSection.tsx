@@ -81,7 +81,11 @@ export const ChannelDetailsMemberSection = ({
           accessibilityRole='header'
           style={[styles.headerTitle, { color: semantics.textPrimary }, headerTitleOverride]}
         >
-          {t('{{count}} members', { count: total })}
+          {t('channelDetails.memberSection.title', {
+            count: total,
+            defaultValue_one: '{{count}} member',
+            defaultValue_other: '{{count}} members',
+          })}
         </Text>
         <View style={[styles.addButtonWrapper, addButtonWrapperOverride]}>
           <ChannelAddMembersButton
@@ -101,7 +105,7 @@ export const ChannelDetailsMemberSection = ({
       </View>
       {hasMore ? (
         <Pressable
-          accessibilityLabel={t('View all')}
+          accessibilityLabel={t('channelDetails.memberSection.viewAll.label', 'View all')}
           accessibilityRole='button'
           onPress={handleViewAllPress}
           style={[styles.footer, { borderTopColor: semantics.borderCoreDefault }, footerOverride]}
@@ -110,7 +114,7 @@ export const ChannelDetailsMemberSection = ({
             <Text
               style={[styles.viewAllLabel, { color: semantics.textPrimary }, viewAllLabelOverride]}
             >
-              {t('View all')}
+              {t('channelDetails.memberSection.viewAll.label', 'View all')}
             </Text>
           </View>
         </Pressable>
@@ -125,7 +129,11 @@ export const ChannelDetailsMemberSection = ({
                 variant='icon'
               />
             }
-            title={t('{{count}} members', { count: total })}
+            title={t('channelDetails.memberSection.title', {
+              count: total,
+              defaultValue_one: '{{count}} member',
+              defaultValue_other: '{{count}} members',
+            })}
           />
           <ChannelMemberList />
         </ChannelDetailsModal>

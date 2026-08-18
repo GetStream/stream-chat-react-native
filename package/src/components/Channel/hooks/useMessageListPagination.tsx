@@ -92,7 +92,10 @@ export const useMessageListPagination = ({ channel }: { channel: Channel }) => {
 
   const notifyJumpToFirstUnreadError = useStableCallback((error: unknown) => {
     addNotification({
-      message: t('Failed to jump to the first unread message'),
+      message: t(
+        'channel.jumpToFirstUnreadFailed.error',
+        'Failed to jump to the first unread message',
+      ),
       options: {
         ...(error instanceof Error ? { originalError: error } : {}),
         severity: 'error',

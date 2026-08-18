@@ -47,7 +47,10 @@ export const LoadingErrorIndicator = (props: LoadingErrorProps) => {
   switch (listType) {
     case 'channel':
       return (
-        <LoadingErrorWrapper onPress={retry} text={t('Error loading channel list...')}>
+        <LoadingErrorWrapper
+          onPress={retry}
+          text={t('indicators.loading.channels.error', 'Error loading channel list...')}
+        >
           <Text style={styles.retryText}>⟳</Text>
         </LoadingErrorWrapper>
       );
@@ -55,11 +58,14 @@ export const LoadingErrorIndicator = (props: LoadingErrorProps) => {
       return (
         <LoadingErrorWrapper
           onPress={retry}
-          text={t('Error loading messages for this channel...')}
+          text={t(
+            'indicators.loading.messages.error',
+            'Error loading messages for this channel...',
+          )}
         />
       );
     default:
-      return <LoadingErrorWrapper text={t('Error loading')} />;
+      return <LoadingErrorWrapper text={t('indicators.loading.error', 'Error loading')} />;
   }
 };
 

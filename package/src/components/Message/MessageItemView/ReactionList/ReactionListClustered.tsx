@@ -67,8 +67,8 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
     },
   } = useTheme();
   const styles = useStyles();
-  const accessibilityHint = useA11yLabel('a11y/Double tap to view reactions');
-  const youReacted = useA11yLabel('a11y/you reacted');
+  const accessibilityHint = useA11yLabel('message.reactionList.viewHint.accessibilityLabel');
+  const youReacted = useA11yLabel('message.reactionList.youReacted.accessibilityLabel');
   const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
   );
@@ -76,7 +76,7 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
   const moreReactionsCount = reactionsCount - 4;
   const reactionsCountText =
     moreReactionsCount < 99 ? moreReactionsCount : `+${moreReactionsCount}`;
-  const moreReactionsA11yText = useA11yLabel('a11y/and {{count}} more reactions', {
+  const moreReactionsA11yText = useA11yLabel('message.reactionList.more.accessibilityLabel', {
     count: moreReactionsCount,
   });
 

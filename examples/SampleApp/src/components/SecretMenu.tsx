@@ -21,6 +21,12 @@ import { Edit, Delete, ZIP, useTheme } from 'stream-chat-react-native';
 
 import { styles as menuDrawerStyles } from './MenuDrawer.tsx';
 
+import {
+  LANGUAGE_STORAGE_KEY,
+  streami18n,
+  SUPPORTED_LANGUAGES,
+  type SupportedLanguageCode,
+} from '../i18n';
 import { Close } from '../icons/Close.tsx';
 import { Folder } from '../icons/Folder.tsx';
 import { Notification } from '../icons/Notification.tsx';
@@ -254,6 +260,23 @@ const SecretMenuMessageOverlayBackdropConfigItem = ({
   </TouchableOpacity>
 );
 
+const SecretMenuLanguageConfigItem = ({
+  isSelected,
+  language,
+  storeLanguage,
+}: {
+  isSelected: boolean;
+  language: (typeof SUPPORTED_LANGUAGES)[number];
+  storeLanguage: (code: SupportedLanguageCode) => void;
+}) => (
+  <TouchableOpacity
+    style={[styles.notificationItemContainer, { borderColor: isSelected ? 'green' : 'gray' }]}
+    onPress={() => storeLanguage(language.code)}
+  >
+    <Text style={styles.notificationItem}>{language.label}</Text>
+  </TouchableOpacity>
+);
+
 /*
  * TODO: Please rewrite this entire component.
  */
@@ -283,6 +306,9 @@ export const SecretMenu = ({
     MessageOverlayBackdropConfigItem['value'] | null
   >(null);
   const [selectedPerfBenchmarkingMode, setSelectedPerfBenchmarkingMode] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguageCode>(
+    streami18n.currentLanguage as SupportedLanguageCode,
+  );
   useTheme();
   const { black, grey, white } = useLegacyColors();
 
@@ -336,6 +362,12 @@ export const SecretMenu = ({
         messageOverlayBackdrop?.value ?? messageOverlayBackdropConfigItems[0].value,
       );
       setSelectedPerfBenchmarkingMode(!!perfBenchmarkingMode?.value);
+      // App.tsx has already applied this to `streami18n` on mount; this only syncs the highlight.
+      const language = await AsyncStore.getItem<SupportedLanguageCode | null>(
+        LANGUAGE_STORAGE_KEY,
+        null,
+      );
+      setSelectedLanguage(language ?? (streami18n.currentLanguage as SupportedLanguageCode));
     };
     getSelectedConfig();
   }, [notificationConfigItems]);
@@ -379,6 +411,14 @@ export const SecretMenu = ({
   const storePerfBenchmarkingMode = useCallback(async (enabled: boolean) => {
     await AsyncStore.setItem(PERF_BENCHMARKING_MODE_STORAGE_KEY, { value: enabled });
     setSelectedPerfBenchmarkingMode(enabled);
+  }, []);
+
+  const storeLanguage = useCallback(async (code: SupportedLanguageCode) => {
+    await AsyncStore.setItem(LANGUAGE_STORAGE_KEY, code);
+    // Swaps the language on the live instance; `Chat` re-renders from the listener it registered,
+    // so there is no reload here and no new `Streami18n`.
+    await streami18n.setLanguage(code);
+    setSelectedLanguage(code);
   }, []);
 
   const removeAllDevices = useCallback(async () => {
@@ -492,6 +532,22 @@ export const SecretMenu = ({
                   messageListPruningConfigItem={item}
                   storeMessageListPruning={storeMessageListPruning}
                   isSelected={item.value === selectedMessageListPruning}
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+        <View style={[menuDrawerStyles.menuItem, { alignItems: 'flex-start' }]}>
+          <Edit height={20} pathFill={grey} width={20} />
+          <View>
+            <Text style={[menuDrawerStyles.menuTitle]}>Language</Text>
+            <View style={{ marginLeft: 16 }}>
+              {SUPPORTED_LANGUAGES.map((language) => (
+                <SecretMenuLanguageConfigItem
+                  key={language.code}
+                  isSelected={language.code === selectedLanguage}
+                  language={language}
+                  storeLanguage={storeLanguage}
                 />
               ))}
             </View>

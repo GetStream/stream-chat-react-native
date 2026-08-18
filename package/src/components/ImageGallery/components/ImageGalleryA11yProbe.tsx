@@ -37,7 +37,7 @@ export const ImageGalleryA11yProbe = ({ containerBackground }: Props) => {
     [currentIndex, assetsCount],
   );
   const accessibilityValueText = useA11yLabel(
-    'a11y/{{position}} of {{count}}',
+    'imageGallery.position.accessibilityLabel',
     accessibilityValueParams,
   );
   const accessibilityValue = useMemo(

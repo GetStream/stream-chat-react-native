@@ -53,9 +53,15 @@ export const useAudioPlayer = ({
       if (!hasNotificationManager) return;
 
       const errorMessages: Record<AudioPlayerErrorCode, string> = {
-        'failed-to-start': t('Failed to play the recording'),
-        'not-playable': t('Recording format is not supported and cannot be reproduced'),
-        'seek-not-supported': t('Cannot seek in the recording'),
+        'failed-to-start': t('audioPlayer.playbackFailed.error', 'Failed to play the recording'),
+        'not-playable': t(
+          'audioPlayer.formatUnsupported.error',
+          'Recording format is not supported and cannot be reproduced',
+        ),
+        'seek-not-supported': t(
+          'audioPlayer.seekUnsupported.error',
+          'Cannot seek in the recording',
+        ),
       };
       const message = errorMessages[errCode];
 

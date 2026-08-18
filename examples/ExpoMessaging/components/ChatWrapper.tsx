@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { UserResponse } from 'stream-chat';
 import {
   Chat,
-  enTranslations,
+  type LooseTranslationDictionary,
   OverlayProvider,
   SqliteClient,
   Streami18n,
@@ -26,6 +26,16 @@ const streami18n = new Streami18n({
   language: 'en',
 });
 
+// A key the app owns rather than the SDK. `TranslationDictionary` only accepts the SDK's own keys,
+// so annotating the variable with `LooseTranslationDictionary` is how you opt into your own —
+// at the cost of no longer catching a stale or mistyped SDK key in this object.
+const appTranslations: LooseTranslationDictionary = {
+  'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+};
+
+// Registered once at module scope; calling this from a component body re-registers on every render.
+streami18n.registerTranslation('en', appTranslations);
+
 SqliteClient.logger = (_level, _message, _extraData) => {
   // console.log(_level, `SqliteClient: ${_message}`, _extraData);
 };
@@ -39,14 +49,6 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   });
 
   usePushNotifications({ chatClient });
-
-  streami18n.registerTranslation('en', {
-    ...enTranslations,
-    // Custom translation key used by the live-location feature. It is not part of the
-    // SDK's `enTranslations` (a closed key set), but i18next resolves arbitrary keys at
-    // runtime, so we cast to the expected parameter type to register it.
-    'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
-  } as typeof enTranslations);
 
   const theme = useStreamChatTheme();
   const componentOverrides = useExpoMessagingComponentOverrides();

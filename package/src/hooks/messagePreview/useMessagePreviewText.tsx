@@ -38,7 +38,7 @@ export const useMessagePreviewText = ({
   const onlyVoiceRecordings =
     voiceRecordings?.length && voiceRecordings?.length === attachmentsLength;
   if (message?.type === 'deleted') {
-    return t('Message deleted');
+    return t('message.deleted.text', 'Message deleted');
   }
 
   if (pollName) {
@@ -51,13 +51,13 @@ export const useMessagePreviewText = ({
       (message?.shared_location as LiveLocationPayload)?.end_at &&
       new Date((message?.shared_location as LiveLocationPayload)?.end_at) > new Date()
     ) {
-      return t('Live Location');
+      return t('messagePreview.liveLocation.label', 'Live Location');
     }
-    return t('Location');
+    return t('messagePreview.location.label', 'Location');
   }
 
   if (giphys?.length) {
-    return t('Giphy');
+    return t('messagePreview.giphy.label', 'Giphy');
   }
 
   if (message?.text) {
@@ -66,37 +66,53 @@ export const useMessagePreviewText = ({
 
   if (onlyImages) {
     if (images?.length === 1) {
-      return t('Photo');
+      return t('messagePreview.photo.label', 'Photo');
     } else {
-      return t('{{count}} Photos', { count: images?.length });
+      return t('messagePreview.photos.label', {
+        count: images?.length,
+        defaultValue_one: '{{count}} Photo',
+        defaultValue_other: '{{count}} Photos',
+      });
     }
   }
 
   if (onlyVideos) {
     if (videos?.length === 1) {
-      return t('Video');
+      return t('messagePreview.video.label', 'Video');
     } else {
-      return t(`{{count}} Videos`, { count: videos?.length });
+      return t('messagePreview.videos.label', {
+        count: videos?.length,
+        defaultValue_one: '{{count}} Video',
+        defaultValue_other: '{{count}} Videos',
+      });
     }
   }
 
   if (onlyAudio) {
     if (audios?.length === 1) {
-      return t('Audio');
+      return t('messagePreview.audio.label', 'Audio');
     } else {
-      return t('{{count}} Audios', { count: audios?.length });
+      return t('messagePreview.audios.label', {
+        count: audios?.length,
+        defaultValue_one: '{{count}} Audio',
+        defaultValue_other: '{{count}} Audios',
+      });
     }
   }
 
   if (onlyVoiceRecordings) {
     if (voiceRecordings?.length === 1) {
-      return t(`Voice message ({{duration}})`, {
+      return t('messagePreview.voiceMessage.label', 'Voice message ({{duration}})', {
         duration: dayjs
           .duration(voiceRecordings?.[0]?.custom?.duration ?? 0, 'seconds')
           .format('m:ss'),
       });
     } else {
-      return t('{{count}} Voice messages', { count: voiceRecordings?.length });
+      return t('messagePreview.voiceMessages.label', {
+        count: voiceRecordings?.length,
+        defaultValue_one: '{{count}} Voice message',
+        defaultValue_other: '{{count}} Voice messages',
+      });
     }
   }
 
@@ -104,5 +120,11 @@ export const useMessagePreviewText = ({
     return files?.[0]?.title;
   }
 
-  return t('{{count}} Files', { count: attachmentsLength });
+  return t('messagePreview.files.label', {
+    // `attachments` may be absent on this fall-through path. It used to render a literal
+    // `{{count}}` placeholder there; 0 at least pluralises.
+    count: attachmentsLength ?? 0,
+    defaultValue_one: '{{count}} File',
+    defaultValue_other: '{{count}} Files',
+  });
 };

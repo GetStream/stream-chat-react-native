@@ -82,10 +82,10 @@ export const AutoCompleteSuggestionList = () => {
   // commands, or emoji without having to swipe in to find out.
   const announceLabelKey =
     triggerType === 'command'
-      ? 'a11y/Command suggestions available'
+      ? 'autoCompleteInput.suggestions.commandsAvailable.accessibilityLabel'
       : triggerType === 'emoji'
-        ? 'a11y/Emoji suggestions available'
-        : 'a11y/Mention suggestions available';
+        ? 'autoCompleteInput.suggestions.emojisAvailable.accessibilityLabel'
+        : 'autoCompleteInput.suggestions.mentionsAvailable.accessibilityLabel';
   const announceLabel = useA11yLabel(announceLabelKey);
   useAnnounceOnShow(!!(showList && triggerType), announceLabel);
 

@@ -11,7 +11,9 @@ jest.mock('../../Notifications', () => ({
   useNotificationApi: () => ({ addNotification: jest.fn() }),
 }));
 jest.mock('../../../contexts/translationContext/TranslationContext', () => ({
-  useTranslationContext: () => ({ t: (key: string) => key }),
+  useTranslationContext: () => ({
+    t: (key: string, d?: unknown) => (typeof d === 'string' ? d : key),
+  }),
 }));
 
 type PaginatorStateValue = {

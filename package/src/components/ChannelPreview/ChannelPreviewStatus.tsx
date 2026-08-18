@@ -31,7 +31,7 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
         date: created_at,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/ChannelPreviewStatus',
+        timestampTranslationKey: 'timestamp.ChannelPreviewStatus',
       }),
     [created_at, t, tDateTimeParser],
   );
@@ -55,7 +55,10 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
     () => ({ date: a11yDate ?? visibleDate ?? '' }),
     [a11yDate, visibleDate],
   );
-  const accessibilityLabel = useA11yLabel('a11y/Last message {{date}}', labelParams);
+  const accessibilityLabel = useA11yLabel(
+    'channelPreview.lastMessage.accessibilityLabel',
+    labelParams,
+  );
 
   return (
     <Text accessibilityLabel={accessibilityLabel} style={styles.date}>

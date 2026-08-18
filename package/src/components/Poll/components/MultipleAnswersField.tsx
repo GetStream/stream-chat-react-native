@@ -41,9 +41,11 @@ export const MultipleAnswersField = () => {
     >
       <View style={[styles.optionCard, multipleAnswers.optionCard]}>
         <View style={[styles.optionCardContent, multipleAnswers.optionCardContent]}>
-          <Text style={[styles.title, multipleAnswers.title]}>{t('Multiple votes')}</Text>
+          <Text style={[styles.title, multipleAnswers.title]}>
+            {t('poll.createPoll.multipleVotes.label', 'Multiple votes')}
+          </Text>
           <Text style={[styles.description, multipleAnswers.description]}>
-            {t('Select more than one option')}
+            {t('poll.createPoll.multipleVotes.description', 'Select more than one option')}
           </Text>
         </View>
         <Switch

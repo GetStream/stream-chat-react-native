@@ -79,7 +79,9 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
     [memberCount, otherUserName],
   );
   const accessibilityLabel = useA11yLabel(
-    isGroup ? 'a11y/Channel with {{count}} members' : 'a11y/Direct chat with {{name}}',
+    isGroup
+      ? 'avatar.channel.group.accessibilityLabel'
+      : 'avatar.channel.direct.accessibilityLabel',
     labelParams,
   );
 

@@ -116,7 +116,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
       return;
     }
     addNotification({
-      message: t('Failed to load media'),
+      message: t('channelDetails.mediaList.load.error', 'Failed to load media'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -183,8 +183,11 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
     ) : (
       <EmptyList
         icon={icons.Picture}
-        subtitle={t('Share a photo or video to see it here')}
-        title={t('No photos or videos')}
+        subtitle={t(
+          'channelDetails.mediaList.empty.description',
+          'Share a photo or video to see it here',
+        )}
+        title={t('channelDetails.mediaList.empty.title', 'No photos or videos')}
       />
     );
 

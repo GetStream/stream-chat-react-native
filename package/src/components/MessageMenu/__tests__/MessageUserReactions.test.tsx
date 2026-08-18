@@ -25,7 +25,20 @@ import { MessageUserReactions } from '../MessageUserReactions';
 import { MessageUserReactionsItemProps } from '../MessageUserReactionsItem';
 
 const mockTranslations = {
-  t: jest.fn((key) => key),
+  // Prose keys pass their English copy inline: a bare second argument, or — for plurals —
+  // `defaultValue_one` / `defaultValue_other` inside the options, selected by `count`.
+  t: jest.fn((key, d) => {
+    if (typeof d === 'string') {
+      return d;
+    }
+    if (d && typeof d === 'object') {
+      const pluralDefault = d.count === 1 ? d.defaultValue_one : d.defaultValue_other;
+      if (typeof pluralDefault === 'string') {
+        return pluralDefault;
+      }
+    }
+    return key;
+  }),
 };
 
 const mockSupportedReactions = [

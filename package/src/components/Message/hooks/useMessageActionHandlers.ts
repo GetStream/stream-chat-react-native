@@ -92,7 +92,7 @@ export const useMessageActionHandlers = ({
     NativeHandlers.setClipboardString(translatedMessage?.text ?? message.text, {
       onFailure: (error) => {
         addNotification({
-          message: t('Failed to copy message'),
+          message: t('message.copyMessage.error', 'Failed to copy message'),
           options: {
             ...getNotificationErrorOptions(error),
             severity: 'error',
@@ -103,7 +103,7 @@ export const useMessageActionHandlers = ({
       },
       onSuccess: () => {
         addNotification({
-          message: t('Message copied to clipboard'),
+          message: t('message.copied.text', 'Message copied to clipboard'),
           options: { severity: 'success', type: 'clipboard:message:copy:success' },
           origin: { context: { message }, emitter: 'MessageActions' },
         });
@@ -116,22 +116,28 @@ export const useMessageActionHandlers = ({
       return;
     }
     Alert.alert(
-      t('Delete Message'),
-      t('Are you sure you want to permanently delete this message?'),
+      t('message.deleteMessage.label', 'Delete Message'),
+      t(
+        'message.deleteMessageConfirm.text',
+        'Are you sure you want to permanently delete this message?',
+      ),
       [
-        { style: 'cancel', text: t('Cancel') },
+        { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
         {
           onPress: async () => {
             try {
               await deleteMessage(message);
               addNotification({
-                message: t('Message deleted'),
+                message: t('message.deleted.text', 'Message deleted'),
                 options: { severity: 'success', type: 'api:message:delete:success' },
                 origin: { context: { message }, emitter: 'MessageActions' },
               });
             } catch (error) {
               addNotification({
-                message: getErrorMessage(error, t('Error deleting message')),
+                message: getErrorMessage(
+                  error,
+                  t('message.deleteMessage.error', 'Error deleting message'),
+                ),
                 options: {
                   ...getNotificationErrorOptions(error),
                   severity: 'error',
@@ -142,7 +148,7 @@ export const useMessageActionHandlers = ({
             }
           },
           style: 'destructive',
-          text: t('Delete'),
+          text: t('message.deleteMessageConfirm.label', 'Delete'),
         },
       ],
       { cancelable: false },
@@ -166,7 +172,7 @@ export const useMessageActionHandlers = ({
       if (isMuted) {
         await client.unmuteUser(message.user.id);
         addNotification({
-          message: t('{{ user }} has been unmuted', {
+          message: t('message.userUnmuted.text', '{{ user }} has been unmuted', {
             user: message.user?.name || message.user?.id,
           }),
           options: { severity: 'success', type: 'api:user:unmute:success' },
@@ -175,7 +181,7 @@ export const useMessageActionHandlers = ({
       } else {
         await client.muteUser(message.user.id);
         addNotification({
-          message: t('{{ user }} has been muted', {
+          message: t('message.userMuted.text', '{{ user }} has been muted', {
             user: message.user?.name || message.user?.id,
           }),
           options: { severity: 'success', type: 'api:user:mute:success' },
@@ -186,7 +192,9 @@ export const useMessageActionHandlers = ({
       addNotification({
         message: getErrorMessage(
           error,
-          isMuted ? t('Error unmuting a user ...') : t('Error muting a user ...'),
+          isMuted
+            ? t('message.unmuteUser.error', 'Error unmuting a user ...')
+            : t('message.muteUser.error', 'Error muting a user ...'),
         ),
         options: {
           ...getNotificationErrorOptions(error),
@@ -217,14 +225,14 @@ export const useMessageActionHandlers = ({
       if (!isPinned) {
         await client.pinMessage(message, null);
         addNotification({
-          message: t('Message pinned'),
+          message: t('message.pinned.text', 'Message pinned'),
           options: { severity: 'success', type: 'api:message:pin:success' },
           origin: { context: { message }, emitter: 'MessageActions' },
         });
       } else {
         await client.unpinMessage(message);
         addNotification({
-          message: t('Message unpinned'),
+          message: t('message.unpinned.text', 'Message unpinned'),
           options: { severity: 'success', type: 'api:message:unpin:success' },
           origin: { context: { message }, emitter: 'MessageActions' },
         });
@@ -233,7 +241,9 @@ export const useMessageActionHandlers = ({
       addNotification({
         message: getErrorMessage(
           error,
-          isPinned ? t('Error removing message pin') : t('Error pinning message'),
+          isPinned
+            ? t('message.unpinMessage.error', 'Error removing message pin')
+            : t('message.pinMessage.error', 'Error pinning message'),
         ),
         options: {
           ...getNotificationErrorOptions(error),
@@ -254,22 +264,28 @@ export const useMessageActionHandlers = ({
       return;
     }
     Alert.alert(
-      t('Flag Message'),
-      t('Do you want to send a copy of this message to a moderator for further investigation?'),
+      t('message.flagMessage.label', 'Flag Message'),
+      t(
+        'message.flagMessageConfirm.text',
+        'Do you want to send a copy of this message to a moderator for further investigation?',
+      ),
       [
-        { style: 'cancel', text: t('Cancel') },
+        { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
         {
           onPress: async () => {
             try {
               await client.flagMessage(message.id);
               addNotification({
-                message: t('Message has been successfully flagged'),
+                message: t('message.flagged.text', 'Message has been successfully flagged'),
                 options: { severity: 'success', type: 'api:message:flag:success' },
                 origin: { context: { message }, emitter: 'MessageActions' },
               });
             } catch (error) {
               addNotification({
-                message: getErrorMessage(error, t('Error adding flag')),
+                message: getErrorMessage(
+                  error,
+                  t('message.flagMessage.error', 'Error adding flag'),
+                ),
                 options: {
                   ...getNotificationErrorOptions(error),
                   severity: 'error',
@@ -279,7 +295,7 @@ export const useMessageActionHandlers = ({
               });
             }
           },
-          text: t('Flag'),
+          text: t('message.flagMessageConfirm.label', 'Flag'),
         },
       ],
       { cancelable: false },
@@ -293,7 +309,7 @@ export const useMessageActionHandlers = ({
     try {
       await channel.markUnread({ message_id: message.id });
       addNotification({
-        message: t('Message marked as unread'),
+        message: t('message.markedUnread.text', 'Message marked as unread'),
         options: { severity: 'success', type: 'api:message:markUnread:success' },
         origin: { context: { message }, emitter: 'MessageActions' },
       });
@@ -302,6 +318,7 @@ export const useMessageActionHandlers = ({
         message: getErrorMessage(
           error,
           t(
+            'message.markUnreadTooOld.error',
             'Error marking message unread. Cannot mark unread messages older than the newest 100 channel messages.',
           ),
         ),

@@ -90,7 +90,7 @@ export const ThreadMessagePreviewDeliveryStatus = ({
       ) : status === MessageDeliveryStatus.SENT ? (
         <icons.Check stroke={semantics.chatTextTimestamp} height={20} width={20} {...checkIcon} />
       ) : null}
-      <Text style={styles.text}>{t('You')}:</Text>
+      <Text style={styles.text}>{t('common.you.label', 'You')}:</Text>
     </View>
   );
 };

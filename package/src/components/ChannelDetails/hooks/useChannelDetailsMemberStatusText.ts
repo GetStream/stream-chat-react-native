@@ -24,12 +24,14 @@ export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
     if (isDirect) {
       const ownUserId = channel.getClient().userID;
       const otherMember = Object.values(members).find((member) => member.user?.id !== ownUserId);
-      return otherMember?.user?.online ? t('Online') : '';
+      return otherMember?.user?.online ? t('common.presence.online.label', 'Online') : '';
     }
-    return t('{{memberCount}} members, {{onlineCount}} online', {
+    return t('channelDetails.presence.membersOnline.label', {
       count: memberCount,
       memberCount,
       onlineCount,
+      defaultValue_one: '{{memberCount}} member, {{onlineCount}} online',
+      defaultValue_other: '{{memberCount}} members, {{onlineCount}} online',
     });
   }, [channel, isDirect, memberCount, members, onlineCount, t]);
 };

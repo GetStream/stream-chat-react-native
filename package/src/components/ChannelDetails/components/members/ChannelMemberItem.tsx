@@ -63,11 +63,11 @@ export const ChannelMemberItem = ({
 
   const isLarge = size === 'lg';
   const isCurrentUser = !!client?.userID && user.id === client.userID;
-  const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
+  const displayName = isCurrentUser ? t('common.you.label', 'You') : (user.name ?? user.id);
   const accessibilityLabel = composeAccessibilityLabel(
     displayName,
     roles.map((role) => role.label).join(', ') || undefined,
-    isMuted ? t('Muted') : undefined,
+    isMuted ? t('channelDetails.muted.accessibilityLabel', 'Muted') : undefined,
     statusLine,
   );
 

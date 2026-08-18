@@ -48,7 +48,10 @@ export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsForm
       onClose={onClose}
       rightAction={
         <Button
-          accessibilityLabel={t('a11y/Confirm edit channel')}
+          accessibilityLabel={t(
+            'channelDetails.editChannel.confirm.accessibilityLabel',
+            'Confirm edit channel',
+          )}
           accessibilityRole='button'
           accessibilityState={{ busy: saving, disabled: !confirmEnabled }}
           disabled={!confirmEnabled}
@@ -60,7 +63,7 @@ export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsForm
           variant='primary'
         />
       }
-      title={t('Edit')}
+      title={t('channelDetails.editChannel.label', 'Edit')}
     />
   );
 };

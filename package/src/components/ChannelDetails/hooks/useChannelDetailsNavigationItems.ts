@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { asDynamicKey } from '../../../i18n/utils';
 import type { IconProps } from '../../../icons/utils/base';
 
 /**
@@ -42,9 +43,12 @@ const SECTION_CONFIG: Record<
   'pinned-messages' | 'photos-and-videos' | 'files',
   { icon: 'Pin' | 'Picture' | 'Folder'; label: string }
 > = {
-  'pinned-messages': { icon: 'Pin', label: 'Pinned Messages' },
-  'photos-and-videos': { icon: 'Picture', label: 'Photos & Videos' },
-  files: { icon: 'Folder', label: 'Files' },
+  'pinned-messages': { icon: 'Pin', label: 'channelDetails.navigation.pinnedMessages.label' },
+  'photos-and-videos': {
+    icon: 'Picture',
+    label: 'channelDetails.navigation.photosAndVideos.label',
+  },
+  files: { icon: 'Folder', label: 'channelDetails.navigation.files.label' },
 };
 
 const SECTIONS = Object.keys(SECTION_CONFIG) as Array<keyof typeof SECTION_CONFIG>;
@@ -89,7 +93,8 @@ export const useChannelDetailsNavigationItems = ({
     () =>
       SECTIONS.map((section) => {
         const { icon, label } = SECTION_CONFIG[section];
-        return { Icon: icons[icon], label: t(label), section };
+        // `label` comes from SECTION_CONFIG, so the key is a runtime value here.
+        return { Icon: icons[icon], label: t(asDynamicKey(label)), section };
       }),
     [icons, t],
   );

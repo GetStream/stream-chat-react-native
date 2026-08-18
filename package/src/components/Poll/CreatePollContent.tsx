@@ -165,9 +165,11 @@ export const CreatePollContent = () => {
           >
             <View style={[styles.optionCard, anonymousPoll.wrapper]}>
               <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
-                <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
+                <Text style={[styles.title, anonymousPoll.title]}>
+                  {t('poll.createPoll.anonymousVoting.label', 'Anonymous voting')}
+                </Text>
                 <Text style={[styles.description, anonymousPoll.description]}>
-                  {t('Hide who voted')}
+                  {t('poll.createPoll.anonymousVoting.description', 'Hide who voted')}
                 </Text>
               </View>
 
@@ -179,9 +181,11 @@ export const CreatePollContent = () => {
             </View>
             <View style={[styles.optionCard, suggestOption.wrapper]}>
               <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
-                <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
+                <Text style={[styles.title, suggestOption.title]}>
+                  {t('poll.suggestOption.label', 'Suggest an option')}
+                </Text>
                 <Text style={[styles.description, suggestOption.description]}>
-                  {t('Let others add options')}
+                  {t('poll.suggestOption.description', 'Let others add options')}
                 </Text>
               </View>
 
@@ -193,9 +197,11 @@ export const CreatePollContent = () => {
             </View>
             <View style={[styles.optionCard, addComment.wrapper]}>
               <View style={[styles.optionCardContent, addComment.optionCardContent]}>
-                <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
+                <Text style={[styles.title, addComment.title]}>
+                  {t('poll.addComment.label', 'Add a comment')}
+                </Text>
                 <Text style={[styles.description, addComment.description]}>
-                  {t('Add a comment to the poll')}
+                  {t('poll.addComment.description', 'Add a comment to the poll')}
                 </Text>
               </View>
 

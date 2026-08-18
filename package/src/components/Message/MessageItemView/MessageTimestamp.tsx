@@ -30,7 +30,7 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
     formattedDate,
     tDateTimeParser: propsTDateTimeParser,
     timestamp,
-    timestampTranslationKey = 'timestamp/MessageTimestamp',
+    timestampTranslationKey = 'timestamp.MessageTimestamp',
   } = props;
   const { t, tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
   const tDateTimeParser = propsTDateTimeParser || contextTDateTimeParser;

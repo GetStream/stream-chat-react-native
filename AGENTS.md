@@ -31,7 +31,7 @@ Targets iOS and Android.
 
 `.nvmrc` · `.yarnrc.yml` · `eslint.config.mjs` · `.prettierrc` / `.prettierignore` · `commitlint.config.js` · `configs/typescript-config/` (`base.json`, `library.json` — the shared presets `package/tsconfig.json` extends) · `.editorconfig` · `.husky/`
 
-Per-package: `package/tsconfig.json` (library) · `package/tsconfig.test.json` (tests) · `package/jest.config.js` · `package/babel.config.js` · `package/i18next.config.ts`
+Per-package: `package/tsconfig.json` (library) · `package/tsconfig.test.json` (tests) · `package/jest.config.js` · `package/babel.config.js`
 
 Respect repo-specific rules. Do not suppress lint rules broadly; justify and scope every exception with an inline comment.
 
@@ -56,7 +56,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
 - `state-store/` — client-side stores on `useSyncExternalStore` with a selector pattern (audio player, video player, image gallery, message overlay, attachment picker, …)
 - `store/` — offline SQLite persistence: `OfflineDB.ts`, `SqliteClient.ts`, `schema.ts`, `mappers/`, `apis/`
 - `theme/` — theming system + `topologicalResolution.ts` + `generated/` tokens
-- `i18n/` — the 13 translation JSON files (the `Streami18n` wrapper class lives in `utils/i18n/`)
+- `i18n/` — the translation key layer: generated `keys.ts` catalog, `types.ts`, `runtimeDefaults.ts`, `externalStrings.ts`. No locale JSON — the SDK ships English only (the `Streami18n` wrapper class lives in `utils/i18n/`)
 - `a11y/` — accessibility primitives (`a11yUtils.ts`, `hooks/`)
 - `middlewares/` — command UI middlewares (`attachments.ts`, `emojiControl.ts`)
 - `icons/` — SVG icon components
@@ -100,7 +100,8 @@ yarn lint-fix                 # ALWAYS run this before committing
 yarn eslint <path>            # eslint a single path
 
 # Translations
-yarn workspace stream-chat-react-native-core build-translations   # i18next-cli sync
+yarn workspace stream-chat-react-native-core build-translations   # regenerate src/i18n/keys.ts
+yarn workspace stream-chat-react-native-core i18n:export          # dump en.json for a translator
 
 # Shared native sync (after editing package/shared-native/)
 yarn workspace stream-chat-react-native-core shared-native:sync
@@ -243,7 +244,7 @@ Tests use `render()` / `renderHook()` from `@testing-library/react-native`. Comp
 
 ## Build system
 
-`yarn build` runs `package`'s build: `rimraf lib` → `build-translations` (`i18next-cli sync`) → `bob build` → `copy-translations` (copies `src/i18n` into `lib/typescript/i18n`).
+`yarn build` runs `package`'s build: `rimraf lib` → `build-translations` (regenerates `src/i18n/keys.ts`) → `bob build`.
 
 `react-native-builder-bob` emits three targets from `src`:
 
@@ -265,11 +266,35 @@ Custom themes are passed as the `style` prop to `<Chat>`. `mergeThemes()` deep-m
 
 ## i18n
 
-- **13 locales** in `package/src/i18n/*.json`: `ar`, `en`, `es`, `fr`, `he`, `hi`, `it`, `ja`, `ko`, `nl`, `pt-br`, `ru`, `tr`
-- `Streami18n` (`package/src/utils/i18n/Streami18n.ts`) wraps i18next with per-locale calendar formats (`calendarFormats.ts`); access `t` via `useTranslationContext()`
-- Extraction: `yarn workspace stream-chat-react-native-core build-translations` (`i18next-cli sync`, configured in `package/i18next.config.ts`)
-- Validation: `validate-translations` runs inside `yarn lint` and in CI — **zero tolerance for empty translation values**
-- Adding a string: use `t()` → run `build-translations` → fill in every locale file
+**English only.** From v10 the SDK ships no locale files. Every UI string is a stable dotted key
+(`message.status.sent.text`) whose English copy is passed inline at the call site as i18next's
+`defaultValue`, so an untranslated key renders readable English rather than a raw dotted path.
+Integrators add languages additively — there is nothing in the SDK to fork or keep in sync.
+
+- `package/src/i18n/keys.ts` is **generated and type-only** — never hand-edit. It maps every key to
+  its English copy, and the i18n types derive `TranslationKey` / `StreamTFunction` from it, so a
+  typo'd or stale key is a compile error rather than a string that silently stops rendering.
+- The catalog has exactly two sources: inline defaults at the call sites, and
+  `package/src/i18n/runtimeDefaults.ts` — the only translation data that ships. `runtimeDefaults`
+  holds just the keys with no inline copy to fall back on: `timestamp.*` / `duration.*` formatter
+  expressions passed around as prop values, and keys built from a runtime value.
+- `Streami18n` (`package/src/utils/i18n/Streami18n.ts`) wraps i18next; access `t` via
+  `useTranslationContext()`. `registerTranslation` **merges**, so a partial dictionary can never
+  knock out the bundled formatter keys.
+- Only the `en` dayjs locale is bundled, and **no dayjs locale defines `calendar`** (that field
+  belongs to the calendar plugin) — a new language needs both `import 'dayjs/locale/xx'` and a
+  `calendar` config, or relative dates render English scaffolding around translated day names.
+- Generation: `build-translations` runs `package/scripts/generate-i18n-keys.mts`, which enforces
+  five hard-fail guards (conflicting inline copy, unresolvable key, shadowed key, external-string
+  drift, strict prefix). Its fixture tests are **not** jest — run
+  `cd package && node --test scripts/tests/i18n-tooling-checks.mts`.
+- Validation: `validate-translations` runs inside `yarn lint` and in CI. It is a **drift gate** —
+  it regenerates `keys.ts` and fails if the result differs from what is committed.
+- Adding a string: call `t('some.dotted.key', 'English copy')` → run `build-translations` → commit
+  the regenerated `keys.ts`. Do not add locale files.
+- `i18n:export` writes a translator-facing `en.json`. It deliberately omits formatter expressions
+  and names the few that still carry English, which must be translated by overriding the key.
+- Worked example of adding a language: `examples/SampleApp/src/i18n/` (German + Italian + README).
 
 ## Offline DB
 
@@ -389,7 +414,7 @@ Never commit API keys or real user data. Example code must use obvious placehold
 
 ## References
 
-- **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9 migration reference — load this instead of the prose upgrade guide for agent-driven migrations), `ai-docs/accessibility.md` (opt-in a11y layer)
+- **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9) and `ai-docs/ai-migration-v9-to-v10.md` (v9 → v10) — load these instead of the prose upgrade guides for agent-driven migrations; `ai-docs/accessibility.md` (opt-in a11y layer); `ai-docs/i18n-v10-migration.md` + `ai-docs/i18n-v10-key-map.json` (English-only i18n, and the reviewed old-key → dotted-key map)
 - **Repo skills:** `.claude/skills/{accessibility,rtl,perf-benchmarking}`, `perf/README.md`
 - **Contributing / process:** `CONTRIBUTING.md`, `RELEASE_PROCESS.md`, `PULL_REQUEST_TEMPLATE.md`, `SECURITY.md`
 - **Component docs:** https://getstream.io/chat/docs/sdk/reactnative/

@@ -41,7 +41,9 @@ describe('PollOption chat text side', () => {
   const renderOption = ({ forceIncoming }: { forceIncoming?: boolean } = {}) =>
     render(
       <ThemeProvider>
-        <TranslationProvider value={{ t: (key: string) => key } as never}>
+        <TranslationProvider
+          value={{ t: (key: string, d?: unknown) => (typeof d === 'string' ? d : key) } as never}
+        >
           <OwnCapabilitiesProvider value={{ castPollVote: true } as never}>
             <PollContextProvider
               value={{ message: generateMessage(), poll: { data: {} } as never }}

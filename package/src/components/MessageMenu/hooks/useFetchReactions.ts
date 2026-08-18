@@ -128,7 +128,7 @@ export const useFetchReactions = ({
         }
       } catch (error) {
         addNotification({
-          message: t('Error fetching reactions'),
+          message: t('messageMenu.userReactions.fetchFailed.error', 'Error fetching reactions'),
           options: {
             ...(error instanceof Error ? { originalError: error } : {}),
             severity: 'error',

@@ -92,7 +92,9 @@ export const ShowThreadMessageInChannelButtonWithContext = (
               />
             )}
           </View>
-          <Text style={[styles.text, text]}>{t('Also send to channel')}</Text>
+          <Text style={[styles.text, text]}>
+            {t('messageInput.alsoSendToChannel.label', 'Also send to channel')}
+          </Text>
         </View>
       </Pressable>
     </Animated.View>

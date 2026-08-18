@@ -14,6 +14,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
+import { runtimeDefaults } from '../../../i18n/runtimeDefaults';
 import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { ChannelEditDetailsForm } from '../components/ChannelEditDetailsForm';
 
@@ -61,7 +62,12 @@ const renderForm = ({ channel, onClose = jest.fn() }: { channel: Channel; onClos
       <AccessibilityProvider value={{ enabled: true }}>
         <TranslationProvider
           value={{
-            t: ((key: string) => key) as never,
+            // Prose keys pass their English copy inline as the second argument; keys resolved by
+            // name (e.g. the close button's `accessibilityLabelKey`) come from `runtimeDefaults`.
+            t: ((key: string, d?: unknown) =>
+              typeof d === 'string'
+                ? d
+                : (runtimeDefaults[key as keyof typeof runtimeDefaults] ?? key)) as never,
             tDateTimeParser: ((input: unknown) => input) as never,
             userLanguage: 'en',
           }}
@@ -234,7 +240,7 @@ describe('ChannelEditDetailsForm', () => {
     renderForm({ channel: buildChannel({ name: 'Original' }), onClose });
 
     fireEvent.changeText(screen.getByTestId('channel-edit-name-input'), 'Renamed');
-    fireEvent.press(screen.getByLabelText('a11y/Close'));
+    fireEvent.press(screen.getByLabelText('Close'));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });

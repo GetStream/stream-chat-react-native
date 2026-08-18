@@ -116,7 +116,7 @@ export const EmojiViewerButton = ({
     <>
       <View style={[styles.emojiViewerButton, emojiViewerButton]}>
         <Button
-          accessibilityLabelKey='a11y/Open more reactions'
+          accessibilityLabelKey='messageMenu.reactionPicker.moreReactions.accessibilityLabel'
           variant='secondary'
           type='outline'
           size='sm'

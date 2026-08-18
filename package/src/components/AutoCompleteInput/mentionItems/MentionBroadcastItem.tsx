@@ -18,8 +18,8 @@ export type MentionBroadcastItemProps = {
 // description below it is.
 const TITLE = { channel: '@channel', here: '@here' } as const;
 const SUBTITLE_KEY = {
-  channel: 'mention/Channel Description',
-  here: 'mention/Here Description',
+  channel: 'autoCompleteInput.mention.channel.description',
+  here: 'autoCompleteInput.mention.here.description',
 } as const;
 
 export const MentionBroadcastItem = ({ entity }: MentionBroadcastItemProps) => {

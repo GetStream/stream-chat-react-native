@@ -79,7 +79,7 @@ const ChannelEditImageSheetInner = () => {
       {
         Icon: icons.Camera,
         id: 'take-photo',
-        label: t('Take Photo'),
+        label: t('channelDetails.editImageSheet.takePhoto.label', 'Take Photo'),
         onPress: () => {
           onSelect('camera');
         },
@@ -88,7 +88,7 @@ const ChannelEditImageSheetInner = () => {
       {
         Icon: icons.Picture,
         id: 'choose-image',
-        label: t('Choose Image'),
+        label: t('channelDetails.editImageSheet.chooseImage.label', 'Choose Image'),
         onPress: () => {
           onSelect('library');
         },
@@ -101,7 +101,7 @@ const ChannelEditImageSheetInner = () => {
         destructive: true,
         Icon: icons.Delete,
         id: 'reset-picture',
-        label: t('Reset Picture'),
+        label: t('channelDetails.editImageSheet.resetPicture.label', 'Reset Picture'),
         onPress: () => {
           onSelect('reset');
         },
@@ -130,7 +130,7 @@ const ChannelEditImageSheetInner = () => {
       <View style={[styles.header, headerOverride]}>
         <View style={styles.side}>
           <Button
-            accessibilityLabelKey='a11y/Close edit picture sheet'
+            accessibilityLabelKey='channelDetails.editImageSheet.close.accessibilityLabel'
             iconOnly
             LeadingIcon={icons.Cross}
             onPress={() => close()}
@@ -146,7 +146,7 @@ const ChannelEditImageSheetInner = () => {
             numberOfLines={1}
             style={[styles.title, { color: semantics.textPrimary }, headerTitleOverride]}
           >
-            {t('Edit Group Picture')}
+            {t('channelDetails.editImageSheet.title', 'Edit Group Picture')}
           </Text>
         </View>
         <View style={[styles.side, styles.sideRight]} />
