@@ -43,9 +43,11 @@ export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabe
       const option = pollOptions?.find((option) => option.id === latestVotes[0].option_id);
       const voteUser = latestVotes[0].user;
       if (voteUser.id === client.user?.id) {
-        return t('You voted: {{ option }}', { option: option?.text });
+        return t('channelPreview.pollVote.byYou.label', 'You voted: {{ option }}', {
+          option: option?.text,
+        });
       } else {
-        return t('{{ user }} voted: {{ option }}', {
+        return t('channelPreview.pollVote.withUser.label', '{{ user }} voted: {{ option }}', {
           user: voteUser.name || voteUser.id,
           option: option?.text,
         });

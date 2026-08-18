@@ -130,11 +130,14 @@ describe('useFileAttachmentListSections', () => {
     ]);
   });
 
-  it('formats the section title via the timestamp/FileAttachmentListSection translation key', () => {
+  it('formats the section title via the timestamp.FileAttachmentListSection translation key', () => {
     const customTranslators = {
-      t: jest.fn((key: string) =>
-        key === 'timestamp/FileAttachmentListSection' ? 'CUSTOM TITLE' : key,
-      ),
+      t: jest.fn((key: string, defaultValue?: unknown) => {
+        if (key === 'timestamp.FileAttachmentListSection') {
+          return 'CUSTOM TITLE';
+        }
+        return typeof defaultValue === 'string' ? defaultValue : key;
+      }),
       tDateTimeParser: translators.tDateTimeParser,
       userLanguage: 'en',
     } as unknown as TranslationContextValue;
@@ -152,7 +155,7 @@ describe('useFileAttachmentListSections', () => {
     // The MMMM YYYY format lives in the translation string itself, so the hook only forwards
     // the timestamp to `t` — it does not pass a `format` option.
     expect(customTranslators.t).toHaveBeenCalledWith(
-      'timestamp/FileAttachmentListSection',
+      'timestamp.FileAttachmentListSection',
       expect.objectContaining({ timestamp: expect.any(Date) }),
     );
   });

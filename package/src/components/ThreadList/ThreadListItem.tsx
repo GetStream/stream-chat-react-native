@@ -122,8 +122,8 @@ export const ThreadListItemComponent = () => {
             />
             <Text style={styles.messageRepliesText}>
               {parentMessage?.reply_count === 1
-                ? t('1 Reply')
-                : t('{{ replyCount }} Replies', {
+                ? t('message.replies.one.label', '1 Reply')
+                : t('message.replies.many.label', '{{ replyCount }} Replies', {
                     replyCount: parentMessage?.reply_count,
                   })}
             </Text>
@@ -144,7 +144,7 @@ export const ThreadListItemComponent = () => {
 export const ThreadListItem = (props: ThreadListItemProps) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
+  const { thread, timestampTranslationKey = 'timestamp.ThreadListItem' } = props;
   const { ThreadListItem: ThreadListItemOverride } = useComponentsContext();
   const { text: draftText } = useStateStore(
     thread.messageComposer.textComposer.state,

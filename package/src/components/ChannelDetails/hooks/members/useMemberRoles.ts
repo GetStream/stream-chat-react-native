@@ -47,13 +47,22 @@ export const useMemberRoles = (
   const defaultRoleLabels: RoleLabel[] = [];
   const userId = member.user?.id;
   if (userId && userId === channel?.data?.created_by?.id) {
-    defaultRoleLabels.push({ key: 'owner', label: t('Owner') });
+    defaultRoleLabels.push({
+      key: 'owner',
+      label: t('channelDetails.memberRoles.owner.label', 'Owner'),
+    });
   }
   if (member.user?.role === 'admin') {
-    defaultRoleLabels.push({ key: 'admin', label: t('Admin') });
+    defaultRoleLabels.push({
+      key: 'admin',
+      label: t('channelDetails.memberRoles.admin.label', 'Admin'),
+    });
   }
   if (member.channel_role === 'channel_moderator') {
-    defaultRoleLabels.push({ key: 'moderator', label: t('Moderator') });
+    defaultRoleLabels.push({
+      key: 'moderator',
+      label: t('channelDetails.memberRoles.moderator.label', 'Moderator'),
+    });
   }
 
   if (getMemberRoles) {

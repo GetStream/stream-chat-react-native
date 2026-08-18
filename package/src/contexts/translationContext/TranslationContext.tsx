@@ -2,17 +2,24 @@ import React, { useContext } from 'react';
 
 import Dayjs from 'dayjs';
 
-import type { TranslationLanguage } from 'stream-chat';
-
 import { TranslatorFunctions } from './types';
 
 import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export const DEFAULT_USER_LANGUAGE: TranslationLanguage = 'en';
+export const DEFAULT_USER_LANGUAGE = 'en';
 
 export type TranslationContextValue = TranslatorFunctions & {
-  userLanguage: TranslationLanguage;
+  /**
+   * The language the SDK's own copy renders in.
+   *
+   * Plain `string`, not `stream-chat`'s `TranslationLanguage`. That union enumerates the languages
+   * the *message auto-translation* endpoint supports, which is a different question from which
+   * languages this SDK's UI can be translated into — any language an integrator registers a
+   * dictionary for is valid here. It also does not contain `pt-BR`, which this SDK itself shipped
+   * a locale for.
+   */
+  userLanguage: string;
 };
 
 const defaultTranslationContextValue: TranslationContextValue = {

@@ -162,8 +162,11 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       Icon={AttachmentMediaPickerIcon}
       onPress={openSettings}
       height={height}
-      buttonText={t('Change in Settings')}
-      description={t('You have not granted access to the photo library.')}
+      buttonText={t('attachmentPicker.openSettings.label', 'Change in Settings')}
+      description={t(
+        'attachmentPicker.photoLibrary.denied.description',
+        'You have not granted access to the photo library.',
+      )}
     />
   ) : (
     <BottomSheetFlatList

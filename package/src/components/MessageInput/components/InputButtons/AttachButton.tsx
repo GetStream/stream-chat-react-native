@@ -50,7 +50,9 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   return (
     <Button
       accessibilityLabelKey={
-        isAttachmentPickerOpen ? 'a11y/Close attachments' : 'a11y/Add attachment'
+        isAttachmentPickerOpen
+          ? 'messageInput.closeAttachments.accessibilityLabel'
+          : 'messageInput.addAttachment.accessibilityLabel'
       }
       variant='secondary'
       type='outline'

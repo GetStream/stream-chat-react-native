@@ -62,7 +62,10 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       voteCountsByOption &&
       voteCountsByOption?.[option.id] > 5 ? (
         <View style={styles.inlineButton}>
-          <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
+          <GenericPollButton
+            onPress={onPressHandler}
+            label={t('poll.results.showAll.label', 'Show All')}
+          />
         </View>
       ) : null}
       {showAllVotes ? (
@@ -71,7 +74,10 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
+          <PollModalHeader
+            onPress={() => setShowAllVotes(false)}
+            title={t('poll.votes.title', 'Votes')}
+          />
           <PollOptionFullResults message={message} option={option} poll={poll} />
         </PollModal>
       ) : null}
@@ -107,12 +113,16 @@ export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
     <View style={[styles.container, container]}>
       <View style={styles.metaContainer}>
         <Text style={[styles.titleMeta, titleMeta]}>
-          {t('Option {{count}}', { count: index + 1 })}
+          {t('poll.results.optionNumber.text', 'Option {{count}}', { count: index + 1 })}
         </Text>
         <View style={[styles.headerContainer, headerContainer]}>
           <Text style={[styles.title, title]}>{option.text}</Text>
           <Text style={[styles.voteCount, voteCount]}>
-            {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+            {t('poll.votes.text', {
+              count: voteCountsByOption[option.id] ?? 0,
+              defaultValue_one: '{{count}} vote',
+              defaultValue_other: '{{count}} votes',
+            })}
           </Text>
         </View>
       </View>

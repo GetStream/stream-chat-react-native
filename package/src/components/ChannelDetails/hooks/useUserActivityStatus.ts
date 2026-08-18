@@ -19,20 +19,20 @@ export const useUserActivityStatus = (user?: UserResponse): string => {
   const { t, tDateTimeParser } = useTranslationContext();
 
   return useMemo(() => {
-    if (user?.online) return t('Online');
+    if (user?.online) return t('common.presence.online.label', 'Online');
 
     if (user?.last_active) {
       const lastSeen = getDateString({
         date: user.last_active,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/UserActivityStatus',
+        timestampTranslationKey: 'timestamp.UserActivityStatus',
       });
       if (typeof lastSeen === 'string') {
         return lastSeen;
       }
     }
 
-    return t('Offline');
+    return t('common.presence.offline.label', 'Offline');
   }, [t, tDateTimeParser, user?.last_active, user?.online]);
 };

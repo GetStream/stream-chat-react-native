@@ -57,7 +57,7 @@ const StopRecording = ({
 
   return (
     <Button
-      accessibilityLabelKey='a11y/Stop voice recording'
+      accessibilityLabelKey='messageInput.audioRecorder.stop.accessibilityLabel'
       variant='destructive'
       type='outline'
       size='sm'
@@ -83,7 +83,7 @@ const UploadRecording = ({
 
   return (
     <Button
-      accessibilityLabelKey='a11y/Send voice recording'
+      accessibilityLabelKey='messageInput.audioRecorder.send.accessibilityLabel'
       variant='primary'
       type='solid'
       onPress={onUploadVoiceRecording}
@@ -106,14 +106,14 @@ const DeleteRecording = ({
     NativeHandlers.triggerHaptic('impactMedium');
     await deleteVoiceRecordingHandler();
     addNotification({
-      message: t('Voice message deleted'),
+      message: t('messageInput.audioRecorder.recordingDeleted.text', 'Voice message deleted'),
       options: { severity: 'info', type: 'audioRecording:cancel:success' },
       origin: { emitter: 'AudioRecorder' },
     });
   };
   return (
     <Button
-      accessibilityLabelKey='a11y/Delete voice recording'
+      accessibilityLabelKey='messageInput.audioRecorder.delete.accessibilityLabel'
       variant='secondary'
       type='outline'
       size='sm'
@@ -185,7 +185,7 @@ const AudioRecorderWithContext = (props: AudioRecorderPropsWithContext) => {
           style={[styles.slideToCancelContainer, slideToCancelStyle, slideToCancelContainer]}
         >
           <Text style={[styles.slideToCancel, { color: semantics.textPrimary }]}>
-            {t('Slide to Cancel')}
+            {t('messageInput.audioRecorder.slideToCancel.text', 'Slide to Cancel')}
           </Text>
           <icons.ChevronLeft
             stroke={semantics.textTertiary}

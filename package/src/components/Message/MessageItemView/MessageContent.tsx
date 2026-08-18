@@ -130,9 +130,11 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     hidePaddingBottom,
   } = props;
   const { client } = useChatContext();
-  const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
+  const accessibilityHint = useA11yLabel('message.content.contextMenuHint.accessibilityLabel');
   const a11ySenderLabel = useA11yLabel(
-    isMyMessage ? 'a11y/Message from you' : 'a11y/Message from {{sender}}',
+    isMyMessage
+      ? 'message.content.fromYou.accessibilityLabel'
+      : 'message.content.fromSender.accessibilityLabel',
     isMyMessage ? undefined : { sender: message.user?.name || message.user?.id || '' },
   );
   const {

@@ -3,6 +3,9 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
+// `fromNow` below comes from this plugin — both the runtime method and its type. Imported here
+// rather than relied on from whichever other module happened to extend dayjs first.
+import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   ChannelResponse,
   DraftMessage,
@@ -22,6 +25,8 @@ import { DraftsIcon } from '../icons/DraftIcon';
 import { useLegacyColors } from '../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../types';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
+
+dayjs.extend(relativeTime);
 
 export type DraftItemProps = {
   type?: 'channel' | 'thread';

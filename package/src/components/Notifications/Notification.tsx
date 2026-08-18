@@ -136,7 +136,7 @@ export const Notification = ({
       ) : null}
       {closeVisible ? (
         <Pressable
-          accessibilityLabel={t('a11y/Dismiss notification')}
+          accessibilityLabel={t('notifications.dismiss.accessibilityLabel', 'Dismiss notification')}
           accessibilityRole='button'
           hitSlop={8}
           onPress={handleDismiss}

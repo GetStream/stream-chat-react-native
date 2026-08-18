@@ -31,15 +31,19 @@ export const PollHeader = () => {
 
   const subtitle = useMemo(() => {
     if (isClosed) {
-      return t('Poll has ended');
+      return t('poll.subtitle.ended.text', 'Poll has ended');
     }
     if (enforceUniqueVote) {
-      return t('Select one');
+      return t('poll.subtitle.selectOne.text', 'Select one');
     }
     if (maxVotesAllowed) {
-      return t('Select up to {{count}}', { count: maxVotesAllowed });
+      return t('poll.subtitle.selectUpTo.text', {
+        count: maxVotesAllowed,
+        defaultValue_one: 'Select up to {{count}}',
+        defaultValue_other: 'Select up to {{count}}',
+      });
     }
-    return t('Select one or more');
+    return t('poll.subtitle.selectAny.text', 'Select one or more');
   }, [isClosed, t, enforceUniqueVote, maxVotesAllowed]);
 
   const {

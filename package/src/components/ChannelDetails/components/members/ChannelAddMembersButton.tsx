@@ -50,7 +50,7 @@ export const ChannelAddMembersButton = ({
     <>
       {variant === 'icon' ? (
         <Button
-          accessibilityLabelKey='a11y/Add members'
+          accessibilityLabelKey='channelDetails.addMembers.accessibilityLabel'
           iconOnly
           LeadingIcon={icons.UserAdd}
           onPress={handlePress}
@@ -62,8 +62,8 @@ export const ChannelAddMembersButton = ({
         />
       ) : (
         <Button
-          accessibilityLabelKey='a11y/Add members'
-          label={t('Add')}
+          accessibilityLabelKey='channelDetails.addMembers.accessibilityLabel'
+          label={t('channelDetails.addMembers.label', 'Add')}
           onPress={handlePress}
           size='sm'
           style={style}

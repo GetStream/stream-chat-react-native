@@ -70,7 +70,9 @@ const GiphyWithContext = (props: GiphyPropsWithContext) => {
     >
       <View style={[styles.header, header]}>
         <icons.EyeOpen height={16} width={16} fill={semantics.chatTextOutgoing} />
-        <Text style={[styles.headerText, giphyHeaderText]}>{t('Only visible to you')}</Text>
+        <Text style={[styles.headerText, giphyHeaderText]}>
+          {t('attachment.giphy.onlyVisibleToYou.text', 'Only visible to you')}
+        </Text>
       </View>
       <GiphyImage attachment={attachment} giphyVersion={giphyVersion} preview />
       <View style={[styles.actionButtonContainer, actionButtonContainer]}>

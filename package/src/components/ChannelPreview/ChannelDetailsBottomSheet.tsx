@@ -44,10 +44,12 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(
     () =>
-      t('{{memberCount}} members, {{onlineCount}} online', {
+      t('channelDetails.presence.membersOnline.label', {
         count: memberCount,
         memberCount: displayedMemberCount,
         onlineCount: displayedOnlineCount,
+        defaultValue_one: '{{memberCount}} member, {{onlineCount}} online',
+        defaultValue_other: '{{memberCount}} members, {{onlineCount}} online',
       }),
     [displayedMemberCount, displayedOnlineCount, memberCount, t],
   );
@@ -61,7 +63,11 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
           {muted ? <ChannelPreviewMutedStatus /> : null}
         </View>
         <Text style={styles.headerMeta}>
-          {isDirectChat ? (onlineCount === 1 ? t('Online') : t('Offline')) : membersAndOnlineLabel}
+          {isDirectChat
+            ? onlineCount === 1
+              ? t('common.presence.online.label', 'Online')
+              : t('common.presence.offline.label', 'Offline')
+            : membersAndOnlineLabel}
         </Text>
       </View>
     </View>

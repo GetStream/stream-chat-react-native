@@ -40,7 +40,9 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
       <icons.ArrowUpRight height={16} width={16} stroke={styles.link.color} />
       <Text style={styles.label}>
-        {threadList ? t('Also sent in channel') : t('Replied to a thread')}
+        {threadList
+          ? t('message.sentToChannelHeader.alsoSent.text', 'Also sent in channel')
+          : t('message.sentToChannelHeader.repliedToThread.text', 'Replied to a thread')}
       </Text>
       {showViewText ? (
         <>
@@ -52,7 +54,7 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
             ·
           </Text>
           <Pressable onPress={onPress}>
-            <Text style={styles.link}>{t('View')}</Text>
+            <Text style={styles.link}>{t('message.sentToChannelHeader.view.label', 'View')}</Text>
           </Pressable>
         </>
       ) : null}

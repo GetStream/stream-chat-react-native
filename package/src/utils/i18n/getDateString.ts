@@ -1,10 +1,9 @@
-import type { TranslationLanguage } from 'stream-chat';
-
 import { calendarFormats } from './calendarFormats';
 import { TimestampFormatterOptions } from './types';
 
 import { TranslatorFunctions } from '../../contexts/translationContext';
 import { isDayOrMoment } from '../../contexts/translationContext/isDayOrMoment';
+import { asDynamicKey } from '../../i18n/utils';
 
 type DateFormatterOptions = TimestampFormatterOptions &
   Partial<TranslatorFunctions> & {
@@ -53,7 +52,8 @@ export function getDateString({
     if (typeof format !== 'undefined' && format !== null) {
       options.format = format;
     }
-    const translatedTimestamp = t(timestampTranslationKey, {
+    // The key arrives as a prop value, so it is only known at runtime.
+    const translatedTimestamp = t(asDynamicKey(timestampTranslationKey), {
       ...options,
       timestamp: new Date(date),
     });
@@ -95,7 +95,12 @@ type DateStringForA11yOptions = {
   }>;
   date?: string | Date;
   tDateTimeParser?: TranslatorFunctions['tDateTimeParser'];
-  userLanguage?: TranslationLanguage;
+  /**
+   * The UI language, used to pick calendar wording. Plain `string`: this indexes
+   * `calendarFormats`, which an integrator extends for whatever language they registered — it is
+   * not `stream-chat`'s auto-translation union.
+   */
+  userLanguage?: string;
 };
 
 /**

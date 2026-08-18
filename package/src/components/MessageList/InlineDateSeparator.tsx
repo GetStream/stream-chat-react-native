@@ -26,7 +26,7 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
         date,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/InlineDateSeparator',
+        timestampTranslationKey: 'timestamp.InlineDateSeparator',
       }),
     [date, t, tDateTimeParser],
   );

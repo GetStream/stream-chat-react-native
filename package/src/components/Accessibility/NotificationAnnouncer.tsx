@@ -33,9 +33,14 @@ export const NotificationAnnouncer = () => {
     previousIsOnlineRef.current = isOnline;
 
     if (isOnline) {
-      announce(t('a11y/Connected'), 'polite');
+      announce(t('a11y.connection.connected.accessibilityLabel', 'Connected'), 'polite');
     } else {
-      announce(connectionRecovering ? t('a11y/Reconnecting') : t('a11y/Offline'), 'assertive');
+      announce(
+        connectionRecovering
+          ? t('a11y.connection.reconnecting.accessibilityLabel', 'Reconnecting')
+          : t('a11y.connection.offline.accessibilityLabel', 'Offline'),
+        'assertive',
+      );
     }
   }, [announce, announceConnectionState, connectionRecovering, enabled, isOnline, t]);
 

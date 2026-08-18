@@ -44,7 +44,7 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
   const ClearIcon: IconRenderer = useCallback(
     () => (
       <Pressable
-        accessibilityLabel={t('a11y/Clear search')}
+        accessibilityLabel={t('uiComponents.searchInput.clear.accessibilityLabel', 'Clear search')}
         accessibilityRole='button'
         hitSlop={30}
         onPress={handleClear}
@@ -65,7 +65,7 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
         containerStyle={styles.input}
         helperText={false}
         LeadingIcon={LeadingIcon}
-        placeholder={t('Search')}
+        placeholder={t('uiComponents.searchInput.placeholder', 'Search')}
         testID='search-input'
         TrailingIcon={hasText ? ClearIcon : undefined}
         variant='outline'

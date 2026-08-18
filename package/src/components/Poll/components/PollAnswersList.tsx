@@ -46,7 +46,11 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
         variant={'secondary'}
         type={'ghost'}
         size={'lg'}
-        label={ownAnswer ? t('Update your comment') : t('Add a comment')}
+        label={
+          ownAnswer
+            ? t('poll.updateComment.label', 'Update your comment')
+            : t('poll.addComment.label', 'Add a comment')
+        }
         onPress={onPressHandler}
       />
       {showAddCommentDialog ? (
@@ -54,8 +58,8 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
           closeDialog={() => setShowAddCommentDialog(false)}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
-          placeholder={t('Your comment')}
-          title={t('Add a comment')}
+          placeholder={t('poll.addComment.placeholder', 'Your comment')}
+          title={t('poll.addComment.label', 'Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
@@ -87,7 +91,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
         date: answer.updated_at,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/PollVote',
+        timestampTranslationKey: 'timestamp.PollVote',
       }),
     [answer.updated_at, t, tDateTimeParser],
   );
@@ -99,7 +103,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
     [votingVisibility, isMyAnswer],
   );
 
-  const answerAuthorName = isMyAnswer ? t('You') : answer.user?.name;
+  const answerAuthorName = isMyAnswer ? t('common.you.label', 'You') : answer.user?.name;
 
   return (
     <View style={[styles.listItemWrapper, itemStyle.wrapper]}>
@@ -111,7 +115,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
               <UserAvatar user={answer.user} size='sm' showBorder />
             ) : null}
             <Text style={styles.listItemInfoUserName}>
-              {isAnonymous ? t('Anonymous') : answerAuthorName}
+              {isAnonymous ? t('common.anonymousUser.label', 'Anonymous') : answerAuthorName}
             </Text>
             <Text style={styles.listItemInfoDate}>{dateString}</Text>
           </View>

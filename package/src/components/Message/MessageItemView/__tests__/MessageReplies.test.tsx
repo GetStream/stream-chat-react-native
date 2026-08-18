@@ -18,7 +18,7 @@ describe('MessageReplies', () => {
   it('should render message replies', async () => {
     const onPressMock = jest.fn(() => null);
     const user = userEvent.setup();
-    const t = jest.fn((key) => key);
+    const t = jest.fn((key, d) => (typeof d === 'string' ? d : key));
     const staticUser = generateStaticUser(0);
     const message = generateMessage({
       reply_count: 2,
@@ -37,8 +37,8 @@ describe('MessageReplies', () => {
       expect(pluralPressable).toBeTruthy();
       expect(pluralPressable.props.accessibilityRole).toBe('button');
       expect(pluralPressable.props.accessibilityLabel).toBe('{{ replyCount }} Replies');
-      expect(pluralPressable.props.accessibilityHint).toBe('a11y/Double tap to view thread');
-      expect(t).toHaveBeenCalledWith('{{ replyCount }} Replies', {
+      expect(pluralPressable.props.accessibilityHint).toBe('Double tap to view thread');
+      expect(t).toHaveBeenCalledWith('message.replies.many.label', '{{ replyCount }} Replies', {
         replyCount: message.reply_count,
       });
       expect(screen.getByText('{{ replyCount }} Replies')).toBeTruthy();
@@ -65,14 +65,14 @@ describe('MessageReplies', () => {
       expect(singularPressable).toBeTruthy();
       expect(singularPressable.props.accessibilityRole).toBe('button');
       expect(singularPressable.props.accessibilityLabel).toBe('1 Reply');
-      expect(singularPressable.props.accessibilityHint).toBe('a11y/Double tap to view thread');
-      expect(t).toHaveBeenCalledWith('1 Reply');
+      expect(singularPressable.props.accessibilityHint).toBe('Double tap to view thread');
+      expect(t).toHaveBeenCalledWith('message.replies.one.label', '1 Reply');
       expect(screen.getByText('1 Reply')).toBeTruthy();
     });
   });
 
   it('should not render message replies', async () => {
-    const t = jest.fn((key) => key);
+    const t = jest.fn((key, d) => (typeof d === 'string' ? d : key));
     const user = generateUser();
     const message = generateMessage({
       user,

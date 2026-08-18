@@ -1,5 +1,8 @@
-import type { TFunction } from 'i18next';
 import type { Notification } from 'stream-chat';
+
+import { translateExternalString } from '../../i18n/externalStrings';
+import type { StreamTFunction } from '../../i18n/types';
+import { asDynamicKey } from '../../i18n/utils';
 
 const normalizeReason = (notification?: Notification) => {
   const reason = notification?.metadata?.reason;
@@ -17,12 +20,12 @@ const withReasonFallback = ({
   fallbackTranslationKey: string;
   notification?: Notification;
   reasonTranslationKey: string;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const reason = normalizeReason(notification);
-  if (!reason) return t(fallbackTranslationKey);
+  if (!reason) return t(asDynamicKey(fallbackTranslationKey));
 
-  return t(reasonTranslationKey, { reason });
+  return t(asDynamicKey(reasonTranslationKey), { reason });
 };
 
 const translateAttachmentUploadBlocked = ({
@@ -30,14 +33,23 @@ const translateAttachmentUploadBlocked = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const rawReason = notification?.metadata?.reason;
-  let reason = t('unsupported file type');
-  if (typeof rawReason !== 'string') reason = t('unknown error');
-  if (rawReason === 'size_limit') reason = t('size limit');
+  let reason = t(
+    'notifications.attachmentUploadBlocked.reason.unsupportedFileType.text',
+    'unsupported file type',
+  );
+  if (typeof rawReason !== 'string')
+    reason = t('notifications.attachmentUploadBlocked.reason.unknownError.text', 'unknown error');
+  if (rawReason === 'size_limit')
+    reason = t('notifications.attachmentUploadBlocked.reason.sizeLimit.text', 'size limit');
 
-  return t('Attachment upload blocked due to {{reason}}', { reason });
+  return t(
+    'notifications.attachmentUploadBlocked.error',
+    'Attachment upload blocked due to {{reason}}',
+    { reason },
+  );
 };
 
 const translateAttachmentUploadFailed = ({
@@ -45,12 +57,12 @@ const translateAttachmentUploadFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
-    fallbackTranslationKey: 'Error uploading attachment',
+    fallbackTranslationKey: 'notifications.attachmentUploadFailed.error',
     notification,
-    reasonTranslationKey: 'Attachment upload failed due to {{reason}}',
+    reasonTranslationKey: 'notifications.attachmentUploadFailed.withReason.error',
     t,
   });
 
@@ -59,12 +71,12 @@ const translatePollCreateFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
-    fallbackTranslationKey: 'Failed to create the poll',
+    fallbackTranslationKey: 'notifications.pollCreateFailed.error',
     notification,
-    reasonTranslationKey: 'Failed to create the poll due to {{reason}}',
+    reasonTranslationKey: 'notifications.pollCreateFailed.withReason.error',
     t,
   });
 
@@ -73,12 +85,12 @@ const translatePollEndFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
-    fallbackTranslationKey: 'Failed to end the poll',
+    fallbackTranslationKey: 'poll.endVote.error',
     notification,
-    reasonTranslationKey: 'Failed to end the poll due to {{reason}}',
+    reasonTranslationKey: 'notifications.pollEndFailed.withReason.error',
     t,
   });
 
@@ -87,44 +99,62 @@ const translateCommandDisabled = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const reason = normalizeReason(notification);
 
   if (reason === 'editing') {
-    return t('Command not available while editing');
+    return t(
+      'notifications.commandUnavailable.whileEditing.error',
+      'Command not available while editing',
+    );
   }
 
   if (reason === 'quoted_message') {
-    return t('Command not available while replying');
+    return t(
+      'notifications.commandUnavailable.whileReplying.error',
+      'Command not available while replying',
+    );
   }
 
-  return t(notification?.message || 'Command not available');
+  return t(asDynamicKey(notification?.message || 'notifications.commandUnavailable.error'));
 };
 
 const notificationTranslatorsByType: Record<
   string,
-  (options: { notification: Notification; t: TFunction }) => string
+  (options: { notification: Notification; t: StreamTFunction }) => string
 > = {
   'api:attachment:upload:failed': translateAttachmentUploadFailed,
-  'api:location:create:failed': ({ t }) => t('Failed to share location'),
-  'api:location:share:failed': ({ t }) => t('Failed to share location'),
+  'api:location:create:failed': ({ t }) =>
+    t('notifications.locationShareFailed.error', 'Failed to share location'),
+  'api:location:share:failed': ({ t }) =>
+    t('notifications.locationShareFailed.error', 'Failed to share location'),
   'api:poll:create:failed': translatePollCreateFailed,
   'api:poll:end:failed': translatePollEndFailed,
-  'api:poll:end:success': ({ t }) => t('Poll ended'),
-  'api:reply:search:failed': ({ t }) => t('Thread has not been found'),
+  'api:poll:end:success': ({ t }) => t('notifications.pollEnded.text', 'Poll ended'),
+  'api:reply:search:failed': ({ t }) =>
+    t('notifications.threadNotFound.error', 'Thread has not been found'),
   'browser:audio:playback:error': ({ notification, t }) =>
-    notification.message ? t(notification.message) : t('Error reproducing the recording'),
-  'browser:location:get:failed': ({ t }) => t('Failed to retrieve location'),
-  'channel:jumpToFirstUnread:failed': ({ t }) => t('Failed to jump to the first unread message'),
-  'validation:attachment:file:missing': ({ t }) => t('File is required for upload attachment'),
-  'validation:attachment:id:missing': ({ t }) => t('Local upload attachment missing local id'),
+    notification.message
+      ? translateExternalString(t, notification.message)
+      : t('notifications.recordingPlaybackFailed.error', 'Error reproducing the recording'),
+  'browser:location:get:failed': ({ t }) =>
+    t('notifications.locationRetrieveFailed.error', 'Failed to retrieve location'),
+  'channel:jumpToFirstUnread:failed': ({ t }) =>
+    t('channel.jumpToFirstUnreadFailed.error', 'Failed to jump to the first unread message'),
+  'validation:attachment:file:missing': ({ t }) =>
+    t('notifications.attachmentFileMissing.error', 'File is required for upload attachment'),
+  'validation:attachment:id:missing': ({ t }) =>
+    t('notifications.attachmentIdMissing.error', 'Local upload attachment missing local id'),
   'validation:attachment:upload:blocked': translateAttachmentUploadBlocked,
   'validation:attachment:upload:in-progress': ({ t }) =>
-    t('Wait until all attachments have uploaded'),
+    t('notifications.attachmentUploadInProgress.error', 'Wait until all attachments have uploaded'),
   'validation:command:disabled': translateCommandDisabled,
   'validation:poll:castVote:limit': ({ t }) =>
-    t('Reached the vote limit. Remove an existing vote first.'),
+    t(
+      'notifications.voteLimitReached.error',
+      'Reached the vote limit. Remove an existing vote first.',
+    ),
 };
 
 export const getNotificationDisplayMessage = ({
@@ -132,11 +162,15 @@ export const getNotificationDisplayMessage = ({
   t,
 }: {
   notification: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const translator = notification.type
     ? notificationTranslatorsByType[notification.type]
     : undefined;
 
-  return translator ? translator({ notification, t }) : t(notification.message);
+  // `notification.message` can be English emitted by `stream-chat`; the map resolves the ones
+  // we recognise and passes anything else through unchanged.
+  return translator
+    ? translator({ notification, t })
+    : translateExternalString(t, notification.message);
 };

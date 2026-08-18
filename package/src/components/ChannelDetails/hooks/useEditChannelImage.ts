@@ -45,11 +45,15 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
 
     if (file.askToOpenSettings) {
       Alert.alert(
-        t('Allow camera access in device settings'),
-        t('Device camera is used to take photos or videos.'),
+        t('common.cameraPermission.title', 'Allow camera access in device settings'),
+        t('common.cameraPermission.text', 'Device camera is used to take photos or videos.'),
         [
-          { style: 'cancel', text: t('Cancel') },
-          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+          { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
+          {
+            onPress: () => Linking.openSettings(),
+            style: 'default',
+            text: t('common.openSettings.label', 'Open Settings'),
+          },
         ],
       );
       return undefined;
@@ -67,11 +71,18 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
 
     if (result.askToOpenSettings) {
       Alert.alert(
-        t('Allow access to your Gallery'),
-        t('Device gallery permissions is used to take photos or videos.'),
+        t('common.galleryPermission.title', 'Allow access to your Gallery'),
+        t(
+          'common.galleryPermission.text',
+          'Device gallery permissions is used to take photos or videos.',
+        ),
         [
-          { style: 'cancel', text: t('Cancel') },
-          { onPress: () => Linking.openSettings(), style: 'default', text: t('Open Settings') },
+          { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
+          {
+            onPress: () => Linking.openSettings(),
+            style: 'default',
+            text: t('common.openSettings.label', 'Open Settings'),
+          },
         ],
       );
       return undefined;

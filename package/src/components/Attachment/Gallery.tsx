@@ -239,9 +239,13 @@ const GalleryThumbnail = ({
   const styles = useStyles();
   const isVideo = thumbnail.type === FileTypes.Video;
   const thumbnailAccessibilityLabel = useA11yLabel(
-    isVideo ? 'a11y/Gallery Video' : 'a11y/Gallery Image',
+    isVideo
+      ? 'attachment.gallery.video.accessibilityLabel'
+      : 'attachment.gallery.image.accessibilityLabel',
   );
-  const thumbnailAccessibilityHint = useA11yLabel('a11y/Double tap to open');
+  const thumbnailAccessibilityHint = useA11yLabel(
+    'attachment.gallery.doubleTapToOpen.accessibilityLabel',
+  );
   const thumbnailRef = useRef<View>(null);
   const openImageViewer = () => {
     if (!message) {
@@ -330,7 +334,13 @@ const GalleryThumbnail = ({
           ]}
         >
           <Text style={[styles.moreImagesText, moreImagesText]}>
-            {String(t('+{{count}}', { count: imagesAndVideos.length - 4 }))}
+            {String(
+              t('attachment.gallery.moreImages.label', {
+                count: imagesAndVideos.length - 4,
+                defaultValue_one: '+{{count}}',
+                defaultValue_other: '+{{count}}',
+              }),
+            )}
           </Text>
         </View>
       ) : null}

@@ -16,14 +16,14 @@ export const useEndVote = () => {
     try {
       const response = await poll.close();
       addNotification({
-        message: t('Poll ended'),
+        message: t('notifications.pollEnded.text', 'Poll ended'),
         options: { severity: 'success', type: 'api:poll:end:success' },
         origin: { emitter: 'PollActions' },
       });
       return response;
     } catch (error) {
       addNotification({
-        message: t('Failed to end the poll'),
+        message: t('poll.endVote.error'),
         options: {
           ...(error instanceof Error ? { originalError: error } : {}),
           severity: 'error',

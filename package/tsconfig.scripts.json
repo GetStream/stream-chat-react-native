@@ -1,0 +1,21 @@
+{
+  // The build scripts are `.mts` run by `node` directly, which strips types rather than checking
+  // them — so nothing else in the pipeline type-checks them. `yarn types:scripts` is that check.
+  //
+  // `erasableSyntaxOnly` keeps the syntax to what Node's type stripping accepts: no enums, no
+  // parameter properties, no namespaces.
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "lib": ["ES2023"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2023",
+    "types": ["node"],
+    "verbatimModuleSyntax": true
+  },
+  "include": ["scripts/**/*.mts"]
+}

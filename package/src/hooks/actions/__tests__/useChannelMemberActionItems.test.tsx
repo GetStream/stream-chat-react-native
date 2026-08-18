@@ -55,11 +55,12 @@ describe('useChannelMemberActionItems', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .spyOn(TranslationContext, 'useTranslationContext')
-      .mockImplementation(
-        () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
-      );
+    jest.spyOn(TranslationContext, 'useTranslationContext').mockImplementation(
+      () =>
+        ({
+          t: (value: string, d?: unknown) => (typeof d === 'string' ? d : value),
+        }) as unknown as TranslationContextValue,
+    );
     jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
     jest.spyOn(useUserActionsModule, 'useUserActions').mockReturnValue(userActions);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
@@ -256,7 +257,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
       member,
       ownCapabilities: undefined,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
     });
@@ -277,7 +279,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
       member,
       ownCapabilities: undefined,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
     });
@@ -295,7 +298,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
       member,
       ownCapabilities: ['update-channel-members'],
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
     });
@@ -316,7 +320,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
       member,
       ownCapabilities: undefined,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: true,
     });
@@ -336,7 +341,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
       member,
       ownCapabilities: undefined,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: true,
     });
@@ -355,7 +361,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
       member,
       ownCapabilities: undefined,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userActions: actions,
       userMuteActive: false,
     });
@@ -369,7 +376,8 @@ describe('buildDefaultChannelMemberActionItems', () => {
         member,
         ownCapabilities: undefined,
         icons: defaultIcons,
-        t: ((value: string) => value) as TranslationContextValue['t'],
+        t: ((value: string, d?: unknown) =>
+          typeof d === 'string' ? d : value) as TranslationContextValue['t'],
         userActions: actions,
         userMuteActive: false,
       },

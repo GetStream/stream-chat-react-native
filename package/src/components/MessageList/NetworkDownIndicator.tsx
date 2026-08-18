@@ -16,9 +16,9 @@ export const NetworkDownIndicator = () => {
 
   const indicatorText = useMemo(() => {
     if (!isOnline) {
-      return t('Reconnecting...');
+      return t('common.reconnecting.text', 'Reconnecting...');
     } else if (error) {
-      return t('Error loading messages for this channel...');
+      return t('indicators.loading.messages.error', 'Error loading messages for this channel...');
     }
     return '';
   }, [error, isOnline, t]);

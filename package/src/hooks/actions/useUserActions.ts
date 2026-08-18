@@ -33,14 +33,16 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     try {
       await client.muteUser(user.id);
       addNotification({
-        message: t('{{ user }} has been muted', { user: user.name || user.id }),
+        message: t('message.userMuted.text', '{{ user }} has been muted', {
+          user: user.name || user.id,
+        }),
         options: { severity: 'success', type: 'api:user:mute:success' },
         origin: { context: { user }, emitter: 'UserActions' },
       });
       await options?.onSuccess?.();
     } catch (error) {
       addNotification({
-        message: t('Error muting a user ...'),
+        message: t('message.muteUser.error', 'Error muting a user ...'),
         options: {
           ...getNotificationErrorOptions(error),
           severity: 'error',
@@ -59,14 +61,16 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     try {
       await client.unmuteUser(user.id);
       addNotification({
-        message: t('{{ user }} has been unmuted', { user: user.name || user.id }),
+        message: t('message.userUnmuted.text', '{{ user }} has been unmuted', {
+          user: user.name || user.id,
+        }),
         options: { severity: 'success', type: 'api:user:unmute:success' },
         origin: { context: { user }, emitter: 'UserActions' },
       });
       await options?.onSuccess?.();
     } catch (error) {
       addNotification({
-        message: t('Error unmuting a user ...'),
+        message: t('message.unmuteUser.error', 'Error unmuting a user ...'),
         options: {
           ...getNotificationErrorOptions(error),
           severity: 'error',
@@ -85,14 +89,14 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     try {
       await client.blockUser(user.id);
       addNotification({
-        message: t('User blocked'),
+        message: t('channel.userBlocked.text', 'User blocked'),
         options: { severity: 'success', type: 'api:user:block:success' },
         origin: { context: { user }, emitter: 'UserActions' },
       });
       await options?.onSuccess?.();
     } catch (error) {
       addNotification({
-        message: t('Failed to block user'),
+        message: t('channel.blockUserFailed.error', 'Failed to block user'),
         options: {
           ...getNotificationErrorOptions(error),
           severity: 'error',
@@ -111,14 +115,14 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     try {
       await client.unblockUser(user.id);
       addNotification({
-        message: t('User unblocked'),
+        message: t('channel.userUnblocked.text', 'User unblocked'),
         options: { severity: 'success', type: 'api:user:unblock:success' },
         origin: { context: { user }, emitter: 'UserActions' },
       });
       await options?.onSuccess?.();
     } catch (error) {
       addNotification({
-        message: t('Failed to block user'),
+        message: t('channel.blockUserFailed.error', 'Failed to block user'),
         options: {
           ...getNotificationErrorOptions(error),
           severity: 'error',

@@ -41,6 +41,7 @@ import { StreamChatProvider } from './src/context/StreamChatContext';
 import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
+import { restoreSavedLanguage, streami18n } from './src/i18n';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
 import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen.tsx';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
@@ -123,7 +124,6 @@ const App = () => {
   );
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
-  const streami18n = new Streami18n();
   const componentOverrides = useSampleAppComponentOverrides(messageOverlayBackdrop);
 
   const setRTLEnabled = React.useCallback(async (enabled: boolean) => {
@@ -187,6 +187,8 @@ const App = () => {
       }
 
       setRtlEnabled(nextRTLEnabled);
+
+      await restoreSavedLanguage();
 
       const messageListImplementationStoredValue = await AsyncStore.getItem(
         '@stream-rn-sampleapp-messagelist-implementation',

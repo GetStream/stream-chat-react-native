@@ -68,7 +68,7 @@ export const ChannelAddMembersFormContent = ({
       return;
     }
     addNotification({
-      message: t('Failed to load users'),
+      message: t('channelDetails.addMembers.load.error', 'Failed to load users'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -102,7 +102,7 @@ export const ChannelAddMembersFormContent = ({
   const emptyState = loading ? (
     <UserListLoadingSkeleton />
   ) : (
-    <EmptySearchResult label={t('No user found')} />
+    <EmptySearchResult label={t('channelDetails.addMembers.noUserFound.label', 'No user found')} />
   );
 
   const loadingMoreIndicator = <>{loading && users && users.length > 0 && <ActivityIndicator />}</>;
@@ -110,7 +110,10 @@ export const ChannelAddMembersFormContent = ({
   return (
     <View style={[styles.container, addMembers.container]}>
       <SearchInput
-        accessibilityLabel={t('a11y/Search users to add')}
+        accessibilityLabel={t(
+          'channelDetails.addMembers.search.accessibilityLabel',
+          'Search users to add',
+        )}
         onChangeText={(text) => searchSource.search(text)}
       />
 

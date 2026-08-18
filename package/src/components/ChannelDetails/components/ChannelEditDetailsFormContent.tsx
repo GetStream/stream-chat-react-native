@@ -80,8 +80,8 @@ export const ChannelEditDetailsFormContent = () => {
           size='2xl'
         />
         <Button
-          accessibilityLabelKey='a11y/Upload channel image'
-          label={t('Upload')}
+          accessibilityLabelKey='channelDetails.editChannel.upload.accessibilityLabel'
+          label={t('channelDetails.editChannel.upload.label', 'Upload')}
           onPress={openSheet}
           size='sm'
           style={[styles.uploadButton, uploadButtonOverride]}

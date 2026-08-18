@@ -75,14 +75,19 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
 
   const replyCountLabel =
     message.reply_count === 1
-      ? t('1 Reply')
-      : t('{{ replyCount }} Replies', { replyCount: message.reply_count });
+      ? t('message.replies.one.label', '1 Reply')
+      : t('message.replies.many.label', '{{ replyCount }} Replies', {
+          replyCount: message.reply_count,
+        });
 
   return (
     <View style={[styles.container, container]}>
       {alignment === 'left' ? connector : null}
       <Pressable
-        accessibilityHint={t('a11y/Double tap to view thread')}
+        accessibilityHint={t(
+          'message.replies.viewHint.accessibilityLabel',
+          'Double tap to view thread',
+        )}
         accessibilityLabel={replyCountLabel}
         accessibilityRole='button'
         disabled={preventPress}

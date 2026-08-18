@@ -62,7 +62,7 @@ export const ReactionListItem = (props: ReactionListItemProps) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const youReacted = useA11yLabel('a11y/you reacted');
+  const youReacted = useA11yLabel('message.reactionList.youReacted.accessibilityLabel');
 
   return (
     <ReactionListItemWrapper

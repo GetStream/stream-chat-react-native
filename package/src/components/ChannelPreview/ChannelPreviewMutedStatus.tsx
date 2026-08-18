@@ -16,7 +16,7 @@ export const ChannelPreviewMutedStatus = () => {
     },
   } = useTheme();
   const { icons } = useComponentsContext();
-  const accessibilityLabel = useA11yLabel('a11y/Muted');
+  const accessibilityLabel = useA11yLabel('channelPreview.muted.accessibilityLabel');
 
   return (
     <CompositeAccessibilityProbe label={accessibilityLabel}>

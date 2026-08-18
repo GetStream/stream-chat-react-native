@@ -247,19 +247,22 @@ export const useMessageActions = ({
     const name = message.user?.name || message.user?.id || '';
 
     Alert.alert(
-      t('Block {{ name }}', { name }),
-      t("They won't be able to message or call you. You can unblock them later."),
+      t('message.blockUserConfirm.title', 'Block {{ name }}', { name }),
+      t(
+        'message.blockUserConfirm.text',
+        "They won't be able to message or call you. You can unblock them later.",
+      ),
       [
         {
           style: 'cancel',
-          text: t('Cancel'),
+          text: t('common.cancel.label', 'Cancel'),
         },
         {
           onPress: () => {
             handleToggleBlockUser(message.user);
           },
           style: 'destructive',
-          text: t('Block'),
+          text: t('message.blockUserConfirm.label', 'Block'),
         },
       ],
     );
@@ -273,7 +276,9 @@ export const useMessageActions = ({
       action: onBanUser,
       actionType: 'banUser',
       icon: <icons.UserDelete width={20} height={20} stroke={semantics.accentError} />,
-      title: message.user?.banned ? t('Unban User') : t('Ban User'),
+      title: message.user?.banned
+        ? t('message.unbanUser.label', 'Unban User')
+        : t('message.banUser.label', 'Ban User'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -282,7 +287,7 @@ export const useMessageActions = ({
       action: onCopyMessage,
       actionType: 'copyMessage',
       icon: <icons.Copy width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Copy Message'),
+      title: t('message.copyMessage.label', 'Copy Message'),
       type: 'standard',
     };
 
@@ -290,7 +295,7 @@ export const useMessageActions = ({
       action: onDeleteMessage,
       actionType: 'deleteMessage',
       icon: <icons.Delete stroke={semantics.accentError} width={20} height={20} />,
-      title: t('Delete Message'),
+      title: t('message.deleteMessage.label', 'Delete Message'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -299,7 +304,7 @@ export const useMessageActions = ({
       action: onDeleteForMeMessage,
       actionType: 'deleteForMeMessage',
       icon: <icons.Delete stroke={semantics.accentError} width={20} height={20} />,
-      title: t('Delete for me'),
+      title: t('message.deleteForMe.label', 'Delete for me'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -308,7 +313,7 @@ export const useMessageActions = ({
       action: onEditMessage,
       actionType: 'editMessage',
       icon: <icons.Edit width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Edit Message'),
+      title: t('message.editMessage.label', 'Edit Message'),
       type: 'standard',
     };
 
@@ -316,7 +321,7 @@ export const useMessageActions = ({
       action: onFlagMessage,
       actionType: 'flagMessage',
       icon: <icons.MessageFlag width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Flag Message'),
+      title: t('message.flagMessage.label', 'Flag Message'),
       type: 'standard',
     };
 
@@ -324,7 +329,7 @@ export const useMessageActions = ({
       action: onMarkUnread,
       actionType: 'markUnread',
       icon: <icons.UnreadIndicator width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Mark as Unread'),
+      title: t('message.markUnread.label', 'Mark as Unread'),
       type: 'standard',
     };
 
@@ -332,7 +337,7 @@ export const useMessageActions = ({
       action: onTogglePinMessage,
       actionType: 'pinMessage',
       icon: <icons.Pin width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Pin to Conversation'),
+      title: t('message.pinMessage.label', 'Pin to Conversation'),
       type: 'standard',
     };
 
@@ -340,7 +345,7 @@ export const useMessageActions = ({
       action: onTogglePinMessage,
       actionType: 'unpinMessage',
       icon: <icons.Unpin width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Unpin from Conversation'),
+      title: t('message.unpinMessage.label', 'Unpin from Conversation'),
       type: 'standard',
     };
 
@@ -352,7 +357,9 @@ export const useMessageActions = ({
       ) : (
         <icons.Mute fill={semantics.textSecondary} height={20} width={20} />
       ),
-      title: isMuted ? t('Unmute User') : t('Mute User'),
+      title: isMuted
+        ? t('message.unmuteUser.label', 'Unmute User')
+        : t('message.muteUser.label', 'Mute User'),
       type: 'standard',
     };
 
@@ -360,7 +367,7 @@ export const useMessageActions = ({
       action: onQuotedReply,
       actionType: 'quotedReply',
       icon: <icons.CurveLineLeftUp stroke={semantics.textSecondary} height={20} width={20} />,
-      title: t('Reply'),
+      title: t('message.reply.label', 'Reply'),
       type: 'standard',
     };
 
@@ -368,7 +375,7 @@ export const useMessageActions = ({
       action: onRetry,
       actionType: 'retry',
       icon: <icons.Resend stroke={semantics.textSecondary} height={20} width={20} />,
-      title: t('Resend'),
+      title: t('message.resend.label', 'Resend'),
       type: 'standard',
     };
 
@@ -376,7 +383,7 @@ export const useMessageActions = ({
       action: onThreadReply,
       actionType: 'threadReply',
       icon: <icons.ThreadReply stroke={semantics.textSecondary} height={20} width={20} />,
-      title: t('Thread Reply'),
+      title: t('message.threadReply.label', 'Thread Reply'),
       type: 'standard',
     };
 
@@ -384,7 +391,9 @@ export const useMessageActions = ({
       action: onBlockUser,
       actionType: 'blockUser',
       icon: <icons.BlockUser stroke={semantics.accentError} height={20} width={20} />,
-      title: isBlocked ? t('Unblock User') : t('Block User'),
+      title: isBlocked
+        ? t('message.unblockUser.label', 'Unblock User')
+        : t('message.blockUser.label', 'Block User'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };

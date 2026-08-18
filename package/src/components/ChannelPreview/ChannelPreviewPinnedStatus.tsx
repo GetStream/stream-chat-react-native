@@ -16,7 +16,7 @@ export const ChannelPreviewPinnedStatus = () => {
     },
   } = useTheme();
   const { icons } = useComponentsContext();
-  const accessibilityLabel = useA11yLabel('a11y/Pinned');
+  const accessibilityLabel = useA11yLabel('channelPreview.pinned.accessibilityLabel');
 
   return (
     <CompositeAccessibilityProbe label={accessibilityLabel}>

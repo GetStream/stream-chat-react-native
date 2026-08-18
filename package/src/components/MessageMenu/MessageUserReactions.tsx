@@ -266,7 +266,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       ) : (
         <Animated.View key={'reaction-details'} exiting={FadeOut.duration(200)}>
           <Text style={[styles.reactionsText, reactionsText]}>
-            {t('{{count}} Reactions', { count: totalReactionCount })}
+            {t('messageMenu.userReactions.title', {
+              count: totalReactionCount,
+              defaultValue_one: '{{count}} Reaction',
+              defaultValue_other: '{{count}} Reactions',
+            })}
           </Text>
           <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
             <FlatList

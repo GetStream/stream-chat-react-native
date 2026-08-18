@@ -70,14 +70,14 @@ export const ChannelMessagePreviewDeliveryStatus = ({
 
   const statusLabel = useA11yLabel(
     messageStatus === MessageStatusTypes.SENDING
-      ? 'a11y/Sending'
+      ? 'message.status.sending.accessibilityLabel'
       : messageStatus === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
-        ? 'a11y/Read, sent by you'
+        ? 'channelPreview.deliveryStatus.read.accessibilityLabel'
         : status === MessageDeliveryStatus.DELIVERED
-          ? 'a11y/Delivered, sent by you'
+          ? 'channelPreview.deliveryStatus.delivered.accessibilityLabel'
           : status === MessageDeliveryStatus.SENT
-            ? 'a11y/Sent by you'
-            : 'a11y/Sending',
+            ? 'channelPreview.deliveryStatus.sent.accessibilityLabel'
+            : 'message.status.sending.accessibilityLabel',
   );
 
   if (
@@ -115,7 +115,7 @@ export const ChannelMessagePreviewDeliveryStatus = ({
         ) : status === MessageDeliveryStatus.SENT ? (
           <icons.Check stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkIcon} />
         ) : null}
-        <Text style={styles.text}>{t('You')}:</Text>
+        <Text style={styles.text}>{t('common.you.label', 'You')}:</Text>
       </View>
     </CompositeAccessibilityProbe>
   );
