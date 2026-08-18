@@ -136,7 +136,6 @@
     "babel-plugin-module-resolver": "5.0.3",
     "better-sqlite3": "12.11.1",
     "jest": "^30.4.2",
-    "moment-timezone": "^0.6.0",
     "react": "19.2.3",
     "react-native": "0.86.0",
     "react-native-builder-bob": "0.40.11",
