@@ -100,6 +100,10 @@ rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
 rg '\bchannel\.state\.(read|typing|members|watcher|ownCapabilities)Store\b' src/
 rg '\bchannel\.state\.mutedUsersStore\b' src/
 rg '\bchannel\.data\.(member_count|own_capabilities)\s*=' src/
+
+# §L — i18n (custom translations silently stop applying under old keys)
+rg '\b(registerTranslation|translationsForLanguage|Streami18n)\b' src/
+rg '\b(enTranslations|esTranslations|frTranslations|heTranslations|hiTranslations|itTranslations|jaTranslations|koTranslations|nlTranslations|ptBrTranslations|ruTranslations|trTranslations)\b' src/
 ```
 
 ---
@@ -149,6 +153,7 @@ means changed. Details in the linked section.
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
 | `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
 | in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
+| custom translations keyed on v9 English text (`t('Send a message')`, `'Edited'`, …) | rename to dotted keys (`autoCompleteInput.placeholder`, `message.edited.text`, …); type as `TranslationDictionary` — old keys **silently** fall back to English | §L.1 |
 
 ---
 
@@ -1023,6 +1028,61 @@ events in `Channel._handleChannelEvent`. Previously the UI SDK kept it in `useAI
 // read the AI indicator anywhere (or just use useAIState)
 const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState }));
 ```
+
+---
+
+# Part L — i18n / translations
+
+## L.1 Translation keys are now stable identifiers (breaking)
+
+Two breaking changes, both v10 (full detail + copy-pasteable recipes in
+[`i18n-v10-migration.md`](./i18n-v10-migration.md); the complete 391-row old→new table is
+[`i18n-v10-key-map.json`](./i18n-v10-key-map.json)):
+
+1. **English is the only bundled language.** The `ar`, `es`, `fr`, `he`, `hi`, `it`, `ja`, `ko`,
+   `nl`, `pt-br`, `ru`, `tr` dictionaries (and the `enTranslations` … `trTranslations` exports and
+   their per-locale `dayjs` calendar formats) are gone. Recover one from git history
+   (`git show v9.7.6:package/src/i18n/nl.json`) — but its keys are the *old* keys, so it needs the
+   same rename as below.
+2. **Keys are stable dotted identifiers, not the English text.** `t('Send a message')` →
+   `t('autoCompleteInput.placeholder')`; prose keys carry their English copy inline as the i18next
+   `defaultValue`, e.g. `t('message.edited.text', 'Edited')`.
+
+**⚠ The trap: renaming fails *silently*.** An override registered under a **v9 key simply never
+matches** — your string stops applying and the SDK renders the English default instead, with **no
+error, no warning**. So an app that customized copy in v9 keeps compiling and running after the
+bump, but every one of its overrides quietly reverts to English. This bites even English-only apps
+that only changed a word or two.
+
+Representative renames (flat v9 key → v10 key), including the strings v10 UI now emits:
+
+| v9 key (what you overrode) | v10 key |
+|---|---|
+| `Cancel` | `common.cancel.label` |
+| `Send a message` | `autoCompleteInput.placeholder` |
+| `Edited` | `message.edited.text` |
+| `Thinking...` / `Generating...` | `aiTypingIndicator.thinking.label` / `aiTypingIndicator.generating.label` |
+| `Unread Messages` | `messageList.unreadMessages.label` |
+| `a11y/Send message` | `messageInput.sendMessage.accessibilityLabel` |
+
+**Turn the silent failure into a compile error:** type your dictionary as `TranslationDictionary`
+(SDK keys only) — a leftover v9 key is then a build error, not an override that never applies. Use
+`LooseTranslationDictionary` only to carry your *own* app keys alongside SDK ones.
+
+```ts
+import { Streami18n, type TranslationDictionary } from 'stream-chat-react-native'; // or 'stream-chat-expo'
+
+const i18n = new Streami18n({
+  translationsForLanguage: {
+    'autoCompleteInput.placeholder': 'Write something…',
+    'Send a message': 'Write something…', // ← v9 key → compile error (exactly what you want)
+  } satisfies TranslationDictionary,
+});
+```
+
+Non-English dates need two steps (`dayjsLocaleConfigForLanguage` **and** the two `timestamp.*` keys
+with their own `calendarFormats`) — see the dedicated guide; the second step is the one that gets
+missed.
 
 ---
 
