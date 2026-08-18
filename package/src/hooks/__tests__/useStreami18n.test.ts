@@ -6,6 +6,10 @@ import { useStreami18n } from '../useStreami18n';
 /**
  * The instance-recognition contract.
  *
+ * `messageInput.sendMessage.accessibilityLabel` is a *bundled* key -- it lives in `runtimeDefaults`
+ * with no inline default at its call site -- so it is called with the key alone, and it resolving to
+ * German is proof the registered dictionary survived rather than being swapped for a fresh instance.
+ *
  * `instanceof` is not usable here — this repo carries several physical `stream-chat` copies under
  * `nmHoistingLimits: workspaces`, and an integrator's app can resolve another — so recognition goes
  * through a `Symbol.for` brand. What matters is that the brand is compared for *identity*: testing it
@@ -33,7 +37,7 @@ describe('useStreami18n', () => {
     const { result } = renderHook(() => useStreami18n(i18n));
 
     await waitFor(() => {
-      expect(result.current.t('messageInput.sendMessage.accessibilityLabel', 'Send message')).toBe(
+      expect(result.current.t('messageInput.sendMessage.accessibilityLabel')).toBe(
         'Nachricht senden',
       );
     });
@@ -60,14 +64,14 @@ describe('useStreami18n', () => {
     const { result } = renderHook(() => useStreami18n(i18n));
 
     await waitFor(() => {
-      expect(result.current.t('messageInput.sendMessage.accessibilityLabel', 'Send message')).toBe(
+      expect(result.current.t('messageInput.sendMessage.accessibilityLabel')).toBe(
         'Nachricht senden',
       );
     });
     expect(warn).not.toHaveBeenCalled();
   });
 
-  it('rejects an unrelated class that happens to have a `brand` static, and warns', async () => {
+  it('rejects an unrelated class that happens to have a `brand` static, and warns', () => {
     class NotStreami18n {
       static readonly brand = 'some-other-library';
     }
@@ -76,12 +80,9 @@ describe('useStreami18n', () => {
       useStreami18n(new NotStreami18n() as unknown as Streami18n),
     );
 
-    // Fell back to a fresh default rather than throwing on `.init()` / `.state`.
-    await waitFor(() => {
-      expect(result.current.t('messageInput.sendMessage.accessibilityLabel', 'Send message')).toBe(
-        'Send message',
-      );
-    });
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('is not a Streami18n'));
+    // Fell back to a usable default rather than throwing on `.init()` / `.state`. A prose key renders
+    // its inline copy through the pre-init default translator, so this holds without waiting on init.
+    expect(result.current.t('channel.archived.text', 'Channel archived')).toBe('Channel archived');
   });
 });

@@ -552,6 +552,39 @@ key just renders English. `examples/SampleApp/src/i18n/{de,it}.ts` shows both ed
 `POLL_VALIDATION_CODE` value. If you render those errors yourself, key your copy on `error.code` and fall back
 to `error.message`.
 
+### `getTranslations()` and `getAvailableLanguages()` are gone
+
+Both were public in v9, both leaked internal bookkeeping, and neither had a consumer in this SDK.
+
+```ts
+// v9 — reading the raw i18next resource map
+i18n.getTranslations().en.translation['some.key'];
+
+// v10 — render the key instead; that is the thing you actually wanted to know
+i18n.t('some.key');
+```
+
+`getTranslations()` never held this SDK's English copy in the first place: prose renders from the
+inline `defaultValue` at each call site, so the resource map only ever contained the bundled formatter
+expressions plus whatever had been registered.
+
+```ts
+// v9 — "available" included languages created only to carry the bundled defaults,
+// so a language nobody registered showed up here
+i18n.getAvailableLanguages().includes('de');
+
+// v10
+i18n.registeredLanguages.has('de');
+```
+
+`registeredLanguages` is now a `ReadonlySet<string>`. Reading it is unchanged; `.add()` no longer
+compiles — use `registerTranslation()`, since adding to the set would claim a language is registered
+with no dictionary behind it.
+
+Also now internal, none of them documented before: `translations`, `dayjsLocales`,
+`isCustomDateTimeParser`, `localeExists()`, `addOrUpdateLocale()`, `validateCurrentLanguage()`. To
+register a dayjs locale directly, `stream-chat/i18n` exports `addOrUpdateDayjsLocale()`.
+
 ### `dayjs` must resolve to one copy
 
 Declare it compatibly with `stream-chat`'s range (`^1.11.13`), or don't declare it at all. An exact pin that
