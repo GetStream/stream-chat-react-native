@@ -25,7 +25,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={false} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -41,7 +41,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -58,7 +58,7 @@ describe('ScrollToBottomButton', () => {
     const onPress = jest.fn();
     const { getByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={onPress} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -116,7 +116,7 @@ describe('ScrollToBottomButton', () => {
     const translators = await i18nInstance.getTranslators();
     const { toJSON } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,

@@ -70,18 +70,25 @@ describe('setLanguage', () => {
     expect(after('common.cancel.label', 'Cancel')).toBe('Abbrechen');
   });
 
-  it('notifies language-change listeners with the new t', async () => {
+  it('publishes the new t to the state store on a language change', async () => {
     const i18n = new Streami18n({ ...silent, language: 'en' });
     i18n.registerTranslation('de', { 'common.cancel.label': 'Abbrechen' } as TranslationDictionary);
-    await i18n.getTranslators();
+    await i18n.init();
 
     const seen: string[] = [];
-    i18n.addOnLanguageChangeListener((t) => seen.push(t('common.cancel.label', 'Cancel')));
+    // Replaces `addOnLanguageChangeListener`. `subscribeWithSelector` fires synchronously with the
+    // current value first, hence the English entry -- and that synchronous first call is the point:
+    // a consumer subscribing after `init()` still gets a live `t` with no ordering to get wrong.
+    const unsubscribe = i18n.state.subscribeWithSelector(
+      ({ t }) => ({ t }),
+      ({ t }) => seen.push(t('common.cancel.label', 'Cancel')),
+    );
 
     await i18n.setLanguage('de');
+    unsubscribe();
 
-    // This is what re-renders the tree: the context's `t` is replaced, not the provider.
-    expect(seen).toEqual(['Abbrechen']);
+    // This is what re-renders the tree: the store's `t` is replaced, not the provider.
+    expect(seen).toEqual(['Cancel', 'Abbrechen']);
   });
 
   it('warns but keeps the language when it has no dictionary', async () => {

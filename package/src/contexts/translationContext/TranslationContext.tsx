@@ -1,10 +1,8 @@
 import React, { useContext } from 'react';
 
-import Dayjs from 'dayjs';
-
 import { TranslatorFunctions } from './types';
 
-import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
+import { defaultDateTimeParser, defaultTranslatorFunction } from '../../i18n/utils';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const DEFAULT_USER_LANGUAGE = 'en';
@@ -24,7 +22,7 @@ export type TranslationContextValue = TranslatorFunctions & {
 
 const defaultTranslationContextValue: TranslationContextValue = {
   t: defaultTranslatorFunction,
-  tDateTimeParser: (input) => Dayjs(input),
+  tDateTimeParser: defaultDateTimeParser,
   userLanguage: DEFAULT_USER_LANGUAGE,
 };
 

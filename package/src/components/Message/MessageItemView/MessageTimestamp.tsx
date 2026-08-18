@@ -6,8 +6,8 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
+import { getDateString } from '../../../i18n/utils';
 import { primitives } from '../../../theme';
-import { getDateString } from '../../../utils/i18n/getDateString';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDateTimeParser'>> & {
@@ -39,7 +39,7 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: timestamp,
+        messageCreatedAt: timestamp,
         t,
         tDateTimeParser,
         timestampTranslationKey,

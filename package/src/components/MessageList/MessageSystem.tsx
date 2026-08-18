@@ -6,8 +6,8 @@ import { LocalMessage } from 'stream-chat';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
+import { getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
-import { getDateString } from '../../utils/i18n/getDateString';
 
 export type MessageSystemProps = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
@@ -44,7 +44,7 @@ export const MessageSystem = (props: MessageSystemProps) => {
   const formattedDate = useMemo(
     () =>
       getDateString({
-        date: createdAt,
+        messageCreatedAt: createdAt,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.MessageSystem',

@@ -98,7 +98,10 @@ describe('G2 — a partial dictionary renders English, not a dotted path', () =>
   });
 
   it('does not let an integrator parseMissingKeyHandler blank out prose keys', async () => {
-    const i18n = new Streami18n(silent, { parseMissingKeyHandler: () => '' } as never);
+    const i18n = new Streami18n({
+      ...silent,
+      i18nextConfigOverrides: { parseMissingKeyHandler: () => '' },
+    });
     const { t } = await i18n.getTranslators();
 
     // Every prose key looks "missing" to i18next — it resolves from the inline default, not from

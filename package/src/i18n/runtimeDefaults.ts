@@ -10,9 +10,13 @@
  * and the `timestamp/<Component>` values these keys replace. Every other namespace is lower
  * camelCase.
  *
- * Unlike the web SDK this catalog has no `language.*` namespace (React Native never rendered ISO
- * language names) and no `translationBuilderTopic.*` — there is no i18next postProcessor here; the
- * formatter registry in `utils/i18n/predefinedFormatters.ts` is the whole extension surface.
+ * Two namespaces are typed into the catalog but supplied by `stream-chat/i18n` rather than declared
+ * here. `language.*` (ISO language names, generated from core's `TranslationLanguage` union) is
+ * merged in by the `StreamI18n` subclass in `utils/i18n/Streami18n.ts`, underneath this file, so an
+ * individual name stays overridable. `relativeTime.*` needs no data at all: core's
+ * `relativeCompactDateFormatter` passes its English inline the same way a call site does. There is
+ * no `translationBuilderTopic.*` — this SDK registers no i18next postProcessor; the formatter
+ * registry in `stream-chat/i18n` is the whole extension surface.
  *
  * `yarn build-translations` joins this file with the inline defaults to generate
  * `src/i18n/keys.ts`; `yarn i18n:export` writes the joined catalog as JSON.
@@ -26,7 +30,7 @@
  *   `timestampFormatter` then parses the calendar config out of the translation value itself.
  * - `timestamp.UserActivityStatus` puts prose (`Last seen`) beside the interpolation.
  *
- * Adding a fourth fails a guard in `__tests__/Streami18n.test.ts` that keeps
+ * Adding a fourth fails a guard in `src/utils/__tests__/Streami18n.test.ts` that keeps
  * `ai-docs/i18n-v10-migration.md` in sync.
  */
 export const runtimeDefaults = {
@@ -121,17 +125,12 @@ export const runtimeDefaults = {
     'Scroll to bottom, {{count}} new messages',
   'messageMenu.actionList.accessibilityLabel': 'Message actions',
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Open more reactions',
-  'notifications.commandUnavailable.error': 'Command not available',
   'notifications.attachmentUploadFailed.error': 'Error uploading attachment',
   'notifications.attachmentUploadFailed.withReason.error':
     'Attachment upload failed due to {{reason}}',
   'notifications.pollCreateFailed.error': 'Failed to create the poll',
   'notifications.pollCreateFailed.withReason.error': 'Failed to create the poll due to {{reason}}',
   'notifications.pollEndFailed.withReason.error': 'Failed to end the poll due to {{reason}}',
-  // Emitted by `stream-chat`'s poll composer and mapped in `externalStrings.ts`. They arrive as
-  // English at runtime, so there is no call site to carry the copy.
-  'poll.createPoll.maxVotes.range.error': 'Type a number from 2 to 10',
-  'poll.createPoll.options.duplicate.error': 'Option already exists',
   'poll.createPoll.close.accessibilityLabel': 'Close poll creation',
   'poll.createPoll.maxVotes.decrease.accessibilityLabel': 'Decrease maximum votes',
   'poll.createPoll.maxVotes.increase.accessibilityLabel': 'Increase maximum votes',

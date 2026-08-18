@@ -23,7 +23,7 @@ When `enabled` is false:
 - `useIncomingMessageAnnouncements` does not subscribe to `channel.on('message.new')`.
 - No `AccessibilityInfo` event listeners attach.
 - Components still render their `accessibilityRole` / `accessibilityState` / etc. attributes (these are passed to native views and only consulted by VO/TalkBack when active — sighted users incur ~zero cost).
-- `useA11yLabel(key, params)` returns `undefined` so `t('a11y/...')` is **not** called on hot list paths.
+- `useA11yLabel(key, params)` returns `undefined` so `t()` is **not** called on hot list paths.
 
 ## Configuration shape
 
@@ -50,13 +50,14 @@ For RN-specific gesture-alternative toggles, the enum semantics are:
 
 ## Localization
 
-All a11y strings flow through the existing `Streami18n` translation pipeline under the `a11y/*` namespace. Defaults ship in English in every locale; integrators can override per-key via the same mechanism they use for other strings:
+All a11y strings flow through the `StreamI18n` translation pipeline, the same one every other string uses.
+Integrators override per key:
 
 ```ts
-const i18n = new Streami18n('nl');
+const i18n = new StreamI18n({ language: 'nl' });
 i18n.registerTranslation('nl', {
-  'a11y/Avatar of {{name}}': 'Avatar van {{name}}',
-  'a11y/{{count}} new messages': '{{count}} nieuwe berichten',
+  'avatar.accessibilityLabel': 'Avatar van {{name}}',
+  'messageList.scrollToBottom.withCount.accessibilityLabel': '{{count}} nieuwe berichten',
 });
 <OverlayProvider accessibility={{ enabled: true }} i18nInstance={i18n}>
   <Chat client={client} i18nInstance={i18n}>
@@ -65,12 +66,24 @@ i18n.registerTranslation('nl', {
 </OverlayProvider>
 ```
 
-`validate-translations` (run as part of `yarn lint`) enforces non-empty values for every `a11y/*` key in every locale.
+Three things changed in v10, and the old form above fails quietly rather than erroring:
+
+- **The `a11y/*` namespace is gone.** Accessible names are the `.accessibilityLabel` leaf of the owning
+  component's key (`avatar.accessibilityLabel`), so a11y copy sits beside the visible copy it describes. See
+  `ai-docs/i18n-v10-migration.md` for the full old→new table.
+- **The constructor takes an options object**, not a positional language string.
+- **English is the only bundled language**, so "in every locale" no longer applies — a key you do not supply
+  renders its English copy from the inline `defaultValue` at the call site, never a raw dotted path.
+
+Most accessible names reach `t()` as a prop or a lookup value rather than a literal, so they have no inline
+default and live in `package/src/i18n/runtimeDefaults.ts` instead. `validate-translations` (part of `yarn lint`)
+is a drift gate on the generated catalog: it regenerates `src/i18n/keys.ts` and fails on any difference, which
+is what catches a key that was renamed at the call site but not in `runtimeDefaults`.
 
 SDK-owned `Button` components can translate their own accessible names from an i18n key:
 
 ```tsx
-<Button accessibilityLabelKey='a11y/Send message' iconOnly {...buttonProps} />
+<Button accessibilityLabelKey='messageInput.sendMessage.accessibilityLabel' iconOnly {...buttonProps} />
 ```
 
 Use `accessibilityLabelParams` for interpolated labels. SDK-owned buttons should pass the key/params only. When migrating an already-released button, keep the translation value aligned with the existing label unless the label change is intentionally breaking.
@@ -92,7 +105,7 @@ Importable from `stream-chat-react-native`:
 
 ## Cross-SDK parity
 
-API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146) wherever the platforms agree (`useAccessibilityAnnouncer` ≈ `useAriaLiveAnnouncer`, `useIncomingMessageAnnouncements` ≈ identical params and throttle semantics, `a11y/*` i18n namespace shared). Mobile-only deviations:
+API shapes mirror [`stream-chat-react#3146`](https://github.com/GetStream/stream-chat-react/pull/3146) wherever the platforms agree (`useAccessibilityAnnouncer` ≈ `useAriaLiveAnnouncer`, `useIncomingMessageAnnouncements` ≈ identical params and throttle semantics; both SDKs now key accessible names as the `.accessibilityLabel` leaf of the owning component rather than a shared `a11y/*` namespace). Mobile-only deviations:
 
 - `<OverlayProvider accessibility={...}>` config object — RN needs gesture-alternative toggles (audio hold-to-record, gallery pinch/pan) that don't exist on web.
 - No `<VisuallyHidden>`, no `<SkipNavigation>`, no roving-focus utilities — RN announcer is imperative, mobile has no Tab key.

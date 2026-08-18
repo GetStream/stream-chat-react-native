@@ -13,12 +13,19 @@ English. Measured on this branch, `.js` and `.json` in each build target concate
 
 | Target         | Before  | After   | Saved   |
 | -------------- | ------- | ------- | ------- |
-| `lib/commonjs` | 498,708 | 427,743 | −70,965 |
-| `lib/module`   | 499,091 | 426,942 | −72,149 |
+| `lib/commonjs` | 498,708 | 414,618 | −84,090 |
+| `lib/module`   | 499,091 | 414,600 | −84,491 |
 
 The 13 JSON files were 392,103 raw / 70,972 gzip and shipped in both targets. What replaces them is
-`runtimeDefaults.js` at 8,013 raw / 1,977 gzip; `keys.js` compiles to 33 bytes — a sourcemap comment — so the
-408-entry typed catalog costs nothing at runtime.
+`runtimeDefaults.js` at 7,802 raw / 1,911 gzip; `keys.js` compiles to 33 bytes — a sourcemap comment — so the
+409-entry typed catalog costs nothing at runtime.
+
+The extra ~13 KB gzip beyond the locale files is the `Streami18n` runtime itself, which moved to
+`stream-chat/i18n` (see below). **That is a move, not a saving** — the code now ships in `stream-chat`
+instead, at 11,711 bytes gzip for its own subpath bundle, so the total your app downloads is roughly
+unchanged on that portion. What genuinely goes away is the 70,972 gzip of locale JSON. `stream-chat`'s
+root bundle is unaffected: the i18n layer is a separate entry point, and a build-time assertion in
+`stream-chat` fails if `i18next` or `dayjs` reach the root.
 
 ## Why the keys changed at all
 
@@ -31,7 +38,7 @@ The old keys _were_ the English copy, which meant:
 Keys are now stable, and the English copy travels inline at the call site as i18next's `defaultValue`. A key you do not
 supply still renders English rather than a raw dotted path.
 
-The exception is the 97 keys that carry no inline copy. They reach `t()` as runtime values — a JSX prop, a ternary
+The exception is the 94 keys that carry no inline copy. They reach `t()` as runtime values — a JSX prop, a ternary
 branch, a lookup table keyed by something other than the copy — so there is no call site at which a default could be
 written. Those live in `runtimeDefaults` (`package/src/i18n/runtimeDefaults.ts`), and both `registerTranslation()` and
 `translationsForLanguage` merge your dictionary over them, so you inherit the working defaults without listing them.
@@ -403,6 +410,134 @@ last segment is the modality: `.label`, `.title`, `.text`, `.placeholder`, `.des
 `.accessibilityLabel`. The `timestamp.*` and `duration.*` leaf stays PascalCase after the consuming component, matching
 the `timestamp/<Component>` keys it replaces.
 
+## The runtime moved to `stream-chat`
+
+`Streami18n` is no longer implemented here. The class, the formatters and the whole date layer live in
+`stream-chat/i18n`, shared with the React SDK, and this package exports a thin subclass that injects its own
+bundled copy. **Your imports do not change** — `Streami18n`, `getDateString`, `predefinedFormatters` and every
+type are still exported from `stream-chat-react-native` / `stream-chat-expo`. What changes is behaviour and a
+handful of signatures.
+
+Why: both UI SDKs carried ~1,300 lines of near-duplicate runtime that had drifted, each reverse-mapping
+`stream-chat`'s English notification prose against its own hand-maintained table. A fix landed in one SDK and
+not the other. One implementation ends that.
+
+### Renamed: `StreamI18n`, with `Streami18n` kept for one cycle
+
+The class is now spelled `StreamI18n`, matching what the two SDKs share. `Streami18n` remains exported as a
+`@deprecated` alias — usable as both a value and a type — so nothing breaks on this alone.
+
+### `setLanguage()` returns `void`
+
+It used to return the new `t` (or i18next's own `TFunction`, or `undefined`, depending on how it went). The
+current `t` now comes from a state store, and returning it invited callers to cache a function that is stale
+the moment the language changes again:
+
+```ts
+// Before
+const t = await i18n.setLanguage('de');
+
+// After — `t` arrives through the store, which <Chat> and <OverlayProvider> subscribe to
+await i18n.setLanguage('de');
+```
+
+If you were reading that return value, read `i18n.t` (a getter over the store) or subscribe:
+
+```ts
+const unsubscribe = i18n.state.subscribeWithSelector(
+  ({ t }) => ({ t }),
+  ({ t }) => {
+    /* fires synchronously with the current value first, then on every change */
+  },
+);
+```
+
+`addOnLanguageChangeListener` and the other listener registrations are removed; the store replaces all of them.
+
+### `getTranslators()` → `init()`
+
+Same return value, and `getTranslators()` still works as a `@deprecated` alias. `init()` is idempotent and safe
+to call concurrently — the promise is memoized, which closes a re-entry window the old
+`waitForInitializing` flag left open.
+
+### i18next config: one options object
+
+The second positional argument is gone. Any i18next setting now goes through `i18nextConfigOverrides`, and it
+accepts the whole of `InitOptions` rather than a curated subset:
+
+```ts
+// Before
+new Streami18n({ language: 'de' }, { parseMissingKeyHandler: myHandler });
+
+// After
+new StreamI18n({ language: 'de', i18nextConfigOverrides: { parseMissingKeyHandler: myHandler } });
+```
+
+### `getDateString`: `date` → `messageCreatedAt`
+
+The two SDKs named this parameter differently; the shared implementation takes the one name. It also returns
+`null` rather than `undefined` when there is nothing renderable — both mean "render no element", but a strict
+`=== undefined` check needs updating.
+
+```ts
+// Before
+getDateString({ date: message.created_at, t, tDateTimeParser });
+
+// After
+getDateString({ messageCreatedAt: message.created_at, t, tDateTimeParser });
+```
+
+### `getDateStringForA11y` is now `getCalendarDateStringForA11y`
+
+The function this SDK shipped — the one that keeps "Today"/"Yesterday" and substitutes `LL` into the calendar's
+`sameElse` slot, because iOS VoiceOver reads "04/08/2026" character by character — is renamed
+`getCalendarDateStringForA11y`. It behaves identically, including `calendarFormatOverrides` and `userLanguage`.
+
+`getDateStringForA11y` still exists but is the **React SDK's** variant, which spells the date out in full via
+`LLLL`. If you called the old name, rename it; leaving it renders a different (still correct, more verbose)
+string.
+
+### `notification.message` is no longer matched against English
+
+`getNotificationDisplayMessage` dispatches only on `stream-chat`'s stable `notification.type`. The table of
+English sentences (`externalStrings.ts`, `EXTERNAL_STRING_KEYS`, `translateExternalString`) is removed — it went
+stale silently on every `stream-chat` upgrade. An unrecognized identifier renders `notification.message`
+verbatim, so a newer core still shows something readable.
+
+Three keys are **removed** from the catalog, because nothing renders them:
+
+| Removed key                                  | Why                                                                   |
+| -------------------------------------------- | --------------------------------------------------------------------- |
+| `notifications.locationRetrieveFailed.error` | mapped `browser:location:get:failed`, which this SDK does not emit     |
+| `notifications.threadNotFound.error`         | mapped `api:reply:search:failed`, which nothing emits                  |
+| `poll.createPoll.maxVotes.range.error`       | no component displayed the max-votes field error                       |
+
+Four are **added**, all previously falling through to untranslated English:
+
+| Added key                                          | Copy                                  |
+| -------------------------------------------------- | ------------------------------------- |
+| `notifications.commandNotReady.error`              | Command not ready to be sent          |
+| `notifications.messageJumpFailed.error`            | Failed to jump to the message         |
+| `notifications.messageJumpToLatestFailed.error`    | Failed to jump to the latest message  |
+| `poll.createPoll.options.empty.error`              | Option is empty                       |
+
+A removed key in your dictionary is a compile error if you type it as `TranslationDictionary`; a missing added
+key just renders English. `examples/SampleApp/src/i18n/{de,it}.ts` shows both edits applied.
+
+### Poll validation errors carry a code
+
+`stream-chat`'s poll composer used to put plain English in `state.errors`. Each entry is now a
+`PollValidationError` — `{ code, message, metadata? }` — where `code` is a stable
+`POLL_VALIDATION_CODE` value. If you render those errors yourself, key your copy on `error.code` and fall back
+to `error.message`.
+
+### `dayjs` must resolve to one copy
+
+Declare it compatibly with `stream-chat`'s range (`^1.11.13`), or don't declare it at all. An exact pin that
+disagrees installs a second copy, and then your `import 'dayjs/locale/de'` extends an instance the SDK never
+formats with — dates stay English with no error anywhere. Don't declare `i18next`; it arrives through
+`stream-chat`.
+
 ## Type reference
 
 | Type                          | Use it for                                                                          |
@@ -415,5 +550,10 @@ the `timestamp/<Component>` keys it replaces.
 | `DayjsLocaleConfig`           | `dayjsLocaleConfigForLanguage` and `registerTranslation`'s third argument            |
 | `CalendarFormats`             | the six calendar slots inside a `DayjsLocaleConfig`                                  |
 | `DynamicTranslationKey`       | a key only known at runtime; brand one with `asDynamicKey()`                         |
+| `StreamI18nOptions`           | the constructor options — newly exported, though `options.formatters` always referenced it |
+| `PredefinedFormatters` / `CustomFormatters` | `options.formatters`; also newly exported                              |
+| `FormatterFactory`            | writing your own formatter                                                           |
+| `TimestampFormatterOptions`   | the `timestampFormatter` arguments inside a `timestamp.*` expression                 |
 
-All of them are exported from `stream-chat-react-native` and `stream-chat-expo`.
+All of them are exported from `stream-chat-react-native` and `stream-chat-expo`. They are re-exported from
+`stream-chat/i18n`, so importing them from either place gives the same type.

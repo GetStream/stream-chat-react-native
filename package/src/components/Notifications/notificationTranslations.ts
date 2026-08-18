@@ -1,8 +1,13 @@
-import type { Notification } from 'stream-chat';
+import { CORE_NOTIFICATION_TYPE } from 'stream-chat';
+import type { CoreNotificationType, Notification } from 'stream-chat';
 
-import { translateExternalString } from '../../i18n/externalStrings';
 import type { StreamTFunction } from '../../i18n/types';
 import { asDynamicKey } from '../../i18n/utils';
+
+type NotificationTranslator = (options: {
+  notification: Notification;
+  t: StreamTFunction;
+}) => string;
 
 const normalizeReason = (notification?: Notification) => {
   const reason = notification?.metadata?.reason;
@@ -110,51 +115,79 @@ const translateCommandDisabled = ({
     );
   }
 
-  if (reason === 'quoted_message') {
+  // `stream-chat` emits `'replying'`. This branch read `'quoted_message'` and so never matched, which
+  // meant the reply case fell through and rendered core's untranslated English instead.
+  if (reason === 'replying') {
     return t(
       'notifications.commandUnavailable.whileReplying.error',
       'Command not available while replying',
     );
   }
 
-  return t(asDynamicKey(notification?.message || 'notifications.commandUnavailable.error'));
+  return t('notifications.commandUnavailable.error', 'Command not available');
 };
 
-const notificationTranslatorsByType: Record<
-  string,
-  (options: { notification: Notification; t: StreamTFunction }) => string
-> = {
-  'api:attachment:upload:failed': translateAttachmentUploadFailed,
-  'api:location:create:failed': ({ t }) =>
-    t('notifications.locationShareFailed.error', 'Failed to share location'),
-  'api:location:share:failed': ({ t }) =>
-    t('notifications.locationShareFailed.error', 'Failed to share location'),
-  'api:poll:create:failed': translatePollCreateFailed,
-  'api:poll:end:failed': translatePollEndFailed,
-  'api:poll:end:success': ({ t }) => t('notifications.pollEnded.text', 'Poll ended'),
-  'api:reply:search:failed': ({ t }) =>
-    t('notifications.threadNotFound.error', 'Thread has not been found'),
-  'browser:audio:playback:error': ({ notification, t }) =>
-    notification.message
-      ? translateExternalString(t, notification.message)
-      : t('notifications.recordingPlaybackFailed.error', 'Error reproducing the recording'),
-  'browser:location:get:failed': ({ t }) =>
-    t('notifications.locationRetrieveFailed.error', 'Failed to retrieve location'),
-  'channel:jumpToFirstUnread:failed': ({ t }) =>
-    t('channel.jumpToFirstUnreadFailed.error', 'Failed to jump to the first unread message'),
-  'validation:attachment:file:missing': ({ t }) =>
+/**
+ * A translator for every notification `stream-chat` itself emits.
+ *
+ * `Record<CoreNotificationType, …>` is the point: a new identifier in core fails to compile here until
+ * it is mapped, and an entry for one that no longer exists is rejected. Before core exported the union,
+ * this table and the React SDK's equivalent were hand-maintained copies of each other, and both had
+ * drifted — carrying entries nothing emits while missing identifiers that fell through to untranslated
+ * English.
+ *
+ * The key *names* stay this SDK's own. They have shipped, integrators' dictionaries are keyed on them,
+ * and `build-translations` reads the literal string at the call site — a key resolved from a map would
+ * be invisible to the generator and so would never reach the catalog.
+ */
+const coreNotificationTranslators: Record<CoreNotificationType, NotificationTranslator> = {
+  [CORE_NOTIFICATION_TYPE.attachmentFileMissing]: ({ t }) =>
     t('notifications.attachmentFileMissing.error', 'File is required for upload attachment'),
-  'validation:attachment:id:missing': ({ t }) =>
+  [CORE_NOTIFICATION_TYPE.attachmentIdMissing]: ({ t }) =>
     t('notifications.attachmentIdMissing.error', 'Local upload attachment missing local id'),
-  'validation:attachment:upload:blocked': translateAttachmentUploadBlocked,
-  'validation:attachment:upload:in-progress': ({ t }) =>
+  [CORE_NOTIFICATION_TYPE.attachmentUploadBlocked]: translateAttachmentUploadBlocked,
+  [CORE_NOTIFICATION_TYPE.attachmentUploadFailed]: translateAttachmentUploadFailed,
+  [CORE_NOTIFICATION_TYPE.attachmentUploadInProgress]: ({ t }) =>
     t('notifications.attachmentUploadInProgress.error', 'Wait until all attachments have uploaded'),
-  'validation:command:disabled': translateCommandDisabled,
-  'validation:poll:castVote:limit': ({ t }) =>
+  [CORE_NOTIFICATION_TYPE.commandDisabled]: translateCommandDisabled,
+  // The three below were unmapped, so they rendered untranslated English from `notification.message`.
+  [CORE_NOTIFICATION_TYPE.commandNotReady]: ({ t }) =>
+    t('notifications.commandNotReady.error', 'Command not ready to be sent'),
+  [CORE_NOTIFICATION_TYPE.locationCreateFailed]: ({ t }) =>
+    t('notifications.locationShareFailed.error', 'Failed to share location'),
+  [CORE_NOTIFICATION_TYPE.messageJumpFailed]: ({ t }) =>
+    t('notifications.messageJumpFailed.error', 'Failed to jump to the message'),
+  [CORE_NOTIFICATION_TYPE.messageJumpToLatestFailed]: ({ t }) =>
+    t('notifications.messageJumpToLatestFailed.error', 'Failed to jump to the latest message'),
+  [CORE_NOTIFICATION_TYPE.pollCastVoteLimit]: ({ t }) =>
     t(
       'notifications.voteLimitReached.error',
       'Reached the vote limit. Remove an existing vote first.',
     ),
+  [CORE_NOTIFICATION_TYPE.pollCreateFailed]: translatePollCreateFailed,
+};
+
+/**
+ * Translators for notifications this SDK emits itself, which core knows nothing about.
+ *
+ * Deliberately not exhaustiveness-checked — there is no union to check against — so keep it to
+ * identifiers that are actually emitted. `api:reply:search:failed`, `api:location:share:failed` and
+ * `browser:location:get:failed` were removed: all three were copied over from the React SDK and none is
+ * emitted here.
+ */
+const sdkNotificationTranslators: Record<string, NotificationTranslator> = {
+  'api:poll:end:failed': translatePollEndFailed,
+  'api:poll:end:success': ({ t }) => t('notifications.pollEnded.text', 'Poll ended'),
+  'browser:audio:playback:error': ({ notification, t }) =>
+    notification.message ||
+    t('notifications.recordingPlaybackFailed.error', 'Error reproducing the recording'),
+  'channel:jumpToFirstUnread:failed': ({ t }) =>
+    t('channel.jumpToFirstUnreadFailed.error', 'Failed to jump to the first unread message'),
+};
+
+const notificationTranslatorsByType: Record<string, NotificationTranslator> = {
+  ...coreNotificationTranslators,
+  ...sdkNotificationTranslators,
 };
 
 export const getNotificationDisplayMessage = ({
@@ -168,9 +201,9 @@ export const getNotificationDisplayMessage = ({
     ? notificationTranslatorsByType[notification.type]
     : undefined;
 
-  // `notification.message` can be English emitted by `stream-chat`; the map resolves the ones
-  // we recognise and passes anything else through unchanged.
-  return translator
-    ? translator({ notification, t })
-    : translateExternalString(t, notification.message);
+  // An unrecognized identifier renders `message` verbatim. It is untranslated English, but a newer
+  // core — or an integrator emitting its own identifier — must not produce an empty toast. This used
+  // to run the message through a table of English sentences, which is the mechanism core's `type`
+  // replaced: matching on prose went stale silently on every core upgrade.
+  return translator ? translator({ notification, t }) : notification.message;
 };

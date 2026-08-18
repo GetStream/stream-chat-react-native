@@ -404,6 +404,7 @@ export const it: TranslationDictionary = {
   'notifications.attachmentUploadFailed.withReason.error':
     "Caricamento dell'allegato non riuscito a causa di {{reason}}",
   'notifications.attachmentUploadInProgress.error': 'Attendi il caricamento di tutti gli allegati',
+  'notifications.commandNotReady.error': 'Il comando non è pronto per essere inviato',
   'notifications.commandUnavailable.error': 'Comando non disponibile',
   'notifications.commandUnavailable.whileEditing.error':
     'Comando non disponibile durante la modifica',
@@ -411,8 +412,9 @@ export const it: TranslationDictionary = {
     'Comando non disponibile durante la risposta',
   'notifications.dismiss.accessibilityLabel': 'Chiudi notifica',
   'notifications.list.accessibilityLabel': 'Notifiche',
-  'notifications.locationRetrieveFailed.error': 'Impossibile recuperare la posizione',
   'notifications.locationShareFailed.error': 'Impossibile condividere la posizione',
+  'notifications.messageJumpFailed.error': 'Impossibile passare al messaggio',
+  'notifications.messageJumpToLatestFailed.error': 'Impossibile passare al messaggio più recente',
   'notifications.pollCreateFailed.error': 'Impossibile creare il sondaggio',
   'notifications.pollCreateFailed.withReason.error':
     'Impossibile creare il sondaggio a causa di {{reason}}',
@@ -421,7 +423,6 @@ export const it: TranslationDictionary = {
   'notifications.pollEnded.text': 'Sondaggio terminato',
   'notifications.recordingPlaybackFailed.error':
     'Errore durante la riproduzione della registrazione',
-  'notifications.threadNotFound.error': 'Thread non trovato',
   'notifications.voteLimitReached.error':
     'Limite di voti raggiunto. Rimuovi prima un voto esistente.',
 
@@ -438,10 +439,10 @@ export const it: TranslationDictionary = {
   'poll.createPoll.maxVotes.description': 'Scegli tra 2 e 10 opzioni',
   'poll.createPoll.maxVotes.increase.accessibilityLabel': 'Aumenta il numero massimo di voti',
   'poll.createPoll.maxVotes.label': 'Limita i voti per persona',
-  'poll.createPoll.maxVotes.range.error': 'Inserisci un numero da 2 a 10',
   'poll.createPoll.multipleVotes.description': "Seleziona più di un'opzione",
   'poll.createPoll.multipleVotes.label': 'Voti multipli',
   'poll.createPoll.options.duplicate.error': "L'opzione esiste già",
+  'poll.createPoll.options.empty.error': "L'opzione è vuota",
   'poll.createPoll.options.label': 'Opzioni',
   'poll.createPoll.options.placeholder': "Aggiungi un'opzione",
   'poll.createPoll.question.label': 'Domande',
