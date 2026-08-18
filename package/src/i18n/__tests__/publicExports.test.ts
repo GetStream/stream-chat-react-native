@@ -45,8 +45,6 @@ describe('i18n public exports', () => {
       'predefinedFormatters',
       'runtimeDefaults',
       'Streami18n',
-      // `@deprecated` alias kept for one release cycle; removing it is a breaking change.
-      'Streami18n',
     ];
 
     expect(expected.filter((name) => !(name in sdk))).toEqual([]);
