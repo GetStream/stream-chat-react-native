@@ -548,8 +548,8 @@ key just renders English. `examples/SampleApp/src/i18n/{de,it}.ts` shows both ed
 ### Poll validation errors carry a code
 
 `stream-chat`'s poll composer used to put plain English in `state.errors`. Each entry is now a
-`PollValidationError` — `{ code, message, metadata? }` — where `code` is a stable
-`POLL_VALIDATION_CODE` value. If you render those errors yourself, key your copy on `error.code` and fall back
+`PollComposerValidationError` — `{ code, message, metadata? }` — where `code` is a stable
+`POLL_COMPOSER_VALIDATION_CODE` value. If you render those errors yourself, key your copy on `error.code` and fall back
 to `error.message`.
 
 ### `getTranslations()` and `getAvailableLanguages()` are gone

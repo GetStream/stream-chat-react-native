@@ -23,8 +23,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { POLL_VALIDATION_CODE, PollComposerOption, PollComposerState } from 'stream-chat';
-import type { PollValidationCode, PollValidationError } from 'stream-chat';
+import { POLL_COMPOSER_VALIDATION_CODE, PollComposerOption, PollComposerState } from 'stream-chat';
+import type { PollComposerValidationCode, PollComposerValidationError } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -50,7 +50,7 @@ export type CreatePollOptionType = {
   optionsCount: number;
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<string | null>;
-  error?: PollValidationError;
+  error?: PollComposerValidationError;
   handleChangeText: (newText: string, index: number) => void;
   handleBlur: () => void;
   index: number;
@@ -291,13 +291,13 @@ export const CreatePollOption = ({
   // Keyed on `stream-chat`'s stable validation code. This used to match on the English sentence the
   // composer returned, which meant a reworded message in a `stream-chat` patch silently stopped
   // translating. `error.message` remains the fallback so an unrecognized code renders readable text.
-  const knownValidationErrors = useMemo<Partial<Record<PollValidationCode, string>>>(
+  const knownValidationErrors = useMemo<Partial<Record<PollComposerValidationCode, string>>>(
     () => ({
-      [POLL_VALIDATION_CODE.optionDuplicate]: t(
+      [POLL_COMPOSER_VALIDATION_CODE.optionDuplicate]: t(
         'poll.createPoll.options.duplicate.error',
         'Option already exists',
       ),
-      [POLL_VALIDATION_CODE.optionEmpty]: t(
+      [POLL_COMPOSER_VALIDATION_CODE.optionEmpty]: t(
         'poll.createPoll.options.empty.error',
         'Option is empty',
       ),

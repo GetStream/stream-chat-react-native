@@ -154,7 +154,7 @@ means changed. Details in the linked section.
 | `{{ timestamp \| relativeCompactDateFormatter }}` | `{{ timestamp \| timestampFormatter(relativeCompact: true) }}` | §19 |
 | `getDateString({ date, … })` | `getDateString({ messageCreatedAt, … })`; returns `null`, not `undefined`, when unrenderable | §19 |
 | `getDateStringForA11y({ date, … })` | `getCalendarDateStringForA11y({ messageCreatedAt, … })` — same behaviour under a new name | §19 |
-| poll `state.errors.x` as an English string | a `PollValidationError` — key your copy on `error.code`, fall back to `error.message` | §19 |
+| poll `state.errors.x` as an English string | a `PollComposerValidationError` — key your copy on `error.code`, fall back to `error.message` | §19 |
 
 ---
 

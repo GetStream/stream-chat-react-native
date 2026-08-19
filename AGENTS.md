@@ -297,7 +297,7 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   `components/Notifications/notificationTranslations.ts`, as a `Record<CoreNotificationType, …>` — so
   a new core identifier is a compile error until it is mapped. Never match on `notification.message`;
   that is untranslated English whose wording is not part of core's contract. Poll field errors are
-  keyed the same way, on `POLL_VALIDATION_CODE`.
+  keyed the same way, on `POLL_COMPOSER_VALIDATION_CODE`.
 - **`dayjs` must resolve to exactly one copy.** Its range here has to stay compatible with core's
   (`^1.11.13`) — an exact pin installs a second copy, `instanceof Dayjs` starts failing, and an
   integrator's `import 'dayjs/locale/de'` lands on an instance the SDK never formats with. Do not
