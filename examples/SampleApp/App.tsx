@@ -434,7 +434,6 @@ const DrawerNavigatorWrapper: React.FC<{
         getEncryptionKey={getEncryptionKey}
         i18nInstance={i18nInstance}
         isMessageAIGenerated={isMessageAIGenerated}
-        key={attempt}
         useNativeMultipartUpload
       >
         <StreamChatProvider>
