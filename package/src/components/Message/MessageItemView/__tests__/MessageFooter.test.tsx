@@ -15,8 +15,8 @@ import { Chat } from '../../../Chat/Chat';
 import { Message } from '../../Message';
 
 // The message footer shows the sender's name only in group channels (>2 members), not in 1:1 DMs.
-// After the members→isDirectChannel rewrite this is driven by `channel.state.isDirectChannel`
-// (memberCount === 2); this test guards that user-facing behavior.
+// After the members→memberCount rewrite this is derived from `channel.state.memberCount === 2`;
+// this test guards that user-facing behavior.
 describe('MessageFooter sender name (group vs DM)', () => {
   const me = generateUser({ id: 'me', name: 'Me' });
   const other = generateUser({ id: 'other', name: 'Other Person' });

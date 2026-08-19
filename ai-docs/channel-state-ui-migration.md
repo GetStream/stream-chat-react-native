@@ -80,11 +80,11 @@ Things that bit us / are easy to get wrong subscribing to the unified store:
 - **The convenience getters are non-reactive.** Reading `channel.state.members` / `.read` /
   `.typing` / `.watchers` directly gives a one-shot snapshot; it does **not** subscribe. Use
   `useStateStore(channel.state, selector)` for anything that must re-render.
-- **Drive unread badges off `read`, not `unreadCount`.** `channel.state.unreadCount` is the
-  _imperative_ counter (it's what `channel.countUnread()` returns and what scroll-gating reads); it's
-  a plain field, not part of `ChannelStateData`, so you can't `useStateStore`-select it. The LLC
-  keeps it in lockstep with the reactive `read[userId].unread_messages`, which _is_ in the store —
-  subscribe to `read` and read `read[userId]?.unread_messages` for a badge that re-renders.
+- **Drive unread badges off `read`, not `unreadCount`.** `channel.state.unreadCount` is a
+  non-reactive getter over the store (it's what `channel.countUnread()` returns and what
+  scroll-gating reads) — it derives from `read[ownUserId].unread_messages` rather than holding a
+  count of its own, so there is nothing separate to `useStateStore`-select. Subscribe to `read` and
+  read `read[userId]?.unread_messages` for a badge that re-renders.
 - **Reactivity needs a store write, not a nested mutation.** Subscribers update only when the write
   side reassigns / `partialNext`es (e.g. reassign `channel.data` or `channel.state.membership`).
   Mutating a nested field in place (`channel.data.name = …`, `channel.state.membership.user = …`)

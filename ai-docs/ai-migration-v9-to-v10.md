@@ -710,9 +710,8 @@ parameter shapes dropped the removed fields:
 ## 17. `stream-chat` must be v10
 
 v10 SDK code hard-depends on `stream-chat` v10 APIs (`channel.messagePaginator`,
-`channel.state.{typing,members,read,watcher}Store`, `*WithLocalUpdate`,
-`messageDeliveryReporter`, `channel.messageFocusSignal`, reactive
-`channel.state.unreadCount`). Ensure your app resolves `stream-chat` to `^10.x`.
+the unified reactive `channel.state`, `*WithLocalUpdate`, `messageDeliveryReporter`,
+`channel.messageFocusSignal`). Ensure your app resolves `stream-chat` to `^10.x`.
 
 > Repo note (for SDK maintainers, not integrators): the published `stream-chat`
 > range in `package/package.json` must be bumped to `^10.x`, and the local
