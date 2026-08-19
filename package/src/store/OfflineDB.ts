@@ -121,7 +121,8 @@ export class OfflineDB extends AbstractOfflineDB {
    *
    * `AbstractOfflineDB.init` catches whatever `initializeDB` throws and does not
    * re-throw it, so a caller has no way to see the reason. Recording it here on the
-   * way out gives `<Chat>` something to read back once `init` has settled.
+   * way out gives the caller something to read back once `init` has settled. Kept on
+   * the instance rather than a static so two clients cannot overwrite each other.
    */
   initializationError: SqliteClientError | undefined;
 

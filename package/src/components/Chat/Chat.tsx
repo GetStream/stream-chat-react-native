@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { Channel, OfflineDBState } from 'stream-chat';
@@ -6,6 +6,7 @@ import { Channel, OfflineDBState } from 'stream-chat';
 import { useClientMutedUsers } from './hooks';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
+import { useInitializeOfflineDb } from './hooks/useInitializeOfflineDb';
 import { useIsOnline } from './hooks/useIsOnline';
 
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
@@ -24,8 +25,6 @@ import init from '../../init';
 
 import { NativeHandlers } from '../../native';
 import { DEFAULT_MAX_SYNC_EVENTS_LIMIT } from '../../store/constants';
-import { OfflineDB } from '../../store/OfflineDB';
-import { SqliteClient, SqliteClientError } from '../../store/SqliteClient';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { installNativeMultipartAdapter } from '../../utils/installNativeMultipartAdapter';
@@ -237,15 +236,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const { ChatLoadingIndicator } = useComponentsContext();
 
   const [channel, setChannel] = useState<Channel>();
-  /**
-   * Why this mount could not open the offline database, or `undefined` if it did.
-   *
-   * Captured per attempt rather than observed from a longer-lived source: a value that
-   * outlives the attempt would be re-read during the first render after a re-mount and
-   * throw before that mount's own attempt could run, so an error boundary that
-   * re-mounts to retry would loop forever.
-   */
-  const [initializationError, setInitializationError] = useState<SqliteClientError>();
 
   // Setup translators
   const translators = useStreami18n(i18nInstance);
@@ -306,57 +296,12 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   const setActiveChannel = (newChannel?: Channel) => setChannel(newChannel);
 
-  const getEncryptionKeyRef = useRef(getEncryptionKey);
-  getEncryptionKeyRef.current = getEncryptionKey;
-  const isEncryptionEnabled = !!getEncryptionKey;
-
-  const initializeDatabase = useCallback(async () => {
-    if (!(userID && enableOfflineSupport)) {
-      return;
-    }
-
-    if (!client.offlineDb) {
-      const getKey = isEncryptionEnabled
-        ? () => getEncryptionKeyRef.current?.() ?? Promise.resolve(undefined)
-        : undefined;
-
-      // Confirm the database can be opened before attaching it: the client writes
-      // through `client.offlineDb` without checking that it initialized, so one we
-      // cannot open turns those writes into rejections (the channel list never
-      // loads). With nothing attached they take their online path.
-      if (getKey) {
-        SqliteClient.getEncryptionKey = getKey;
-        try {
-          await SqliteClient.preflightEncryption();
-        } catch (error) {
-          if (error instanceof SqliteClientError) {
-            // Surfaced by re-throwing during render; see below.
-            setInitializationError(error);
-            return;
-          }
-          throw error;
-        }
-      }
-
-      client.setOfflineDBApi(
-        new OfflineDB({ client, getEncryptionKey: getKey, maxSyncEventsLimit }),
-      );
-    }
-
-    const { offlineDb } = client;
-    if (offlineDb) {
-      await offlineDb.init(userID);
-      // `init` never re-throws, so the reason is read back off the instance, which
-      // recorded it on the way out.
-      setInitializationError(
-        offlineDb instanceof OfflineDB ? offlineDb.initializationError : undefined,
-      );
-    }
-  }, [userID, enableOfflineSupport, client, maxSyncEventsLimit, isEncryptionEnabled]);
-
-  useEffect(() => {
-    initializeDatabase();
-  }, [initializeDatabase]);
+  useInitializeOfflineDb({
+    client,
+    enabled: enableOfflineSupport,
+    options: { getEncryptionKey, maxSyncEventsLimit },
+    userID,
+  });
 
   useEffect(() => {
     if (!client) {
@@ -399,15 +344,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     mutedUsers,
     setActiveChannel,
   });
-
-  // Encryption is a security posture, not something to quietly downgrade. Rather than
-  // continuing without the encrypted cache the caller asked for, the failure is raised
-  // here so an error boundary above `<Chat>` can decide what to do - re-mount with
-  // `enableOfflineSupport={false}`, wipe the database and retry, or surface it to the
-  // user. Thrown from render because a boundary cannot catch an async rejection.
-  if (initializationError) {
-    throw initializationError;
-  }
 
   if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
