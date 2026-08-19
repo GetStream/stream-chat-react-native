@@ -521,7 +521,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const optimisticallyUpdatedNewMessages = useMemo<Set<string>>(() => new Set(), []);
 
   const channelId = channel?.id || '';
-  const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
+  const pollCreationEnabled =
+    !channel.pendingDisposal && !!channel?.id && channel?.getConfig()?.polls;
 
   const {
     loadChannelAroundMessage: loadChannelAroundMessageFn,
@@ -786,7 +787,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
   }, [enableOfflineSupport, client, shouldSyncChannel]);
 
-  // In case the channel is disconnected which may happen when channel is deleted,
+  // In case the channel is pending disposal, which may happen when the channel is deleted,
   // underlying js client throws an error. Following function ensures that Channel component
   // won't result in error in such a case.
   const getChannelConfigSafely = () => {

@@ -10,7 +10,7 @@ import { MarkReadFunctionOptions } from '../../Channel/Channel';
  * Marks the channel read through the client's `messageDeliveryReporter.throttledMarkRead` — the
  * canonical v10 read-reporting path, which the reporter throttles + coordinates — rather than calling
  * `channel.markRead()` behind our own throttle. It is a no-op when the channel is missing or
- * disconnected; when read events are disabled it resets the local unread count via `markReadLocally()`
+ * pending disposal; when read events are disabled it resets the local unread count via `markReadLocally()`
  * (dispatches `message.read_locally`) if the client opted into a local count; otherwise it reports the
  * read and resets the paginator's unread snapshot (unless `updateChannelUnreadState` is `false`) so the
  * "N new messages" banner + unread separator clear once caught up. The returned function is stabilized
@@ -19,7 +19,7 @@ import { MarkReadFunctionOptions } from '../../Channel/Channel';
 export const useMarkRead = (channel: Channel) => {
   const { client } = useChatContext();
 
-  // In case the channel is disconnected which may happen when channel is deleted,
+  // In case the channel is pending disposal, which may happen when the channel is deleted,
   // underlying js client throws an error. Following function ensures that we don't
   // result in an error in such a case.
   const getChannelConfigSafely = () => {
@@ -31,7 +31,7 @@ export const useMarkRead = (channel: Channel) => {
   };
 
   const markRead = useStableCallback((options?: MarkReadFunctionOptions) => {
-    if (!channel || channel?.disconnected) {
+    if (!channel || channel?.pendingDisposal) {
       return;
     }
 

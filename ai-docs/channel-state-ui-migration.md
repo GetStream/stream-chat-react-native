@@ -13,7 +13,8 @@
 `useStateStore(channel.state, selector)`, like `thread.state`. The per-concern handles
 (`readStore` / `typingStore` / `membersStore` / `watcherStore` / `ownCapabilitiesStore` /
 `mutedUsersStore`) were removed; the state is flat and gained new slices (`data`, `membership`,
-`muteStatus`, `initialized` / `offlineMode` / `disconnected`, `active`, `aiState`). AI-indicator
+`muteStatus`, `initialized` / `offlineMode` / `pendingDisposal` (the renamed `disconnected`, kept as
+a deprecated alias), `active`, `aiState`). AI-indicator
 state and its connection-loss resets are now LLC-owned.
 
 ## What RN changed on the UI side

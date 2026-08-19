@@ -23,7 +23,7 @@ const DEFAULTS: Record<string, unknown> = {
   data: undefined,
   initialized: true,
   offlineMode: false,
-  disconnected: false,
+  pendingDisposal: false,
   active: false,
 };
 
