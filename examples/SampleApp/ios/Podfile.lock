@@ -233,6 +233,7 @@ PODS:
     - Yoga
   - op-sqlite (17.1.2):
     - hermes-engine
+    - OpenSSL-Universal
     - RCTRequired
     - RCTTypeSafety
     - React-Core
@@ -253,6 +254,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - OpenSSL-Universal (3.6.2000)
   - PromisesObjC (2.4.1)
   - PromisesSwift (2.4.1):
     - PromisesObjC (= 2.4.1)
@@ -298,7 +300,7 @@ PODS:
     - React-utils
     - ReactNativeDependencies
     - Yoga
-  - React-Core-prebuilt (0.86.0):
+  - React-Core-prebuilt (0.86.2):
     - ReactNativeDependencies
   - React-Core/CoreModulesHeaders (0.86.2):
     - hermes-engine
@@ -2857,7 +2859,7 @@ PODS:
   - SDWebImageWebPCoder (0.15.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - stream-chat-react-native (9.7.2):
+  - stream-chat-react-native (9.7.6):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3057,6 +3059,7 @@ SPEC REPOS:
     - libdav1d
     - libwebp
     - nanopb
+    - OpenSSL-Universal
     - PromisesObjC
     - PromisesSwift
     - SDWebImage
@@ -3291,14 +3294,15 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 57270ccc2b77472d7e85c4cbe45972564eff78bb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 766ace00c6b10d8148408f329d10c4f051931850
-  hermes-engine: 188393eb43a0cce2dfbf912e6d22c7bb6469957d
+  hermes-engine: 3730f5b467f988fa954ded67cbea8a9ba32d854c
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   NitroModules: e0ac5f9a04e23cb2f378b51810ebc07ed63aeae9
   NitroSound: a18e2d59d0d60c291586e622ce4752c53da73086
-  op-sqlite: d8d5eae2bddb0b55d6f48cf7ac356b63d26cb4f0
+  op-sqlite: 6cf4cf717567180707bf372c894b27f9bce04a51
+  OpenSSL-Universal: ecee7b138fa75a74ecf00d7ffd248fb584739b9e
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   RCTDeprecation: bccb6545c26db881ecddfd83a3f9ea82aba1605f
@@ -3309,7 +3313,7 @@ SPEC CHECKSUMS:
   React: 4b2532a459d15e1adf6c22d3e399e5c85a94220f
   React-callinvoker: 0b8ce4057e02a0bd15cf0532596e8eb8c0392e92
   React-Core: 5af045531a540ba3f65f07de1e3f585ddfb27948
-  React-Core-prebuilt: 13924a267683b3d6fa4bde9c80380becf83a9c5c
+  React-Core-prebuilt: 405cf395d66cf694faf9aed3483a21b5515cec85
   React-CoreModules: 99b194a721de84ccfc1be149a0de52647dc38c0e
   React-cxxreact: b7e8e254074fd8111d147202b391ccf7816946a6
   React-debug: 3281bfefe5ece9a9d8b28bec3f871db229f9d8d8
@@ -3399,7 +3403,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  stream-chat-react-native: e97f6d3ed0c2828b20610ffc0023ad7f9c90738d
+  stream-chat-react-native: ea3499916019c499ecb745be61e7ecf82f0fd999
   Teleport: c56b30b08bd20d10da1efb0f21c6bc50c269ee6a
   Yoga: 542a30dafe5b0f5f1d9f185ea7b2a3811ac54801
 

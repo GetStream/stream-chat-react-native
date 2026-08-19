@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { Channel, OfflineDBState } from 'stream-chat';
@@ -25,6 +25,7 @@ import init from '../../init';
 import { NativeHandlers } from '../../native';
 import { DEFAULT_MAX_SYNC_EVENTS_LIMIT } from '../../store/constants';
 import { OfflineDB } from '../../store/OfflineDB';
+import { SqliteClient, SqliteClientError } from '../../store/SqliteClient';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { installNativeMultipartAdapter } from '../../utils/installNativeMultipartAdapter';
@@ -43,8 +44,62 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     closeConnectionOnBackground?: boolean;
     /**
      * Enables offline storage and loading for chat data.
+     *
+     * **Wrap `<Chat>` in an error boundary.** If the database on disk cannot be read -
+     * corruption, or an encrypted database left behind after {@link getEncryptionKey}
+     * was removed - `<Chat>` throws a {@link SqliteClientError} with code
+     * `OFFLINE_DB_UNREADABLE` from render. The SDK never deletes it for you; recover
+     * with `SqliteClient.deleteDatabase()` and re-mount, which rebuilds from the
+     * server. Prior to this the same situation left offline support uninitialized and
+     * `<Chat>` rendering `ChatLoadingIndicator` indefinitely, with no way to react.
      */
     enableOfflineSupport?: boolean;
+    /**
+     * Encrypts the offline database at rest with SQLCipher, using the key this
+     * resolves to. Only relevant when `enableOfflineSupport` is enabled. Leaving it
+     * unset keeps the offline database unencrypted, which is the default.
+     *
+     * Requires a native build of `@op-engineering/op-sqlite` that includes SQLCipher.
+     * Add the following to your application's `package.json` and rebuild the native
+     * app - without the flag the key is accepted and then silently ignored:
+     *
+     * ```json
+     * { "op-sqlite": { "sqlcipher": true } }
+     * ```
+     *
+     * **Wrap `<Chat>` in an error boundary.** If the database cannot be opened with
+     * the encryption you asked for, `<Chat>` throws a {@link SqliteClientError}
+     * from render instead of continuing without it. The SDK deliberately takes no
+     * recovery action of its own - it never deletes data, and never silently falls
+     * back to an unencrypted or absent cache. Discriminate on `code`:
+     *
+     * - `OFFLINE_DB_UNREADABLE` - the file exists but this key cannot read it (the
+     *   key changed, or the database predates encryption). **Recommended recovery:
+     *   `SqliteClient.deleteDatabase()`, then re-mount `<Chat>`.** The contents are a
+     *   cache and are refetched from the server; the exception is actions queued while
+     *   offline, which are lost - prompt the user first if that matters to you.
+     * - `ENCRYPTION_KEY_UNAVAILABLE` - the key could not be read (a locked keychain, a
+     *   launch before first unlock). The database is untouched. **Recommended
+     *   recovery: re-mount to retry** once the key is readable - for example when the
+     *   app next returns to the foreground.
+     * - `SQLCIPHER_BUILD_MISSING` - the native build has no SQLCipher, so the key
+     *   would be ignored and the database written in plaintext. Not recoverable at
+     *   runtime; it needs the build flag above and a new binary. **Recommended
+     *   recovery: re-mount with `enableOfflineSupport={false}`** so nothing is
+     *   persisted unencrypted.
+     *
+     * `examples/SampleApp` implements all three.
+     *
+     * The key must be **stable for the lifetime of the database file**. There is no
+     * rekey path, so a key that changes costs one `OFFLINE_DB_UNREADABLE` and a
+     * rebuild. To rotate without paying that, rotate a key-encryption key and keep the
+     * database key it protects unchanged (envelope encryption).
+     *
+     * Switching encryption on, or back off, leaves a database from the other mode on
+     * disk and so raises `OFFLINE_DB_UNREADABLE` once in each direction. Deleting it
+     * from your boundary is all that is needed.
+     */
+    getEncryptionKey?: () => Promise<string | undefined>;
     /**
      * Optional positive cap on the number of events a single `/sync` response may
      * contain before the offline sync manager skips replaying those events into
@@ -172,6 +227,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     client,
     closeConnectionOnBackground = true,
     enableOfflineSupport = false,
+    getEncryptionKey,
     i18nInstance,
     isMessageAIGenerated,
     maxSyncEventsLimit = DEFAULT_MAX_SYNC_EVENTS_LIMIT,
@@ -181,6 +237,15 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const { ChatLoadingIndicator } = useComponentsContext();
 
   const [channel, setChannel] = useState<Channel>();
+  /**
+   * Why this mount could not open the offline database, or `undefined` if it did.
+   *
+   * Captured per attempt rather than observed from a longer-lived source: a value that
+   * outlives the attempt would be re-read during the first render after a re-mount and
+   * throw before that mount's own attempt could run, so an error boundary that
+   * re-mounts to retry would loop forever.
+   */
+  const [initializationError, setInitializationError] = useState<SqliteClientError>();
 
   // Setup translators
   const translators = useStreami18n(i18nInstance);
@@ -241,23 +306,57 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   const setActiveChannel = (newChannel?: Channel) => setChannel(newChannel);
 
-  useEffect(() => {
+  const getEncryptionKeyRef = useRef(getEncryptionKey);
+  getEncryptionKeyRef.current = getEncryptionKey;
+  const isEncryptionEnabled = !!getEncryptionKey;
+
+  const initializeDatabase = useCallback(async () => {
     if (!(userID && enableOfflineSupport)) {
       return;
     }
 
-    const initializeDatabase = async () => {
-      if (!client.offlineDb) {
-        client.setOfflineDBApi(new OfflineDB({ client, maxSyncEventsLimit }));
+    if (!client.offlineDb) {
+      const getKey = isEncryptionEnabled
+        ? () => getEncryptionKeyRef.current?.() ?? Promise.resolve(undefined)
+        : undefined;
+
+      // Confirm the database can be opened before attaching it: the client writes
+      // through `client.offlineDb` without checking that it initialized, so one we
+      // cannot open turns those writes into rejections (the channel list never
+      // loads). With nothing attached they take their online path.
+      if (getKey) {
+        SqliteClient.getEncryptionKey = getKey;
+        try {
+          await SqliteClient.preflightEncryption();
+        } catch (error) {
+          if (error instanceof SqliteClientError) {
+            // Surfaced by re-throwing during render; see below.
+            setInitializationError(error);
+            return;
+          }
+          throw error;
+        }
       }
 
-      if (client.offlineDb) {
-        await client.offlineDb.init(userID);
-      }
-    };
+      client.setOfflineDBApi(
+        new OfflineDB({ client, getEncryptionKey: getKey, maxSyncEventsLimit }),
+      );
+    }
 
+    const { offlineDb } = client;
+    if (offlineDb) {
+      await offlineDb.init(userID);
+      // `init` never re-throws, so the reason is read back off the instance, which
+      // recorded it on the way out.
+      setInitializationError(
+        offlineDb instanceof OfflineDB ? offlineDb.initializationError : undefined,
+      );
+    }
+  }, [userID, enableOfflineSupport, client, maxSyncEventsLimit, isEncryptionEnabled]);
+
+  useEffect(() => {
     initializeDatabase();
-  }, [userID, enableOfflineSupport, client, maxSyncEventsLimit]);
+  }, [initializeDatabase]);
 
   useEffect(() => {
     if (!client) {
@@ -300,6 +399,15 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     mutedUsers,
     setActiveChannel,
   });
+
+  // Encryption is a security posture, not something to quietly downgrade. Rather than
+  // continuing without the encrypted cache the caller asked for, the failure is raised
+  // here so an error boundary above `<Chat>` can decide what to do - re-mount with
+  // `enableOfflineSupport={false}`, wipe the database and retry, or surface it to the
+  // user. Thrown from render because a boundary cannot catch an async rejection.
+  if (initializationError) {
+    throw initializationError;
+  }
 
   if (userID && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised

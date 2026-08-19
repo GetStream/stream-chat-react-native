@@ -20,6 +20,8 @@ import {
   OverlayProvider,
   setupCommandUIMiddlewares,
   SqliteClient,
+  SqliteClientError,
+  type SqliteClientErrorCode,
   Streami18n,
   ThemeProvider,
   useOverlayContext,
@@ -330,24 +332,118 @@ const DrawerNavigator: React.FC = () => (
 
 const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
+/**
+ * Demonstrates encryption-at-rest for the offline database. Paired with
+ * `{ "op-sqlite": { "sqlcipher": true } }` in this app's package.json, which is what
+ * actually builds op-sqlite against SQLCipher - without it the SDK refuses to open
+ * the database rather than write it in plaintext.
+ *
+ * A hardcoded constant is fine for a sample and wrong for a real app: it ships the
+ * key inside the binary, so anyone who can read the database can also read the key.
+ * A real integration reads the key from the iOS Keychain / Android Keystore, and
+ * rotates a key-encryption key around a stable database key (envelope encryption) so
+ * rotation does not force the cache to be wiped.
+ *
+ * What this does illustrate is the invariant that matters: the same key comes back on
+ * every launch. A key that changes wipes the offline cache and rebuilds it from the
+ * server.
+ */
+const getEncryptionKey = () => Promise.resolve('sample-app-offline-db-key');
+
+/**
+ * `<Chat>` throws a {@link SqliteClientError} from render when it cannot open the
+ * offline database with the encryption that was asked for. It never downgrades to
+ * running unencrypted on its own - recovery is the application's decision.
+ *
+ * This boundary shows the two sensible responses:
+ *
+ * - `OFFLINE_DB_UNREADABLE` - the file exists but this key cannot read it (the key
+ *   changed, or it predates encryption). The data is a cache, so delete it and retry;
+ *   the only real loss is actions that were queued while offline. A real app may want
+ *   to confirm with the user first.
+ * - `SQLCIPHER_BUILD_MISSING` / `ENCRYPTION_KEY_UNAVAILABLE` - there is no usable key,
+ *   so a new database would be written in plaintext. Run online-only instead: no local
+ *   cache means nothing unencrypted on disk.
+ */
+type BoundaryProps = React.PropsWithChildren<{
+  onGiveUp: () => void;
+  onRetry: () => void;
+}>;
+
+type BoundaryState = { code?: SqliteClientErrorCode };
+
+class OfflineEncryptionBoundary extends React.Component<BoundaryProps, BoundaryState> {
+  state: BoundaryState = {};
+
+  // Must return state, and render() must stop rendering the failing subtree. Returning
+  // null here would re-render the same children, they would throw again, and React
+  // would give up and unmount the whole app.
+  static getDerivedStateFromError(error: unknown) {
+    const code = (error as SqliteClientError | undefined)?.code;
+    if (!code) {
+      throw error;
+    }
+    return { code };
+  }
+
+  componentDidCatch(error: unknown) {
+    // Discriminated on `code` rather than `instanceof`: a string comparison cannot be
+    // defeated by two copies of the class ending up in one bundle.
+    const code = (error as SqliteClientError | undefined)?.code;
+
+    if (code === 'OFFLINE_DB_UNREADABLE') {
+      // The recommended recovery: the contents are a cache, so drop the database and
+      // let it rebuild. Only actions queued while offline are lost.
+      try {
+        SqliteClient.deleteDatabase();
+      } catch (deleteError) {
+        console.warn('[SampleApp] could not delete the offline database', deleteError);
+      }
+      this.props.onRetry();
+      return;
+    }
+
+    // No usable key, so a new database would be plaintext. Run online-only instead.
+    console.warn(`[SampleApp] offline encryption unavailable (${code}); going online-only`);
+    this.props.onGiveUp();
+  }
+
+  render() {
+    return this.state.code ? null : this.props.children;
+  }
+}
+
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
   i18nInstance: Streami18n;
 }> = ({ chatClient, i18nInstance }) => {
+  // `attempt` re-mounts <Chat> after the offline database has been deleted;
+  // `offlineSupport` is switched off once there is no usable encryption key.
+  const [attempt, setAttempt] = useState(0);
+  const [offlineSupport, setOfflineSupport] = useState(true);
+
   return (
-    <Chat
-      client={chatClient}
-      enableOfflineSupport
-      isMessageAIGenerated={isMessageAIGenerated}
-      i18nInstance={i18nInstance}
-      useNativeMultipartUpload
+    <OfflineEncryptionBoundary
+      key={`${attempt}-${offlineSupport}`}
+      onGiveUp={() => setOfflineSupport(false)}
+      onRetry={() => setAttempt((value) => value + 1)}
     >
-      <StreamChatProvider>
-        <UserSearchProvider>
-          <DrawerNavigator />
-        </UserSearchProvider>
-      </StreamChatProvider>
-    </Chat>
+      <Chat
+        client={chatClient}
+        enableOfflineSupport={offlineSupport}
+        getEncryptionKey={getEncryptionKey}
+        i18nInstance={i18nInstance}
+        isMessageAIGenerated={isMessageAIGenerated}
+        key={attempt}
+        useNativeMultipartUpload
+      >
+        <StreamChatProvider>
+          <UserSearchProvider>
+            <DrawerNavigator />
+          </UserSearchProvider>
+        </StreamChatProvider>
+      </Chat>
+    </OfflineEncryptionBoundary>
   );
 };
 
