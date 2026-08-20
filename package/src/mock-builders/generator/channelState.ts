@@ -17,6 +17,7 @@ const DEFAULTS: Record<string, unknown> = {
   typing: {},
   watchers: {},
   watcherCount: 0,
+  watching: true,
   ownCapabilities: [],
   membership: {},
   muteStatus: { createdAt: null, expiresAt: null, muted: false },

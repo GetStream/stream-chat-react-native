@@ -14,7 +14,7 @@
 (`readStore` / `typingStore` / `membersStore` / `watcherStore` / `ownCapabilitiesStore` /
 `mutedUsersStore`) were removed; the state is flat and gained new slices (`data`, `membership`,
 git`muteStatus`, `initialized` / `offlineMode` / `pendingDisposal` (replaces `disconnected`, which is
-removed), `active`, `aiState`). AI-indicator
+removed), `active`, `aiState`, `watching`). AI-indicator
 state and its connection-loss resets are now LLC-owned.
 
 ## What RN changed on the UI side

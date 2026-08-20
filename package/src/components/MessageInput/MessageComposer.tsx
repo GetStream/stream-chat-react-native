@@ -10,7 +10,7 @@ import Animated, {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type MembersState, type UserResponse, type WatcherState } from 'stream-chat';
+import { type ChannelWatchState, type MembersState, type UserResponse } from 'stream-chat';
 
 import { MicPositionProvider } from './contexts/MicPositionContext';
 
@@ -140,7 +140,7 @@ const useStyles = () => {
 type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<ChannelContextValue, 'channel'> & {
     members: MembersState['members'];
-    watchers: WatcherState['watchers'];
+    watchers: ChannelWatchState['watchers'];
   } & Pick<
     MessageInputContextValue,
     | 'audioRecorderManager'
@@ -178,7 +178,7 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
 });
 
 const membersSelector = (state: MembersState) => ({ members: state.members });
-const watchersSelector = (state: WatcherState) => ({ watchers: state.watchers });
+const watchersSelector = (state: ChannelWatchState) => ({ watchers: state.watchers });
 
 const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const {

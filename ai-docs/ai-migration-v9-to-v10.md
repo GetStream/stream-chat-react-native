@@ -155,6 +155,7 @@ means changed. Details in the linked section.
 | `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
 | in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
 | `channel.disconnected` | `channel.pendingDisposal` (hard rename — no alias) | §K.8 |
+| `WatcherState` type | `ChannelWatchState` (now also carries `watching`) | §K.3 |
 | custom translations keyed on v9 English text (`t('Send a message')`, `'Edited'`, …) | rename to dotted keys (`autoCompleteInput.placeholder`, `message.edited.text`, …); type as `TranslationDictionary` — old keys **silently** fall back to English | §L.1 |
 
 ---
@@ -961,6 +962,7 @@ The `MutedUsersState` type and the `channel.state.mutedUsersStore` handle are re
 | `membership` | `ChannelMemberResponse` | The current user's own membership (role, `pinned_at`, `archived_at`). |
 | `muteStatus` | `{ muted: boolean; createdAt: Date \| null; expiresAt: Date \| null }` | Is **this channel** muted for the current user — mirrors `client.mutedChannels`. `channel.muteStatus()` (imperative) is unchanged. |
 | `initialized` / `offlineMode` / `pendingDisposal` | `boolean` | Lifecycle flags, now store-backed. `channel.initialized` etc. are transparent getters over these. `pendingDisposal` replaces `disconnected` — see §K.8. |
+| `watching` | `boolean` | Whether this client currently holds a server-side watch, i.e. whether channel events are flowing. Set when a `watch: true` query succeeds, cleared by `stopWatching()`, teardown, and **any WS connection loss** (the server keys watches by connection ID, so a reconnect needs a re-query). Also makes `channel.watch()`'s silent downgrade — it drops to a non-watching query when there is no connection ID — observable. Read via `channel.watching` or `useStateStore(channel.state, (s) => ({ watching: s.watching }))`. |
 
 ```tsx
 // e.g. react to a channel rename
