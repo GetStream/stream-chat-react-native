@@ -10,7 +10,7 @@ export type InitializeOfflineDbOptions = {
   /**
    * Encrypts the offline database at rest with SQLCipher, using the key this resolves
    * to. Leaving it unset opens the database unencrypted, which is the default. See
-   * `ChatProps.getEncryptionKey` for the build flag it requires, the stability
+   * `ChatProps.getOfflineDbEncryptionKey` for the build flag it requires, the stability
    * requirement, and how failures are surfaced.
    */
   getEncryptionKey?: () => Promise<string | undefined>;

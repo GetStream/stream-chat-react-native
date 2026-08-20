@@ -432,19 +432,23 @@ describe('Chat offline DB encryption', () => {
     expect(SqliteClient.getEncryptionKey).toBeUndefined();
   });
 
-  it('forwards getEncryptionKey to the sqlite client', async () => {
+  it('forwards getOfflineDbEncryptionKey to the sqlite client', async () => {
     const chatClientWithUser = await createClient();
-    const getEncryptionKey = jest.fn().mockResolvedValue('a-stable-key');
+    const getOfflineDbEncryptionKey = jest.fn().mockResolvedValue('a-stable-key');
 
     render(
-      <Chat client={chatClientWithUser} enableOfflineSupport getEncryptionKey={getEncryptionKey} />,
+      <Chat
+        client={chatClientWithUser}
+        enableOfflineSupport
+        getOfflineDbEncryptionKey={getOfflineDbEncryptionKey}
+      />,
     );
 
     await waitFor(() => expect(chatClientWithUser.offlineDb).toBeDefined());
-    await waitFor(() => expect(getEncryptionKey).toHaveBeenCalled());
+    await waitFor(() => expect(getOfflineDbEncryptionKey).toHaveBeenCalled());
   });
 
-  it('does not re-initialize when getEncryptionKey is a new function every render', async () => {
+  it('does not re-initialize when getOfflineDbEncryptionKey is a new function every render', async () => {
     const chatClientWithUser = await createClient();
     const resolveKey = jest.fn().mockResolvedValue('a-stable-key');
 
@@ -454,7 +458,7 @@ describe('Chat offline DB encryption', () => {
       <Chat
         client={chatClientWithUser}
         enableOfflineSupport
-        getEncryptionKey={() => resolveKey()}
+        getOfflineDbEncryptionKey={() => resolveKey()}
       />,
     );
 
@@ -465,14 +469,14 @@ describe('Chat offline DB encryption', () => {
       <Chat
         client={chatClientWithUser}
         enableOfflineSupport
-        getEncryptionKey={() => resolveKey()}
+        getOfflineDbEncryptionKey={() => resolveKey()}
       />,
     );
     rerender(
       <Chat
         client={chatClientWithUser}
         enableOfflineSupport
-        getEncryptionKey={() => resolveKey()}
+        getOfflineDbEncryptionKey={() => resolveKey()}
       />,
     );
 
@@ -495,7 +499,7 @@ describe('Chat offline DB encryption', () => {
 
     const { getByTestId } = render(
       <Boundary onCatch={onCatch}>
-        <Chat client={chatClientWithUser} enableOfflineSupport getEncryptionKey={getKey}>
+        <Chat client={chatClientWithUser} enableOfflineSupport getOfflineDbEncryptionKey={getKey}>
           <View testID='children' />
         </Chat>
       </Boundary>,
@@ -520,7 +524,7 @@ describe('Chat offline DB encryption', () => {
         <Chat
           client={chatClientWithUser}
           enableOfflineSupport
-          getEncryptionKey={() => Promise.resolve('a-stable-key')}
+          getOfflineDbEncryptionKey={() => Promise.resolve('a-stable-key')}
         />
       </Boundary>,
     );
@@ -548,7 +552,7 @@ describe('Chat offline DB encryption', () => {
         <Chat
           client={chatClientWithUser}
           enableOfflineSupport
-          getEncryptionKey={() => Promise.resolve('a-stable-key')}
+          getOfflineDbEncryptionKey={() => Promise.resolve('a-stable-key')}
         />
       </Boundary>,
     );
@@ -571,7 +575,7 @@ describe('Chat offline DB encryption', () => {
         <Chat
           client={chatClientWithUser}
           enableOfflineSupport
-          getEncryptionKey={() => Promise.resolve(undefined)}
+          getOfflineDbEncryptionKey={() => Promise.resolve(undefined)}
         />
       </Boundary>,
     );
@@ -594,7 +598,7 @@ describe('Chat offline DB encryption', () => {
         <Chat
           client={chatClientWithUser}
           enableOfflineSupport
-          getEncryptionKey={() => Promise.resolve('a-stable-key')}
+          getOfflineDbEncryptionKey={() => Promise.resolve('a-stable-key')}
         >
           <View testID='children' />
         </Chat>

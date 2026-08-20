@@ -61,8 +61,9 @@ export class SqliteClient {
   /**
    * Supplies the SQLCipher key the offline database is opened with; `undefined`
    * opens it unencrypted, which is the default. The key must be stable for the
-   * lifetime of the database file - there is no rekey path, so a database it cannot
-   * decrypt is wiped and rebuilt from the server.
+   * lifetime of the database file - there is no rekey path, so a database this key
+   * cannot read raises `OFFLINE_DB_UNREADABLE` on the first page read. The file is
+   * left untouched; recovery is `SqliteClient.deleteDatabase()` and a re-mount.
    */
   static getEncryptionKey: (() => Promise<string | undefined>) | undefined;
 
@@ -138,16 +139,17 @@ export class SqliteClient {
     if (sqlite === undefined) {
       throw new SqliteClientError(
         'SQLCIPHER_BUILD_MISSING',
-        'getEncryptionKey was provided but "@op-engineering/op-sqlite" is not installed.',
+        'An offline database encryption key was provided but "@op-engineering/op-sqlite" ' +
+          'is not installed.',
       );
     }
     if (typeof sqlite.isSQLCipher !== 'function' || !sqlite.isSQLCipher()) {
       throw new SqliteClientError(
         'SQLCIPHER_BUILD_MISSING',
-        'getEncryptionKey was provided but @op-engineering/op-sqlite was not built with ' +
-          'SQLCipher, so the key would be silently ignored and the offline database ' +
-          'written in plaintext. Add { "op-sqlite": { "sqlcipher": true } } to your ' +
-          "application's package.json and rebuild, or remove getEncryptionKey.",
+        'An offline database encryption key was provided but @op-engineering/op-sqlite was ' +
+          'not built with SQLCipher, so the key would be silently ignored and the offline ' +
+          'database written in plaintext. Add { "op-sqlite": { "sqlcipher": true } } to your ' +
+          "application's package.json and rebuild, or stop providing a key.",
       );
     }
 
@@ -158,7 +160,7 @@ export class SqliteClient {
     } catch (error) {
       throw new SqliteClientError(
         'ENCRYPTION_KEY_UNAVAILABLE',
-        'getEncryptionKey threw, so the offline database cannot be opened.',
+        'The offline database encryption key getter threw, so the database cannot be opened.',
         { cause: error },
       );
     }
@@ -168,7 +170,8 @@ export class SqliteClient {
     if (!encryptionKey) {
       throw new SqliteClientError(
         'ENCRYPTION_KEY_UNAVAILABLE',
-        'getEncryptionKey resolved without a key, so the offline database cannot be opened.',
+        'The offline database encryption key getter resolved without a key, so the database ' +
+          'cannot be opened.',
       );
     }
 

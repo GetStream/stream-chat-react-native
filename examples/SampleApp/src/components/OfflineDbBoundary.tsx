@@ -19,8 +19,8 @@ import {
  *
  * The `onGiveUp` path covers the codes that mean "no usable encryption key"
  * (`SQLCIPHER_BUILD_MISSING`, `ENCRYPTION_KEY_UNAVAILABLE`). Those only occur when
- * `<Chat>` is given a `getEncryptionKey` prop, which this sample does not do - a new
- * database would then be written in plaintext, so running online-only is the safe
+ * `<Chat>` is given a `getOfflineDbEncryptionKey` prop, which this sample does not do -
+ * a new database would then be written in plaintext, so running online-only is the safe
  * response.
  */
 type BoundaryProps = React.PropsWithChildren<{
@@ -37,19 +37,19 @@ export class OfflineDbBoundary extends React.Component<BoundaryProps, BoundarySt
   // null here would re-render the same children, they would throw again, and React
   // would give up and unmount the whole app.
   static getDerivedStateFromError(error: unknown) {
-    const code = (error as SqliteClientError | undefined)?.code;
-    if (!code) {
+    if (!(error instanceof SqliteClientError)) {
+      // Not one of ours - re-throw so it reaches whatever boundary owns it.
       throw error;
     }
-    return { code };
+    return { code: error.code };
   }
 
   componentDidCatch(error: unknown) {
-    // Discriminated on `code` rather than `instanceof`: a string comparison cannot be
-    // defeated by two copies of the class ending up in one bundle.
-    const code = (error as SqliteClientError | undefined)?.code;
+    if (!(error instanceof SqliteClientError)) {
+      return;
+    }
 
-    if (code === 'OFFLINE_DB_UNREADABLE') {
+    if (error.code === 'OFFLINE_DB_UNREADABLE') {
       // The recommended recovery: the contents are a cache, so drop the database and
       // let it rebuild. Only actions queued while offline are lost.
       try {
@@ -62,7 +62,7 @@ export class OfflineDbBoundary extends React.Component<BoundaryProps, BoundarySt
     }
 
     // No usable key, so a new database would be plaintext. Run online-only instead.
-    console.warn(`[SampleApp] offline encryption unavailable (${code}); going online-only`);
+    console.warn(`[SampleApp] offline encryption unavailable (${error.code}); going online-only`);
     this.props.onGiveUp();
   }
 

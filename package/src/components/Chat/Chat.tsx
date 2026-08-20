@@ -43,14 +43,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     closeConnectionOnBackground?: boolean;
     /**
      * Enables offline storage and loading for chat data.
-     *
-     * **Wrap `<Chat>` in an error boundary.** If the database on disk cannot be read -
-     * corruption, or an encrypted database left behind after {@link getEncryptionKey}
-     * was removed - `<Chat>` throws a {@link SqliteClientError} with code
-     * `OFFLINE_DB_UNREADABLE` from render. The SDK never deletes it for you; recover
-     * with `SqliteClient.deleteDatabase()` and re-mount, which rebuilds from the
-     * server. Prior to this the same situation left offline support uninitialized and
-     * `<Chat>` rendering `ChatLoadingIndicator` indefinitely, with no way to react.
      */
     enableOfflineSupport?: boolean;
     /**
@@ -87,8 +79,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      *   recovery: re-mount with `enableOfflineSupport={false}`** so nothing is
      *   persisted unencrypted.
      *
-     * `examples/SampleApp` implements all three.
-     *
      * The key must be **stable for the lifetime of the database file**. There is no
      * rekey path, so a key that changes costs one `OFFLINE_DB_UNREADABLE` and a
      * rebuild. To rotate without paying that, rotate a key-encryption key and keep the
@@ -98,7 +88,7 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * disk and so raises `OFFLINE_DB_UNREADABLE` once in each direction. Deleting it
      * from your boundary is all that is needed.
      */
-    getEncryptionKey?: () => Promise<string | undefined>;
+    getOfflineDbEncryptionKey?: () => Promise<string | undefined>;
     /**
      * Optional positive cap on the number of events a single `/sync` response may
      * contain before the offline sync manager skips replaying those events into
@@ -226,7 +216,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     client,
     closeConnectionOnBackground = true,
     enableOfflineSupport = false,
-    getEncryptionKey,
+    getOfflineDbEncryptionKey,
     i18nInstance,
     isMessageAIGenerated,
     maxSyncEventsLimit = DEFAULT_MAX_SYNC_EVENTS_LIMIT,
@@ -299,7 +289,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   useInitializeOfflineDb({
     client,
     enabled: enableOfflineSupport,
-    options: { getEncryptionKey, maxSyncEventsLimit },
+    options: { getEncryptionKey: getOfflineDbEncryptionKey, maxSyncEventsLimit },
     userID,
   });
 
