@@ -2,11 +2,14 @@ import Database from 'better-sqlite3';
 
 import { tables } from '../store/schema';
 
+// Must match the name used by mock-builders/DB/mock.ts.
+const testDbName = `foobar-${process.env.JEST_WORKER_ID ?? '0'}.db`;
+
 export class BetterSqlite {
   db = null;
 
   static openDB = () => {
-    this.db = new Database('foobar.db');
+    this.db = new Database(testDbName);
   };
 
   static closeDB = () => {

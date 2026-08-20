@@ -32,7 +32,7 @@ export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
 
 export * from './state-store';
-export { SqliteClient } from './store/SqliteClient';
+export { SqliteClient, SqliteClientError, type SqliteClientErrorCode } from './store/SqliteClient';
 export { OfflineDB } from './store/OfflineDB';
 export { version } from './version.json';
 

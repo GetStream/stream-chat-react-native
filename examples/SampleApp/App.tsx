@@ -32,6 +32,7 @@ import { ChatScreen } from './src/screens/ChatScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
 import { MenuDrawer } from './src/components/MenuDrawer';
+import { OfflineDbBoundary } from './src/components/OfflineDbBoundary';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
@@ -269,26 +270,43 @@ const DrawerNavigatorWrapper: React.FC<{
   const streamChatTheme = useStreamChatTheme();
   const streami18n = new Streami18n();
 
+  // `attempt` re-mounts <Chat> after the offline database has been deleted;
+  // `offlineSupport` is switched off once there is no usable encryption key.
+  const [attempt, setAttempt] = useState(0);
+  const [offlineSupport, setOfflineSupport] = useState(true);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <OverlayProvider value={{ style: streamChatTheme }} i18nInstance={streami18n}>
-        <Chat
-          client={chatClient}
-          enableOfflineSupport
-          // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
-          ImageComponent={FastImage}
-          isMessageAIGenerated={isMessageAIGenerated}
-          i18nInstance={streami18n}
+        {/*
+          The boundary stops rendering its children once it has caught (see its render), and
+          nothing else clears that. Keying it on both recovery levers re-mounts it when one is
+          pulled - without that it would sit on a blank screen forever, having already deleted
+          the database.
+        */}
+        <OfflineDbBoundary
+          key={`${attempt}-${offlineSupport}`}
+          onGiveUp={() => setOfflineSupport(false)}
+          onRetry={() => setAttempt((value) => value + 1)}
         >
-          <StreamChatProvider>
-            <AppOverlayProvider>
-              <UserSearchProvider>
-                <DrawerNavigator />
-                <Toast />
-              </UserSearchProvider>
-            </AppOverlayProvider>
-          </StreamChatProvider>
-        </Chat>
+          <Chat
+            client={chatClient}
+            enableOfflineSupport={offlineSupport}
+            // @ts-expect-error - the `ImageComponent` prop is generic, meaning we can expect an error
+            ImageComponent={FastImage}
+            isMessageAIGenerated={isMessageAIGenerated}
+            i18nInstance={streami18n}
+          >
+            <StreamChatProvider>
+              <AppOverlayProvider>
+                <UserSearchProvider>
+                  <DrawerNavigator />
+                  <Toast />
+                </UserSearchProvider>
+              </AppOverlayProvider>
+            </StreamChatProvider>
+          </Chat>
+        </OfflineDbBoundary>
       </OverlayProvider>
     </GestureHandlerRootView>
   );
