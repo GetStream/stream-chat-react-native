@@ -233,7 +233,6 @@ PODS:
     - Yoga
   - op-sqlite (17.1.2):
     - hermes-engine
-    - OpenSSL-Universal
     - RCTRequired
     - RCTTypeSafety
     - React-Core
@@ -254,7 +253,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - OpenSSL-Universal (3.6.2000)
   - PromisesObjC (2.4.1)
   - PromisesSwift (2.4.1):
     - PromisesObjC (= 2.4.1)
@@ -3059,7 +3057,6 @@ SPEC REPOS:
     - libdav1d
     - libwebp
     - nanopb
-    - OpenSSL-Universal
     - PromisesObjC
     - PromisesSwift
     - SDWebImage
@@ -3301,8 +3298,7 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   NitroModules: e0ac5f9a04e23cb2f378b51810ebc07ed63aeae9
   NitroSound: a18e2d59d0d60c291586e622ce4752c53da73086
-  op-sqlite: 6cf4cf717567180707bf372c894b27f9bce04a51
-  OpenSSL-Universal: ecee7b138fa75a74ecf00d7ffd248fb584739b9e
+  op-sqlite: d8d5eae2bddb0b55d6f48cf7ac356b63d26cb4f0
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   RCTDeprecation: bccb6545c26db881ecddfd83a3f9ea82aba1605f

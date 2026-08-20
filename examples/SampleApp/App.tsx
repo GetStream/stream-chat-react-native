@@ -333,37 +333,21 @@ const DrawerNavigator: React.FC = () => (
 const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
 /**
- * Demonstrates encryption-at-rest for the offline database. Paired with
- * `{ "op-sqlite": { "sqlcipher": true } }` in this app's package.json, which is what
- * actually builds op-sqlite against SQLCipher - without it the SDK refuses to open
- * the database rather than write it in plaintext.
- *
- * A hardcoded constant is fine for a sample and wrong for a real app: it ships the
- * key inside the binary, so anyone who can read the database can also read the key.
- * A real integration reads the key from the iOS Keychain / Android Keystore, and
- * rotates a key-encryption key around a stable database key (envelope encryption) so
- * rotation does not force the cache to be wiped.
- *
- * What this does illustrate is the invariant that matters: the same key comes back on
- * every launch. A key that changes wipes the offline cache and rebuilds it from the
- * server.
- */
-const getEncryptionKey = () => Promise.resolve('sample-app-offline-db-key');
-
-/**
  * `<Chat>` throws a {@link SqliteClientError} from render when it cannot open the
- * offline database with the encryption that was asked for. It never downgrades to
- * running unencrypted on its own - recovery is the application's decision.
+ * offline database - most often `OFFLINE_DB_UNREADABLE`, meaning the file on disk
+ * cannot be read (corruption, or a database left behind from a different encryption
+ * mode). It never silently continues without the cache; recovery is the application's
+ * decision.
  *
- * This boundary shows the two sensible responses:
+ * The recommended recovery, shown here: the contents are a cache, so delete the
+ * database and let it rebuild from the server. The only real loss is actions that were
+ * queued while offline, so a real app may want to confirm with the user first.
  *
- * - `OFFLINE_DB_UNREADABLE` - the file exists but this key cannot read it (the key
- *   changed, or it predates encryption). The data is a cache, so delete it and retry;
- *   the only real loss is actions that were queued while offline. A real app may want
- *   to confirm with the user first.
- * - `SQLCIPHER_BUILD_MISSING` / `ENCRYPTION_KEY_UNAVAILABLE` - there is no usable key,
- *   so a new database would be written in plaintext. Run online-only instead: no local
- *   cache means nothing unencrypted on disk.
+ * The `onGiveUp` path covers the codes that mean "no usable encryption key"
+ * (`SQLCIPHER_BUILD_MISSING`, `ENCRYPTION_KEY_UNAVAILABLE`). Those only occur when
+ * `<Chat>` is given a `getEncryptionKey` prop, which this sample does not do - a new
+ * database would then be written in plaintext, so running online-only is the safe
+ * response.
  */
 type BoundaryProps = React.PropsWithChildren<{
   onGiveUp: () => void;
@@ -372,7 +356,7 @@ type BoundaryProps = React.PropsWithChildren<{
 
 type BoundaryState = { code?: SqliteClientErrorCode };
 
-class OfflineEncryptionBoundary extends React.Component<BoundaryProps, BoundaryState> {
+class OfflineDbBoundary extends React.Component<BoundaryProps, BoundaryState> {
   state: BoundaryState = {};
 
   // Must return state, and render() must stop rendering the failing subtree. Returning
@@ -422,8 +406,12 @@ const DrawerNavigatorWrapper: React.FC<{
   const [attempt, setAttempt] = useState(0);
   const [offlineSupport, setOfflineSupport] = useState(true);
 
+  // The boundary stops rendering its children once it has caught (see its render), and
+  // nothing else clears that. Keying it on both recovery levers re-mounts it when one is
+  // pulled - without that it would sit on a blank screen forever, having already deleted
+  // the database.
   return (
-    <OfflineEncryptionBoundary
+    <OfflineDbBoundary
       key={`${attempt}-${offlineSupport}`}
       onGiveUp={() => setOfflineSupport(false)}
       onRetry={() => setAttempt((value) => value + 1)}
@@ -431,7 +419,6 @@ const DrawerNavigatorWrapper: React.FC<{
       <Chat
         client={chatClient}
         enableOfflineSupport={offlineSupport}
-        getEncryptionKey={getEncryptionKey}
         i18nInstance={i18nInstance}
         isMessageAIGenerated={isMessageAIGenerated}
         useNativeMultipartUpload
@@ -442,7 +429,7 @@ const DrawerNavigatorWrapper: React.FC<{
           </UserSearchProvider>
         </StreamChatProvider>
       </Chat>
-    </OfflineEncryptionBoundary>
+    </OfflineDbBoundary>
   );
 };
 
