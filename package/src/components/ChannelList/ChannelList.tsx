@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
-import { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import { Channel, ChannelFilters, ChannelOptions, SortParamRequest } from 'stream-chat';
 
 import { ChannelListView } from './ChannelListView';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
@@ -61,7 +61,7 @@ export type ChannelListProps = Partial<
    * Object containing channel sort parameters
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available sorting fields
    * */
-  sort?: ChannelSort;
+  sort?: SortParamRequest[];
 
   /**
    * A custom request implementation for this list's `ChannelPaginator` (its `doRequest`). Use it to
@@ -77,7 +77,7 @@ export type ChannelListProps = Partial<
 
 const DEFAULT_FILTERS = {};
 const DEFAULT_OPTIONS = {};
-const DEFAULT_SORT: ChannelSort = [];
+const DEFAULT_SORT: SortParamRequest[] = [];
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.

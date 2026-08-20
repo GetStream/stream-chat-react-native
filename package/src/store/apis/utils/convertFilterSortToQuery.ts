@@ -1,4 +1,4 @@
-import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type { ChannelFilters, ChannelOptions, SortParamRequest } from 'stream-chat';
 
 type PredefinedFilterCacheKeyOptions = Pick<
   ChannelOptions,
@@ -26,7 +26,7 @@ export const convertFilterSortToQuery = ({
 }: {
   filters?: ChannelFilters;
   options?: ChannelOptions;
-  sort?: ChannelSort;
+  sort?: SortParamRequest[];
 }) => {
   const predefinedFilterOptions = getPredefinedFilterOptions(options);
 

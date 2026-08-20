@@ -1,12 +1,10 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { CommandVariants } from 'stream-chat';
-
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
+export const SuggestionCommandIcon = ({ name }: { name: string }) => {
   const {
     theme: { semantics },
   } = useTheme();
@@ -31,7 +29,7 @@ export const SuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
   }
 };
 
-export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandVariants }) => {
+export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: string }) => {
   const {
     theme: {
       messageComposer: {

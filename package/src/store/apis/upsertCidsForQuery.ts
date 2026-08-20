@@ -1,4 +1,4 @@
-import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type { ChannelFilters, ChannelOptions, SortParamRequest } from 'stream-chat';
 
 import { convertFilterSortToQuery } from './utils/convertFilterSortToQuery';
 
@@ -16,7 +16,7 @@ export const upsertCidsForQuery = async ({
   filters?: ChannelFilters;
   execute?: boolean;
   options?: ChannelOptions;
-  sort?: ChannelSort;
+  sort?: SortParamRequest[];
 }) => {
   // Update the database only if the query is provided.
   const cidsString = JSON.stringify(cids);

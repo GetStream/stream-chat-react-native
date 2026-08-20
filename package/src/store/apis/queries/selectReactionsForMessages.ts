@@ -1,4 +1,4 @@
-import type { ReactionFilters, ReactionSort } from 'stream-chat';
+import type { ReactionFilters, SortParamRequest } from 'stream-chat';
 
 import { tables } from '../../schema';
 import { SqliteClient } from '../../SqliteClient';
@@ -15,7 +15,7 @@ export const selectReactionsForMessages = async (
   messageIds: string[],
   limit: number | null = 25,
   filters?: Pick<ReactionFilters, 'type'>,
-  sort?: ReactionSort,
+  sort?: SortParamRequest[],
 ): Promise<TableRowJoinedUser<'reactions'>[]> => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
   const reactionsColumnNames = Object.keys(tables.reactions.columns)

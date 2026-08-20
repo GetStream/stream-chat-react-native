@@ -1,6 +1,6 @@
 import type {
   ChannelFilters,
-  ChannelSort,
+  SortParamRequest,
   ChannelState,
   FileReference,
   LocalAudioAttachment,
@@ -87,7 +87,7 @@ export type Reaction = {
 
 export type ChannelListEventListenerOptions = {
   filters?: ChannelFilters;
-  sort?: ChannelSort;
+  sort?: SortParamRequest[];
 };
 
 export type UnknownType = Record<string, unknown>;

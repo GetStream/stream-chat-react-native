@@ -1,4 +1,4 @@
-import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type { ChannelFilters, ChannelOptions, SortParamRequest } from 'stream-chat';
 
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../../SqliteClient';
@@ -22,7 +22,7 @@ export const selectChannelIdsForFilterSort = async ({
 }: {
   filters?: ChannelFilters;
   options?: ChannelOptions;
-  sort?: ChannelSort;
+  sort?: SortParamRequest[];
 }): Promise<string[] | null> => {
   const query = convertFilterSortToQuery({ filters, options, sort });
 

@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import type { Channel, ChannelData } from 'stream-chat';
+import type { Channel, ChannelInput } from 'stream-chat';
 
 import { generateChannelResponse } from '../../mock-builders/generator/channel';
 import { getTestClientWithUser } from '../../mock-builders/mock';
@@ -26,7 +26,7 @@ const createChannel = async (data: { image?: string; name?: string } = {}) => {
   return client.channel(
     'messaging',
     response.channel.id,
-    response.channel as unknown as ChannelData,
+    response.channel as unknown as ChannelInput,
   ) as Channel;
 };
 
