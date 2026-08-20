@@ -154,7 +154,7 @@ means changed. Details in the linked section.
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
 | `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
 | in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
-| `channel.disconnected` | `channel.pendingDisposal` (old name kept as a deprecated alias) | §K.8 |
+| `channel.disconnected` | `channel.pendingDisposal` (hard rename — no alias) | §K.8 |
 | custom translations keyed on v9 English text (`t('Send a message')`, `'Edited'`, …) | rename to dotted keys (`autoCompleteInput.placeholder`, `message.edited.text`, …); type as `TranslationDictionary` — old keys **silently** fall back to English | §L.1 |
 
 ---
@@ -960,7 +960,7 @@ The `MutedUsersState` type and the `channel.state.mutedUsersStore` handle are re
 | `data` | `Channel['data']` | The server channel data (name/image/frozen/hidden/blocked/config/…). Republished on `channel.updated` / `channel.hidden` / `channel.visible` and on query/watch. |
 | `membership` | `ChannelMemberResponse` | The current user's own membership (role, `pinned_at`, `archived_at`). |
 | `muteStatus` | `{ muted: boolean; createdAt: Date \| null; expiresAt: Date \| null }` | Is **this channel** muted for the current user — mirrors `client.mutedChannels`. `channel.muteStatus()` (imperative) is unchanged. |
-| `initialized` / `offlineMode` / `pendingDisposal` | `boolean` | Lifecycle flags, now store-backed. `channel.initialized` etc. are transparent getters over these. `pendingDisposal` is the renamed `disconnected` — see §K.8. |
+| `initialized` / `offlineMode` / `pendingDisposal` | `boolean` | Lifecycle flags, now store-backed. `channel.initialized` etc. are transparent getters over these. `pendingDisposal` replaces `disconnected` — see §K.8. |
 
 ```tsx
 // e.g. react to a channel rename
@@ -993,7 +993,7 @@ sticky across data updates that omit them, and `own_capabilities` stays `undefin
 known. (Same applies to `channel.state.membership` — reassign it rather than mutating a nested field
 if you need subscribers to update.)
 
-## K.8 `channel.disconnected` → `channel.pendingDisposal` (deprecated alias)
+## K.8 `channel.disconnected` → `channel.pendingDisposal` (breaking)
 
 The flag is one-way and terminal: `Channel._disconnect()` disposes the paginators, unregisters the
 subscriptions, and the client drops the channel from `activeChannels` right after — the instance is
@@ -1007,8 +1007,9 @@ if (channel.disconnected) return;
 if (channel.pendingDisposal) return;
 ```
 
-`channel.disconnected` still works as a `@deprecated` alias proxying the same slice (both read and
-write) and will be removed in the next major. If you subscribe to the slice, the **key** changed:
+`channel.disconnected` is **removed outright** — no alias. v10 is a major, so the rename lands in one
+step rather than carrying a deprecation through it. Rename every read and write; if you subscribe to
+the slice, the **key** changed too:
 `useStateStore(channel.state, (s) => ({ pendingDisposal: s.pendingDisposal }))`.
 
 ## K.6 Built-in hooks now source from `channel.state` (behavioral)
