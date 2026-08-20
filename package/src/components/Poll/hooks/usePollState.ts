@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 
 import {
-  PollOptionData,
   PollOptionResponseData,
   PollResponse,
   PollState,
@@ -83,7 +82,7 @@ export const usePollState = (): UsePollStateReturnType => {
 
   const addOption = useCallback(
     async (optionText: string) => {
-      await poll.createOption({ text: optionText } as PollOptionData);
+      await poll.createOption({ text: optionText });
     },
     [poll],
   );
