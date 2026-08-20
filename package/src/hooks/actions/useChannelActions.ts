@@ -296,7 +296,7 @@ export const useChannelActions = (channel: Channel) => {
 
     try {
       if (otherUser?.user?.id) {
-        await client.muteUser(otherUser.user.id);
+        await client.moderation.mute({ target_ids: [otherUser.user.id] });
         addNotification({
           message: t('message.userMuted.text', '{{ user }} has been muted', {
             user: otherUser.user.name || otherUser.user.id,
@@ -329,7 +329,7 @@ export const useChannelActions = (channel: Channel) => {
 
     try {
       if (otherUser?.user?.id) {
-        await client.unmuteUser(otherUser.user.id);
+        await client.moderation.unmute({ target_ids: [otherUser.user.id] });
         addNotification({
           message: t('message.userUnmuted.text', '{{ user }} has been unmuted', {
             user: otherUser.user.name || otherUser.user.id,

@@ -31,7 +31,7 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     }
 
     try {
-      await client.muteUser(user.id);
+      await client.moderation.mute({ target_ids: [user.id] });
       addNotification({
         message: t('message.userMuted.text', '{{ user }} has been muted', {
           user: user.name || user.id,
@@ -59,7 +59,7 @@ export const useUserActions = (user: UserResponse | undefined): UserActions => {
     }
 
     try {
-      await client.unmuteUser(user.id);
+      await client.moderation.unmute({ target_ids: [user.id] });
       addNotification({
         message: t('message.userUnmuted.text', '{{ user }} has been unmuted', {
           user: user.name || user.id,
