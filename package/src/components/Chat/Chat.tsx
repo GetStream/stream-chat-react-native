@@ -5,6 +5,7 @@ import { Channel, OfflineDBState } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
+import { useInitializeOfflineDb } from './hooks/useInitializeOfflineDb';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
 
@@ -22,7 +23,6 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { NativeHandlers } from '../../native';
-import { OfflineDB } from '../../store/OfflineDB';
 
 import type { Streami18n } from '../../utils/i18n/Streami18n';
 import { version } from '../../version.json';
@@ -42,6 +42,50 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * Enables offline storage and loading for chat data.
      */
     enableOfflineSupport?: boolean;
+    /**
+     * Encrypts the offline database at rest with SQLCipher, using the key this
+     * resolves to. Only relevant when `enableOfflineSupport` is enabled. Leaving it
+     * unset keeps the offline database unencrypted, which is the default.
+     *
+     * Requires a native build of `@op-engineering/op-sqlite` that includes SQLCipher.
+     * Add the following to your application's `package.json` and rebuild the native
+     * app - without the flag the key is accepted and then silently ignored:
+     *
+     * ```json
+     * { "op-sqlite": { "sqlcipher": true } }
+     * ```
+     *
+     * **Wrap `<Chat>` in an error boundary.** If the database cannot be opened with
+     * the encryption you asked for, `<Chat>` throws a {@link SqliteClientError}
+     * from render instead of continuing without it. The SDK deliberately takes no
+     * recovery action of its own - it never deletes data, and never silently falls
+     * back to an unencrypted or absent cache. Discriminate on `code`:
+     *
+     * - `OFFLINE_DB_UNREADABLE` - the file exists but this key cannot read it (the
+     *   key changed, or the database predates encryption). **Recommended recovery:
+     *   `SqliteClient.deleteDatabase()`, then re-mount `<Chat>`.** The contents are a
+     *   cache and are refetched from the server; the exception is actions queued while
+     *   offline, which are lost - prompt the user first if that matters to you.
+     * - `ENCRYPTION_KEY_UNAVAILABLE` - the key could not be read (a locked keychain, a
+     *   launch before first unlock). The database is untouched. **Recommended
+     *   recovery: re-mount to retry** once the key is readable - for example when the
+     *   app next returns to the foreground.
+     * - `SQLCIPHER_BUILD_MISSING` - the native build has no SQLCipher, so the key
+     *   would be ignored and the database written in plaintext. Not recoverable at
+     *   runtime; it needs the build flag above and a new binary. **Recommended
+     *   recovery: re-mount with `enableOfflineSupport={false}`** so nothing is
+     *   persisted unencrypted.
+     *
+     * The key must be **stable for the lifetime of the database file**. There is no
+     * rekey path, so a key that changes costs one `OFFLINE_DB_UNREADABLE` and a
+     * rebuild. To rotate without paying that, rotate a key-encryption key and keep the
+     * database key it protects unchanged (envelope encryption).
+     *
+     * Switching encryption on, or back off, leaves a database from the other mode on
+     * disk and so raises `OFFLINE_DB_UNREADABLE` once in each direction. Deleting it
+     * from your boundary is all that is needed.
+     */
+    getOfflineDbEncryptionKey?: () => Promise<string | undefined>;
     /**
      * Instance of Streami18n class should be provided to Chat component to enable internationalization.
      *
@@ -143,6 +187,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     client,
     closeConnectionOnBackground = true,
     enableOfflineSupport = false,
+    getOfflineDbEncryptionKey,
     i18nInstance,
     ImageComponent = Image,
     isMessageAIGenerated,
@@ -211,23 +256,12 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   const setActiveChannel = (newChannel?: Channel) => setChannel(newChannel);
 
-  useEffect(() => {
-    if (!(userID && enableOfflineSupport)) {
-      return;
-    }
-
-    const initializeDatabase = async () => {
-      if (!client.offlineDb) {
-        client.setOfflineDBApi(new OfflineDB({ client }));
-      }
-
-      if (client.offlineDb) {
-        await client.offlineDb.init(userID);
-      }
-    };
-
-    initializeDatabase();
-  }, [userID, enableOfflineSupport, client]);
+  useInitializeOfflineDb({
+    client,
+    enabled: enableOfflineSupport,
+    options: { getEncryptionKey: getOfflineDbEncryptionKey },
+    userID,
+  });
 
   useEffect(() => {
     if (!client) {
