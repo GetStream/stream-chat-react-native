@@ -1,3 +1,5 @@
+import { rmSync } from 'fs';
+
 import Sqlite3 from 'better-sqlite3';
 
 import type { PreparedQueries } from '../../store/types';
@@ -6,6 +8,11 @@ let db: Sqlite3.Database;
 const testDbName = `foobar-${process.env.JEST_WORKER_ID ?? '0'}.db`;
 
 export const sqliteMock = {
+  // better-sqlite3 has no SQLCipher, so an `encryptionKey` passed to open() is
+  // simply ignored. Reporting a SQLCipher build keeps the encrypted path
+  // exercisable in tests; whether the bytes on disk are actually encrypted can
+  // only be verified on a device. Spy on this to test the build-missing guard.
+  isSQLCipher: () => true,
   open: () => {
     db = new Sqlite3(testDbName);
     db.pragma('journal_mode = MEMORY');
@@ -17,6 +24,12 @@ export const sqliteMock = {
           message: '',
           status: 0,
         };
+      },
+      // Mirrors op-sqlite's delete(): closes the handle and unlinks the file, so a
+      // subsequent open() starts from an empty database.
+      delete: () => {
+        db.close();
+        rmSync(testDbName, { force: true });
       },
       execute: async (queryInput: string, params: unknown[]) => {
         const query = queryInput.trim().toLowerCase();
