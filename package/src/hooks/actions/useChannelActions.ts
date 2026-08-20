@@ -485,8 +485,9 @@ export const useChannelActions = (channel: Channel) => {
         } else {
           const { file } = doFileUploadRequest
             ? await doFileUploadRequest(image)
-            : // eslint-disable-next-line no-underscore-dangle -- LLC's positional RN image-upload helper
-              await client.uploadImage_(image.uri, image.name, image.type);
+            : await client.uploadImage({
+                file: { name: image.name, type: image.type, uri: image.uri },
+              });
           await channel.updatePartial({ set: { image: file } });
         }
         addNotification({

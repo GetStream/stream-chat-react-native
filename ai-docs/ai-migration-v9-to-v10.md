@@ -780,8 +780,11 @@ Highlights that hit integrator code:
   annotation so `client.on('x', cb)` narrows automatically.
 - **Method signatures collapsed to single objects** — `channel.sendReaction({ id, reaction, ... })`,
   `deleteReaction({ id, type })`, `sendMessage({ message, ... })`, `queryChannels(request)`;
-  `client.uploadImage_(uri, name, type)` for RN image upload (the object-form `uploadImage` is
-  web/server-shaped); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
+  `client.uploadImage({ file: { uri, name, type } })` for RN image upload — the `file` field takes
+  a browser `File`/`Blob` or an RN `{ uri, name, type }` descriptor, so the MIME type still has to
+  be explicit, it just lives on the descriptor now; the same shape applies to `client.uploadFile`
+  and `channel.uploadFile` / `channel.uploadImage` (which replace `channel.sendFile` /
+  `sendImage`); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
   `createAbortControllerForNextRequest` moved to `client.api`.
 - **Sort is `SortParamRequest[]`** — `{ last_message_at: -1 }` → `[{ field: 'last_message_at', direction: -1 }]`.
 

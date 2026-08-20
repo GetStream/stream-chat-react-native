@@ -8554,9 +8554,9 @@ __metadata:
   linkType: hard
 
 "dayjs@npm:^1.11.13, dayjs@npm:^1.8.15":
-  version: 1.11.22
-  resolution: "dayjs@npm:1.11.22"
-  checksum: 10c0/b9e5a807f21e323359ded3ae28e60d6fa0e760f021a1bb271becb336e11e42d796e00a4c1a690c6d233034a260ef9c72d94d30b02ffa721857d2144b750ca7c6
+  version: 1.11.23
+  resolution: "dayjs@npm:1.11.23"
+  checksum: 10c0/69ab04bf19c676e44ab50cc2fca223d265f3dafd107151ef3b0f3ad74d360c37caa602abe62f87cb25d90bd9f6bee003698af47df5b0dbf10a998b7b5f3bb3f1
   languageName: node
   linkType: hard
 
@@ -11087,7 +11087,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hasown@npm:^2.0.2, hasown@npm:^2.0.3, hasown@npm:^2.0.4":
+"hasown@npm:^2.0.2, hasown@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "hasown@npm:2.0.3"
+  dependencies:
+    function-bind: "npm:^1.1.2"
+  checksum: 10c0/f5eb28c3fd0d3e4facd821c1eeee3836c37b70ab0b0fc532e8a39976e18fef43652415dadc52f8c7a5ff6d5ac93b7bef128789aa6f90f4e9b9a9083dce74ab38
+  languageName: node
+  linkType: hard
+
+"hasown@npm:^2.0.4":
   version: 2.0.4
   resolution: "hasown@npm:2.0.4"
   dependencies:
@@ -11352,6 +11361,18 @@ __metadata:
   version: 1.1.0
   resolution: "hyphenate-style-name@npm:1.1.0"
   checksum: 10c0/bfe88deac2414a41a0d08811e277c8c098f23993d6a1eb17f14a0f11b54c4d42865a63d3cfe1914668eefb9a188e2de58f38b55a179a238fd1fef606893e194f
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^26.3.6":
+  version: 26.3.6
+  resolution: "i18next@npm:26.3.6"
+  peerDependencies:
+    typescript: ^5 || ^6 || ^7
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/5920ac8fb6b647a2bdd439d121de04e5297246e52c4d95d13f5faae0824fd45b2faeb66038bcd61fc62362daa815f9c32fb992d6faa3787607d1dfe768e9a8b1
   languageName: node
   linkType: hard
 
@@ -16164,7 +16185,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-drawer-layout@npm:^4.2.2, react-native-drawer-layout@npm:^4.2.8":
+"react-native-drawer-layout@npm:^4.2.2":
+  version: 4.2.4
+  resolution: "react-native-drawer-layout@npm:4.2.4"
+  dependencies:
+    color: "npm:^4.2.3"
+    use-latest-callback: "npm:^0.2.4"
+  peerDependencies:
+    react: ">= 18.2.0"
+    react-native: "*"
+    react-native-gesture-handler: ">= 2.0.0"
+    react-native-reanimated: ">= 2.0.0"
+  checksum: 10c0/b37e4c4df2cb862299cd5f330144542f57b6dfebb057275517eddb76a1ad5e3edc795bfb2d3144182cd8b40d4af75aa6376d7c0f1a62057595b6908f1c1ab45e
+  languageName: node
+  linkType: hard
+
+"react-native-drawer-layout@npm:^4.2.8":
   version: 4.2.8
   resolution: "react-native-drawer-layout@npm:4.2.8"
   dependencies:
@@ -16372,7 +16408,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-screens@npm:4.26.2, react-native-screens@npm:^4.25.2, react-native-screens@npm:^4.26.2":
+"react-native-screens@npm:4.26.2, react-native-screens@npm:^4.26.2":
   version: 4.26.2
   resolution: "react-native-screens@npm:4.26.2"
   dependencies:
@@ -16382,6 +16418,19 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/3cdc702d8e21c63331e306a2b971307d5d9e13df52d94f435c5bb8d5dcf09fed00f4ef788e85ba87fae1ba5b155f4cdc2ee177a70f1f512adff73f94eef844d1
+  languageName: node
+  linkType: hard
+
+"react-native-screens@npm:^4.25.2":
+  version: 4.25.2
+  resolution: "react-native-screens@npm:4.25.2"
+  dependencies:
+    react-freeze: "npm:^1.0.0"
+    warn-once: "npm:^0.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: ">=0.82.0"
+  checksum: 10c0/b1f155830e57c36e8ca60831f4b22079cd311f0e36f7c4465ff4094f9dec18e66cef2321a4ff8944aac51ead437720585080f1f4b2956106099a9ea7d9745d00
   languageName: node
   linkType: hard
 
@@ -18028,18 +18077,20 @@ __metadata:
   linkType: soft
 
 "stream-chat@npm:^10.0.0-rc.3":
-  version: 10.0.0-rc.4
-  resolution: "stream-chat@npm:10.0.0-rc.4"
+  version: 10.0.0-rc.5
+  resolution: "stream-chat@npm:10.0.0-rc.5"
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
     axios: "npm:^1.19.0"
+    dayjs: "npm:^1.11.13"
+    i18next: "npm:^26.3.6"
     linkifyjs: "npm:^4.3.3"
   dependenciesMeta:
     esbuild:
       built: true
     husky:
       built: true
-  checksum: 10c0/44582f022a84fc4924723316d1ed43961d0cd4044ed8544e92347047ed79066f6f365e772af7f47e4d03ca1678a0dca7a10b59663618c360f62bd4f3658475ab
+  checksum: 10c0/e04a95a1ede0a8eaca72cf31a3b0c2bfd22f78812c4fb7dff225ad44f99502dd7b00edbe2bc2cf712dd53e4997ca796212d7adb0be709e249e0fcfd917d75c01
   languageName: node
   linkType: hard
 
