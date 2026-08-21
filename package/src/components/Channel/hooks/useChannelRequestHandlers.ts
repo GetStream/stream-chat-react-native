@@ -75,6 +75,18 @@ export const useChannelRequestHandlers = ({
     // Built once per effect run rather than inside `applyRequestHandlers`, so its identity is stable
     // across re-applies — that identity is what the subscription below uses to tell "still ours" from
     // "dropped by a re-derivation".
+    //
+    // TODO: discuss with the team — request a `next`-shaped `sendMessageRequest` slot in `stream-chat`,
+    // then delete this wrapper and the `doSendMessageRequest` prop with it.
+    //
+    // Every other `do*Request` prop is gone; this one stays only because the SDK needs the slot itself
+    // (the upload step must run after the optimistic ingest, before the POST) so it has to wrap rather
+    // than be replaced. Two consequences: we hand-copy the LLC's default send below and nothing catches
+    // it drifting, and a declaratively-registered handler is never reached.
+    //
+    // `MessageOperations.send` already builds the fallback (`requestFn ?? handlers.send ??
+    // defaults.send`) — it just does not pass it to the handler. With `next` available this collapses to
+    // "await uploads, call next".
     const sendMessageRequest: RequestHandlers['sendMessageRequest'] = async ({
       localMessage,
       message,
