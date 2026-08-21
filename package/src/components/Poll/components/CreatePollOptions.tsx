@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -29,6 +30,7 @@ import { useComponentsContext } from '../../../contexts/componentsContext/Compon
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
+import type { ViewRef } from '../../../types/react-native-compat';
 
 export type CurrentOptionPositionsCache = {
   inverseIndexCache: {
@@ -295,7 +297,7 @@ export const CreatePollOption = ({
       normalizedCreatePollOptionGap,
     );
   const top = useSharedValue(initialTop);
-  const optionContainerRef = useRef<View>(null);
+  const optionContainerRef = useRef<ViewRef>(null);
   const isMeasurementScheduledRef = useRef(false);
   const isDraggingDerived = useDerivedValue(() => isDragging.value);
 

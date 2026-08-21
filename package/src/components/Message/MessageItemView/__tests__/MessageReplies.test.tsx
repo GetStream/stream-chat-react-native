@@ -2,9 +2,7 @@ import React from 'react';
 
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 
-import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
-import type { Theme } from '../../../../contexts/themeContext/utils/theme';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import type { TranslationContextValue } from '../../../../contexts/translationContext/TranslationContext';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
@@ -26,7 +24,7 @@ describe('MessageReplies', () => {
     });
     render(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-        <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies alignment='right' message={message} />
         </ThemeProvider>
       </TranslationProvider>,
@@ -51,7 +49,7 @@ describe('MessageReplies', () => {
 
     screen.rerender(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-        <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies alignment='left' message={message2} onPress={onPressMock} />
         </ThemeProvider>
       </TranslationProvider>,
@@ -79,7 +77,7 @@ describe('MessageReplies', () => {
     });
     render(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-        <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies alignment='right' message={message} onPress={() => null} />
         </ThemeProvider>
       </TranslationProvider>,
@@ -96,7 +94,7 @@ describe('MessageReplies', () => {
 
     screen.rerender(
       <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-        <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies alignment='right' message={message2} onPress={() => null} threadList />
         </ThemeProvider>
       </TranslationProvider>,

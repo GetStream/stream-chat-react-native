@@ -68,6 +68,7 @@ import {
   useIsOverlayActive,
 } from '../../state-store';
 import { primitives } from '../../theme';
+import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
 import {
   checkMessageEquality,
@@ -359,10 +360,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const rectRef = useRef<Rect>(undefined);
   const bubbleRect = useRef<Rect>(undefined);
-  const contextMenuAnchorRef = useRef<View>(null);
-  const messageOverlayTargetsRef = useRef<Record<string, View | null>>({});
+  const contextMenuAnchorRef = useRef<ViewRef>(null);
+  const messageOverlayTargetsRef = useRef<Record<string, ViewRef | null>>({});
   const registerMessageOverlayTarget = useStableCallback(
-    ({ id, view }: { id: string; view: View | null }) => {
+    ({ id, view }: { id: string; view: ViewRef | null }) => {
       messageOverlayTargetsRef.current[id] = view;
     },
   );

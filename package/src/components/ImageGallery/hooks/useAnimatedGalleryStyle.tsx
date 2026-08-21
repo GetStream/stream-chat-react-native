@@ -15,6 +15,13 @@ type Props = {
 
 const oneEighth = 1 / 8;
 
+/**
+ * Named via `ReturnType` because Reanimated does not export `AnimatedStyleHandle` from its root.
+ * Without an explicit annotation the inferred return type inlines React Native's internal style
+ * helper types, which cannot be written into the emitted declarations (TS2883).
+ */
+type GalleryAnimatedStyle = ReturnType<typeof useAnimatedStyle<ImageStyle>>;
+
 export const useAnimatedGalleryStyle = ({
   currentIndexShared,
   index,
@@ -23,7 +30,7 @@ export const useAnimatedGalleryStyle = ({
   screenHeight,
   translateX,
   translateY,
-}: Props) => {
+}: Props): [GalleryAnimatedStyle, GalleryAnimatedStyle] => {
   const { vw } = useViewport();
 
   const screenWidth = vw(100);
@@ -64,7 +71,7 @@ export const useAnimatedGalleryStyle = ({
     };
   }, []);
 
-  const animatedStyles = useAnimatedStyle(() => {
+  const animatedStyles = useAnimatedStyle<ImageStyle>(() => {
     const xScaleOffset = 7 * screenWidth * (0.5 + index);
     const yScaleOffset = -screenHeight * 3.5;
     return {

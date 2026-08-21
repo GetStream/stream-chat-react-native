@@ -4,8 +4,6 @@ import { render } from '@testing-library/react-native';
 
 import type { StreamChat } from 'stream-chat';
 
-import type { DeepPartial } from '../../../contexts/themeContext/ThemeContext';
-import type { Theme } from '../../../contexts/themeContext/utils/theme';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
@@ -21,7 +19,7 @@ describe('MessageUserReactionsAvatar', () => {
 
   it('should render Avatar with correct image, name, and default size', () => {
     const { queryByTestId } = render(
-      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+      <Chat client={chatClient} style={defaultTheme}>
         <MessageUserReactionsAvatar reaction={reaction} />
       </Chat>,
     );
@@ -32,7 +30,7 @@ describe('MessageUserReactionsAvatar', () => {
 
   it('should render Avatar with correct image, name, and custom size', () => {
     const { queryByTestId } = render(
-      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+      <Chat client={chatClient} style={defaultTheme}>
         <MessageUserReactionsAvatar reaction={reaction} size={'lg'} />
       </Chat>,
     );

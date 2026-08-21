@@ -38,6 +38,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
+import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
 
@@ -242,7 +243,7 @@ const GalleryThumbnail = ({
     isVideo ? 'a11y/Gallery Video' : 'a11y/Gallery Image',
   );
   const thumbnailAccessibilityHint = useA11yLabel('a11y/Double tap to open');
-  const thumbnailRef = useRef<View>(null);
+  const thumbnailRef = useRef<ViewRef>(null);
   const openImageViewer = () => {
     if (!message) {
       return;

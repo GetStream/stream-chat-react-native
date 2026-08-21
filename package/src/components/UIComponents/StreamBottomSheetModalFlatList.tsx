@@ -1,10 +1,12 @@
 import React, { useRef } from 'react';
 import { FlatListProps } from 'react-native';
+
 import { FlatList } from 'react-native-gesture-handler';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useStableCallback } from '../../hooks';
+import type { FlatListRef } from '../../types/react-native-compat';
 
 type StreamBottomSheetModalFlatListProps<ItemT> = FlatListProps<ItemT>;
 
@@ -13,7 +15,7 @@ export const StreamBottomSheetModalFlatList = <ItemT,>({
   ...props
 }: StreamBottomSheetModalFlatListProps<ItemT>) => {
   const { currentSnapIndex, topSnapIndex } = useBottomSheetContext();
-  const listRef = useRef<FlatList<ItemT>>(null);
+  const listRef = useRef<FlatListRef<ItemT>>(null);
 
   const setNativeScrollEnabled = useStableCallback((value: boolean) =>
     listRef.current?.setNativeProps({ scrollEnabled: value }),

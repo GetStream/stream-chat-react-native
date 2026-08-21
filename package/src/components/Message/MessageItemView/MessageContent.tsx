@@ -197,14 +197,16 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       }
     }
 
+    // Built in one literal rather than by mutation: React Native 0.87 types style objects as
+    // `Readonly`, so assigning onto an already-typed `ViewStyle` no longer compiles.
     const style: ViewStyle = {
       backgroundColor,
       borderBottomLeftRadius: borderBottomLeftRadius ?? computedBottomLeftRadius,
       borderBottomRightRadius: borderBottomRightRadius ?? computedBottomRightRadius,
+      ...(borderRadius !== undefined ? { borderRadius } : {}),
+      ...(borderTopLeftRadius !== undefined ? { borderTopLeftRadius } : {}),
+      ...(borderTopRightRadius !== undefined ? { borderTopRightRadius } : {}),
     };
-    if (borderRadius !== undefined) style.borderRadius = borderRadius;
-    if (borderTopLeftRadius !== undefined) style.borderTopLeftRadius = borderTopLeftRadius;
-    if (borderTopRightRadius !== undefined) style.borderTopRightRadius = borderTopRightRadius;
 
     return style;
   }, [

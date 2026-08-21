@@ -27,18 +27,19 @@ import {
 
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
+import type { TextInputRef } from '../../types/react-native-compat';
 import { useCooldownRemaining } from '../MessageInput/hooks/useCooldownRemaining';
 
 export type TextInputOverrideComponent =
   | typeof RNTextInput
   | React.ComponentClass<TextInputProps>
-  | React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<RNTextInput>>;
+  | React.ForwardRefExoticComponent<TextInputProps & React.RefAttributes<TextInputRef>>;
 
 type AnimatedTextInputRendererProps = TextInputProps & {
   TextInputComponent: TextInputOverrideComponent;
 };
 
-const TextInputRenderer = React.forwardRef<RNTextInput, AnimatedTextInputRendererProps>(
+const TextInputRenderer = React.forwardRef<TextInputRef, AnimatedTextInputRendererProps>(
   ({ TextInputComponent: Component, ...props }, ref) => <Component {...props} ref={ref} />,
 );
 
@@ -165,7 +166,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     }
   }, [text]);
 
-  const nativeInputRef = useRef<RNTextInput | null>(null);
+  const nativeInputRef = useRef<TextInputRef | null>(null);
 
   const clearState = useCallback(() => {
     setLocalText('');
@@ -186,7 +187,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   });
 
   const setExtendedInputRef = useCallback(
-    (ref: RNTextInput | null) => {
+    (ref: TextInputRef | null) => {
       nativeInputRef.current = ref;
       if (!ref) {
         setRef(setInputBoxRef, null);

@@ -8,6 +8,7 @@ import {
   useMessageContext,
   useMessageOverlayRuntimeContext,
 } from '../../contexts/messageContext/MessageContext';
+import type { ViewRef } from '../../types/react-native-compat';
 
 export type MessageOverlayWrapperProps = PropsWithChildren<{
   /**
@@ -37,7 +38,7 @@ export const MessageOverlayWrapper = ({
   const placeholderLayout = overlayTargetRectRef.current;
 
   const handleTargetRef = useCallback(
-    (view: View | null) => {
+    (view: ViewRef | null) => {
       registerMessageOverlayTarget({
         id: targetId,
         view,

@@ -333,7 +333,11 @@ export const renderText = (params: RenderTextParams) => {
   const onLink = (url: string) =>
     onLinkParams
       ? onLinkParams(url)
-      : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
+      : Linking.canOpenURL(url).then(async (canOpenUrl) => {
+          if (canOpenUrl) {
+            await Linking.openURL(url);
+          }
+        });
 
   let previousLink: string | undefined;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {

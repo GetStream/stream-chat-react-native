@@ -2,7 +2,12 @@ import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 
 export const useAppStateListener = (onForeground?: () => void, onBackground?: () => void) => {
-  const appStateRef = useRef(AppState.currentState);
+  // React Native 0.87 widened `AppState.currentState` to `string | null | undefined` (it was
+  // `AppStateStatus` up to 0.86). Normalise once here so the comparisons below stay total on
+  // every supported version.
+  const appStateRef = useRef<AppStateStatus>(
+    (AppState.currentState as AppStateStatus | null | undefined) ?? 'unknown',
+  );
   const onForegroundRef = useRef(onForeground);
   const onBackgroundRef = useRef(onBackground);
 

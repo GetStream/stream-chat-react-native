@@ -1,6 +1,8 @@
-import { Dimensions, Platform, View } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 
 import type { EdgeInsets } from 'react-native-safe-area-context';
+
+import type { ViewRef } from '../../../../types/react-native-compat';
 
 import { isMeasuredRectBogus, measureInWindow } from '../measureInWindow';
 
@@ -42,14 +44,14 @@ const makeNode = ({
 }: {
   measure?: MeasureTuple;
   measureInWindow: MeasureInWindowTuple;
-}): { current: View | null } => {
+}): { current: ViewRef | null } => {
   const handle: Record<string, unknown> = {
     measureInWindow: (cb: (...args: MeasureInWindowTuple) => void) => cb(...miw),
   };
   if (measure) {
     handle.measure = (cb: (...args: MeasureTuple) => void) => cb(...measure);
   }
-  return { current: handle as unknown as View };
+  return { current: handle as unknown as ViewRef };
 };
 
 describe('isMeasuredRectBogus', () => {

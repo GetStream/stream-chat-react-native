@@ -16,15 +16,27 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
+/**
+ * A custom theme passed to `<Chat style={...}>` / `<ThemeProvider style={...}>`: either a partial
+ * override tree or a complete `Theme`.
+ *
+ * `Theme` is listed first deliberately. A full `Theme` *is* structurally a valid `DeepPartial<Theme>`,
+ * but from React Native 0.87 the style types underpinning `Theme` are deep enough that asking
+ * TypeScript to prove it exceeds its instantiation depth limit (TS2589). Accepting `Theme` directly
+ * means neither the SDK nor integrators need the `as DeepPartial<Theme>` cast that used to be
+ * required, and the cheap branch is matched first.
+ */
+export type ThemeStyle = Theme | DeepPartial<Theme>;
+
 export type ThemeProviderInputValue = {
   mergedStyle?: Theme;
-  style?: DeepPartial<Theme>;
+  style?: ThemeStyle;
 };
 
 export type MergedThemesParams = {
-  style?: DeepPartial<Theme>;
+  style?: ThemeStyle;
   theme?: Theme;
-  scheme?: ColorSchemeName;
+  scheme?: ColorSchemeName | null;
 };
 
 export type ThemeContextValue = {

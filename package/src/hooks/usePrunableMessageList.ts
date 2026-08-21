@@ -1,12 +1,11 @@
 import { useRef } from 'react';
 
-import { ViewToken } from 'react-native';
-
 import { Channel } from 'stream-chat';
 
 import { useStableCallback } from './useStableCallback';
 
 import { ChannelPropsWithContext } from '../components';
+import type { ViewToken } from '../types/react-native-compat';
 
 export type VisibleRangeConfig = { first: number; last: number; inverted: boolean };
 export type ViewabilityChangedCallbackInput = {

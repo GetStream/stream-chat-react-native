@@ -133,7 +133,7 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     <>
       <FlatList
         contentContainerStyle={styles.flatListContentContainer}
-        data={channels}
+        data={channels ?? undefined}
         extraData={forceUpdate}
         keyExtractor={keyExtractor}
         ListEmptyComponent={

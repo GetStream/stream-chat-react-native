@@ -17,9 +17,21 @@ import { FileTypes } from '../../../types/types';
 import { Button } from '../../ui/Button/Button';
 import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent
-  ? Animated.createAnimatedComponent(SafeAreaView)
-  : SafeAreaView;
+// Never called - it exists only so `ReturnType` below can name the animated component's type.
+// Spelling it as `ReturnType<typeof Animated.createAnimatedComponent<typeof SafeAreaView>>`
+// directly resolves against the wrong overload (the `FlatList` one).
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in type position only
+const createAnimatedSafeAreaViewType = () => Animated.createAnimatedComponent(SafeAreaView);
+
+/**
+ * `createAnimatedComponent` is guarded because a stripped-down Reanimated mock may not provide it.
+ * The result is asserted back to the animated component type on purpose: written as a bare ternary
+ * this types as the *union* of the animated and the plain component, so its `style` prop becomes
+ * their intersection - which from React Native 0.87 no longer accepts an animated style.
+ */
+const ReanimatedSafeAreaView = (
+  Animated.createAnimatedComponent ? Animated.createAnimatedComponent(SafeAreaView) : SafeAreaView
+) as ReturnType<typeof createAnimatedSafeAreaViewType>;
 
 export type ImageGalleryFooterCustomComponent = ({
   openGridView,

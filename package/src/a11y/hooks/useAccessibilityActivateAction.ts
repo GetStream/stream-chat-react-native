@@ -1,4 +1,4 @@
-import type { AccessibilityActionEvent, AccessibilityProps } from 'react-native';
+import type { AccessibilityActionEvent, ViewProps } from 'react-native';
 
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 
@@ -9,12 +9,12 @@ export type UseAccessibilityActivateActionProps<TPressEvent> = {
 
 export type UseAccessibilityActivateActionResult =
   | {
-      accessibilityActions?: AccessibilityProps['accessibilityActions'];
-      onAccessibilityAction?: AccessibilityProps['onAccessibilityAction'];
+      accessibilityActions?: ViewProps['accessibilityActions'];
+      onAccessibilityAction?: ViewProps['onAccessibilityAction'];
     }
   | undefined;
 
-const accessibilityActivateActions: NonNullable<AccessibilityProps['accessibilityActions']> = [
+const accessibilityActivateActions: NonNullable<ViewProps['accessibilityActions']> = [
   { name: 'activate' },
 ];
 
