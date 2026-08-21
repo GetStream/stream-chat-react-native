@@ -14,9 +14,9 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 
+import { getDateString } from '../../../i18n/utils';
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';
-import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui/Button/Button';
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
@@ -37,7 +37,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
   const date = useMemo(
     () =>
       getDateString({
-        date: asset?.created_at,
+        messageCreatedAt: asset?.created_at,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.ImageGalleryHeader',

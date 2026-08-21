@@ -21,7 +21,7 @@ let translators: TranslationContextValue;
 
 beforeAll(async () => {
   const i18nInstance = new Streami18n();
-  translators = (await i18nInstance.getTranslators()) as unknown as TranslationContextValue;
+  translators = (await i18nInstance.init()) as unknown as TranslationContextValue;
 });
 
 const wrapper = ({ children }: PropsWithChildren) => (

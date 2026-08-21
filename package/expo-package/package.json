@@ -30,7 +30,7 @@
     "stream-chat-react-native-core": "workspace:^"
   },
   "peerDependencies": {
-    "expo": ">=52.0.0",
+    "expo": ">=53.0.0",
     "expo-audio": "*",
     "expo-av": "*",
     "expo-clipboard": "*",
@@ -42,7 +42,7 @@
     "expo-media-library": "*",
     "expo-sharing": "*",
     "expo-video": "*",
-    "react-native": ">=0.76.0"
+    "react-native": ">=0.79.0"
   },
   "peerDependenciesMeta": {
     "expo-audio": {

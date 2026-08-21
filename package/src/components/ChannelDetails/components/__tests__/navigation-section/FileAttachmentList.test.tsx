@@ -150,7 +150,7 @@ describe('FileAttachmentList', () => {
 
   beforeAll(async () => {
     const i18nInstance = new Streami18n();
-    realTranslators = (await i18nInstance.getTranslators()) as unknown as TranslationContextValue;
+    realTranslators = (await i18nInstance.init()) as unknown as TranslationContextValue;
   });
 
   beforeEach(() => {

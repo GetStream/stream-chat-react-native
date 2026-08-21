@@ -91,6 +91,12 @@ rg '\b(sendMessage|SendMessageDisallowedIndicator)\b' src/
 rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|ChannelListEventHandler|useChannelUpdated|queryChannelsOverride)\b' src/
 rg 'useChatContext\(\)' -A6 src/ | rg '\bchannelManager\b'
 rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
+
+# §19 — i18n: keys, the Streami18n API, and the a11y namespace
+rg '\bStreami18n\b|registerTranslation|translationsForLanguage|setLanguage|getTranslators' src/
+rg "t\(\s*'a11y/|'[A-Z][a-z]+ [a-z]" src/          # v9 keys WERE the English copy
+rg '\b(enTranslations|deTranslations|frTranslations|esTranslations|itTranslations|nlTranslations|ptBrTranslations|ruTranslations|trTranslations|jaTranslations|koTranslations|hiTranslations|heTranslations|arTranslations)\b' src/
+rg 'getDateString|getDateStringForA11y' -A4 src/ | rg '\bdate:'
 ```
 
 ---
@@ -137,6 +143,18 @@ means changed. Details in the linked section.
 | `useChannelUpdated()` | removed — `channel.updated` is handled by the orchestrator | §18.2 |
 | `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
 | `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
+| `t('Send Message')` — the key *was* the English copy | `t('messageInput.sendMessage.accessibilityLabel', 'Send Message')` — stable dotted key, copy inline | §19 |
+| `t('a11y/Send message')` | the `.accessibilityLabel` leaf of the owning component's key | §19 |
+| `import { deTranslations } from 'stream-chat-react-native'` | removed — English is the only bundled language; supply your own dictionary | §19 |
+| `new Streami18n('nl')` | `new Streami18n({ language: 'nl' })` — options object; the class name is unchanged | §19 |
+| `new Streami18n(opts, i18nextConfig)` | `new Streami18n({ ...opts, i18nextConfigOverrides: i18nextConfig })` | §19 |
+| `const t = await i18n.setLanguage('de')` | `await i18n.setLanguage('de')` → `void`; read `i18n.t` or subscribe to `i18n.state` | §19 |
+| `i18n.addOnLanguageChangeListener(fn)` | `i18n.state.subscribeWithSelector(({ t }) => ({ t }), fn)` | §19 |
+| `i18n.getTranslators()` | `i18n.init()` — removed, not aliased; same return value | §19 |
+| `{{ timestamp \| relativeCompactDateFormatter }}` | `{{ timestamp \| timestampFormatter(relativeCompact: true) }}` | §19 |
+| `getDateString({ date, … })` | `getDateString({ messageCreatedAt, … })`; returns `null`, not `undefined`, when unrenderable | §19 |
+| `getDateStringForA11y({ date, … })` | `getCalendarDateStringForA11y({ messageCreatedAt, … })` — same behaviour under a new name | §19 |
+| poll `state.errors.x` as an English string | a `PollComposerValidationError` — key your copy on `error.code`, fall back to `error.message` | §19 |
 
 ---
 
@@ -897,3 +915,33 @@ Configure the shared manager through its own API (`client.channelManager.setEven
   `channel.updated`; pull-to-refresh and reconnect (the list re-queries, no
   blank); and confirm a pinned-first `sort` keeps pinned channels on top when
   other channels receive messages.
+
+---
+
+# Part I — i18n
+
+## 19. English-only bundle, dotted keys, shared runtime
+
+**The full guide is `ai-docs/i18n-v10-migration.md`.** Read it for the migration; this section exists so an
+agent grepping this file finds i18n at all, and knows the three shapes of change:
+
+1. **Keys are stable dotted identifiers**, not the English copy, with the English inline as i18next's
+   `defaultValue`. The reviewed old→new table is `ai-docs/i18n-v10-key-map.json` (389 rows). Renaming is not
+   optional and **it fails silently** — an old key simply never matches, so the override stops applying and
+   English renders with no error. Type your dictionary as `TranslationDictionary` to turn that into a compile
+   error.
+2. **English is the only bundled language.** The 12 non-English dictionaries and the `*Translations` exports
+   are gone. An integrator supplies their own, additively; a key they omit still renders English.
+3. **The runtime moved to `stream-chat/i18n`**, shared with the React SDK. Imports are unchanged — everything
+   is still exported from `stream-chat-react-native` / `stream-chat-expo`, and `Streami18n` keeps its name
+   — but reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`,
+   `getTranslators()` is now `init()`, and a few date-helper parameters were renamed to the one name both
+   SDKs use. Nothing is kept as a deprecated alias. See the quick-reference rows above.
+
+Two dependency rules that produce silent breakage rather than errors:
+
+- **`dayjs` must resolve to a single copy.** Declare it compatibly with `stream-chat`'s range (`^1.11.13`) or
+  not at all. A disagreeing exact pin installs a second copy, and an app's `import 'dayjs/locale/de'` then
+  extends an instance the SDK never formats with — dates stay English, nothing throws.
+- **Do not declare `i18next`.** It arrives through `stream-chat`. Two copies mean dictionaries registered on
+  one instance and read from the other.

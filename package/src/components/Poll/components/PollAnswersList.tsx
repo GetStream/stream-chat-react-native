@@ -15,8 +15,8 @@ import {
   useTranslationContext,
 } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { getDateString } from '../../../i18n/utils';
 import { primitives } from '../../../theme';
-import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
@@ -88,7 +88,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
   const dateString = useMemo(
     () =>
       getDateString({
-        date: answer.updated_at,
+        messageCreatedAt: answer.updated_at,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.PollVote',

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { UserResponse } from 'stream-chat';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { getDateString } from '../../../utils/i18n/getDateString';
+import { getDateString } from '../../../i18n/utils';
 
 /**
  * Returns the localized presence status string for a user:
@@ -23,7 +23,7 @@ export const useUserActivityStatus = (user?: UserResponse): string => {
 
     if (user?.last_active) {
       const lastSeen = getDateString({
-        date: user.last_active,
+        messageCreatedAt: user.last_active,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.UserActivityStatus',
