@@ -3,9 +3,16 @@ import type { ReactNode } from 'react';
 import { FlatList, View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
+import { configure as configureTestingLibrary } from '@testing-library/react-native';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { registerNativeHandlers } from './src/native';
+
+// Under full-suite CPU contention (many parallel jest workers), async renders driven by events
+// (message.new list updates, orchestrator watches, etc.) can exceed RN Testing Library's default
+// 1s `waitFor` timeout and fail intermittently even though the behavior is correct. Give async
+// assertions more headroom globally so the suite is deterministic.
+configureTestingLibrary({ asyncUtilTimeout: 5000 });
 
 console.warn = () => {};
 

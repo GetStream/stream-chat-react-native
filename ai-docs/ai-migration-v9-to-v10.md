@@ -3,7 +3,7 @@
 > Machine-oriented migration reference for AI coding agents, mirroring the style
 > of `ai-migration.md` (v8 → v9). v10 adopts the `stream-chat` v10 **reactive
 > state layer**: state that used to be copied into React context is now read
-> reactively from `stream-chat` instance stores (`channel.state.*Store`,
+> reactively from `stream-chat` instance stores (`channel.state`,
 > `channel.messagePaginator`, `thread.messagePaginator`) via
 > `useStateStore(store, selector)`. This guide documents every integrator-facing
 > breaking change verified against the v10 source.
@@ -15,8 +15,12 @@
    `node_modules/stream-chat-react-native-core/src/`.
 2. **The unifying idea:** state that used to be copied into React context is now
    read reactively from `stream-chat` instance stores via the SDK hook
-   `useStateStore(store, selector)`. The channel exposes per-concern stores on
-   `channel.state.*` and a message paginator on `channel.messagePaginator`.
+   `useStateStore(store, selector)`. The channel exposes a **single unified
+   reactive store** on `channel.state` and a message paginator on
+   `channel.messagePaginator`. (Earlier v10 pre-releases exposed per-concern
+   handles `channel.state.readStore` / `typingStore` / `membersStore` /
+   `watcherStore` / `ownCapabilitiesStore`; these were **removed** in favor of the
+   one `channel.state` store — see §K.)
 3. **Resolution hooks** (new in v10, additive — use these as the entry points):
    - `useChannelContext().channel` — the active `Channel` instance.
    - `useChannel()` — `threadInstance?.channel ?? channel` (thread-aware).
@@ -61,6 +65,7 @@ rg '\b(useTargetedMessage|targetedMessage|setTargetedMessage)\b' src/
 # §7 — unread-state store / props removed
 rg '\b(channelUnreadStateStore|setChannelUnreadState|ScrollToBottomButton|UnreadMessagesNotification)\b' src/
 rg '\bunreadCount\b' src/
+rg '\bchannel[.?]*\.disconnected\b' src/
 
 # §8 — ChannelContext loader signatures
 rg '\b(loadChannelAroundMessage|loadChannelAtFirstUnreadMessage)\b' src/
@@ -92,6 +97,11 @@ rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|on
 rg 'useChatContext\(\)' -A6 src/ | rg '\bchannelManager\b'
 rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
 
+# §K — unified channel.state (removed *Store handles, in-place data mutation)
+rg '\bchannel\.state\.(read|typing|members|watcher|ownCapabilities)Store\b' src/
+rg '\bchannel\.state\.mutedUsersStore\b' src/
+rg '\bchannel\.data\.(member_count|own_capabilities)\s*=' src/
+
 # §19 — i18n: keys, the Streami18n API, and the a11y namespace
 rg '\bStreami18n\b|registerTranslation|translationsForLanguage|setLanguage|getTranslators' src/
 rg "t\(\s*'a11y/|'[A-Z][a-z]+ [a-z]" src/          # v9 keys WERE the English copy
@@ -108,17 +118,17 @@ means changed. Details in the linked section.
 
 | v9 — you used to… | v10 — now do… | § |
 |---|---|---|
-| `useTypingContext().typing` | `useStateStore(channel.state.typingStore, s => ({ typing: s.typing }))` | §2 |
+| `useTypingContext().typing` | `useStateStore(channel.state, s => ({ typing: s.typing }))` | §2 |
 | `filterTypingUsers({ client, thread, typing })` | `filterTypingUsers({ client, threadId: thread?.id, typing })` | §2.1 |
 | `usePaginatedMessageListContext().messages` | `useStateStore(channel.messagePaginator.state, s => s.items)` | §3 |
 | …`.hasMore` / `.hasMoreNewer` | `channel.messagePaginator.state.hasMoreTail` / `.hasMoreHead` | §3 |
 | …`.loadMore()` / `.loadMoreRecent()` | `channel.messagePaginator.toTail()` / `.toHead()` | §3 |
 | …`.loadLatestMessages()` | `channel.messagePaginator.jumpToTheLatestMessage()` | §3 |
-| `useChannelContext().members` / `read` / `watchers` / `watcherCount` | `channel.state.membersStore` / `readStore` / `watcherStore` (via `useStateStore`) | §4 |
+| `useChannelContext().members` / `read` / `watchers` / `watcherCount` | `useStateStore(channel.state, selector)` (one store; selector picks the slice) | §4 |
 | `useChannelContext().markRead()` | `useMarkRead(channel)()` — or `channel.markRead()` | §5 |
 | `useTargetedMessage()` / `setTargetedMessage(id)` | `useChannelContext().loadChannelAroundMessage({ messageId })`; read `highlightedMessageId` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
-| `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state.readStore` (override the component to control) | §7 |
+| `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state` `read` (override the component to control) | §7 |
 | app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.activeChannels` | §7.1 |
 | `useMessagesContext()` → `sendReaction` / `deleteReaction` / `deleteMessage` / `removeMessage` / `retrySendMessage` / `updateMessage` | `useMessageOperations()` (same names) | §9 |
 | `useMessagesContext().targetedMessage` | `useChannelContext().highlightedMessageId` | §6 |
@@ -143,6 +153,11 @@ means changed. Details in the linked section.
 | `useChannelUpdated()` | removed — `channel.updated` is handled by the orchestrator | §18.2 |
 | `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
 | `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
+| `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
+| `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
+| in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
+| `channel.disconnected` | `channel.pendingDisposal` (hard rename — no alias) | §K.8 |
+| `WatcherState` type | `ChannelWatchState` (now also carries `watchStatus`) | §K.3 |
 | `t('Send Message')` — the key *was* the English copy | `t('messageInput.sendMessage.accessibilityLabel', 'Send Message')` — stable dotted key, copy inline | §19 |
 | `t('a11y/Send message')` | the `.accessibilityLabel` leaf of the owning component's key | §19 |
 | `import { deTranslations } from 'stream-chat-react-native'` | removed — English is the only bundled language; supply your own dictionary | §19 |
@@ -160,7 +175,7 @@ means changed. Details in the linked section.
 
 # Part A — Removed contexts
 
-## 2. `TypingContext` removed → `channel.state.typingStore`
+## 2. `TypingContext` removed → `useStateStore(channel.state, …)`
 
 Removed symbols: `TypingContext`, `TypingProvider`, `useTypingContext`,
 `TypingContextValue`, `useCreateTypingContext`.
@@ -182,10 +197,13 @@ import type { TypingUsersState } from 'stream-chat';
 const typingSelector = (state: TypingUsersState) => ({ typing: state.typing });
 
 const { channel } = useChannelContext();
-const { typing } = useStateStore(channel.state.typingStore, typingSelector) ?? { typing: {} };
+const { typing } = useStateStore(channel.state, typingSelector) ?? { typing: {} };
 ```
 
-`typing` has the same shape as before (`Record<string, Event>`).
+`typing` has the same shape as before (`Record<string, Event>`). The selector is
+unchanged from any earlier pre-release that used `channel.state.typingStore` —
+`channel.state` is flat and carries the same `typing` key, so `(s: TypingUsersState)
+=> …` stays assignable (see §K).
 
 ### 2.1 Typing prop/util changes (if you override the typing indicator)
 
@@ -258,17 +276,18 @@ messages while a thread is open.
 
 # Part B — `ChannelContext` value changes
 
-## 4. `ChannelContext` scalar state fields removed → `channel.state.*Store`
+## 4. `ChannelContext` scalar state fields removed → `useStateStore(channel.state, …)`
 
 `useChannelContext()` no longer returns `members`, `read`, `watchers`, or
-`watcherCount`. Read them from the per-channel stores.
+`watcherCount`. Read them from the one unified `channel.state` store (§K) with a
+selector that picks the slice.
 
 | Removed context field | Replacement store | Store state key |
 |---|---|---|
-| `members` | `channel.state.membersStore` | `members` |
-| `read` | `channel.state.readStore` | `read` |
-| `watchers` | `channel.state.watcherStore` | `watchers` |
-| `watcherCount` | `channel.state.watcherStore` | `watcherCount` |
+| `members` | `channel.state` | `members` |
+| `read` | `channel.state` | `read` |
+| `watchers` | `channel.state` | `watchers` |
+| `watcherCount` | `channel.state` | `watcherCount` |
 
 **Before (v9):**
 
@@ -289,8 +308,8 @@ const watcherSelector = (s: WatcherState) => ({
 });
 
 const { channel } = useChannelContext();
-const { members } = useStateStore(channel.state.membersStore, membersSelector) ?? { members: {} };
-const { watcherCount } = useStateStore(channel.state.watcherStore, watcherSelector) ?? {};
+const { members } = useStateStore(channel.state, membersSelector) ?? { members: {} };
+const { watcherCount } = useStateStore(channel.state, watcherSelector) ?? {};
 ```
 
 Note: `members` remains available on the per-message `MessageContext`
@@ -376,7 +395,7 @@ the public `ChannelUnreadState` shape for imperative readers.
 |---|---|
 | `channelUnreadStateStore` | `channel.messagePaginator.unreadStateSnapshot` |
 | `setChannelUnreadState` | (managed internally by the paginator) |
-| `ScrollToBottomButtonProps.unreadCount` | self-derived from `channel.state.readStore` (undefined in thread lists) |
+| `ScrollToBottomButtonProps.unreadCount` | self-derived from `channel.state` `read[userId].unread_messages` (undefined in thread lists) |
 | `UnreadMessagesNotificationProps.channelUnreadStateStore` | count from `channel.messagePaginator.unreadStateSnapshot` |
 
 `UnreadMessagesNotificationProps` also **adds** an optional
@@ -707,9 +726,8 @@ parameter shapes dropped the removed fields:
 ## 17. `stream-chat` must be v10
 
 v10 SDK code hard-depends on `stream-chat` v10 APIs (`channel.messagePaginator`,
-`channel.state.{typing,members,read,watcher}Store`, `*WithLocalUpdate`,
-`messageDeliveryReporter`, `channel.messageFocusSignal`, reactive
-`channel.state.unreadCount`). Ensure your app resolves `stream-chat` to `^10.x`.
+the unified reactive `channel.state`, `*WithLocalUpdate`, `messageDeliveryReporter`,
+`channel.messageFocusSignal`). Ensure your app resolves `stream-chat` to `^10.x`.
 
 > Repo note (for SDK maintainers, not integrators): the published `stream-chat`
 > range in `package/package.json` must be bumped to `^10.x`, and the local
@@ -899,6 +917,160 @@ Configure the shared manager through its own API (`client.channelManager.setEven
 
 ---
 
+# Part K — Unified channel state (`channel.state`)
+
+> **Who this affects.** Only integrators who read the per-concern `channel.state.*Store`
+> handles directly, subscribe to `channel.state.mutedUsersStore`, or mutate
+> `channel.data.member_count` / `own_capabilities` in place. Everything the SDK's own
+> components read is already migrated — this is additive for most apps. The sections above
+> (§2, §4, §7) already point here.
+
+`channel.state` is now a **single `StateStore<ChannelStateData>`** — subscribe to it directly
+with `useStateStore(channel.state, selector)`, exactly like `thread.state`. Earlier v10
+pre-releases split it into per-concern handles (`channel.state.readStore`, `typingStore`,
+`membersStore`, `watcherStore`, `ownCapabilitiesStore`); those are **removed**. The state is
+**flat**: `read`, `typing`, `members`, `memberCount`, `watchers`, `watcherCount`,
+`ownCapabilities` are all top-level keys of the one store.
+
+## K.1 `channel.state.*Store` handles removed (breaking)
+
+**The recipe** — mechanical, one edit per call site:
+
+> `useStateStore(channel.state.<X>Store, selector)` → `useStateStore(channel.state, selector)`
+> — delete the `.<X>Store` segment and **keep the selector verbatim**.
+
+The selector does not change: `ChannelStateData` carries the same top-level keys the old
+per-handle shapes did, so a `(s: ReadState) => O` (or `MembersState`, `WatcherState`,
+`TypingUsersState`, `OwnCapabilitiesState`) stays contravariantly assignable to
+`(s: ChannelStateData) => O`.
+
+| Removed handle | Replacement | Slice key(s) it exposed |
+|---|---|---|
+| `channel.state.readStore` | `channel.state` | `read` |
+| `channel.state.typingStore` | `channel.state` | `typing` |
+| `channel.state.membersStore` | `channel.state` | `members`, `memberCount` |
+| `channel.state.watcherStore` | `channel.state` | `watchers`, `watcherCount` |
+| `channel.state.ownCapabilitiesStore` | `channel.state` | `ownCapabilities` |
+
+```tsx
+// Before (early v10 pre-release)
+const { read } = useStateStore(channel.state.readStore, s => ({ read: s.read }));
+// After (v10)
+const { read } = useStateStore(channel.state, s => ({ read: s.read }));
+```
+
+The convenience getters `channel.state.members` / `.read` / `.typing` / `.watchers` /
+`.member_count` / `.watcher_count` are **unchanged** (they proxy the one store).
+
+## K.2 `channel.state.mutedUsersStore` removed → `client.mutedUsersStore`
+
+The `MutedUsersState` type and the `channel.state.mutedUsersStore` handle are removed — muted
+**users** are client-global, not per-channel. Read them from `client.mutedUsersStore` (via
+`useMutedUsers()`, §14). Muted **channel** status is a new per-channel field — see K.3.
+
+## K.3 New reactive slices on `channel.state` (additive)
+
+`channel.state` now also carries these — subscribe with `useStateStore(channel.state, selector)`:
+
+| Slice | Shape | Notes |
+|---|---|---|
+| `data` | `Channel['data']` | The server channel data (name/image/frozen/hidden/blocked/config/…). Republished on `channel.updated` / `channel.hidden` / `channel.visible` and on query/watch. |
+| `membership` | `ChannelMemberResponse` | The current user's own membership (role, `pinned_at`, `archived_at`). |
+| `muteStatus` | `{ muted: boolean; createdAt: Date \| null; expiresAt: Date \| null }` | Is **this channel** muted for the current user — mirrors `client.mutedChannels`. `channel.muteStatus()` (imperative) is unchanged. |
+| `initialized` / `offlineMode` / `pendingDisposal` | `boolean` | Lifecycle flags, now store-backed. `channel.initialized` etc. are transparent getters over these. `pendingDisposal` replaces `disconnected` — see §K.8. |
+| `watchStatus` | `ChannelWatchStatus` — `'watching'` \| `'wasWatching'` \| `'notWatching'` | Whether this client holds a server-side watch (i.e. whether channel events are flowing) and, when it doesn't, whether the watch should be restored. `Watching` once a `watch: true` query succeeds; `WasWatching` when the WS connection drops (the server keys watches by connection ID, so a reconnect issues a new id and every watch is gone — this records that a re-query is wanted); `NotWatching` when never watched, when the consumer called `stopWatching()`, or on teardown — a deliberate stop is never resurrected by a reconnect. Also makes `channel.watch()`'s silent downgrade — it drops to a non-watching query when there is no connection ID — observable. Read via `channel.watchStatus` or `useStateStore(channel.state, (s) => ({ watchStatus: s.watchStatus }))`; the `ChannelWatchStatus` const is exported from `stream-chat`. |
+
+```tsx
+// e.g. react to a channel rename
+const name = useStateStore(channel.state, s => ({ name: s.data?.custom?.name }))?.name;
+```
+
+## K.4 `channel.activate()` / `deactivate()` / `channel.active` (additive)
+
+New refcounted lifecycle API mirroring `thread.activate()`. `<Channel>` calls
+`activate()` on mount and `deactivate()` on unmount for you; `channel.active` is a reactive
+boolean. While active, the channel auto-marks messages read on focus and the channel-list
+hydration does not destructively re-seed the open channel's message list on reconnect. Custom
+navigation that mounts a channel outside `<Channel>` can call these directly (they refcount, so a
+shared instance stays active until the last holder deactivates).
+
+## K.5 In-place mutation of `channel.data.member_count` / `own_capabilities` no longer syncs (behavioral)
+
+These fields used to be backed by an `Object.defineProperty` accessor that pushed in-place writes
+into the store. That accessor is gone. Reassign `channel.data` instead of mutating a field:
+
+```tsx
+// Before — used to sync to channel.state
+channel.data.member_count = 12;
+// After — reassign so the store (and channel.state.memberCount) updates
+channel.data = { ...channel.data, member_count: 12 };
+```
+
+`member_count` / `own_capabilities` are still read normally off `channel.data`; the values stay
+sticky across data updates that omit them, and `own_capabilities` stays `undefined` until first
+known. (Same applies to `channel.state.membership` — reassign it rather than mutating a nested field
+if you need subscribers to update.)
+
+## K.8 `channel.disconnected` → `channel.pendingDisposal` (breaking)
+
+The flag is one-way and terminal: `Channel._disconnect()` disposes the paginators, unregisters the
+subscriptions, and the client drops the channel from `activeChannels` right after — the instance is
+never reconnected. `disconnected` read like something that could come back, so the state key and the
+getter/setter are now `pendingDisposal`.
+
+```tsx
+// Before
+if (channel.disconnected) return;
+// After
+if (channel.pendingDisposal) return;
+```
+
+`channel.disconnected` is **removed outright** — no alias. v10 is a major, so the rename lands in one
+step rather than carrying a deprecation through it. Rename every read and write; if you subscribe to
+the slice, the **key** changed too:
+`useStateStore(channel.state, (s) => ({ pendingDisposal: s.pendingDisposal }))`.
+
+## K.6 Built-in hooks now source from `channel.state` (behavioral)
+
+These SDK hooks were rewired off ad-hoc `channel.on(...)` event subscriptions onto
+`useStateStore(channel.state, …)` — same return shapes, finer-grained updates. No app change
+needed unless you mock `channel.state` in tests (it must be a real `StateStore` now):
+`useChannelName`, `useChannelImage`, `useChannelMemberCount`, `useChannelMembershipState`,
+`useIsChannelMuted`, `useChannelMuteActive`. `useMutedChannels` intentionally stays event-based
+(it returns the client-global muted-channel **list**, not this channel's `muteStatus`).
+
+## K.7 AI-indicator state → `channel.state.aiState` (additive slice; soft-breaking enum)
+
+The per-channel AI-indicator state (thinking / generating / …) is now a reactive slice on
+`channel.state`, owned by the LLC and driven from the `ai_indicator.update` / `.clear` / `.stop`
+events in `Channel._handleChannelEvent`. Previously the UI SDK kept it in `useAIState` via local
+`useState` + `channel.on('ai_indicator.*')` listeners.
+
+- **Subscribe:** `useStateStore(channel.state, s => ({ aiState: s.aiState }))`, seeded
+  `AIStates.Idle`. If you ran your own `ai_indicator.*` listeners, drop them and read the slice.
+- **`useAIState(channel)` is unchanged** — same `{ aiState }` return, now a thin `useStateStore`
+  reader internally. It additionally honors `ai_indicator.stop` (→ `AIStates.Stop`), which the RN
+  hook previously ignored.
+- **`AIState` reconciled + `AIStates` const now exported from `stream-chat`** (soft-breaking):
+  `AI_STATE_CHECKING_SOURCES` → `AI_STATE_EXTERNAL_SOURCES`, plus `AI_STATE_IDLE` and
+  `AI_STATE_STOP` added. `(string & {})` keeps any string assignable, so this is a literal-set / DX
+  change, not a hard compile break. Import `AIStates` from `stream-chat` (also re-exported from the
+  SDK) instead of hand-writing the literals.
+- **Connection-loss reset is automatic (LLC-owned).** `aiState` resets to `Idle` whenever the WS
+  goes away — a transient / internet drop (via the channel cleaning sweep, gated on connection
+  health) or a deliberate close such as mobile backgrounding (via `client.closeConnection()`) — so a
+  stuck "Generating" can't outlive a lost socket. No app code needed; the terminal
+  `ai_indicator.clear` / `.stop` that would otherwise be missed offline is not replayed on reconnect.
+
+```tsx
+// read the AI indicator anywhere (or just use useAIState)
+const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState }));
+```
+
+---
+
+---
+
 ## 19. Verify
 
 - Typecheck the customer app; removed symbols surface as "Property does not
@@ -915,6 +1087,11 @@ Configure the shared manager through its own API (`client.channelManager.setEven
   `channel.updated`; pull-to-refresh and reconnect (the list re-queries, no
   blank); and confirm a pinned-first `sort` keeps pinned channels on top when
   other channels receive messages.
+- **Unified `channel.state`** (§K): a `channel.updated` rename/avatar reflects live
+  (header + preview); muting/unmuting a channel updates its muted indicator;
+  pin/archive updates membership-driven UI; and — with `<Channel>` mounted —
+  focusing a channel with unreads marks it read and reconnect does not blank/re-seed
+  the open message list.
 
 ---
 

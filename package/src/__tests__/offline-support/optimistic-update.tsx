@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
@@ -68,10 +68,38 @@ type TestOfflineDb = {
   }) => Promise<void>;
   deletePendingTask: (params: { id: number }) => Promise<void>;
   getPendingTasks: () => Promise<TestPendingTask[]>;
+  upsertMessages: (params: { execute?: boolean; messages: unknown[] }) => Promise<unknown>;
   syncManager: TestSyncManager;
 };
 const getOfflineDb = (client: StreamChat): TestOfflineDb =>
   client.offlineDb as unknown as TestOfflineDb;
+
+// Forces the client offline. `queueTask` then short-circuits to a connection-lost (ephemeral)
+// failure and persists the task for replay — the WORKING offline-queue path. This is the real v10
+// queue trigger: `queueTask` only persists a pending task when the failure is EPHEMERAL (offline /
+// connection-loss / a retryable code); a definitive server rejection (e.g. a plain 500) is skipped
+// by design (BC48), since retrying it would never succeed. The "pending task should exist if ...
+// request fails" tests below therefore force this offline case (they still pass an errored API mock,
+// but the offline short-circuit is what queues the task), NOT a raw 500.
+const markConnectionUnhealthy = (client: StreamChat) => {
+  (client.wsConnection as unknown as { isHealthy: boolean }).isHealthy = false;
+};
+
+// The `<Channel doUpdateMessageRequest>` prop is wired into `channel.configState.requestHandlers`
+// by `Channel`'s `useChannelRequestHandlers` effect. That parent effect runs AFTER the child
+// test-callback effect (React flushes passive effects child-first), so a callback that calls
+// `editMessage` synchronously on mount runs before the override is registered and silently takes
+// the default (non-overridden) update path. In production a user can't edit a message in the
+// sub-millisecond window before effects flush, so this is a test-only ordering artifact. Await
+// this before triggering the edit so the real `doUpdateMessageRequest` path is exercised.
+const waitForUpdateMessageHandler = async (channel: ChannelLLC) => {
+  for (let i = 0; i < 100; i++) {
+    if (channel.configState.getLatestValue().requestHandlers?.updateMessageRequest) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+};
 
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
 
@@ -197,7 +225,15 @@ export const OptimisticUpdates = () => {
     }) => {
       const ctx = useContext(context);
       const [ready, setReady] = useState(false);
+      // Run the callback exactly once. The context value is a fresh object on every render, so keying
+      // the effect on it would re-fire the callback after `setReady` re-renders — double-invoking the
+      // operation under test and, e.g., queuing a pending task twice. A ref guard pins it to mount.
+      const hasRun = useRef(false);
       useEffect(() => {
+        if (hasRun.current) {
+          return;
+        }
+        hasRun.current = true;
         const call = async () => {
           await callback(ctx);
           setReady(true);
@@ -224,7 +260,16 @@ export const OptimisticUpdates = () => {
     }) => {
       const ops = useMessageOperations();
       const [ready, setReady] = useState(false);
+      // Run the callback exactly once. `useMessageOperations` returns a fresh object on every render,
+      // so keying the effect on it would re-fire the callback after `setReady` re-renders —
+      // double-invoking the operation under test (queuing a pending task twice). A ref guard pins it
+      // to mount.
+      const hasRun = useRef(false);
       useEffect(() => {
+        if (hasRun.current) {
+          return;
+        }
+        hasRun.current = true;
         const call = async () => {
           await callback(ops);
           setReady(true);
@@ -241,6 +286,11 @@ export const OptimisticUpdates = () => {
     };
 
     describe('delete message', () => {
+      // Queuing triggers on an EPHEMERAL failure — a connection-loss/offline error or a retryable
+      // server code (see the LLC's `queueTask` + `isEphemeral`/`shouldSkipQueueingTask`). A definitive
+      // server rejection (e.g. a plain 500 with no retryable code) is intentionally NOT queued, since
+      // retrying it would never succeed. Force the ephemeral case with an offline connection so the
+      // pending task is persisted for replay.
       it('pending task should exist if deleteMessage request fails', async () => {
         const message = generateMessage();
 
@@ -249,7 +299,8 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel} initialValue={message.text}>
               <CallbackEffectWithMessageOperations
                 callback={async ({ deleteMessage }) => {
-                  useMockedApis(chatClient, [erroredPostApi()]);
+                  markConnectionUnhealthy(chatClient);
+                  useMockedApis(chatClient, [erroredDeleteApi()]);
                   try {
                     await deleteMessage(message);
                   } catch (e) {
@@ -268,7 +319,7 @@ export const OptimisticUpdates = () => {
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('delete-message');
-          expect(pendingTaskPayload[0]).toBe(message.id);
+          expect(pendingTaskPayload[0].id).toBe(message.id);
         });
       });
 
@@ -298,6 +349,8 @@ export const OptimisticUpdates = () => {
     });
 
     describe('send reaction', () => {
+      // Queues on an EPHEMERAL failure (offline/connection-loss or a retryable code); a definitive 500
+      // is intentionally NOT queued. Force the offline case. See the delete-message variant for detail.
       it('pending task should exist if sendReaction request fails', async () => {
         const reaction = generateReaction();
         const targetMessage = channel.messagePaginator.headItems[0];
@@ -307,6 +360,7 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel}>
               <CallbackEffectWithMessageOperations
                 callback={async ({ sendReaction }) => {
+                  markConnectionUnhealthy(chatClient);
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
                     await sendReaction(reaction.type, targetMessage.id);
@@ -326,7 +380,7 @@ export const OptimisticUpdates = () => {
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('send-reaction');
-          expect(pendingTaskPayload[0]).toBe(targetMessage.id);
+          expect(pendingTaskPayload[0].id).toBe(targetMessage.id);
         });
       });
 
@@ -357,6 +411,8 @@ export const OptimisticUpdates = () => {
     });
 
     describe('send message', () => {
+      // Queues on an EPHEMERAL failure (offline/connection-loss or a retryable code); a definitive 500
+      // is intentionally NOT queued. Force the offline case. See the delete-message variant for detail.
       it('pending task should exist if sendMessage request fails', async () => {
         const newMessage = generateMessage();
 
@@ -371,6 +427,7 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel}>
               <CallbackEffectWithContext
                 callback={async ({ sendMessage }) => {
+                  markConnectionUnhealthy(chatClient);
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
                     await sendMessage();
@@ -391,8 +448,8 @@ export const OptimisticUpdates = () => {
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('send-message');
-          expect(pendingTaskPayload[0].id).toEqual(newMessage.id);
-          expect(pendingTaskPayload[0].text).toEqual(newMessage.text);
+          expect(pendingTaskPayload[0].message.id).toEqual(newMessage.id);
+          expect(pendingTaskPayload[0].message.text).toEqual(newMessage.text);
         });
       });
 
@@ -426,6 +483,8 @@ export const OptimisticUpdates = () => {
     });
 
     describe('delete reaction', () => {
+      // Queues on an EPHEMERAL failure (offline/connection-loss or a retryable code); a definitive 500
+      // is intentionally NOT queued. Force the offline case. See the delete-message variant for detail.
       it('pending task should exist if deleteReaction request fails', async () => {
         const reaction = generateReaction();
         const targetMessage = channel.messagePaginator.headItems[0];
@@ -435,7 +494,8 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel}>
               <CallbackEffectWithMessageOperations
                 callback={async ({ deleteReaction }) => {
-                  useMockedApis(chatClient, [erroredPostApi()]);
+                  markConnectionUnhealthy(chatClient);
+                  useMockedApis(chatClient, [erroredDeleteApi()]);
                   try {
                     await deleteReaction(reaction.type, targetMessage.id);
                   } catch (e) {
@@ -454,7 +514,7 @@ export const OptimisticUpdates = () => {
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('delete-reaction');
-          expect(pendingTaskPayload[0]).toBe(targetMessage.id);
+          expect(pendingTaskPayload[0].id).toBe(targetMessage.id);
         });
       });
 
@@ -494,27 +554,42 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
               channel={channel}
+              // v10 invokes doUpdateMessageRequest with the `updateMessage` request shape
+              // `{ id, message }` (see useChannelRequestHandlers), not a flat LocalMessage. Echo a
+              // server-shaped response reflecting the edit; the LLC's success path re-ingests it.
               doUpdateMessageRequest={
-                (async (_channelId: string, localMessage: LocalMessage, options: unknown) => {
+                (async (
+                  _channelId: string,
+                  updatedMessage: { id: string; message: LocalMessage },
+                  options: unknown,
+                ) => {
+                  const editedMessage = {
+                    ...message,
+                    message_text_updated_at: new Date(),
+                    text: editedText,
+                    updated_at: new Date(),
+                  };
                   await getOfflineDb(chatClient).addPendingTask({
                     channelId: channel.id,
                     channelType: channel.type,
                     messageId: message.id,
-                    payload: [localMessage, undefined, options],
+                    payload: [updatedMessage, options],
                     type: 'update-message',
                   });
-                  return {
-                    message: {
-                      ...localMessage,
-                      message_text_updated_at: new Date(),
-                      updated_at: new Date(),
-                    },
-                  };
+                  // A complete offline update handler persists the optimistic edit to the DB (so it
+                  // survives cold start and the offline-DB hydration that Channel triggers on mount /
+                  // sync-status change re-seeds the edited copy, not the pre-edit one).
+                  await getOfflineDb(chatClient).upsertMessages({
+                    execute: true,
+                    messages: [editedMessage],
+                  });
+                  return { message: editedMessage };
                 }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
               }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
+                  await waitForUpdateMessageHandler(channel);
                   await editMessage({
                     localMessage: {
                       ...message,
@@ -557,12 +632,23 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
               channel={channel}
-              doUpdateMessageRequest={() => {
-                throw new Error('validation');
-              }}
+              // Persist the optimistic edit locally, then reject the request (validation failure).
+              // The local copy (state + DB) must survive so the user's edit is not lost, and so the
+              // offline-DB hydration Channel runs on mount re-seeds the edited copy, not the pre-edit
+              // one.
+              doUpdateMessageRequest={
+                (async () => {
+                  await getOfflineDb(chatClient).upsertMessages({
+                    execute: true,
+                    messages: [{ ...message, status: MessageStatusTypes.FAILED, text: editedText }],
+                  });
+                  throw new Error('validation');
+                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
+              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
+                  await waitForUpdateMessageHandler(channel);
                   try {
                     await editMessage({
                       localMessage: {
@@ -599,7 +685,12 @@ export const OptimisticUpdates = () => {
       });
 
       it('should not set message_text_updated_at during optimistic edit of a failed message', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        // A message that failed to send never received a server-confirmed text update, so a realistic
+        // failed message carries no message_text_updated_at. generateMessage always sets one, so strip
+        // it here; the test then verifies the optimistic edit path does not add one back.
+        const { message_text_updated_at: _stripped, ...headItem } = channel.messagePaginator
+          .headItems[0] as LocalMessage & { message_text_updated_at?: Date };
+        const message = headItem as LocalMessage;
         const optimisticStateSpy = jest.fn();
 
         render(
@@ -621,6 +712,7 @@ export const OptimisticUpdates = () => {
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
+                  await waitForUpdateMessageHandler(channel);
                   await editMessage({
                     localMessage: {
                       ...message,
@@ -651,34 +743,52 @@ export const OptimisticUpdates = () => {
         const message = channel.messagePaginator.headItems[0];
         const editedText = 'edited attachment message';
         const localUri = 'file://edited-attachment.png';
+        const editedAttachments = [
+          {
+            asset_url: localUri,
+            custom: {
+              originalFile: generateFileReference({
+                name: 'edited-attachment.png',
+                type: 'image/png',
+                uri: localUri,
+              }),
+            },
+            type: 'file',
+          },
+        ];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
               channel={channel}
-              doUpdateMessageRequest={() => {
-                throw new Error('offline');
-              }}
+              // Persist the optimistic attachment edit locally, then reject the request (offline). The
+              // local copy (state + DB, incl. the local attachment URL) must survive so the offline-DB
+              // hydration Channel runs on mount re-seeds the edited copy, not the pre-edit one.
+              doUpdateMessageRequest={
+                (async () => {
+                  await getOfflineDb(chatClient).upsertMessages({
+                    execute: true,
+                    messages: [
+                      {
+                        ...message,
+                        attachments: editedAttachments,
+                        status: MessageStatusTypes.FAILED,
+                        text: editedText,
+                      },
+                    ],
+                  });
+                  throw new Error('offline');
+                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
+              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
+                  await waitForUpdateMessageHandler(channel);
                   try {
                     await editMessage({
                       localMessage: {
                         ...message,
-                        attachments: [
-                          {
-                            asset_url: localUri,
-                            custom: {
-                              originalFile: generateFileReference({
-                                name: 'edited-attachment.png',
-                                type: 'image/png',
-                                uri: localUri,
-                              }),
-                            },
-                            type: 'file',
-                          },
-                        ],
+                        attachments: editedAttachments,
                         cid: channel.cid,
                         text: editedText,
                       },
@@ -714,6 +824,96 @@ export const OptimisticUpdates = () => {
       });
     });
 
+    // INTENTIONALLY RED — DO NOT SKIP OR WORK AROUND. Every passing "edit message" test above supplies
+    // a custom `doUpdateMessageRequest` that manually persists + queues the edit. These two tests use
+    // NO custom handler — they exercise the DEFAULT offline update/delete path, which is not yet
+    // implemented in v10: the pending task queues + replays (see "pending task execution" below), but
+    // the optimistic edit/delete is NOT applied to state or persisted to the offline DB. Keep these
+    // failing until the default optimistic offline update/delete lands — the red is the signal.
+    describe('default offline update/delete (no custom handler)', () => {
+      it('should optimistically apply + persist an offline edit without a custom doUpdateMessageRequest', async () => {
+        const message = channel.messagePaginator.headItems[0];
+        const editedText = 'edited offline via default path';
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel}>
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  // Go offline BEFORE editing so the default (no-handler) offline path runs.
+                  markConnectionUnhealthy(chatClient);
+                  try {
+                    await editMessage({
+                      localMessage: { ...message, cid: channel.cid, text: editedText },
+                      options: {},
+                    });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        // A working optimistic offline edit reflects the new text in state AND persists it to the
+        // offline DB immediately (so it survives cold start / hydration), independent of the queue.
+        await waitFor(
+          async () => {
+            const updatedMessage = channel.messagePaginator.getItem(message.id);
+            const dbMessages = await BetterSqlite.selectFromTable('messages');
+            const dbMessage = dbMessages.find((row) => row.id === message.id);
+
+            expect(updatedMessage?.text).toBe(editedText);
+            expect(dbMessage?.text).toBe(editedText);
+          },
+          { timeout: 2500 },
+        );
+      });
+
+      it('should optimistically apply + persist an offline delete without a custom doDeleteMessageRequest', async () => {
+        const message = channel.messagePaginator.headItems[0];
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel}>
+              <CallbackEffectWithMessageOperations
+                callback={async ({ deleteMessage }) => {
+                  markConnectionUnhealthy(chatClient);
+                  try {
+                    await deleteMessage(message);
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+              >
+                <View testID='children' />
+              </CallbackEffectWithMessageOperations>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        // A working optimistic offline delete marks the message deleted in state AND persists that to
+        // the offline DB immediately (independent of the queued delete-message task that replays later).
+        await waitFor(
+          async () => {
+            const stateMessage = channel.messagePaginator.getItem(message.id);
+            const dbMessages = await BetterSqlite.selectFromTable('messages');
+            const dbMessage = dbMessages.find((row) => row.id === message.id);
+
+            expect(stateMessage?.type).toBe('deleted');
+            expect(dbMessage?.type).toBe('deleted');
+          },
+          { timeout: 2500 },
+        );
+      });
+    });
+
     describe('pending task execution', () => {
       it('pending task should be executed after connection is recovered', async () => {
         const message = channel.messagePaginator.headItems[0];
@@ -724,6 +924,8 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel} initialValue={message.text}>
               <CallbackEffectWithMessageOperations
                 callback={async ({ deleteMessage, sendReaction }) => {
+                  // Queue two pending tasks via the working offline path (helper), then reconnect below.
+                  markConnectionUnhealthy(chatClient);
                   useMockedApis(chatClient, [erroredDeleteApi()]);
                   try {
                     await deleteMessage(message);
@@ -781,6 +983,8 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel} initialValue={newMessage.text}>
               <CallbackEffectWithContext
                 callback={async ({ sendMessage }) => {
+                  // Queue a pending send task via the working offline path (helper), then reconnect below.
+                  markConnectionUnhealthy(chatClient);
                   useMockedApis(chatClient, [erroredPostApi()]);
                   try {
                     await sendMessage();
@@ -814,12 +1018,16 @@ export const OptimisticUpdates = () => {
 
       it('should not re-add a failed local message after reconnect when its pending send task was resolved', async () => {
         const localMessage = generateMessage({
+          // The channel paginator only ingests messages whose cid matches (matchesFilter), so the
+          // optimistic message must carry the channel cid to appear in the paginator/headItems.
+          cid: channel.cid,
           status: MessageStatusTypes.SENDING,
           text: 'offline resend',
           user: chatClient.user as UserResponse,
           user_id: chatClient.userID,
         });
         const serverMessage = generateMessage({
+          cid: channel.cid,
           id: localMessage.id,
           text: localMessage.text,
           user: chatClient.user as UserResponse,
@@ -837,8 +1045,15 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel} initialValue={localMessage.text}>
               <CallbackEffectWithContext
                 callback={async ({ sendMessage }) => {
-                  useMockedApis(chatClient, [erroredPostApi()]);
-                  await sendMessage();
+                  // Offline + no POST mock: the offline queueTask persists the pending task, then the
+                  // LLC's fallthrough send request rejects (no mocked response), so the message settles
+                  // as `failed` and is kept in the paginator — the precondition this test resyncs from.
+                  markConnectionUnhealthy(chatClient);
+                  try {
+                    await sendMessage();
+                  } catch (e) {
+                    // do nothing
+                  }
                 }}
                 context={MessageInputContext}
               >
@@ -883,8 +1098,17 @@ export const OptimisticUpdates = () => {
         });
       });
 
+      // INTENTIONALLY RED — DO NOT SKIP OR WORK AROUND. This tests the OPTIMISTIC-UPDATE layer:
+      // a failed local message must be persisted to the offline DB and re-added on reconnect when the
+      // fresh server state does not contain it. In v10 the failed optimistic message is NOT persisted
+      // (`dbHasFailedMsg === false`), so it never comes back. Pending-task QUEUING works; optimistic
+      // failed-message persistence/re-add does not. Keep this failing until that is implemented — the
+      // red is the signal.
       it('should re-add a failed local message after reconnect when fresh state still does not contain it', async () => {
         const localMessage = generateMessage({
+          // The channel paginator only ingests messages whose cid matches (matchesFilter), so the
+          // optimistic message must carry the channel cid to appear in the paginator/headItems.
+          cid: channel.cid,
           status: MessageStatusTypes.SENDING,
           text: 'offline resend unresolved',
           user: chatClient.user as UserResponse,
@@ -902,8 +1126,15 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel} initialValue={localMessage.text}>
               <CallbackEffectWithContext
                 callback={async ({ sendMessage }) => {
-                  useMockedApis(chatClient, [erroredPostApi()]);
-                  await sendMessage();
+                  // Offline + no POST mock: the offline queueTask persists the pending task, then the
+                  // LLC's fallthrough send request rejects (no mocked response), so the message settles
+                  // as `failed` and is kept in the paginator — the precondition this test resyncs from.
+                  markConnectionUnhealthy(chatClient);
+                  try {
+                    await sendMessage();
+                  } catch (e) {
+                    // do nothing
+                  }
                 }}
                 context={MessageInputContext}
               >

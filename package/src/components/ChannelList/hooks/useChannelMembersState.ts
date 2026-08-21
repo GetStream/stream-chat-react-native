@@ -7,12 +7,12 @@ const selector = (state: { members: Record<string, ChannelMemberResponse> }) => 
 });
 
 /**
- * Returns the channel's members, sourced reactively from `channel.state.membersStore`.
+ * Returns the channel's members, sourced reactively from `channel.state`.
  */
 export function useChannelMembersState(channel: Channel): Record<string, ChannelMemberResponse>;
 export function useChannelMembersState(
   channel?: Channel,
 ): Record<string, ChannelMemberResponse> | undefined;
 export function useChannelMembersState(channel?: Channel) {
-  return useStateStore(channel?.state?.membersStore, selector)?.members;
+  return useStateStore(channel?.state, selector)?.members;
 }

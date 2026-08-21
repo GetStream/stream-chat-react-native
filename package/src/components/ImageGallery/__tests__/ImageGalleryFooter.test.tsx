@@ -176,7 +176,7 @@ describe('ImageGalleryFooter', () => {
     const shareImageMock = jest.spyOn(NativeHandlers, 'shareImage');
     const deleteFileMock = jest.spyOn(NativeHandlers, 'deleteFile');
 
-    const attachment = { ...generateImageAttachment(), mime_type: 'image/png' };
+    const attachment = { ...generateImageAttachment(), custom: { mime_type: 'image/png' } };
 
     render(<ImageGalleryComponentImage attachment={attachment} />);
 
@@ -206,8 +206,8 @@ describe('ImageGalleryFooter', () => {
 
     const attachment = {
       ...generateImageAttachment(),
+      custom: { mime_type: 'image/png' },
       image_url: 'https://my-image-service/image/123456',
-      mime_type: 'image/png',
     };
 
     render(<ImageGalleryComponentImage attachment={attachment} />);

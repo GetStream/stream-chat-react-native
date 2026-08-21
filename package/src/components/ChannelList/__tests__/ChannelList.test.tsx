@@ -24,13 +24,14 @@ import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import dispatchChannelHiddenEvent from '../../../mock-builders/event/channelHidden';
 import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
+import dispatchChannelVisibleEvent from '../../../mock-builders/event/channelVisible';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchNotificationAddedToChannelEvent from '../../../mock-builders/event/notificationAddedToChannel';
 import dispatchNotificationMessageNewEvent from '../../../mock-builders/event/notificationMessageNew';
 import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
-import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -216,16 +217,20 @@ describe('ChannelList', () => {
       expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy();
     });
 
+    // v10: the orchestrator's `ChannelPaginator` issues a single v10-shaped request object to
+    // `client.queryChannels(request)` (was the legacy `(filters, sort, options, ...)` positional form).
+    // `filter_values` / `predefined_filter` now travel inside that one request object. The trailing
+    // `undefined` is the optional per-request `requestOptions` (abort signal) arg the paginator threads
+    // through `queryChannelsAndHydrate` (LLC #1828); the channel list never passes one.
     expect(queryChannelsSpy).toHaveBeenNthCalledWith(
       1,
-      {},
-      expect.anything(),
       expect.objectContaining({
+        filter_conditions: {},
         filter_values: { user_id: 'dan' },
         offset: 0,
         predefined_filter: 'user_messaging',
       }),
-      expect.anything(),
+      undefined,
     );
 
     useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
@@ -251,50 +256,36 @@ describe('ChannelList', () => {
 
     expect(queryChannelsSpy).toHaveBeenNthCalledWith(
       2,
-      {},
-      expect.anything(),
       expect.objectContaining({
+        filter_conditions: {},
         filter_values: { user_id: 'sara' },
         offset: 0,
         predefined_filter: 'user_messaging',
       }),
-      expect.anything(),
+      undefined,
     );
   });
 
-  it('should update if filters are updated while awaiting api call', async () => {
+  it('should re-query and swap results when filters are updated', async () => {
     const deferredCallForStaleFilter = new DeferredPromise();
     const deferredCallForFreshFilter = new DeferredPromise();
     const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
     const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
-    const createMockChannel = (id: string) => {
-      const channel = generateChannel({
-        data: { name: id },
-        id,
-        state: { members: {} },
-      } as unknown as Parameters<typeof generateChannel>[0]) as unknown as {
-        countUnread: () => number;
-        messageComposer: { registerDraftEventSubscriptions: () => () => void };
-        muteStatus: () => { muted: boolean };
-        on: jest.Mock;
-      };
-      channel.countUnread = () => 0;
-      channel.muteStatus = () => ({ muted: false });
-      channel.on = jest.fn(() => ({ unsubscribe: jest.fn() }));
-      channel.messageComposer = {
-        registerDraftEventSubscriptions: jest.fn(() => jest.fn()),
-      };
-      return channel;
-    };
-    const staleChannel = [createMockChannel('stale-channel')];
-    const freshChannel = [createMockChannel('new-channel')];
+    // v10: the orchestrator hydrates REAL `Channel` instances from the `queryChannels` response, so the
+    // mock must resolve the actual response shape (`{ channels: ChannelResponse[] }`) rather than the
+    // hand-rolled channel stubs the legacy `setChannels` array accepted.
+    const staleChannel = generateChannelResponse({ id: 'stale-channel' });
+    const freshChannel = generateChannelResponse({ id: 'new-channel' });
     const spy = jest.spyOn(chatClient, 'queryChannels');
-    spy.mockImplementation(((filters: Parameters<typeof chatClient.queryChannels>[0] = {}) => {
-      if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
+    // v10: `client.queryChannels(request)` receives a single v10-shaped request object, so the filter to
+    // discriminate on now lives under `request.filter_conditions` (was the positional `filters` arg).
+    spy.mockImplementation(((request: Parameters<typeof chatClient.queryChannels>[0] = {}) => {
+      const filterConditions = request.filter_conditions ?? {};
+      if (Object.prototype.hasOwnProperty.call(filterConditions, 'new-filter')) {
         return deferredCallForFreshFilter.promise;
       }
       return deferredCallForStaleFilter.promise;
-    }) as typeof chatClient.queryChannels);
+    }) as unknown as typeof chatClient.queryChannels);
 
     const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
@@ -307,16 +298,25 @@ describe('ChannelList', () => {
       </Chat>,
     );
 
-    expect(spy).toHaveBeenNthCalledWith(
-      1,
-      staleFilter,
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    );
-
+    // The paginator issues its query asynchronously (on the post-render effect), so wait for the call
+    // instead of asserting synchronously as the legacy synchronous `queryChannels` allowed.
     await waitFor(() => {
-      expect(queryByTestId('channel-list-view')).toBeTruthy();
+      expect(spy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ filter_conditions: staleFilter }),
+        undefined,
+      );
+    });
+
+    // Settle the in-flight first-page query before flipping the filter. The v10 `ChannelPaginator`
+    // serializes queries (`canExecuteQuery` blocks while `isLoading`), so a filter change is only
+    // guaranteed to trigger a fresh query once the previous one is no longer loading.
+    await act(async () => {
+      deferredCallForStaleFilter.resolve({ channels: [staleChannel] });
+      await deferredCallForStaleFilter.promise;
+    });
+    await waitFor(() => {
+      expect(queryByTestId('stale-channel')).toBeTruthy();
     });
 
     rerender(
@@ -330,21 +330,23 @@ describe('ChannelList', () => {
       </Chat>,
     );
 
-    expect(spy).toHaveBeenNthCalledWith(
-      2,
-      freshFilter,
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    );
-
-    await act(() => {
-      deferredCallForStaleFilter.resolve(staleChannel);
-      deferredCallForFreshFilter.resolve(freshChannel);
-    });
+    // The filter change triggers a fresh re-query; its response is still awaiting at this point.
     await waitFor(() => {
-      expect(queryByTestId('channel-list-view')).toBeTruthy();
+      expect(spy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ filter_conditions: freshFilter }),
+        undefined,
+      );
+    });
+
+    await act(async () => {
+      deferredCallForFreshFilter.resolve({ channels: [freshChannel] });
+      await deferredCallForFreshFilter.promise;
+    });
+    // Once the fresh api call resolves the list reflects the new filter, replacing the stale channel.
+    await waitFor(() => {
       expect(queryByTestId('new-channel')).toBeTruthy();
+      expect(queryByTestId('stale-channel')).toBeNull();
     });
   });
 
@@ -480,19 +482,40 @@ describe('ChannelList', () => {
 
   describe('Event handling', () => {
     describe('message.new', () => {
+      // The message must carry the target channel's `cid`: v10's `MessageIntervalPaginator` filters
+      // ingested messages by `cid` (`buildMatchFilters`), so a message without one is dropped and never
+      // reaches the channel's `messagePaginator.headItems` that the preview reads.
       const sendNewMessageOnChannel3 = () => {
         const newMessage = generateMessage({
+          cid: testChannel3.channel.cid,
           user: generateUser(),
         });
         act(() => dispatchMessageNewEvent(chatClient, newMessage, testChannel3.channel));
         return newMessage;
       };
 
+      const getRenderedOrder = () =>
+        screen.getAllByLabelText('list-item').map((item) => item.props.testID);
+
+      // Settle the list to its loaded channels (past the skeleton→channels swap) before reading order.
+      const waitForRenderedChannels = async (length: number) => {
+        let order: string[] = [];
+        await waitFor(() => {
+          order = getRenderedOrder();
+          expect(order).toHaveLength(length);
+        });
+        return order;
+      };
+
       beforeEach(() => {
         useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2, testChannel3])]);
       });
 
-      it('should move channel to top of the list by default', async () => {
+      // v10 removed the implicit "float to top" on events: the `ChannelManager` no longer boosts a
+      // channel on `message.new`; order is governed purely by `sort` (default = stable, by cid). A new
+      // message therefore updates the channel's preview in place without relocating it. (To force a
+      // channel to the top an integrator now calls `paginator.boost(cid)`.)
+      it('should keep the channel in place on a new message with the default sort', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
@@ -502,6 +525,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
+        const orderBefore = await waitForRenderedChannels(3);
 
         const newMessage = sendNewMessageOnChannel3();
 
@@ -509,14 +533,18 @@ describe('ChannelList', () => {
           expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
-
-        await waitFor(() => {
-          expect(within(items[0]).getByText(newMessage.text as string)).toBeTruthy();
-        });
+        // The new message renders inside the receiving channel's own row (its preview updated in place)…
+        expect(
+          within(screen.getByTestId(testChannel3.channel.id)).getByText(newMessage.text as string),
+        ).toBeTruthy();
+        // …and the list order is unchanged (no float-to-top).
+        expect(getRenderedOrder()).toEqual(orderBefore);
       });
 
-      it('should add channel to top if channel is hidden from the list', async () => {
+      // v10: a `message.new` alone no longer un-hides a channel client-side (only `channel.visible`
+      // clears `data.hidden`), and there is no float-to-top, so a background message does not resurface
+      // a channel the user hid. The channel returns to the list when it becomes visible again.
+      it('should not resurface a hidden channel on a new message (channel.visible does)', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
@@ -526,24 +554,27 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
-        act(() => dispatchChannelHiddenEvent(chatClient, testChannel3.channel));
+        await waitForRenderedChannels(3);
 
-        const newItems = screen.getAllByLabelText('list-item');
+        act(() => dispatchChannelHiddenEvent(chatClient, testChannel3.channel));
         await waitFor(() => {
-          expect(newItems).toHaveLength(2);
+          expect(getRenderedOrder()).toHaveLength(2);
         });
 
         const newMessage = sendNewMessageOnChannel3();
-
-        await waitFor(() => {
-          expect(screen.getByText(newMessage.text as string)).toBeTruthy();
+        // Give the async event pipeline a chance to run; the hidden channel must stay out of the list.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 50));
         });
+        expect(getRenderedOrder()).toHaveLength(2);
+        expect(screen.queryByTestId(testChannel3.channel.id)).toBeNull();
+        expect(screen.queryByText(newMessage.text as string)).toBeNull();
 
-        const items = screen.getAllByLabelText('list-item');
-
+        act(() => dispatchChannelVisibleEvent(chatClient, testChannel3.channel));
         await waitFor(() => {
-          expect(within(items[0]).getByText(newMessage.text as string)).toBeTruthy();
+          expect(getRenderedOrder()).toHaveLength(3);
         });
+        expect(screen.getByTestId(testChannel3.channel.id)).toBeTruthy();
       });
 
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
@@ -558,6 +589,7 @@ describe('ChannelList', () => {
         await waitFor(() => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
+        const orderBefore = await waitForRenderedChannels(3);
 
         const newMessage = sendNewMessageOnChannel3();
 
@@ -565,11 +597,11 @@ describe('ChannelList', () => {
           expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
-
-        await waitFor(() => {
-          expect(within(items[2]).getByText(newMessage.text as string)).toBeTruthy();
-        });
+        // Order is preserved and the new message renders in the receiving channel's row.
+        expect(getRenderedOrder()).toEqual(orderBefore);
+        expect(
+          within(screen.getByTestId(testChannel3.channel.id)).getByText(newMessage.text as string),
+        ).toBeTruthy();
       });
     });
 
@@ -658,16 +690,21 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(items).toHaveLength(3);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(3);
         });
 
         act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
 
-        const newItems = screen.getAllByLabelText('list-item');
+        // v10 routes the event through the `ChannelManager`'s async handler pipeline, so the removal
+        // lands after `act()` returns. Flush the pipeline (and the FlatList's deferred cell teardown)
+        // on a real timer, then re-query — asserting on a snapshot taken before this would see the old
+        // count.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        });
         await waitFor(() => {
-          expect(newItems).toHaveLength(2);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(2);
         });
       });
     });
@@ -721,16 +758,19 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(items).toHaveLength(2);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(2);
         });
 
         act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
 
-        const newItems = screen.getAllByLabelText('list-item');
+        // The `ChannelManager` removes the channel via its async handler pipeline; flush it (and the
+        // FlatList's deferred cell teardown) on a real timer before re-querying.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        });
         await waitFor(() => {
-          expect(newItems).toHaveLength(1);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(1);
         });
       });
     });
@@ -753,16 +793,19 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(items).toHaveLength(2);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(2);
         });
 
         act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
 
-        const newItems = screen.getAllByLabelText('list-item');
+        // The `ChannelManager` drops the hidden channel via its async handler pipeline; flush it (and
+        // the FlatList's deferred cell teardown) on a real timer before re-querying.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        });
         await waitFor(() => {
-          expect(newItems).toHaveLength(1);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(1);
         });
       });
     });

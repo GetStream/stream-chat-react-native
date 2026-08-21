@@ -8,18 +8,19 @@ import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import { ChannelEditName } from '../components/ChannelEditName';
 
-const buildChannel = (overrides?: { name?: string }): Channel =>
-  ({
+const buildChannel = (overrides?: { name?: string }): Channel => {
+  const name = overrides && 'name' in overrides ? overrides.name : 'Original';
+  return {
     cid: 'messaging:test',
-    data: {
-      name: overrides && 'name' in overrides ? overrides.name : 'Original',
-    },
+    data: { custom: { name } },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
-  }) as unknown as Channel;
+    state: generateChannelState({ data: { custom: { name } } }),
+  } as unknown as Channel;
+};
 
 const renderComponent = ({ channel }: { channel: Channel }) => {
   const store = new EditChannelDetailsStore(channel);

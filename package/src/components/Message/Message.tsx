@@ -11,13 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type {
-  Attachment,
-  LocalMessage,
-  MembersState,
-  MentionEntity,
-  UserResponse,
-} from 'stream-chat';
+import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -62,7 +56,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { useStableCallback, useStateStore } from '../../hooks';
+import { useStableCallback } from '../../hooks';
 import { isVideoPlayerAvailable, NativeHandlers } from '../../native';
 import {
   closeOverlay,
@@ -209,7 +203,8 @@ export type MessageActionHandlers = {
 export type MessagePropsWithContext = Pick<
   ChannelContextValue,
   'channel' | 'enforceUniqueReaction'
-> & { members: MembersState['members'] } & Pick<KeyboardContextValue, 'dismissKeyboard'> &
+> &
+  Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
     Omit<
       MessageContextValue,
@@ -318,7 +313,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleThreadReply,
     handleBlockUser,
     isTargetedMessage,
-    members,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
     messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
@@ -750,7 +744,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMessageAIGenerated,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
-    members,
     message: overlayActive ? frozenMessage.current : message,
     messageOverlayId,
     messageContentOrder,
@@ -979,7 +972,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
     messageOverlayTargetId: prevMessageOverlayTargetId,
-    members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
     showUnreadUnderlay: prevShowUnreadUnderlay,
@@ -993,7 +985,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
     messageOverlayTargetId: nextMessageOverlayTargetId,
-    members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
     showUnreadUnderlay: nextShowUnreadUnderlay,
@@ -1008,11 +999,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const readByEqual = prevReadBy === nextReadBy;
   if (!readByEqual) {
-    return false;
-  }
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) {
     return false;
   }
 
@@ -1150,8 +1136,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
-const messageMembersSelector = (state: MembersState) => ({ members: state.members });
-
 export type MessageProps = Partial<
   Omit<MessagePropsWithContext, 'groupStyles' | 'handleReaction' | 'message'>
 > &
@@ -1166,9 +1150,6 @@ export type MessageProps = Partial<
 export const Message = (props: MessageProps) => {
   const { message } = props;
   const { channel, enforceUniqueReaction } = useChannelContext();
-  const { members } = useStateStore(channel.state.membersStore, messageMembersSelector) ?? {
-    members: {},
-  };
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
@@ -1188,7 +1169,6 @@ export const Message = (props: MessageProps) => {
         deliveredToCount,
         dismissKeyboard,
         enforceUniqueReaction,
-        members,
         messagesContext,
         readBy: readByCount,
         setEditingState,

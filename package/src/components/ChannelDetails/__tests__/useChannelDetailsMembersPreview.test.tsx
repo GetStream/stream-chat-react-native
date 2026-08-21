@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
@@ -16,11 +17,12 @@ const buildChannel = ({
     cid: 'messaging:test',
     data: memberCount == null ? {} : { member_count: memberCount },
     on: () => ({ unsubscribe: () => undefined }),
-    state: {
+    state: generateChannelState({
       members: Object.fromEntries(
         members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),
       ),
-    },
+      ...(memberCount == null ? {} : { memberCount }),
+    }),
   }) as unknown as Channel;
 
 const buildMember = (id: string, created_at?: string) =>

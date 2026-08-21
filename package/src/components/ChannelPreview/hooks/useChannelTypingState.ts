@@ -1,48 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Channel } from 'stream-chat';
 
-import { Channel, EventPayload, UserResponse } from 'stream-chat';
-
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChannelTypingUsers } from '../../MessageList/hooks/useTypingUsers';
 
 type UseChannelTypingStateProps = {
   channel: Channel;
 };
 
-// Listen to the typing.start and typing.stop events and update the typing state
+/**
+ * Typing users for a channel-preview row. A thin wrapper over the shared `useChannelTypingUsers`
+ * core (the same reactive `channel.state.typing` source the in-channel indicator uses). The preview
+ * row isn't inside a `<Channel>` provider, so the channel is passed as a prop rather than read from
+ * context.
+ */
 export const useChannelTypingState = ({ channel }: UseChannelTypingStateProps) => {
-  const { client } = useChatContext();
-  const [usersTyping, setUsersTyping] = useState<UserResponse[]>([]);
-
-  const handleTypingStart = useCallback(
-    (event: EventPayload<'typing.start'>) => {
-      if (channel.cid !== event.cid || event.user?.id === client?.user?.id) return;
-      setUsersTyping((prev) => {
-        if (!event.user) return prev;
-        if (prev.some((user) => user.id === event.user?.id)) return prev;
-        return [...prev, event.user];
-      });
-    },
-    [channel.cid, client?.user?.id],
-  );
-
-  const handleTypingStop = useCallback(
-    (event: EventPayload<'typing.stop'>) => {
-      if (channel.cid !== event.cid || event.user?.id === client?.user?.id) return;
-      setUsersTyping((prev) => prev.filter((user) => user.id !== event.user?.id));
-    },
-    [channel.cid, client?.user?.id],
-  );
-
-  useEffect(() => {
-    const listeners = [
-      channel.on('typing.start', handleTypingStart),
-      channel.on('typing.stop', handleTypingStop),
-    ];
-
-    return () => {
-      listeners.forEach((listener) => listener.unsubscribe());
-    };
-  }, [channel, handleTypingStart, handleTypingStop]);
+  const usersTyping = useChannelTypingUsers(channel);
 
   return { usersTyping };
 };

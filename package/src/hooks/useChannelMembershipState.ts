@@ -1,12 +1,17 @@
-import { Channel, ChannelMemberResponse, EventType } from 'stream-chat';
+import { Channel, ChannelMemberResponse } from 'stream-chat';
 
-import { useSelectedChannelState } from './useSelectedChannelState';
+import { useStateStore } from './useStateStore';
 
-const selector = (channel: Channel) => channel.state.membership;
-const keys: EventType[] = ['member.updated'];
+const selector = (state: { membership: ChannelMemberResponse }) => ({
+  membership: state.membership,
+});
 
+/**
+ * Returns the current user's membership for the channel, sourced reactively from `channel.state`
+ * (updates on `member.added`/`member.updated`).
+ */
 export function useChannelMembershipState(channel: Channel): ChannelMemberResponse;
 export function useChannelMembershipState(channel?: Channel): ChannelMemberResponse | undefined;
 export function useChannelMembershipState(channel?: Channel) {
-  return useSelectedChannelState({ channel, selector, stateChangeEventKeys: keys });
+  return useStateStore(channel?.state, selector)?.membership;
 }

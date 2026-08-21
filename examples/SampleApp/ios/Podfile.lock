@@ -2857,7 +2857,7 @@ PODS:
   - SDWebImageWebPCoder (0.15.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - stream-chat-react-native (9.7.2):
+  - stream-chat-react-native (9.7.6):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3399,7 +3399,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  stream-chat-react-native: e97f6d3ed0c2828b20610ffc0023ad7f9c90738d
+  stream-chat-react-native: ea3499916019c499ecb745be61e7ecf82f0fd999
   Teleport: c56b30b08bd20d10da1efb0f21c6bc50c269ee6a
   Yoga: 542a30dafe5b0f5f1d9f185ea7b2a3811ac54801
 

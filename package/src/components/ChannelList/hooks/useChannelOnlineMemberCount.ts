@@ -6,10 +6,10 @@ const selector = (state: { watcherCount: number }) => ({ watcherCount: state.wat
 
 /**
  * Returns the channel's online (watcher) count, sourced reactively from
- * `channel.state.watcherStore`.
+ * `channel.state`.
  */
 export function useChannelOnlineMemberCount(channel: Channel): number;
 export function useChannelOnlineMemberCount(channel?: Channel): number | undefined;
 export function useChannelOnlineMemberCount(channel?: Channel) {
-  return useStateStore(channel?.state?.watcherStore, selector)?.watcherCount;
+  return useStateStore(channel?.state, selector)?.watcherCount;
 }

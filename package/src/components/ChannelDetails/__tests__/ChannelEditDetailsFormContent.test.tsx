@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { StateStore, type Channel } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
@@ -15,6 +15,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateFileReference } from '../../../mock-builders/attachments';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { NativeHandlers } from '../../../native';
 import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import { ChannelEditDetailsFormContent } from '../components/ChannelEditDetailsFormContent';
@@ -47,21 +48,18 @@ const SheetProbe = (props: ChannelEditImageSheetProps) => {
   );
 };
 
-const buildChannel = (overrides?: { image?: string; name?: string }): Channel =>
-  ({
+const buildChannel = (overrides?: { image?: string; name?: string }): Channel => {
+  const custom = {
+    name: overrides && 'name' in overrides ? overrides.name : 'Original',
+    ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+  };
+  return {
     cid: 'messaging:test',
-    // Channel name/image live under `data.custom` since the OpenAPI migration — that is where
-    // `useChannelName` / `useChannelImage` and `EditChannelDetailsStore` read them from.
-    data: {
-      custom: {
-        name: overrides && 'name' in overrides ? overrides.name : 'Original',
-        ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
-      },
-    },
+    data: { custom },
     on: () => ({ unsubscribe: () => undefined }),
-    // `useChannelMembersState` reads the members reactively off `channel.state.membersStore`.
-    state: { members: {}, membersStore: new StateStore({ members: {} }) },
-  }) as unknown as Channel;
+    state: generateChannelState({ data: { custom } }),
+  } as unknown as Channel;
+};
 
 // The avatar renders its image through the default `SvgAwareImage`, which for a
 // raster URI is a plain RN `Image`. Read back the displayed `uri` (or undefined

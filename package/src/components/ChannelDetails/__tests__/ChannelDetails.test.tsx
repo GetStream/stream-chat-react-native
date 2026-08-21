@@ -15,6 +15,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { ChannelDetails } from '../ChannelDetails';
 
 const Providers = ({ children }: PropsWithChildren) => (
@@ -61,7 +62,7 @@ const buildChannel = (capabilities: string[] = []) =>
     data: { own_capabilities: capabilities },
     id: 'test',
     on: jest.fn(() => ({ unsubscribe: jest.fn() })),
-    state: { members: {} },
+    state: generateChannelState({ ownCapabilities: capabilities }),
   }) as unknown as Channel;
 
 const renderContent = () =>

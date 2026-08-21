@@ -9,6 +9,7 @@ import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { ScrollToBottomButton } from '../ScrollToBottomButton';
 
@@ -71,26 +72,19 @@ describe('ScrollToBottomButton', () => {
     const t = jest.fn((key: string, d?: unknown) => (typeof d === 'string' ? d : key));
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.init();
-    // The button reads OUR user's count from the channel read store (see ScrollToBottomButton),
-    // keyed by the chat client's userID. Provide a minimal fake client + channel read store
-    // reporting 3 unread for that user. Hand-rolled to avoid a runtime `stream-chat` import (which
-    // breaks jest under the local portal).
-    const readState = {
-      read: {
-        me: {
-          last_read: new Date(),
-          unread_messages: 3,
-          user: { id: 'me' },
-        },
-      },
-    };
+    // The button reads OUR user's count from `channel.state` (a v10 reactive StateStore) via
+    // `useStateStore`, keyed by the chat client's userID. Seed the `read` slice with 3 unread
+    // for that user.
     const channel = {
-      state: {
-        readStore: {
-          getLatestValue: () => readState,
-          subscribeWithSelector: () => () => {},
+      state: generateChannelState({
+        read: {
+          me: {
+            last_read: new Date(),
+            unread_messages: 3,
+            user: { id: 'me' },
+          },
         },
-      },
+      }),
     };
     const { getByTestId, getByText } = render(
       <ThemeProvider>

@@ -18,6 +18,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { ChannelDetailsMemberSection } from '../components/ChannelDetailsMemberSection';
@@ -51,11 +52,12 @@ const buildChannel = (
     cid: 'messaging:test',
     data: { member_count: memberCount ?? members.length },
     on: () => ({ unsubscribe: () => undefined }),
-    state: {
+    state: generateChannelState({
+      memberCount: memberCount ?? members.length,
       members: Object.fromEntries(
         members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),
       ),
-    },
+    }),
     ...overrides,
   }) as unknown as Channel;
 
@@ -67,10 +69,7 @@ const applyCapabilities = (
   const ownCapabilities = Object.entries(overrides)
     .filter(([, enabled]) => enabled)
     .map(([key]) => allOwnCapabilities[key as OwnCapability]);
-  (channel as { data?: Record<string, unknown> }).data = {
-    ...((channel as { data?: Record<string, unknown> }).data ?? {}),
-    own_capabilities: ownCapabilities,
-  };
+  channel.state.partialNext({ ownCapabilities });
   return channel;
 };
 

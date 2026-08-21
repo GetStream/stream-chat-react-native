@@ -79,12 +79,14 @@ describe('MessageTextContainer', () => {
   it('should display a translated message if applicable', async () => {
     const chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' } as UserResponse);
 
-    const message = {
+    // A well-formed message (id/created_at/user) so the v10 message paginator can seed it from the
+    // query response; a bare `{ i18n, text }` object has no created_at and is dropped → empty list.
+    const message = generateMessage({
       i18n: {
         no_text: 'Hallo verden!',
       },
       text: 'Hello world!',
-    };
+    });
 
     const mockedChannel = generateChannelResponse({
       id: 'chans',
@@ -110,7 +112,7 @@ describe('MessageTextContainer', () => {
     const { getByText } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(getByText(message.i18n.no_text)).toBeTruthy();
+      expect(getByText(message.i18n!.no_text)).toBeTruthy();
     });
   });
 

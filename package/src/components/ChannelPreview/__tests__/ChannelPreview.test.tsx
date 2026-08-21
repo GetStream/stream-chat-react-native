@@ -3,7 +3,14 @@ import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
-import type { Channel, StreamChat, UserResponse, UserResponseCommonFields } from 'stream-chat';
+import { fromPartial } from '@total-typescript/shoehorn';
+import type {
+  Channel,
+  Event,
+  StreamChat,
+  UserResponse,
+  UserResponseCommonFields,
+} from 'stream-chat';
 
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
@@ -16,7 +23,7 @@ import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchNotificationMarkRead from '../../../mock-builders/event/notificationMarkRead';
 import dispatchNotificationMarkUnread from '../../../mock-builders/event/notificationMarkUnread';
-import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -35,7 +42,6 @@ type ChannelPreviewUIComponentProps = {
   muted: boolean;
 };
 
-const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
 const mockChannelSwipableWrapper = jest.fn(({ children }: React.PropsWithChildren) => (
   <Text testID='swipe-wrapper'>{children}</Text>
 ));
@@ -66,16 +72,30 @@ const initChannelFromData = async (
 
   channel.countUnread = jest.fn().mockReturnValue(0);
   channel.initialized = true;
-  channel.muteStatus = jest.fn().mockReturnValue({ muted: false });
   channel.messagePaginator.ingestItem(channel.state.formatMessage(generateMessage()));
 
   return channel;
 };
 
+// The preview now sources unread reactively from `channel.state.read[userId].unread_messages`
+// (see useChannelPreviewData), so seed that slice directly rather than mocking `countUnread()`.
+const seedUnread = (channel: Channel, userId: string, unread_messages: number) => {
+  channel.state.partialNext({
+    read: {
+      ...channel.state.read,
+      [userId]: {
+        last_read: new Date(),
+        unread_messages,
+        user: { id: userId } as UserResponse,
+      },
+    },
+  });
+};
+
 // TODO(#27/#8): the unread-count assertions below exercise the pre-reactive, mock-driven mechanism
 // (mocking `channel.countUnread()` + dispatching `notification.mark_read`/`mark_unread` so the old WS
 // listeners refreshed). `useChannelPreviewData` now sources unread reactively from
-// `channel.state.readStore` and no longer calls `countUnread()`, so these need reworking to seed
+// `channel.state` and no longer calls `countUnread()`, so these need reworking to seed
 // `readStore` and dispatch the events that actually mutate it (`message.read`, `message.new`).
 // Deferred with the rest of the portal-blocked test staleness (jest cannot currently run — the local
 // stream-chat-js portal breaks module resolution); fix when the portal is removed.
@@ -104,15 +124,6 @@ describe('ChannelPreview', () => {
     );
   };
 
-  const generateChannelWrapper = (overrides: Partial<Channel>) =>
-    generateChannel({
-      countUnread: jest.fn().mockReturnValue(0),
-      initialized: true,
-      lastMessage: jest.fn().mockReturnValue(generateMessage()),
-      muteStatus: jest.fn().mockReturnValue({ muted: false }),
-      ...overrides,
-    } as unknown as Parameters<typeof generateChannel>[0]);
-
   const useInitializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
@@ -132,9 +143,7 @@ describe('ChannelPreview', () => {
   describe('notification.mark_read event', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
       channel = await initChannelFromData(chatClient);
-
-      channel.countUnread = jest.fn().mockReturnValue(10);
-      channel.on = channelOnMock;
+      seedUnread(channel, chatClient.userID as string, 10);
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -144,8 +153,9 @@ describe('ChannelPreview', () => {
         expect(getByTestId('unread-count')).toHaveTextContent('10');
       });
 
+      // a mark-read for a different channel (no `unread_channels: 0`) must not zero this one
       act(() => {
-        dispatchNotificationMarkRead(chatClient, { cid: 'channel-id' });
+        dispatchNotificationMarkRead(chatClient, { cid: 'messaging:other' });
       });
 
       await waitFor(() => {
@@ -154,15 +164,8 @@ describe('ChannelPreview', () => {
     });
 
     it('should update the unread count to 0', async () => {
-      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
-      const countUnreadMock = jest.fn();
-
-      countUnreadMock.mockReturnValue(10);
-
       channel = await initChannelFromData(chatClient);
-
-      channel.countUnread = countUnreadMock;
-      channel.on = channelOnMock;
+      seedUnread(channel, chatClient.userID as string, 10);
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -172,10 +175,11 @@ describe('ChannelPreview', () => {
         expect(getByTestId('unread-count')).toHaveTextContent('10');
       });
 
-      countUnreadMock.mockReturnValue(0);
-
+      // a "mark all read" (`unread_channels: 0`) zeroes every active channel's own unread
       act(() => {
-        dispatchNotificationMarkRead(chatClient, channel || {});
+        chatClient.dispatchEvent(
+          fromPartial<Event>({ type: 'notification.mark_read', unread_channels: 0 }),
+        );
       });
 
       await waitFor(() => {
@@ -280,14 +284,7 @@ describe('ChannelPreview', () => {
     });
 
     it("should update the unread count if the event's user id matches the client's user id", async () => {
-      const c = generateChannelResponse();
-      await useInitializeChannel(c);
-      const channelOnMock = jest.fn().mockReturnValue({ unsubscribe: jest.fn() });
-
-      const testChannel = generateChannelWrapper({
-        ...channel,
-        on: channelOnMock,
-      });
+      channel = await initChannelFromData(chatClient);
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -297,11 +294,14 @@ describe('ChannelPreview', () => {
         expect(getByTestId('unread-count')).toHaveTextContent('0');
       });
 
+      // the channel's mark_unread handler requires an own user + `last_read_at`; it upserts
+      // `read[userId].unread_messages`, which the preview renders reactively.
       act(() => {
         dispatchNotificationMarkUnread(
           chatClient,
-          { cid: testChannel?.cid },
+          { cid: channel?.cid },
           {
+            last_read_at: new Date(),
             unread_channels: 2,
             unread_messages: 5,
             user: { id: clientUser.id } as UserResponseCommonFields,
@@ -316,59 +316,35 @@ describe('ChannelPreview', () => {
   });
 
   it('should update the unread count to 0 if the channel is muted', async () => {
-    const someOtherUser = generateUser({ id: 'not-me' });
+    channel = await initChannelFromData(chatClient);
 
-    const c = generateChannelResponse();
-    await useInitializeChannel(c);
-
-    if (channel) channel.muteStatus = jest.fn().mockReturnValue({ muted: true });
+    // mute reactively; useChannelPreviewData renders a muted channel with a zeroed unread count
+    // regardless of how many messages are actually unread.
+    act(() => {
+      channel?.state.partialNext({
+        muteStatus: { createdAt: null, expiresAt: null, muted: true },
+      });
+    });
+    seedUnread(channel, chatClient.userID as string, 5);
 
     const { getByTestId } = render(<TestComponent />);
 
-    await waitFor(() => getByTestId('channel-id'));
-
-    for (let i = 0; i < 10; i++) {
-      const message = generateMessage({
-        user: someOtherUser,
-      });
-      act(() => {
-        dispatchMessageNewEvent(chatClient, message, channel || {});
-      });
-    }
     await waitFor(() => getByTestId('channel-id'));
 
     await waitFor(() => {
       expect(getByTestId('unread-count')).toHaveTextContent('0');
     });
-
-    act(() => {
-      dispatchNotificationMarkUnread(
-        chatClient,
-        { cid: channel?.cid },
-        {
-          unread_channels: 2,
-          unread_messages: 5,
-          user: { id: clientUser.id } as UserResponseCommonFields,
-        },
-      );
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('unread-count')).toHaveTextContent('5');
-    });
   });
 
   it('should update the latest message on "message.new" event', async () => {
-    const c = generateChannelResponse();
-    await useInitializeChannel(c);
+    channel = await initChannelFromData(chatClient);
 
     const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() => getByTestId('channel-id'));
 
-    const message = generateMessage({
-      user: clientUser,
-    });
+    // the paginator ingest filter keys on `cid`, so a cid-less message never updates the preview
+    const message = generateMessage({ cid: channel.cid, user: clientUser });
 
     act(() => {
       dispatchMessageNewEvent(chatClient, message, channel || {});
@@ -380,27 +356,23 @@ describe('ChannelPreview', () => {
   });
 
   it('should update the unread count on "message.new" event', async () => {
-    const c = generateChannelResponse();
-    await useInitializeChannel(c);
+    const someOtherUser = generateUser({ id: 'not-me' });
+    channel = await initChannelFromData(chatClient);
+    seedUnread(channel, chatClient.userID as string, 0);
 
     const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() => getByTestId('channel-id'));
 
-    const message = generateMessage({
-      user: clientUser,
-    });
-
-    if (channel !== null) {
-      channel.countUnread = () => 10;
-    }
+    // a new message from another user bumps the current user's reactive unread count
+    const message = generateMessage({ cid: channel.cid, user: someOtherUser });
 
     act(() => {
       dispatchMessageNewEvent(chatClient, message, channel || {});
     });
 
     await waitFor(() => {
-      expect(getByTestId('unread-count')).toHaveTextContent('10');
+      expect(getByTestId('unread-count')).toHaveTextContent('1');
     });
   });
 

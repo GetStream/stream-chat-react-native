@@ -15,6 +15,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import {
   ChannelDetailsEditButton,
   ChannelDetailsEditButtonProps,
@@ -48,7 +49,7 @@ const buildChannel = (capabilities: string[] = []): Channel =>
     cid: 'messaging:test',
     data: { own_capabilities: capabilities },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
+    state: generateChannelState({ ownCapabilities: capabilities }),
   }) as unknown as Channel;
 
 const Providers = ({ children }: PropsWithChildren) => (

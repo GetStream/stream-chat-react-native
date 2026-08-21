@@ -48,7 +48,8 @@ export const ThreadMessagePreviewDeliveryStatus = ({
     if (!channelConfigExists) {
       return true;
     }
-    const read_events = !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
+    const read_events =
+      !channel.pendingDisposal && !!channel?.id && channel.getConfig()?.read_events;
     if (typeof read_events !== 'boolean') {
       return true;
     }

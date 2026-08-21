@@ -58,7 +58,7 @@ export const TypingIndicatorContainer = (props: TypingIndicatorContainerProps) =
   const { channel } = useChannelContext();
   const { client } = useChatContext();
   const { threadInstance } = useThreadContext();
-  const { typing } = useStateStore(channel.state.typingStore, typingSelector) ?? { typing: {} };
+  const { typing } = useStateStore(channel.state, typingSelector) ?? { typing: {} };
 
   return (
     <TypingIndicatorContainerWithContext

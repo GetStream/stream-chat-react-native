@@ -521,7 +521,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const optimisticallyUpdatedNewMessages = useMemo<Set<string>>(() => new Set(), []);
 
   const channelId = channel?.id || '';
-  const pollCreationEnabled = !channel.disconnected && !!channel?.id && channel?.getConfig()?.polls;
+  const pollCreationEnabled =
+    !channel.pendingDisposal && !!channel?.id && channel?.getConfig()?.polls;
 
   const {
     loadChannelAroundMessage: loadChannelAroundMessageFn,
@@ -559,7 +560,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         return;
       }
 
-      // Typing state is sourced reactively from channel.state.typingStore; nothing to copy here.
+      // Typing state is sourced reactively from channel.state; nothing to copy here.
       if (event.type === 'typing.start' || event.type === 'typing.stop') {
         return;
       }
@@ -645,6 +646,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel.cid, messageId, shouldSyncChannel]);
+
+  // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
+  // Channel instance shared with the channel-list preview or a thread stays active until the last
+  // mount unmounts. Being active enables auto-mark-read-on-focus and suppresses destructive
+  // channel-list re-seeding of the open channel's message list on reconnect. Keyed on `channel` and
+  // balanced (the cleanup deactivates the exact instance the effect activated), so swapping the
+  // `channel` prop deactivates the previous instance before activating the new one.
+  useEffect(() => {
+    channel?.activate?.();
+    return () => {
+      channel?.deactivate?.();
+    };
+  }, [channel]);
 
   // subscribe to channel.deleted event
   useEffect(() => {
@@ -773,7 +787,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
   }, [enableOfflineSupport, client, shouldSyncChannel]);
 
-  // In case the channel is disconnected which may happen when channel is deleted,
+  // In case the channel is pending disposal, which may happen when the channel is deleted,
   // underlying js client throws an error. Following function ensures that Channel component
   // won't result in error in such a case.
   const getChannelConfigSafely = () => {

@@ -65,10 +65,13 @@ const uniqueModules = dependencyPackageNames.map((packageName) => {
 const blockList = uniqueModules.map(({ blockPattern }) => blockPattern);
 
 // provide the path for the unique modules
-const extraNodeModules = uniqueModules.reduce((acc, item) => {
-  acc[item.packageName] = item.modulePath;
-  return acc;
-}, {});
+const extraNodeModules = uniqueModules.reduce(
+  (acc, item) => {
+    acc[item.packageName] = item.modulePath;
+    return acc;
+  },
+  { 'stream-chat': '/Users/isekovanic/Projects/stream-chat-js' },
+);
 
 config.resolver.blockList = exclusionList(blockList);
 config.resolver.extraNodeModules = extraNodeModules;
@@ -76,6 +79,6 @@ config.resolver.extraNodeModules = extraNodeModules;
 config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
 
 // add the package dir for metro to access the package folder
-config.watchFolders = [packageDirPath];
+config.watchFolders = [packageDirPath, '/Users/isekovanic/Projects/stream-chat-js'];
 
 module.exports = config;
