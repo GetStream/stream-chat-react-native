@@ -115,9 +115,7 @@ const translateCommandDisabled = ({
     );
   }
 
-  // `stream-chat` emits `'replying'`. This branch read `'quoted_message'` and so never matched, which
-  // meant the reply case fell through and rendered core's untranslated English instead.
-  if (reason === 'replying') {
+  if (reason === 'quoted_message') {
     return t(
       'notifications.commandUnavailable.whileReplying.error',
       'Command not available while replying',
