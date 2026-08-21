@@ -23,10 +23,10 @@ describe('ScrollToBottomButton', () => {
 
   it('should render nothing if showNotification is false', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={false} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -39,10 +39,10 @@ describe('ScrollToBottomButton', () => {
 
   it('should render if showNotification is true', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -55,11 +55,11 @@ describe('ScrollToBottomButton', () => {
 
   it('should trigger onPress when pressed', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const onPress = jest.fn();
     const { getByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={onPress} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -71,7 +71,7 @@ describe('ScrollToBottomButton', () => {
   it('should display the unread count', async () => {
     const t = jest.fn((key: string, d?: unknown) => (typeof d === 'string' ? d : key));
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     // The button reads OUR user's count from `channel.state` (a v10 reactive StateStore) via
     // `useStateStore`, keyed by the chat client's userID. Seed the `read` slice with 3 unread
     // for that user.
@@ -107,10 +107,10 @@ describe('ScrollToBottomButton', () => {
 
   it('should render the message notification and match snapshot', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { toJSON } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,

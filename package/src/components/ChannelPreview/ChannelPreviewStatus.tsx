@@ -8,8 +8,8 @@ import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
+import { getCalendarDateStringForA11y, getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
-import { getDateString, getDateStringForA11y } from '../../utils/i18n/getDateString';
 
 export type ChannelPreviewStatusProps = Pick<
   ChannelPreviewViewPropsWithContext,
@@ -28,7 +28,7 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   const formattedDate = useMemo(
     () =>
       getDateString({
-        date: created_at,
+        messageCreatedAt: created_at,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.ChannelPreviewStatus',
@@ -38,9 +38,9 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
 
   const a11yDate = useMemo(
     () =>
-      getDateStringForA11y({
+      getCalendarDateStringForA11y({
         calendarFormatOverrides: { sameDay: 'LT' },
-        date: created_at,
+        messageCreatedAt: created_at,
         tDateTimeParser,
         userLanguage,
       }),

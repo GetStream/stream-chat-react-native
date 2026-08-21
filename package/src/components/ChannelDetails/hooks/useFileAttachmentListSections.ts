@@ -9,7 +9,7 @@ import {
 } from 'stream-chat';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { getDateString } from '../../../utils/i18n/getDateString';
+import { getDateString } from '../../../i18n/utils';
 
 /**
  * A single file/audio attachment paired with the message it belongs to. The file attachment list
@@ -60,7 +60,7 @@ export const useFileAttachmentListSections = (
         continue;
       }
       const formatted = getDateString({
-        date: message.created_at as string | Date | undefined,
+        messageCreatedAt: message.created_at as string | Date | undefined,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.FileAttachmentListSection',

@@ -36,7 +36,7 @@
     "@react-native-camera-roll/camera-roll": ">=7.9.0",
     "@react-native-clipboard/clipboard": ">=1.16.0",
     "@react-native-documents/picker": ">=10.1.1",
-    "react-native": ">=0.76.0",
+    "react-native": ">=0.79.0",
     "react-native-audio-recorder-player": ">=3.6.13",
     "react-native-blob-util": ">=0.22.0",
     "react-native-haptic-feedback": ">=2.3.0",

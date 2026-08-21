@@ -23,13 +23,13 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { PollComposerOption, PollComposerState } from 'stream-chat';
+import { POLL_COMPOSER_VALIDATION_CODE, PollComposerOption, PollComposerState } from 'stream-chat';
+import type { PollComposerValidationCode, PollComposerValidationError } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { translateExternalString } from '../../../i18n/externalStrings';
 import { primitives } from '../../../theme';
 
 export type CurrentOptionPositionsCache = {
@@ -50,7 +50,7 @@ export type CreatePollOptionType = {
   optionsCount: number;
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<string | null>;
-  error?: string;
+  error?: PollComposerValidationError;
   handleChangeText: (newText: string, index: number) => void;
   handleBlur: () => void;
   index: number;
@@ -287,6 +287,23 @@ export const CreatePollOption = ({
   const { t } = useTranslationContext();
   const { icons } = useComponentsContext();
   const { createPollOptionGap = 8 } = useCreatePollContentContext();
+
+  // Keyed on `stream-chat`'s stable validation code. This used to match on the English sentence the
+  // composer returned, which meant a reworded message in a `stream-chat` patch silently stopped
+  // translating. `error.message` remains the fallback so an unrecognized code renders readable text.
+  const knownValidationErrors = useMemo<Partial<Record<PollComposerValidationCode, string>>>(
+    () => ({
+      [POLL_COMPOSER_VALIDATION_CODE.optionDuplicate]: t(
+        'poll.createPoll.options.duplicate.error',
+        'Option already exists',
+      ),
+      [POLL_COMPOSER_VALIDATION_CODE.optionEmpty]: t(
+        'poll.createPoll.options.empty.error',
+        'Option is empty',
+      ),
+    }),
+    [t],
+  );
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
   const initialTop =
@@ -533,7 +550,7 @@ export const CreatePollOption = ({
         >
           <icons.InfoTooltip height={20} width={20} fill={semantics.accentError} />
           <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
-            {translateExternalString(t, error)}
+            {knownValidationErrors[error.code] ?? error.message}
           </Text>
         </View>
       ) : null}

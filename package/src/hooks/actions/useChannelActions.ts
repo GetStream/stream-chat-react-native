@@ -485,7 +485,9 @@ export const useChannelActions = (channel: Channel) => {
         } else {
           const { file } = doFileUploadRequest
             ? await doFileUploadRequest(image)
-            : await client.uploadImage({ file: image });
+            : await client.uploadImage({
+                file: { name: image.name, type: image.type, uri: image.uri },
+              });
           await channel.updatePartial({ set: { image: file } });
         }
         addNotification({

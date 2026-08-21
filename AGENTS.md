@@ -56,7 +56,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
 - `state-store/` — client-side stores on `useSyncExternalStore` with a selector pattern (audio player, video player, image gallery, message overlay, attachment picker, …)
 - `store/` — offline SQLite persistence: `OfflineDB.ts`, `SqliteClient.ts`, `schema.ts`, `mappers/`, `apis/`
 - `theme/` — theming system + `topologicalResolution.ts` + `generated/` tokens
-- `i18n/` — the translation key layer: generated `keys.ts` catalog, `types.ts`, `runtimeDefaults.ts`, `externalStrings.ts`. No locale JSON — the SDK ships English only (the `Streami18n` wrapper class lives in `utils/i18n/`)
+- `i18n/` — the translation key layer: generated `keys.ts` catalog, `types.ts`, `runtimeDefaults.ts`, `utils.ts`. No locale JSON — the SDK ships English only. The runtime lives in `stream-chat/i18n`, shared with the React SDK; `utils/i18n/Streami18n.ts` is a thin subclass injecting this package's bundled data
 - `a11y/` — accessibility primitives (`a11yUtils.ts`, `hooks/`)
 - `middlewares/` — command UI middlewares (`attachments.ts`, `emojiControl.ts`)
 - `icons/` — SVG icon components
@@ -278,16 +278,38 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   `package/src/i18n/runtimeDefaults.ts` — the only translation data that ships. `runtimeDefaults`
   holds just the keys with no inline copy to fall back on: `timestamp.*` / `duration.*` formatter
   expressions passed around as prop values, and keys built from a runtime value.
-- `Streami18n` (`package/src/utils/i18n/Streami18n.ts`) wraps i18next; access `t` via
+- **The runtime is `stream-chat/i18n`**, shared with the React SDK — one `Streami18n`, one set of
+  formatters, one date layer. `package/src/utils/i18n/Streami18n.ts` is a ~30-line subclass that
+  injects this package's `runtimeDefaults` (core cannot import them: the catalog is generated from
+  *this* package's call sites). A behavioural fix belongs in `stream-chat`, not here. Access `t` via
   `useTranslationContext()`. `registerTranslation` **merges**, so a partial dictionary can never
   knock out the bundled formatter keys.
+- **Reactivity is a `StateStore`,** not listeners. `i18n.state` publishes
+  `{ t, tDateTimeParser, language, initialized }`; `useStreami18n` subscribes with a module-scope
+  selector. `setLanguage()` returns `void` — the new `t` arrives through the store. There is no
+  `addOnLanguageChangeListener`, and `getTranslators()` is now `init()`. **Nothing is kept as a
+  deprecated alias** — v10 is a breaking release, so an old name is removed rather than carried with a
+  countdown on it. `relativeCompactDateFormatter` is gone the same way: use `timestampFormatter` with
+  `relativeCompact: true`, whose wording goes through `t()`.
+- `language.*` (ISO language names) and `relativeTime.*` are typed into the catalog but come from
+  core, which owns the code that renders them. Neither is declared in `runtimeDefaults`.
+- Notification copy is keyed on `stream-chat`'s `CORE_NOTIFICATION_TYPE`, in
+  `components/Notifications/notificationTranslations.ts`, as a `Record<CoreNotificationType, …>` — so
+  a new core identifier is a compile error until it is mapped. Never match on `notification.message`;
+  that is untranslated English whose wording is not part of core's contract. Poll field errors are
+  keyed the same way, on `POLL_COMPOSER_VALIDATION_CODE`.
+- **`dayjs` must resolve to exactly one copy.** Its range here has to stay compatible with core's
+  (`^1.11.13`) — an exact pin installs a second copy, `instanceof Dayjs` starts failing, and an
+  integrator's `import 'dayjs/locale/de'` lands on an instance the SDK never formats with. Do not
+  declare `i18next` at all; it arrives through `stream-chat`.
 - Only the `en` dayjs locale is bundled, and **no dayjs locale defines `calendar`** (that field
   belongs to the calendar plugin) — a new language needs both `import 'dayjs/locale/xx'` and a
   `calendar` config, or relative dates render English scaffolding around translated day names.
-- Generation: `build-translations` runs `package/scripts/generate-i18n-keys.mts`, which enforces
-  five hard-fail guards (conflicting inline copy, unresolvable key, shadowed key, external-string
-  drift, strict prefix). Its fixture tests are **not** jest — run
-  `cd package && node --test scripts/tests/i18n-tooling-checks.mts`.
+- Generation: `build-translations` runs `package/scripts/generate-i18n-keys.mts`, now a ~40-line
+  config shim over the generator in `stream-chat/i18n/codegen` (also shared with the React SDK). Four
+  hard-fail guards: conflicting inline copy, unresolvable key, shadowed key, strict prefix. The
+  external-string drift guard is gone with `externalStrings.ts`. The fixture tests live in
+  `stream-chat`'s own suite — there is no longer a `node --test` step here.
 - Validation: `validate-translations` runs inside `yarn lint` and in CI. It is a **drift gate** —
   it regenerates `keys.ts` and fails if the result differs from what is committed.
 - Adding a string: call `t('some.dotted.key', 'English copy')` → run `build-translations` → commit

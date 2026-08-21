@@ -1,54 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import Dayjs from 'dayjs';
+import type { Streami18nState } from 'stream-chat/i18n';
 
-import { useIsMountedRef } from './useIsMountedRef';
+import { useStateStore } from './useStateStore';
 
 import type { TranslatorFunctions } from '../contexts/translationContext/types';
-import { defaultTranslatorFunction, Streami18n } from '../utils/i18n/Streami18n';
+import type { BundledTranslationKey } from '../i18n/keys';
+import type { TranslationCatalog } from '../i18n/types';
+import { Streami18n } from '../utils/i18n/Streami18n';
 
-export const useStreami18n = (i18nInstance?: Streami18n) => {
-  const [translators, setTranslators] = useState<TranslatorFunctions>({
-    t: defaultTranslatorFunction,
-    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-  });
-  const isMounted = useIsMountedRef();
+/**
+ * This SDK's instantiation of core's state shape.
+ *
+ * Spelled out rather than left to `Streami18nState`'s defaults: those default the catalog to
+ * `AnyTranslationCatalog`, and `t` is contravariant in its options, so the concrete store is not
+ * assignable to the default-parameterized one.
+ */
+type SDKStreami18nState = Streami18nState<TranslationCatalog, BundledTranslationKey>;
 
+/** Module-scope so the subscription is not torn down and rebuilt on every render. */
+const selector = ({ t, tDateTimeParser }: SDKStreami18nState) => ({ t, tDateTimeParser });
+
+export const useStreami18n = (i18nInstance?: Streami18n): TranslatorFunctions => {
+  const streami18n = useMemo(() => i18nInstance ?? new Streami18n(), [i18nInstance]);
   useEffect(() => {
-    let streami18n: Streami18n;
-
-    if (i18nInstance instanceof Streami18n) {
-      streami18n = i18nInstance;
-    } else {
-      streami18n = new Streami18n({ language: 'en' });
-    }
-
-    const updateTFunction = (t: TranslatorFunctions['t']) => {
-      setTranslators((prevTranslator) => ({ ...prevTranslator, t }));
-    };
-
-    const { unsubscribe: unsubscribeOnLanguageChangeListener } =
-      streami18n.addOnLanguageChangeListener((t) => {
-        updateTFunction(t);
-      });
-
-    const { unsubscribe: unsubscribeOnTFuncOverrideListener } =
-      streami18n.addOnTFunctionOverrideListener((t) => {
-        updateTFunction(t);
-      });
-
-    streami18n.getTranslators().then((translator) => {
-      if (translator && isMounted.current) {
-        setTranslators(translator);
-      }
+    streami18n.init().catch((error: unknown) => {
+      console.warn('Streami18n failed to initialize', error);
     });
+  }, [streami18n]);
 
-    return () => {
-      unsubscribeOnTFuncOverrideListener();
-      unsubscribeOnLanguageChangeListener();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [i18nInstance]);
-
-  return translators;
+  return useStateStore(streami18n.state, selector) as TranslatorFunctions;
 };

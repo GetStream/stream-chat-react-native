@@ -102,9 +102,11 @@ rg '\bchannel\.state\.(read|typing|members|watcher|ownCapabilities)Store\b' src/
 rg '\bchannel\.state\.mutedUsersStore\b' src/
 rg '\bchannel\.data\.(member_count|own_capabilities)\s*=' src/
 
-# §L — i18n (custom translations silently stop applying under old keys)
-rg '\b(registerTranslation|translationsForLanguage|Streami18n)\b' src/
-rg '\b(enTranslations|esTranslations|frTranslations|heTranslations|hiTranslations|itTranslations|jaTranslations|koTranslations|nlTranslations|ptBrTranslations|ruTranslations|trTranslations)\b' src/
+# §19 — i18n: keys, the Streami18n API, and the a11y namespace
+rg '\bStreami18n\b|registerTranslation|translationsForLanguage|setLanguage|getTranslators' src/
+rg "t\(\s*'a11y/|'[A-Z][a-z]+ [a-z]" src/          # v9 keys WERE the English copy
+rg '\b(enTranslations|deTranslations|frTranslations|esTranslations|itTranslations|nlTranslations|ptBrTranslations|ruTranslations|trTranslations|jaTranslations|koTranslations|hiTranslations|heTranslations|arTranslations)\b' src/
+rg 'getDateString|getDateStringForA11y' -A4 src/ | rg '\bdate:'
 ```
 
 ---
@@ -156,7 +158,18 @@ means changed. Details in the linked section.
 | in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
 | `channel.disconnected` | `channel.pendingDisposal` (hard rename — no alias) | §K.8 |
 | `WatcherState` type | `ChannelWatchState` (now also carries `watchStatus`) | §K.3 |
-| custom translations keyed on v9 English text (`t('Send a message')`, `'Edited'`, …) | rename to dotted keys (`autoCompleteInput.placeholder`, `message.edited.text`, …); type as `TranslationDictionary` — old keys **silently** fall back to English | §L.1 |
+| `t('Send Message')` — the key *was* the English copy | `t('messageInput.sendMessage.accessibilityLabel', 'Send Message')` — stable dotted key, copy inline | §19 |
+| `t('a11y/Send message')` | the `.accessibilityLabel` leaf of the owning component's key | §19 |
+| `import { deTranslations } from 'stream-chat-react-native'` | removed — English is the only bundled language; supply your own dictionary | §19 |
+| `new Streami18n('nl')` | `new Streami18n({ language: 'nl' })` — options object; the class name is unchanged | §19 |
+| `new Streami18n(opts, i18nextConfig)` | `new Streami18n({ ...opts, i18nextConfigOverrides: i18nextConfig })` | §19 |
+| `const t = await i18n.setLanguage('de')` | `await i18n.setLanguage('de')` → `void`; read `i18n.t` or subscribe to `i18n.state` | §19 |
+| `i18n.addOnLanguageChangeListener(fn)` | `i18n.state.subscribeWithSelector(({ t }) => ({ t }), fn)` | §19 |
+| `i18n.getTranslators()` | `i18n.init()` — removed, not aliased; same return value | §19 |
+| `{{ timestamp \| relativeCompactDateFormatter }}` | `{{ timestamp \| timestampFormatter(relativeCompact: true) }}` | §19 |
+| `getDateString({ date, … })` | `getDateString({ messageCreatedAt, … })`; returns `null`, not `undefined`, when unrenderable | §19 |
+| `getDateStringForA11y({ date, … })` | `getCalendarDateStringForA11y({ messageCreatedAt, … })` — same behaviour under a new name | §19 |
+| poll `state.errors.x` as an English string | a `PollComposerValidationError` — key your copy on `error.code`, fall back to `error.message` | §19 |
 
 ---
 
@@ -785,8 +798,11 @@ Highlights that hit integrator code:
   annotation so `client.on('x', cb)` narrows automatically.
 - **Method signatures collapsed to single objects** — `channel.sendReaction({ id, reaction, ... })`,
   `deleteReaction({ id, type })`, `sendMessage({ message, ... })`, `queryChannels(request)`;
-  `client.uploadImage_(uri, name, type)` for RN image upload (the object-form `uploadImage` is
-  web/server-shaped); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
+  `client.uploadImage({ file: { uri, name, type } })` for RN image upload — the `file` field takes
+  a browser `File`/`Blob` or an RN `{ uri, name, type }` descriptor, so the MIME type still has to
+  be explicit, it just lives on the descriptor now; the same shape applies to `client.uploadFile`
+  and `channel.uploadFile` / `channel.uploadImage` (which replace `channel.sendFile` /
+  `sendImage`); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
   `createAbortControllerForNextRequest` moved to `client.api`.
 - **Sort is `SortParamRequest[]`** — `{ last_message_at: -1 }` → `[{ field: 'last_message_at', direction: -1 }]`.
 
@@ -1053,59 +1069,6 @@ const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState })
 
 ---
 
-# Part L — i18n / translations
-
-## L.1 Translation keys are now stable identifiers (breaking)
-
-Two breaking changes, both v10 (full detail + copy-pasteable recipes in
-[`i18n-v10-migration.md`](./i18n-v10-migration.md); the complete 391-row old→new table is
-[`i18n-v10-key-map.json`](./i18n-v10-key-map.json)):
-
-1. **English is the only bundled language.** The `ar`, `es`, `fr`, `he`, `hi`, `it`, `ja`, `ko`,
-   `nl`, `pt-br`, `ru`, `tr` dictionaries (and the `enTranslations` … `trTranslations` exports and
-   their per-locale `dayjs` calendar formats) are gone. Recover one from git history
-   (`git show v9.7.6:package/src/i18n/nl.json`) — but its keys are the *old* keys, so it needs the
-   same rename as below.
-2. **Keys are stable dotted identifiers, not the English text.** `t('Send a message')` →
-   `t('autoCompleteInput.placeholder')`; prose keys carry their English copy inline as the i18next
-   `defaultValue`, e.g. `t('message.edited.text', 'Edited')`.
-
-**⚠ The trap: renaming fails *silently*.** An override registered under a **v9 key simply never
-matches** — your string stops applying and the SDK renders the English default instead, with **no
-error, no warning**. So an app that customized copy in v9 keeps compiling and running after the
-bump, but every one of its overrides quietly reverts to English. This bites even English-only apps
-that only changed a word or two.
-
-Representative renames (flat v9 key → v10 key), including the strings v10 UI now emits:
-
-| v9 key (what you overrode) | v10 key |
-|---|---|
-| `Cancel` | `common.cancel.label` |
-| `Send a message` | `autoCompleteInput.placeholder` |
-| `Edited` | `message.edited.text` |
-| `Thinking...` / `Generating...` | `aiTypingIndicator.thinking.label` / `aiTypingIndicator.generating.label` |
-| `Unread Messages` | `messageList.unreadMessages.label` |
-| `a11y/Send message` | `messageInput.sendMessage.accessibilityLabel` |
-
-**Turn the silent failure into a compile error:** type your dictionary as `TranslationDictionary`
-(SDK keys only) — a leftover v9 key is then a build error, not an override that never applies. Use
-`LooseTranslationDictionary` only to carry your *own* app keys alongside SDK ones.
-
-```ts
-import { Streami18n, type TranslationDictionary } from 'stream-chat-react-native'; // or 'stream-chat-expo'
-
-const i18n = new Streami18n({
-  translationsForLanguage: {
-    'autoCompleteInput.placeholder': 'Write something…',
-    'Send a message': 'Write something…', // ← v9 key → compile error (exactly what you want)
-  } satisfies TranslationDictionary,
-});
-```
-
-Non-English dates need two steps (`dayjsLocaleConfigForLanguage` **and** the two `timestamp.*` keys
-with their own `calendarFormats`) — see the dedicated guide; the second step is the one that gets
-missed.
-
 ---
 
 ## 19. Verify
@@ -1129,3 +1092,33 @@ missed.
   pin/archive updates membership-driven UI; and — with `<Channel>` mounted —
   focusing a channel with unreads marks it read and reconnect does not blank/re-seed
   the open message list.
+
+---
+
+# Part I — i18n
+
+## 19. English-only bundle, dotted keys, shared runtime
+
+**The full guide is `ai-docs/i18n-v10-migration.md`.** Read it for the migration; this section exists so an
+agent grepping this file finds i18n at all, and knows the three shapes of change:
+
+1. **Keys are stable dotted identifiers**, not the English copy, with the English inline as i18next's
+   `defaultValue`. The reviewed old→new table is `ai-docs/i18n-v10-key-map.json` (389 rows). Renaming is not
+   optional and **it fails silently** — an old key simply never matches, so the override stops applying and
+   English renders with no error. Type your dictionary as `TranslationDictionary` to turn that into a compile
+   error.
+2. **English is the only bundled language.** The 12 non-English dictionaries and the `*Translations` exports
+   are gone. An integrator supplies their own, additively; a key they omit still renders English.
+3. **The runtime moved to `stream-chat/i18n`**, shared with the React SDK. Imports are unchanged — everything
+   is still exported from `stream-chat-react-native` / `stream-chat-expo`, and `Streami18n` keeps its name
+   — but reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`,
+   `getTranslators()` is now `init()`, and a few date-helper parameters were renamed to the one name both
+   SDKs use. Nothing is kept as a deprecated alias. See the quick-reference rows above.
+
+Two dependency rules that produce silent breakage rather than errors:
+
+- **`dayjs` must resolve to a single copy.** Declare it compatibly with `stream-chat`'s range (`^1.11.13`) or
+  not at all. A disagreeing exact pin installs a second copy, and an app's `import 'dayjs/locale/de'` then
+  extends an instance the SDK never formats with — dates stay English, nothing throws.
+- **Do not declare `i18next`.** It arrives through `stream-chat`. Two copies mean dictionaries registered on
+  one instance and read from the other.

@@ -731,6 +731,13 @@ describe('MessageList pagination', () => {
     });
   });
 
+  // FLAKY (~20% of runs, pre-existing on V10 — this body is byte-identical there). Fails as
+  // "Exceeded timeout of 5000 ms": the test intermittently stalls 5-15s and then completes, so a
+  // raised timeout makes it pass (measured: 16s vs a 1.9s baseline). Ruled out: cold jest cache (a
+  // 15.9s cold run passed all 21) and network retries (no retry/error noise in the logs). Also note
+  // the `fireEvent.press` below sits inside `waitFor`, whose callback is retried — hoisting the
+  // press out is correct but did NOT change the failure rate, so it is not the cause. Not skipped
+  // on purpose: it should keep failing visibly until the stall is understood.
   it('should call load latest messages when the scroll to bottom button is pressed', async () => {
     const user1 = generateUser();
     const messages = Array.from({ length: 10 }, (_, i) =>

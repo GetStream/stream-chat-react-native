@@ -407,13 +407,15 @@ export const de: TranslationDictionary = {
   'notifications.attachmentUploadFailed.withReason.error':
     'Hochladen des Anhangs fehlgeschlagen wegen {{reason}}',
   'notifications.attachmentUploadInProgress.error': 'Warte, bis alle Anhänge hochgeladen sind',
+  'notifications.commandNotReady.error': 'Befehl kann noch nicht gesendet werden',
   'notifications.commandUnavailable.error': 'Befehl nicht verfügbar',
   'notifications.commandUnavailable.whileEditing.error': 'Befehl beim Bearbeiten nicht verfügbar',
   'notifications.commandUnavailable.whileReplying.error': 'Befehl beim Antworten nicht verfügbar',
   'notifications.dismiss.accessibilityLabel': 'Benachrichtigung schließen',
   'notifications.list.accessibilityLabel': 'Benachrichtigungen',
-  'notifications.locationRetrieveFailed.error': 'Standort konnte nicht abgerufen werden',
   'notifications.locationShareFailed.error': 'Standort konnte nicht geteilt werden',
+  'notifications.messageJumpFailed.error': 'Sprung zur Nachricht fehlgeschlagen',
+  'notifications.messageJumpToLatestFailed.error': 'Sprung zur neuesten Nachricht fehlgeschlagen',
   'notifications.pollCreateFailed.error': 'Umfrage konnte nicht erstellt werden',
   'notifications.pollCreateFailed.withReason.error':
     'Umfrage konnte nicht erstellt werden wegen {{reason}}',
@@ -421,7 +423,6 @@ export const de: TranslationDictionary = {
     'Umfrage konnte nicht beendet werden wegen {{reason}}',
   'notifications.pollEnded.text': 'Umfrage beendet',
   'notifications.recordingPlaybackFailed.error': 'Fehler beim Abspielen der Aufnahme',
-  'notifications.threadNotFound.error': 'Thread nicht gefunden',
   'notifications.voteLimitReached.error':
     'Stimmenlimit erreicht. Entferne zuerst eine vorhandene Stimme.',
 
@@ -438,10 +439,10 @@ export const de: TranslationDictionary = {
   'poll.createPoll.maxVotes.description': 'Zwischen 2–10 Optionen wählen',
   'poll.createPoll.maxVotes.increase.accessibilityLabel': 'Maximale Stimmenzahl erhöhen',
   'poll.createPoll.maxVotes.label': 'Stimmen pro Person begrenzen',
-  'poll.createPoll.maxVotes.range.error': 'Zahl von 2 bis 10 eingeben',
   'poll.createPoll.multipleVotes.description': 'Mehr als eine Option auswählen',
   'poll.createPoll.multipleVotes.label': 'Mehrere Stimmen',
   'poll.createPoll.options.duplicate.error': 'Option existiert bereits',
+  'poll.createPoll.options.empty.error': 'Option ist leer',
   'poll.createPoll.options.label': 'Optionen',
   'poll.createPoll.options.placeholder': 'Option hinzufügen',
   'poll.createPoll.question.label': 'Fragen',

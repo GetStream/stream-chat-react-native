@@ -536,7 +536,9 @@ describe('useChannelActions', () => {
       await result.current.updateImage(imageFile);
     });
 
-    expect(client.uploadImage).toHaveBeenCalledWith({ file: imageFile });
+    expect(client.uploadImage).toHaveBeenCalledWith({
+      file: { name: 'avatar.png', type: 'image/png', uri: 'file:///tmp/avatar.png' },
+    });
     expect(channel.updatePartial).toHaveBeenCalledWith({
       set: { image: 'https://cdn.example.com/uploaded.png' },
     });
