@@ -87,13 +87,8 @@ describe('useStreami18n', () => {
   });
 
   /**
-   * `init()` rejects on an i18next failure, so this hook is what stands between that and an unhandled
-   * rejection escaping an effect.
-   *
-   * `init()` itself is mocked, rather than the i18next instance underneath it: what is under test is
-   * this hook's handling of a rejected `init()`, not core's decision to reject -- core's own suite
-   * covers that. Mocking at this seam also keeps the test independent of which `stream-chat` version
-   * is installed, which matters while the rejecting contract is still rolling out through a release.
+   * The hook is what stands between a rejected `init()` and an unhandled rejection. `init()` is
+   * mocked, not the i18next instance under it: core's suite owns *why* it rejects.
    */
   it('reports a failed init() through the instance logger and still renders English', async () => {
     const logger = jest.fn();
