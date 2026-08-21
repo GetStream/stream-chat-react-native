@@ -4,12 +4,9 @@ import {
   Channel,
   ChannelConfig,
   LocalMessage,
-  localMessageToNewMessagePayload,
   MessageRequest as Message,
   SendMessageAPIResponse,
   SendMessageOptions,
-  StreamChat,
-  UpdateMessageOptions,
 } from 'stream-chat';
 
 type RequestHandlers = NonNullable<ChannelConfig['requestHandlers']>;
@@ -22,12 +19,6 @@ export type ChannelRequestHandlersParams = {
    * stream-chat send pipeline (after the optimistic ingest, before the POST).
    */
   uploadPendingAttachments?: (message: LocalMessage) => Promise<void>;
-  /** Overrides the default update request. Mirrors the `<Channel doUpdateMessageRequest>` prop. */
-  doUpdateMessageRequest?: (
-    channelId: string,
-    updatedMessage: Parameters<StreamChat['updateMessage']>[0],
-    options?: UpdateMessageOptions,
-  ) => ReturnType<StreamChat['updateMessage']>;
   /** Overrides the default send/retry request. Mirrors the `<Channel doSendMessageRequest>` prop. */
   doSendMessageRequest?: (
     channelId: string,
@@ -46,14 +37,14 @@ export type ChannelRequestHandlersParams = {
  * integrator's `doSendMessageRequest` when provided, and otherwise to `channel.sendMessage` (the client
  * default).
  *
- * `markReadRequest` and `deleteMessageRequest` are **not** managed here — those are registered
- * declaratively through `client.config.set({ channel: { requestHandlers } })` and the LLC resolves them
- * per instance. The `<Channel doMarkReadRequest>` prop that used to feed mark-read is removed.
+ * `markReadRequest`, `updateMessageRequest` and `deleteMessageRequest` are **not** managed here — those
+ * are registered declaratively through `client.config.set({ channel: { requestHandlers } })` and the LLC
+ * resolves them per instance. The `<Channel doMarkReadRequest>` / `doUpdateMessageRequest` props that
+ * used to feed them are removed.
  *
- * `updateMessageRequest` is still prop-fed (`<Channel doUpdateMessageRequest>`) and so is still managed
- * here. Moving it to the declarative route destabilised the offline-support edit tests — they pass in
- * isolation but time out under full-suite contention — so it needs its own pass rather than riding along
- * with this one.
+ * Nothing this hook does not own is deleted from the slot map, which matters: `delete`-ing a handler it
+ * merely *might* own is what silently dropped a declaratively-registered one, sending the operation down
+ * the LLC's default path — an unmocked request that simply hangs.
  *
  * Re-applied whenever the channel re-derives its configuration. `Channel.initializeConfig` *replaces*
  * `requestHandlers` from the declarative tree rather than merging into it, and it runs on every change
@@ -66,7 +57,6 @@ export const useChannelRequestHandlers = ({
   channel,
   uploadPendingAttachments,
   doSendMessageRequest,
-  doUpdateMessageRequest,
 }: ChannelRequestHandlersParams) => {
   useEffect(() => {
     // `configState` is a getter on `Channel.prototype` now (it delegates to the channel's
@@ -113,22 +103,9 @@ export const useChannelRequestHandlers = ({
       // used to drop an integrator's declaratively-registered handler on the floor.
       delete nextRequestHandlers.retrySendMessageRequest;
       delete nextRequestHandlers.sendMessageRequest;
-      delete nextRequestHandlers.updateMessageRequest;
 
       nextRequestHandlers.sendMessageRequest = sendMessageRequest;
       nextRequestHandlers.retrySendMessageRequest = sendMessageRequest;
-
-      if (doUpdateMessageRequest) {
-        nextRequestHandlers.updateMessageRequest = async ({ localMessage, options }) => ({
-          message: (
-            await doUpdateMessageRequest(
-              channel.cid,
-              { id: localMessage.id, message: localMessageToNewMessagePayload(localMessage) },
-              options,
-            )
-          ).message,
-        });
-      }
 
       configState.partialNext({
         requestHandlers:
@@ -145,5 +122,5 @@ export const useChannelRequestHandlers = ({
       if (requestHandlers?.sendMessageRequest === sendMessageRequest) return;
       applyRequestHandlers();
     });
-  }, [channel, uploadPendingAttachments, doSendMessageRequest, doUpdateMessageRequest]);
+  }, [channel, uploadPendingAttachments, doSendMessageRequest]);
 };

@@ -10,11 +10,9 @@ import {
   MessageResponse,
   SendMessageAPIResponse,
   SendMessageOptions,
-  StreamChat,
   Event as StreamEvent,
   MessageRequest as StreamMessage,
   Thread,
-  UpdateMessageOptions,
 } from 'stream-chat';
 
 import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
@@ -284,20 +282,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     ) => Promise<SendMessageAPIResponse>;
 
     /**
-     * Overrides the Stream default update message request (Advanced usage only)
-     *
-     * Kept for now: removing it destabilises the offline-support edit tests, which pass in isolation
-     * but time out under full-suite contention when the handler is registered declaratively instead.
-     * Needs its own pass — see the note in `useChannelRequestHandlers`.
-     * @param channelId
-     * @param updatedMessage The update-message request payload
-     */
-    doUpdateMessageRequest?: (
-      channelId: string,
-      updatedMessage: Parameters<StreamChat['updateMessage']>[0],
-      options?: UpdateMessageOptions,
-    ) => ReturnType<StreamChat['updateMessage']>;
-    /**
      * A method invoked just after the first optimistic update of a new message,
      * but before any other HTTP requests happen. Can be used to do extra work
      * (such as creating a channel, or editing a message) before the local message
@@ -399,7 +383,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
     doSendMessageRequest,
-    doUpdateMessageRequest,
     preSendMessageRequest,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
@@ -920,7 +903,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channel,
     uploadPendingAttachments,
     doSendMessageRequest,
-    doUpdateMessageRequest,
   });
 
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
@@ -958,8 +940,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         throw new Error('Channel has not been initialized');
       }
       // The LLC handles the optimistic local update (ingest into the paginator), the network
-      // request (honoring any doUpdateMessageRequest registered into channel.configState in
-      // useChannelRequestHandlers), the received/failed state transitions, and offline queueing.
+      // request (honoring any `updateMessageRequest` registered through
+      // `client.config.set({ channel: { requestHandlers } })`), the received/failed state transitions,
+      // and offline queueing.
       // Thread edits route through the thread instance's own message operations.
       await (threadInstance ?? channel).updateMessageWithLocalUpdate({ localMessage, options });
     },

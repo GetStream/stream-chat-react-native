@@ -11,6 +11,7 @@ import type {
   StreamChat,
   UserResponse,
 } from 'stream-chat';
+import { localMessageToNewMessagePayload } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Channel as ChannelRaw } from '../../components/Channel/Channel';
@@ -85,21 +86,27 @@ const markConnectionUnhealthy = (client: StreamChat) => {
   (client.wsConnection as unknown as { isHealthy: boolean }).isHealthy = false;
 };
 
-// The `<Channel doUpdateMessageRequest>` prop is wired into `channel.configState.requestHandlers`
-// by `Channel`'s `useChannelRequestHandlers` effect. That parent effect runs AFTER the child
-// test-callback effect (React flushes passive effects child-first), so a callback that calls
-// `editMessage` synchronously on mount runs before the override is registered and silently takes
-// the default (non-overridden) update path. In production a user can't edit a message in the
-// sub-millisecond window before effects flush, so this is a test-only ordering artifact. Await
-// this before triggering the edit so the real `doUpdateMessageRequest` path is exercised.
-const waitForUpdateMessageHandler = async (channel: ChannelLLC) => {
-  for (let i = 0; i < 100; i++) {
-    if (channel.configState.getLatestValue().requestHandlers?.updateMessageRequest) {
-      return;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-};
+// React flushes passive effects child-first, so the test-callback effect below runs BEFORE `Channel`'s
+// own mount effects — verifiably: without this wait, `channel.configState.requestHandlers` at edit time
+// holds only the declaratively-registered `updateMessageRequest`, with no `sendMessageRequest`, because
+// `useChannelRequestHandlers` has not run yet.
+//
+// An operation fired from that window races `Channel`'s own offline-DB persistence of the initial query
+// result. The in-memory paginator is fine either way; the DB row is not. Observed across repeat runs of
+// the same test: the persisted `messages` row held the edited text on one run and the pre-edit text on
+// the next, while the pending task was queued both times. Two writers, last write wins, no ordering
+// guarantee between them.
+//
+// That window does not exist in production — the channel is queried and persisted before any message UI
+// exists to edit, so a user cannot reach it. Only code editing from a child mount effect can, which is
+// exactly what this harness does.
+//
+// It used to be hidden. While `doUpdateMessageRequest` was a prop, the callback polled `configState`
+// until `Channel`'s effect had registered the handler; the first iteration found nothing and yielded a
+// macrotask, which is what let the parent effects flush. Registering the handler declaratively removed
+// the reason to poll and, accidentally, the barrier. So it is now explicit and named for what it does:
+// one macrotask, matching the single yield the poll performed, not a sleep tuned until tests went green.
+const flushMountEffects = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 test('Workaround to allow exporting tests', () => expect(true).toBe(true));
 
@@ -550,6 +557,51 @@ export const OptimisticUpdates = () => {
         const message = channel.messagePaginator.headItems[0];
         const editedText = 'edited while offline';
 
+        // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
+        // resolves this into `channel.configState.requestHandlers` as part of the channel's own
+        // derivation, so it is in place before `render` rather than after a mount effect.
+        chatClient.config.set({
+          channel: {
+            requestHandlers: {
+              updateMessageRequest: (async ({
+                localMessage,
+                options,
+              }: {
+                localMessage: LocalMessage;
+                options?: unknown;
+              }) => {
+                // The LLC hands over a `localMessage`; the prop received the `updateMessage` request
+                // shape `{ id, message }`. Rebuilt so the queued pending-task payload is unchanged.
+                const updatedMessage = {
+                  id: localMessage.id,
+                  message: localMessageToNewMessagePayload(localMessage),
+                };
+                const editedMessage = {
+                  ...message,
+                  message_text_updated_at: new Date(),
+                  text: editedText,
+                  updated_at: new Date(),
+                };
+                await getOfflineDb(chatClient).addPendingTask({
+                  channelId: channel.id,
+                  channelType: channel.type,
+                  messageId: message.id,
+                  payload: [updatedMessage, options],
+                  type: 'update-message',
+                });
+                // A complete offline update handler persists the optimistic edit to the DB (so it
+                // survives cold start and the offline-DB hydration that Channel triggers on mount /
+                // sync-status change re-seeds the edited copy, not the pre-edit one).
+                await getOfflineDb(chatClient).upsertMessages({
+                  execute: true,
+                  messages: [editedMessage],
+                });
+                return { message: editedMessage };
+              }) as never,
+            },
+          },
+        });
+
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
@@ -557,39 +609,10 @@ export const OptimisticUpdates = () => {
               // v10 invokes doUpdateMessageRequest with the `updateMessage` request shape
               // `{ id, message }` (see useChannelRequestHandlers), not a flat LocalMessage. Echo a
               // server-shaped response reflecting the edit; the LLC's success path re-ingests it.
-              doUpdateMessageRequest={
-                (async (
-                  _channelId: string,
-                  updatedMessage: { id: string; message: LocalMessage },
-                  options: unknown,
-                ) => {
-                  const editedMessage = {
-                    ...message,
-                    message_text_updated_at: new Date(),
-                    text: editedText,
-                    updated_at: new Date(),
-                  };
-                  await getOfflineDb(chatClient).addPendingTask({
-                    channelId: channel.id,
-                    channelType: channel.type,
-                    messageId: message.id,
-                    payload: [updatedMessage, options],
-                    type: 'update-message',
-                  });
-                  // A complete offline update handler persists the optimistic edit to the DB (so it
-                  // survives cold start and the offline-DB hydration that Channel triggers on mount /
-                  // sync-status change re-seeds the edited copy, not the pre-edit one).
-                  await getOfflineDb(chatClient).upsertMessages({
-                    execute: true,
-                    messages: [editedMessage],
-                  });
-                  return { message: editedMessage };
-                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
-              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
-                  await waitForUpdateMessageHandler(channel);
+                  await flushMountEffects();
                   await editMessage({
                     localMessage: {
                       ...message,
@@ -628,6 +651,23 @@ export const OptimisticUpdates = () => {
         const message = channel.messagePaginator.headItems[0];
         const editedText = 'should stay optimistic';
 
+        // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
+        // resolves this into `channel.configState.requestHandlers` as part of the channel's own
+        // derivation, so it is in place before `render` rather than after a mount effect.
+        chatClient.config.set({
+          channel: {
+            requestHandlers: {
+              updateMessageRequest: (async () => {
+                await getOfflineDb(chatClient).upsertMessages({
+                  execute: true,
+                  messages: [{ ...message, status: MessageStatusTypes.FAILED, text: editedText }],
+                });
+                throw new Error('validation');
+              }) as never,
+            },
+          },
+        });
+
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
@@ -636,19 +676,10 @@ export const OptimisticUpdates = () => {
               // The local copy (state + DB) must survive so the user's edit is not lost, and so the
               // offline-DB hydration Channel runs on mount re-seeds the edited copy, not the pre-edit
               // one.
-              doUpdateMessageRequest={
-                (async () => {
-                  await getOfflineDb(chatClient).upsertMessages({
-                    execute: true,
-                    messages: [{ ...message, status: MessageStatusTypes.FAILED, text: editedText }],
-                  });
-                  throw new Error('validation');
-                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
-              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
-                  await waitForUpdateMessageHandler(channel);
+                  await flushMountEffects();
                   try {
                     await editMessage({
                       localMessage: {
@@ -693,26 +724,32 @@ export const OptimisticUpdates = () => {
         const message = headItem as LocalMessage;
         const optimisticStateSpy = jest.fn();
 
+        // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
+        // resolves this into `channel.configState.requestHandlers` as part of the channel's own
+        // derivation, so it is in place before `render` rather than after a mount effect.
+        chatClient.config.set({
+          channel: {
+            requestHandlers: {
+              updateMessageRequest: (() => {
+                const optimisticMessage = channel.messagePaginator.getItem(message.id);
+                optimisticStateSpy(optimisticMessage);
+
+                return {
+                  message: {
+                    ...optimisticMessage,
+                  },
+                };
+              }) as never,
+            },
+          },
+        });
+
         render(
           <Chat client={chatClient} enableOfflineSupport>
-            <Channel
-              channel={channel}
-              doUpdateMessageRequest={
-                (() => {
-                  const optimisticMessage = channel.messagePaginator.getItem(message.id);
-                  optimisticStateSpy(optimisticMessage);
-
-                  return {
-                    message: {
-                      ...optimisticMessage,
-                    },
-                  };
-                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
-              }
-            >
+            <Channel channel={channel}>
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
-                  await waitForUpdateMessageHandler(channel);
+                  await flushMountEffects();
                   await editMessage({
                     localMessage: {
                       ...message,
@@ -757,6 +794,30 @@ export const OptimisticUpdates = () => {
           },
         ];
 
+        // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
+        // resolves this into `channel.configState.requestHandlers` as part of the channel's own
+        // derivation, so it is in place before `render` rather than after a mount effect.
+        chatClient.config.set({
+          channel: {
+            requestHandlers: {
+              updateMessageRequest: (async () => {
+                await getOfflineDb(chatClient).upsertMessages({
+                  execute: true,
+                  messages: [
+                    {
+                      ...message,
+                      attachments: editedAttachments,
+                      status: MessageStatusTypes.FAILED,
+                      text: editedText,
+                    },
+                  ],
+                });
+                throw new Error('offline');
+              }) as never,
+            },
+          },
+        });
+
         render(
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
@@ -764,26 +825,10 @@ export const OptimisticUpdates = () => {
               // Persist the optimistic attachment edit locally, then reject the request (offline). The
               // local copy (state + DB, incl. the local attachment URL) must survive so the offline-DB
               // hydration Channel runs on mount re-seeds the edited copy, not the pre-edit one.
-              doUpdateMessageRequest={
-                (async () => {
-                  await getOfflineDb(chatClient).upsertMessages({
-                    execute: true,
-                    messages: [
-                      {
-                        ...message,
-                        attachments: editedAttachments,
-                        status: MessageStatusTypes.FAILED,
-                        text: editedText,
-                      },
-                    ],
-                  });
-                  throw new Error('offline');
-                }) as unknown as React.ComponentProps<typeof Channel>['doUpdateMessageRequest']
-              }
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
-                  await waitForUpdateMessageHandler(channel);
+                  await flushMountEffects();
                   try {
                     await editMessage({
                       localMessage: {
