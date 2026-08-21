@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.15.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.7...sampleapp@v4.15.0) (2026-08-20)
+
+### Features
+
+* offline db encryption ([#3780](https://github.com/GetStream/stream-chat-react-native/issues/3780)) ([111e21a](https://github.com/GetStream/stream-chat-react-native/commit/111e21a94de0cedfb9ef535105d2885b976095c4))
+
 ## [4.14.7](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.6...sampleapp@v4.14.7) (2026-08-14)
 
 ### Performance Improvements
