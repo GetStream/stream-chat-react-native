@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PollVoteResponseData as PollVoteClass, VotingVisibility } from 'stream-chat';
+import { PollVoteResponseData as PollVoteClass } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
 import { getDateString } from '../../../../i18n/utils';
@@ -36,10 +36,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
     [vote.created_at, t, tDateTimeParser],
   );
 
-  const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous,
-    [votingVisibility],
-  );
+  const isAnonymous = useMemo(() => votingVisibility === 'anonymous', [votingVisibility]);
 
   return (
     <View style={[styles.voteContainer, container]}>

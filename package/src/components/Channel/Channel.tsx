@@ -306,7 +306,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
-     * @param updatedMessage UpdatedMessage object
+     * @param updatedMessage The update-message request payload
      */
     doUpdateMessageRequest?: (
       channelId: string,

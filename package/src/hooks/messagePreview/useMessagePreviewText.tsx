@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {
   DraftMessage,
-  LiveLocationPayload,
+  SharedLocation,
   LocalMessage,
   MessageResponse,
   PollState,
@@ -46,11 +46,10 @@ export const useMessagePreviewText = ({
   }
 
   if (message?.shared_location) {
-    if (
-      // There is a problem with types in Draft Message, and its not able to infer the type of `end_at` correctly, so the `as` is used.
-      (message?.shared_location as LiveLocationPayload)?.end_at &&
-      new Date((message?.shared_location as LiveLocationPayload)?.end_at) > new Date()
-    ) {
+    // Draft messages type `shared_location` loosely, hence the cast. `end_at` is optional
+    // because a static location has no expiry — only a live one does.
+    const { end_at: endAt } = message.shared_location as SharedLocation;
+    if (endAt && new Date(endAt) > new Date()) {
       return t('messagePreview.liveLocation.label', 'Live Location');
     }
     return t('messagePreview.location.label', 'Location');

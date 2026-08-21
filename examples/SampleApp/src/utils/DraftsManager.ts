@@ -1,10 +1,13 @@
-import { DraftFilters, DraftResponse, DraftSort, Pager, StateStore, StreamChat } from 'stream-chat';
+import { DraftFilters, DraftResponse, SortParamRequest, StateStore, StreamChat } from 'stream-chat';
 
 import { WithSubscriptions } from './WithSubscription';
 
-export type QueryDraftOptions = Pager & {
+export type QueryDraftOptions = {
+  limit?: number;
+  next?: string;
+  prev?: string;
   filter?: DraftFilters;
-  sort?: DraftSort;
+  sort?: SortParamRequest[];
   user_id?: string;
 };
 

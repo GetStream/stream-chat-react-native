@@ -9,7 +9,7 @@ import type {
   Channel as ChannelLLC,
   ChannelFilters,
   ChannelMemberResponse,
-  ChannelSort,
+  SortParamRequest,
   Event,
   LocalMessage,
   MessageResponse,
@@ -255,7 +255,7 @@ export const Generic = () => {
       foo: 'bar',
       type: 'messaging',
     } as ChannelFilters;
-    const sort: ChannelSort = [{ direction: 1, field: 'last_updated' }];
+    const sort: SortParamRequest[] = [{ direction: 1, field: 'last_updated' }];
 
     const renderComponent = async () => {
       const result = render(

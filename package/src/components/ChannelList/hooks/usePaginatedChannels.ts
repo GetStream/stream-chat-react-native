@@ -7,7 +7,7 @@ import {
   ChannelPaginator,
   ChannelPaginatorState,
   ChannelQueryShape,
-  ChannelSort,
+  SortParamRequest,
   PaginatorOptions,
 } from 'stream-chat';
 
@@ -31,7 +31,7 @@ export type ChannelListQueryChannelsOverride = PaginatorOptions<
 type Parameters = {
   filters: ChannelFilters;
   options: ChannelOptions;
-  sort: ChannelSort;
+  sort: SortParamRequest[];
   lockChannelOrder?: boolean;
   queryChannelsOverride?: ChannelListQueryChannelsOverride;
 };

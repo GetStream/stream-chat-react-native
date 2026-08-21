@@ -1,10 +1,10 @@
-import type { PollResponse_old } from 'stream-chat';
+import type { PollResponseData } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
 import type { TableRow } from '../types';
 
-export const mapPollToStorable = (poll: PollResponse_old): TableRow<'poll'> => {
+export const mapPollToStorable = (poll: PollResponseData): TableRow<'poll'> => {
   const {
     allow_answers,
     allow_user_suggested_options,

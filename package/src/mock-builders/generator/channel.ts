@@ -30,8 +30,8 @@ const defaultCapabilities: ChannelOwnCapability[] = [
 ];
 
 const defaultConfig = {
-  automod: 'disabled',
-  automod_behavior: 'flag',
+  automod: 'disabled' as const,
+  automod_behavior: 'flag' as const,
   commands: [
     {
       args: '[text]',

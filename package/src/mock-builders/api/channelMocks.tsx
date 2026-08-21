@@ -36,7 +36,7 @@ const CHANNEL_WITH_MESSAGES_TEXT = {
       deleted_at: new Date('2021-02-12T12:12:35.862Z'),
       id: 'ljkblk',
       text: 'jkbkbiubicbi',
-      type: 'MessageLabel',
+      type: 'regular',
       user: mockUser({ id: 'okechukwu' }),
     }),
     mockMessage({
@@ -50,7 +50,7 @@ const CHANNEL_WITH_MESSAGES_TEXT = {
       deleted_at: new Date('2021-02-12T12:12:35.862Z'),
       id: 'jbkjb',
       text: 'jkbkbiubicbi',
-      type: 'MessageLabel',
+      type: 'regular',
       user: mockUser({ id: 'okechukwu' }),
     }),
   ],
@@ -149,7 +149,7 @@ const LATEST_MESSAGE = mockMessage({
   deleted_at: new Date('2021-02-12T12:12:35.862Z'),
   id: 'string',
   text: 'jkbkbiubicbi',
-  type: 'MessageLabel',
+  type: 'regular',
   user: mockUser({ id: 'okechukwu' }),
 });
 
