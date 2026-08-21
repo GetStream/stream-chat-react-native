@@ -155,7 +155,7 @@ means changed. Details in the linked section.
 | `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
 | in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
 | `channel.disconnected` | `channel.pendingDisposal` (hard rename — no alias) | §K.8 |
-| `WatcherState` type | `ChannelWatchState` (now also carries `watching`) | §K.3 |
+| `WatcherState` type | `ChannelWatchState` (now also carries `watchStatus`) | §K.3 |
 | custom translations keyed on v9 English text (`t('Send a message')`, `'Edited'`, …) | rename to dotted keys (`autoCompleteInput.placeholder`, `message.edited.text`, …); type as `TranslationDictionary` — old keys **silently** fall back to English | §L.1 |
 
 ---
@@ -962,7 +962,7 @@ The `MutedUsersState` type and the `channel.state.mutedUsersStore` handle are re
 | `membership` | `ChannelMemberResponse` | The current user's own membership (role, `pinned_at`, `archived_at`). |
 | `muteStatus` | `{ muted: boolean; createdAt: Date \| null; expiresAt: Date \| null }` | Is **this channel** muted for the current user — mirrors `client.mutedChannels`. `channel.muteStatus()` (imperative) is unchanged. |
 | `initialized` / `offlineMode` / `pendingDisposal` | `boolean` | Lifecycle flags, now store-backed. `channel.initialized` etc. are transparent getters over these. `pendingDisposal` replaces `disconnected` — see §K.8. |
-| `watching` | `boolean` | Whether this client currently holds a server-side watch, i.e. whether channel events are flowing. Set when a `watch: true` query succeeds, cleared by `stopWatching()`, teardown, and **any WS connection loss** (the server keys watches by connection ID, so a reconnect needs a re-query). Also makes `channel.watch()`'s silent downgrade — it drops to a non-watching query when there is no connection ID — observable. Read via `channel.watching` or `useStateStore(channel.state, (s) => ({ watching: s.watching }))`. |
+| `watchStatus` | `ChannelWatchStatus` — `'watching'` \| `'wasWatching'` \| `'notWatching'` | Whether this client holds a server-side watch (i.e. whether channel events are flowing) and, when it doesn't, whether the watch should be restored. `Watching` once a `watch: true` query succeeds; `WasWatching` when the WS connection drops (the server keys watches by connection ID, so a reconnect issues a new id and every watch is gone — this records that a re-query is wanted); `NotWatching` when never watched, when the consumer called `stopWatching()`, or on teardown — a deliberate stop is never resurrected by a reconnect. Also makes `channel.watch()`'s silent downgrade — it drops to a non-watching query when there is no connection ID — observable. Read via `channel.watchStatus` or `useStateStore(channel.state, (s) => ({ watchStatus: s.watchStatus }))`; the `ChannelWatchStatus` const is exported from `stream-chat`. |
 
 ```tsx
 // e.g. react to a channel rename

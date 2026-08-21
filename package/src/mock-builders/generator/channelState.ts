@@ -1,4 +1,4 @@
-import { StateStore } from 'stream-chat';
+import { ChannelWatchStatus, StateStore } from 'stream-chat';
 
 /**
  * Builds a mock `channel.state` as a REAL `StateStore` — the shape v10 hooks require
@@ -17,7 +17,7 @@ const DEFAULTS: Record<string, unknown> = {
   typing: {},
   watchers: {},
   watcherCount: 0,
-  watching: true,
+  watchStatus: ChannelWatchStatus.Watching,
   ownCapabilities: [],
   membership: {},
   muteStatus: { createdAt: null, expiresAt: null, muted: false },
