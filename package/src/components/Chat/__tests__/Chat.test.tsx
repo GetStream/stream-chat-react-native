@@ -166,10 +166,14 @@ describe('TranslationContext', () => {
   it('uses the i18nInstance provided in props', async () => {
     let context: TranslationContextValue = {} as TranslationContextValue;
     const i18nInstance = new Streami18n();
-    const { t, tDateTimeParser } = await i18nInstance.getTranslators();
+    const { t, tDateTimeParser } = await i18nInstance.init();
 
-    i18nInstance.t = (() => 't') as typeof i18nInstance.t;
-    i18nInstance.tDateTimeParser = (() => 'tDateTimeParser') as typeof i18nInstance.tDateTimeParser;
+    // `t` and `tDateTimeParser` are getters over the state store now, so the sentinels go in through
+    // the store rather than being assigned onto the instance.
+    i18nInstance.state.partialNext({
+      t: (() => 't') as typeof i18nInstance.t,
+      tDateTimeParser: (() => 'tDateTimeParser') as typeof i18nInstance.tDateTimeParser,
+    });
 
     render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
@@ -193,8 +197,12 @@ describe('TranslationContext', () => {
     let context: TranslationContextValue = {} as TranslationContextValue;
     const i18nInstance = new Streami18n();
 
-    i18nInstance.t = (() => 't') as typeof i18nInstance.t;
-    i18nInstance.tDateTimeParser = (() => 'tDateTimeParser') as typeof i18nInstance.tDateTimeParser;
+    // `t` and `tDateTimeParser` are getters over the state store now, so the sentinels go in through
+    // the store rather than being assigned onto the instance.
+    i18nInstance.state.partialNext({
+      t: (() => 't') as typeof i18nInstance.t,
+      tDateTimeParser: (() => 'tDateTimeParser') as typeof i18nInstance.tDateTimeParser,
+    });
 
     const { rerender } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
@@ -213,9 +221,10 @@ describe('TranslationContext', () => {
 
     const newI18nInstance = new Streami18n();
 
-    newI18nInstance.t = (() => 'newT') as typeof newI18nInstance.t;
-    newI18nInstance.tDateTimeParser = (() =>
-      'newtDateTimeParser') as typeof newI18nInstance.tDateTimeParser;
+    newI18nInstance.state.partialNext({
+      t: (() => 'newT') as typeof newI18nInstance.t,
+      tDateTimeParser: (() => 'newtDateTimeParser') as typeof newI18nInstance.tDateTimeParser,
+    });
 
     rerender(
       <Chat client={chatClient} i18nInstance={newI18nInstance}>

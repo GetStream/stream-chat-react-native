@@ -5,8 +5,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PollVoteResponseData as PollVoteClass } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
+import { getDateString } from '../../../../i18n/utils';
 import { primitives } from '../../../../theme';
-import { getDateString } from '../../../../utils/i18n/getDateString';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 
 import { usePollState } from '../../hooks/usePollState';
@@ -28,7 +28,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: vote.created_at,
+        messageCreatedAt: vote.created_at,
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.PollVote',

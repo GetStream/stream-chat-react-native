@@ -184,12 +184,27 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   // Setup translators
   const translators = useStreami18n(i18nInstance);
 
+  /**
+   * Tracked rather than read inline: `client.user` is a plain field, so a `useMemo` over it only
+   * re-evaluates when something else re-renders `Chat`. A language changed server-side would
+   * otherwise never reach the components that read it.
+   */
+  const [userLanguage, setUserLanguage] = useState(
+    () => client.user?.language || DEFAULT_USER_LANGUAGE,
+  );
+  useEffect(() => {
+    const sync = () => setUserLanguage(client.user?.language || DEFAULT_USER_LANGUAGE);
+
+    sync();
+    const { unsubscribe } = client.on('user.updated', (event) => {
+      if (event.user?.id === client.user?.id) sync();
+    });
+    return unsubscribe;
+  }, [client]);
+
   const translationContextValue = useMemo(
-    () => ({
-      ...translators,
-      userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE,
-    }),
-    [client.user?.language, translators],
+    () => ({ ...translators, userLanguage }),
+    [translators, userLanguage],
   );
 
   /**

@@ -36,7 +36,7 @@ describe('every catalog key renders copy, never its own key path', () => {
   beforeAll(async () => {
     // Deliberately bare: no language, no dictionary, no overrides.
     const i18n = new Streami18n({ logger: () => {} });
-    ({ t } = await i18n.getTranslators());
+    ({ t } = await i18n.init());
   });
 
   const bases = new Set<string>();

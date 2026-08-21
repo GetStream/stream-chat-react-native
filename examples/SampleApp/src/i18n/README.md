@@ -45,6 +45,13 @@ import 'dayjs/locale/de';
 Only the `en` dayjs locale is bundled. Without this import the strings translate but every
 timestamp, month name and numeric date stays English.
 
+**And it has to be the same dayjs the SDK uses.** `import 'dayjs/locale/de'` is a side effect on one
+module instance; if your app resolves a different copy of dayjs than `stream-chat` does, the locale
+registers somewhere the SDK never reads and dates stay English with no error anywhere. Declare `dayjs`
+compatibly with `stream-chat`'s range — `"dayjs": "^1.11.13"`, as this app does — or leave it undeclared
+and take it transitively. An exact pin that disagrees with core's resolved version is what installs the
+second copy.
+
 The import alone is not enough, though. dayjs locale files carry month and day names but **no
 `calendar` block** — that field belongs to the calendar plugin, and no locale ships one, `en`
 included. Miss it and relative dates render the plugin's English scaffolding wrapped around a
@@ -99,8 +106,21 @@ partial dictionary can never knock out the SDK's bundled timestamp formats.
 await streami18n.setLanguage('de');
 ```
 
-`setLanguage` swaps the active language on the live instance and notifies listeners, so the tree
-re-renders. You do not need to remount `<Chat>` or build a new `Streami18n`.
+`setLanguage` swaps the active language on the live instance and publishes the new `t` to
+`streami18n.state`, which `<Chat>` and `<OverlayProvider>` subscribe to, so the tree re-renders. You do
+not need to remount `<Chat>` or build a new instance.
+
+It returns `void`. If you need the fresh `t` outside the React tree, read `streami18n.t` — a getter over
+that store — or subscribe:
+
+```ts
+streami18n.state.subscribeWithSelector(
+  ({ t }) => ({ t }),
+  ({ t }) => {
+    /* fires synchronously with the current value first, then on every change */
+  },
+);
+```
 
 In this app the switcher lives in the drawer's secret menu — open the drawer, tap your own name at
 the top of it seven times, then pick a language under **Language**.

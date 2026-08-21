@@ -18,8 +18,8 @@ import {
 } from '../../contexts/threadsContext/ThreadListItemContext';
 import { useThreadsContext } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
+import { getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
-import { getDateString } from '../../utils/i18n/getDateString';
 import { useChannelPreviewDisplayPresence } from '../ChannelPreview/hooks';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { BadgeNotification, UserAvatarStack } from '../ui';
@@ -202,7 +202,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: timestamp,
+        messageCreatedAt: timestamp,
         t,
         tDateTimeParser,
         timestampTranslationKey,
@@ -212,7 +212,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const deletedAtDateString = useMemo(
     () =>
       getDateString({
-        date: deletedAt as Date | undefined,
+        messageCreatedAt: deletedAt as Date | undefined,
         t,
         tDateTimeParser,
         timestampTranslationKey,
@@ -224,8 +224,9 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
     <ThreadListItemProvider
       value={{
         channel,
-        dateString,
-        deletedAtDateString,
+        // `getDateString` returns `null` for "nothing renderable"; the context takes `undefined`.
+        dateString: dateString ?? undefined,
+        deletedAtDateString: deletedAtDateString ?? undefined,
         draftMessage,
         lastReply,
         ownUnreadMessageCount,

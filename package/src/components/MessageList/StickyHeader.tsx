@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { getDateString } from '../../utils/i18n/getDateString';
+import { getDateString } from '../../i18n/utils';
 
 /**
  * Props for the StickyHeader component.
@@ -29,7 +29,7 @@ export const StickyHeader = ({ date, dateString }: StickyHeaderProps) => {
     }
 
     return getDateString({
-      date,
+      messageCreatedAt: date,
       t,
       tDateTimeParser,
       timestampTranslationKey: 'timestamp.StickyHeader',
@@ -41,5 +41,5 @@ export const StickyHeader = ({ date, dateString }: StickyHeaderProps) => {
     return null;
   }
 
-  return <DateHeader dateString={stickyHeaderDateString} />;
+  return <DateHeader dateString={stickyHeaderDateString ?? undefined} />;
 };

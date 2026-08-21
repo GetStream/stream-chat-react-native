@@ -77,7 +77,7 @@ describe('plural categories beyond one/other', () => {
   it('selects Arabic zero / one / two / few / many / other', async () => {
     const i18n = new Streami18n({ language: 'ar', logger: () => {} });
     i18n.registerTranslation('ar', dictionaries.ar.dictionary as TranslationDictionary);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t(asDynamicKey(KEY), { count: 0 })).toBe('zero');
     expect(t(asDynamicKey(KEY), { count: 1 })).toBe('one');
@@ -90,7 +90,7 @@ describe('plural categories beyond one/other', () => {
   it('selects Russian one / few / many', async () => {
     const i18n = new Streami18n({ language: 'ru', logger: () => {} });
     i18n.registerTranslation('ru', dictionaries.ru.dictionary as TranslationDictionary);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(t(asDynamicKey(KEY), { count: 1 })).toBe('1 one');
     expect(t(asDynamicKey(KEY), { count: 3 })).toBe('3 few');
@@ -101,7 +101,7 @@ describe('plural categories beyond one/other', () => {
     const i18n = new Streami18n({ language: 'ar', logger: () => {} });
     // Only `_other` supplied — every other category has to render the inline English default.
     i18n.registerTranslation('ar', { [`${KEY}_other`]: '{{count}} صوت' } as TranslationDictionary);
-    const { t } = await i18n.getTranslators();
+    const { t } = await i18n.init();
 
     expect(
       t(asDynamicKey(KEY), {
