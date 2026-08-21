@@ -27,6 +27,7 @@ import {
 } from 'stream-chat-react-native';
 
 import { MenuDrawer } from './src/components/MenuDrawer';
+import { OfflineDbBoundary } from './src/components/OfflineDbBoundary';
 import { useSampleAppComponentOverrides } from './src/components/SampleAppComponentOverrides';
 import {
   MessageInputFloatingConfigItem,
@@ -351,20 +352,35 @@ const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;
   i18nInstance: Streami18n;
 }> = ({ chatClient, i18nInstance }) => {
+  // `attempt` re-mounts <Chat> after the offline database has been deleted;
+  // `offlineSupport` is switched off once there is no usable encryption key.
+  const [attempt, setAttempt] = useState(0);
+  const [offlineSupport, setOfflineSupport] = useState(true);
+
+  // The boundary stops rendering its children once it has caught (see its render), and
+  // nothing else clears that. Keying it on both recovery levers re-mounts it when one is
+  // pulled - without that it would sit on a blank screen forever, having already deleted
+  // the database.
   return (
-    <Chat
-      client={chatClient}
-      enableOfflineSupport
-      isMessageAIGenerated={isMessageAIGenerated}
-      i18nInstance={i18nInstance}
-      useNativeMultipartUpload
+    <OfflineDbBoundary
+      key={`${attempt}-${offlineSupport}`}
+      onGiveUp={() => setOfflineSupport(false)}
+      onRetry={() => setAttempt((value) => value + 1)}
     >
-      <StreamChatProvider>
-        <UserSearchProvider>
-          <DrawerNavigator />
-        </UserSearchProvider>
-      </StreamChatProvider>
-    </Chat>
+      <Chat
+        client={chatClient}
+        enableOfflineSupport={offlineSupport}
+        i18nInstance={i18nInstance}
+        isMessageAIGenerated={isMessageAIGenerated}
+        useNativeMultipartUpload
+      >
+        <StreamChatProvider>
+          <UserSearchProvider>
+            <DrawerNavigator />
+          </UserSearchProvider>
+        </StreamChatProvider>
+      </Chat>
+    </OfflineDbBoundary>
   );
 };
 

@@ -28,7 +28,7 @@ export * from './utils/utils';
 export * from './nativeMultipartUpload';
 
 export * from './state-store';
-export { SqliteClient } from './store/SqliteClient';
+export { SqliteClient, SqliteClientError, type SqliteClientErrorCode } from './store/SqliteClient';
 export { OfflineDB } from './store/OfflineDB';
 export { version } from './version.json';
 

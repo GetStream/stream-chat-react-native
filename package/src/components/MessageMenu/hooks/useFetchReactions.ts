@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { LocalMessage, ReactionResponse, ReactionSort } from 'stream-chat';
+import { LocalMessage, ReactionResponse, SortParamRequest } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -10,7 +10,7 @@ export type UseFetchReactionParams = {
   limit?: number;
   message?: LocalMessage;
   reactionType?: string;
-  sort?: ReactionSort;
+  sort?: SortParamRequest[];
 };
 
 const isSameReaction = (left: ReactionResponse, right: ReactionResponse) =>

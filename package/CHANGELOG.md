@@ -1,5 +1,11 @@
 # Change Log
 
+## [9.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.6...v9.8.0) (2026-08-20)
+
+### Features
+
+* offline db encryption ([#3780](https://github.com/GetStream/stream-chat-react-native/issues/3780)) ([111e21a](https://github.com/GetStream/stream-chat-react-native/commit/111e21a94de0cedfb9ef535105d2885b976095c4))
+
 ## [9.7.6](https://github.com/GetStream/stream-chat-react-native/compare/v9.7.5...v9.7.6) (2026-08-14)
 
 ### Bug Fixes

@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 
 import {
-  APIResponse,
-  PollOptionData,
   PollOptionResponseData,
   PollResponse,
   PollState,
@@ -37,9 +35,9 @@ export type UsePollStateSelectorReturnType = {
 };
 
 export type UsePollStateReturnType = UsePollStateSelectorReturnType & {
-  addComment: (answerText: string) => Promise<APIResponse & PollVoteResponse>;
+  addComment: (answerText: string) => Promise<PollVoteResponse>;
   addOption: (optionText: string) => Promise<void>;
-  endVote: () => Promise<APIResponse & PollResponse>;
+  endVote: () => Promise<PollResponse>;
 };
 
 const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
@@ -84,7 +82,7 @@ export const usePollState = (): UsePollStateReturnType => {
 
   const addOption = useCallback(
     async (optionText: string) => {
-      await poll.createOption({ text: optionText } as PollOptionData);
+      await poll.createOption({ text: optionText });
     },
     [poll],
   );

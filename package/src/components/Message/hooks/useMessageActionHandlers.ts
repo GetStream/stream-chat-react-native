@@ -170,7 +170,7 @@ export const useMessageActionHandlers = ({
 
     try {
       if (isMuted) {
-        await client.unmuteUser(message.user.id);
+        await client.moderation.unmute({ target_ids: [message.user.id] });
         addNotification({
           message: t('message.userUnmuted.text', '{{ user }} has been unmuted', {
             user: message.user?.name || message.user?.id,
@@ -179,7 +179,7 @@ export const useMessageActionHandlers = ({
           origin: { context: { message }, emitter: 'MessageActions' },
         });
       } else {
-        await client.muteUser(message.user.id);
+        await client.moderation.mute({ target_ids: [message.user.id] });
         addNotification({
           message: t('message.userMuted.text', '{{ user }} has been muted', {
             user: message.user?.name || message.user?.id,
@@ -215,7 +215,7 @@ export const useMessageActionHandlers = ({
     if (messageUser.banned) {
       await client.unbanUser(messageUser.id);
     } else {
-      await client.banUser(messageUser.id);
+      await client.moderation.ban({ target_user_id: messageUser.id });
     }
   });
 
@@ -274,7 +274,7 @@ export const useMessageActionHandlers = ({
         {
           onPress: async () => {
             try {
-              await client.flagMessage(message.id);
+              await client.moderation.flagMessage(message.id);
               addNotification({
                 message: t('message.flagged.text', 'Message has been successfully flagged'),
                 options: { severity: 'success', type: 'api:message:flag:success' },

@@ -1,4 +1,4 @@
-import type { ReactionFilters, ReactionResponse, ReactionSort } from 'stream-chat';
+import type { ReactionFilters, ReactionResponse, SortParamRequest } from 'stream-chat';
 
 import { getReactions } from './getReactions';
 import { selectReactionsForMessages } from './queries/selectReactionsForMessages';
@@ -20,7 +20,7 @@ export const getReactionsForFilterSort = async ({
 }: {
   messageId: string;
   filters?: Pick<ReactionFilters, 'type'>;
-  sort?: ReactionSort;
+  sort?: SortParamRequest[];
   limit?: number;
 }): Promise<ReactionResponse[] | null> => {
   if (!filters && !sort) {

@@ -1,4 +1,4 @@
-import type { PollResponse_old } from 'stream-chat';
+import type { PollResponseData } from 'stream-chat';
 
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
@@ -9,7 +9,7 @@ export const upsertPoll = async ({
   execute = true,
   poll,
 }: {
-  poll: PollResponse_old;
+  poll: PollResponseData;
   execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

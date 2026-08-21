@@ -32,9 +32,8 @@ describe('useUserActions', () => {
         ({
           client: {
             blockUser,
-            muteUser,
+            moderation: { mute: muteUser, unmute: unmuteUser },
             unblockUser,
-            unmuteUser,
           },
         }) as unknown as ChatContext.ChatContextValue,
     );
@@ -75,7 +74,7 @@ describe('useUserActions', () => {
 
       await result.current.muteUser({ onSuccess });
 
-      expect(muteUser).toHaveBeenCalledWith('target-user-id');
+      expect(muteUser).toHaveBeenCalledWith({ target_ids: ['target-user-id'] });
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(addNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -119,7 +118,7 @@ describe('useUserActions', () => {
 
       await result.current.unmuteUser({ onSuccess });
 
-      expect(unmuteUser).toHaveBeenCalledWith('target-user-id');
+      expect(unmuteUser).toHaveBeenCalledWith({ target_ids: ['target-user-id'] });
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(addNotification).toHaveBeenCalledWith(
         expect.objectContaining({

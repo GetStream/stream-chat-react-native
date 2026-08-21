@@ -1,7 +1,7 @@
 import type {
   ChannelFilters,
   ChannelOptions,
-  ChannelSort,
+  SortParamRequest,
   ChannelStateResponseFields,
 } from 'stream-chat';
 
@@ -29,7 +29,7 @@ export const getChannelsForFilterSort = async ({
   currentUserId: string;
   filters?: ChannelFilters;
   options?: ChannelOptions;
-  sort?: ChannelSort;
+  sort?: SortParamRequest[];
 }): Promise<Omit<ChannelStateResponseFields, 'duration'>[] | null> => {
   if (!filters && !sort && !options?.predefined_filter) {
     console.warn(

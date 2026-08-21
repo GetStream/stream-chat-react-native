@@ -4,7 +4,7 @@ import { StyleSheet, Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
-import { PollComposerState, StateStore, VotingVisibility } from 'stream-chat';
+import { PollComposerState, StateStore } from 'stream-chat';
 
 import { CreatePollOptions, CurrentOptionPositionsCache } from './components';
 
@@ -120,7 +120,7 @@ export const CreatePollContent = () => {
     async (value: boolean) => {
       setIsAnonymousPoll(value);
       await pollComposer.updateFields({
-        voting_visibility: value ? VotingVisibility.anonymous : VotingVisibility.public,
+        voting_visibility: value ? 'anonymous' : 'public',
       });
     },
     [pollComposer],

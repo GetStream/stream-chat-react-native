@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollVoteResponseData, VotingVisibility } from 'stream-chat';
+import { PollVoteResponseData } from 'stream-chat';
 
 import { PollButtonProps } from './Button';
 import { PollInputDialog } from './PollInputDialog';
@@ -99,7 +99,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
   const isMyAnswer = client.userID === answer.user?.id;
 
   const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous && !isMyAnswer,
+    () => votingVisibility === 'anonymous' && !isMyAnswer,
     [votingVisibility, isMyAnswer],
   );
 
