@@ -602,6 +602,7 @@ formats with — dates stay English with no error anywhere. Don't declare `i18ne
 | `TranslationCatalog`          | every key mapped to its English copy — type-only, adds nothing to the bundle        |
 | `StreamTFunction`             | the SDK's `t`, as returned by `useTranslationContext()`                             |
 | `DayjsLocaleConfig`           | `dayjsLocaleConfigForLanguage` and `registerTranslation`'s third argument            |
+| `DateTimeParserModule`        | a custom `DateTimeParser` — the `dayjs` / `moment` module, not a parse function      |
 | `CalendarFormats`             | the six calendar slots inside a `DayjsLocaleConfig`                                  |
 | `DynamicTranslationKey`       | a key only known at runtime; brand one with `asDynamicKey()`                         |
 | `Streami18nOptions`           | the constructor options — newly exported, though `options.formatters` always referenced it |

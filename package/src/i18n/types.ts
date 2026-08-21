@@ -1,7 +1,6 @@
 import type {
   LanguageNameCatalog,
   LooseTranslationDictionaryOf,
-  PluralTranslationKeyOf,
   RelativeTimeCatalog,
   StreamTFunctionFor,
   TranslationDictionaryOf,
@@ -25,7 +24,6 @@ import type { BundledTranslationKey, TranslationCatalog as GeneratedCatalog } fr
  */
 export type TranslationCatalog = GeneratedCatalog & LanguageNameCatalog & RelativeTimeCatalog;
 
-export type PluralTranslationKey = PluralTranslationKeyOf<TranslationCatalog>;
 export type TranslationKey = TranslationKeyOf<TranslationCatalog>;
 export type TranslationDictionary = TranslationDictionaryOf<TranslationCatalog>;
 export type LooseTranslationDictionary = LooseTranslationDictionaryOf<TranslationCatalog>;
@@ -43,13 +41,12 @@ export type {
   // runtime moved; re-exporting them here keeps the public surface unchanged.
   CalendarFormats,
   CustomFormatters,
+  DateTimeParserModule,
   DayjsLocaleConfig,
   DurationFormatterOptions,
   DynamicTranslationKey,
   FormatterFactory,
-  LanguageNameCatalog,
   PredefinedFormatters,
-  RelativeTimeCatalog,
   TDateTimeParser,
   TDateTimeParserInput,
   TDateTimeParserOutput,
