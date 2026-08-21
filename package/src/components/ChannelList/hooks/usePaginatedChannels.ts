@@ -234,13 +234,13 @@ export const usePaginatedChannels = ({
   // Propagate runtime `lockChannelOrder` changes without a re-query (matches the legacy `setOptions`
   // effect). Only affects how subsequent event-driven ingests reorder the list.
   useEffect(() => {
-    paginator.config.lockItemOrder = lockChannelOrder;
+    paginator.updateConfig({ lockItemOrder: lockChannelOrder });
   }, [paginator, lockChannelOrder]);
 
   // Propagate a runtime `queryChannelsOverride` swap (matches the legacy `setQueryChannelsRequest`
   // effect). The next query picks it up; no immediate reload needed.
   useEffect(() => {
-    paginator.config.doRequest = queryChannelsOverride;
+    paginator.updateConfig({ doRequest: queryChannelsOverride });
   }, [paginator, queryChannelsOverride]);
 
   return {

@@ -16,7 +16,6 @@ import {
   MessageRequest as StreamMessage,
   SendMessageOptions,
   UpdateMessageOptions,
-  UploadRequestFn,
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
@@ -171,15 +170,6 @@ export type InputMessageInputContextValue = {
   createPollOptionGap?: number;
 
   /**
-   * Override file upload request
-   *
-   * @param file    File object
-   *
-   * @overrideType Function
-   */
-  doFileUploadRequest?: UploadRequestFn;
-
-  /**
    * Handler for when the attach button is pressed.
    */
   handleAttachButtonPress?: () => void;
@@ -247,10 +237,6 @@ export const MessageInputProvider = ({
    * the feature.
    */
   useEffect(() => {
-    if (value.doFileUploadRequest) {
-      attachmentManager.setCustomUploadFn(value.doFileUploadRequest);
-    }
-
     setupVideoAttachmentPreviewMiddleware(messageComposer);
 
     if (allowSendBeforeAttachmentsUpload) {
@@ -262,12 +248,7 @@ export const MessageInputProvider = ({
         createDraftAttachmentsCompositionMiddleware(messageComposer),
       ]);
     }
-  }, [
-    value.doFileUploadRequest,
-    allowSendBeforeAttachmentsUpload,
-    messageComposer,
-    attachmentManager,
-  ]);
+  }, [allowSendBeforeAttachmentsUpload, messageComposer, attachmentManager]);
 
   /**
    * Function for capturing a photo and uploading it

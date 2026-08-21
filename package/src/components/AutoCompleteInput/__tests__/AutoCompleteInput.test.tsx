@@ -81,9 +81,14 @@ describe('AutoCompleteInput', () => {
   });
 
   it('should have the maxLength same as the one on the config of channel', async () => {
-    jest.spyOn(channel, 'getConfig').mockReturnValue({
-      max_message_length: 10,
-    } as unknown as ReturnType<typeof channel.getConfig>);
+    // `max_message_length` is a server upper bound on the composer's `text.maxLengthOnSend`, so it has
+    // to be written where the channel derives from — `getConfig()` is gone and `serverConfig` is a getter.
+    client.channelServerConfigsStore.partialNext({
+      configs: {
+        ...client.channelServerConfigs,
+        [channel.cid]: { max_message_length: 10 } as never,
+      },
+    });
     const channelProps = { channel };
     const props = {};
 

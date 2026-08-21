@@ -19,12 +19,16 @@ import { MarkReadFunctionOptions } from '../../Channel/Channel';
 export const useMarkRead = (channel: Channel) => {
   const { client } = useChatContext();
 
-  // In case the channel is pending disposal, which may happen when the channel is deleted,
-  // underlying js client throws an error. Following function ensures that we don't
-  // result in an error in such a case.
-  const getChannelConfigSafely = () => {
+  // The channel's *resolved* configuration, not the raw server flag: `readEvents.enabled` is the
+  // channel type's `read_events` already ANDed with anything registered through
+  // `client.config.set({ channel: { readEvents } })`, so a client-side opt-out is honoured too.
+  //
+  // Read at call time rather than through `useStateStore`: `markRead` is an imperative callback, so it
+  // needs the current value, not a re-render when the value moves. Still wrapped, because a channel
+  // pending disposal makes the underlying client throw.
+  const getReadEventsEnabledSafely = () => {
     try {
-      return channel?.getConfig();
+      return channel?.config.readEvents.enabled;
     } catch (_) {
       return null;
     }
@@ -38,7 +42,7 @@ export const useMarkRead = (channel: Channel) => {
     // Read events disabled (e.g. livestreams): if the client opted into a local unread count, reset
     // it locally (dispatches message.read_locally) — no backend round trip. The paginator's unread
     // snapshot updates from that.
-    if (!getChannelConfigSafely()?.read_events) {
+    if (!getReadEventsEnabledSafely()) {
       if (client.options.isLocalUnreadCountEnabled) {
         channel.markReadLocally();
       }

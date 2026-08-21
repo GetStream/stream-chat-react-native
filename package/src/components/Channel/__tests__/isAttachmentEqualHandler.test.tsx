@@ -11,6 +11,7 @@ import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateCha
 
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageUpdateEvent from '../../../mock-builders/event/messageUpdated';
+import { toChannelResponse } from '../../../mock-builders/event/utils';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -115,7 +116,7 @@ describe('isAttachmentEqualHandler', () => {
           ],
           updated_at: new Date(),
         },
-        channel,
+        toChannelResponse(channel),
       );
     });
 
