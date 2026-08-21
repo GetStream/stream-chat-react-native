@@ -13,9 +13,27 @@
 `useStateStore(channel.state, selector)`, like `thread.state`. The per-concern handles
 (`readStore` / `typingStore` / `membersStore` / `watcherStore` / `ownCapabilitiesStore` /
 `mutedUsersStore`) were removed; the state is flat and gained new slices (`data`, `membership`,
-git`muteStatus`, `initialized` / `offlineMode` / `pendingDisposal` (replaces `disconnected`, which is
-removed), `active`, `aiState`, `watchStatus`). AI-indicator
-state and its connection-loss resets are now LLC-owned.
+`muteStatus`, `initialized` / `offlineMode` / `pendingDisposal`, `active`, `aiState`, `watchStatus`).
+AI-indicator state and its connection-loss resets are now LLC-owned.
+
+### Renames and new slices worth knowing before you start
+
+Beyond the flattening, three things changed name or shape rather than location:
+
+- **`channel.disconnected` → `channel.pendingDisposal`**, and the old name is **removed outright — there is
+  no deprecated alias.** (V10 is a major, so the LLC is not carrying aliases through it.) The flag is one-way
+  and terminal: the paginators are disposed, the subscriptions unregistered, and the client drops the channel
+  from `activeChannels`, so it never revives. `getClient()` throws on such an instance. RN had five call
+  sites, all plain property reads.
+- **`WatcherState` → `ChannelWatchState`**, also with no alias. The slice no longer describes only *other*
+  people watching (`watchers`, `watcherCount`) — it now also answers whether *this client* is watching, so
+  the old name was wrong. Anything importing `WatcherState` as a type needs the new name.
+- **`watchStatus`** (new, inside that slice) is a three-value machine, not a boolean:
+  `'watching'` (a live server-side watch, events flowing) · `'wasWatching'` (the watch was lost to a dropped
+  connection and *should* be restored) · `'notWatching'` (never watched, or the consumer called
+  `stopWatching()` — must **not** be restored). A boolean cannot distinguish the last two, which is the whole
+  point: the server keys watches by connection ID, so a dropped socket ends every watch even if it reconnects
+  moments later. `ChannelWatchStatus` is exported as a const from `stream-chat`.
 
 ## What RN changed on the UI side
 
@@ -86,6 +104,13 @@ Things that bit us / are easy to get wrong subscribing to the unified store:
   scroll-gating reads) — it derives from `read[ownUserId].unread_messages` rather than holding a
   count of its own, so there is nothing separate to `useStateStore`-select. Subscribe to `read` and
   read `read[userId]?.unread_messages` for a badge that re-renders.
+- **The own unread count is now gated, which changes what `read[me]` reports.** Collapsing
+  `unreadCount` into the read slice moved that field's two gates onto the own read row: a message that does
+  not count as unread (silent, shadowed, from a muted user, in a muted channel) no longer bumps it, and
+  neither does one that arrives while the consumer is viewing the newest message (reported to the LLC via
+  `messagePaginator.setViewingLive`). Previously the row bumped unconditionally. Net effect on a badge reading
+  `read[userId]?.unread_messages`: no transient +1 while the user sits at the bottom of an open channel, and
+  silent/muted messages stop inflating it. It self-heals from the server on the next `message.read` or query.
 - **Reactivity needs a store write, not a nested mutation.** Subscribers update only when the write
   side reassigns / `partialNext`es (e.g. reassign `channel.data` or `channel.state.membership`).
   Mutating a nested field in place (`channel.data.name = …`, `channel.state.membership.user = …`)
