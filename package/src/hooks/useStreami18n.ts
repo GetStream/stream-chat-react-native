@@ -52,8 +52,24 @@ export const useStreami18n = (i18nInstance?: Streami18n): TranslatorFunctions =>
     return new Streami18n();
   }, [i18nInstance]);
 
+  /**
+   * `init()` rejects if i18next fails to initialize, so the rejection is handled here rather than
+   * left to surface as an unhandled rejection from an effect.
+   *
+   * Reported through the instance's own `logger`, which is where an integrator has already routed
+   * diagnostics. Nothing is thrown onward and no error state is rendered, because core leaves the
+   * instance degraded but safe: `t` still returns each call site's inline English, so the chat renders
+   * in English rather than blanking or showing dotted keys. Failing the whole subtree over a
+   * translation-layer fault would be the worse outcome.
+   */
   useEffect(() => {
-    streami18n.init();
+    streami18n.init().catch((error: unknown) => {
+      streami18n.logger(
+        `stream-chat-react-native: Streami18n failed to initialize, falling back to the bundled English copy: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    });
   }, [streami18n]);
 
   // One subscription replaces the two listener registrations this used to make. `subscribe` fires

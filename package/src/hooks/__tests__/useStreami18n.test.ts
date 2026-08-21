@@ -85,4 +85,29 @@ describe('useStreami18n', () => {
     // its inline copy through the pre-init default translator, so this holds without waiting on init.
     expect(result.current.t('channel.archived.text', 'Channel archived')).toBe('Channel archived');
   });
+
+  /**
+   * `init()` rejects on an i18next failure, so this hook is what stands between that and an unhandled
+   * rejection escaping an effect.
+   *
+   * `init()` itself is mocked, rather than the i18next instance underneath it: what is under test is
+   * this hook's handling of a rejected `init()`, not core's decision to reject -- core's own suite
+   * covers that. Mocking at this seam also keeps the test independent of which `stream-chat` version
+   * is installed, which matters while the rejecting contract is still rolling out through a release.
+   */
+  it('reports a failed init() through the instance logger and still renders English', async () => {
+    const logger = jest.fn();
+    const i18n = new Streami18n({ logger });
+    jest.spyOn(i18n, 'init').mockRejectedValue(new Error('i18next exploded'));
+
+    const { result } = renderHook(() => useStreami18n(i18n));
+
+    await waitFor(() => {
+      expect(logger).toHaveBeenCalledWith(
+        expect.stringContaining('Streami18n failed to initialize'),
+      );
+    });
+    expect(logger).toHaveBeenCalledWith(expect.stringContaining('i18next exploded'));
+    expect(result.current.t('channel.archived.text', 'Channel archived')).toBe('Channel archived');
+  });
 });
