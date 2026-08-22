@@ -117,8 +117,11 @@ describe('Channel', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.channel.id);
     channel.cid = mockedChannel.channel.cid as string;
-    const getConfigSpy = jest.fn();
-    channel.getConfig = getConfigSpy;
+    // `channel.getConfig()` is gone; `serverConfig` is a getter over the client's store. Nothing here
+    // asserts on the value, so seeding an empty config for this cid is enough to stand in for the spy.
+    chatClient.channelServerConfigsStore.partialNext({
+      configs: { ...chatClient.channelServerConfigs, [channel.cid]: {} as never },
+    });
   });
 
   afterEach(() => {
@@ -214,7 +217,7 @@ describe('Channel', () => {
     getOrCreateChannelApi(
       generateChannelResponse({
         channel: {
-          config: channel.getConfig(),
+          config: channel.serverConfig,
           id: channel.id,
           type: channel.type,
         },

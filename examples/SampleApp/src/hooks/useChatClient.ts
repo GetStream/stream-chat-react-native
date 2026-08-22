@@ -76,6 +76,21 @@ export const useChatClient = () => {
       timeout: 6000,
       // logger: (type, msg) => console.log(type, msg)
     });
+
+    // Declarative configuration for the instances the SDK builds for us. Registered here, at the
+    // client-creation site, rather than from a component effect: some configuration is read once when
+    // an instance is constructed, and channels are constructed by `client.channel()` — which can run
+    // before a component effect flushes. Behaviour that cannot be expressed as a value (middleware)
+    // stays in the `messageComposer` setup function in `App.tsx`.
+    //
+    // `linkPreviews.enabled` is deliberately not set: it defaults to `true` in v10 and is ANDed with
+    // the channel type's `url_enrichment`, so the server has the final say either way.
+    client.config.set({
+      messageComposer: {
+        drafts: { enabled: true },
+      },
+    });
+
     setChatClient(client);
 
     const user = {

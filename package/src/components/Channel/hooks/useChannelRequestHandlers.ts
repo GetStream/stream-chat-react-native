@@ -2,17 +2,14 @@ import { useEffect } from 'react';
 
 import {
   Channel,
-  ChannelInstanceConfig,
+  ChannelConfig,
   LocalMessage,
-  localMessageToNewMessagePayload,
   MessageRequest as Message,
   SendMessageAPIResponse,
   SendMessageOptions,
-  StreamChat,
-  UpdateMessageOptions,
 } from 'stream-chat';
 
-type RequestHandlers = NonNullable<ChannelInstanceConfig['requestHandlers']>;
+type RequestHandlers = NonNullable<ChannelConfig['requestHandlers']>;
 
 export type ChannelRequestHandlersParams = {
   channel: Channel;
@@ -22,20 +19,12 @@ export type ChannelRequestHandlersParams = {
    * stream-chat send pipeline (after the optimistic ingest, before the POST).
    */
   uploadPendingAttachments?: (message: LocalMessage) => Promise<void>;
-  /** Overrides the default mark-read request. Mirrors the `<Channel doMarkReadRequest>` prop. */
-  doMarkReadRequest?: (channel: Channel) => void;
   /** Overrides the default send/retry request. Mirrors the `<Channel doSendMessageRequest>` prop. */
   doSendMessageRequest?: (
     channelId: string,
     message: Message,
     options?: SendMessageOptions,
   ) => Promise<SendMessageAPIResponse>;
-  /** Overrides the default update request. Mirrors the `<Channel doUpdateMessageRequest>` prop. */
-  doUpdateMessageRequest?: (
-    channelId: string,
-    updatedMessage: Parameters<StreamChat['updateMessage']>[0],
-    options?: UpdateMessageOptions,
-  ) => ReturnType<StreamChat['updateMessage']>;
 };
 
 /**
@@ -43,38 +32,38 @@ export type ChannelRequestHandlersParams = {
  * message-operations engine (`channel.sendMessageWithLocalUpdate` / `retrySendMessageWithLocalUpdate`
  * / `updateMessageWithLocalUpdate`) honors them.
  *
- * The handlers this hook manages are (re)written whenever the channel or an input changes. The send
- * handler is registered unconditionally because it also drives the attachment-upload step (see
- * `uploadPendingAttachments`); it defers the actual POST to the integrator's `doSendMessageRequest`
- * when provided, and otherwise to `channel.sendMessage` (the client default). The update override is
- * registered only when provided; delete and mark-read are left to the client default / mark-read flow.
+ * Only the send/retry pair is managed here, and it is registered unconditionally because it also drives
+ * the attachment-upload step (see `uploadPendingAttachments`); it defers the actual POST to the
+ * integrator's `doSendMessageRequest` when provided, and otherwise to `channel.sendMessage` (the client
+ * default).
+ *
+ * `markReadRequest`, `updateMessageRequest` and `deleteMessageRequest` are **not** managed here — those
+ * are registered declaratively through `client.config.set({ channel: { requestHandlers } })` and the LLC
+ * resolves them per instance. The `<Channel doMarkReadRequest>` / `doUpdateMessageRequest` props that
+ * used to feed them are removed.
+ *
+ * Nothing this hook does not own is deleted from the slot map, which matters: `delete`-ing a handler it
+ * merely *might* own is what silently dropped a declaratively-registered one, sending the operation down
+ * the LLC's default path — an unmocked request that simply hangs.
+ *
+ * Re-applied whenever the channel re-derives its configuration. `Channel.initializeConfig` *replaces*
+ * `requestHandlers` from the declarative tree rather than merging into it, and it runs on every change
+ * to the `channel`, `messagePaginator` or `messageOperations` keys (a `Channel` declares the latter two
+ * as `alsoWatch`). A write made here is not one of those inputs, so any `client.config.set()` touching
+ * them would otherwise drop our send handler — and with it the attachment-upload step, silently. The
+ * subscription below is the re-apply the LLC's `initializeConfig` doc asks direct writers to perform.
  */
 export const useChannelRequestHandlers = ({
   channel,
   uploadPendingAttachments,
-  doMarkReadRequest,
   doSendMessageRequest,
-  doUpdateMessageRequest,
 }: ChannelRequestHandlersParams) => {
   useEffect(() => {
-    const currentRequestHandlers = channel.configState.getLatestValue().requestHandlers;
-    const nextRequestHandlers: RequestHandlers = { ...(currentRequestHandlers ?? {}) };
-
-    // Reset the handlers this hook manages, then re-register: the send/retry handler unconditionally
-    // (it also drives attachment uploads), and mark-read / update only when their override is provided.
-    delete nextRequestHandlers.markReadRequest;
-    delete nextRequestHandlers.retrySendMessageRequest;
-    delete nextRequestHandlers.sendMessageRequest;
-    delete nextRequestHandlers.updateMessageRequest;
-
-    if (doMarkReadRequest) {
-      // RN's doMarkReadRequest performs the custom mark-read itself (returns void); its obsolete 2nd
-      // (setChannelUnreadUiState) arg is dropped now that unread state is the paginator snapshot.
-      nextRequestHandlers.markReadRequest = ({ channel: markReadChannel }) => {
-        doMarkReadRequest(markReadChannel);
-        return Promise.resolve(null);
-      };
-    }
+    // `configState` is a getter on `Channel.prototype` now (it delegates to the channel's
+    // `ConfigController`), where it used to be an own field. A spread copy of a channel — which tests
+    // and integrator code both make — therefore no longer carries it, so this cannot be assumed.
+    const configState = channel?.configState;
+    if (!configState) return;
 
     // Always register a send handler. It runs INSIDE the stream-chat send pipeline — after the
     // optimistic ingest (the message already shows as pending), before the POST — so it is where we
@@ -82,6 +71,22 @@ export const useChannelRequestHandlers = ({
     // integrator supplied doSendMessageRequest we defer the actual POST to it; otherwise we fall back
     // to channel.sendMessage, which is byte-identical to the client default for messages with no
     // pending uploads. retrySendMessageRequest reuses it, so retries re-await uploads too.
+    //
+    // Built once per effect run rather than inside `applyRequestHandlers`, so its identity is stable
+    // across re-applies — that identity is what the subscription below uses to tell "still ours" from
+    // "dropped by a re-derivation".
+    //
+    // TODO: discuss with the team — request a `next`-shaped `sendMessageRequest` slot in `stream-chat`,
+    // then delete this wrapper and the `doSendMessageRequest` prop with it.
+    //
+    // Every other `do*Request` prop is gone; this one stays only because the SDK needs the slot itself
+    // (the upload step must run after the optimistic ingest, before the POST) so it has to wrap rather
+    // than be replaced. Two consequences: we hand-copy the LLC's default send below and nothing catches
+    // it drifting, and a declaratively-registered handler is never reached.
+    //
+    // `MessageOperations.send` already builds the fallback (`requestFn ?? handlers.send ??
+    // defaults.send`) — it just does not pass it to the handler. With `next` available this collapses to
+    // "await uploads, call next".
     const sendMessageRequest: RequestHandlers['sendMessageRequest'] = async ({
       localMessage,
       message,
@@ -100,30 +105,34 @@ export const useChannelRequestHandlers = ({
       return { message: fallback.message };
     };
 
-    nextRequestHandlers.sendMessageRequest = sendMessageRequest;
-    nextRequestHandlers.retrySendMessageRequest = sendMessageRequest;
+    const applyRequestHandlers = () => {
+      const currentRequestHandlers = configState.getLatestValue().requestHandlers;
+      const nextRequestHandlers: RequestHandlers = { ...(currentRequestHandlers ?? {}) };
 
-    if (doUpdateMessageRequest) {
-      nextRequestHandlers.updateMessageRequest = async ({ localMessage, options }) => ({
-        message: (
-          await doUpdateMessageRequest(
-            channel.cid,
-            { id: localMessage.id, message: localMessageToNewMessagePayload(localMessage) },
-            options,
-          )
-        ).message,
+      // Only the send/retry pair is ours. `markReadRequest`, `updateMessageRequest` and
+      // `deleteMessageRequest` are left untouched so a handler registered through
+      // `client.config.set({ channel: { requestHandlers } })` survives — deleting them here is what
+      // used to drop an integrator's declaratively-registered handler on the floor.
+      delete nextRequestHandlers.retrySendMessageRequest;
+      delete nextRequestHandlers.sendMessageRequest;
+
+      nextRequestHandlers.sendMessageRequest = sendMessageRequest;
+      nextRequestHandlers.retrySendMessageRequest = sendMessageRequest;
+
+      configState.partialNext({
+        requestHandlers:
+          Object.keys(nextRequestHandlers).length > 0 ? nextRequestHandlers : undefined,
       });
-    }
+    };
 
-    channel.configState.partialNext({
-      requestHandlers:
-        Object.keys(nextRequestHandlers).length > 0 ? nextRequestHandlers : undefined,
+    applyRequestHandlers();
+
+    // Subscribed after the first apply, so the immediate replay `subscribe` performs already sees our
+    // handler and short-circuits. Our own `partialNext` re-enters here for the same reason, so there is
+    // no write loop: the guard is satisfied by the write that triggered it.
+    return configState.subscribe(({ requestHandlers }) => {
+      if (requestHandlers?.sendMessageRequest === sendMessageRequest) return;
+      applyRequestHandlers();
     });
-  }, [
-    channel,
-    uploadPendingAttachments,
-    doMarkReadRequest,
-    doSendMessageRequest,
-    doUpdateMessageRequest,
-  ]);
+  }, [channel, uploadPendingAttachments, doSendMessageRequest]);
 };

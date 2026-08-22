@@ -15,14 +15,39 @@ const createChannel = (
   sendMessage: jest.Mock = jest.fn().mockResolvedValue({ message: { id: 'fallback' } }),
 ) => {
   let config: FakeConfig = {};
+  const listeners = new Set<(value: FakeConfig) => void>();
+  const notify = () => listeners.forEach((listener) => listener(config));
   const configState = {
     getLatestValue: (): FakeConfig => config,
     partialNext: (patch: FakeConfig) => {
       config = { ...config, ...patch };
+      notify();
+    },
+    // Mirrors `StateStore.subscribe`: replays the current value immediately and notifies on every write.
+    // The hook relies on both — the immediate replay must be a no-op (its handler is already installed),
+    // and the write notification is what lets it re-apply after a re-derivation dropped its handlers.
+    subscribe: (listener: (value: FakeConfig) => void) => {
+      listeners.add(listener);
+      listener(config);
+      return () => listeners.delete(listener);
     },
   };
   const channel = { cid: 'messaging:test', configState, sendMessage } as unknown as Channel;
-  return { channel, configState, getHandlers: () => config.requestHandlers, sendMessage };
+  return {
+    channel,
+    configState,
+    getHandlers: () => config.requestHandlers,
+    /**
+     * Stands in for `Channel.initializeConfig`, which *replaces* `requestHandlers` from the declarative
+     * tree rather than merging — what happens on any `client.config.set()` touching `channel`,
+     * `messagePaginator` or `messageOperations`.
+     */
+    simulateReDerivation: () => {
+      config = { ...config, requestHandlers: undefined };
+      notify();
+    },
+    sendMessage,
+  };
 };
 
 const localMessage = { id: 'm1', text: 'hi' } as unknown as LocalMessage;
@@ -89,48 +114,61 @@ describe('useChannelRequestHandlers', () => {
     expect(result).toEqual({ message: { id: 'fallback' } });
   });
 
-  it('registers updateMessageRequest from doUpdateMessageRequest', async () => {
-    const { channel, getHandlers } = createChannel();
-    const doUpdateMessageRequest = jest.fn().mockResolvedValue({ message: { id: 'updated' } });
+  it('leaves handlers it does not own alone', () => {
+    const { channel, configState, getHandlers } = createChannel();
 
-    renderHook(() => useChannelRequestHandlers({ channel, doUpdateMessageRequest }));
+    // Registered elsewhere — in production by `client.config.set({ channel: { requestHandlers } })`,
+    // which the LLC resolves into `configState`. The hook no longer manages mark-read or delete, so
+    // both must survive its writes; it used to `delete` markRead unconditionally, which silently
+    // dropped a declaratively-registered handler.
+    const deleteMessageRequest = jest.fn();
+    const markReadRequest = jest.fn();
+    configState.partialNext({ requestHandlers: { deleteMessageRequest, markReadRequest } });
 
-    const result = await getHandlers()?.updateMessageRequest?.({ localMessage });
-    // The handler now forwards the update-message payload (id + the new-message payload derived
-    // from the local message) rather than the raw LocalMessage.
-    expect(doUpdateMessageRequest).toHaveBeenCalledWith(
-      'messaging:test',
-      { id: 'm1', message: { id: 'm1', text: 'hi' } },
-      undefined,
-    );
-    expect(result).toEqual({ message: { id: 'updated' } });
+    renderHook(() => useChannelRequestHandlers({ channel }));
+
+    expect(getHandlers()?.deleteMessageRequest).toBe(deleteMessageRequest);
+    expect(getHandlers()?.markReadRequest).toBe(markReadRequest);
+    // ...while the send/retry pair it does own is registered.
+    expect(getHandlers()?.sendMessageRequest).toBeDefined();
+    expect(getHandlers()?.retrySendMessageRequest).toBe(getHandlers()?.sendMessageRequest);
+  });
+  it('re-applies its handlers after a re-derivation drops them', () => {
+    const { channel, getHandlers, simulateReDerivation } = createChannel();
+
+    renderHook(() => useChannelRequestHandlers({ channel }));
+    const original = getHandlers()?.sendMessageRequest;
+    expect(original).toBeDefined();
+
+    // `Channel.initializeConfig` replaces `requestHandlers` wholesale, so any `client.config.set()`
+    // touching `channel` / `messagePaginator` / `messageOperations` wipes what this hook wrote. Without
+    // the re-apply the attachment-upload step would go with it, silently.
+    simulateReDerivation();
+
+    expect(getHandlers()?.sendMessageRequest).toBeDefined();
+    expect(getHandlers()?.retrySendMessageRequest).toBe(getHandlers()?.sendMessageRequest);
   });
 
-  it('clears the managed update handler when its override is removed, preserving unrelated handlers', () => {
-    const { channel, configState, getHandlers } = createChannel();
-    // mark-read is now a hook-managed handler, so use delete (which the hook never touches) as the
-    // "registered elsewhere" handler that must survive a re-run.
-    const deleteMessageRequest = jest.fn();
-    configState.partialNext({ requestHandlers: { deleteMessageRequest } });
+  it('re-applies a doSendMessageRequest override after a re-derivation', async () => {
+    const { channel, getHandlers, simulateReDerivation } = createChannel();
+    const doSendMessageRequest = jest.fn().mockResolvedValue({ message: { id: 'from-override' } });
 
-    const doUpdateMessageRequest = jest.fn();
-    const { rerender } = renderHook(
-      ({ update }: { update?: typeof doUpdateMessageRequest }) =>
-        useChannelRequestHandlers({ channel, doUpdateMessageRequest: update }),
-      {
-        initialProps: {
-          update: doUpdateMessageRequest as typeof doUpdateMessageRequest | undefined,
-        },
-      },
-    );
-    expect(getHandlers()?.updateMessageRequest).toBeDefined();
+    renderHook(() => useChannelRequestHandlers({ channel, doSendMessageRequest }));
+    simulateReDerivation();
 
-    rerender({ update: undefined });
+    const result = await getHandlers()?.sendMessageRequest?.({ localMessage, message });
+    expect(doSendMessageRequest).toHaveBeenCalled();
+    expect(result).toEqual({ message: { id: 'from-override' } });
+  });
 
-    expect(getHandlers()?.updateMessageRequest).toBeUndefined();
-    // the send handler is always registered, independent of overrides.
-    expect(getHandlers()?.sendMessageRequest).toBeDefined();
-    // an unrelated handler registered elsewhere must be preserved.
-    expect(getHandlers()?.deleteMessageRequest).toBe(deleteMessageRequest);
+  it('does not loop when its own write re-enters the subscription', () => {
+    const { channel, configState } = createChannel();
+    const partialNext = jest.spyOn(configState, 'partialNext');
+
+    renderHook(() => useChannelRequestHandlers({ channel }));
+
+    // One write for the initial apply. The subscription's immediate replay sees our own handler and
+    // short-circuits, so it must not write again.
+    expect(partialNext).toHaveBeenCalledTimes(1);
   });
 });

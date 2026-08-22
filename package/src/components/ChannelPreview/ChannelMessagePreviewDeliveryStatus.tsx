@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LocalMessage, MessageResponse } from 'stream-chat';
+import { ChannelConfig, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 
@@ -11,9 +11,17 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { MessageDeliveryStatus, useMessageDeliveryStatus } from '../../hooks';
+import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
+
+/**
+ * Module scope so the reference stays stable — an inline selector re-subscribes on every render.
+ */
+const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
+  readEventsEnabled: readEvents.enabled,
+});
 
 export type ChannelMessagePreviewDeliveryStatusProps = Pick<ChannelPreviewProps, 'channel'> & {
   message: MessageResponse | LocalMessage;
@@ -26,7 +34,11 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
-  const channelConfigExists = typeof channel?.getConfig === 'function';
+  // `configState` is absent on the partial channel mocks some tests pass in; a real channel always
+  // has one. Resolved configuration, so `read_events` is already ANDed with anything registered
+  // through `client.config.set({ channel: { readEvents } })`.
+  const configState = channel?.configState;
+  const { readEventsEnabled } = useStateStore(configState, readEventsSelector) ?? {};
   const styles = useStyles();
   const {
     theme: {
@@ -48,16 +60,15 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   }, [message, client.user?.id]);
 
   const readEvents = useMemo(() => {
-    if (!channelConfigExists) {
+    if (!configState) {
       return true;
     }
-    const read_events =
-      !channel.pendingDisposal && !!channel?.id && channel.getConfig()?.read_events;
+    const read_events = !channel.pendingDisposal && !!channel?.id && readEventsEnabled;
     if (typeof read_events !== 'boolean') {
       return true;
     }
     return read_events;
-  }, [channelConfigExists, channel]);
+  }, [configState, readEventsEnabled, channel]);
 
   // `status` only exists on optimistic/local messages (`LocalMessage`); a delivered
   // `MessageResponse` won't carry it. Read it through a guard instead of asserting the shape.

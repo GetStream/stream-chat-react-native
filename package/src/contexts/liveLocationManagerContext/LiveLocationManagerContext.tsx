@@ -50,6 +50,7 @@ export const LiveLocationManagerProvider = (
 
     return () => {
       liveLocationManager.unregisterSubscriptions();
+      liveLocationManager.dispose();
     };
   }, [liveLocationManager]);
 

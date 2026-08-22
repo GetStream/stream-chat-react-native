@@ -78,6 +78,7 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 
 const configStateSelector = (state: MessageComposerConfig) => ({
   enabled: state.text.enabled,
+  maxLengthOnSend: state.text.maxLengthOnSend,
 });
 
 const MAX_NUMBER_OF_LINES = 5;
@@ -95,7 +96,10 @@ const commandPlaceHolders: Record<string, string> = {
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const styles = useStyles();
   const {
-    channel,
+    // Destructured purely to keep it out of `...rest`, which is spread onto the TextInput below. It is
+    // no longer read here — the message length limit now comes from resolved composer configuration —
+    // but leaking a whole Channel into native props would be a large, pointless serialization.
+    channel: _channel,
     cooldownRemainingSeconds,
     setInputBoxRef,
     t,
@@ -107,7 +111,10 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
   const { command, text } = useStateStore(textComposer.state, textComposerStateSelector);
-  const { enabled } = useStateStore(messageComposer.configState, configStateSelector);
+  const { enabled, maxLengthOnSend } = useStateStore(
+    messageComposer.configState,
+    configStateSelector,
+  );
 
   // RN's onChangeText doesn't carry cursor info, and iOS / Android fire
   // onChangeText vs onSelectionChange in different orders. Rather than derive
@@ -145,9 +152,10 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     };
   }, []);
 
-  const maxMessageLength = useMemo(() => {
-    return channel.getConfig()?.max_message_length;
-  }, [channel]);
+  // The composer's resolved limit, not the raw `max_message_length` server flag. The LLC treats the
+  // channel type's value as an *upper bound* on `text.maxLengthOnSend`, so this is the tighter of the
+  // server's cap and anything registered through `client.config`, and it is reactive.
+  const maxMessageLength = maxLengthOnSend;
 
   const numberOfLines = useMemo(() => {
     return props.numberOfLines ?? MAX_NUMBER_OF_LINES;

@@ -3,16 +3,16 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import {
   Channel as ChannelType,
+  ChannelConfig,
   EventHandler,
   LocalMessage,
+  MessageComposerConfig,
   MessageResponse,
   SendMessageAPIResponse,
   SendMessageOptions,
-  StreamChat,
   Event as StreamEvent,
   MessageRequest as StreamMessage,
   Thread,
-  UpdateMessageOptions,
 } from 'stream-chat';
 
 import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
@@ -80,7 +80,7 @@ import {
 } from '../../native';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
-import type { ChannelUnreadState } from '../../types/types';
+
 import { FileTypes } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
@@ -193,7 +193,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'audioRecordingEnabled'
       | 'compressImageQuality'
       | 'createPollOptionGap'
-      | 'doFileUploadRequest'
       | 'focusInputOnPickerClose'
       | 'handleAttachButtonPress'
       | 'hasCameraPicker'
@@ -272,14 +271,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     disableKeyboardCompatibleView?: boolean;
     /**
-     * Overrides the Stream default mark channel read request (Advanced usage only)
-     * @param channel Channel object
-     */
-    doMarkReadRequest?: (
-      channel: ChannelType,
-      setChannelUnreadUiState?: (data: ChannelUnreadState | undefined) => void,
-    ) => void;
-    /**
      * Overrides the Stream default send message request (Advanced usage only)
      * @param channelId
      * @param messageData Message object
@@ -304,16 +295,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       options?: SendMessageOptions;
     }) => Promise<void>;
     /**
-     * Overrides the Stream default update message request (Advanced usage only)
-     * @param channelId
-     * @param updatedMessage The update-message request payload
-     */
-    doUpdateMessageRequest?: (
-      channelId: string,
-      updatedMessage: Parameters<StreamChat['updateMessage']>[0],
-      options?: UpdateMessageOptions,
-    ) => ReturnType<StreamChat['updateMessage']>;
-    /**
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
@@ -328,18 +309,12 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     messageId?: string;
     notificationHostId?: string;
-    /**
-     * @deprecated
-     * The time interval for throttling while updating the message state
-     */
-    newMessageStateUpdateThrottleInterval?: number;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
     /**
      * If true, multiple audio players will be allowed to play simultaneously
      * @default true
      */
     allowConcurrentAudioPlayback?: boolean;
-    stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
      */
@@ -359,6 +334,22 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
 
 // The highlighted message id is derived from the paginator's messageFocusSignal (LLC), which is
 // emitted by the jump fns and auto-cleared after its TTL — no separate targeted-message React state.
+/**
+ * Poll composition, resolved: the channel type's `polls` flag already ANDed with anything registered
+ * through `client.config.set({ messageComposer: { polls } })`. Module scope keeps the reference stable.
+ */
+const composerPollsSelector = (state: MessageComposerConfig) => ({
+  pollsEnabled: state.polls.enabled,
+});
+
+/**
+ * The slash commands this channel type offers, as the server reports them. Lives on resolved channel
+ * configuration so there is one place to read from — see `ChannelConfig.availableCommands`.
+ */
+const availableCommandsSelector = (state: ChannelConfig) => ({
+  availableCommands: state.availableCommands,
+});
+
 const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
   highlightedMessageId: state.signal?.messageId,
 });
@@ -391,11 +382,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
-    doFileUploadRequest,
-    doMarkReadRequest,
     doSendMessageRequest,
     preSendMessageRequest,
-    doUpdateMessageRequest,
     enableMessageGroupingByUser = true,
     enableOfflineSupport,
     allowSendBeforeAttachmentsUpload = enableOfflineSupport,
@@ -521,8 +509,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const optimisticallyUpdatedNewMessages = useMemo<Set<string>>(() => new Set(), []);
 
   const channelId = channel?.id || '';
-  const pollCreationEnabled =
-    !channel.pendingDisposal && !!channel?.id && channel?.getConfig()?.polls;
+  const { pollsEnabled } = useStateStore(
+    channel?.messageComposer?.configState,
+    composerPollsSelector,
+  ) ?? { pollsEnabled: false };
+  const pollCreationEnabled = !channel.pendingDisposal && !!channel?.id && pollsEnabled;
 
   const {
     loadChannelAroundMessage: loadChannelAroundMessageFn,
@@ -787,23 +778,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     };
   }, [enableOfflineSupport, client, shouldSyncChannel]);
 
-  // In case the channel is pending disposal, which may happen when the channel is deleted,
-  // underlying js client throws an error. Following function ensures that Channel component
-  // won't result in error in such a case.
-  const getChannelConfigSafely = () => {
-    try {
-      return channel?.getConfig();
-    } catch (_) {
-      return null;
-    }
-  };
-
   /**
    * Channel configs for use in disabling local functionality.
    * Nullish coalescing is used to give first priority to props to override
    * the server settings. Then priority to server settings to override defaults.
+   *
+   * Read from the channel's *resolved* configuration, which carries the server's command list as
+   * `availableCommands`. That is reactive, so the list no longer has to be re-read imperatively on
+   * every render — and it no longer throws for a channel pending disposal, which is why the previous
+   * try/catch wrapper is gone.
    */
-  const clientChannelConfig = getChannelConfigSafely();
+  const { availableCommands } = useStateStore(channel?.configState, availableCommandsSelector) ?? {
+    availableCommands: [],
+  };
 
   const reloadChannel = useStableCallback(async () => {
     try {
@@ -853,8 +840,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // after the LLC's optimistic ingest (message already shows pending), before the POST — awaiting
   // `client.uploadManager` to finish the in-flight uploads and swapping local preview URLs for the
   // returned CDN URLs. This deliberately stays RN-side: native image compression (`compressedImageURI`)
-  // and the integrator's `doFileUploadRequest` must remain reachable, and the sendMessageRequest seam
-  // lets it run in the right place without a pre-ingest or any LLC change. It is NOT slated to move
+  // and a custom uploader registered through `client.config` must remain reachable, and the
+  // sendMessageRequest seam lets it run in the right place without a pre-ingest or any LLC change. It is NOT slated to move
   // into the LLC — this handler is its intended home.
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     if (!message.attachments?.length || !channel?.cid) {
@@ -878,7 +865,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       let fileForUpload = originalFile;
-      if (attachment.type === FileTypes.Image && !doFileUploadRequest) {
+      const hasCustomUploader = !!channel.messageComposer.config.attachments.doUploadRequest;
+      if (attachment.type === FileTypes.Image && !hasCustomUploader) {
         const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
         const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
         fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
@@ -914,9 +902,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   useChannelRequestHandlers({
     channel,
     uploadPendingAttachments,
-    doMarkReadRequest,
     doSendMessageRequest,
-    doUpdateMessageRequest,
   });
 
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
@@ -954,8 +940,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         throw new Error('Channel has not been initialized');
       }
       // The LLC handles the optimistic local update (ingest into the paginator), the network
-      // request (honoring any doUpdateMessageRequest registered into channel.configState in
-      // useChannelRequestHandlers), the received/failed state transitions, and offline queueing.
+      // request (honoring any `updateMessageRequest` registered through
+      // `client.config.set({ channel: { requestHandlers } })`), the received/failed state transitions,
+      // and offline queueing.
       // Thread edits route through the thread instance's own message operations.
       await (threadInstance ?? channel).updateMessageWithLocalUpdate({ localMessage, options });
     },
@@ -1043,12 +1030,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channelId,
     compressImageQuality,
     createPollOptionGap,
-    doFileUploadRequest,
     editMessage,
     focusInputOnPickerClose,
     handleAttachButtonPress,
     hasCameraPicker,
-    hasCommands: hasCommands ?? !!clientChannelConfig?.commands?.length,
+    hasCommands: hasCommands ?? !!availableCommands.length,
     hasFilePicker,
     hasImagePicker,
     messageInputFloating,

@@ -241,16 +241,11 @@ const App = () => {
     if (!chatClient) {
       return;
     }
-    chatClient.setMessageComposerSetupFunction(({ composer }) => {
-      composer.updateConfig({
-        drafts: {
-          enabled: true,
-        },
-        linkPreviews: {
-          enabled: true,
-        },
-      });
-
+    // Only behaviour lives here. `setMessageComposerSetupFunction` is deprecated in favour of
+    // `config.setSetupFunction`, and the plain values this used to set (`drafts`, `linkPreviews`) moved
+    // to the declarative `client.config.set()` call in `useChatClient`, next to where the client is
+    // created. A setup function is re-run on every configuration cycle, which is what middleware needs.
+    chatClient.config.setSetupFunction('messageComposer', ({ composer }) => {
       setupCommandUIMiddlewares(composer);
 
       composer.textComposer.middlewareExecutor.insert({

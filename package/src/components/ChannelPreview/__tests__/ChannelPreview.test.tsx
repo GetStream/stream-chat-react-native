@@ -23,6 +23,7 @@ import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchNotificationMarkRead from '../../../mock-builders/event/notificationMarkRead';
 import dispatchNotificationMarkUnread from '../../../mock-builders/event/notificationMarkUnread';
+import { toChannelResponse } from '../../../mock-builders/event/utils';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
@@ -347,7 +348,7 @@ describe('ChannelPreview', () => {
     const message = generateMessage({ cid: channel.cid, user: clientUser });
 
     act(() => {
-      dispatchMessageNewEvent(chatClient, message, channel || {});
+      dispatchMessageNewEvent(chatClient, message, toChannelResponse(channel ?? {}));
     });
 
     await waitFor(() => {
@@ -368,7 +369,7 @@ describe('ChannelPreview', () => {
     const message = generateMessage({ cid: channel.cid, user: someOtherUser });
 
     act(() => {
-      dispatchMessageNewEvent(chatClient, message, channel || {});
+      dispatchMessageNewEvent(chatClient, message, toChannelResponse(channel ?? {}));
     });
 
     await waitFor(() => {
