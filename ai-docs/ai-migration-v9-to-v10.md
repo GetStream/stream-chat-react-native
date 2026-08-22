@@ -84,7 +84,14 @@ rg '\beditMessage\b' src/
 rg '\b(FooterComponent|HeaderComponent|MessageList|MessageFlashList)\b' src/
 
 # §13 — ChannelProps removed props
-rg '<Channel\b' -A20 src/ | rg '\b(messages|loadingMore|loadingMoreRecent|threadMessages|setThreadMessages|doMarkReadRequest)\b'
+rg '<Channel\b' -A20 src/ | rg '\b(messages|loadingMore|loadingMoreRecent|threadMessages|setThreadMessages)\b'
+
+# §13.1 — props replaced by client.config (request handlers, throttles, upload override)
+rg '\b(doMarkReadRequest|doUpdateMessageRequest|doFileUploadRequest|stateUpdateThrottleInterval|newMessageStateUpdateThrottleInterval)\b' src/
+
+# §13.1 — raw server flags that should now read resolved config
+rg '\b(getConfig\(\)|client\.configs)\b' src/
+rg 'serverConfig\?\.(typing_events|read_events|replies|user_message_reminders|delivery_events|commands|uploads|polls|url_enrichment|shared_locations|max_message_length)' src/
 
 # §14–§15 — hooks
 rg '\b(useMutedUsers|useCreateChannelContext|useCreateMessagesContext|useCreateThreadContext|useCreateMessageInputContext)\b' src/
@@ -126,6 +133,15 @@ means changed. Details in the linked section.
 | …`.loadLatestMessages()` | `channel.messagePaginator.jumpToTheLatestMessage()` | §3 |
 | `useChannelContext().members` / `read` / `watchers` / `watcherCount` | `useStateStore(channel.state, selector)` (one store; selector picks the slice) | §4 |
 | `useChannelContext().markRead()` | `useMarkRead(channel)()` — or `channel.markRead()` | §5 |
+| `<Channel doMarkReadRequest>` | `client.config.set({ channel: { requestHandlers: { markReadRequest } } })` | §13.1 |
+| `<Channel doUpdateMessageRequest>` | `…{ requestHandlers: { updateMessageRequest } }` | §13.1 |
+| `<Channel doFileUploadRequest>` | `client.config.set({ messageComposer: { attachments: { doUploadRequest } } })` | §13.1 |
+| `<Channel stateUpdateThrottleInterval>` | `…{ channel: { messagePaginator: { stateThrottleMs } } }` | §13.1 |
+| `channel.getConfig()` | `channel.serverConfig` (getter) — or `channel.config` for resolved gates | §13.1 |
+| `client.configs[cid]` | `client.channelServerConfigs[cid]` | §13.1 |
+| `channel.serverConfig?.typing_events` (and the other gated flags) | `channel.config.typingEvents.enabled` — resolved, server ANDed with yours | §13.1 |
+| `client.setMessageComposerSetupFunction(fn)` | `client.config.setSetupFunction('messageComposer', fn)` | §13.1 |
+| re-setting `channel.messagePaginator.pageSize` after mount | `client.config.set({ channel: { messagePaginator: { pageSize } } })` | §13.1, §16.1 |
 | `useTargetedMessage()` / `setTargetedMessage(id)` | `useChannelContext().loadChannelAroundMessage({ messageId })`; read `highlightedMessageId` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
 | `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state` `read` (override the component to control) | §7 |
@@ -348,8 +364,9 @@ markRead();
 // or, imperatively (no hook): await channel.markRead();
 ```
 
-A custom `doMarkReadRequest` handler (passed as a `Channel` prop) is still
-honored — see §13 for its retyped signature.
+A custom mark-read handler is still honored, but it is no longer a `Channel` prop —
+register it as `client.config.set({ channel: { requestHandlers: { markReadRequest } } })`.
+See §13.1.
 
 ## 6. Message targeting / highlight removed → `messagePaginator.messageFocusSignal`
 
@@ -650,22 +667,193 @@ Removed props: `messages`, `loadingMore`, `loadingMoreRecent`, `threadMessages`,
 `setThreadMessages` — message/thread-reply state now lives in the LLC paginator,
 so these are no longer inputs. Drop them.
 
-`doMarkReadRequest` is retyped — its setter callback param is now
-`(data: ChannelUnreadState | undefined) => void` (`ChannelUnreadState` is a
-public `stream-chat` type, same shape):
+Also removed, and covered in §13.1:
+
+| Removed prop | v10 replacement |
+|---|---|
+| `doMarkReadRequest` | `client.config.set({ channel: { requestHandlers: { markReadRequest } } })` |
+| `doUpdateMessageRequest` | `client.config.set({ channel: { requestHandlers: { updateMessageRequest } } })` |
+| `doFileUploadRequest` | `client.config.set({ messageComposer: { attachments: { doUploadRequest } } })` |
+| `stateUpdateThrottleInterval` | `client.config.set({ channel: { messagePaginator: { stateThrottleMs } } })` |
+| `newMessageStateUpdateThrottleInterval` | same as above |
+
+The two throttle props were declared but never read in v10 — they are now deleted
+outright rather than left inert. `stateThrottleMs` is the real, reactive control.
+
+`doSendMessageRequest` is the one `do*Request` prop that **remains**. The SDK itself
+occupies that handler slot to run the attachment-upload step inside the send pipeline,
+so it wraps your handler rather than being replaced by it. Its `message` argument is
+now typed `MessageRequest` (rename only; no shape change).
+
+## 13.1 Instance configuration → `client.config`
+
+v10's `stream-chat` ships a declarative configuration API for the objects the SDK builds
+on your behalf — channels, threads, message composers, paginators, the client's own
+managers. Several `<Channel>` props are gone because this replaced them, and a number of
+values that were previously unreachable are now settable.
+
+### Where to register it
+
+At the client, **not** from a component effect:
 
 ```tsx
-doMarkReadRequest?: (
-  channel: Channel,
-  setChannelUnreadUiState?: (data: ChannelUnreadState | undefined) => void,
-) => void;
+const client = StreamChat.getInstance(apiKey);
+
+client.config.set({
+  channel: {
+    messagePaginator: { pageSize: 50, stateThrottleMs: 250 },
+    readEvents: { enabled: false },
+  },
+  messageComposer: {
+    drafts: { enabled: true },
+    attachments: { doUploadRequest: myUpload, customCdn: true },
+  },
+});
 ```
 
-> Note: `stateUpdateThrottleInterval` and `newMessageStateUpdateThrottleInterval`
-> are **not removed** — they remain declared on `ChannelProps` (the latter is
-> `@deprecated`) but are **inert** (never read in v10; state updates are driven
-> by the reactive stores). Passing them compiles but has no effect; remove them
-> during cleanup.
+Some configuration is read once when an instance is constructed, and channels are
+constructed by `client.channel()` / `client.queryChannels()` — which an app typically
+calls before or during the same commit that mounts `<Chat>`. Registering from a
+`useEffect` runs after that, so those values arrive too late for instances that already
+exist. There is deliberately no `<Chat>` prop for this: binding registration to a
+component lifecycle would recreate that ordering problem.
+
+### Request handlers
+
+The `doMarkReadRequest`, `doUpdateMessageRequest` and `doFileUploadRequest` props are
+removed (§13). Register the handlers instead:
+
+```tsx
+// v9
+<Channel channel={channel} doUpdateMessageRequest={myUpdate}>…</Channel>
+
+// v10
+client.config.set({
+  channel: {
+    requestHandlers: {
+      updateMessageRequest: async ({ localMessage, options }) => ({
+        message: await myUpdate(localMessage, options),
+      }),
+    },
+  },
+});
+<Channel channel={channel}>…</Channel>
+```
+
+Three things change with it:
+
+- **The signature is the LLC's, not the prop's.** Handlers take a single params object
+  (`{ localMessage, options }`, plus `message` for send) and must return `{ message }`.
+  The props took positional arguments; an adapter inside the SDK filled in the rest.
+- **Registration is per client**, not per mounted subtree. If you were passing different
+  handlers to different `<Channel>` instances, branch inside one handler on the
+  `localMessage.cid` you receive.
+- **Thread-scoped handlers** go under the `thread` key with the same shape.
+
+`doSendMessageRequest` stays a prop — see §13.
+
+### Behaviour, not values → setup functions
+
+Values go in `set()`. Reach for a setup function when what you are changing is behaviour
+that no value can express — middleware, comparators:
+
+```tsx
+client.config.setSetupFunction('messageComposer', ({ composer }) => {
+  setupCommandUIMiddlewares(composer);
+  composer.textComposer.middlewareExecutor.insert({ /* … */ });
+});
+```
+
+This replaces `client.setMessageComposerSetupFunction(fn)`, which is deprecated in the
+LLC. A setup function is also what makes a per-instance change survive
+`client.config.reset()` — reset re-runs setup functions but discards imperative
+`updateConfig()` calls made outside one.
+
+### Read the resolved value, never the raw server flag
+
+Several channel-type flags now resolve **into** the instance's own configuration, ANDed
+with whatever you registered — either side can switch a feature off, neither can widen:
+
+| Read this | …instead of |
+|---|---|
+| `channel.config.typingEvents.enabled` | `channel.serverConfig?.typing_events` |
+| `channel.config.readEvents.enabled` | `…?.read_events` |
+| `channel.config.replies.enabled` | `…?.replies` |
+| `channel.config.userMessageReminders.enabled` | `…?.user_message_reminders` |
+| `channel.config.deliveryEvents.enabled` | `…?.delivery_events` |
+| `channel.config.availableCommands` | `…?.commands` |
+| `composer.config.attachments.enabled` | `…?.uploads` |
+| `composer.config.polls.enabled` | `…?.polls` |
+| `composer.config.linkPreviews.enabled` | `…?.url_enrichment` |
+| `composer.config.location.enabled` | `…?.shared_locations` |
+| `composer.config.text.maxLengthOnSend` | `…?.max_message_length` |
+
+Gating UI on the raw flag offers features the client has already disabled. Both
+`channel.configState` and `composer.configState` are reactive stores, so
+`useStateStore(channel.configState, selector)` re-renders when a value moves — define
+the selector at module scope.
+
+`channel.getConfig()` is **removed**; `channel.serverConfig` is a getter returning the
+same value. Note it is a getter, so `jest.spyOn(channel, 'getConfig')` has no direct
+equivalent — write to `client.channelServerConfigsStore` in tests instead.
+
+`client.configs` is also gone → `client.channelServerConfigs`, still keyed by cid.
+
+### Two silent behaviour changes
+
+Neither produces a compile error.
+
+- **`linkPreviews.enabled` now defaults to `true`.** It was `false`, and the manager used
+  to AND the channel type's `url_enrichment` itself; that gate moved into resolved
+  configuration. Net effect: link previews turn **on** wherever enrichment is enabled
+  server-side. Opt out with
+  `client.config.set({ messageComposer: { linkPreviews: { enabled: false } } })`.
+- **A custom `doUploadRequest` no longer waives the `upload-file` capability.** That
+  conflated *how* files are sent with *where* they land. If your uploads go to storage
+  Stream does not host, set `attachments: { customCdn: true }` — otherwise uploads are
+  refused for users without the capability and the attachment control disappears.
+
+### What this unlocks that no prop could
+
+These had no v9 equivalent — the SDK constructs the objects, so there was nothing to pass
+a prop to:
+
+```tsx
+client.config.set({
+  messagePaginator: { stateThrottleMs: 250, retryCount: 2, lockItemOrder: true },
+  channel: { messagePaginator: { pageSize: 50 }, pinnedMessagesPaginator: { pageSize: 25 } },
+  thread: { messagePaginator: { pageSize: 25 } },
+  client: {
+    notifications: { durations: { error: 10_000 } },
+    reminders: { scheduledOffsetsMs: [5 * 60_000, 60 * 60_000] },
+    messageDelivery: { markAsReadThrottleTimeoutMs: 2000 },
+  },
+  messageOperations: { failedSendCacheTtlMs: 5 * 60_000 },
+});
+```
+
+The top-level `messagePaginator` key applies to **every** `MessagePaginator` — the channel
+list and thread replies both — because one class backs both. The per-parent slices
+(`channel.messagePaginator`, `thread.messagePaginator`) override it field by field, which
+is how `pageSize` can differ while `stateThrottleMs` does not.
+
+`client.config.getTree()` dumps everything you have registered, without needing to know
+the key names.
+
+### Caveats worth knowing
+
+- **`pageSize` is not `channelQueryOptions.messages.limit`.** The prop sizes the *initial*
+  channel query; `pageSize` sizes every *subsequent* page. They are different numbers and
+  you usually want both.
+- **Imperative `updateConfig()` does not survive a re-derivation**, except on
+  `MessageComposer`. `channel.messagePaginator.updateConfig({ pageSize: 200 })` is dropped
+  the next time anything re-resolves that paginator's configuration — including a
+  `client.config.set()` on an unrelated key, because `Channel` watches `messagePaginator`
+  and `messageOperations`. Register the value, or use a setup function.
+- **`X.config` is `Readonly`.** Assigning to a field is a compile error; nested writes
+  throw at runtime because the defaults are deep-frozen. Use `updateConfig()`.
+- **`<ChannelList>`'s `lockChannelOrder` and `queryChannelsOverride` stay props.** There is
+  no configuration key that reaches a channel-list paginator, so these are unchanged.
 
 ---
 
@@ -706,11 +894,14 @@ parameter shapes dropped the removed fields:
 
 ## 16. Behavioral changes (no symbol removed)
 
-- **16.1 Initial message-list page size 100 → 25.** `Channel` sets
-  `channel.messagePaginator.pageSize = 25` on init (the `stream-chat` default is
-  100). There is no public prop to override it; to change it, re-set
-  `channel.messagePaginator.pageSize` yourself after mount. Apps that assumed
-  ~100 messages loaded on open now get 25 and paginate the rest in.
+- **16.1 Initial message-list page size 100 → 25.** The `stream-chat` default is 100;
+  v10 resolves 25. Apps that assumed ~100 messages loaded on open now get 25 and
+  paginate the rest in. To change it, **register** the value —
+  `client.config.set({ channel: { messagePaginator: { pageSize: 50 } } })` (§13.1).
+  Do **not** re-set `channel.messagePaginator.pageSize` after mount: that is an
+  imperative patch and is dropped the next time the paginator's configuration
+  re-resolves. Note this is separate from `channelQueryOptions.messages.limit`, which
+  sizes only the initial query.
 - **16.2 `sendMessage` throws on failure** (previously swallowed). The built-in
   `MessageInput` catches the rejection and shows a notification. Any custom code
   that calls the context `sendMessage` (or `channel.sendMessageWithLocalUpdate`)
@@ -765,16 +956,20 @@ delete) still works.
 - `deleteMessage(msg, { hardDelete: true })` → `deleteMessage(msg, { hard: true })`
 - `deleteMessage(msg, { deleteForMe: true })` → `deleteMessage(msg, { delete_for_me: true })`
 
-## 17.3 `<Channel doUpdateMessageRequest>` override signature
+## 17.3 Update-message override moved off `<Channel>`
 
-The override now receives a request object, not a `LocalMessage`:
+`doUpdateMessageRequest` is **removed as a prop** (§13). Register an `updateMessageRequest`
+handler on `client.config` instead (§13.1). The signature is the LLC's, so it takes a single
+params object rather than the prop's positional arguments:
 
-- v9: `doUpdateMessageRequest(channelId, localMessage, options)`
-- v10: `doUpdateMessageRequest(channelId, { id, message }, options)` — `message` is a
-  `MessageRequest` (derived via `localMessageToNewMessagePayload`), matching the LLC's default
-  update path.
+- v9 prop: `doUpdateMessageRequest(channelId, localMessage, options)`
+- v10 handler: `updateMessageRequest({ localMessage, options })` → `{ message }`
 
-`doSendMessageRequest`'s `message` argument is now typed `MessageRequest` (rename only; no shape change).
+If you need the old `{ id, message }` request shape inside your handler, derive it with
+`localMessageToNewMessagePayload(localMessage)` — that is what the SDK's adapter used to do.
+
+`doSendMessageRequest` remains a prop; its `message` argument is now typed `MessageRequest`
+(rename only; no shape change).
 
 ## 17.4 `message.moderation_details` → `message.moderation`
 
