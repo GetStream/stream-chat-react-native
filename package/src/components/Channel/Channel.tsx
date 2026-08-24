@@ -2,12 +2,10 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
-  Channel as ChannelType,
   ChannelConfig,
   EventHandler,
   LocalMessage,
   MessageComposerConfig,
-  MessageResponse,
   SendMessageAPIResponse,
   SendMessageOptions,
   Event as StreamEvent,
@@ -84,12 +82,7 @@ import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import {
-  getFileNameFromPath,
-  isLocalUrl,
-  MessageStatusTypes,
-  ReactionData,
-} from '../../utils/utils';
+import { getFileNameFromPath, isLocalUrl, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
@@ -498,18 +491,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
-  const syncingChannelRef = useRef(false);
-
   const { highlightedMessageId } = useStateStore(
     (threadInstance ?? channel).messagePaginator.messageFocusSignal,
     messageFocusSignalSelector,
   );
 
-  // A failed reconnect reload is published on the channel rather than thrown at us, because the reload
-  // is issued by `client.connectionRecovery` inside a `Promise.allSettled`. Reading it here is what
-  // keeps the "could not load messages" indicator working now that this component no longer owns the
+  // A failed reconnect reload is published on the channel/thread rather than thrown at us, because the
+  // reload is issued by `client.connectionRecovery` inside a `Promise.allSettled`. Reading it here is
+  // what keeps the "could not load messages" indicator working now that this component owns neither
   // call. ORed with the local `error` below, which still covers the mount-time `watch()` failure.
   const { lastReloadError } = useStateStore(channel?.state, reloadErrorSelector) ?? {};
+  const { lastReloadError: threadReloadError } =
+    useStateStore(threadInstance?.state, reloadErrorSelector) ?? {};
 
   /**
    * This ref keeps track of message IDs which have already been optimistically updated.
@@ -694,130 +687,49 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // instance via useMarkRead(channel). Channel still needs it internally (mark-read-on-mount + resync).
   const markRead = useMarkRead(channel);
 
-  /**
-   * Reconnect refresh for an open THREAD's replies.
-   *
-   * The channel half of this used to live here too; it is now owned by `client.connectionRecovery`,
-   * which reloads whichever channels are active. Threads still need their own pass: the LLC's
-   * `ThreadManager` recovery refreshes the thread *list*, and `Thread`'s own stale-state recovery keys
-   * off `user.watching.stop` rather than a reconnect — so nothing else brings an open thread's replies
-   * back. Keep this until thread recovery moves down as its own piece of work.
-   */
-  const resyncThread = useStableCallback(async () => {
-    if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
-      return;
-    }
-    syncingChannelRef.current = true;
-    setError(false);
-
-    const parseMessage = (message: LocalMessage) =>
-      ({
-        ...message,
-        created_at: message.created_at.toString(),
-        pinned_at: message.pinned_at?.toString(),
-        updated_at: message.updated_at?.toString(),
-      }) as unknown as MessageResponse;
-
-    const getRecoverableFailedMessages = (messages: LocalMessage[] = []) =>
-      messages
-        .filter(
-          (message) =>
-            message.status === MessageStatusTypes.FAILED &&
-            !(message.parent_id
-              ? threadInstance?.messagePaginator.getItem(message.id)
-              : channel.messagePaginator.getItem(message.id)),
-        )
-        .map(parseMessage);
-
-    try {
-      if (threadInstance) {
-        await threadInstance.reload();
-
-        const currentThreadMessages =
-          threadInstance.messagePaginator.state.getLatestValue().items ?? [];
-        const failedThreadMessages = getRecoverableFailedMessages(currentThreadMessages);
-        if (failedThreadMessages.length) {
-          failedThreadMessages.forEach((m) =>
-            threadInstance.messagePaginator.ingestItem(channel.state.formatMessage(m)),
-          );
-        }
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-    }
-
-    syncingChannelRef.current = false;
-  });
-
-  // held in a ref so the effect below need not take it as a dependency
-  const resyncThreadRef = useRef(resyncThread);
-  resyncThreadRef.current = resyncThread;
-
-  // Trigger for the thread resync above. Deliberately unchanged: with offline support enabled it hangs
-  // off the offline DB's sync-status change rather than `connection.changed`, because that is published
-  // only after pending-task replay and `sync()` have run — the reply refresh has to land after them,
-  // not race them.
-  useEffect(() => {
-    if (!thread) {
-      return;
-    }
-
-    const connectionChangedHandler = () => {
-      if (shouldSyncChannel) {
-        resyncThreadRef.current();
-      }
-    };
-    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
-
-    if (enableOfflineSupport && client.offlineDb) {
-      connectionChangedSubscription = client.offlineDb.syncManager.onSyncStatusChange(
-        (statusChanged) => {
-          if (statusChanged) {
-            connectionChangedHandler();
-          }
-        },
-      );
-    } else {
-      connectionChangedSubscription = client.on('connection.changed', (event) => {
-        if (event.online) {
-          connectionChangedHandler();
-        }
-      });
-    }
-    return () => {
-      connectionChangedSubscription.unsubscribe();
-    };
-  }, [enableOfflineSupport, client, shouldSyncChannel, thread]);
-
   // Mark-read after the LLC's reconnect reload. `connection.recovered` is dispatched by
   // `client.connectionRecovery` once that reload has landed, so `hasMoreHead` read here reflects the
   // refreshed window — which is why this cannot hang off `connection.changed`. Only the reload moved
   // into the LLC; whether a caught-up channel is marked read stays a UI decision (see `useMarkRead`).
   useEffect(() => {
-    if (thread || !shouldSyncChannel) {
+    if (!shouldSyncChannel) {
       return;
     }
 
-    const { unsubscribe } = client.on('connection.recovered', () => {
-      // Drop an error latched while there was no connection — opening a channel offline leaves
-      // `watch()` throwing, which sets it below. The old `resyncChannel` cleared it at the top of
-      // every reconnect; nothing else does now that the channel reload lives in the LLC. Safe to
-      // clear unconditionally: a reload that actually failed reports itself on
-      // `channel.lastReloadError`, which is OR'd into the context error separately.
-      setError(false);
-
-      // Only when the refreshed window is at the newest. If the user has paginated up into older
-      // history, leave their read state alone.
-      if (!channel.messagePaginator.hasMoreHead) {
-        markRead();
+    // Drop an error latched while there was no connection — opening a channel offline leaves
+    // `watch()` throwing, which sets it below. The old `resyncChannel`/`resyncThread` cleared it at
+    // the top of every reconnect; nothing else does now that both reloads live in the LLC.
+    //
+    // Deliberately on `connection.changed`, NOT on `connection.recovered`: `NetworkDownIndicator`
+    // masks `error` behind `!isOnline`, and `isOnline` flips on exactly this event — so clearing any
+    // later leaves the banner reading "Error loading messages for this channel..." over perfectly
+    // good (often offline-cached) content for the whole length of the recovery. Same event as
+    // `useIsOnline`'s, so the two state updates batch and the banner never flips through the error
+    // text at all. Clearing early cannot hide a real failure: a reload that fails republishes on
+    // `channel.lastReloadError` / `thread.state.lastReloadError`, both ORed into the context error.
+    //
+    // Not gated on `thread` — a thread screen opened offline latches the same error.
+    const clearLatchedError = client.on('connection.changed', (event) => {
+      if (event.online) {
+        setError(false);
       }
-    });
+    }).unsubscribe;
 
-    return unsubscribe;
+    // Mark-read, by contrast, HAS to wait for `connection.recovered`: it is dispatched once the
+    // reloads have landed, so `hasMoreHead` read here reflects the refreshed window. Channel view
+    // only, and only when that window is at the newest — if the user has paginated up into older
+    // history, leave their read state alone.
+    const markReadOnRecovery = client.on('connection.recovered', () => {
+      if (thread || channel.messagePaginator.hasMoreHead) {
+        return;
+      }
+      markRead();
+    }).unsubscribe;
+
+    return () => {
+      clearLatchedError();
+      markReadOnRecovery();
+    };
   }, [channel, client, markRead, shouldSyncChannel, thread]);
 
   /**
@@ -1031,7 +943,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
-    error: error || lastReloadError || false,
+    error: error || lastReloadError || threadReloadError || false,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
