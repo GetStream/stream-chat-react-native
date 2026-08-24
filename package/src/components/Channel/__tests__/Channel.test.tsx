@@ -652,6 +652,46 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(reload).toHaveBeenCalled());
   });
 
+  it('clears an error latched by opening the channel offline once recovery lands', async () => {
+    // Opening a channel with no connection leaves `watch()` throwing, which latches `error` on the
+    // component (and `offlineMode` on the channel). The old `resyncChannel` cleared that error at the
+    // top of every reconnect; with the reload moved into `client.connectionRecovery` there is no
+    // longer a channel-branch resync to do it, so it has to be cleared on `connection.recovered` or
+    // the "Error loading messages for this channel..." indicator outlives the recovery it describes.
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+
+    // Not initialized and `watch()` rejecting = the offline-open path.
+    const watchSpy = jest
+      .spyOn(testChannel, 'watch')
+      .mockRejectedValue(new Error('offline: watch failed'));
+
+    let contextError: unknown;
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={testChannel}>
+          <CallbackEffectWithContext
+            callback={(ctx) => {
+              contextError = (ctx as { error: unknown }).error;
+            }}
+            context={ChannelContext as React.Context<unknown>}
+          />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => expect(contextError).toBe(true));
+
+    // Connection is back: the reload the LLC issues now succeeds.
+    watchSpy.mockRestore();
+
+    act(() => dispatchConnectionChanged(chatClient, false));
+    act(() => dispatchConnectionChanged(chatClient));
+
+    await waitFor(() => expect(contextError).toBe(false));
+  });
+
   it('surfaces a failed reconnect reload on the channel context', async () => {
     // The reload is issued by `client.connectionRecovery` inside a `Promise.allSettled`, so a failure
     // never reaches this component as a throw. It arrives on `channel.state.lastReloadError` instead,

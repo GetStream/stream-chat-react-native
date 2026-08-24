@@ -803,6 +803,13 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
 
     const { unsubscribe } = client.on('connection.recovered', () => {
+      // Drop an error latched while there was no connection — opening a channel offline leaves
+      // `watch()` throwing, which sets it below. The old `resyncChannel` cleared it at the top of
+      // every reconnect; nothing else does now that the channel reload lives in the LLC. Safe to
+      // clear unconditionally: a reload that actually failed reports itself on
+      // `channel.lastReloadError`, which is OR'd into the context error separately.
+      setError(false);
+
       // Only when the refreshed window is at the newest. If the user has paginated up into older
       // history, leave their read state alone.
       if (!channel.messagePaginator.hasMoreHead) {
