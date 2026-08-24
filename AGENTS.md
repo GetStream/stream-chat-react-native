@@ -130,7 +130,17 @@ yarn workspace sampleapp android
           └─ <Thread>
 ```
 
-`<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), disables the JS client's `recoverStateOnReconnect` (the SDK handles recovery itself), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider` → `ChannelsStateProvider`.
+`<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider`.
+
+**Reconnect recovery is owned by the JS client, not this SDK.** `client.connectionRecovery` re-runs
+each channel list's own first-page query and reloads whichever channels are `active` (`<Channel>`
+marks its channel active on mount), then dispatches `connection.recovered`. So do not add a
+`connection.changed` listener that re-queries a list or re-watches a channel — that duplicates it.
+`recoverStateOnReconnect` is left at its default `true`; it used to be switched off here because the
+client's old recovery was a single 30-channel query that ignored the lists' own filters. Two things
+deliberately stay UI-side: mark-read after the reload (`<Channel>` listens for
+`connection.recovered`), and the open thread's reply refresh (`resyncThread` in `Channel.tsx`, since
+nothing in the client recovers an open thread's replies yet).
 
 ### Context three-layer pattern
 

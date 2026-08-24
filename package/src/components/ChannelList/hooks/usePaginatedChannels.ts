@@ -169,19 +169,13 @@ export const usePaginatedChannels = ({
   );
 
   const refreshList = useStableCallback(
-    async ({
-      force = false,
-      isBackground = false,
-    }: { force?: boolean; isBackground?: boolean } = {}) => {
+    async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
       const now = Date.now();
-      // Only allow pull-to-refresh 5 seconds after the last successful refresh. A reconnect (`force`)
-      // must bypass this throttle: it is the sole trigger that re-establishes channel watches after the
-      // socket reopens (the JS client's own recovery is disabled via `recoverStateOnReconnect = false`),
-      // so debouncing it leaves the channels un-watched — the list still reorders on member-level
-      // `notification.message_new`, but per-channel state (last message / unread) stays frozen until the
-      // next reconnect > 5s later or an app reload. This bites both a reconnect < 5s after launch
-      // (`lastRefresh` is seeded to mount time) and two reconnects < 5s apart.
-      if (!force && now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
+      // Only allow pull-to-refresh 5 seconds after the last successful refresh. This throttle is now
+      // purely about the user pulling repeatedly: reconnect refreshes no longer come through here at
+      // all — `client.connectionRecovery` owns them and re-runs each list's own query directly on the
+      // paginator, so they can never be swallowed by this window.
+      if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
         return;
       }
 
@@ -214,20 +208,6 @@ export const usePaginatedChannels = ({
     }
 
     reloadList();
-
-    const listener: ReturnType<typeof client.on> = client.on(
-      'connection.changed',
-      async (event) => {
-        if (event.online) {
-          // Reconnection refreshes stay silent (`isBackground`) but must NOT be throttled by the
-          // pull-to-refresh debounce (`force`) — this is the query that re-watches the channels on the
-          // fresh socket. See the `force` note in `refreshList`.
-          await refreshList({ force: true, isBackground: true });
-        }
-      },
-    );
-
-    return () => listener?.unsubscribe?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStr, optionsStr, sortStr, paginator]);
 

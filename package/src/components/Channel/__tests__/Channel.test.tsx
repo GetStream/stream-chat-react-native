@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, Thread } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -562,7 +562,10 @@ describe('Channel initial load useEffect', () => {
     });
   });
 
-  it('should call resyncChannel when connection changed event is triggered', async () => {
+  it('reloads the channel on reconnect while preserving failed messages', async () => {
+    // The reload is issued by `client.connectionRecovery` now, not by this component — `<Channel>`
+    // only marks the channel active. Asserted end to end on purpose: what matters is that a reconnect
+    // still refreshes the open channel and still does not lose locally-unsent messages.
     // Deterministic timestamps so the 10 loaded messages and the 10 offline-failed messages occupy
     // adjacent, ordered positions in the paginator's active window.
     const baseTime = 1600000000000;
@@ -602,11 +605,88 @@ describe('Channel initial load useEffect', () => {
       act(() => dispatchConnectionChanged(chatClient));
     });
 
-    // resyncChannel re-watches via channel.reload() and reconciles, but preserves the failed
-    // (locally-unsent) messages — the 10 originals + 10 failed remain.
+    // The reload re-watches and reconciles, but preserves the failed (locally-unsent) messages —
+    // the 10 originals + 10 failed remain.
     await waitFor(() => {
       expect(reloadSpy).toHaveBeenCalled();
       expect(channel.messagePaginator.headItems.length).toBe(20);
     });
+  });
+
+  // Regression guard for the reconnect refresh of an OPEN THREAD's replies.
+  //
+  // The channel half of the old `resyncChannel` moved into `client.connectionRecovery`; the thread half
+  // deliberately did NOT, because nothing else brings an open thread's replies back — `ThreadManager`
+  // recovery refreshes the thread *list*, and `Thread`'s own stale-state recovery keys off
+  // `user.watching.stop` rather than a reconnect. Deleting this branch while moving the rest is an easy
+  // mistake to make and produces no other failure, so it is pinned here.
+  it('reloads an open thread on reconnect', async () => {
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+
+    const parentMessage = generateMessage({ user });
+    const threadInstance = new Thread({
+      channel: testChannel,
+      client: chatClient,
+      parentMessage: testChannel.state.formatMessage(parentMessage),
+    });
+    const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+
+    render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          // `threadList` is what makes this <Channel> the one that owns the thread resync
+          // (`shouldSyncChannel`); without it the channel view would claim it instead.
+          threadList
+          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance }}
+        />
+      </Chat>,
+    );
+
+    act(() => dispatchConnectionChanged(chatClient, false));
+    act(() => dispatchConnectionChanged(chatClient));
+
+    await waitFor(() => expect(reload).toHaveBeenCalled());
+  });
+
+  it('surfaces a failed reconnect reload on the channel context', async () => {
+    // The reload is issued by `client.connectionRecovery` inside a `Promise.allSettled`, so a failure
+    // never reaches this component as a throw. It arrives on `channel.state.lastReloadError` instead,
+    // and has to reach `ChannelContext.error` — that is what drives the "Error loading messages for
+    // this channel…" indicator.
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+
+    // Rendered inline rather than through this describe's `renderComponent`, which does not take a
+    // context probe.
+    let contextError: unknown;
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={testChannel}>
+          <CallbackEffectWithContext
+            callback={(ctx) => {
+              contextError = (ctx as { error: unknown }).error;
+            }}
+            context={ChannelContext as React.Context<unknown>}
+          />
+        </Channel>
+      </Chat>,
+    );
+    // Let the mount settle with a healthy channel first, so the error asserted below can only have
+    // come from the reconnect reload and not from the mount-time watch.
+    await waitFor(() => expect(contextError).toBe(false));
+
+    const failure = new Error('reload failed');
+    jest.spyOn(testChannel, 'watch').mockRejectedValue(failure);
+
+    act(() => dispatchConnectionChanged(chatClient, false));
+    act(() => dispatchConnectionChanged(chatClient));
+
+    await waitFor(() => expect(contextError).toBe(failure));
   });
 });

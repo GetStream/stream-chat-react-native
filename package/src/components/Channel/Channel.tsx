@@ -350,6 +350,10 @@ const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
 
+const reloadErrorSelector = (state: { lastReloadError?: Error }) => ({
+  lastReloadError: state.lastReloadError,
+});
+
 const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
   highlightedMessageId: state.signal?.messageId,
 });
@@ -500,6 +504,12 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     (threadInstance ?? channel).messagePaginator.messageFocusSignal,
     messageFocusSignalSelector,
   );
+
+  // A failed reconnect reload is published on the channel rather than thrown at us, because the reload
+  // is issued by `client.connectionRecovery` inside a `Promise.allSettled`. Reading it here is what
+  // keeps the "could not load messages" indicator working now that this component no longer owns the
+  // call. ORed with the local `error` below, which still covers the mount-time `watch()` failure.
+  const { lastReloadError } = useStateStore(channel?.state, reloadErrorSelector) ?? {};
 
   /**
    * This ref keeps track of message IDs which have already been optimistically updated.
@@ -684,7 +694,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // instance via useMarkRead(channel). Channel still needs it internally (mark-read-on-mount + resync).
   const markRead = useMarkRead(channel);
 
-  const resyncChannel = useStableCallback(async () => {
+  /**
+   * Reconnect refresh for an open THREAD's replies.
+   *
+   * The channel half of this used to live here too; it is now owned by `client.connectionRecovery`,
+   * which reloads whichever channels are active. Threads still need their own pass: the LLC's
+   * `ThreadManager` recovery refreshes the thread *list*, and `Thread`'s own stale-state recovery keys
+   * off `user.watching.stop` rather than a reconnect — so nothing else brings an open thread's replies
+   * back. Keep this until thread recovery moves down as its own piece of work.
+   */
+  const resyncThread = useStableCallback(async () => {
     if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
       return;
     }
@@ -711,19 +730,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         .map(parseMessage);
 
     try {
-      if (!thread) {
-        // The LLC owns the reconnect refresh now: channel.reload() re-watches, folds the newest page,
-        // and reconciles messages hard-deleted while offline — capturing the pre-fetch snapshot + the
-        // requested limit itself, so this no longer passes them (see Channel.reload /
-        // MessagePaginator.mergeNewestPage).
-        await channel.reload();
-        // Only mark read when the refreshed window is at the newest (hasMoreHead false); if the user
-        // has paginated up into older history, leave their read state untouched.
-        const atLatest = !channel.messagePaginator.hasMoreHead;
-        if (atLatest) {
-          await markRead();
-        }
-      } else if (threadInstance) {
+      if (threadInstance) {
         await threadInstance.reload();
 
         const currentThreadMessages =
@@ -746,14 +753,22 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     syncingChannelRef.current = false;
   });
 
-  // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
-  const resyncChannelRef = useRef(resyncChannel);
-  resyncChannelRef.current = resyncChannel;
+  // held in a ref so the effect below need not take it as a dependency
+  const resyncThreadRef = useRef(resyncThread);
+  resyncThreadRef.current = resyncThread;
 
+  // Trigger for the thread resync above. Deliberately unchanged: with offline support enabled it hangs
+  // off the offline DB's sync-status change rather than `connection.changed`, because that is published
+  // only after pending-task replay and `sync()` have run — the reply refresh has to land after them,
+  // not race them.
   useEffect(() => {
+    if (!thread) {
+      return;
+    }
+
     const connectionChangedHandler = () => {
       if (shouldSyncChannel) {
-        resyncChannelRef.current();
+        resyncThreadRef.current();
       }
     };
     let connectionChangedSubscription: ReturnType<ChannelType['on']>;
@@ -776,7 +791,27 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return () => {
       connectionChangedSubscription.unsubscribe();
     };
-  }, [enableOfflineSupport, client, shouldSyncChannel]);
+  }, [enableOfflineSupport, client, shouldSyncChannel, thread]);
+
+  // Mark-read after the LLC's reconnect reload. `connection.recovered` is dispatched by
+  // `client.connectionRecovery` once that reload has landed, so `hasMoreHead` read here reflects the
+  // refreshed window — which is why this cannot hang off `connection.changed`. Only the reload moved
+  // into the LLC; whether a caught-up channel is marked read stays a UI decision (see `useMarkRead`).
+  useEffect(() => {
+    if (thread || !shouldSyncChannel) {
+      return;
+    }
+
+    const { unsubscribe } = client.on('connection.recovered', () => {
+      // Only when the refreshed window is at the newest. If the user has paginated up into older
+      // history, leave their read state alone.
+      if (!channel.messagePaginator.hasMoreHead) {
+        markRead();
+      }
+    });
+
+    return unsubscribe;
+  }, [channel, client, markRead, shouldSyncChannel, thread]);
 
   /**
    * Channel configs for use in disabling local functionality.
@@ -839,10 +874,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // (see the useChannelRequestHandlers call below) so it runs INSIDE the stream-chat send pipeline —
   // after the LLC's optimistic ingest (message already shows pending), before the POST — awaiting
   // `client.uploadManager` to finish the in-flight uploads and swapping local preview URLs for the
-  // returned CDN URLs. This deliberately stays RN-side: native image compression (`compressedImageURI`)
+  // returned CDN URLs. It lives here for now because native image compression (`compressedImageURI`)
   // and a custom uploader registered through `client.config` must remain reachable, and the
-  // sendMessageRequest seam lets it run in the right place without a pre-ingest or any LLC change. It is NOT slated to move
-  // into the LLC — this handler is its intended home.
+  // sendMessageRequest seam lets it run in the right place without a pre-ingest or any LLC change.
+  // It IS slated to move into the LLC, just not yet — and that move is what lets the
+  // `doSendMessageRequest` prop and its wrapper in `useChannelRequestHandlers` go.
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     if (!message.attachments?.length || !channel?.cid) {
       return;
@@ -988,7 +1024,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
-    error,
+    error: error || lastReloadError || false,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
