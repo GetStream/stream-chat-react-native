@@ -37,7 +37,12 @@ export type ChannelContextValue = {
    * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
    */
   enforceUniqueReaction: boolean;
-  error: boolean | Error;
+  /**
+   * The error from the most recent attempt to load this channel's messages, or the open thread's
+   * replies — read straight off `channel.state.lastLoadError` / `thread.state.lastLoadError`, each
+   * cleared by the next attempt. `undefined` when the last load succeeded.
+   */
+  error?: Error;
   /**
    * Hide inline date separators on channel
    */

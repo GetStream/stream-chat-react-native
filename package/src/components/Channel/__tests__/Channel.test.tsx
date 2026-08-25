@@ -157,7 +157,9 @@ describe('Channel', () => {
 
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
     const watchError = new Error('channel watch fail');
-    jest.spyOn(channel, 'watch').mockImplementationOnce(() => Promise.reject(watchError));
+    // Rejected at the API seam so the real `watch()` runs: it is what records the failure on
+    // `channel.state.lastLoadError`, which is the only thing this component reads.
+    jest.spyOn(channel, 'getOrCreate').mockRejectedValueOnce(watchError);
     // The LoadingErrorIndicator renders only when watch errors AND the paginator has no messages
     // to fall back on; seed an empty (rather than the default undefined) item window so the guard
     // `messages?.length === 0` holds.
@@ -673,18 +675,20 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(reload).toHaveBeenCalled());
   });
 
-  it('clears a latched error on a thread view too, once recovery lands', async () => {
-    // Sibling of the channel-view case below. `resyncThread` used to clear this at the top of every
-    // reconnect; when it moved into the LLC the clearing had to move to `connection.recovered` — and
-    // that handler must NOT be gated on `thread`, or a thread screen opened offline keeps the "Error
-    // loading messages for this channel..." banner forever after a perfectly good recovery.
+  it('surfaces and drops a channel load error on a thread view too', async () => {
+    // Sibling of the channel-view case below, and the reason the error is a straight store read
+    // rather than anything gated on which view is open: a thread screen opened offline sees the same
+    // failed `channel.watch()`, and used to keep the "Error loading messages for this channel..."
+    // banner forever after a perfectly good recovery.
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
 
     const parentMessage = generateMessage({ user });
-    const watchSpy = jest
-      .spyOn(testChannel, 'watch')
+    // Rejected at the API seam, not by mocking `watch()`: the real `watch()` is what records the
+    // failure on `channel.state.lastLoadError`, which is the whole surface under test.
+    const getOrCreateSpy = jest
+      .spyOn(testChannel, 'getOrCreate')
       .mockRejectedValue(new Error('offline: watch failed'));
     const threadInstance = new Thread({
       channel: testChannel,
@@ -713,28 +717,29 @@ describe('Channel initial load useEffect', () => {
       </Chat>,
     );
 
-    await waitFor(() => expect(contextError).toBe(true));
+    await waitFor(() => expect(contextError).toBeInstanceOf(Error));
 
-    watchSpy.mockRestore();
+    getOrCreateSpy.mockRestore();
     act(() => dispatchConnectionChanged(chatClient, false));
     act(() => dispatchConnectionChanged(chatClient));
 
-    await waitFor(() => expect(contextError).toBe(false));
+    await waitFor(() => expect(contextError).toBeUndefined());
   });
 
-  it('clears the latched error as soon as the connection is back, not when recovery finishes', async () => {
+  it('drops the load error when the reload starts, not when it finishes', async () => {
     // Timing, not just outcome. `NetworkDownIndicator` masks `error` behind `!isOnline`, and
-    // `isOnline` flips on `connection.changed`. If the error were only cleared on
-    // `connection.recovered` — dispatched after offline replay, sync and every reload — the banner
-    // would read "Error loading messages for this channel..." over good offline-cached content for
-    // the whole length of the recovery. So the reload is held open here and the error must ALREADY
-    // be gone.
+    // `isOnline` flips on `connection.changed`. The clear has to happen no later than that same
+    // dispatch, or the banner reads "Error loading messages for this channel..." over good
+    // (often offline-cached) content for the whole length of the recovery. It does, because
+    // `Channel.watch()` clears above its first await and the reload reaches it synchronously — the
+    // same clear-before-attempt v9's `resyncChannel` did on its first line. So the request is held
+    // open here and the error must ALREADY be gone.
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
 
-    const watchSpy = jest
-      .spyOn(testChannel, 'watch')
+    const getOrCreateSpy = jest
+      .spyOn(testChannel, 'getOrCreate')
       .mockRejectedValue(new Error('offline: watch failed'));
 
     let contextError: unknown;
@@ -751,16 +756,17 @@ describe('Channel initial load useEffect', () => {
       </Chat>,
     );
 
-    await waitFor(() => expect(contextError).toBe(true));
+    await waitFor(() => expect(contextError).toBeInstanceOf(Error));
 
-    // Recovery is in flight and never settles, so `connection.recovered` cannot fire.
-    watchSpy.mockRestore();
-    jest.spyOn(testChannel, 'reload').mockReturnValue(new Promise(() => {}));
+    // The re-attempt never comes back, so nothing about its OUTCOME can be what clears the error —
+    // only the clear that runs on the way in. Held at the API seam rather than by mocking `reload`,
+    // which would skip the very code under test.
+    getOrCreateSpy.mockReturnValue(new Promise(() => {}));
 
     act(() => dispatchConnectionChanged(chatClient, false));
     act(() => dispatchConnectionChanged(chatClient));
 
-    await waitFor(() => expect(contextError).toBe(false));
+    await waitFor(() => expect(contextError).toBeUndefined());
   });
 
   it('does not mark a reply-less thread read on open, but does once it has replies', async () => {
@@ -869,15 +875,15 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(getThread).toHaveBeenCalled());
     await waitFor(() => expect(threadInstance.state.getLatestValue().isLoading).toBe(false));
     await waitFor(() =>
-      expect(threadInstance.state.getLatestValue().lastReloadError).toBeUndefined(),
+      expect(threadInstance.state.getLatestValue().lastLoadError).toBeUndefined(),
     );
 
-    expect(contextError).toBe(false);
+    expect(contextError).toBeUndefined();
   });
 
   it('surfaces a failed thread reload on the channel context', async () => {
     // Recovery runs `thread.reload()` inside a `Promise.allSettled`, so a failure cannot reach this
-    // component as a throw — it arrives on `thread.state.lastReloadError` and has to be ORed into
+    // component as a throw — it arrives on `thread.state.lastLoadError` and has to be ORed into
     // `ChannelContext.error`. That wiring is what this pins; the "recovery actually calls reload"
     // half is covered by "reloads an open thread on reconnect" above, so the failure is published
     // directly here rather than driven through a reconnect.
@@ -911,27 +917,29 @@ describe('Channel initial load useEffect', () => {
       </Chat>,
     );
 
-    await waitFor(() => expect(contextError).toBe(false));
+    await waitFor(() => expect(contextError).toBeUndefined());
 
     const failure = new Error('thread reload failed');
-    act(() => threadInstance.state.partialNext({ lastReloadError: failure }));
+    act(() => threadInstance.state.partialNext({ lastLoadError: failure }));
 
     await waitFor(() => expect(contextError).toBe(failure));
   });
 
-  it('clears an error latched by opening the channel offline once recovery lands', async () => {
-    // Opening a channel with no connection leaves `watch()` throwing, which latches `error` on the
-    // component (and `offlineMode` on the channel). The old `resyncChannel` cleared that error at the
-    // top of every reconnect; with the reload moved into `client.connectionRecovery` there is no
-    // longer a channel-branch resync to do it, so it has to be cleared on `connection.recovered` or
-    // the "Error loading messages for this channel..." indicator outlives the recovery it describes.
+  it('surfaces the error from opening the channel offline, and drops it once recovery lands', async () => {
+    // Opening a channel with no connection makes the mount-time `watch()` throw. This component
+    // catches nothing and holds no error state: `watch()` records the failure on
+    // `channel.state.lastLoadError`, which is read straight into `ChannelContext.error` — and the LLC
+    // drops it on the connection edge. Both halves of that wiring are pinned here, because if either
+    // breaks the "Error loading messages for this channel..." indicator either never appears or
+    // outlives the recovery it describes.
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
 
-    // Not initialized and `watch()` rejecting = the offline-open path.
-    const watchSpy = jest
-      .spyOn(testChannel, 'watch')
+    // Not initialized and the API seam rejecting = the offline-open path, with the real `watch()`
+    // running so it is the LLC that records the failure.
+    const getOrCreateSpy = jest
+      .spyOn(testChannel, 'getOrCreate')
       .mockRejectedValue(new Error('offline: watch failed'));
 
     let contextError: unknown;
@@ -948,20 +956,20 @@ describe('Channel initial load useEffect', () => {
       </Chat>,
     );
 
-    await waitFor(() => expect(contextError).toBe(true));
+    await waitFor(() => expect(contextError).toBeInstanceOf(Error));
 
     // Connection is back: the reload the LLC issues now succeeds.
-    watchSpy.mockRestore();
+    getOrCreateSpy.mockRestore();
 
     act(() => dispatchConnectionChanged(chatClient, false));
     act(() => dispatchConnectionChanged(chatClient));
 
-    await waitFor(() => expect(contextError).toBe(false));
+    await waitFor(() => expect(contextError).toBeUndefined());
   });
 
   it('surfaces a failed reconnect reload on the channel context', async () => {
     // The reload is issued by `client.connectionRecovery` inside a `Promise.allSettled`, so a failure
-    // never reaches this component as a throw. It arrives on `channel.state.lastReloadError` instead,
+    // never reaches this component as a throw. It arrives on `channel.state.lastLoadError` instead,
     // and has to reach `ChannelContext.error` — that is what drives the "Error loading messages for
     // this channel…" indicator.
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
@@ -986,10 +994,12 @@ describe('Channel initial load useEffect', () => {
     );
     // Let the mount settle with a healthy channel first, so the error asserted below can only have
     // come from the reconnect reload and not from the mount-time watch.
-    await waitFor(() => expect(contextError).toBe(false));
+    await waitFor(() => expect(contextError).toBeUndefined());
 
+    // Same seam: the reload goes through `watch()`, which records the failure on its way out. Also
+    // shows the connection-edge clear cannot stomp a fresh failure — it runs first, then this lands.
     const failure = new Error('reload failed');
-    jest.spyOn(testChannel, 'watch').mockRejectedValue(failure);
+    jest.spyOn(testChannel, 'getOrCreate').mockRejectedValue(failure);
 
     act(() => dispatchConnectionChanged(chatClient, false));
     act(() => dispatchConnectionChanged(chatClient));

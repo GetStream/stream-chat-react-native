@@ -343,8 +343,8 @@ const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
 
-const reloadErrorSelector = (state: { lastReloadError?: Error }) => ({
-  lastReloadError: state.lastReloadError,
+const loadErrorSelector = (state: { lastLoadError?: Error }) => ({
+  lastLoadError: state.lastLoadError,
 });
 
 const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
@@ -467,7 +467,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const [error, setError] = useState<Error | boolean>(false);
   const lastReadRef = useRef<Date | undefined>(undefined);
   // The active thread is fully prop-driven: derive it synchronously during render so the reply
   // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
@@ -496,13 +495,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     messageFocusSignalSelector,
   );
 
-  // A failed reconnect reload is published on the channel/thread rather than thrown at us, because the
-  // reload is issued by `client.connectionRecovery` inside a `Promise.allSettled`. Reading it here is
-  // what keeps the "could not load messages" indicator working now that this component owns neither
-  // call. ORed with the local `error` below, which still covers the mount-time `watch()` failure.
-  const { lastReloadError } = useStateStore(channel?.state, reloadErrorSelector) ?? {};
-  const { lastReloadError: threadReloadError } =
-    useStateStore(threadInstance?.state, reloadErrorSelector) ?? {};
+  const { lastLoadError } = useStateStore(channel?.state, loadErrorSelector) ?? {};
+  const { lastLoadError: threadLoadError } =
+    useStateStore(threadInstance?.state, loadErrorSelector) ?? {};
+  const error = lastLoadError ?? threadLoadError;
 
   /**
    * This ref keeps track of message IDs which have already been optimistically updated.
@@ -594,7 +590,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           await channel?.watch();
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
-          setError(true);
           errored = true;
           channel.offlineMode = true;
         }
@@ -696,40 +691,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       return;
     }
 
-    // Drop an error latched while there was no connection — opening a channel offline leaves
-    // `watch()` throwing, which sets it below. The old `resyncChannel`/`resyncThread` cleared it at
-    // the top of every reconnect; nothing else does now that both reloads live in the LLC.
-    //
-    // Deliberately on `connection.changed`, NOT on `connection.recovered`: `NetworkDownIndicator`
-    // masks `error` behind `!isOnline`, and `isOnline` flips on exactly this event — so clearing any
-    // later leaves the banner reading "Error loading messages for this channel..." over perfectly
-    // good (often offline-cached) content for the whole length of the recovery. Same event as
-    // `useIsOnline`'s, so the two state updates batch and the banner never flips through the error
-    // text at all. Clearing early cannot hide a real failure: a reload that fails republishes on
-    // `channel.lastReloadError` / `thread.state.lastReloadError`, both ORed into the context error.
-    //
-    // Not gated on `thread` — a thread screen opened offline latches the same error.
-    const clearLatchedError = client.on('connection.changed', (event) => {
-      if (event.online) {
-        setError(false);
-      }
-    }).unsubscribe;
-
-    // Mark-read, by contrast, HAS to wait for `connection.recovered`: it is dispatched once the
-    // reloads have landed, so `hasMoreHead` read here reflects the refreshed window. Channel view
-    // only, and only when that window is at the newest — if the user has paginated up into older
-    // history, leave their read state alone.
-    const markReadOnRecovery = client.on('connection.recovered', () => {
+    // Mark read has to wait for `connection.recovered`, as it is dispatched once the reloads have
+    // landed, so `hasMoreHead` read here reflects the refreshed window. Channel view only, and only
+    // when that window is at the newest, only if the user has paginated up into older history so leave
+    // their read state alone.
+    const { unsubscribe } = client.on('connection.recovered', () => {
       if (thread || channel.messagePaginator.hasMoreHead) {
         return;
       }
       markRead();
-    }).unsubscribe;
+    });
 
-    return () => {
-      clearLatchedError();
-      markReadOnRecovery();
-    };
+    return unsubscribe;
   }, [channel, client, markRead, shouldSyncChannel, thread]);
 
   /**
@@ -761,21 +734,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       try {
         if (thread) {
-          try {
-            // jumpToMessage loads the message range into thread.messagePaginator (which backs the
-            // reply list) and emits the focus signal driving the thread-aware highlight + scroll.
-            // The reply-list loading spinner is driven off the paginator's own isLoading flag.
-            await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
-              focusReason: 'jump-to-message',
-              focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
-            });
-          } catch (err) {
-            if (err instanceof Error) {
-              setError(err);
-            } else {
-              setError(true);
-            }
-          }
+          await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
+            focusReason: 'jump-to-message',
+            focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+          });
         } else {
           await loadChannelAroundMessageFn({
             messageId: messageIdToLoadAround,
@@ -943,7 +905,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
-    error: error || lastReloadError || threadReloadError || false,
+    error,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
