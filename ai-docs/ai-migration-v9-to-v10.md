@@ -1475,6 +1475,37 @@ offline-DB path keyed on `ThreadManager.threadsById`. Neither covers a thread co
 never registered, which is the common path. `thread.reload()` now reads the failed replies out of the
 reply paginator instead, so it holds for managed and unmanaged threads alike.
 
+## L.8 The reconnect refresh now finds messages you never had (bug fix)
+
+Two defects meant a reconnect could refresh a channel or thread and still miss content that arrived
+while you were away. Both are fixed; no API change.
+
+- **The request was sized to what was already loaded.** `channel.reload()` / `thread.reload()` asked
+  for `loadedCount` items, so a window holding one message asked the server for one message — new
+  content was undiscoverable, and the single item that came back was disjoint from the loaded window,
+  so the fold rebuilt and dropped what was there. Now at least a page is requested.
+- **A window nothing had ever anchored discarded the page entirely.** When the first query returns
+  empty and the only content arrives live — a thread or channel created in the current session — the
+  fetched page was thrown away rather than merged. It is now anchored instead.
+
+Most visible as: create a thread, send a reply, go offline, someone else replies, come back — the new
+replies never appeared, and re-entering the thread did not help.
+
+## L.9 A brand-new thread no longer reports an error (bug fix)
+
+A parent with no replies has no server-side thread, so `getThread` answers "not found". That was
+being treated as a failed refresh: `thread.state.lastReloadError` was set, which the React Native SDK
+ORs into `useChannelContext().error`, so simply opening a new thread raised the channel's error state.
+It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting, and
+publishes nothing.
+
+A genuine failure still publishes as before, including a thread that *did* have replies and comes back
+not-found (its parent was deleted, possibly while you were offline). The two are told apart by
+`replyCount`, which — unlike `deletedAt` — survives having missed the deletion event.
+
+Related: the SDK no longer issues a mark-read for a reply-less thread. There is nothing that could be
+unread, and the call only ever 404'd.
+
 ---
 
 ## 19. Verify
