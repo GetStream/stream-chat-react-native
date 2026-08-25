@@ -17428,17 +17428,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:4.6.0-nightly-20260817-b15bb32ab":
-  version: 4.6.0-nightly-20260817-b15bb32ab
-  resolution: "react-native-reanimated@npm:4.6.0-nightly-20260817-b15bb32ab"
+"react-native-reanimated@npm:4.6.0, react-native-reanimated@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "react-native-reanimated@npm:4.6.0"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.3.1"
     semver: "npm:^7.7.3"
   peerDependencies:
     react: "*"
     react-native: 0.83 - 0.87
-    react-native-worklets: "*"
-  checksum: 10c0/b6f4bc86a39a9395e422fd8316fe12b81ad021b8fb5aaafca29509dd5264745b30c71e82c9e2fc639b9d069e96b879203948a89556ee5f5da86d0839ec43b733
+    react-native-worklets: 0.12.x
+  checksum: 10c0/947c9038b9c876a5e77364afd4b256327e05317537022b283aa76dc35af20b5cb4786989117fd1c3926c583595165703903e91ab3c204f90fdb6296022eff614
   languageName: node
   linkType: hard
 
@@ -17623,9 +17623,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:0.13.0-nightly-20260817-b15bb32ab":
-  version: 0.13.0-nightly-20260817-b15bb32ab
-  resolution: "react-native-worklets@npm:0.13.0-nightly-20260817-b15bb32ab"
+"react-native-worklets@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "react-native-worklets@npm:0.12.1"
   dependencies:
     "@babel/generator": "npm:^7.27.1"
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
@@ -17646,7 +17646,7 @@ __metadata:
     "@react-native/metro-config": "*"
     react: "*"
     react-native: 0.83 - 0.87
-  checksum: 10c0/17588abe97b982de0d8a28f6fd5a3f59de68cb271dcfda18e2a16076a4e97ccbfc280c00ca6707e4691cff47c83baa46b4eecb732eab40f445001c9443278e80
+  checksum: 10c0/86b9043ed2ceacd3dada3f94d62393a5bb54c7a26877e5bb54171cd4455b34f4148009a6b41bf53be70f265444bd7fff287f4d0fd8599e27d476c10e6cd7923f
   languageName: node
   linkType: hard
 
@@ -18404,14 +18404,14 @@ __metadata:
     react-native-maps: "npm:^1.29.0"
     react-native-nitro-modules: "npm:0.36.5"
     react-native-nitro-sound: "npm:0.2.17"
-    react-native-reanimated: "npm:4.6.0-nightly-20260817-b15bb32ab"
+    react-native-reanimated: "npm:4.6.0"
     react-native-safe-area-context: "npm:^5.8.0"
     react-native-screens: "npm:^4.27.0"
     react-native-share: "npm:^12.3.1"
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.1.12"
     react-native-video: "npm:^6.19.2"
-    react-native-worklets: "npm:0.13.0-nightly-20260817-b15bb32ab"
+    react-native-worklets: "npm:^0.12.1"
     stream-chat: "npm:^9.51.0"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
@@ -19156,12 +19156,12 @@ __metadata:
     react-native-builder-bob: "npm:0.40.11"
     react-native-gesture-handler: "npm:^3.1.0"
     react-native-markdown-package: "npm:1.8.2"
-    react-native-reanimated: "npm:4.6.0-nightly-20260817-b15bb32ab"
+    react-native-reanimated: "npm:^4.6.0"
     react-native-safe-area-context: "npm:^5.8.1"
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.1.12"
     react-native-url-polyfill: "npm:^2.0.0"
-    react-native-worklets: "npm:0.13.0-nightly-20260817-b15bb32ab"
+    react-native-worklets: "npm:^0.12.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
     stream-chat: "npm:^9.51.0"

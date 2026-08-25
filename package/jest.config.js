@@ -11,7 +11,7 @@ module.exports = {
     // Babel's ESM interop under Jest. Mapped (rather than jest.mock'd) so it also applies in the
     // separate registry Jest uses to build automocks.
     SvgTouchableMixin$: '<rootDir>/__mocks__/SvgTouchableMixin.js',
-    // See __mocks__/reanimatedModuleInstance.js - Reanimated 4.6.0-nightly throws from
+    // See __mocks__/reanimatedModuleInstance.js - Reanimated (>=4.6.0, incl. stable) throws from
     // `setCSSEventHandler` on the JS-only backend Jest uses, which breaks importing its own mock.
     // Mapped (rather than jest.mock'd) so it applies in the automock registry too, and so it is not
     // overridden by suites that register their own react-native-reanimated mock.

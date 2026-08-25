@@ -3,8 +3,9 @@
 /**
  * Test-environment shim for Reanimated's `ReanimatedModule` singleton.
  *
- * Reanimated 4.6.0-nightly regression (not present in 4.5.2): `initializeReanimatedModule()` now
- * calls `setCSSEventHandler()` unconditionally at import time. On the JS-only `JSReanimated` backend
+ * Reanimated regression, introduced between 4.5.2 and 4.6.0 and STILL PRESENT IN 4.6.0 STABLE
+ * (re-verified 2026-08-25): `initializeReanimatedModule()` calls `setCSSEventHandler()`
+ * unconditionally at import time. On the JS-only `JSReanimated` backend
  * that Jest resolves to, that method *throws* (`[Reanimated] setCSSEventHandler is not available in
  * JSReanimated.`), whereas the native backend's stub is a harmless no-op. The result is that merely
  * requiring Reanimated's own official mock blows up, taking the whole suite with it.
@@ -16,8 +17,10 @@
  *
  * Device and simulator builds use the native backend and are unaffected.
  *
- * TODO: remove once Reanimated 4.6.0 stable ships with this fixed - track
- * https://github.com/software-mansion/react-native-reanimated
+ * TODO: remove once Reanimated fixes this upstream - `JSReanimated.setCSSEventHandler` should be a
+ * no-op like the native backend's stub in `NativeReanimated.ts`. Re-check on each Reanimated bump:
+ * grep `setCSSEventHandler` in `src/initializers.native.ts` and `src/ReanimatedModule/js-reanimated/
+ * JSReanimated.ts`. https://github.com/software-mansion/react-native-reanimated
  */
 
 // Required by its full path (with the platform suffix and extension) so the
