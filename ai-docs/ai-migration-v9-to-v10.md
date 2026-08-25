@@ -1402,18 +1402,25 @@ and on more reconnect paths than before.
 contexts, call `channel.activate()` / `thread.activate()` (each balanced with `deactivate()`) or those
 surfaces will not be recovered — being active is the one thing recovery cannot infer.
 
-Two things stay deliberately UI-side, on **different** events:
+One thing stays deliberately UI-side: **mark-read after the reload**, on `connection.recovered`. It
+has to be post-reload so the "is the window at the newest?" check reflects the refreshed window. Read
+policy is a UI decision (`useMarkRead`, §5); refreshing state is not.
 
-- **Mark-read after the reload**, on `connection.recovered` — it has to be post-reload so the
-  "is the window at the newest?" check reflects the refreshed window. Read policy is a UI decision
-  (`useMarkRead`, §5); refreshing state is not.
-- **Clearing a connection error**, on `connection.changed { online: true }` — deliberately the earlier
-  event. The built-in `NetworkDownIndicator` masks the channel error behind `!isOnline`, so clearing
-  any later would leave "Error loading messages for this channel…" showing over good (often
-  offline-cached) content for the whole length of the recovery. Clearing early cannot hide a real
-  failure: a reload that fails republishes on `channel.lastReloadError` /
-  `thread.state.lastReloadError`. If you render your own error UI from `useChannelContext().error`,
-  the same reasoning applies. Read policy is a UI decision; refreshing state is not.
+**The error surface is not UI-side either.** `<Channel>` holds no error state of its own — it reads
+`channel.state.lastLoadError` and `thread.state.lastLoadError` straight into `useChannelContext().error`
+(§L.5). Both failures a UI cares about are recorded by the client: `channel.watch()` records the
+mount-time failure of a channel opened with no connection and — since `reload()` goes through
+`watch()` — the reconnect refresh too.
+
+**Nothing clears these on a connection event.** A load error is invalidated by the next load, not by
+coming back online: `watch()` and `Thread.reload()` each clear before they await anything, which is the
+same clear-before-attempt v9's `resyncChannel` did on its first line. Because the clear sits above the
+first await, a reconnect reload reaches it inside the synchronous `connection.changed` dispatch — the
+same dispatch a UI flips its own online flag in, so the two land in one render and an error masked
+behind `!isOnline` is never flashed over content that is about to refresh. Clearing on the way in
+cannot hide a real failure: the attempt records its own on the way out. If you render your own error UI
+from `useChannelContext().error` you get all of this for free; if you latch an error of your own,
+delete it.
 
 `<ChannelList>`'s own reconnect listener is gone for the same reason — the list re-query is item 1.
 
@@ -1427,17 +1434,21 @@ Two things stay deliberately UI-side, on **different** events:
   thread held by more than one mount stays active until the last holder releases it. `active` is what
   recovery filters on, so an unbalanced `deactivate()` now costs a missed reload as well as a missed
   auto-read.
-- **`thread.state.lastReloadError`** — the thread twin of the channel field below, same contract.
-- **`channel.state.lastReloadError`** (+ the `channel.lastReloadError` getter) — mirrors
-  `BasePaginator.lastQueryError`. Cleared when `reload()` starts, set in its catch, and **rethrown**,
-  so a failed reconnect refresh stays visible to the UI even though the manager runs the reloads
-  inside `Promise.allSettled`. The SDK ORs it into `useChannelContext().error`, which is what keeps
-  the "Error loading messages for this channel…" indicator working.
+- **`thread.state.lastLoadError`** — the thread twin of the channel field below, same contract,
+  written by `Thread.reload()`.
+- **`channel.state.lastLoadError`** (+ the `channel.lastLoadError` getter) — mirrors
+  `BasePaginator.lastQueryError` one level up. Owned by **`watch()`**: cleared before its first await,
+  set in its catch, and **rethrown**. Owning it there rather than in `reload()` is what makes it cover
+  both failures a UI cares about — the reconnect refresh (the manager runs reloads inside
+  `Promise.allSettled`, which would otherwise swallow them) *and* the mount-time `watch()` of a channel
+  opened offline, which throws long before anything could later prove it stale. The SDK ORs both fields
+  into `useChannelContext().error`, which is what keeps the "Error loading messages for this channel…"
+  indicator working.
 
 ```tsx
-// surface a failed reconnect refresh in your own UI
-const { lastReloadError } = useStateStore(channel.state, (s) => ({
-  lastReloadError: s.lastReloadError,
+// surface a failed load in your own UI
+const { lastLoadError } = useStateStore(channel.state, (s) => ({
+  lastLoadError: s.lastLoadError,
 }));
 ```
 
@@ -1494,7 +1505,7 @@ replies never appeared, and re-entering the thread did not help.
 ## L.9 A brand-new thread no longer reports an error (bug fix)
 
 A parent with no replies has no server-side thread, so `getThread` answers "not found". That was
-being treated as a failed refresh: `thread.state.lastReloadError` was set, which the React Native SDK
+being treated as a failed refresh: `thread.state.lastLoadError` was set, which the React Native SDK
 ORs into `useChannelContext().error`, so simply opening a new thread raised the channel's error state.
 It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting, and
 publishes nothing.
