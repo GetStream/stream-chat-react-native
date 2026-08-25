@@ -763,6 +763,118 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(contextError).toBe(false));
   });
 
+  it('does not mark a reply-less thread read on open, but does once it has replies', async () => {
+    // A parent with no replies has no server-side thread, so the mark-read 404s on every open. There
+    // is also nothing that could be unread, so the call is skipped rather than made and swallowed.
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+    const markRead = jest
+      .spyOn(testChannel, 'markRead')
+      .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+
+    const parentMessage = generateMessage({ user });
+    const makeThread = (replyCount: number) => {
+      const instance = new Thread({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage: testChannel.state.formatMessage({
+          ...parentMessage,
+          reply_count: replyCount,
+        }),
+      });
+      jest.spyOn(instance, 'reload').mockResolvedValue(undefined);
+      return instance;
+    };
+
+    const empty = makeThread(0);
+    const { unmount } = render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          threadList
+          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance: empty }}
+        >
+          <ThreadComponent />
+        </Channel>
+      </Chat>,
+    );
+    await waitFor(() => expect(empty.state.getLatestValue().active).toBe(true));
+    expect(markRead).not.toHaveBeenCalled();
+    unmount();
+
+    // Same component, a thread that does have replies: the call is made as before.
+    const withReplies = makeThread(3);
+    render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          threadList
+          thread={{
+            thread: testChannel.state.formatMessage(parentMessage),
+            threadInstance: withReplies,
+          }}
+        >
+          <ThreadComponent />
+        </Channel>
+      </Chat>,
+    );
+    await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: withReplies.id }));
+  });
+
+  it('does not raise the channel error when a brand-new thread has no server-side thread yet', async () => {
+    // Opening a parent with no replies makes <Thread>'s metadata reload answer DoesNotExist (404).
+    // That is expected, so it must not reach `ChannelContext.error` — otherwise every freshly created
+    // thread shows the "could not load messages" state.
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+
+    const parentMessage = generateMessage({ user });
+    const threadInstance = new Thread({
+      channel: testChannel,
+      client: chatClient,
+      parentMessage: testChannel.state.formatMessage(parentMessage),
+    });
+    const notFound = Object.assign(new Error('Request failed with status code 404'), {
+      code: 16,
+      StatusCode: 404,
+    });
+    const getThread = jest.spyOn(chatClient, 'getThreadAndHydrate').mockRejectedValue(notFound);
+
+    let contextError: unknown;
+    render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          threadList
+          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance }}
+        >
+          {/* <Thread> is what issues the metadata reload this test is about. */}
+          <ThreadComponent />
+          <CallbackEffectWithContext
+            callback={(ctx) => {
+              contextError = (ctx as { error: unknown }).error;
+            }}
+            context={ChannelContext as React.Context<unknown>}
+          />
+        </Channel>
+      </Chat>,
+    );
+
+    // Anchor on the rejection having actually happened, then on the reload having settled — asserting
+    // `contextError` before either would pass without anything running (`isLoading` starts false).
+    await waitFor(() => expect(getThread).toHaveBeenCalled());
+    await waitFor(() => expect(threadInstance.state.getLatestValue().isLoading).toBe(false));
+    await waitFor(() =>
+      expect(threadInstance.state.getLatestValue().lastReloadError).toBeUndefined(),
+    );
+
+    expect(contextError).toBe(false);
+  });
+
   it('surfaces a failed thread reload on the channel context', async () => {
     // Recovery runs `thread.reload()` inside a `Promise.allSettled`, so a failure cannot reach this
     // component as a throw — it arrives on `thread.state.lastReloadError` and has to be ORed into
