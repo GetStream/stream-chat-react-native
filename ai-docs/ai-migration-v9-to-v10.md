@@ -177,7 +177,7 @@ means changed. Details in the linked section.
 | `useChannelContext().error` | `useStateStore((threadInstance ?? channel).messagePaginator.state, sel).lastQueryError` | §L.7 |
 | `<Channel>` refreshing the channel / open thread on reconnect | `client.connectionRecovery`; `<Channel>` only marks them active | §L.4 |
 | a custom channel/thread view built on the contexts | call `channel.activate()` / `thread.activate()`, balanced with `deactivate()`, or recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
-| `<Chat>` setting `client.recoverStateOnReconnect = false` for you | it no longer does; the option is now the kill switch for `client.connectionRecovery` | §L.1 |
+| `new StreamChat(key, { recoverStateOnReconnect: false })` | `client.config.set({ client: { connectionRecovery: { enabled: false } } })` | §L.1 |
 | a `connection.changed` listener re-querying a list / re-watching a channel | delete it — `client.connectionRecovery` owns reconnect | §L |
 | `connection.recovered` as "the `_reconnect()` path fired" | now dispatched on **every** reconnect path, after the recovery reload | §L.2 |
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
@@ -1282,7 +1282,7 @@ const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState })
 
 > **Who this affects.** Every app inherits the new behaviour, but almost none needs a code change.
 > Reconnect recovery moved out of the UI SDK into `stream-chat`, so `<Chat>` / `<ChannelList>` /
-> `<Channel>` get it for free. You have work to do only if you set `recoverStateOnReconnect: false`
+> `<Channel>` get it for free. You have work to do only if you passed `recoverStateOnReconnect: false`
 > and hand-rolled recovery, called `client.recoverState()` yourself, or listen for
 > `connection.recovered`.
 
@@ -1322,9 +1322,29 @@ recovery never covered at all.
 **No app code is required for any of this.** Do not add a `connection.changed` listener that
 re-queries a list or re-watches a channel — that now duplicates the client.
 
-## L.1 `recoverStateOnReconnect` — same name, new meaning (behavioral)
+## L.1 `recoverStateOnReconnect` removed — configure recovery instead (breaking — `stream-chat`)
 
-The option and its `true` default are unchanged, but what it gates is not.
+The client option and the `client.recoverStateOnReconnect` field are both gone. Recovery is
+configured through the declarative configuration registry, like every other client-owned manager
+(`reminders`, `threads`, `notifications`, `messageDelivery`):
+
+```ts
+// Before (v9)
+const client = new StreamChat(apiKey, { recoverStateOnReconnect: false });
+
+// After (v10) — at construction
+const client = new StreamChat(apiKey, {
+  config: { client: { connectionRecovery: { enabled: false } } },
+});
+
+// After (v10) — at any point afterwards; read when a recovery actually runs, so it takes effect
+// from the next reconnect
+client.config.set({ client: { connectionRecovery: { enabled: false } } });
+```
+
+Default is still `true`, and the flag still means "recover nothing, I will do it myself" — so an app
+that never touched it needs no change. What it *gates* is different, though, and that part is
+behavioural:
 
 | | v9 | v10 |
 |---|---|---|
@@ -1333,14 +1353,8 @@ The option and its `true` default are unchanged, but what it gates is not.
 | Coverage | the 30 most recently active channels, silently truncated | every loaded list page + every `active` channel |
 | Fires on | `StableWSConnection._reconnect()` only | every reconnect path, backgrounding included |
 
-If you set `recoverStateOnReconnect: false` and recover state yourself, nothing changes — it is still
-the kill switch. **The RN SDK no longer sets it to `false`**, so if you were relying on `<Chat>`
-disabling client recovery for you, it no longer does.
-
-```ts
-// still the escape hatch, still opt-out
-const client = new StreamChat(apiKey, { recoverStateOnReconnect: false });
-```
+**The RN SDK no longer disables client recovery for you** — v9's `<Chat>` set
+`client.recoverStateOnReconnect = false` on your behalf, and it no longer does.
 
 ## L.2 `connection.recovered` now fires on every reconnect path (behavioral)
 
@@ -1430,13 +1444,18 @@ reconnect, or until a query the consumer itself issues records its own error.
 ## L.5 Additive surface
 
 - **`client.connectionRecovery`** — the `ConnectionRecoveryManager` instance. Public method:
-  `recover()`, which runs a full recovery immediately without waiting for a connection event.
+  `recover()`, which runs a full recovery immediately without waiting for a connection event, plus the
+  `config` / `configState` / `updateConfig` / `initializeConfig` surface every configurable class
+  exposes.
+- **`client.config`'s `client.connectionRecovery` key** — `{ enabled: boolean }`, default `true`. The
+  replacement for the removed `recoverStateOnReconnect` option (§L.1).
 - **`client.channelManager.recover()`** — re-runs every initialized list's first-page query,
   non-destructively. Sibling of the destructive `reload()`, which is unchanged.
 - **`thread.activate()` / `deactivate()` are now refcounted**, matching `channel.activate()`, so a
   thread held by more than one mount stays active until the last holder releases it. `active` is what
   recovery filters on, so an unbalanced `deactivate()` now costs a missed reload as well as a missed
   auto-read.
+
 There is deliberately **no** channel-level or thread-level error field. Read the paginator backing
 whatever you are rendering — the thread's replies when one is open, the channel's messages otherwise:
 

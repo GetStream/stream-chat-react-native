@@ -136,11 +136,14 @@ yarn workspace sampleapp android
 each channel list's own first-page query and reloads whichever channels are `active` (`<Channel>`
 marks its channel active on mount), then dispatches `connection.recovered`. So do not add a
 `connection.changed` listener that re-queries a list or re-watches a channel — that duplicates it.
-`recoverStateOnReconnect` is left at its default `true`; it used to be switched off here because the
-client's old recovery was a single 30-channel query that ignored the lists' own filters. Two things
-deliberately stay UI-side: mark-read after the reload (`<Channel>` listens for
-`connection.recovered`), and the open thread's reply refresh (`resyncThread` in `Channel.tsx`, since
-nothing in the client recovers an open thread's replies yet).
+Recovery is on by default and configured declaratively
+(`client.config.set({ client: { connectionRecovery: { enabled: false } } })` turns it off); the old
+`recoverStateOnReconnect` option is gone. It used to be switched off here because the client's old
+recovery was a single 30-channel query that ignored the lists' own filters. An open thread's replies
+are recovered too — the client reloads every `active` thread — so `<Channel>` no longer resyncs one
+itself. Exactly one thing deliberately stays UI-side: mark-read after the reload (`<Channel>` listens
+for `connection.recovered`), because it has to read the refreshed window and read policy is a UI
+decision.
 
 ### Context three-layer pattern
 
