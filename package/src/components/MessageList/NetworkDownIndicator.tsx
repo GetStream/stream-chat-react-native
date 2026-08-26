@@ -1,46 +1,24 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 
-const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
-  lastQueryError: state.lastQueryError,
-});
-
 export const NetworkDownIndicator = () => {
-  const { channel } = useChannelContext();
-  const { threadInstance } = useThreadContext();
   const { isOnline } = useChatContext();
   const styles = useStyles();
   const { t } = useTranslationContext();
 
-  const { lastQueryError } =
-    useStateStore((threadInstance ?? channel)?.messagePaginator?.state, lastQueryErrorSelector) ??
-    {};
-
-  const indicatorText = useMemo(() => {
-    if (!isOnline) {
-      return t('common.reconnecting.text', 'Reconnecting...');
-    } else if (lastQueryError) {
-      return t('indicators.loading.messages.error', 'Error loading messages for this channel...');
-    }
-    return '';
-  }, [lastQueryError, isOnline, t]);
-
-  if (!indicatorText) {
+  if (isOnline) {
     return null;
   }
 
   return (
     <View style={styles.container} testID='error-notification'>
-      <Text style={styles.errorText}>{indicatorText}</Text>
+      <Text style={styles.errorText}>{t('common.reconnecting.text', 'Reconnecting...')}</Text>
     </View>
   );
 };

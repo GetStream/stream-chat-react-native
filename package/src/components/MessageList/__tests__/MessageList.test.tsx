@@ -9,7 +9,6 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import dispatchConnectionChanged from '../../../mock-builders/event/connectionChanged';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchTypingEvent from '../../../mock-builders/event/typing';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -273,49 +272,6 @@ describe('MessageList', () => {
       expect(getByTestId('error-notification')).toBeTruthy();
       expect(getByText('Reconnecting...')).toBeTruthy();
     });
-  });
-
-  it('should render the load error from the message paginator once back online', async () => {
-    // The indicator reads the paginator that backs the list, not any channel-level error state: the
-    // paginator owns the query, so it owns the failure. Online, or the offline copy wins the branch.
-    const user1 = generateUser();
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 })],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
-    await channel.watch();
-
-    const { getByText, queryByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    act(() => dispatchConnectionChanged(chatClient));
-    await waitFor(() => expect(queryByText('Reconnecting...')).toBeNull());
-
-    act(() =>
-      channel.messagePaginator.state.partialNext({ lastQueryError: new Error('load failed') }),
-    );
-
-    await waitFor(() =>
-      expect(getByText('Error loading messages for this channel...')).toBeTruthy(),
-    );
-
-    // Cleared by the next successful query, so the indicator cannot outlive the failure.
-    act(() => channel.messagePaginator.state.partialNext({ lastQueryError: undefined }));
-
-    await waitFor(() =>
-      expect(queryByText('Error loading messages for this channel...')).toBeNull(),
-    );
   });
 
   it('should scroll to a message even if out of the loaded window', async () => {

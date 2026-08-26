@@ -1422,17 +1422,10 @@ has to be post-reload so the "is the window at the newest?" check reflects the r
 policy is a UI decision (`useMarkRead`, §5); refreshing state is not.
 
 **`<Channel>` holds no error state of its own, and neither does the client.** A load error belongs to
-the paginator whose window failed to load, on `BasePaginator.lastQueryError` — cleared when an attempt
-starts, set when it fails, invalidated by the next successful load. There is no channel-level or
-thread-level error field, and `useChannelContext().error` is gone (§L.7).
-
-`channel.watch()` and `Thread.reload()` refresh that window without going through the paginator's own
-query path, so each clears the paginator's error on the way in — **above its first `await`**, which is
-the load-bearing part. A reconnect reload reaches it inside the synchronous `connection.changed`
-dispatch, the same event a UI flips its online flag on, so the two land in one render and a stale error
-is never shown over content that is about to refresh. This is the clear-before-attempt v9's
-`resyncChannel` did on its first line, moved to where the load actually happens. It cannot hide a real
-failure: the attempt records its own on the way out.
+the paginator whose window failed to load, on `BasePaginator.lastQueryError` — set when a query fails,
+cleared by the next one that succeeds, including the reconciling re-seed a reconnect reload performs.
+Nothing outside the paginator writes that field. There is no channel-level or thread-level error field,
+and `useChannelContext().error` is gone (§L.7).
 
 A failed `watch()` simply rejects to whoever called it. The one caller that cannot propagate it is
 `ConnectionRecoveryManager`, which runs the reloads inside a `Promise.allSettled` — **a failed
@@ -1513,9 +1506,17 @@ const { lastQueryError } = useStateStore(
 The built-in `NetworkDownIndicator` and `<Channel>`'s own error screen both do exactly this, so an app
 that never read `error` itself needs no change.
 
-Two behavioural consequences worth knowing. The indicator now reflects **the list you are looking at**:
-on a thread view it reports the reply paginator's failure rather than the channel's. And a failed
-reconnect refresh is no longer surfaced anywhere (§L.4) — the loaded window simply stays as it was.
+**`NetworkDownIndicator` no longer reports load errors at all** — it reports the connection, and
+nothing else. It renders "Reconnecting…" while offline and nothing while online. In v9 it also showed
+"Error loading messages for this channel…", driven by a failed `watch()`/resync and by a failed thread
+reply pagination; that full-width, channel-wide message overstated what is usually one failed page of
+history, with the messages you already have rendered fine underneath it.
+
+A load failure that leaves nothing to show still gets the full-screen treatment: `<Channel>` renders
+`LoadingErrorIndicator`, with its retry, when the paginator has an error and no items. A failed
+reconnect refresh is not surfaced at all (§L.4) — the loaded window simply stays as it was.
+
+If you want the old banner back, render your own from `lastQueryError` using the snippet above.
 
 ## L.8 Unsent messages now survive a reconnect rebuild (bug fix)
 
