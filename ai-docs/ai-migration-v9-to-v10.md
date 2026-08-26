@@ -174,6 +174,7 @@ means changed. Details in the linked section.
 | `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
 | `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
 | `client.recoverState()` | `client.connectionRecovery.recover()` | §L.6 |
+| `useChannelContext().error` | `useStateStore((threadInstance ?? channel).messagePaginator.state, sel).lastQueryError` | §L.7 |
 | `<Channel>` refreshing the channel / open thread on reconnect | `client.connectionRecovery`; `<Channel>` only marks them active | §L.4 |
 | a custom channel/thread view built on the contexts | call `channel.activate()` / `thread.activate()`, balanced with `deactivate()`, or recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
 | `<Chat>` setting `client.recoverStateOnReconnect = false` for you | it no longer does; the option is now the kill switch for `client.connectionRecovery` | §L.1 |
@@ -1406,21 +1407,23 @@ One thing stays deliberately UI-side: **mark-read after the reload**, on `connec
 has to be post-reload so the "is the window at the newest?" check reflects the refreshed window. Read
 policy is a UI decision (`useMarkRead`, §5); refreshing state is not.
 
-**The error surface is not UI-side either.** `<Channel>` holds no error state of its own — it reads
-`channel.state.lastLoadError` and `thread.state.lastLoadError` straight into `useChannelContext().error`
-(§L.5). Both failures a UI cares about are recorded by the client: `channel.watch()` records the
-mount-time failure of a channel opened with no connection and — since `reload()` goes through
-`watch()` — the reconnect refresh too.
+**`<Channel>` holds no error state of its own, and neither does the client.** A load error belongs to
+the paginator whose window failed to load, on `BasePaginator.lastQueryError` — cleared when an attempt
+starts, set when it fails, invalidated by the next successful load. There is no channel-level or
+thread-level error field, and `useChannelContext().error` is gone (§L.7).
 
-**Nothing clears these on a connection event.** A load error is invalidated by the next load, not by
-coming back online: `watch()` and `Thread.reload()` each clear before they await anything, which is the
-same clear-before-attempt v9's `resyncChannel` did on its first line. Because the clear sits above the
-first await, a reconnect reload reaches it inside the synchronous `connection.changed` dispatch — the
-same dispatch a UI flips its own online flag in, so the two land in one render and an error masked
-behind `!isOnline` is never flashed over content that is about to refresh. Clearing on the way in
-cannot hide a real failure: the attempt records its own on the way out. If you render your own error UI
-from `useChannelContext().error` you get all of this for free; if you latch an error of your own,
-delete it.
+`channel.watch()` and `Thread.reload()` refresh that window without going through the paginator's own
+query path, so each clears the paginator's error on the way in — **above its first `await`**, which is
+the load-bearing part. A reconnect reload reaches it inside the synchronous `connection.changed`
+dispatch, the same event a UI flips its online flag on, so the two land in one render and a stale error
+is never shown over content that is about to refresh. This is the clear-before-attempt v9's
+`resyncChannel` did on its first line, moved to where the load actually happens. It cannot hide a real
+failure: the attempt records its own on the way out.
+
+A failed `watch()` simply rejects to whoever called it. The one caller that cannot propagate it is
+`ConnectionRecoveryManager`, which runs the reloads inside a `Promise.allSettled` — **a failed
+reconnect refresh is deliberately not surfaced.** The loaded window stays as it was until the next
+reconnect, or until a query the consumer itself issues records its own error.
 
 `<ChannelList>`'s own reconnect listener is gone for the same reason — the list re-query is item 1.
 
@@ -1434,22 +1437,19 @@ delete it.
   thread held by more than one mount stays active until the last holder releases it. `active` is what
   recovery filters on, so an unbalanced `deactivate()` now costs a missed reload as well as a missed
   auto-read.
-- **`thread.state.lastLoadError`** — the thread twin of the channel field below, same contract,
-  written by `Thread.reload()`.
-- **`channel.state.lastLoadError`** (+ the `channel.lastLoadError` getter) — mirrors
-  `BasePaginator.lastQueryError` one level up. Owned by **`watch()`**: cleared before its first await,
-  set in its catch, and **rethrown**. Owning it there rather than in `reload()` is what makes it cover
-  both failures a UI cares about — the reconnect refresh (the manager runs reloads inside
-  `Promise.allSettled`, which would otherwise swallow them) *and* the mount-time `watch()` of a channel
-  opened offline, which throws long before anything could later prove it stale. The SDK ORs both fields
-  into `useChannelContext().error`, which is what keeps the "Error loading messages for this channel…"
-  indicator working.
+There is deliberately **no** channel-level or thread-level error field. Read the paginator backing
+whatever you are rendering — the thread's replies when one is open, the channel's messages otherwise:
 
 ```tsx
 // surface a failed load in your own UI
-const { lastLoadError } = useStateStore(channel.state, (s) => ({
-  lastLoadError: s.lastLoadError,
-}));
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
+const { lastQueryError } = useStateStore(
+  (threadInstance ?? channel).messagePaginator.state,
+  lastQueryErrorSelector,
+);
 ```
 
 ## L.6 `client.recoverState()` removed (breaking — `stream-chat`)
@@ -1468,7 +1468,37 @@ The two are not equivalent in shape — `recoverState()` ran the 30-channel bulk
 §L.1 — but `recover()` is the v10 way to say "bring everything I am reading back in line with the
 server now". Most apps never called it: it was invoked automatically on reconnect, and it still is.
 
-## L.7 Unsent messages now survive a reconnect rebuild (bug fix)
+## L.7 `useChannelContext().error` removed (breaking — React Native)
+
+`ChannelContext` no longer carries an `error`. A load failure belongs to the paginator that issued the
+query, so read it from there instead:
+
+```tsx
+// Before (v9)
+const { error } = useChannelContext();
+
+// After (v10) — at module scope
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
+// After (v10) — in the component
+const { channel } = useChannelContext();
+const { threadInstance } = useThreadContext();
+const { lastQueryError } = useStateStore(
+  (threadInstance ?? channel).messagePaginator.state,
+  lastQueryErrorSelector,
+);
+```
+
+The built-in `NetworkDownIndicator` and `<Channel>`'s own error screen both do exactly this, so an app
+that never read `error` itself needs no change.
+
+Two behavioural consequences worth knowing. The indicator now reflects **the list you are looking at**:
+on a thread view it reports the reply paginator's failure rather than the channel's. And a failed
+reconnect refresh is no longer surfaced anywhere (§L.4) — the loaded window simply stays as it was.
+
+## L.8 Unsent messages now survive a reconnect rebuild (bug fix)
 
 `channel.reload()` and `thread.reload()` both preserve failed (locally unsent) messages across the
 refresh. They already intended to, but the check for "did this one fall out?" read the paginator's
@@ -1486,7 +1516,7 @@ offline-DB path keyed on `ThreadManager.threadsById`. Neither covers a thread co
 never registered, which is the common path. `thread.reload()` now reads the failed replies out of the
 reply paginator instead, so it holds for managed and unmanaged threads alike.
 
-## L.8 The reconnect refresh now finds messages you never had (bug fix)
+## L.9 The reconnect refresh now finds messages you never had (bug fix)
 
 Two defects meant a reconnect could refresh a channel or thread and still miss content that arrived
 while you were away. Both are fixed; no API change.
@@ -1502,15 +1532,13 @@ while you were away. Both are fixed; no API change.
 Most visible as: create a thread, send a reply, go offline, someone else replies, come back — the new
 replies never appeared, and re-entering the thread did not help.
 
-## L.9 A brand-new thread no longer reports an error (bug fix)
+## L.10 A brand-new thread no longer reports an error (bug fix)
 
-A parent with no replies has no server-side thread, so `getThread` answers "not found". That was
-being treated as a failed refresh: `thread.state.lastLoadError` was set, which the React Native SDK
-ORs into `useChannelContext().error`, so simply opening a new thread raised the channel's error state.
-It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting, and
-publishes nothing.
+A parent with no replies has no server-side thread, so `getThread` answers "not found". That was being
+treated as a failed refresh and reported as one, so simply opening a new thread raised an error state.
+It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting.
 
-A genuine failure still publishes as before, including a thread that *did* have replies and comes back
+A genuine failure still rejects as before, including a thread that *did* have replies and comes back
 not-found (its parent was deleted, possibly while you were offline). The two are told apart by
 `replyCount`, which — unlike `deletedAt` — survives having missed the deletion event.
 
@@ -1551,7 +1579,7 @@ unread, and the call only ever 404'd.
   reconnect (its replies refresh — §L.4); and cold-boot with a populated offline DB
   (exactly one recovery, no double load). Also scroll up into old history, send a
   message that fails, then reconnect — the unsent message must still be in the list
-  (§L.7).
+  (§L.8).
 
 ---
 

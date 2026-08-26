@@ -7,7 +7,6 @@ export const useCreateChannelContext = ({
   disabled,
   enableMessageGroupingByUser,
   enforceUniqueReaction,
-  error,
   hideDateSeparators,
   hideStickyDateHeader,
   highlightedMessageId,
@@ -30,7 +29,6 @@ export const useCreateChannelContext = ({
       disabled,
       enableMessageGroupingByUser,
       enforceUniqueReaction,
-      error,
       hideDateSeparators,
       hideStickyDateHeader,
       highlightedMessageId,
@@ -49,7 +47,6 @@ export const useCreateChannelContext = ({
     [
       channelId,
       disabled,
-      error,
       isChannelActive,
       highlightedMessageId,
       loading,
