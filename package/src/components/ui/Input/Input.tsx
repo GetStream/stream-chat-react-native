@@ -16,6 +16,7 @@ import {
 import { useTheme } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../theme';
+import type { TextInputRef } from '../../../types/react-native-compat';
 import { IconRenderer } from '../Button';
 
 const inputAccessibilityStates = {
@@ -51,7 +52,11 @@ export type InputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-export const Input = React.forwardRef<TextInput, InputProps>(function Input(
+// Explicitly annotated: the inferred type of a `forwardRef` component inlines React Native's
+// internal style/instance helper types, which cannot be named in the emitted declarations (TS2883).
+export const Input: React.ForwardRefExoticComponent<
+  InputProps & React.RefAttributes<TextInputRef>
+> = React.forwardRef<TextInputRef, InputProps>(function Input(
   {
     title,
     description,

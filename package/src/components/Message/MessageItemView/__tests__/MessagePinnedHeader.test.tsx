@@ -2,9 +2,7 @@ import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
-import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
-import type { Theme } from '../../../../contexts/themeContext/utils/theme';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
   generateMessage,
@@ -23,7 +21,7 @@ describe('MessagePinnedHeader', () => {
       pinned: true,
     });
     render(
-      <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+      <ThemeProvider style={defaultTheme}>
         <MessagePinnedHeader message={message} />
       </ThemeProvider>,
     );
@@ -33,7 +31,7 @@ describe('MessagePinnedHeader', () => {
     });
 
     screen.rerender(
-      <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+      <ThemeProvider style={defaultTheme}>
         <MessagePinnedHeader message={message} />
       </ThemeProvider>,
     );
@@ -44,7 +42,7 @@ describe('MessagePinnedHeader', () => {
     });
 
     screen.rerender(
-      <ThemeProvider style={defaultTheme as DeepPartial<Theme>}>
+      <ThemeProvider style={defaultTheme}>
         <MessagePinnedHeader message={staticMessage} />
       </ThemeProvider>,
     );

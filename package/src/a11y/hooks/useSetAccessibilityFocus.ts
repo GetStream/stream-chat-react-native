@@ -19,7 +19,7 @@ const resolveNode = (target: AccessibilityFocusTarget): number | null => {
     return target;
   }
   const current = target.current;
-  return current == null ? null : findNodeHandle(current as FindNodeHandleArg);
+  return current == null ? null : (findNodeHandle(current as FindNodeHandleArg) ?? null);
 };
 
 /**

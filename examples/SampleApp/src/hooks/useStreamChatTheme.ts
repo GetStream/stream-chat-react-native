@@ -4,7 +4,8 @@ import { ColorSchemeName, useColorScheme } from 'react-native';
 import type { DeepPartial, Theme } from 'stream-chat-react-native';
 
 const getChatStyle = (
-  colorScheme: ColorSchemeName,
+  // React Native 0.87 types `useColorScheme()` as `ColorSchemeName | null`.
+  colorScheme: ColorSchemeName | null,
 ): DeepPartial<Theme> & { colors: Record<string, string> } => ({
   colors:
     colorScheme === 'dark'

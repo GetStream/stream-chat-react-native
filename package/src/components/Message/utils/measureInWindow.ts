@@ -1,6 +1,9 @@
 import React from 'react';
-import { Dimensions, Platform, View } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
+
 import { EdgeInsets } from 'react-native-safe-area-context';
+
+import type { ViewRef } from '../../../types/react-native-compat';
 
 import { isRN86OrGreater } from '../../../utils/react-native-constants';
 
@@ -49,7 +52,7 @@ export const isMeasuredRectBogus = (x: number, y: number, w: number, h: number):
 };
 
 export const measureInWindow = (
-  node: React.RefObject<View | null>,
+  node: React.RefObject<ViewRef | null>,
   insets: EdgeInsets,
 ): Promise<MeasuredRect> => {
   return new Promise((resolve, reject) => {

@@ -13,8 +13,7 @@ import { ChannelsStateProvider } from '../../contexts/channelsStateContext/Chann
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
-import { DeepPartial, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { Theme } from '../../contexts/themeContext/utils/theme';
+import { ThemeProvider, ThemeStyle, useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
   TranslationProvider,
@@ -201,7 +200,7 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      *
      * @overrideType object
      */
-    style?: DeepPartial<Theme>;
+    style?: ThemeStyle;
   };
 
 const selector = (nextValue: OfflineDBState) =>
@@ -366,5 +365,5 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 export const Chat = (props: PropsWithChildren<ChatProps>) => {
   const { theme } = useTheme();
 
-  return <ChatWithContext style={theme as DeepPartial<Theme>} {...props} />;
+  return <ChatWithContext style={theme} {...props} />;
 };

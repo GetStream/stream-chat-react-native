@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@stream-io/typescript-config": "workspace:^",
-    "react-native": "0.86.0",
+    "react-native": "0.87.0",
     "typescript": "6.0.3"
   },
   "codegenConfig": {

@@ -32,6 +32,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useLazyRef } from '../../../../hooks/useLazyRef';
 import { isSoundPackageAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
+import type { ScrollViewRef } from '../../../../types/react-native-compat';
 
 const END_ANCHOR_THRESHOLD = 16;
 const ATTACHMENT_PREVIEW_ANIMATION_DURATION = 200;
@@ -97,7 +98,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
   const { attachmentManager } = useMessageComposer();
   const { attachments } = useAttachmentManagerState();
   const isRTL = I18nManager.isRTL;
-  const attachmentListRef = useRef<ScrollView>(null);
+  const attachmentListRef = useRef<ScrollViewRef>(null);
   const soundPackageAvailable = useMemo(() => isSoundPackageAvailable(), []);
   const isAudioAttachmentPreview = useMemo(
     () => getIsAudioAttachmentPreview(soundPackageAvailable),

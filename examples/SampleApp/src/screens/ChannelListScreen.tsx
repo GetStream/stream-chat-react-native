@@ -18,6 +18,7 @@ import {
   useStableCallback,
   ChannelActionItem,
   GetChannelActionItems,
+  TextInputRef,
 } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -83,7 +84,7 @@ export const ChannelListScreen: React.FC = () => {
   const { black, grey, grey_gainsboro, grey_whisper, white, white_snow } = useLegacyColors();
   const { setChannel } = useStreamChatContext();
 
-  const searchInputRef = useRef<TextInput | null>(null);
+  const searchInputRef = useRef<TextInputRef | null>(null);
   const scrollRef = useRef<FlatList<Channel> | null>(null);
 
   const [searchInputText, setSearchInputText] = useState('');

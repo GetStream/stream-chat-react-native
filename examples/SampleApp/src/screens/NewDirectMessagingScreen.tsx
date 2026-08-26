@@ -14,6 +14,7 @@ import {
   UserAdd,
   WithComponents,
   useTheme,
+  TextInputRef,
 } from 'stream-chat-react-native';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
@@ -136,8 +137,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     toggleUser,
   } = useUserSearchContext();
 
-  const messageInputRef = useRef<TextInput | null>(null);
-  const searchInputRef = useRef<TextInput>(null);
+  const messageInputRef = useRef<TextInputRef | null>(null);
+  const searchInputRef = useRef<TextInputRef>(null);
   const currentChannel = useRef<StreamChatChannel>(undefined);
   const isDraft = useRef(true);
   const initialUserIdRef = useRef<string>(undefined);
