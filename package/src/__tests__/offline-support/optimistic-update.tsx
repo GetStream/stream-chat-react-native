@@ -86,6 +86,11 @@ const markConnectionUnhealthy = (client: StreamChat) => {
   (client.wsConnection as unknown as { isHealthy: boolean }).isHealthy = false;
 };
 
+/** The counterpart of {@link markConnectionUnhealthy}, for tests that go offline and then reconnect. */
+const markConnectionHealthy = (client: StreamChat) => {
+  (client.wsConnection as unknown as { isHealthy: boolean }).isHealthy = true;
+};
+
 // React flushes passive effects child-first, so the test-callback effect below runs BEFORE `Channel`'s
 // own mount effects — verifiably: without this wait, `channel.configState.requestHandlers` at edit time
 // holds only the declaratively-registered `updateMessageRequest`, with no `sendMessageRequest`, because
@@ -885,6 +890,13 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel}>
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
+                  // Same barrier every other "edit message" test uses. Without it the edit fires from
+                  // this child mount effect BEFORE `Channel`'s own effect runs `channel.watch()`, whose
+                  // seed then re-ingests the pre-edit copy from the mocked query response and overwrites
+                  // the optimistic edit. Measured: the optimistic copy is correct at `editMessage`
+                  // resolution and still correct a macrotask later, then the in-flight watch lands on
+                  // top of it. That window is unreachable in production (see flushMountEffects).
+                  await flushMountEffects();
                   // Go offline BEFORE editing so the default (no-handler) offline path runs.
                   markConnectionUnhealthy(chatClient);
                   try {
@@ -914,6 +926,9 @@ export const OptimisticUpdates = () => {
             const dbMessage = dbMessages.find((row) => row.id === message.id);
 
             expect(updatedMessage?.text).toBe(editedText);
+            // Offline support is enabled and the edit was queued for replay, so this is "pending",
+            // not "failed" — the message must never enter a failed state on this path.
+            expect(updatedMessage?.status).not.toBe(MessageStatusTypes.FAILED);
             expect(dbMessage?.text).toBe(editedText);
           },
           { timeout: 2500 },
@@ -928,6 +943,7 @@ export const OptimisticUpdates = () => {
             <Channel channel={channel}>
               <CallbackEffectWithMessageOperations
                 callback={async ({ deleteMessage }) => {
+                  await flushMountEffects();
                   markConnectionUnhealthy(chatClient);
                   try {
                     await deleteMessage(message);
@@ -956,6 +972,184 @@ export const OptimisticUpdates = () => {
           },
           { timeout: 2500 },
         );
+      });
+    });
+
+    describe('failed message persistence', () => {
+      it('persists a failed send so it survives a restart and reads back as retryable', async () => {
+        const localMessage = generateMessage({
+          cid: channel.cid,
+          status: MessageStatusTypes.SENDING,
+          text: 'unsent across a restart',
+          user: chatClient.user as UserResponse,
+          user_id: chatClient.userID,
+        });
+
+        jest
+          .spyOn(channel.messageComposer, 'compose')
+          .mockResolvedValue({ localMessage, message: localMessage } as unknown as Awaited<
+            ReturnType<typeof channel.messageComposer.compose>
+          >);
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={localMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  await flushMountEffects();
+                  markConnectionUnhealthy(chatClient);
+                  try {
+                    await sendMessage();
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        // The row itself is what makes a failed message survive a process death: v9 wrote it ahead of
+        // the request and v10 dropped that write, which is why closing the app lost unsent messages.
+        await waitFor(async () => {
+          const dbMessages = await BetterSqlite.selectFromTable<{
+            extraData: string;
+            id: string;
+            text: string;
+          }>('messages');
+          const dbMessage = dbMessages.find((row) => row.id === localMessage.id);
+
+          expect(dbMessage).toBeTruthy();
+          expect(dbMessage!.text).toBe(localMessage.text);
+          // `status` has no column of its own — it round-trips through the extraData blob.
+          expect(JSON.parse(dbMessage!.extraData).status).toBe(MessageStatusTypes.FAILED);
+        });
+
+        // And it has to come back through the DB's own read path, which is what a cold start hydrates
+        // from and what `Channel.reload` consults on reconnect.
+        const restored = await (
+          chatClient.offlineDb as unknown as {
+            getFailedMessages: (o: { cid: string }) => Promise<LocalMessage[]>;
+          }
+        ).getFailedMessages({ cid: channel.cid });
+
+        expect(restored.map((message) => message.id)).toContain(localMessage.id);
+        expect(restored.find((message) => message.id === localMessage.id)?.text).toBe(
+          localMessage.text,
+        );
+      });
+    });
+
+    describe('channel guard cost', () => {
+      it('writes an optimistic message without probing for the channel row', async () => {
+        const localMessage = generateMessage({
+          cid: channel.cid,
+          status: MessageStatusTypes.SENDING,
+          text: 'no guard probe please',
+          user: chatClient.user as UserResponse,
+          user_id: chatClient.userID,
+        });
+
+        jest
+          .spyOn(channel.messageComposer, 'compose')
+          .mockResolvedValue({ localMessage, message: localMessage } as unknown as Awaited<
+            ReturnType<typeof channel.messageComposer.compose>
+          >);
+
+        let guardSpy: jest.SpyInstance | undefined;
+
+        render(
+          <Chat client={chatClient} enableOfflineSupport>
+            <Channel channel={channel} initialValue={localMessage.text}>
+              <CallbackEffectWithContext
+                callback={async ({ sendMessage }) => {
+                  await flushMountEffects();
+                  // Spied after mount, so the count covers only the send below — not the channel
+                  // query that `Channel` performs while starting up.
+                  guardSpy = jest.spyOn(
+                    chatClient.offlineDb as unknown as { channelExists: () => Promise<boolean> },
+                    'channelExists',
+                  );
+                  try {
+                    await sendMessage();
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        // The write has to actually have happened, or "no probe" would be trivially true.
+        await waitFor(async () => {
+          const dbMessages = await BetterSqlite.selectFromTable<{ id: string }>('messages');
+          expect(dbMessages.some((row) => row.id === localMessage.id)).toBe(true);
+        });
+
+        // The guard is lazy: it attempts the write and only probes if that fails on the foreign key.
+        // A probe here means the eager version is back — a native round-trip per message write, for
+        // every message written AND every message received.
+        expect(guardSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('optimistic edit without offline support', () => {
+      it('keeps the optimistic edit AND surfaces the failure when there is no offline DB', async () => {
+        const message = channel.messagePaginator.headItems[0];
+        const editedText = 'edited with no offline support';
+
+        chatClient.config.set({
+          channel: {
+            requestHandlers: {
+              updateMessageRequest: (() => Promise.reject(new Error('validation'))) as never,
+            },
+          },
+        });
+
+        // No `enableOfflineSupport`, so `client.offlineDb` is never attached and there is no queue for
+        // the edit to fall back on. The failure is therefore definitive and must be shown on the
+        // message — the opposite of the offline-enabled case above, where it must NOT be.
+        render(
+          <Chat client={chatClient}>
+            <Channel channel={channel}>
+              <CallbackEffectWithContext
+                callback={async ({ editMessage }) => {
+                  await flushMountEffects();
+                  try {
+                    await editMessage({
+                      localMessage: { ...message, cid: channel.cid, text: editedText },
+                      options: {},
+                    });
+                  } catch (e) {
+                    // do nothing
+                  }
+                }}
+                context={MessageInputContext}
+              >
+                <View testID='children' />
+              </CallbackEffectWithContext>
+            </Channel>
+          </Chat>,
+        );
+        await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+
+        await waitFor(() => {
+          const updatedMessage = channel.messagePaginator.getItem(message.id);
+
+          expect(chatClient.offlineDb).toBeUndefined();
+          // The edit is never rolled back — reverting would throw away what the user typed.
+          expect(updatedMessage?.text).toBe(editedText);
+          expect(updatedMessage?.status).toBe(MessageStatusTypes.FAILED);
+        });
       });
     });
 
@@ -1123,13 +1317,33 @@ export const OptimisticUpdates = () => {
         jest
           .spyOn(channel, 'watch')
           .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
+        // Without this the reconnect below nukes the offline DB. `client.sync` is a POST, so it
+        // resolves with the `getOrCreateChannelApi` payload mocked in `beforeEach`, whose `events` is
+        // undefined; `OfflineDBSyncManager.sync` then throws reading `result.events.length` and its
+        // catch block calls `resetDB()` — taking the persisted failed message with it. Nothing to do
+        // with what these tests assert, so give sync an empty, well-formed reply.
+        jest
+          .spyOn(chatClient, 'sync')
+          .mockResolvedValue({ events: [] } as unknown as Awaited<
+            ReturnType<typeof chatClient.sync>
+          >);
 
         channel.messagePaginator.removeItem({ id: localMessage.id });
         channel.messagePaginator.ingestItem(channel.state.formatMessage(serverMessage));
         await getOfflineDb(chatClient).deletePendingTask({ id: pendingTask!.id });
 
         await act(async () => {
-          await getOfflineDb(chatClient).syncManager.invokeSyncStatusListeners(true);
+          // The real reconnect signal. `invokeSyncStatusListeners(true)` on its own used to be enough
+          // because `Channel` subscribed to the offline DB's sync-status edge itself; on v10 that moved
+          // into the LLC's `ConnectionRecoveryManager`, which binds that subscription lazily from its
+          // `connection.changed` handler and only then reloads the active channels. Driving the edge
+          // directly therefore reached no subscriber at all — the assertions below never ran against a
+          // reload. `OfflineDBSyncManager` publishes the edge itself once it has replayed and synced.
+          markConnectionHealthy(chatClient);
+          dispatchConnectionChangedEvent(chatClient, true);
+          // Recovery is detached (`runDetached`), so yield once to let it start before the assertions
+          // below begin polling.
+          await flushMountEffects();
         });
 
         await waitFor(() => {
@@ -1200,12 +1414,32 @@ export const OptimisticUpdates = () => {
         jest
           .spyOn(channel, 'watch')
           .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
+        // Without this the reconnect below nukes the offline DB. `client.sync` is a POST, so it
+        // resolves with the `getOrCreateChannelApi` payload mocked in `beforeEach`, whose `events` is
+        // undefined; `OfflineDBSyncManager.sync` then throws reading `result.events.length` and its
+        // catch block calls `resetDB()` — taking the persisted failed message with it. Nothing to do
+        // with what these tests assert, so give sync an empty, well-formed reply.
+        jest
+          .spyOn(chatClient, 'sync')
+          .mockResolvedValue({ events: [] } as unknown as Awaited<
+            ReturnType<typeof chatClient.sync>
+          >);
 
         channel.messagePaginator.removeItem({ id: localMessage.id });
         await getOfflineDb(chatClient).deletePendingTask({ id: pendingTask!.id });
 
         await act(async () => {
-          await getOfflineDb(chatClient).syncManager.invokeSyncStatusListeners(true);
+          // The real reconnect signal. `invokeSyncStatusListeners(true)` on its own used to be enough
+          // because `Channel` subscribed to the offline DB's sync-status edge itself; on v10 that moved
+          // into the LLC's `ConnectionRecoveryManager`, which binds that subscription lazily from its
+          // `connection.changed` handler and only then reloads the active channels. Driving the edge
+          // directly therefore reached no subscriber at all — the assertions below never ran against a
+          // reload. `OfflineDBSyncManager` publishes the edge itself once it has replayed and synced.
+          markConnectionHealthy(chatClient);
+          dispatchConnectionChangedEvent(chatClient, true);
+          // Recovery is detached (`runDetached`), so yield once to let it start before the assertions
+          // below begin polling.
+          await flushMountEffects();
         });
 
         await waitFor(() => {

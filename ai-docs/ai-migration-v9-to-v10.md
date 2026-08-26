@@ -1519,6 +1519,149 @@ unread, and the call only ever 404'd.
 
 ---
 
+# Part M — Optimistic edit, delete and unsent-message persistence
+
+Three v9 capabilities did not survive the move of the message lifecycle out of `<Channel>` and into
+`stream-chat`'s `MessageOperations` engine. All are restored, all inside the LLC. No API was removed
+and there is nothing to migrate — but if you worked around any of them, the workaround is now
+redundant and will double-apply.
+
+## M.1 Editing a message is optimistic again, and persisted (bug fix)
+
+An edit shows immediately and is written to the offline DB before the request is made, so it survives
+a cold start and the hydration `<Channel>` performs on mount. v9 did both (`Channel.tsx` wrote the
+optimistic copy through `db.updateMessage`); v10 kept neither.
+
+`message_text_updated_at` is stamped optimistically too, so the "edited" indicator appears at once —
+except when the message being edited is itself `failed`, which never had a server-confirmed text
+update to advertise.
+
+**An edit is never rolled back.** Reverting would discard text the user typed. What changes is only
+whether the failure is shown on the message:
+
+- **Offline support enabled and the request was queued for replay** — the message does **not** enter a
+  failed state. It is pending, not failed, and marking it failed lights up the retry affordance, which
+  re-*sends* the message rather than re-editing it. The promise still rejects, so any notification you
+  surface from a rejected `editMessage` is unaffected.
+- **No offline DB, or a definitive rejection** (a server error that is not retryable, or a cancelled
+  request) —
+  the message keeps the edit and gains `status: 'failed'` plus `error`, as before.
+
+The predicate is the same one reactions already use: an offline DB is present **and** the error is
+`isEphemeral`.
+
+## M.2 Deleting a message is optimistic, and reverted if it definitively fails (behavioral)
+
+`MessageOperations.delete` was the only operation that bypassed the optimistic lifecycle: it awaited
+the request and then ingested the response. So a delete showed nothing until the server answered.
+
+Now:
+
+- A soft delete immediately marks the message `type: 'deleted'` with `deleted_at`, and
+  `deleted_for_me` for a `delete_for_me` delete.
+- A **hard delete removes the message** instead of marking it, matching what the `message.deleted` WS
+  handler does for `hard_delete`. Previously the response message was ingested unconditionally, which
+  put a message the server had just destroyed back into the list.
+- A delete that fails definitively is **reverted** — unlike an edit there is no user input to lose, and
+  a "Message deleted" placeholder on a message that still exists server-side only self-corrects on the
+  next query. A queued (offline) delete keeps the optimistic state.
+
+  In practice the trigger is **offline support disabled plus no connectivity**, not a permission
+  rejection: the delete action is capability-gated in the UI (`deleteOwnMessage` / `deleteAnyMessage`),
+  so a user without permission is never offered it. If the revert is ever wrong — the server did delete
+  the message but the response was lost — the `message.deleted` event removes it again.
+- Deleting a message nothing was displaying no longer inserts a phantom deleted row.
+
+The revert is guarded on object identity against the copy the optimistic step wrote, so a WS update
+landing mid-request is never clobbered by the rollback.
+
+## M.3 Unsent messages survive closing the app (bug fix — data loss)
+
+Every send now writes the message to the offline DB **before** the request, pessimistically marked
+`failed`, and overwrites it with `received` on success. A process death anywhere between composing and
+the server's ack therefore leaves a message that hydrates as failed and retryable, instead of one that
+silently disappears. This is v9's write-ahead (`Channel.tsx`), which v10 dropped when `sendMessage`
+collapsed into `sendMessageWithLocalUpdate`.
+
+No schema change and no `dbVersion` bump: `status` already round-trips through the storable's
+`extraData` blob.
+
+The retry payload does not need persisting alongside it. `MessageOperations.retry` reconstructs the
+request from the message when its in-memory `failedSendCache` is cold, so a persisted failed message
+stays retryable past that cache's 5-minute TTL and across restarts.
+
+`channel.reload()` also consults the DB, not just the in-memory window, when deciding which failed
+messages a reconnect has to put back — a message evicted from the paginator, or one on a cold boot that
+the paginator never held, was previously unrecoverable. v9 got this from a second, lagging copy of the
+message list (the SDK's own React state); with a single reactive source of truth the persisted row is
+that buffer.
+
+## M.4 An empty request response no longer overwrites local state (bug fix)
+
+`formatMessage(undefined)` does not throw — it returns `{ status: 'received', created_at: <now>,
+updated_at: <now> }`. Because that `updated_at` is *now*, it beat the "is the server copy newer?" check
+and was ingested as an id-less message. v9 guarded every apply with `if (response?.message)`; the guard
+is back. Reachable from a custom `sendMessageRequest` / `updateMessageRequest` / `deleteMessageRequest`
+that resolves without a `message`.
+
+## M.5 Editing or deleting a thread parent from inside a thread works (bug fix)
+
+The reply paginator's local filter is `{ cid, parent_id }`, and a parent message has no `parent_id` —
+so routing a parent edit or delete through the open thread's instance (which is what the SDKs do while
+a thread is on screen) handed it to a collection that could not hold it, and the operation was silently
+dropped. Optimistic writes now fall back to the client-global message store when the paginator does not
+accept the message, reaching it wherever it is held and fanning out to every collection that holds it —
+the same addressing `applyReactionLocally` uses. The SDK additionally routes by membership rather than
+by "is a thread open", mirroring `sendReaction`.
+
+## M.6 Additive on `AbstractOfflineDB`
+
+Both are **concrete** helpers composed from existing primitives, so a custom offline DB implementation
+inherits them and has nothing new to implement:
+
+- `getFailedMessages({ cid })` — the channel's locally failed (unsent) messages, read back through
+  `getChannels`.
+- `upsertMessageWithChannelGuard({ message })` — upserts one message, creating its channel row first
+  when the DB has never seen that channel, so the optimistic write cannot fail on the foreign key.
+  `updateMessage` cannot serve this: it is an UPDATE and no-ops when the row does not exist, which is
+  exactly the write-ahead case.
+
+## M.7 The offline channel guard actually guards now (bug fix)
+
+`channelExists` ran `SELECT EXISTS(SELECT 1 FROM channels WHERE cid = ?)` and returned
+`rows.length > 0`. `SELECT EXISTS` always returns exactly one row — holding `0` or `1` — so the row
+count carried no information and the helper reported `true` for every cid, present or not. It has done
+so since offline support v2 shipped; the LLC's tests mock `channelExists`, so the logic was covered and
+the SQL never was.
+
+Its only consumer is `AbstractOfflineDB.queriesWithChannelGuard`, used by ten WS-event handlers
+(`message.new`, `message.deleted`, `message.updated`, `message.read`, `member.*`, `reaction.*`, …). Its
+gate is `forceUpdate || !(await channelExists({ cid }))`, which collapsed to `forceUpdate` — so the
+branch that recreates a missing channel row from the event never ran, and those writes died on the
+`messages.cid → channels.cid` foreign key and were swallowed by the detached query runner.
+
+Reachable whenever an event arrives for a channel the DB has no row for: after `resetDB()` (which the
+sync-failure path and a >30-day-stale sync both trigger) until the next channel-list query; in the
+window between `queryChannels` resolving and its persistence completing (and `channel.query`'s
+persistence is detached, widening it); and after being added to a channel mid-session. The message list
+self-heals on the next query — reactions, read state, member changes and older messages in those
+windows did not.
+
+**Both channel guards are also lazy now.** `queriesWithChannelGuard` and
+`upsertMessageWithChannelGuard` attempt the write first and only probe for the channel row when it
+fails, repairing and retrying once; a failure with the channel row present is rethrown without a retry.
+Every statement involved is an upsert, so the retry is idempotent. The eager probe is kept for
+`execute: false` callers (collecting queries for someone else's batch, so there is no failure to catch)
+and for `forceUpdate`.
+
+That inversion matters because the probe is a native round-trip, not a cheap read. Measured through
+op-sqlite on device: the probe costs ~0.5ms against ~8-12ms for the message upsert it protects, and
+roughly two thirds of that is the JS↔native crossing rather than the query. Removing it from the happy
+path takes it off every message received as well as every message written — so message writes are
+cheaper than they were before this release, not more expensive.
+
+---
+
 ## 19. Verify
 
 - Typecheck the customer app; removed symbols surface as "Property does not

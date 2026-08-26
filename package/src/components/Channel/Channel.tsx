@@ -856,12 +856,18 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!channel) {
         throw new Error('Channel has not been initialized');
       }
-      // The LLC handles the optimistic local update (ingest into the paginator), the network
-      // request (honoring any `updateMessageRequest` registered through
-      // `client.config.set({ channel: { requestHandlers } })`), the received/failed state transitions,
-      // and offline queueing.
-      // Thread edits route through the thread instance's own message operations.
-      await (threadInstance ?? channel).updateMessageWithLocalUpdate({ localMessage, options });
+      // The LLC handles the optimistic local update, the network request (honoring any
+      // `updateMessageRequest` registered through `client.config.set({ channel: { requestHandlers } })`),
+      // the received/failed state transitions, offline queueing and the offline-DB write.
+      //
+      // Routed by MEMBERSHIP rather than "a thread is open", mirroring `useMessageOperations`'
+      // `sendReaction`: a reply loaded in the open thread is edited through the thread instance, and
+      // anything else — including the thread's own PARENT message, which the reply paginator cannot
+      // hold — through the channel.
+      const target = threadInstance?.messagePaginator.getItem(localMessage.id)
+        ? threadInstance
+        : channel;
+      await target.updateMessageWithLocalUpdate({ localMessage, options });
     },
   );
 
