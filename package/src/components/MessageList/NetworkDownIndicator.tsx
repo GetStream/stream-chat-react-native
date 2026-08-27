@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -9,27 +8,17 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { primitives } from '../../theme';
 
 export const NetworkDownIndicator = () => {
-  const { error } = useChannelContext();
   const { isOnline } = useChatContext();
   const styles = useStyles();
   const { t } = useTranslationContext();
 
-  const indicatorText = useMemo(() => {
-    if (!isOnline) {
-      return t('common.reconnecting.text', 'Reconnecting...');
-    } else if (error) {
-      return t('indicators.loading.messages.error', 'Error loading messages for this channel...');
-    }
-    return '';
-  }, [error, isOnline, t]);
-
-  if (!indicatorText) {
+  if (isOnline) {
     return null;
   }
 
   return (
     <View style={styles.container} testID='error-notification'>
-      <Text style={styles.errorText}>{indicatorText}</Text>
+      <Text style={styles.errorText}>{t('common.reconnecting.text', 'Reconnecting...')}</Text>
     </View>
   );
 };

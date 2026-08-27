@@ -174,9 +174,10 @@ means changed. Details in the linked section.
 | `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
 | `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
 | `client.recoverState()` | `client.connectionRecovery.recover()` | §L.6 |
+| `useChannelContext().error` | `useStateStore((threadInstance ?? channel).messagePaginator.state, sel).lastQueryError` | §L.7 |
 | `<Channel>` refreshing the channel / open thread on reconnect | `client.connectionRecovery`; `<Channel>` only marks them active | §L.4 |
 | a custom channel/thread view built on the contexts | call `channel.activate()` / `thread.activate()`, balanced with `deactivate()`, or recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
-| `<Chat>` setting `client.recoverStateOnReconnect = false` for you | it no longer does; the option is now the kill switch for `client.connectionRecovery` | §L.1 |
+| `new StreamChat(key, { recoverStateOnReconnect: false })` | `client.config.set({ client: { connectionRecovery: { enabled: false } } })` | §L.1 |
 | a `connection.changed` listener re-querying a list / re-watching a channel | delete it — `client.connectionRecovery` owns reconnect | §L |
 | `connection.recovered` as "the `_reconnect()` path fired" | now dispatched on **every** reconnect path, after the recovery reload | §L.2 |
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
@@ -1281,7 +1282,7 @@ const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState })
 
 > **Who this affects.** Every app inherits the new behaviour, but almost none needs a code change.
 > Reconnect recovery moved out of the UI SDK into `stream-chat`, so `<Chat>` / `<ChannelList>` /
-> `<Channel>` get it for free. You have work to do only if you set `recoverStateOnReconnect: false`
+> `<Channel>` get it for free. You have work to do only if you passed `recoverStateOnReconnect: false`
 > and hand-rolled recovery, called `client.recoverState()` yourself, or listen for
 > `connection.recovered`.
 
@@ -1321,9 +1322,29 @@ recovery never covered at all.
 **No app code is required for any of this.** Do not add a `connection.changed` listener that
 re-queries a list or re-watches a channel — that now duplicates the client.
 
-## L.1 `recoverStateOnReconnect` — same name, new meaning (behavioral)
+## L.1 `recoverStateOnReconnect` removed — configure recovery instead (breaking — `stream-chat`)
 
-The option and its `true` default are unchanged, but what it gates is not.
+The client option and the `client.recoverStateOnReconnect` field are both gone. Recovery is
+configured through the declarative configuration registry, like every other client-owned manager
+(`reminders`, `threads`, `notifications`, `messageDelivery`):
+
+```ts
+// Before (v9)
+const client = new StreamChat(apiKey, { recoverStateOnReconnect: false });
+
+// After (v10) — at construction
+const client = new StreamChat(apiKey, {
+  config: { client: { connectionRecovery: { enabled: false } } },
+});
+
+// After (v10) — at any point afterwards; read when a recovery actually runs, so it takes effect
+// from the next reconnect
+client.config.set({ client: { connectionRecovery: { enabled: false } } });
+```
+
+Default is still `true`, and the flag still means "recover nothing, I will do it myself" — so an app
+that never touched it needs no change. What it *gates* is different, though, and that part is
+behavioural:
 
 | | v9 | v10 |
 |---|---|---|
@@ -1332,14 +1353,8 @@ The option and its `true` default are unchanged, but what it gates is not.
 | Coverage | the 30 most recently active channels, silently truncated | every loaded list page + every `active` channel |
 | Fires on | `StableWSConnection._reconnect()` only | every reconnect path, backgrounding included |
 
-If you set `recoverStateOnReconnect: false` and recover state yourself, nothing changes — it is still
-the kill switch. **The RN SDK no longer sets it to `false`**, so if you were relying on `<Chat>`
-disabling client recovery for you, it no longer does.
-
-```ts
-// still the escape hatch, still opt-out
-const client = new StreamChat(apiKey, { recoverStateOnReconnect: false });
-```
+**The RN SDK no longer disables client recovery for you** — v9's `<Chat>` set
+`client.recoverStateOnReconnect = false` on your behalf, and it no longer does.
 
 ## L.2 `connection.recovered` now fires on every reconnect path (behavioral)
 
@@ -1406,50 +1421,47 @@ One thing stays deliberately UI-side: **mark-read after the reload**, on `connec
 has to be post-reload so the "is the window at the newest?" check reflects the refreshed window. Read
 policy is a UI decision (`useMarkRead`, §5); refreshing state is not.
 
-**The error surface is not UI-side either.** `<Channel>` holds no error state of its own — it reads
-`channel.state.lastLoadError` and `thread.state.lastLoadError` straight into `useChannelContext().error`
-(§L.5). Both failures a UI cares about are recorded by the client: `channel.watch()` records the
-mount-time failure of a channel opened with no connection and — since `reload()` goes through
-`watch()` — the reconnect refresh too.
+**`<Channel>` holds no error state of its own, and neither does the client.** A load error belongs to
+the paginator whose window failed to load, on `BasePaginator.lastQueryError` — set when a query fails,
+cleared by the next one that succeeds, including the reconciling re-seed a reconnect reload performs.
+Nothing outside the paginator writes that field. There is no channel-level or thread-level error field,
+and `useChannelContext().error` is gone (§L.7).
 
-**Nothing clears these on a connection event.** A load error is invalidated by the next load, not by
-coming back online: `watch()` and `Thread.reload()` each clear before they await anything, which is the
-same clear-before-attempt v9's `resyncChannel` did on its first line. Because the clear sits above the
-first await, a reconnect reload reaches it inside the synchronous `connection.changed` dispatch — the
-same dispatch a UI flips its own online flag in, so the two land in one render and an error masked
-behind `!isOnline` is never flashed over content that is about to refresh. Clearing on the way in
-cannot hide a real failure: the attempt records its own on the way out. If you render your own error UI
-from `useChannelContext().error` you get all of this for free; if you latch an error of your own,
-delete it.
+A failed `watch()` simply rejects to whoever called it. The one caller that cannot propagate it is
+`ConnectionRecoveryManager`, which runs the reloads inside a `Promise.allSettled` — **a failed
+reconnect refresh is deliberately not surfaced.** The loaded window stays as it was until the next
+reconnect, or until a query the consumer itself issues records its own error.
 
 `<ChannelList>`'s own reconnect listener is gone for the same reason — the list re-query is item 1.
 
 ## L.5 Additive surface
 
 - **`client.connectionRecovery`** — the `ConnectionRecoveryManager` instance. Public method:
-  `recover()`, which runs a full recovery immediately without waiting for a connection event.
+  `recover()`, which runs a full recovery immediately without waiting for a connection event, plus the
+  `config` / `configState` / `updateConfig` / `initializeConfig` surface every configurable class
+  exposes.
+- **`client.config`'s `client.connectionRecovery` key** — `{ enabled: boolean }`, default `true`. The
+  replacement for the removed `recoverStateOnReconnect` option (§L.1).
 - **`client.channelManager.recover()`** — re-runs every initialized list's first-page query,
   non-destructively. Sibling of the destructive `reload()`, which is unchanged.
 - **`thread.activate()` / `deactivate()` are now refcounted**, matching `channel.activate()`, so a
   thread held by more than one mount stays active until the last holder releases it. `active` is what
   recovery filters on, so an unbalanced `deactivate()` now costs a missed reload as well as a missed
   auto-read.
-- **`thread.state.lastLoadError`** — the thread twin of the channel field below, same contract,
-  written by `Thread.reload()`.
-- **`channel.state.lastLoadError`** (+ the `channel.lastLoadError` getter) — mirrors
-  `BasePaginator.lastQueryError` one level up. Owned by **`watch()`**: cleared before its first await,
-  set in its catch, and **rethrown**. Owning it there rather than in `reload()` is what makes it cover
-  both failures a UI cares about — the reconnect refresh (the manager runs reloads inside
-  `Promise.allSettled`, which would otherwise swallow them) *and* the mount-time `watch()` of a channel
-  opened offline, which throws long before anything could later prove it stale. The SDK ORs both fields
-  into `useChannelContext().error`, which is what keeps the "Error loading messages for this channel…"
-  indicator working.
+
+There is deliberately **no** channel-level or thread-level error field. Read the paginator backing
+whatever you are rendering — the thread's replies when one is open, the channel's messages otherwise:
 
 ```tsx
 // surface a failed load in your own UI
-const { lastLoadError } = useStateStore(channel.state, (s) => ({
-  lastLoadError: s.lastLoadError,
-}));
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
+const { lastQueryError } = useStateStore(
+  (threadInstance ?? channel).messagePaginator.state,
+  lastQueryErrorSelector,
+);
 ```
 
 ## L.6 `client.recoverState()` removed (breaking — `stream-chat`)
@@ -1468,7 +1480,45 @@ The two are not equivalent in shape — `recoverState()` ran the 30-channel bulk
 §L.1 — but `recover()` is the v10 way to say "bring everything I am reading back in line with the
 server now". Most apps never called it: it was invoked automatically on reconnect, and it still is.
 
-## L.7 Unsent messages now survive a reconnect rebuild (bug fix)
+## L.7 `useChannelContext().error` removed (breaking — React Native)
+
+`ChannelContext` no longer carries an `error`. A load failure belongs to the paginator that issued the
+query, so read it from there instead:
+
+```tsx
+// Before (v9)
+const { error } = useChannelContext();
+
+// After (v10) — at module scope
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
+// After (v10) — in the component
+const { channel } = useChannelContext();
+const { threadInstance } = useThreadContext();
+const { lastQueryError } = useStateStore(
+  (threadInstance ?? channel).messagePaginator.state,
+  lastQueryErrorSelector,
+);
+```
+
+The built-in `NetworkDownIndicator` and `<Channel>`'s own error screen both do exactly this, so an app
+that never read `error` itself needs no change.
+
+**`NetworkDownIndicator` no longer reports load errors at all** — it reports the connection, and
+nothing else. It renders "Reconnecting…" while offline and nothing while online. In v9 it also showed
+"Error loading messages for this channel…", driven by a failed `watch()`/resync and by a failed thread
+reply pagination; that full-width, channel-wide message overstated what is usually one failed page of
+history, with the messages you already have rendered fine underneath it.
+
+A load failure that leaves nothing to show still gets the full-screen treatment: `<Channel>` renders
+`LoadingErrorIndicator`, with its retry, when the paginator has an error and no items. A failed
+reconnect refresh is not surfaced at all (§L.4) — the loaded window simply stays as it was.
+
+If you want the old banner back, render your own from `lastQueryError` using the snippet above.
+
+## L.8 Unsent messages now survive a reconnect rebuild (bug fix)
 
 `channel.reload()` and `thread.reload()` both preserve failed (locally unsent) messages across the
 refresh. They already intended to, but the check for "did this one fall out?" read the paginator's
@@ -1486,7 +1536,7 @@ offline-DB path keyed on `ThreadManager.threadsById`. Neither covers a thread co
 never registered, which is the common path. `thread.reload()` now reads the failed replies out of the
 reply paginator instead, so it holds for managed and unmanaged threads alike.
 
-## L.8 The reconnect refresh now finds messages you never had (bug fix)
+## L.9 The reconnect refresh now finds messages you never had (bug fix)
 
 Two defects meant a reconnect could refresh a channel or thread and still miss content that arrived
 while you were away. Both are fixed; no API change.
@@ -1502,15 +1552,13 @@ while you were away. Both are fixed; no API change.
 Most visible as: create a thread, send a reply, go offline, someone else replies, come back — the new
 replies never appeared, and re-entering the thread did not help.
 
-## L.9 A brand-new thread no longer reports an error (bug fix)
+## L.10 A brand-new thread no longer reports an error (bug fix)
 
-A parent with no replies has no server-side thread, so `getThread` answers "not found". That was
-being treated as a failed refresh: `thread.state.lastLoadError` was set, which the React Native SDK
-ORs into `useChannelContext().error`, so simply opening a new thread raised the channel's error state.
-It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting, and
-publishes nothing.
+A parent with no replies has no server-side thread, so `getThread` answers "not found". That was being
+treated as a failed refresh and reported as one, so simply opening a new thread raised an error state.
+It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting.
 
-A genuine failure still publishes as before, including a thread that *did* have replies and comes back
+A genuine failure still rejects as before, including a thread that *did* have replies and comes back
 not-found (its parent was deleted, possibly while you were offline). The two are told apart by
 `replyCount`, which — unlike `deletedAt` — survives having missed the deletion event.
 
@@ -1694,7 +1742,7 @@ cheaper than they were before this release, not more expensive.
   reconnect (its replies refresh — §L.4); and cold-boot with a populated offline DB
   (exactly one recovery, no double load). Also scroll up into old history, send a
   message that fails, then reconnect — the unsent message must still be in the list
-  (§L.7).
+  (§L.8).
 
 ---
 

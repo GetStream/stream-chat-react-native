@@ -343,8 +343,8 @@ const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
 
-const loadErrorSelector = (state: { lastLoadError?: Error }) => ({
-  lastLoadError: state.lastLoadError,
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
 });
 
 const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
@@ -495,10 +495,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     messageFocusSignalSelector,
   );
 
-  const { lastLoadError } = useStateStore(channel?.state, loadErrorSelector) ?? {};
-  const { lastLoadError: threadLoadError } =
-    useStateStore(threadInstance?.state, loadErrorSelector) ?? {};
-  const error = lastLoadError ?? threadLoadError;
+  const { lastQueryError: error } = useStateStore(
+    (threadInstance ?? channel).messagePaginator.state,
+    lastQueryErrorSelector,
+  );
 
   /**
    * This ref keeps track of message IDs which have already been optimistically updated.
@@ -576,7 +576,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!channel || !shouldSyncChannel) {
         return;
       }
-      let errored = false;
 
       // Keep the message-list page light: the list's per-update commit cost scales with the number
       // of loaded messages, and the paginator otherwise defaults to a 100-message page.
@@ -590,18 +589,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           await channel?.watch();
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
-          errored = true;
           channel.offlineMode = true;
         }
       }
 
-      if (!errored) {
-        // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
-        // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
-        // to avoid a redundant fetch.
-        if (!channel.messagePaginator.state.getLatestValue().items?.length) {
-          await channel.messagePaginator.reload();
-        }
+      // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
+      // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
+      // to avoid a redundant fetch.
+      if (!channel.messagePaginator.state.getLatestValue().items?.length) {
+        await channel.messagePaginator.reload();
       }
 
       // Re-seed the unread snapshot from the CURRENT read state on every open. The paginator is
@@ -911,7 +907,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
-    error,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
@@ -1037,7 +1032,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return null;
   }
 
-  if (!channel || (error && channelMessagesState.messages?.length === 0)) {
+  if (!channel || (error && !channelMessagesState.messages?.length)) {
     return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;
   }
 

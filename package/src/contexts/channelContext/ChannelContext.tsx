@@ -38,12 +38,6 @@ export type ChannelContextValue = {
    */
   enforceUniqueReaction: boolean;
   /**
-   * The error from the most recent attempt to load this channel's messages, or the open thread's
-   * replies — read straight off `channel.state.lastLoadError` / `thread.state.lastLoadError`, each
-   * cleared by the next attempt. `undefined` when the last load succeeded.
-   */
-  error?: Error;
-  /**
    * Hide inline date separators on channel
    */
   hideDateSeparators: boolean;
