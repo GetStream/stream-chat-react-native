@@ -281,9 +281,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
         version,
       };
       client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
-      // This is to disable recovery related logic in js client, since we handle it in this SDK
-      client.recoverStateOnReconnect = false;
-      client.preventThreadCleanup = true;
       client.persistUserOnConnectionFailure = enableOfflineSupport;
     }
 

@@ -32,7 +32,7 @@ const LoadingErrorWrapper = (props: React.PropsWithChildren<LoadingErrorWrapperP
 };
 
 export type LoadingErrorProps = {
-  error?: boolean | Error;
+  error?: Error;
   listType?: 'channel' | 'message' | 'default';
   loadNextPage?: () => Promise<void>;
   retry?: () => void;

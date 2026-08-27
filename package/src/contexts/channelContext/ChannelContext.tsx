@@ -37,7 +37,6 @@ export type ChannelContextValue = {
    * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
    */
   enforceUniqueReaction: boolean;
-  error: boolean | Error;
   /**
    * Hide inline date separators on channel
    */

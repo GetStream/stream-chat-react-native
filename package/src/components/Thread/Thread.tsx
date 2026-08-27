@@ -141,11 +141,15 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   // Mark the thread read on open. Mirrors the pre-refactor openThread behavior: channel.markRead with
   // a thread_id marks reliably even when the thread instance's own unread count is 0 (so it can't
-  // rely on the LLC's active-thread auto-read); a reply-less parent has no server-side thread yet and
-  // rejects with "thread not found", which we swallow.
+  // rely on the LLC's active-thread auto-read); a reply-less parent has no server-side thread yet, so
+  // the call is skipped rather than left to 404 on every open.
   useEffect(() => {
     const channel = threadInstance?.channel;
     if (!threadInstance?.id || !channel?.initialized) {
+      return;
+    }
+    // No replies means nothing that could be unread — true whether or not the thread exists yet.
+    if (threadInstance.state.getLatestValue().replyCount === 0) {
       return;
     }
     channel

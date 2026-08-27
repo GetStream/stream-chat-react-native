@@ -836,11 +836,16 @@ describe('ChannelList', () => {
     });
 
     describe('connection.changed', () => {
-      it('should force reconnection refreshes past the pull-to-refresh debounce while keeping them out of the refreshing UI', async () => {
-        // Regression guard: a reconnect is the sole trigger that re-watches channels on the fresh
-        // socket, so it must bypass the 5s pull-to-refresh throttle (`force`). Without the bypass a
-        // second reconnect landing inside the debounce window is dropped and its channels stay
-        // un-watched (frozen last message / unread) until the next reconnect > 5s later.
+      it('refreshes on every reconnect, however close together, without surfacing in the refreshing UI', async () => {
+        // Regression guard for a shipped freeze bug: a reconnect is the trigger that re-watches
+        // channels on the fresh socket, so dropping one leaves its channels un-watched and their
+        // per-channel state (last message / unread) frozen until the next reconnect or an app reload.
+        // The list reorders anyway off member-level `notification.message_new`, which is what made it
+        // look like the connection was fine.
+        //
+        // Recovery is now owned by `client.connectionRecovery`, which has no throttle at all — the
+        // 5s window this used to have to be forced past belongs to pull-to-refresh only and is no
+        // longer on the reconnect path. The behaviour asserted here is unchanged.
         useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
         // Freeze the clock at t=0 for the whole mount so `lastRefresh` is seeded to 0 regardless of
         // how many `Date.now()` calls the render makes.
@@ -881,8 +886,8 @@ describe('ChannelList', () => {
           ).toBe(false);
         });
 
-        // Reconnect #2 at t=6000, i.e. 0ms after reconnect #1 → inside the debounce window. It fires a
-        // fresh query only because reconnection refreshes are forced past the throttle.
+        // Reconnect #2 at t=6000, i.e. 0ms after reconnect #1 — well inside what used to be the
+        // debounce window. It must still fire a fresh query.
         act(() => dispatchConnectionChangedEvent(chatClient, false));
         act(() => dispatchConnectionChangedEvent(chatClient, true));
         await waitFor(() => {

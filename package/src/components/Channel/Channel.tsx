@@ -2,12 +2,10 @@ import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useS
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
-  Channel as ChannelType,
   ChannelConfig,
   EventHandler,
   LocalMessage,
   MessageComposerConfig,
-  MessageResponse,
   SendMessageAPIResponse,
   SendMessageOptions,
   Event as StreamEvent,
@@ -84,12 +82,7 @@ import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import {
-  getFileNameFromPath,
-  isLocalUrl,
-  MessageStatusTypes,
-  ReactionData,
-} from '../../utils/utils';
+import { getFileNameFromPath, isLocalUrl, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
@@ -350,6 +343,10 @@ const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
 
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
 const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
   highlightedMessageId: state.signal?.messageId,
 });
@@ -470,7 +467,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const [error, setError] = useState<Error | boolean>(false);
   const lastReadRef = useRef<Date | undefined>(undefined);
   // The active thread is fully prop-driven: derive it synchronously during render so the reply
   // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
@@ -494,11 +490,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
-  const syncingChannelRef = useRef(false);
-
   const { highlightedMessageId } = useStateStore(
     (threadInstance ?? channel).messagePaginator.messageFocusSignal,
     messageFocusSignalSelector,
+  );
+
+  const { lastQueryError: error } = useStateStore(
+    (threadInstance ?? channel).messagePaginator.state,
+    lastQueryErrorSelector,
   );
 
   /**
@@ -577,7 +576,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       if (!channel || !shouldSyncChannel) {
         return;
       }
-      let errored = false;
 
       // Keep the message-list page light: the list's per-update commit cost scales with the number
       // of loaded messages, and the paginator otherwise defaults to a 100-message page.
@@ -591,19 +589,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           await channel?.watch();
         } catch (err) {
           console.warn('Channel watch request failed with error:', err);
-          setError(true);
-          errored = true;
           channel.offlineMode = true;
         }
       }
 
-      if (!errored) {
-        // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
-        // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
-        // to avoid a redundant fetch.
-        if (!channel.messagePaginator.state.getLatestValue().items?.length) {
-          await channel.messagePaginator.reload();
-        }
+      // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
+      // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
+      // to avoid a redundant fetch.
+      if (!channel.messagePaginator.state.getLatestValue().items?.length) {
+        await channel.messagePaginator.reload();
       }
 
       // Re-seed the unread snapshot from the CURRENT read state on every open. The paginator is
@@ -684,99 +678,28 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // instance via useMarkRead(channel). Channel still needs it internally (mark-read-on-mount + resync).
   const markRead = useMarkRead(channel);
 
-  const resyncChannel = useStableCallback(async () => {
-    if (!channel || syncingChannelRef.current || (!channel.initialized && !channel.offlineMode)) {
+  // Mark-read after the LLC's reconnect reload. `connection.recovered` is dispatched by
+  // `client.connectionRecovery` once that reload has landed, so `hasMoreHead` read here reflects the
+  // refreshed window — which is why this cannot hang off `connection.changed`. Only the reload moved
+  // into the LLC; whether a caught-up channel is marked read stays a UI decision (see `useMarkRead`).
+  useEffect(() => {
+    if (!shouldSyncChannel) {
       return;
     }
-    syncingChannelRef.current = true;
-    setError(false);
 
-    const parseMessage = (message: LocalMessage) =>
-      ({
-        ...message,
-        created_at: message.created_at.toString(),
-        pinned_at: message.pinned_at?.toString(),
-        updated_at: message.updated_at?.toString(),
-      }) as unknown as MessageResponse;
-
-    const getRecoverableFailedMessages = (messages: LocalMessage[] = []) =>
-      messages
-        .filter(
-          (message) =>
-            message.status === MessageStatusTypes.FAILED &&
-            !(message.parent_id
-              ? threadInstance?.messagePaginator.getItem(message.id)
-              : channel.messagePaginator.getItem(message.id)),
-        )
-        .map(parseMessage);
-
-    try {
-      if (!thread) {
-        // The LLC owns the reconnect refresh now: channel.reload() re-watches, folds the newest page,
-        // and reconciles messages hard-deleted while offline — capturing the pre-fetch snapshot + the
-        // requested limit itself, so this no longer passes them (see Channel.reload /
-        // MessagePaginator.mergeNewestPage).
-        await channel.reload();
-        // Only mark read when the refreshed window is at the newest (hasMoreHead false); if the user
-        // has paginated up into older history, leave their read state untouched.
-        const atLatest = !channel.messagePaginator.hasMoreHead;
-        if (atLatest) {
-          await markRead();
-        }
-      } else if (threadInstance) {
-        await threadInstance.reload();
-
-        const currentThreadMessages =
-          threadInstance.messagePaginator.state.getLatestValue().items ?? [];
-        const failedThreadMessages = getRecoverableFailedMessages(currentThreadMessages);
-        if (failedThreadMessages.length) {
-          failedThreadMessages.forEach((m) =>
-            threadInstance.messagePaginator.ingestItem(channel.state.formatMessage(m)),
-          );
-        }
+    // Mark read has to wait for `connection.recovered`, as it is dispatched once the reloads have
+    // landed, so `hasMoreHead` read here reflects the refreshed window. Channel view only, and only
+    // when that window is at the newest, only if the user has paginated up into older history so leave
+    // their read state alone.
+    const { unsubscribe } = client.on('connection.recovered', () => {
+      if (thread || channel.messagePaginator.hasMoreHead) {
+        return;
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
-      }
-    }
+      markRead();
+    });
 
-    syncingChannelRef.current = false;
-  });
-
-  // resync channel is added to ref so that it can be used in useEffect without adding it as a dependency
-  const resyncChannelRef = useRef(resyncChannel);
-  resyncChannelRef.current = resyncChannel;
-
-  useEffect(() => {
-    const connectionChangedHandler = () => {
-      if (shouldSyncChannel) {
-        resyncChannelRef.current();
-      }
-    };
-    let connectionChangedSubscription: ReturnType<ChannelType['on']>;
-
-    if (enableOfflineSupport && client.offlineDb) {
-      connectionChangedSubscription = client.offlineDb.syncManager.onSyncStatusChange(
-        (statusChanged) => {
-          if (statusChanged) {
-            connectionChangedHandler();
-          }
-        },
-      );
-    } else {
-      connectionChangedSubscription = client.on('connection.changed', (event) => {
-        if (event.online) {
-          connectionChangedHandler();
-        }
-      });
-    }
-    return () => {
-      connectionChangedSubscription.unsubscribe();
-    };
-  }, [enableOfflineSupport, client, shouldSyncChannel]);
+    return unsubscribe;
+  }, [channel, client, markRead, shouldSyncChannel, thread]);
 
   /**
    * Channel configs for use in disabling local functionality.
@@ -807,21 +730,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
       try {
         if (thread) {
-          try {
-            // jumpToMessage loads the message range into thread.messagePaginator (which backs the
-            // reply list) and emits the focus signal driving the thread-aware highlight + scroll.
-            // The reply-list loading spinner is driven off the paginator's own isLoading flag.
-            await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
-              focusReason: 'jump-to-message',
-              focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
-            });
-          } catch (err) {
-            if (err instanceof Error) {
-              setError(err);
-            } else {
-              setError(true);
-            }
-          }
+          await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
+            focusReason: 'jump-to-message',
+            focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+          });
         } else {
           await loadChannelAroundMessageFn({
             messageId: messageIdToLoadAround,
@@ -839,10 +751,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // (see the useChannelRequestHandlers call below) so it runs INSIDE the stream-chat send pipeline —
   // after the LLC's optimistic ingest (message already shows pending), before the POST — awaiting
   // `client.uploadManager` to finish the in-flight uploads and swapping local preview URLs for the
-  // returned CDN URLs. This deliberately stays RN-side: native image compression (`compressedImageURI`)
+  // returned CDN URLs. It lives here for now because native image compression (`compressedImageURI`)
   // and a custom uploader registered through `client.config` must remain reachable, and the
-  // sendMessageRequest seam lets it run in the right place without a pre-ingest or any LLC change. It is NOT slated to move
-  // into the LLC — this handler is its intended home.
+  // sendMessageRequest seam lets it run in the right place without a pre-ingest or any LLC change.
+  // It IS slated to move into the LLC, just not yet — and that move is what lets the
+  // `doSendMessageRequest` prop and its wrapper in `useChannelRequestHandlers` go.
   const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
     if (!message.attachments?.length || !channel?.cid) {
       return;
@@ -988,7 +901,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
-    error,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
@@ -1114,7 +1026,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return null;
   }
 
-  if (!channel || (error && channelMessagesState.messages?.length === 0)) {
+  if (!channel || (error && !channelMessagesState.messages?.length)) {
     return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;
   }
 

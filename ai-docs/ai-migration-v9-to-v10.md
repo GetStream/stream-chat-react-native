@@ -104,6 +104,10 @@ rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|on
 rg 'useChatContext\(\)' -A6 src/ | rg '\bchannelManager\b'
 rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
 
+# §L — connection recovery moved into the client
+rg '\b(recoverState|recoverStateOnReconnect|preventThreadCleanup)\b' src/
+rg 'connection\.(changed|recovered)' src/
+
 # §K — unified channel.state (removed *Store handles, in-place data mutation)
 rg '\bchannel\.state\.(read|typing|members|watcher|ownCapabilities)Store\b' src/
 rg '\bchannel\.state\.mutedUsersStore\b' src/
@@ -169,6 +173,13 @@ means changed. Details in the linked section.
 | `useChannelUpdated()` | removed — `channel.updated` is handled by the orchestrator | §18.2 |
 | `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
 | `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
+| `client.recoverState()` | `client.connectionRecovery.recover()` | §L.6 |
+| `useChannelContext().error` | `useStateStore((threadInstance ?? channel).messagePaginator.state, sel).lastQueryError` | §L.7 |
+| `<Channel>` refreshing the channel / open thread on reconnect | `client.connectionRecovery`; `<Channel>` only marks them active | §L.4 |
+| a custom channel/thread view built on the contexts | call `channel.activate()` / `thread.activate()`, balanced with `deactivate()`, or recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
+| `new StreamChat(key, { recoverStateOnReconnect: false })` | `client.config.set({ client: { connectionRecovery: { enabled: false } } })` | §L.1 |
+| a `connection.changed` listener re-querying a list / re-watching a channel | delete it — `client.connectionRecovery` owns reconnect | §L |
+| `connection.recovered` as "the `_reconnect()` path fired" | now dispatched on **every** reconnect path, after the recovery reload | §L.2 |
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
 | `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
 | in-place `channel.data.member_count = n` / `.own_capabilities = […]` | reassign `channel.data = { …channel.data, member_count: n }` | §K.5 |
@@ -1105,10 +1116,13 @@ Configure the shared manager through its own API (`client.channelManager.setEven
   now relocates by its sort key (e.g. `last_message_at`) instead of jumping to the very top. This also
   means a new message no longer overrides a pinned-first `sort` (pinned channels stay pinned). To keep
   the old jump-to-top, boost it yourself: `paginator.boost(channel.cid)`.
-- **Watch-on-notification narrowed.** On `notification.*` events (e.g. added to a channel) v10 watches
-  only channels it does not already know; v9 re-watched unconditionally. Deliberate change — the SDK's
-  own reconnect/query flow re-establishes watches, and blanket auto-watch risks the watch limit. To
-  watch a specific channel, call `channel.watch()`.
+- **Watch-on-notification narrowed — but a watch that was *lost* comes back.** On `notification.*`
+  events (e.g. added to a channel) v9 re-watched the routed channel unconditionally. v10 does two
+  narrower things: it watches a channel it does not already know, and it restores a watch this client
+  previously held and lost to a dropped socket (`watchStatus === 'wasWatching'` — see **§L.3**). A
+  channel that was never watched, or that you explicitly `stopWatching()`d, stays unwatched, so the
+  client's watch count can never exceed what it already had, and blanket auto-watch never risks the
+  watch limit. To watch a specific channel yourself, call `channel.watch()`.
 
 ---
 
@@ -1264,6 +1278,293 @@ const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState })
 
 ---
 
+# Part L — Connection recovery (`client.connectionRecovery`)
+
+> **Who this affects.** Every app inherits the new behaviour, but almost none needs a code change.
+> Reconnect recovery moved out of the UI SDK into `stream-chat`, so `<Chat>` / `<ChannelList>` /
+> `<Channel>` get it for free. You have work to do only if you passed `recoverStateOnReconnect: false`
+> and hand-rolled recovery, called `client.recoverState()` yourself, or listen for
+> `connection.recovered`.
+
+In v9 the RN SDK reimplemented reconnect recovery in three uncoordinated places, because the
+client's own recovery was unusable and `<Chat>` switched it off (`client.recoverStateOnReconnect =
+false`). v10 gives the client a `ConnectionRecoveryManager` — reachable as
+`client.connectionRecovery` — that owns the whole flow, and the SDK's own listeners were deleted in
+favour of it.
+
+**What recovery does once the socket is back:**
+
+1. **Every loaded channel list re-runs its own first-page query** — `client.channelManager.recover()`,
+   i.e. `paginator.toTail({ keepPreviousItems: true, reset: 'yes' })` for each initialized paginator.
+   Each list re-asserts its *own* `filters` / `sort` / `pageSize`, and since `queryChannels` watches
+   by default, that page's watches come back as a side effect. Non-destructive — the list never
+   blanks, unlike `channelManager.reload()`.
+2. **Every `active` channel reloads itself** — `channel.reload()`. A list page carries far fewer
+   messages per channel than an open channel's loaded window, so the open channel cannot be served by
+   the list query. `<Channel>` marks its channel `active` on mount (§K.4).
+3. **Every active thread reloads its replies** — `thread.reload()`, for threads in
+   `client.threads.threadsById` whose `state.active` is set. Nothing else covers them: a channel
+   reload refreshes the main message list, and `ThreadManager`'s own recovery refreshes the thread
+   *list*, reusing thread instances without rehydrating them unless something separately marked them
+   stale — which only `user.watching.stop` does, never a reconnect. Note the current limitation: a
+   thread opened from a message list only enters `threadsById` once `<Thread>` adopts it (after its
+   replies load), so a reconnect before that — or after `ThreadManager.reload()` evicts it — skips it.
+4. **Every other previously-watched channel self-heals on demand** — §L.3.
+
+It is deliberately **not** a sweep over `client.activeChannels`: watches are a bounded server
+resource, and after any scrolling that cache holds far more channels than a query page.
+
+With offline support enabled, active-channel recovery is triggered off the offline DB's sync-status
+edge, so the ordering `executePendingTasks()` → `sync()` → reload holds on every reconnect path —
+including mobile backgrounding (`closeConnection()` → `openConnection()`), which v9's client-side
+recovery never covered at all.
+
+**No app code is required for any of this.** Do not add a `connection.changed` listener that
+re-queries a list or re-watches a channel — that now duplicates the client.
+
+## L.1 `recoverStateOnReconnect` removed — configure recovery instead (breaking — `stream-chat`)
+
+The client option and the `client.recoverStateOnReconnect` field are both gone. Recovery is
+configured through the declarative configuration registry, like every other client-owned manager
+(`reminders`, `threads`, `notifications`, `messageDelivery`):
+
+```ts
+// Before (v9)
+const client = new StreamChat(apiKey, { recoverStateOnReconnect: false });
+
+// After (v10) — at construction
+const client = new StreamChat(apiKey, {
+  config: { client: { connectionRecovery: { enabled: false } } },
+});
+
+// After (v10) — at any point afterwards; read when a recovery actually runs, so it takes effect
+// from the next reconnect
+client.config.set({ client: { connectionRecovery: { enabled: false } } });
+```
+
+Default is still `true`, and the flag still means "recover nothing, I will do it myself" — so an app
+that never touched it needs no change. What it *gates* is different, though, and that part is
+behavioural:
+
+| | v9 | v10 |
+|---|---|---|
+| Gates | one `queryChannels({ cid: { $in: Object.keys(activeChannels) } }, [{ last_message_at: -1 }], { limit: 30 })` | the whole `client.connectionRecovery` flow above |
+| Query shape | invented, unrelated to any list's `filters` / `sort` | each list's own first-page query |
+| Coverage | the 30 most recently active channels, silently truncated | every loaded list page + every `active` channel |
+| Fires on | `StableWSConnection._reconnect()` only | every reconnect path, backgrounding included |
+
+**The RN SDK no longer disables client recovery for you** — v9's `<Chat>` set
+`client.recoverStateOnReconnect = false` on your behalf, and it no longer does.
+
+## L.2 `connection.recovered` now fires on every reconnect path (behavioral)
+
+Same event, same (empty) payload, still exactly one dispatcher — but the dispatcher moved from
+`client.recoverState()` to `ConnectionRecoveryManager`, and it is dispatched *after* the recovery
+reload. In v9 `recoverState()` was called only by `StableWSConnection._reconnect()`, so a
+`closeConnection()` → `openConnection()` cycle — mobile backgrounding, the dominant path on React
+Native — produced no `connection.recovered` at all.
+
+Consequences:
+
+- A listener that was effectively dead on backgrounding now runs there. If it is expensive or not
+  idempotent, check it.
+- It is now a valid "recovery finished" hook: the channel reloads have settled by the time it fires.
+  That is how the SDK sequences its own mark-read-on-catch-up (§L.4).
+
+## L.3 A lost watch is restored on demand (behavioral — amends §18.5)
+
+The server keys watches by connection ID, so a dropped socket ends every watch it held. Recovery
+re-watches the first page of each list plus the active channel; everything else — pages 2+ of a
+scrolled list, channels visited and navigated away from, channels matching no mounted list — is left
+marked `ChannelWatchStatus.WasWatching` (§K.3).
+
+`ChannelManager`'s default event pipeline now re-watches such a channel the moment an event routes it
+into a list. Without this, a channel that lost its watch still receives member-level events (e.g.
+`notification.message_new`) — enough to relocate its row, but carrying no message body — so its
+preview would sit frozen until the channel was opened.
+
+This is **narrower than v9, not a revert of §18.5's second bullet**: v9 re-watched any routed channel
+unconditionally, whereas v10 only restores a watch this client previously *held and lost*. Skipped
+for `channel.hidden` events, for a channel pending disposal, and for `NotWatching` — a channel never
+watched, or one you explicitly `stopWatching()`d, stays unwatched. The client's watch count can
+therefore never exceed what it already had. The re-watch runs after routing and is not awaited, so
+the row still relocates immediately off the event; it is idempotent, and concurrent watches for the
+same cid are deduped.
+
+> Applies to `stream-chat-react` as well — this is a default `ChannelManager` handler, not RN code.
+
+## L.4 `<Channel>` no longer runs any reconnect resync (behavioral)
+
+`<Channel>` used to reload the channel on reconnect, and — when a thread was open — reload that
+thread's replies. **Both are gone**; the component's only remaining part is declaring what is on
+screen:
+
+```tsx
+// what <Channel> does now — the rest is client.connectionRecovery's job
+useEffect(() => { channel?.activate?.(); return () => channel?.deactivate?.(); }, [channel]);
+```
+
+The open thread is declared the same way, but by **`<Thread>`**, which already did this before v10 —
+`threadInstance.activate()` on mount, `deactivate()` on unmount. `<Channel>` does not need to (and
+does not) activate it as well.
+
+Neither reconnect handler was ever exported, so there is no symbol to migrate — this is here because
+the behaviour relocated, and because the *capability* is unchanged: an integrator who relied on
+`<Channel>` refreshing the channel (or the open thread) on reconnect still gets both, one layer down
+and on more reconnect paths than before.
+
+**If you render `<Channel>` and `<Thread>` you get this for free.** If you built your own views on the
+contexts, call `channel.activate()` / `thread.activate()` (each balanced with `deactivate()`) or those
+surfaces will not be recovered — being active is the one thing recovery cannot infer.
+
+One thing stays deliberately UI-side: **mark-read after the reload**, on `connection.recovered`. It
+has to be post-reload so the "is the window at the newest?" check reflects the refreshed window. Read
+policy is a UI decision (`useMarkRead`, §5); refreshing state is not.
+
+**`<Channel>` holds no error state of its own, and neither does the client.** A load error belongs to
+the paginator whose window failed to load, on `BasePaginator.lastQueryError` — set when a query fails,
+cleared by the next one that succeeds, including the reconciling re-seed a reconnect reload performs.
+Nothing outside the paginator writes that field. There is no channel-level or thread-level error field,
+and `useChannelContext().error` is gone (§L.7).
+
+A failed `watch()` simply rejects to whoever called it. The one caller that cannot propagate it is
+`ConnectionRecoveryManager`, which runs the reloads inside a `Promise.allSettled` — **a failed
+reconnect refresh is deliberately not surfaced.** The loaded window stays as it was until the next
+reconnect, or until a query the consumer itself issues records its own error.
+
+`<ChannelList>`'s own reconnect listener is gone for the same reason — the list re-query is item 1.
+
+## L.5 Additive surface
+
+- **`client.connectionRecovery`** — the `ConnectionRecoveryManager` instance. Public method:
+  `recover()`, which runs a full recovery immediately without waiting for a connection event, plus the
+  `config` / `configState` / `updateConfig` / `initializeConfig` surface every configurable class
+  exposes.
+- **`client.config`'s `client.connectionRecovery` key** — `{ enabled: boolean }`, default `true`. The
+  replacement for the removed `recoverStateOnReconnect` option (§L.1).
+- **`client.channelManager.recover()`** — re-runs every initialized list's first-page query,
+  non-destructively. Sibling of the destructive `reload()`, which is unchanged.
+- **`thread.activate()` / `deactivate()` are now refcounted**, matching `channel.activate()`, so a
+  thread held by more than one mount stays active until the last holder releases it. `active` is what
+  recovery filters on, so an unbalanced `deactivate()` now costs a missed reload as well as a missed
+  auto-read.
+
+There is deliberately **no** channel-level or thread-level error field. Read the paginator backing
+whatever you are rendering — the thread's replies when one is open, the channel's messages otherwise:
+
+```tsx
+// surface a failed load in your own UI
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
+const { lastQueryError } = useStateStore(
+  (threadInstance ?? channel).messagePaginator.state,
+  lastQueryErrorSelector,
+);
+```
+
+## L.6 `client.recoverState()` removed (breaking — `stream-chat`)
+
+Removed outright rather than left as a no-op, so a caller fails loudly instead of silently getting no
+recovery. To force a recovery by hand:
+
+```ts
+// Before (v9)
+await client.recoverState();
+// After (v10)
+await client.connectionRecovery.recover();
+```
+
+The two are not equivalent in shape — `recoverState()` ran the 30-channel bulk query described in
+§L.1 — but `recover()` is the v10 way to say "bring everything I am reading back in line with the
+server now". Most apps never called it: it was invoked automatically on reconnect, and it still is.
+
+## L.7 `useChannelContext().error` removed (breaking — React Native)
+
+`ChannelContext` no longer carries an `error`. A load failure belongs to the paginator that issued the
+query, so read it from there instead:
+
+```tsx
+// Before (v9)
+const { error } = useChannelContext();
+
+// After (v10) — at module scope
+const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
+  lastQueryError: state.lastQueryError,
+});
+
+// After (v10) — in the component
+const { channel } = useChannelContext();
+const { threadInstance } = useThreadContext();
+const { lastQueryError } = useStateStore(
+  (threadInstance ?? channel).messagePaginator.state,
+  lastQueryErrorSelector,
+);
+```
+
+The built-in `NetworkDownIndicator` and `<Channel>`'s own error screen both do exactly this, so an app
+that never read `error` itself needs no change.
+
+**`NetworkDownIndicator` no longer reports load errors at all** — it reports the connection, and
+nothing else. It renders "Reconnecting…" while offline and nothing while online. In v9 it also showed
+"Error loading messages for this channel…", driven by a failed `watch()`/resync and by a failed thread
+reply pagination; that full-width, channel-wide message overstated what is usually one failed page of
+history, with the messages you already have rendered fine underneath it.
+
+A load failure that leaves nothing to show still gets the full-screen treatment: `<Channel>` renders
+`LoadingErrorIndicator`, with its retry, when the paginator has an error and no items. A failed
+reconnect refresh is not surfaced at all (§L.4) — the loaded window simply stays as it was.
+
+If you want the old banner back, render your own from `lastQueryError` using the snippet above.
+
+## L.8 Unsent messages now survive a reconnect rebuild (bug fix)
+
+`channel.reload()` and `thread.reload()` both preserve failed (locally unsent) messages across the
+refresh. They already intended to, but the check for "did this one fall out?" read the paginator's
+item *index* rather than its visible window — and on a disjoint rebuild (the loaded window shares no
+id with the server's newest page, e.g. after scrolling up into old history) a message can sit in the
+index while being absent from the rendered list. So the re-ingest was skipped on exactly the path
+that needed it, and the user's unsent message disappeared from the list on reconnect.
+
+No API change and nothing to do — noted because if you worked around it by re-adding failed messages
+yourself after a reconnect, that workaround is now redundant.
+
+For threads there was a second hole: the preservation relied on `Thread`'s `failedRepliesMap`, which
+is only written by `upsertReplyLocally` — whose callers are the thread's own subscriptions and the
+offline-DB path keyed on `ThreadManager.threadsById`. Neither covers a thread constructed directly and
+never registered, which is the common path. `thread.reload()` now reads the failed replies out of the
+reply paginator instead, so it holds for managed and unmanaged threads alike.
+
+## L.9 The reconnect refresh now finds messages you never had (bug fix)
+
+Two defects meant a reconnect could refresh a channel or thread and still miss content that arrived
+while you were away. Both are fixed; no API change.
+
+- **The request was sized to what was already loaded.** `channel.reload()` / `thread.reload()` asked
+  for `loadedCount` items, so a window holding one message asked the server for one message — new
+  content was undiscoverable, and the single item that came back was disjoint from the loaded window,
+  so the fold rebuilt and dropped what was there. Now at least a page is requested.
+- **A window nothing had ever anchored discarded the page entirely.** When the first query returns
+  empty and the only content arrives live — a thread or channel created in the current session — the
+  fetched page was thrown away rather than merged. It is now anchored instead.
+
+Most visible as: create a thread, send a reply, go offline, someone else replies, come back — the new
+replies never appeared, and re-entering the thread did not help.
+
+## L.10 A brand-new thread no longer reports an error (bug fix)
+
+A parent with no replies has no server-side thread, so `getThread` answers "not found". That was being
+treated as a failed refresh and reported as one, so simply opening a new thread raised an error state.
+It is now recognised as the expected answer — `reload()` resolves quietly instead of rejecting.
+
+A genuine failure still rejects as before, including a thread that *did* have replies and comes back
+not-found (its parent was deleted, possibly while you were offline). The two are told apart by
+`replyCount`, which — unlike `deletedAt` — survives having missed the deletion event.
+
+Related: the SDK no longer issues a mark-read for a reply-less thread. There is nothing that could be
+unread, and the call only ever 404'd.
+
 ---
 
 ## 19. Verify
@@ -1287,6 +1588,18 @@ const { aiState } = useStateStore(channel.state, (s) => ({ aiState: s.aiState })
   pin/archive updates membership-driven UI; and — with `<Channel>` mounted —
   focusing a channel with unreads marks it read and reconnect does not blank/re-seed
   the open message list.
+- **Connection recovery** (§L), on a real device, with offline support both on and
+  off: toggle airplane mode with the list open (it re-queries, never blanks) and
+  with a channel open (the window comes back byte-identical, scrolled into old
+  history included); background and foreground the app (same, and this is the path
+  v9 never recovered); open a channel while offline, then reconnect (its messages
+  load); send while offline, then reconnect (the queued message goes out); leave a
+  channel that was open, push it off page 1 of the list, reconnect, then message it
+  from another user (its preview updates — that is §L.3); open a thread and
+  reconnect (its replies refresh — §L.4); and cold-boot with a populated offline DB
+  (exactly one recovery, no double load). Also scroll up into old history, send a
+  message that fails, then reconnect — the unsent message must still be in the list
+  (§L.8).
 
 ---
 

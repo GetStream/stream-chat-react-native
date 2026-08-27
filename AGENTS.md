@@ -130,7 +130,20 @@ yarn workspace sampleapp android
           └─ <Thread>
 ```
 
-`<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), disables the JS client's `recoverStateOnReconnect` (the SDK handles recovery itself), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider` → `ChannelsStateProvider`.
+`<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider`.
+
+**Reconnect recovery is owned by the JS client, not this SDK.** `client.connectionRecovery` re-runs
+each channel list's own first-page query and reloads whichever channels are `active` (`<Channel>`
+marks its channel active on mount), then dispatches `connection.recovered`. So do not add a
+`connection.changed` listener that re-queries a list or re-watches a channel — that duplicates it.
+Recovery is on by default and configured declaratively
+(`client.config.set({ client: { connectionRecovery: { enabled: false } } })` turns it off); the old
+`recoverStateOnReconnect` option is gone. It used to be switched off here because the client's old
+recovery was a single 30-channel query that ignored the lists' own filters. An open thread's replies
+are recovered too — the client reloads every `active` thread — so `<Channel>` no longer resyncs one
+itself. Exactly one thing deliberately stays UI-side: mark-read after the reload (`<Channel>` listens
+for `connection.recovered`), because it has to read the refreshed window and read policy is a UI
+decision.
 
 ### Context three-layer pattern
 

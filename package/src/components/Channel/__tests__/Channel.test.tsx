@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, Thread } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -26,6 +26,7 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
+import { Thread as ThreadComponent } from '../../Thread/Thread';
 import { Channel } from '../Channel';
 import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
 
@@ -156,15 +157,41 @@ describe('Channel', () => {
 
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
     const watchError = new Error('channel watch fail');
-    jest.spyOn(channel, 'watch').mockImplementationOnce(() => Promise.reject(watchError));
-    // The LoadingErrorIndicator renders only when watch errors AND the paginator has no messages
-    // to fall back on; seed an empty (rather than the default undefined) item window so the guard
-    // `messages?.length === 0` holds.
-    channel.messagePaginator.state.partialNext({ items: [] });
+    // Rejected persistently, at the API seam: an offline open fails the mount `watch()` AND the
+    // paginator seed that follows it, and it is the paginator's own failed query that records
+    // `lastQueryError` — the only error surface this component reads.
+    jest.spyOn(channel, 'getOrCreate').mockRejectedValue(watchError);
+    // No item window is seeded on purpose: a load that never succeeded leaves `items` undefined, and
+    // the LoadingErrorIndicator has to render for that as much as for an empty array.
 
     const { getByTestId } = renderComponent({ channel });
 
     await waitFor(() => expect(getByTestId('loading-error')).toBeTruthy());
+  });
+
+  it('still seeds the paginator when the mount watch fails, so the failure is recorded', async () => {
+    // `watch()` does not go through the paginator, so its throw records nothing. The seed is
+    // therefore NOT skipped on a failed watch: the paginator issues its own query, and that query's
+    // failure is what puts `lastQueryError` on the only error surface this component reads. Skip the
+    // seed and an offline cold open renders an empty list instead of the retry screen.
+    const watchError = new Error('channel watch fail');
+    const getOrCreate = jest.spyOn(channel, 'getOrCreate').mockRejectedValue(watchError);
+
+    renderComponent({ channel });
+
+    await waitFor(() =>
+      expect(channel.messagePaginator.state.getLatestValue().lastQueryError).toBe(watchError),
+    );
+    // Two calls, not one: the watch, then the paginator's own query. The second is the one that records.
+    expect(getOrCreate.mock.calls.length).toBeGreaterThanOrEqual(2);
+
+    // Clearing is the paginator's own job, which is what the error screen's retry relies on.
+    getOrCreate.mockRestore();
+    await act(async () => {
+      await channel.messagePaginator.reload();
+    });
+
+    expect(channel.messagePaginator.state.getLatestValue().lastQueryError).toBeUndefined();
   });
 
   it('should render children if a channel is set', async () => {
@@ -562,7 +589,10 @@ describe('Channel initial load useEffect', () => {
     });
   });
 
-  it('should call resyncChannel when connection changed event is triggered', async () => {
+  it('reloads the channel on reconnect while preserving failed messages', async () => {
+    // The reload is issued by `client.connectionRecovery` now, not by this component — `<Channel>`
+    // only marks the channel active. Asserted end to end on purpose: what matters is that a reconnect
+    // still refreshes the open channel and still does not lose locally-unsent messages.
     // Deterministic timestamps so the 10 loaded messages and the 10 offline-failed messages occupy
     // adjacent, ordered positions in the paginator's active window.
     const baseTime = 1600000000000;
@@ -602,11 +632,130 @@ describe('Channel initial load useEffect', () => {
       act(() => dispatchConnectionChanged(chatClient));
     });
 
-    // resyncChannel re-watches via channel.reload() and reconciles, but preserves the failed
-    // (locally-unsent) messages — the 10 originals + 10 failed remain.
+    // The reload re-watches and reconciles, but preserves the failed (locally-unsent) messages —
+    // the 10 originals + 10 failed remain.
     await waitFor(() => {
       expect(reloadSpy).toHaveBeenCalled();
       expect(channel.messagePaginator.headItems.length).toBe(20);
     });
+  });
+
+  // Regression guard for the reconnect refresh of an OPEN THREAD's replies, which now runs entirely in
+  // `client.connectionRecovery` — this component's only part is marking the thread active.
+  //
+  // Asserted end to end on purpose: the LLC can only reach the thread through `client.activeThreads`,
+  // and a thread resolved as `threadsById[id] ?? new Thread(...)` (the common path — see the
+  // `threadInstance` memo) is in no other registry. Drop the `threadInstance.activate()` effect and
+  // recovery silently skips the thread with nothing else failing, so it is pinned here.
+  it('reloads an open thread on reconnect', async () => {
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+
+    const parentMessage = generateMessage({ user });
+    const threadInstance = new Thread({
+      channel: testChannel,
+      client: chatClient,
+      parentMessage: testChannel.state.formatMessage(parentMessage),
+    });
+    const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    // Recovery finds threads through `client.threads.threadsById`, and <Thread> only adopts an
+    // unmanaged instance into the manager once its reply paginator has loaded (Thread.tsx:126, gated
+    // on `items !== undefined`). Seed loaded-but-empty replies so that adoption actually happens —
+    // without it this test exercises the documented gap (active but unadopted → skipped) rather than
+    // the path it means to cover.
+    act(() => threadInstance.messagePaginator.state.partialNext({ items: [], isLoading: false }));
+
+    render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          // `threadList` is what makes this <Channel> the one that owns the thread view
+          // (`shouldSyncChannel`); without it the channel view would claim it instead.
+          threadList
+          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance }}
+        >
+          {/* The real <Thread> is what calls `threadInstance.activate()`, which is the ONLY thing
+              that puts the instance in `client.activeThreads` for recovery to find. Rendering it is
+              the point of the test — a bare <Channel> would not activate anything. */}
+          <ThreadComponent />
+        </Channel>
+      </Chat>,
+    );
+
+    // Wait for <Thread> to activate AND adopt the instance — both are preconditions for recovery to
+    // see it at all. (With replies seeded above, Thread.tsx's mount metadata-reload is skipped, so
+    // the spy is clean; cleared anyway so this can only pass on a reconnect-driven call.)
+    await waitFor(() => {
+      expect(chatClient.threads.threadsById[threadInstance.id]).toBeDefined();
+      expect(threadInstance.state.getLatestValue().active).toBe(true);
+    });
+    reload.mockClear();
+
+    act(() => dispatchConnectionChanged(chatClient, false));
+    act(() => dispatchConnectionChanged(chatClient));
+
+    await waitFor(() => expect(reload).toHaveBeenCalled());
+  });
+
+  it('does not mark a reply-less thread read on open, but does once it has replies', async () => {
+    // A parent with no replies has no server-side thread, so the mark-read 404s on every open. There
+    // is also nothing that could be unread, so the call is skipped rather than made and swallowed.
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+    const markRead = jest
+      .spyOn(testChannel, 'markRead')
+      .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+
+    const parentMessage = generateMessage({ user });
+    const makeThread = (replyCount: number) => {
+      const instance = new Thread({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage: testChannel.state.formatMessage({
+          ...parentMessage,
+          reply_count: replyCount,
+        }),
+      });
+      jest.spyOn(instance, 'reload').mockResolvedValue(undefined);
+      return instance;
+    };
+
+    const empty = makeThread(0);
+    const { unmount } = render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          threadList
+          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance: empty }}
+        >
+          <ThreadComponent />
+        </Channel>
+      </Chat>,
+    );
+    await waitFor(() => expect(empty.state.getLatestValue().active).toBe(true));
+    expect(markRead).not.toHaveBeenCalled();
+    unmount();
+
+    // Same component, a thread that does have replies: the call is made as before.
+    const withReplies = makeThread(3);
+    render(
+      <Chat client={chatClient}>
+        <Channel
+          channel={testChannel}
+          threadList
+          thread={{
+            thread: testChannel.state.formatMessage(parentMessage),
+            threadInstance: withReplies,
+          }}
+        >
+          <ThreadComponent />
+        </Channel>
+      </Chat>,
+    );
+    await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: withReplies.id }));
   });
 });
