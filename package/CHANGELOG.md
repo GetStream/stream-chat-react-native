@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.8.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.1...v9.8.2) (2026-08-27)
+
+### Bug Fixes
+
+* disable LayoutAnimation in KeyboardCompatibleView ([#3789](https://github.com/GetStream/stream-chat-react-native/issues/3789)) ([3baccde](https://github.com/GetStream/stream-chat-react-native/commit/3baccdeb950ead49853673f70e6324ede1f23684))
+* disable LayoutAnimation in KeyboardCompatibleView ([#3789](https://github.com/GetStream/stream-chat-react-native/issues/3789)) ([bf16ccc](https://github.com/GetStream/stream-chat-react-native/commit/bf16cccd49e95dc46725444a40d88948e5d0088a))
+
 ## [9.8.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.0...v9.8.1) (2026-08-27)
 
 ### Bug Fixes
