@@ -126,9 +126,17 @@ export const useMessageOperations = (): MessageOperations => {
         options = { hard: true };
       }
 
-      // The LLC performs the delete request (honoring any configState delete handler) and ingests
-      // the deleted message into the paginator. Thread deletes route through the thread instance.
-      await (threadInstance ?? channel).deleteMessageWithLocalUpdate({
+      // The LLC owns the whole delete lifecycle: the optimistic `deleted` marking (or removal, for a
+      // hard delete), the request (honoring any configState delete handler), the offline-DB write, and
+      // the revert if the delete is definitively rejected.
+      //
+      // Routed by MEMBERSHIP, like `sendReaction` above: a reply loaded in the open thread goes through
+      // the thread instance, everything else — including the thread's own parent message, which the
+      // reply paginator cannot hold — through the channel.
+      const target = threadInstance?.messagePaginator.getItem(message.id)
+        ? threadInstance
+        : channel;
+      await target.deleteMessageWithLocalUpdate({
         localMessage: message,
         options,
       });
