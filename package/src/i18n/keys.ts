@@ -484,8 +484,6 @@ export type BundledTranslationKey =
   | 'message.status.sent.accessibilityLabel'
   | 'messageInput.addAttachment.accessibilityLabel'
   | 'messageInput.audioRecorder.delete.accessibilityLabel'
-  | 'messageInput.audioRecorder.holdToRecord.text'
-  | 'messageInput.audioRecorder.permissionDenied.text'
   | 'messageInput.audioRecorder.send.accessibilityLabel'
   | 'messageInput.audioRecorder.start.accessibilityLabel'
   | 'messageInput.audioRecorder.stop.accessibilityLabel'

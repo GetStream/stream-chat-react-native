@@ -105,7 +105,10 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     if (!recording) {
       NativeHandlers.triggerHaptic('notificationError');
       addNotification({
-        message: 'messageInput.audioRecorder.holdToRecord.text',
+        message: t(
+          'messageInput.audioRecorder.holdToRecord.text',
+          'Hold to record. Release to save.',
+        ),
         options: {
           severity: 'info',
           type: 'validation:audio:recording:hold-required',
@@ -128,7 +131,10 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       const permissionsGranted = await startVoiceRecording();
       if (!permissionsGranted) {
         addNotification({
-          message: 'messageInput.audioRecorder.permissionDenied.text',
+          message: t(
+            'messageInput.audioRecorder.permissionDenied.text',
+            'Please allow Audio permissions in settings.',
+          ),
           options: {
             actions: [
               {
