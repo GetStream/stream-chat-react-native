@@ -111,8 +111,6 @@ export const runtimeDefaults = {
   'message.status.sent.accessibilityLabel': 'Sent',
   'messageInput.addAttachment.accessibilityLabel': 'Add attachment',
   'messageInput.audioRecorder.delete.accessibilityLabel': 'Delete voice recording',
-  'messageInput.audioRecorder.holdToRecord.text': 'Hold to record. Release to save.',
-  'messageInput.audioRecorder.permissionDenied.text': 'Please allow Audio permissions in settings.',
   'messageInput.audioRecorder.send.accessibilityLabel': 'Send voice recording',
   'messageInput.audioRecorder.start.accessibilityLabel': 'Start voice recording',
   'messageInput.audioRecorder.stop.accessibilityLabel': 'Stop voice recording',

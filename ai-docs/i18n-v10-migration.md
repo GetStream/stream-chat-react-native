@@ -192,9 +192,10 @@ relative date renders the plugin's built-in English scaffolding around a transla
 
 > Last **Mittwoch** at 5:10 PM
 
-The SDK applies its own `calendar` block to `en` internally for exactly this reason. That the field is plugin-owned is
-also why `DayjsLocaleConfig` is exported: typing the argument as a bare `Partial<ILocale>` makes passing a calendar
-config a TS2345 "no properties in common" error.
+The SDK applies its own `calendar` block to `en` internally for exactly this reason; it is exported as
+`englishCalendarFormats`, so a language can start from it rather than transcribing the six slots. That the field is
+plugin-owned is also why `DayjsLocaleConfig` is exported: typing the argument as a bare `Partial<ILocale>` makes passing
+a calendar config a TS2345 "no properties in common" error.
 
 ```ts
 import { Streami18n, type DayjsLocaleConfig } from 'stream-chat-react-native';
