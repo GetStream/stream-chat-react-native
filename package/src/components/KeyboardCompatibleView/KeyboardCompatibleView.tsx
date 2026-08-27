@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingViewProps,
   KeyboardEvent,
   KeyboardMetrics,
-  LayoutAnimation,
   LayoutChangeEvent,
   LayoutRectangle,
   NativeEventSubscription,
@@ -205,7 +204,7 @@ export class KeyboardCompatibleView extends React.Component<
       return;
     }
 
-    const { duration, easing, endCoordinates } = this._keyboardEvent;
+    const { endCoordinates } = this._keyboardEvent;
     const height = await this._relativeKeyboardHeight(endCoordinates);
 
     if (this._bottom === height) {
@@ -213,18 +212,6 @@ export class KeyboardCompatibleView extends React.Component<
     }
 
     this._setBottom(height);
-
-    const enabled = this.props.enabled ?? true;
-    if (enabled && duration && easing) {
-      LayoutAnimation.configureNext({
-        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
-        duration: duration > 10 ? duration : 10,
-        update: {
-          duration: duration > 10 ? duration : 10,
-          type: LayoutAnimation.Types[easing] || 'keyboard',
-        },
-      });
-    }
   };
 
   _handleAppStateChange = (nextAppState: AppStateStatus) => {
