@@ -6,6 +6,7 @@ import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { createUpsertQueryIfParentExists } from '../sqlite-utils/createUpsertQueryIfParentExists';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
@@ -34,7 +35,13 @@ export const updateReaction = async ({
       userId: reaction.user_id,
     }),
   );
-  queries.push(createUpsertQuery('reactions', storableReaction));
+  queries.push(
+    createUpsertQueryIfParentExists('reactions', storableReaction, {
+      column: 'id',
+      table: 'messages',
+      value: reaction.message_id,
+    }),
+  );
 
   let updatedReactionGroups: string | undefined;
   if (message.reaction_groups) {

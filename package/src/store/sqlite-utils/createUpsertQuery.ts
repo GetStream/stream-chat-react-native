@@ -2,18 +2,17 @@ import { Schema, tables } from '../schema';
 import type { PreparedQueries, TableColumnNames, TableRow } from '../types';
 
 /**
- * Creates a simple upsert query for sqlite.
+ * The pieces every upsert statement is built from, shared with
+ * {@link import('./createUpsertQueryIfParentExists').createUpsertQueryIfParentExists} so the two
+ * forms cannot drift in how they filter columns or resolve conflict keys.
  *
- * @param {string} table Table name
- * @param {Object} row Table row to insert or update.
- * @param {Array} conflictCheckKeys Custom list of columns to check conflicts for - https://www.sqlite.org/lang_UPSERT.html. By default conflicts are checked on primary keys.
- * @returns {string} Final upsert query for sqlite
+ * @internal
  */
-export const createUpsertQuery = <T extends keyof Schema>(
+export const upsertStatementParts = <T extends keyof Schema>(
   table: T,
   row: Partial<TableRow<T>>,
   conflictCheckKeys?: Array<TableColumnNames<T>>,
-): PreparedQueries => {
+) => {
   const filteredRow: typeof row = {};
 
   // In case of "DO UPDATE SET", we only want to update the properties which
@@ -41,8 +40,35 @@ export const createUpsertQuery = <T extends keyof Schema>(
   ${conflictMatchersWithoutPK.join(',')}`
       : '';
 
+  return {
+    columns: fields.join(','),
+    conflictConstraint,
+    questionMarks,
+    values: Object.values(filteredRow),
+  };
+};
+
+/**
+ * Creates a simple upsert query for sqlite.
+ *
+ * @param {string} table Table name
+ * @param {Object} row Table row to insert or update.
+ * @param {Array} conflictCheckKeys Custom list of columns to check conflicts for - https://www.sqlite.org/lang_UPSERT.html. By default conflicts are checked on primary keys.
+ * @returns {string} Final upsert query for sqlite
+ */
+export const createUpsertQuery = <T extends keyof Schema>(
+  table: T,
+  row: Partial<TableRow<T>>,
+  conflictCheckKeys?: Array<TableColumnNames<T>>,
+): PreparedQueries => {
+  const { columns, conflictConstraint, questionMarks, values } = upsertStatementParts(
+    table,
+    row,
+    conflictCheckKeys,
+  );
+
   return [
-    `INSERT INTO ${table} (${fields.join(',')}) VALUES (${questionMarks}) ${conflictConstraint}`,
-    Object.values(filteredRow),
+    `INSERT INTO ${table} (${columns}) VALUES (${questionMarks}) ${conflictConstraint}`,
+    values,
   ];
 };
