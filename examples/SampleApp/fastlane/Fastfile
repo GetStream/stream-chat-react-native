@@ -83,7 +83,9 @@ platform :ios do
 
     message.include?('Could not find a live-version') ||
       message.include?('Could not find a beta-version') ||
-      message.include?('Could not find a build')
+      message.include?('Could not find a build') ||
+      # For new apps that might not yet have a build number
+      message.include?("No value found for 'initial_build_number'")
   end
 
   private_lane :latest_appstore_version_code do |options|
