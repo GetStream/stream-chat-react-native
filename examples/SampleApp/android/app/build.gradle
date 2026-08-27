@@ -86,6 +86,22 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+/**
+ * The RC channel ships as a separate app so it can sit on a device next to the develop sample
+ * app. CI passes `-PstreamRc=true` when building the pre-release branch; everything else builds
+ * the normal app.
+ *
+ * Driven by a property rather than a product flavor on purpose: a flavor would rename every
+ * Gradle task (`assembleRcRelease` and friends) and move the APK output path, which the Fastlane
+ * lane and the S3 upload both depend on.
+ *
+ * `namespace` deliberately does NOT change — it is the Kotlin package that MainApplication and
+ * MainActivity declare, and it is independent of the app's identity.
+ */
+def isRcBuild = project.hasProperty('streamRc')
+def sampleAppId = isRcBuild ? 'io.getstream.reactnative.sampleapp.rc' : 'io.getstream.reactnative.sampleapp'
+def sampleAppLabel = isRcBuild ? 'Chat Sample RN (RC)' : 'Chat Sample React Native'
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -94,7 +110,9 @@ android {
     namespace "io.getstream.reactnative.sampleapp"
 
     defaultConfig {
-        applicationId "io.getstream.reactnative.sampleapp"
+        applicationId sampleAppId
+        // Lives here rather than in strings.xml so both variants have a single source of truth.
+        resValue "string", "app_name", sampleAppLabel
         minSdkVersion rootProject.ext.minSdkVersion
         multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion

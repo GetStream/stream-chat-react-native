@@ -8,15 +8,62 @@ sdk_size_ext = 'KB'
 build_output_directory = "./app-build"
 
 # iOS Platform Configuration
-bundle_id = 'io.getstream.reactnative.SampleApp'
 xcode_project = 'ios/SampleApp.xcodeproj'
 xcode_workspace = 'ios/SampleApp.xcworkspace'
 output_ipa_name = "reactnativesampleapp.ipa"
+info_plist_path = 'SampleApp/Info.plist' # resolved relative to the xcodeproj's directory
 
 # Android Platform Configuration
-package_name = 'io.getstream.reactnative.sampleapp'
 output_apk_name = "reactnativesampleapp.apk"
 apk_path = "#{build_output_directory}/#{output_apk_name}"
+
+# App variants
+#
+# `default` is the app that ships from develop. `rc` is a permanently named second app used as the
+# pre-release channel, so the App Store Connect and Firebase setup is done once and reused for
+# every future pre-release branch (V10, V11, ...) rather than recreated per major. Which branch
+# owns the channel is decided by the RC_BRANCH repository variable, not by this file.
+#
+# The iOS and Android identifiers deliberately differ in case, each following the convention its
+# own platform's existing identifier already uses. Do not "fix" them into matching: the Android
+# value has to equal a `package_name` registered in google-services.json exactly, or the Google
+# Services Gradle plugin fails the build with "No matching client found for package name".
+VARIANTS = {
+  'default' => {
+    bundle_id: 'io.getstream.reactnative.SampleApp',
+    display_name: 'ChatSample',
+    firebase_app_id: ENV.fetch('ANDROID_FIREBASE_APP_ID', nil),
+    gradle_properties: {}
+  },
+  'rc' => {
+    bundle_id: 'io.getstream.reactnative.SampleApp.RC',
+    display_name: 'ChatSample RC',
+    # Hardcoded rather than read from a secret. A Firebase app id is not sensitive (it ships
+    # inside the committed google-services.json), and a literal here cannot silently drift out of
+    # sync with the Firebase project the way a secret can.
+    firebase_app_id: '1:674907137625:android:81f0a13a8223bdbbd7f348',
+    gradle_properties: { 'streamRc' => 'true' }
+  }
+}.freeze
+
+resolve_variant = lambda do |options|
+  key = (options[:variant] || 'default').to_s
+  unless VARIANTS.key?(key)
+    UI.user_error!("Unknown variant '#{key}'. Expected one of: #{VARIANTS.keys.join(', ')}")
+  end
+  UI.message("Building variant: #{key}")
+  VARIANTS[key]
+end
+
+# Testers cannot tell RC builds apart by icon or name, so the branch and commit have to travel
+# with the build itself.
+build_release_notes = lambda do
+  commit = Actions.last_git_commit_dict || {}
+  branch = ENV['GITHUB_REF_NAME'] || Actions.git_branch || 'unknown branch'
+  sha = (ENV['GITHUB_SHA'] || commit[:commit_hash]).to_s[0, 8]
+  subject = commit[:message].to_s.lines.first.to_s.strip
+  ["#{branch} @ #{sha}", '', subject].join("\n")
+end
 
 
 before_all do
@@ -40,6 +87,7 @@ platform :ios do
   end
 
   private_lane :latest_appstore_version_code do |options|
+    bundle_id = options[:app_identifier]
     livestates = [true, false]
     version_codes = []
     livestates.each do |livestate|
@@ -65,11 +113,28 @@ platform :ios do
   end
 
   lane :deploy_to_testflight_qa do |options|
-    match_me
+    variant = resolve_variant.call(options)
+    bundle_id = variant[:bundle_id]
+
+    match_me(app_identifier: bundle_id)
 
     deploy = options.fetch(:deploy, false)
 
     UI.message("Deploying to Testflight: #{deploy}")
+
+    # Point the project at this variant's identity before archiving. This cannot be done through
+    # `xcargs`: the project reads PRODUCT_BUNDLE_IDENTIFIER, and overriding that on the xcodebuild
+    # command line would apply to every target in the build, CocoaPods resource bundles included.
+    update_app_identifier(
+      xcodeproj: xcode_project,
+      plist_path: info_plist_path,
+      app_identifier: bundle_id
+    )
+    update_info_plist(
+      xcodeproj: xcode_project,
+      plist_path: info_plist_path,
+      display_name: variant[:display_name]
+    )
 
     if deploy
       increment_version_number(
@@ -77,7 +142,7 @@ platform :ios do
         xcodeproj: xcode_project
       )
 
-      current_build_number = latest_appstore_version_code || get_build_number(
+      current_build_number = latest_appstore_version_code(app_identifier: bundle_id) || get_build_number(
         xcodeproj: xcode_project,
       ).to_i
 
@@ -90,7 +155,6 @@ platform :ios do
     end
 
     settings_to_override = {
-      BUNDLE_IDENTIFIER: bundle_id,
       PROVISIONING_PROFILE_SPECIFIER: "match AppStore #{bundle_id}"
     }
 
@@ -98,7 +162,12 @@ platform :ios do
       workspace: xcode_workspace,
       scheme: 'SampleApp',
       export_method: 'app-store',
-      export_options: './fastlane/testflight_gym_export_options.plist',
+      # Built inline rather than read from a plist so the profile mapping follows the variant's
+      # bundle id. The values mirror the export options plist this replaced.
+      export_options: {
+        iCloudContainerEnvironment: 'Development',
+        provisioningProfiles: { bundle_id => "match AppStore #{bundle_id}" }
+      },
       silent: true,
       clean: true,
       xcargs: settings_to_override,
@@ -111,7 +180,7 @@ platform :ios do
       upload_to_testflight(
         api_key: appstore_api_key,
         groups: ['Testers'],
-        changelog: 'Lots of amazing new features to test out!',
+        changelog: build_release_notes.call,
         reject_build_waiting_for_review: true,
         ipa: "#{build_output_directory}/#{output_ipa_name}",
         skip_waiting_for_build_processing: true
@@ -130,11 +199,13 @@ platform :ios do
     )
   end
 
-  desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
+  desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely.\nPass `app_identifier:` (or `variant:rc`) to target the RC channel's bundle id."
   lane :match_me do |options|
+    app_identifier = options[:app_identifier] || resolve_variant.call(options)[:bundle_id]
+
     custom_match(
       api_key: appstore_api_key,
-      app_identifier: [bundle_id],
+      app_identifier: [app_identifier],
       readonly: options[:readonly],
       register_device: options[:register_device]
     )
@@ -147,9 +218,14 @@ end
 
 platform :android do
   lane :firebase_build_and_upload do |options|
+    variant = resolve_variant.call(options)
     deploy = options.fetch(:deploy, false)
 
     UI.message("Deploying to Firebase: #{deploy}")
+
+    if deploy && variant[:firebase_app_id].to_s.empty?
+      UI.user_error!('No Firebase app id available. The default variant reads ANDROID_FIREBASE_APP_ID.')
+    end
 
     # Clean
     gradle(
@@ -161,7 +237,8 @@ platform :android do
     gradle(
         task: "assemble",
         build_type: "Release",
-        project_dir: "./android"
+        project_dir: "./android",
+        properties: variant[:gradle_properties]
     )
 
     Dir.chdir('..') do
@@ -171,11 +248,12 @@ platform :android do
     if deploy
       # Upload to Firebase App Distribution
       firebase_app_distribution(
-          app: ENV.fetch('ANDROID_FIREBASE_APP_ID', nil),
+          app: variant[:firebase_app_id],
           service_credentials_json_data: ENV.fetch('FIREBASE_CREDENTIALS_JSON', nil),
           android_artifact_path: apk_path,
           android_artifact_type: "APK",
-          groups: "stream-testers"
+          groups: "stream-testers",
+          release_notes: build_release_notes.call
       )
     else
       UI.message("Skipping Firebase upload! (deploy: #{deploy})")

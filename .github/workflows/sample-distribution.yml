@@ -15,9 +15,17 @@ permissions:
   actions: write
   contents: read
 
+# The RC channel is owned by whichever branch the RC_BRANCH repository variable names, so
+# retargeting it at a new pre-release branch is a settings change rather than a PR. Unset
+# RC_BRANCH resolves to an empty string, which never matches a ref name, so this fails closed.
+# The `!= 'develop'` guard stops a mis-set RC_BRANCH from turning develop into the RC channel.
+env:
+  IS_DEVELOP: ${{ github.ref_name == 'develop' }}
+  IS_RC: ${{ github.ref_name != 'develop' && github.ref_name == vars.RC_BRANCH }}
+
 jobs:
   build_and_deploy_ios_testflight_qa:
-    name: Build SampleApp iOS and Deploy-${{ github.ref == 'refs/heads/develop' }}
+    name: Build SampleApp iOS and Deploy-${{ github.ref_name == 'develop' || github.ref_name == vars.RC_BRANCH }}
     runs-on: [macos-15]
     strategy:
       matrix:
@@ -57,14 +65,14 @@ jobs:
           bundle exec pod install
       - name: Build and release Testflight QA
         working-directory: examples/SampleApp
-        run: bundle exec fastlane ios deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
+        run: bundle exec fastlane ios deploy_to_testflight_qa deploy:${{ env.IS_DEVELOP == 'true' || env.IS_RC == 'true' }} variant:${{ env.IS_RC == 'true' && 'rc' || 'default' }};
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
 
   build_and_deploy_android_firebase:
-    name: Build SampleApp Android and Deploy-${{ github.ref == 'refs/heads/develop' }}
+    name: Build SampleApp Android and Deploy-${{ github.ref_name == 'develop' || github.ref_name == vars.RC_BRANCH }}
     runs-on: public
     strategy:
       matrix:
@@ -90,14 +98,18 @@ jobs:
         uses: ./.github/actions/install-and-build-sdk
       - name: Build and deploy Android Firebase
         working-directory: examples/SampleApp
-        run: bundle exec fastlane android firebase_build_and_upload deploy:${{ github.ref == 'refs/heads/develop' }};
+        run: bundle exec fastlane android firebase_build_and_upload deploy:${{ env.IS_DEVELOP == 'true' || env.IS_RC == 'true' }} variant:${{ env.IS_RC == 'true' && 'rc' || 'default' }};
         env:
           ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
           FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
       # Publish the same APK to S3 for the public download link. Reuses the
       # artifact the Fastlane step above already built (app-build/), no rebuild.
+      #
+      # These three steps are deliberately gated on develop ALONE, not on the combined deploy
+      # gate above: the S3 key backs the public getstream.io/downloads/rn-sample-app.apk link,
+      # so letting an RC build reach it would replace the published develop APK.
       - name: Ensure AWS CLI is available
-        if: github.ref == 'refs/heads/develop'
+        if: env.IS_DEVELOP == 'true'
         # The self-hosted `public` runner does not ship the AWS CLI. Install v2
         # only when missing, to a user-writable dir (no sudo), then expose it.
         run: |
@@ -117,14 +129,14 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           "$HOME/.local/bin/aws" --version
       - name: Configure AWS credentials
-        if: github.ref == 'refs/heads/develop'
+        if: env.IS_DEVELOP == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Upload APK to S3
-        if: github.ref == 'refs/heads/develop'
+        if: env.IS_DEVELOP == 'true'
         working-directory: examples/SampleApp
         # Public download link: https://getstream.io/downloads/rn-sample-app.apk
         run: |
