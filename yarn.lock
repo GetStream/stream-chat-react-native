@@ -6578,7 +6578,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-web: "npm:^0.21.2"
     react-native-worklets: "npm:0.11.1"
-    stream-chat: "npm:^10.0.0-rc.5"
+    stream-chat: "npm:^10.0.0-rc.8"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -17575,7 +17575,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-video: "npm:^6.19.2"
     react-native-worklets: "npm:^0.12.1"
-    stream-chat: "npm:^10.0.0-rc.5"
+    stream-chat: "npm:^10.0.0-rc.8"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18317,7 +18317,7 @@ __metadata:
     react-native-worklets: "npm:^0.12.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0-rc.5"
+    stream-chat: "npm:^10.0.0-rc.8"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -18391,9 +18391,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A."
+"stream-chat@npm:^10.0.0-rc.8":
+  version: 10.0.0-rc.8
+  resolution: "stream-chat@npm:10.0.0-rc.8"
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
     axios: "npm:^1.19.0"
@@ -18405,8 +18405,9 @@ __metadata:
       built: true
     husky:
       built: true
+  checksum: 10c0/0cbd96aae6cae42804090c96d7b3461274b77ded18d42c7b529820fba1c6206c6608de8436778ab140ed6ab1e88fccfe361bc27d58e6172c97f0548302f81527
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "stream-combiner2@npm:~1.1.1":
   version: 1.1.1
