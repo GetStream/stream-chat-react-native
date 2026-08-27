@@ -11,6 +11,7 @@ import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
+import type { TextInputRef } from '../../../types/react-native-compat';
 import { useRtlMirrorSwitchStyle } from '../../../utils/rtlMirrorSwitchStyle';
 import { Button } from '../../ui';
 
@@ -35,7 +36,7 @@ const MaxVotesTextInput = () => {
     },
   } = useTheme();
   const hasSelectedInitialValueRef = useRef(false);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
 
   const styles = useStyles();
 

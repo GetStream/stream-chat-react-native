@@ -9,8 +9,6 @@ import {
   StyleSheet,
   View,
   useColorScheme,
-  ViewabilityConfig,
-  ViewToken,
 } from 'react-native';
 
 import Animated from 'react-native-reanimated';
@@ -71,6 +69,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
+import type { ViewabilityConfig, ViewToken } from '../../types/react-native-compat';
 import { transitions } from '../../utils/animations/transitions';
 import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
@@ -501,99 +500,103 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const channelRef = useRef(channel);
   channelRef.current = channel;
 
-  const updateStickyHeaderDateIfNeeded = useStableCallback((viewableItems: ViewToken[]) => {
-    if (!viewableItems.length) {
-      return;
-    }
-
-    const lastMessage = viewableItems[viewableItems.length - 1].item?.message;
-
-    if (lastMessage) {
-      if (
-        !channel.messagePaginator.hasMoreTail &&
-        processedMessageList[processedMessageList.length - 1].id === lastMessage.id
-      ) {
-        setStickyHeaderDate(undefined);
+  const updateStickyHeaderDateIfNeeded = useStableCallback(
+    (viewableItems: ViewToken<MessageListItemWithNeighbours>[]) => {
+      if (!viewableItems.length) {
         return;
       }
-      const isMessageTypeDeleted = lastMessage.type === 'deleted';
 
-      if (
-        lastMessage?.created_at &&
-        !isMessageTypeDeleted &&
-        typeof lastMessage.created_at !== 'string' &&
-        lastMessage.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
-      ) {
-        stickyHeaderDateRef.current = lastMessage.created_at;
-        setStickyHeaderDate(lastMessage.created_at);
+      const lastMessage = viewableItems[viewableItems.length - 1].item?.message;
+
+      if (lastMessage) {
+        if (
+          !channel.messagePaginator.hasMoreTail &&
+          processedMessageList[processedMessageList.length - 1].id === lastMessage.id
+        ) {
+          setStickyHeaderDate(undefined);
+          return;
+        }
+        const isMessageTypeDeleted = lastMessage.type === 'deleted';
+
+        if (
+          lastMessage?.created_at &&
+          !isMessageTypeDeleted &&
+          typeof lastMessage.created_at !== 'string' &&
+          lastMessage.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+        ) {
+          stickyHeaderDateRef.current = lastMessage.created_at;
+          setStickyHeaderDate(lastMessage.created_at);
+        }
       }
-    }
-  });
+    },
+  );
 
   /**
    * This function should show or hide the unread indicator depending on the
    */
-  const updateStickyUnreadIndicator = useStableCallback((viewableItems: ViewToken[]) => {
-    const channelUnreadState = getChannelUnreadState(channel);
-    // we need this check to make sure that regular list change do not trigger
-    // the unread notification to appear (for example if the old last read messages
-    // go out of the viewport).
-    const lastReadMessageId = channelUnreadState?.last_read_message_id;
-    const lastReadMessageVisible = viewableItems.some(
-      (item) => item.item.message.id === lastReadMessageId,
-    );
+  const updateStickyUnreadIndicator = useStableCallback(
+    (viewableItems: ViewToken<MessageListItemWithNeighbours>[]) => {
+      const channelUnreadState = getChannelUnreadState(channel);
+      // we need this check to make sure that regular list change do not trigger
+      // the unread notification to appear (for example if the old last read messages
+      // go out of the viewport).
+      const lastReadMessageId = channelUnreadState?.last_read_message_id;
+      const lastReadMessageVisible = viewableItems.some(
+        (item) => item.item.message.id === lastReadMessageId,
+      );
 
-    // Channels with disabled `read-events` (i.e livestreams) still surface the unread
-    // notification when the client opted into a local unread count, so the gate accepts
-    // either source.
-    const unreadNotificationSupported = readEvents || client.options.isLocalUnreadCountEnabled;
-
-    if (
-      !viewableItems.length ||
-      !unreadNotificationSupported ||
-      lastReadMessageVisible ||
-      attachmentPickerStore.state.getLatestValue().selectedPicker === 'images'
-    ) {
-      setIsUnreadNotificationOpen(false);
-      return;
-    }
-
-    const lastItem = viewableItems[viewableItems.length - 1].item;
-
-    if (lastItem) {
-      const lastItemMessage = lastItem.message;
-      const lastItemCreatedAt = lastItemMessage.created_at;
-
-      const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
-      const lastItemDate = lastItemCreatedAt.getTime();
+      // Channels with disabled `read-events` (i.e livestreams) still surface the unread
+      // notification when the client opted into a local unread count, so the gate accepts
+      // either source.
+      const unreadNotificationSupported = readEvents || client.options.isLocalUnreadCountEnabled;
 
       if (
-        !channel.messagePaginator.hasMoreTail &&
-        processedMessageList[processedMessageList.length - 1].id === lastItemMessage.id
+        !viewableItems.length ||
+        !unreadNotificationSupported ||
+        lastReadMessageVisible ||
+        attachmentPickerStore.state.getLatestValue().selectedPicker === 'images'
       ) {
         setIsUnreadNotificationOpen(false);
         return;
       }
-      /**
-       * This is a special case where there is a single long message by the sender.
-       * When a message is sent, we mark it as read before it actually has a `created_at` timestamp.
-       * This is a workaround to prevent the unread indicator from showing when the message is sent.
-       */
-      if (
-        viewableItems.length === 1 &&
-        channel.countUnread() === 0 &&
-        lastItemMessage.user.id === client.userID
-      ) {
-        setIsUnreadNotificationOpen(false);
-        return;
+
+      const lastItem = viewableItems[viewableItems.length - 1].item;
+
+      if (lastItem) {
+        const lastItemMessage = lastItem.message;
+        const lastItemCreatedAt = lastItemMessage.created_at;
+
+        const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
+        const lastItemDate = lastItemCreatedAt.getTime();
+
+        if (
+          !channel.messagePaginator.hasMoreTail &&
+          processedMessageList[processedMessageList.length - 1].id === lastItemMessage.id
+        ) {
+          setIsUnreadNotificationOpen(false);
+          return;
+        }
+        /**
+         * This is a special case where there is a single long message by the sender.
+         * When a message is sent, we mark it as read before it actually has a `created_at` timestamp.
+         * This is a workaround to prevent the unread indicator from showing when the message is sent.
+         */
+        if (
+          viewableItems.length === 1 &&
+          channel.countUnread() === 0 &&
+          lastItemMessage.user?.id === client.userID
+        ) {
+          setIsUnreadNotificationOpen(false);
+          return;
+        }
+        if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+          setIsUnreadNotificationOpen(true);
+        } else {
+          setIsUnreadNotificationOpen(false);
+        }
       }
-      if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
-        setIsUnreadNotificationOpen(true);
-      } else {
-        setIsUnreadNotificationOpen(false);
-      }
-    }
-  });
+    },
+  );
 
   /**
    * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
@@ -602,7 +605,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const unstableOnViewableItemsChanged = ({
     viewableItems,
   }: {
-    viewableItems: ViewToken[] | undefined;
+    viewableItems: ViewToken<MessageListItemWithNeighbours>[] | undefined;
   }) => {
     viewabilityChangedCallback({ inverted, viewableItems });
 
@@ -629,7 +632,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   onViewableItemsChanged.current = unstableOnViewableItemsChanged;
 
   const stableOnViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
+    ({
+      viewableItems,
+    }: {
+      viewableItems: ViewToken<MessageListItemWithNeighbours>[] | undefined;
+    }) => {
       onViewableItemsChanged.current({ viewableItems });
     },
     [],
@@ -1183,6 +1190,17 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     [additionalFlatListProps?.style, styles.listContainer],
   );
 
+  /**
+   * `strictMode` only became a `FlatList` prop in React Native 0.87, and this SDK supports `>=0.79`.
+   * Passed via spread rather than as a literal attribute because JSX excess-property checking does
+   * not apply to spreads, so this compiles on every supported version. A `@ts-expect-error` cannot
+   * work here: it is required below 0.87 and reported as unused from 0.87 onwards.
+   */
+  const liveStreamingListProps = useMemo(
+    () => ({ strictMode: isLiveStreaming }),
+    [isLiveStreaming],
+  );
+
   const flatListContentContainerStyle = useMemo(
     () => [
       { paddingTop: messageInputFloating ? messageInputHeight : 0 },
@@ -1327,11 +1345,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             renderItem={renderItem}
             scrollEventThrottle={isLiveStreaming ? 16 : undefined}
             showsVerticalScrollIndicator={false}
-            // @ts-expect-error Safe to do for now
-            strictMode={isLiveStreaming}
             style={flatListStyle}
             testID='message-flat-list'
             viewabilityConfig={flatListViewabilityConfig}
+            {...liveStreamingListProps}
             {...additionalFlatListPropsExcludingStyle}
             accessibilityActions={messageListAccessibilityActions}
             onAccessibilityAction={messageListOnAccessibilityAction}

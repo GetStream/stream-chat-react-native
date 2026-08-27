@@ -70,7 +70,7 @@ export const DefaultThreadListComponent = () => {
         data={threads}
         keyExtractor={(props) => props.id}
         ListEmptyComponent={ThreadListEmptyPlaceholder}
-        ListFooterComponent={isLoadingNext ? ThreadListLoadingMoreIndicator : null}
+        ListFooterComponent={isLoadingNext ? ThreadListLoadingMoreIndicator : undefined}
         onEndReached={loadMore}
         renderItem={renderItem}
         testID='thread-flatlist'

@@ -2,7 +2,15 @@
   "extends": ["expo/tsconfig.base", "@stream-io/typescript-config/base.json"],
   "compilerOptions": {
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      // This workspace keeps its own React Native (Expo 57 -> RN 0.86) while the SDK workspace is on
+      // RN 0.87, and `nmHoistingLimits: workspaces` means both copies exist. Without this, the SDK's
+      // declarations resolve React Native relative to themselves, so `ColorValue` from the SDK's
+      // theme and `ColorValue` in this app's `ViewStyle` are two different nominal types. Pinning
+      // the whole program to this workspace's copy models what a real consumer sees (exactly one
+      // react-native) and, usefully, type-checks the SDK against RN 0.86.
+      "react-native": ["./node_modules/react-native"],
+      "react-native/*": ["./node_modules/react-native/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"]

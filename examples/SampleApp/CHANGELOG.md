@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.15.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.0...sampleapp@v4.15.1) (2026-08-27)
+
+### Refactors
+
+* rn 0.87 compatibility ([#3786](https://github.com/GetStream/stream-chat-react-native/issues/3786)) ([a72b6b3](https://github.com/GetStream/stream-chat-react-native/commit/a72b6b35a974019e4496b44d3b9339a37e12b6c8))
+
 ## [4.15.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.14.7...sampleapp@v4.15.0) (2026-08-20)
 
 ### Features

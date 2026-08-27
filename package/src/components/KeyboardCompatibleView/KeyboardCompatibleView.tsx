@@ -8,9 +8,7 @@ import {
   Keyboard,
   KeyboardAvoidingViewProps,
   KeyboardEvent,
-  KeyboardEventListener,
   KeyboardMetrics,
-  LayoutAnimation,
   LayoutChangeEvent,
   LayoutRectangle,
   NativeEventSubscription,
@@ -22,6 +20,7 @@ import {
 } from 'react-native';
 
 import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
+import type { KeyboardEventListener, ViewRef } from '../../types/react-native-compat';
 
 export type KeyboardCompatibleViewProps = KeyboardAvoidingViewProps;
 
@@ -84,14 +83,14 @@ export class KeyboardCompatibleView extends React.Component<
   _keyboardEvent: KeyboardEvent | null = null;
   _subscriptions: EmitterSubscription[] = [];
   _appStateSubscription: NativeEventSubscription | null = null;
-  viewRef: React.RefObject<View | null>;
+  viewRef: React.RefObject<ViewRef | null>;
   _initialFrameHeight = 0;
   _bottom: number = 0;
 
   constructor(props: KeyboardAvoidingViewProps) {
     super(props);
     this.state = {
-      appState: AppState.currentState,
+      appState: (AppState.currentState as AppStateStatus | null | undefined) ?? 'unknown',
       bottom: 0,
       isKeyboardOpen: false,
     };
@@ -205,7 +204,7 @@ export class KeyboardCompatibleView extends React.Component<
       return;
     }
 
-    const { duration, easing, endCoordinates } = this._keyboardEvent;
+    const { endCoordinates } = this._keyboardEvent;
     const height = await this._relativeKeyboardHeight(endCoordinates);
 
     if (this._bottom === height) {
@@ -213,18 +212,6 @@ export class KeyboardCompatibleView extends React.Component<
     }
 
     this._setBottom(height);
-
-    const enabled = this.props.enabled ?? true;
-    if (enabled && duration && easing) {
-      LayoutAnimation.configureNext({
-        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
-        duration: duration > 10 ? duration : 10,
-        update: {
-          duration: duration > 10 ? duration : 10,
-          type: LayoutAnimation.Types[easing] || 'keyboard',
-        },
-      });
-    }
   };
 
   _handleAppStateChange = (nextAppState: AppStateStatus) => {

@@ -3,8 +3,6 @@ import React from 'react';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 import type { StreamChat, UserResponse } from 'stream-chat';
 
-import type { DeepPartial } from '../../../../contexts/themeContext/ThemeContext';
-import type { Theme } from '../../../../contexts/themeContext/utils/theme';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
   generateMessage,
@@ -30,7 +28,7 @@ describe('MessageAuthor', () => {
       user: { ...staticUser, image: undefined },
     });
     render(
-      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+      <Chat client={chatClient} style={defaultTheme}>
         <MessageAuthor message={message} />
       </Chat>,
     );
@@ -40,7 +38,7 @@ describe('MessageAuthor', () => {
     });
 
     screen.rerender(
-      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+      <Chat client={chatClient} style={defaultTheme}>
         <MessageAuthor message={message} />
       </Chat>,
     );
@@ -55,7 +53,7 @@ describe('MessageAuthor', () => {
     });
 
     screen.rerender(
-      <Chat client={chatClient} style={defaultTheme as DeepPartial<Theme>}>
+      <Chat client={chatClient} style={defaultTheme}>
         <MessageAuthor message={staticMessage} showAvatar />
       </Chat>,
     );

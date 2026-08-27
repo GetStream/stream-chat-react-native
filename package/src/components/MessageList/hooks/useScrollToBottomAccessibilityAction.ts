@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import type { AccessibilityActionEvent, AccessibilityProps } from 'react-native';
+import type { AccessibilityActionEvent, ViewProps } from 'react-native';
 
 import { mergeAccessibilityActions } from '../../../a11y/a11yUtils';
 import { useAccessibilityContext } from '../../../contexts/accessibilityContext/AccessibilityContext';
@@ -13,8 +13,19 @@ import {
 
 export const SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME = 'streamScrollToBottom';
 
-type AccessibilityActions = AccessibilityProps['accessibilityActions'];
-type OnAccessibilityAction = AccessibilityProps['onAccessibilityAction'];
+type AccessibilityActions = ViewProps['accessibilityActions'];
+type OnAccessibilityAction = ViewProps['onAccessibilityAction'];
+
+/**
+ * Declared explicitly rather than inferred. Left to inference, TypeScript expands
+ * `AccessibilityActionEvent` into its structural shape when emitting the declaration, and that
+ * shape names `HostInstance`. Naming the props here keeps the emitted `.d.ts` referring to
+ * `ViewProps[...]`, which resolves against whichever React Native the consumer actually has.
+ */
+export type UseScrollToBottomAccessibilityActionResult = {
+  accessibilityActions: AccessibilityActions;
+  onAccessibilityAction: OnAccessibilityAction;
+};
 
 type UseScrollToBottomAccessibilityActionParams = {
   accessibilityActions?: AccessibilityActions;
@@ -30,7 +41,7 @@ export const useScrollToBottomAccessibilityAction = ({
   onScrollToBottom,
   unreadCount,
   visible,
-}: UseScrollToBottomAccessibilityActionParams) => {
+}: UseScrollToBottomAccessibilityActionParams): UseScrollToBottomAccessibilityActionResult => {
   const { enabled } = useAccessibilityContext();
   const { t } = useContext(TranslationContext);
 

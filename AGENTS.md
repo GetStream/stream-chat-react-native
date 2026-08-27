@@ -18,7 +18,7 @@ Targets iOS and Android.
 ## Tech & toolchain
 
 - **Languages:** TypeScript + React Native
-- **Runtime:** Node 24 (`.nvmrc` is `v24`; root `engines.node` is `>=20.19.4`; CI runs `24.x`)
+- **Runtime:** Node 24 (`.nvmrc` is `v24`; root `engines.node` is `>=22.13.0`; CI runs `24.x`)
 - **Package manager:** Yarn 4.15.0 (Berry). The binary lives at `.yarn/releases/yarn-4.15.0.cjs` and is activated via `yarnPath` in `.yarnrc.yml`. Any globally installed `yarn` (even the Homebrew classic 1.x) acts only as a launcher — no Corepack required.
 - **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/ExpoMessaging`. **No Lerna.**
 - **Testing:** Jest with the `@react-native/jest-preset` + `@testing-library/react-native`.

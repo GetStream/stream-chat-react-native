@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Search, useTheme } from 'stream-chat-react-native';
+import { Search, TextInputRef, useTheme } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
@@ -76,7 +76,7 @@ type Props = {
 
 export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
   const { chatClient } = useAppContext();
-  const searchInputRef = useRef<TextInput>(null);
+  const searchInputRef = useRef<TextInputRef>(null);
 
   const {
     theme: { semantics },

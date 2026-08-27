@@ -93,7 +93,7 @@ export class SqliteClient {
    * LogBox turns red.
    */
   private static recordError = (e: SqliteClientError) => {
-    this.logger?.('error', e.message, { tag: e.code });
+    SqliteClient.logger?.('error', e.message, { tag: e.code });
 
     throw e;
   };
@@ -109,10 +109,10 @@ export class SqliteClient {
    */
   static preflightEncryption = async () => {
     try {
-      this.preflightedKey = await this.resolveEncryptionKey();
+      SqliteClient.preflightedKey = await SqliteClient.resolveEncryptionKey();
     } catch (e) {
       if (e instanceof SqliteClientError) {
-        this.recordError(e);
+        SqliteClient.recordError(e);
       }
       throw e;
     }
@@ -125,7 +125,7 @@ export class SqliteClient {
    * cache of its users' messages.
    */
   private static resolveEncryptionKey = async () => {
-    const { getEncryptionKey } = this;
+    const { getEncryptionKey } = SqliteClient;
 
     if (!getEncryptionKey) {
       return undefined;
@@ -185,10 +185,11 @@ export class SqliteClient {
           'Please install "@op-engineering/op-sqlite" package to enable offline support',
         );
       }
-      const encryptionKey = this.preflightedKey ?? (await this.resolveEncryptionKey());
-      this.preflightedKey = undefined;
+      const encryptionKey =
+        SqliteClient.preflightedKey ?? (await SqliteClient.resolveEncryptionKey());
+      SqliteClient.preflightedKey = undefined;
 
-      this.db = sqlite.open({
+      SqliteClient.db = sqlite.open({
         location: SqliteClient.dbLocation,
         name: SqliteClient.dbName,
         ...(encryptionKey ? { encryptionKey } : {}),
@@ -198,12 +199,12 @@ export class SqliteClient {
       // any pages, but rather look at a connection level flag. The first failure
       // is going to be whatever actually reads something, which is going to be
       // the user_version read in initializeDatabase.
-      await this.db?.execute('PRAGMA foreign_keys = ON', []);
+      await SqliteClient.db?.execute('PRAGMA foreign_keys = ON', []);
     } catch (e) {
       if (e instanceof SqliteClientError) {
         throw e;
       }
-      this.logger?.('error', `Error opening database ${SqliteClient.dbName}`, {
+      SqliteClient.logger?.('error', `Error opening database ${SqliteClient.dbName}`, {
         error: e,
       });
       console.error(`Error opening database ${SqliteClient.dbName}: ${e}`);
@@ -212,13 +213,13 @@ export class SqliteClient {
 
   static closeDB = () => {
     try {
-      if (!this.db) {
+      if (!SqliteClient.db) {
         throw new Error('DB is not open or initialized.');
       }
-      this.db.close();
-      this.db = undefined;
+      SqliteClient.db.close();
+      SqliteClient.db = undefined;
     } catch (e) {
-      this.logger?.('error', `Error closing database ${SqliteClient.dbName}`, {
+      SqliteClient.logger?.('error', `Error closing database ${SqliteClient.dbName}`, {
         error: e,
       });
       console.error(`Error closing database ${SqliteClient.dbName}: ${e}`);
@@ -231,7 +232,7 @@ export class SqliteClient {
     }
 
     try {
-      if (!this.db) {
+      if (!SqliteClient.db) {
         throw new Error('DB is not open or initialized.');
       }
       // This is a workaround to make the executeBatch method work.
@@ -244,9 +245,9 @@ export class SqliteClient {
         }
         return query;
       });
-      await this.db.executeBatch(finalQueries);
+      await SqliteClient.db.executeBatch(finalQueries);
     } catch (e) {
-      this.logger?.('error', 'SqlBatch queries failed', {
+      SqliteClient.logger?.('error', 'SqlBatch queries failed', {
         error: e,
         queries,
       });
@@ -256,14 +257,14 @@ export class SqliteClient {
 
   static executeSql = async (query: string, params?: Scalar[]) => {
     try {
-      if (!this.db) {
+      if (!SqliteClient.db) {
         throw new Error('DB is not open or initialized.');
       }
-      const { rows } = await this.db.execute(query, params);
+      const { rows } = await SqliteClient.db.execute(query, params);
 
       return rows ? (rows as Record<string, string>[]) : [];
     } catch (e) {
-      this.logger?.('error', 'Sql single query failed', {
+      SqliteClient.logger?.('error', 'Sql single query failed', {
         error: e,
         query,
       });
@@ -276,24 +277,24 @@ export class SqliteClient {
       `DROP TABLE IF EXISTS ${table}`,
       [],
     ]);
-    this.logger?.('info', 'Dropping tables', {
+    SqliteClient.logger?.('info', 'Dropping tables', {
       tables: Object.keys(tables),
     });
     await SqliteClient.executeSqlBatch(queries);
   };
 
   static deleteDatabase = () => {
-    this.logger?.('info', 'deleteDatabase', {
+    SqliteClient.logger?.('info', 'deleteDatabase', {
       dbLocation: SqliteClient.dbLocation,
       dbname: SqliteClient.dbName,
     });
     try {
-      if (!this.db) {
+      if (!SqliteClient.db) {
         throw new Error('DB is not open or initialized.');
       }
-      this.db.delete();
+      SqliteClient.db.delete();
     } catch (e) {
-      this.logger?.('error', 'Error deleting DB', {
+      SqliteClient.logger?.('error', 'Error deleting DB', {
         dbLocation: SqliteClient.dbLocation,
         dbname: SqliteClient.dbName,
         error: e,
@@ -313,11 +314,11 @@ export class SqliteClient {
   static isUnreadableDbError = (e: unknown) => {
     const message = String((e as Error)?.message ?? e);
 
-    if (this.TRANSIENT_ERROR.test(message)) {
+    if (SqliteClient.TRANSIENT_ERROR.test(message)) {
       return false;
     }
 
-    return this.UNREADABLE_ERROR.test(message);
+    return SqliteClient.UNREADABLE_ERROR.test(message);
   };
 
   static initializeDatabase = async (): Promise<boolean> => {
@@ -347,11 +348,11 @@ export class SqliteClient {
       return true;
     } catch (e) {
       if (e instanceof SqliteClientError) {
-        this.recordError(e);
+        SqliteClient.recordError(e);
       }
 
-      if (this.isUnreadableDbError(e)) {
-        this.recordError(
+      if (SqliteClient.isUnreadableDbError(e)) {
+        SqliteClient.recordError(
           new SqliteClientError(
             'OFFLINE_DB_UNREADABLE',
             'The offline database exists but could not be read. Usually the encryption ' +
@@ -365,7 +366,7 @@ export class SqliteClient {
       }
 
       console.log('Error initializing DB', e);
-      this.logger?.('error', 'Error initializing DB', {
+      SqliteClient.logger?.('error', 'Error initializing DB', {
         dbLocation: SqliteClient.dbLocation,
         dbname: SqliteClient.dbName,
         error: e,
@@ -377,20 +378,20 @@ export class SqliteClient {
 
   static updateUserPragmaVersion = async (version: number) => {
     SqliteClient.logger?.('info', `updateUserPragmaVersion to ${version}`);
-    if (!this.db) {
+    if (!SqliteClient.db) {
       throw new Error('DB is not open or initialized.');
     }
-    await this.db.execute(`PRAGMA user_version = ${version}`, []);
+    await SqliteClient.db.execute(`PRAGMA user_version = ${version}`, []);
   };
 
   static getUserPragmaVersion = async () => {
     try {
-      if (!this.db) {
+      if (!SqliteClient.db) {
         throw new Error('DB is not open or initialized.');
       }
-      const { rows } = await this.db.execute('PRAGMA user_version', []);
+      const { rows } = await SqliteClient.db.execute('PRAGMA user_version', []);
       const result = rows ? rows : [];
-      this.logger?.('info', 'getUserPragmaVersion', {
+      SqliteClient.logger?.('info', 'getUserPragmaVersion', {
         result,
       });
       return result[0].user_version as number;
@@ -401,8 +402,8 @@ export class SqliteClient {
   };
 
   static resetDB = async () => {
-    this.logger?.('info', 'resetDB');
-    if (this.db) {
+    SqliteClient.logger?.('info', 'resetDB');
+    if (SqliteClient.db) {
       await SqliteClient.dropTables();
       SqliteClient.closeDB();
     }

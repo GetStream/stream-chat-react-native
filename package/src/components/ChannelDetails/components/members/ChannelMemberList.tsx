@@ -154,7 +154,7 @@ const ChannelMemberListContent = ({
         keyExtractor={keyExtractor}
         ListEmptyComponent={emptyState}
         ListFooterComponent={
-          loading && members && members.length > 0 ? <ActivityIndicator /> : null
+          loading && members && members.length > 0 ? <ActivityIndicator /> : undefined
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}

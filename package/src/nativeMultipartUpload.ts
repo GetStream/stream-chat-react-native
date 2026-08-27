@@ -250,7 +250,12 @@ export const createNativeMultipartUploader = (
     return undefined;
   }
 
-  const multipartUploadEventEmitter = options.eventEmitter ?? new NativeEventEmitter(nativeModule);
+  // Annotated with the SDK's own structural emitter type: React Native 0.87 made
+  // `NativeEventEmitter` generic over an event -> args map, so the inferred union of
+  // `options.eventEmitter` and a raw `NativeEventEmitter` no longer accepts a typed listener.
+  const multipartUploadEventEmitter: NativeMultipartUploadEventEmitter =
+    options.eventEmitter ??
+    (new NativeEventEmitter(nativeModule) as unknown as NativeMultipartUploadEventEmitter);
 
   return async ({
     headers,

@@ -1,5 +1,4 @@
 import React, { PropsWithChildren, useContext } from 'react';
-import type { View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -16,6 +15,7 @@ import type { MessageContentType } from '../../contexts/messagesContext/Messages
 import type { DeepPartial } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { Rect } from '../../state-store/message-overlay-store';
+import type { ViewRef } from '../../types/react-native-compat';
 
 import type { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -73,7 +73,7 @@ export type MessageContextValue = {
    * Ref to the view that the message context menu should align with.
    * Custom message renderers can attach this to a different subview if needed.
    */
-  contextMenuAnchorRef: React.RefObject<View | null>;
+  contextMenuAnchorRef: React.RefObject<ViewRef | null>;
   /**
    * Stable UI-instance identifier for the rendered message.
    * Used for overlay state so two rendered instances of the same message do not collide.
@@ -114,7 +114,7 @@ export type MessageContextValue = {
    * Registers the subtree that should be measured and portaled into the message overlay.
    * Custom message renderers typically interact with this via `MessageOverlayWrapper`.
    */
-  registerMessageOverlayTarget: (params: { id: string; view: View | null }) => void;
+  registerMessageOverlayTarget: (params: { id: string; view: ViewRef | null }) => void;
   unregisterMessageOverlayTarget: (id: string) => void;
   reactions: ReactionSummary[];
   /** Read count of the message */

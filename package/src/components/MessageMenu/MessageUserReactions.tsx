@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { FlatList } from 'react-native-gesture-handler';
 
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -25,6 +26,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { useStableCallback } from '../../hooks';
 import { IconProps } from '../../icons';
 import { primitives } from '../../theme';
+import type { FlatListRef } from '../../types/react-native-compat';
 import { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 import { Button } from '../ui';
@@ -98,7 +100,7 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
     selectedReaction: propSelectedReaction,
     supportedReactions: propSupportedReactions,
   } = props;
-  const selectorListRef = useRef<FlatList>(null);
+  const selectorListRef = useRef<FlatListRef<ReactionSelectorItemType>>(null);
   const { close } = useBottomSheetContext();
   const reactionTypes = useMemo(
     () => Object.keys(message?.reaction_groups ?? {}),

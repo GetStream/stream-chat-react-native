@@ -1,13 +1,12 @@
 import React from 'react';
 
-import type { TextInput } from 'react-native';
-
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
 import type { InputBoxRef } from '../../../contexts/messageInputContext/MessageInputContext';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import type { TextInputRef } from '../../../types/react-native-compat';
 import type { ChannelProps } from '../../Channel/Channel';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
@@ -141,7 +140,7 @@ describe('AutoCompleteInput', () => {
     const text = 'hello';
     const channelProps = {
       channel,
-      setInputRef: (ref: TextInput | null) => {
+      setInputRef: (ref: TextInputRef | null) => {
         inputRef = ref as InputBoxRef | null;
       },
     };
