@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Linking, TextInput, TextInputProps } from 'react-native';
+import { Alert, Linking, TextInputProps } from 'react-native';
 
 import { lookup as lookupMimeType } from 'mime-types';
 import {
@@ -37,6 +37,7 @@ import {
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { AudioRecorderManager } from '../../state-store/audio-recorder-manager';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
+import { TextInputRef } from '../../types/react-native-compat';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
@@ -78,7 +79,7 @@ export type LocalMessageInputContext = {
   stopVoiceRecording: () => Promise<void>;
 };
 
-export type InputBoxRef = TextInput & {
+export type InputBoxRef = TextInputRef & {
   clearState: () => void;
   restoreState: (text: string) => void;
 };
@@ -202,7 +203,7 @@ export type InputMessageInputContextValue = {
    *
    * @overrideType Function
    */
-  setInputRef?: (ref: TextInput | null) => void;
+  setInputRef?: (ref: TextInputRef | null) => void;
   showPollCreationDialog?: boolean;
   messageInputHeightStore: MessageInputHeightStore;
 };

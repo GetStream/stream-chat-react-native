@@ -6,7 +6,7 @@ import { SvgUri } from 'react-native-svg';
 import { useIsSvg } from '../../hooks/useIsSvg';
 
 const getSourceUri = (source: ImageProps['source']): string | undefined => {
-  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+  if (!source || typeof source !== 'object' || Array.isArray(source) || !('uri' in source)) {
     return undefined;
   }
   return source.uri;

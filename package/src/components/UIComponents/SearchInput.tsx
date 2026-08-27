@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Pressable } from 'react-native-gesture-handler';
 
@@ -7,6 +7,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
+import type { TextInputRef } from '../../types/react-native-compat';
 import type { IconRenderer } from '../ui/Button/Button';
 import { Input, InputProps } from '../ui/Input/Input';
 
@@ -19,7 +20,7 @@ export const SearchInput = ({ onChangeText, ...props }: SearchInputProps) => {
     theme: { semantics },
   } = useTheme();
 
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputRef>(null);
   const [hasText, setHasText] = useState(() => Boolean(props.value || props.defaultValue));
 
   const handleChangeText = useCallback(

@@ -8,7 +8,6 @@ import {
   Keyboard,
   KeyboardAvoidingViewProps,
   KeyboardEvent,
-  KeyboardEventListener,
   KeyboardMetrics,
   LayoutAnimation,
   LayoutChangeEvent,
@@ -22,6 +21,7 @@ import {
 } from 'react-native';
 
 import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
+import type { KeyboardEventListener, ViewRef } from '../../types/react-native-compat';
 
 export type KeyboardCompatibleViewProps = KeyboardAvoidingViewProps;
 
@@ -84,14 +84,14 @@ export class KeyboardCompatibleView extends React.Component<
   _keyboardEvent: KeyboardEvent | null = null;
   _subscriptions: EmitterSubscription[] = [];
   _appStateSubscription: NativeEventSubscription | null = null;
-  viewRef: React.RefObject<View | null>;
+  viewRef: React.RefObject<ViewRef | null>;
   _initialFrameHeight = 0;
   _bottom: number = 0;
 
   constructor(props: KeyboardAvoidingViewProps) {
     super(props);
     this.state = {
-      appState: AppState.currentState,
+      appState: (AppState.currentState as AppStateStatus | null | undefined) ?? 'unknown',
       bottom: 0,
       isKeyboardOpen: false,
     };

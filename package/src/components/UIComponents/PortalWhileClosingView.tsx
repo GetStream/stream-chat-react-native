@@ -15,6 +15,7 @@ import {
   useHasActiveId,
   useIsOverlayClosing,
 } from '../../state-store';
+import type { ViewRef } from '../../types/react-native-compat';
 
 type PortalWhileClosingViewProps = {
   /**
@@ -114,7 +115,7 @@ export const PortalWhileClosingView = ({
 };
 
 const useSyncingApi = (portalHostName: string, registrationId: string) => {
-  const containerRef = useRef<View | null>(null);
+  const containerRef = useRef<ViewRef | null>(null);
   const placeholderLayout = useSharedValue({ h: 0, w: 0 });
   const insets = useSafeAreaInsets();
   const hasActiveId = useHasActiveId();

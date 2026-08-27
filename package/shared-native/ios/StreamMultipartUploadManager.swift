@@ -390,9 +390,24 @@ extension StreamMultipartUploadManager: URLSessionDataDelegate, URLSessionTaskDe
 
       if nsError.domain == NSURLErrorDomain, nsError.code == NSURLErrorCancelled {
         state.completion?(.failure(StreamMultipartUploadError.cancelled))
+      } else if let bodyError = state.bodyFactory.bodyError {
+        // The request body could not be produced in full. A bound stream pair has no error
+        // channel — the reader only sees a truncated body — so prefer the recorded cause over
+        // the transport error it surfaces as.
+        state.completion?(.failure(bodyError))
       } else {
         state.completion?(.failure(nsError))
       }
+      state.completion = nil
+      return
+    }
+
+    // The task completed without a transport error, but the body may still not have been produced
+    // in full. A bound stream pair has no error channel, so a producer failure closes the write end
+    // and the reader sees a clean EOF — with no `Content-Length` (chunked) that is a well-formed
+    // short body the server can happily accept. Never report a truncated upload as a success.
+    if let bodyError = state.bodyFactory.bodyError {
+      state.completion?(.failure(bodyError))
       state.completion = nil
       return
     }

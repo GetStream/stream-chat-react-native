@@ -7,6 +7,7 @@ import { useChatConfigContext } from '../../../../contexts/chatConfigContext/Cha
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
+import type { ViewRef } from '../../../../types/react-native-compat';
 import { FileTypes } from '../../../../types/types';
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
@@ -49,7 +50,7 @@ export const MediaItem = (props: MediaItemProps) => {
   } = useTheme();
   const { resizableCDNHosts } = useChatConfigContext();
   const styles = useStyles();
-  const containerRef = useRef<View>(null);
+  const containerRef = useRef<ViewRef>(null);
 
   const isVideo = attachment.type === FileTypes.Video;
   const url = attachment.thumb_url || getUrlOfImageAttachment(attachment);
@@ -65,7 +66,11 @@ export const MediaItem = (props: MediaItemProps) => {
       onPress={
         onPress
           ? () =>
-              onPress({ attachment, message, requesterNode: findNodeHandle(containerRef.current) })
+              onPress({
+                attachment,
+                message,
+                requesterNode: findNodeHandle(containerRef.current) ?? null,
+              })
           : undefined
       }
       ref={containerRef}

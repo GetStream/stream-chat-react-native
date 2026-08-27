@@ -17,6 +17,7 @@ export * from './icons';
 
 export * from './middlewares';
 
+export * from './types/react-native-compat';
 export * from './types/types';
 
 export * from './utils/patchMessageTextCommand';
