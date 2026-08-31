@@ -1,5 +1,6 @@
 import type { ChannelMemberResponse } from 'stream-chat';
 
+import { mapStorableToDateTime } from './mapStorableToDateTime';
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { TableRowJoinedUser } from '../types';
@@ -25,20 +26,20 @@ export const mapStorableToMember = (
   } = memberRow;
 
   return {
-    archived_at: archivedAt ? new Date(archivedAt) : undefined,
+    archived_at: mapStorableToDateTime(archivedAt),
     banned: Boolean(banned),
     channel_role: channelRole ?? '',
-    created_at: new Date(createdAt ?? ''),
+    created_at: mapStorableToDateTime(createdAt) ?? 0,
     custom: {},
-    invite_accepted_at: inviteAcceptedAt ? new Date(inviteAcceptedAt) : undefined,
-    invite_rejected_at: inviteRejectedAt ? new Date(inviteRejectedAt) : undefined,
+    invite_accepted_at: mapStorableToDateTime(inviteAcceptedAt),
+    invite_rejected_at: mapStorableToDateTime(inviteRejectedAt),
     invited,
     is_moderator: isModerator,
     notifications_muted: false,
-    pinned_at: pinnedAt ? new Date(pinnedAt) : undefined,
+    pinned_at: mapStorableToDateTime(pinnedAt),
     role,
     shadow_banned: Boolean(shadowBanned),
-    updated_at: new Date(updatedAt ?? ''),
+    updated_at: mapStorableToDateTime(updatedAt) ?? 0,
     user: mapStorableToUser(user),
     user_id: userId,
   };

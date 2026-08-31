@@ -17,6 +17,8 @@ import debounce from 'lodash/debounce';
 
 import type { Channel, EventPayload, LocalMessage } from 'stream-chat';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
 
@@ -175,7 +177,7 @@ const keyExtractor = (derivedItem: MessageListItemWithNeighbours) => {
     return item.id;
   }
   if (item.created_at) {
-    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+    return String(item.created_at);
   }
   return Date.now().toString();
 };
@@ -521,11 +523,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         if (
           lastMessage?.created_at &&
           !isMessageTypeDeleted &&
-          typeof lastMessage.created_at !== 'string' &&
-          lastMessage.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+          lastMessage.created_at != null &&
+          convertTimestampToDate(lastMessage.created_at)?.toDateString() !==
+            stickyHeaderDateRef.current?.toDateString()
         ) {
-          stickyHeaderDateRef.current = lastMessage.created_at;
-          setStickyHeaderDate(lastMessage.created_at);
+          stickyHeaderDateRef.current = convertTimestampToDate(lastMessage.created_at);
+          setStickyHeaderDate(convertTimestampToDate(lastMessage.created_at));
         }
       }
     },
@@ -566,8 +569,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         const lastItemMessage = lastItem.message;
         const lastItemCreatedAt = lastItemMessage.created_at;
 
-        const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
-        const lastItemDate = lastItemCreatedAt.getTime();
+        const unreadIndicatorDate = channelUnreadState?.last_read;
+        const lastItemDate = lastItemCreatedAt;
 
         if (
           !channel.messagePaginator.hasMoreTail &&

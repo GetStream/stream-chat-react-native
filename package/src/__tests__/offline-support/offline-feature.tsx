@@ -932,11 +932,10 @@ export const Generic = () => {
       const messages = channelResponse.messages;
       messages.sort(
         (a: Partial<MessageResponse> | LocalMessage, b: Partial<MessageResponse> | LocalMessage) =>
-          new Date(a.created_at as string | Date).getTime() -
-          new Date(b.created_at as string | Date).getTime(),
+          (a.created_at as number) - (b.created_at as number),
       );
       // truncate at the middle
-      const truncatedAt = messages[Number(messages.length / 2)].created_at as Date | undefined;
+      const truncatedAt = messages[Number(messages.length / 2)].created_at as number | undefined;
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -981,7 +980,7 @@ export const Generic = () => {
 
       const channelResponse = channels[getRandomInt(0, channels.length - 1)];
       const channelToTruncate = channelResponse.channel;
-      const truncatedAt = new Date(0);
+      const truncatedAt = 0;
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -1019,12 +1018,10 @@ export const Generic = () => {
       const channelToTruncate = channelResponse.channel;
       const messages = channelResponse.messages;
       const latestTimestamp = Math.max(
-        ...messages.map((m: Partial<MessageResponse> | LocalMessage) =>
-          new Date(m.created_at as string | Date).getTime(),
-        ),
+        ...messages.map((m: Partial<MessageResponse> | LocalMessage) => m.created_at as number),
       );
       // truncate at the middle
-      const truncatedAt = new Date(latestTimestamp + 1);
+      const truncatedAt = latestTimestamp + 1;
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,

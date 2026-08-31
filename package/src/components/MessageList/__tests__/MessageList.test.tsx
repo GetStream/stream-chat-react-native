@@ -5,6 +5,8 @@ import { FlatList } from 'react-native';
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 import type { UserResponse } from 'stream-chat';
 
+import { msToNs } from 'stream-chat';
+
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
@@ -353,7 +355,7 @@ describe('MessageList', () => {
       read: [
         {
           user: user1,
-          last_read: new Date(base + 5000).toISOString(),
+          last_read: msToNs(base + 5000),
           last_read_message_id: '5',
           unread_messages: 5,
         },
@@ -414,7 +416,7 @@ describe('MessageList', () => {
       read: [
         {
           user: user1,
-          last_read: new Date(base + 5000).toISOString(),
+          last_read: msToNs(base + 5000),
           last_read_message_id: '5',
           unread_messages: 4,
         },

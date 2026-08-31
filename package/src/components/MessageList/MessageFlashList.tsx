@@ -13,6 +13,8 @@ import Animated from 'react-native-reanimated';
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, EventPayload, LocalMessage } from 'stream-chat';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
 
@@ -85,7 +87,7 @@ const keyExtractor = (item: LocalMessage) => {
     return item.id;
   }
   if (item.created_at) {
-    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+    return String(item.created_at);
   }
   return Date.now().toString();
 };
@@ -700,11 +702,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       if (
         lastItem?.item?.created_at &&
         !isMessageTypeDeleted &&
-        typeof lastItem.item.created_at !== 'string' &&
-        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+        lastItem.item.created_at != null &&
+        convertTimestampToDate(lastItem.item.created_at)?.toDateString() !==
+          stickyHeaderDateRef.current?.toDateString()
       ) {
-        stickyHeaderDateRef.current = lastItem.item.created_at;
-        setStickyHeaderDate(lastItem.item.created_at);
+        stickyHeaderDateRef.current = convertTimestampToDate(lastItem.item.created_at);
+        setStickyHeaderDate(convertTimestampToDate(lastItem.item.created_at));
       }
     },
   );
@@ -745,8 +748,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       const lastItemMessage = lastItem.item;
       const lastItemCreatedAt = lastItemMessage.created_at;
 
-      const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
-      const lastItemDate = lastItemCreatedAt.getTime();
+      const unreadIndicatorDate = channelUnreadState?.last_read;
+      const lastItemDate = lastItemCreatedAt;
 
       if (
         !channel.messagePaginator.hasMoreTail &&

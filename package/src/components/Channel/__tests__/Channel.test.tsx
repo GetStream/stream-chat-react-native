@@ -22,6 +22,7 @@ import dispatchConnectionChanged from '../../../mock-builders/event/connectionCh
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
@@ -526,7 +527,7 @@ describe('Channel initial load useEffect', () => {
       const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
-        last_read: new Date(),
+        last_read: convertDateToTimestamp(),
         user,
       } as unknown as (typeof channel.state.read)[string];
 
@@ -564,7 +565,7 @@ describe('Channel initial load useEffect', () => {
       const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
-        last_read: new Date(),
+        last_read: convertDateToTimestamp(),
         unread_messages: numberOfUnreadMessages,
         user,
       };

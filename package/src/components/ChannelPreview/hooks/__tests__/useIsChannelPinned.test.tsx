@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { Channel, ChannelMemberResponse, StateStore } from 'stream-chat';
 
+import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { useIsChannelPinned } from '../useIsChannelPinned';
 
 describe('useIsChannelPinned', () => {
@@ -30,7 +31,7 @@ describe('useIsChannelPinned', () => {
     act(() => {
       channel.state.partialNext({
         membership: {
-          pinned_at: new Date('2026-06-15T08:00:00.000Z'),
+          pinned_at: convertDateToTimestamp('2026-06-15T08:00:00.000Z'),
         } as ChannelMemberResponse,
       });
     });

@@ -1,5 +1,7 @@
 import type { Channel } from 'stream-chat';
 
+import { nowNs } from 'stream-chat';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStableCallback } from '../../../hooks';
 import { MarkReadFunctionOptions } from '../../Channel/Channel';
@@ -69,7 +71,7 @@ export const useMarkRead = (channel: Channel) => {
       const previous = channel.messagePaginator.unreadStateSnapshot.getLatestValue();
       channel.messagePaginator.unreadStateSnapshot.next({
         firstUnreadMessageId: null,
-        lastReadAt: new Date(),
+        lastReadAt: nowNs(),
         lastReadMessageId: loadedItems[loadedItems.length - 1]?.id ?? previous.lastReadMessageId,
         unreadCount: 0,
       });

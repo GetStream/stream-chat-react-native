@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollVoteResponseData } from 'stream-chat';
+import { convertTimestampToDate, PollVoteResponseData } from 'stream-chat';
 
 import { PollButtonProps } from './Button';
 import { PollInputDialog } from './PollInputDialog';
@@ -88,7 +88,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
   const dateString = useMemo(
     () =>
       getDateString({
-        messageCreatedAt: answer.updated_at,
+        messageCreatedAt: convertTimestampToDate(answer.updated_at),
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.PollVote',

@@ -9,7 +9,8 @@ const defaultMuteStatus = {
 };
 
 const selector = (state: {
-  muteStatus: { createdAt: Date | null; expiresAt: Date | null; muted: boolean };
+  // Mirrors core's `ChannelMuteStatus`: both timestamps are unix nanoseconds.
+  muteStatus: { createdAt: number | null; expiresAt: number | null; muted: boolean };
 }) => ({ muteStatus: state.muteStatus });
 
 /**

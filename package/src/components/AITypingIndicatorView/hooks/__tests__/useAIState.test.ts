@@ -3,6 +3,7 @@ import { act, renderHook } from '@testing-library/react-native';
 import { AIStates } from 'stream-chat';
 
 import { initiateClientWithChannels } from '../../../../mock-builders/api/initiateClientWithChannels';
+import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { useAIState } from '../useAIState';
 
 describe('useAIState', () => {
@@ -24,7 +25,7 @@ describe('useAIState', () => {
       client.dispatchEvent({
         ai_state: AIStates.Generating,
         cid: channel.cid,
-        created_at: new Date('2024-01-01T00:00:00.000Z'),
+        created_at: convertDateToTimestamp('2024-01-01T00:00:00.000Z'),
         custom: {},
         message_id: 'message-id',
         type: 'ai_indicator.update',
@@ -35,7 +36,7 @@ describe('useAIState', () => {
     act(() => {
       client.dispatchEvent({
         cid: channel.cid,
-        created_at: new Date('2024-01-01T00:00:00.000Z'),
+        created_at: convertDateToTimestamp('2024-01-01T00:00:00.000Z'),
         custom: {},
         type: 'ai_indicator.clear',
       });

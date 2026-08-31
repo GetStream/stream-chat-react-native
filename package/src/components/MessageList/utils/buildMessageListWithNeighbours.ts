@@ -11,7 +11,7 @@ export const getMessageListItemCacheKey = (item: LocalMessage, index: number) =>
     return item.id;
   }
   if (item.created_at) {
-    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+    return String(item.created_at);
   }
   return `index-${index}`;
 };

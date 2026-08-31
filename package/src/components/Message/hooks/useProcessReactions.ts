@@ -1,6 +1,6 @@
 import { ComponentType, useMemo } from 'react';
 
-import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
+import { convertTimestampToDate, ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
 import {
@@ -105,9 +105,9 @@ export const useProcessReactions = (props: UseProcessReactionsParams) => {
 
         return {
           count,
-          firstReactionAt: first_reaction_at ? new Date(first_reaction_at) : null,
+          firstReactionAt: convertTimestampToDate(first_reaction_at) ?? null,
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
-          lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
+          lastReactionAt: convertTimestampToDate(last_reaction_at) ?? null,
           latestReactedUserNames,
           own: isOwnReaction(reactionType, own_reactions, latest_reactions, client.userID),
           type: reactionType,

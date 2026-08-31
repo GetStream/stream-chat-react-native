@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { EventPayload, PaginatorState, ReminderFilters, ReminderResponseData } from 'stream-chat';
 
+import { nowNs } from 'stream-chat';
+
 import { useStateStore } from './useStateStore';
 
 import { useChatContext } from '../contexts/chatContext/ChatContext';
@@ -19,17 +21,17 @@ const sortRemindersByDate = (reminders: ReminderResponseData[]) => {
       return 0; // If either remind_at is missing, keep original order
     }
     // Sort by remind_at date
-    return new Date(a.remind_at).getTime() - new Date(b.remind_at).getTime();
+    return a.remind_at - b.remind_at;
   });
 };
 
 // Utility functions to check reminder status
 const isReminderOverdue = (reminder?: ReminderResponseData) => {
-  return reminder?.remind_at && new Date(reminder.remind_at) < new Date();
+  return reminder?.remind_at != null && reminder.remind_at < nowNs();
 };
 
 const isReminderUpcoming = (reminder?: ReminderResponseData) => {
-  return reminder?.remind_at && new Date(reminder.remind_at) > new Date();
+  return reminder?.remind_at != null && reminder.remind_at > nowNs();
 };
 
 // Utility to check if all reminders should be shown based on filters

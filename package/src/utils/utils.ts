@@ -273,22 +273,18 @@ export const findInMessagesById = (messages: LocalMessage[], targetId: string) =
  */
 export const findInMessagesByDate = (
   messages: MessageResponse[] | LocalMessage[],
-  targetDate: Date,
+  /** Unix nanoseconds, the same unit the messages' `created_at` carries. */
+  targetTimestamp: number,
 ) => {
   // Binary search
-  const targetTimestamp = targetDate.getTime();
   let left = 0;
   let right = messages.length - 1;
   let middle = 0;
   while (left <= right) {
     middle = Math.floor(left + (right - left) / 2);
-    const middleTimestamp = new Date(messages[middle].created_at as string | Date).getTime();
-    const middleLeftTimestamp =
-      messages[middle - 1]?.created_at &&
-      new Date(messages[middle - 1].created_at as string | Date).getTime();
-    const middleRightTimestamp =
-      messages[middle + 1]?.created_at &&
-      new Date(messages[middle + 1].created_at as string | Date).getTime();
+    const middleTimestamp = messages[middle].created_at;
+    const middleLeftTimestamp = messages[middle - 1]?.created_at;
+    const middleRightTimestamp = messages[middle + 1]?.created_at;
     if (
       middleTimestamp === targetTimestamp ||
       (middleLeftTimestamp &&
@@ -337,8 +333,8 @@ export const checkMessageEquality = (
     prevMessage?.pinned === nextMessage?.pinned &&
     prevMessage?.i18n === nextMessage?.i18n &&
     prevMessage?.reply_count === nextMessage?.reply_count &&
-    prevMessage?.updated_at?.getTime?.() === nextMessage?.updated_at?.getTime?.() &&
-    prevMessage?.deleted_at?.getTime?.() === nextMessage?.deleted_at?.getTime?.();
+    prevMessage?.updated_at === nextMessage?.updated_at &&
+    prevMessage?.deleted_at === nextMessage?.deleted_at;
 
   return messageEqual;
 };
@@ -365,8 +361,8 @@ export const checkQuotedMessageEquality = (
   const quotedMessageEqual =
     prevQuotedMessage?.type === nextQuotedMessage?.type &&
     prevQuotedMessage?.text === nextQuotedMessage?.text &&
-    prevQuotedMessage?.updated_at?.getTime?.() === nextQuotedMessage?.updated_at?.getTime?.() &&
-    prevQuotedMessage?.deleted_at?.getTime?.() === nextQuotedMessage?.deleted_at?.getTime?.();
+    prevQuotedMessage?.updated_at === nextQuotedMessage?.updated_at &&
+    prevQuotedMessage?.deleted_at === nextQuotedMessage?.deleted_at;
 
   return quotedMessageEqual;
 };

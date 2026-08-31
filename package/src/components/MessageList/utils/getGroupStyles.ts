@@ -1,5 +1,7 @@
 import { LocalMessage } from 'stream-chat';
 
+import { nsToMs } from 'stream-chat';
+
 import { isEditedMessage } from '../../../utils/utils';
 
 export type MessageGroupStylesParams = {
@@ -44,8 +46,7 @@ export const getGroupStyle = ({
     userId !== nextMessage?.user?.id ||
     nextMessageDateSeparatorDate ||
     (maxTimeBetweenGroupedMessages !== undefined &&
-      (nextMessage.created_at as Date).getTime() - (message.created_at as Date).getTime() >
-        maxTimeBetweenGroupedMessages) ||
+      nsToMs(nextMessage.created_at - message.created_at) > maxTimeBetweenGroupedMessages) ||
     isEditedMessage(message);
 
   /**

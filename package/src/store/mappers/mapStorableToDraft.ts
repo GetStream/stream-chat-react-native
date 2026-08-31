@@ -1,6 +1,7 @@
 import { DraftResponse } from 'stream-chat';
 
 import { mapStorableToChannel } from './mapStorableToChannel';
+import { mapStorableToDateTime } from './mapStorableToDateTime';
 import { mapStorableToDraftMessage } from './mapStorableToDraftMessage';
 
 import { mapStorableToMessage } from './mapStorableToMessage';
@@ -33,7 +34,7 @@ export const mapStorableToDraft = ({
   return {
     channel: channel.channel,
     channel_cid: cid,
-    created_at: new Date(createdAt),
+    created_at: mapStorableToDateTime(createdAt) ?? 0,
     message,
     parent_id: parentId,
     quoted_message: quotedMessage,

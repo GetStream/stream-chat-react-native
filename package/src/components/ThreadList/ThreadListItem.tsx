@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   AttachmentManagerState,
+  convertTimestampToDate,
   DraftMessage,
   LocalMessage,
   TextComposerState,
@@ -202,7 +203,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        messageCreatedAt: timestamp,
+        messageCreatedAt: convertTimestampToDate(timestamp),
         t,
         tDateTimeParser,
         timestampTranslationKey,
@@ -212,7 +213,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const deletedAtDateString = useMemo(
     () =>
       getDateString({
-        messageCreatedAt: deletedAt as Date | undefined,
+        messageCreatedAt: convertTimestampToDate(deletedAt),
         t,
         tDateTimeParser,
         timestampTranslationKey,

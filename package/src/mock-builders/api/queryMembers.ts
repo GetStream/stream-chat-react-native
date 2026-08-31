@@ -3,6 +3,8 @@ import type { ChannelMemberResponse } from 'stream-chat';
 
 import { mockedApiResponse, type MockedApiResponse } from './utils';
 
+import { convertDateToTimestamp } from '../generator/time';
+
 /**
  * Returns the api response for queryMembers api
  *
@@ -20,10 +22,10 @@ export const CHANNEL_MEMBERS: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-27T11:54:34.173125Z',
+    created_at: convertDateToTimestamp('2021-01-27T11:54:34.173125Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {
       id: 'ben',
       name: 'ben',
@@ -33,10 +35,10 @@ export const CHANNEL_MEMBERS: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-27T11:54:34.173125Z',
+    created_at: convertDateToTimestamp('2021-01-27T11:54:34.173125Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {
       id: 'nick',
       name: 'nick',
@@ -46,10 +48,10 @@ export const CHANNEL_MEMBERS: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-27T11:54:34.173125Z',
+    created_at: convertDateToTimestamp('2021-01-27T11:54:34.173125Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {
       id: 'okechukwu nwagba',
       name: 'okechukwu nwagba',
@@ -59,10 +61,10 @@ export const CHANNEL_MEMBERS: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-28T09:08:43.274508Z',
+    created_at: convertDateToTimestamp('2021-01-28T09:08:43.274508Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {
       id: 'qatest1',
       name: 'qatest1',
@@ -73,10 +75,10 @@ export const CHANNEL_MEMBERS: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-27T11:54:34.173125Z',
+    created_at: convertDateToTimestamp('2021-01-27T11:54:34.173125Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {
       id: 'thierry',
       name: 'thierry',
@@ -89,10 +91,10 @@ export const ONE_CHANNEL_MEMBER: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-27T11:54:34.173125Z',
+    created_at: convertDateToTimestamp('2021-01-27T11:54:34.173125Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {
       id: 'okechukwu nwagba martin',
       name: 'okechukwu nwagba martin',
@@ -115,10 +117,10 @@ export const ONE_MEMBER_WITH_EMPTY_USER: ChannelMemberResponse[] = [
   fromPartial<ChannelMemberResponse>({
     banned: false,
     channel_role: 'channel_member',
-    created_at: '2021-01-27T11:54:34.173125Z',
+    created_at: convertDateToTimestamp('2021-01-27T11:54:34.173125Z'),
     role: 'member',
     shadow_banned: false,
-    updated_at: '2021-02-12T12:12:35.862282Z',
+    updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
     user: {},
     user_id: 'okechukwu nwagba martin',
   }),

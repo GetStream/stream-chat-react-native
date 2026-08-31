@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 
 import {
-  type Attachment,
+  convertTimestampToDate,
   isAudioAttachment,
   isFileAttachment,
   isScrapedContent,
+  type Attachment,
   type MessageResponse,
 } from 'stream-chat';
 
@@ -60,7 +61,7 @@ export const useFileAttachmentListSections = (
         continue;
       }
       const formatted = getDateString({
-        messageCreatedAt: message.created_at as string | Date | undefined,
+        messageCreatedAt: convertTimestampToDate(message.created_at),
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.FileAttachmentListSection',

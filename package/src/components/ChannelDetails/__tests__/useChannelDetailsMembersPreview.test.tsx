@@ -3,6 +3,7 @@ import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { generateMember } from '../../../mock-builders/generator/member';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
@@ -27,7 +28,7 @@ const buildChannel = ({
 
 const buildMember = (id: string, created_at?: string) =>
   generateMember({
-    created_at: created_at ? new Date(created_at) : undefined,
+    created_at: created_at ? convertDateToTimestamp(created_at) : undefined,
     user: generateUser({ id, name: id }),
   });
 
