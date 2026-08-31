@@ -4,7 +4,15 @@ import type { ComponentOverrides } from 'stream-chat-expo';
 
 import InputButtons from './InputButtons';
 import { MessageLocation } from './LocationSharing/MessageLocation';
+import { QuickReplyMessageBottomView } from './QuickReplyMessageBottomView';
 
 export const useExpoMessagingComponentOverrides = () => {
-  return useMemo<ComponentOverrides>(() => ({ InputButtons, MessageLocation }), []);
+  return useMemo<ComponentOverrides>(
+    () => ({
+      InputButtons,
+      MessageLocation,
+      MessageContentBottomView: QuickReplyMessageBottomView,
+    }),
+    [],
+  );
 };
