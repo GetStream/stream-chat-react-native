@@ -1,6 +1,6 @@
 import type { PollResponseData } from 'stream-chat';
 
-import { mapStorableToDateTime } from './mapStorableToDateTime';
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
 
 import type { TableRow } from '../types';
 
@@ -32,7 +32,7 @@ export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponseData =
     allow_answers: Boolean(allow_answers),
     allow_user_suggested_options: Boolean(allow_user_suggested_options),
     answers_count,
-    created_at: mapStorableToDateTime(created_at) ?? 0,
+    created_at: mapStorableToTimestamp(created_at) ?? 0,
     created_by: JSON.parse(created_by),
     created_by_id,
     custom: {},
@@ -46,7 +46,7 @@ export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponseData =
     name,
     options: JSON.parse(options),
     own_votes: own_votes ? JSON.parse(own_votes) : [],
-    updated_at: mapStorableToDateTime(updated_at) ?? 0,
+    updated_at: mapStorableToTimestamp(updated_at) ?? 0,
     vote_count,
     vote_counts_by_option: JSON.parse(vote_counts_by_option),
     // `voting_visibility` is `'anonymous' | 'public'` on the response, and the column is TEXT.

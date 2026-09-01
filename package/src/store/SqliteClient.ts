@@ -51,7 +51,7 @@ export class SqliteClientError extends Error {
  * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
  */
 export class SqliteClient {
-  static dbVersion = 16;
+  static dbVersion = 17;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;

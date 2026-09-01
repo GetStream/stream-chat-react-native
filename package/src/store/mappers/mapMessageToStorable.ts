@@ -1,6 +1,6 @@
 import type { LocalMessage, MessageLabel, MessageResponse } from 'stream-chat';
 
-import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+import { mapTimestampToStorable } from './mapTimestampToStorable';
 
 import type { TableRow } from '../types';
 
@@ -36,18 +36,18 @@ export const mapMessageToStorable = (
   return {
     attachments: JSON.stringify(attachments),
     cid: cid || '',
-    createdAt: mapDateTimeToStorable(created_at),
-    deletedAt: mapDateTimeToStorable(deleted_at),
+    createdAt: mapTimestampToStorable(created_at),
+    deletedAt: mapTimestampToStorable(deleted_at),
     deletedForMe: deleted_for_me,
     extraData: JSON.stringify(extraData),
     id,
-    messageTextUpdatedAt: mapDateTimeToStorable(message_text_updated_at),
+    messageTextUpdatedAt: mapTimestampToStorable(message_text_updated_at),
     poll_id: poll_id || '',
     reactionGroups: JSON.stringify(reaction_groups),
     shared_location: JSON.stringify(shared_location),
     text,
     type: type as MessageLabel,
-    updatedAt: mapDateTimeToStorable(updated_at),
+    updatedAt: mapTimestampToStorable(updated_at),
     userId: user?.id,
   };
 };

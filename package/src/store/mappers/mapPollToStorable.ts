@@ -1,6 +1,6 @@
 import type { PollResponseData } from 'stream-chat';
 
-import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+import { mapTimestampToStorable } from './mapTimestampToStorable';
 
 import type { TableRow } from '../types';
 
@@ -32,7 +32,7 @@ export const mapPollToStorable = (poll: PollResponseData): TableRow<'poll'> => {
     allow_answers,
     allow_user_suggested_options,
     answers_count,
-    created_at: mapDateTimeToStorable(created_at),
+    created_at: mapTimestampToStorable(created_at),
     created_by: JSON.stringify(created_by), // decouple the users from the actual poll
     created_by_id,
     description,
@@ -45,7 +45,7 @@ export const mapPollToStorable = (poll: PollResponseData): TableRow<'poll'> => {
     name,
     options: JSON.stringify(options),
     own_votes: JSON.stringify(own_votes),
-    updated_at: mapDateTimeToStorable(updated_at),
+    updated_at: mapTimestampToStorable(updated_at),
     vote_count,
     vote_counts_by_option: JSON.stringify(vote_counts_by_option),
     voting_visibility,

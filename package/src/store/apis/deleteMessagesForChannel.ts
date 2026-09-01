@@ -1,4 +1,5 @@
-import { mapDateTimeToStorable } from '../mappers/mapDateTimeToStorable';
+import { nowNs } from 'stream-chat';
+
 import { SqliteClient } from '../SqliteClient';
 
 export const deleteMessagesForChannel = async ({
@@ -11,10 +12,8 @@ export const deleteMessagesForChannel = async ({
   truncated_at?: number;
   execute?: boolean;
 }) => {
-  // The column holds ISO, so the cutoff has to be ISO too — and it has to go through the mapper:
-  // `new Date(nanoseconds)` is out of range and `.toISOString()` on it throws `RangeError`.
-  const timestamp =
-    truncated_at != null ? mapDateTimeToStorable(truncated_at) : new Date().toISOString();
+  // `createdAt` holds unix nanoseconds, so the cutoff is one too and the comparison is numeric.
+  const timestamp = truncated_at ?? nowNs();
   const query: [string, (string | number)[]] = [
     `DELETE FROM messages WHERE cid = ? AND createdAt <= ?`,
     [cid, timestamp],

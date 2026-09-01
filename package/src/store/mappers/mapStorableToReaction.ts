@@ -1,6 +1,6 @@
 import type { ReactionResponse } from 'stream-chat';
 
-import { mapStorableToDateTime } from './mapStorableToDateTime';
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { TableRowJoinedUser } from '../types';
@@ -11,11 +11,11 @@ export const mapStorableToReaction = (
   const { createdAt, extraData, messageId, score, type, updatedAt, user } = reactionRow;
 
   return {
-    created_at: mapStorableToDateTime(createdAt),
+    created_at: mapStorableToTimestamp(createdAt),
     message_id: messageId,
     score,
     type,
-    updated_at: mapStorableToDateTime(updatedAt),
+    updated_at: mapStorableToTimestamp(updatedAt),
     user: mapStorableToUser(user),
     ...(extraData ? JSON.parse(extraData) : {}),
   };

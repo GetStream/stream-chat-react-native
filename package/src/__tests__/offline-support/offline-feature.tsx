@@ -17,6 +17,7 @@ import type {
   StreamChat,
   UserResponse,
 } from 'stream-chat';
+import { dateToNs, nowNs, nsToMs } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 // Tests exercise internal APIs on StreamChat (private sync manager, legacy `wsConnection`).
@@ -136,7 +137,8 @@ export const Generic = () => {
     type MemberWithCid = ChannelMemberResponse & { cid: string };
     type ReadWithCid = {
       cid: string;
-      last_read: Date;
+      /** Unix nanoseconds, as the API sends it. */
+      last_read: number;
       unread_messages: number;
       user: ChannelMemberResponse['user'];
     };
@@ -203,7 +205,9 @@ export const Generic = () => {
 
       const reads: ReadWithCid[] = members.map((member: MemberWithCid) => ({
         cid,
-        last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
+        last_read: dateToNs(
+          new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
+        ),
         unread_messages: 0,
         user: member.user,
       }));
@@ -1732,7 +1736,7 @@ export const Generic = () => {
       const targetChannel = channels[getRandomInt(0, channels.length - 1)];
       const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 
-      const readTimestamp = new Date().toISOString();
+      const readTimestamp = nowNs();
 
       act(() => {
         // `last_read` is not on `Event` (the real field is `last_read_at`), but the test fixture
@@ -1762,10 +1766,7 @@ export const Generic = () => {
         // FIXME: Currently missing from the DB, uncomment when added.
         // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
         expect(
-          Math.abs(
-            new Date(matchingReadRows[0].lastRead as string).getTime() -
-              new Date(readTimestamp).getTime(),
-          ),
+          Math.abs(nsToMs(matchingReadRows[0].lastRead as number) - nsToMs(readTimestamp)),
         ).toBeLessThanOrEqual(1);
       });
     });
@@ -1783,7 +1784,7 @@ export const Generic = () => {
       // `userID` is now a read-only getter derived from `user.id`; setting `user` is enough.
       chatClient.user = targetMember.user;
 
-      const readTimestamp = new Date().toISOString();
+      const readTimestamp = nowNs();
 
       act(() => {
         dispatchNotificationMarkUnread(
@@ -1812,10 +1813,7 @@ export const Generic = () => {
         // FIXME: Currently missing from the DB, uncomment when added.
         // expect(matchingReadRows[0].firstUnreadMessageId).toBe('123');
         expect(
-          Math.abs(
-            new Date(matchingReadRows[0].lastRead as string).getTime() -
-              new Date(readTimestamp).getTime(),
-          ),
+          Math.abs(nsToMs(matchingReadRows[0].lastRead as number) - nsToMs(readTimestamp)),
         ).toBeLessThanOrEqual(1);
       });
     });

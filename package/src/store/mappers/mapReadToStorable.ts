@@ -1,6 +1,6 @@
 import type { ReadStateResponse } from 'stream-chat';
 
-import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+import { mapTimestampToStorable } from './mapTimestampToStorable';
 
 import type { TableRow } from '../types';
 
@@ -22,9 +22,9 @@ export const mapReadToStorable = ({
 
   return {
     cid,
-    lastDeliveredAt: mapDateTimeToStorable(last_delivered_at),
+    lastDeliveredAt: mapTimestampToStorable(last_delivered_at),
     lastDeliveredMessageId: last_delivered_message_id,
-    lastRead: mapDateTimeToStorable(last_read),
+    lastRead: last_read,
     lastReadMessageId: last_read_message_id,
     unreadMessages: unread_messages,
     userId: user?.id,

@@ -1,6 +1,6 @@
 import type { ChannelStateResponseFields } from 'stream-chat';
 
-import { mapStorableToDateTime } from './mapStorableToDateTime';
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
 
 import type { TableRow } from '../types';
 
@@ -44,24 +44,24 @@ export const mapStorableToChannel = (
       cid,
       config: config && JSON.parse(config),
       cooldown,
-      created_at: mapStorableToDateTime(createdAt),
+      created_at: mapStorableToTimestamp(createdAt),
       created_by_id: createdById,
-      deleted_at: mapStorableToDateTime(deletedAt),
+      deleted_at: mapStorableToTimestamp(deletedAt),
       disabled,
       frozen,
       hidden,
       id,
       invites: invites && JSON.parse(invites),
-      last_message_at: mapStorableToDateTime(lastMessageAt),
+      last_message_at: mapStorableToTimestamp(lastMessageAt),
       member_count: memberCount,
       muted,
       own_capabilities: ownCapabilities && JSON.parse(ownCapabilities),
       team,
-      truncated_at: mapStorableToDateTime(truncatedAt),
+      truncated_at: mapStorableToTimestamp(truncatedAt),
       truncated_by: truncatedBy,
       truncated_by_id: truncatedById,
       type,
-      updated_at: mapStorableToDateTime(updatedAt),
+      updated_at: mapStorableToTimestamp(updatedAt),
       ...(extraData ? JSON.parse(extraData) : {}),
     },
   };
