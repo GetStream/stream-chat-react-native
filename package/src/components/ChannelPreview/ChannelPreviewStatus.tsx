@@ -25,7 +25,7 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   const styles = useStyles();
 
   const created_at = lastMessage?.created_at;
-  const latestMessageDate = created_at ? new Date(created_at) : new Date();
+  const latestMessageDate = convertTimestampToDate(created_at);
 
   const formattedDate = useMemo(
     () =>

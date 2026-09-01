@@ -11,7 +11,7 @@ import {
 
 import MapView, { MapMarker, Marker } from 'react-native-maps';
 
-import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { convertTimestampToDate, nowNs, SharedLocationResponse, StreamChat } from 'stream-chat';
 import {
   MessageLocationProps,
   useChannelContext,
@@ -32,12 +32,15 @@ const MessageLocationFooter = ({
   const { end_at, user_id } = shared_location;
   useTheme();
   const { grey } = useLegacyColors();
-  const liveLocationActive = end_at && new Date(end_at) > new Date();
-  const endedAtDate = end_at ? new Date(end_at) : null;
-  const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
+  // `end_at` is a unix-**nanosecond** wire timestamp: `new Date(ns)` is out of range, so the
+  // comparison is done in the wire unit and only the displayed value becomes a `Date`.
+  const liveLocationActive = end_at ? end_at > nowNs() : false;
+  const formattedEndedAt = convertTimestampToDate(end_at)?.toLocaleString() ?? '';
 
   const stopSharingLiveLocation = useCallback(async () => {
-    await channel.stopLiveLocationSharing(shared_location);
+    // The request shape, not the response: `stopLiveLocationSharing` stamps `end_at` itself, and
+    // the response's `end_at` is a wire number the request field cannot take.
+    await channel.stopLiveLocationSharing({ message_id: shared_location.message_id });
   }, [channel, shared_location]);
 
   if (!end_at) {

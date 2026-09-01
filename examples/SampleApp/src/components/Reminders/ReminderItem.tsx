@@ -70,7 +70,7 @@ export const ReminderItem = (
       onPress: async () => {
         await client.reminders.upsertReminder({
           messageId: item.message_id,
-          remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
+          remind_at: new Date(Date.now() + offsetMs),
         });
       },
       style: 'default',
@@ -81,7 +81,7 @@ export const ReminderItem = (
       onPress: async () => {
         await client.reminders.upsertReminder({
           messageId: item.message_id,
-          remind_at: null,
+          remind_at: undefined,
         });
       },
       style: 'default',

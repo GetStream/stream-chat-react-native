@@ -64,6 +64,14 @@ describe('timestamp storage', () => {
 
     expect(row.storageClass).toBe('integer');
     expect(row.createdAt).toBe(NANOS);
+
+    // `json_object` renders the integer SQLite actually holds; `toBe(NANOS)` alone cannot fail for
+    // a precision reason, since the literal is already the rounded double.
+    const { exact } = db
+      .prepare(`SELECT json_object('v', createdAt) AS exact FROM messages WHERE id = ?`)
+      .get(message.id) as { exact: string };
+    expect(Number(JSON.parse(exact).v)).toBe(NANOS);
+    expect(Math.abs(Number(JSON.parse(exact).v) - NANOS)).toBeLessThan(1e6 / 2);
     // The whole point of the change: no truncation to the millisecond. ISO carried three decimal
     // places, so this assertion is what the previous storage format could not satisfy.
     expect(row.createdAt % 1e6).not.toBe(0);

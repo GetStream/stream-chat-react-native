@@ -1,9 +1,8 @@
 /**
  * A timestamp on its way *into* SQLite. Unix nanoseconds in, unix nanoseconds out — every date
- * column is `INTEGER` holding exactly what the API put on the wire, so there is no conversion
- * here and nothing is lost. The `INTEGER` columns are wide enough (int64) and the round trip is
- * exact, because a nanosecond timestamp is already an integral `double` by the time
- * `JSON.parse` has read the response.
+ * column is `INTEGER` holding exactly what the API put on the wire, so there is no conversion here.
+ * Lossless relative to what JavaScript holds: `JSON.parse` already quantised the value to the
+ * nearest double (~256 ns) before SQLite saw it.
  *
  * The only thing this function does is pick `null` over `undefined`, and that choice is
  * load-bearing rather than stylistic: `upsertStatementParts` omits `undefined` values from the

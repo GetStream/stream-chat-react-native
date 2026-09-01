@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SharedLocationResponse, StreamChat } from 'stream-chat';
+import { convertTimestampToDate, nowNs, SharedLocationResponse, StreamChat } from 'stream-chat';
 import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-react-native';
 
 import { useStreamChatContext } from '../context/StreamChatContext';
@@ -51,17 +51,18 @@ const MapScreenFooter = ({
   const { end_at, user_id } = shared_location;
   useTheme();
   const { accent_blue, accent_red, grey } = useLegacyColors();
-  const liveLocationActive = isLiveLocationStopped
-    ? false
-    : end_at && new Date(end_at) > new Date();
-  const endedAtDate = end_at ? new Date(end_at) : null;
-  const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
+  // `end_at` is a unix-**nanosecond** wire timestamp: `new Date(ns)` is out of range, so the
+  // comparison is done in the wire unit and only the displayed value becomes a `Date`.
+  const liveLocationActive = isLiveLocationStopped ? false : end_at ? end_at > nowNs() : false;
+  const formattedEndedAt = convertTimestampToDate(end_at)?.toLocaleString() ?? '';
 
   const stopSharingLiveLocation = useCallback(async () => {
     if (!locationResponse) {
       return;
     }
-    await channel?.stopLiveLocationSharing(locationResponse);
+    // The request shape, not the response: `stopLiveLocationSharing` stamps `end_at` itself, and
+    // the response's `end_at` is a wire number the request field cannot take.
+    await channel?.stopLiveLocationSharing({ message_id: locationResponse.message_id });
   }, [channel, locationResponse]);
 
   if (!end_at) {

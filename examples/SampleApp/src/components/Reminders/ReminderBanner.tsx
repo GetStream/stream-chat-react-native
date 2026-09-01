@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ReminderResponse, ReminderState } from 'stream-chat';
+import { nsToDate, nsToMs, ReminderResponse, ReminderState } from 'stream-chat';
 import {
   useMessageReminder,
   useTheme,
@@ -22,9 +22,11 @@ export const ReminderBanner = (item: ReminderResponse) => {
   const reminder = useMessageReminder(message_id);
   const { timeLeftMs } = useStateStore(reminder?.state, reminderStateSelector) ?? {};
   const stopRefreshBoundaryMs = reminder?.timer.stopRefreshBoundaryMs;
+  // `remindAt` is a unix-**nanosecond** wire timestamp while `stopRefreshBoundaryMs` is a
+  // millisecond duration, so the timestamp is converted before the two are added.
   const stopRefreshTimeStamp =
     reminder?.remindAt && stopRefreshBoundaryMs
-      ? reminder?.remindAt.getTime() + stopRefreshBoundaryMs
+      ? nsToMs(reminder.remindAt) + stopRefreshBoundaryMs
       : undefined;
 
   const isBehindRefreshBoundary =
@@ -44,7 +46,7 @@ export const ReminderBanner = (item: ReminderResponse) => {
           {isBehindRefreshBoundary
             ? t('Due since {{ dueSince }}', {
                 dueSince: t('timestamp/ReminderNotification', {
-                  timestamp: reminder.remindAt,
+                  timestamp: nsToDate(reminder.remindAt),
                 }),
               })
             : t('Due {{ timeLeft }}', {

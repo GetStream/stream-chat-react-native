@@ -15,6 +15,7 @@ const TIMESTAMP_FIELDS = [
   'updated_at',
   'deleted_at',
   'pinned_at',
+  'pin_expires',
   'message_text_updated_at',
 ] as const;
 

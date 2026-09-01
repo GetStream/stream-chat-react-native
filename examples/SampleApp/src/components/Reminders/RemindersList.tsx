@@ -51,11 +51,11 @@ export const RemindersList = () => {
         client.reminders.paginator.filters = {};
       } else if (tab.key === 'overdue') {
         client.reminders.paginator.filters = {
-          remind_at: { $lte: new Date().toISOString() },
+          remind_at: { $lte: new Date() },
         };
       } else if (tab.key === 'upcoming') {
         client.reminders.paginator.filters = {
-          remind_at: { $gt: new Date().toISOString() },
+          remind_at: { $gt: new Date() },
         };
       } else if (tab.key === 'scheduled') {
         client.reminders.paginator.filters = {
