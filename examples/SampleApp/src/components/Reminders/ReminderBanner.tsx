@@ -25,16 +25,16 @@ export const ReminderBanner = (item: ReminderResponse) => {
   // `remindAt` is a unix-**nanosecond** wire timestamp while `stopRefreshBoundaryMs` is a
   // millisecond duration, so the timestamp is converted before the two are added.
   const stopRefreshTimeStamp =
-    reminder?.remindAt && stopRefreshBoundaryMs
+    reminder?.remindAt != null && stopRefreshBoundaryMs != null
       ? nsToMs(reminder.remindAt) + stopRefreshBoundaryMs
       : undefined;
 
   const isBehindRefreshBoundary =
     !!stopRefreshTimeStamp && new Date().getTime() > stopRefreshTimeStamp;
 
-  if (!reminder?.remindAt) {
+  if (reminder?.remindAt == null) {
     return <Text style={styles.date}>🔖</Text>;
-  } else if (reminder.remindAt && timeLeftMs) {
+  } else if (timeLeftMs != null) {
     return (
       <View
         style={[

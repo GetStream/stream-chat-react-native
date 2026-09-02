@@ -53,7 +53,7 @@ const MapScreenFooter = ({
   const { accent_blue, accent_red, grey } = useLegacyColors();
   // `end_at` is a unix-**nanosecond** wire timestamp: `new Date(ns)` is out of range, so the
   // comparison is done in the wire unit and only the displayed value becomes a `Date`.
-  const liveLocationActive = isLiveLocationStopped ? false : end_at ? end_at > nowNs() : false;
+  const liveLocationActive = !isLiveLocationStopped && end_at != null && end_at > nowNs();
   const formattedEndedAt = convertTimestampToDate(end_at)?.toLocaleString() ?? '';
 
   const stopSharingLiveLocation = useCallback(async () => {
@@ -65,7 +65,7 @@ const MapScreenFooter = ({
     await channel?.stopLiveLocationSharing({ message_id: locationResponse.message_id });
   }, [channel, locationResponse]);
 
-  if (!end_at) {
+  if (end_at == null) {
     return null;
   }
 
@@ -186,7 +186,7 @@ export const MapScreen = ({ route }: MapScreenProps) => {
         ref={mapRef}
         style={styles.mapView}
       >
-        {shared_location.end_at ? (
+        {shared_location.end_at != null ? (
           <Marker
             coordinate={
               locationResponse

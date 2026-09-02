@@ -25,7 +25,7 @@ export const getUserActivityStatus = (
     return t('common.presence.online.label', 'Online');
   }
 
-  if (!user.last_active) {
+  if (user.last_active == null) {
     return '';
   }
 

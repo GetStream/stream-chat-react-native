@@ -52,7 +52,7 @@ const normalizeUser = (user: Partial<UserResponse> | null | undefined, fallbackI
     name: user?.name || id,
     online: user?.online ?? true,
     role: user?.role || 'user',
-    updated_at: user?.updated_at || nowNs(),
+    updated_at: user?.updated_at ?? nowNs(),
   } as UserResponse;
 };
 

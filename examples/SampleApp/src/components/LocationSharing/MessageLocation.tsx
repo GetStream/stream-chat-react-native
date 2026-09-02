@@ -34,7 +34,7 @@ const MessageLocationFooter = ({
   const { grey } = useLegacyColors();
   // `end_at` is a unix-**nanosecond** wire timestamp: `new Date(ns)` is out of range, so the
   // comparison is done in the wire unit and only the displayed value becomes a `Date`.
-  const liveLocationActive = end_at ? end_at > nowNs() : false;
+  const liveLocationActive = end_at != null && end_at > nowNs();
   const formattedEndedAt = convertTimestampToDate(end_at)?.toLocaleString() ?? '';
 
   const stopSharingLiveLocation = useCallback(async () => {
@@ -43,7 +43,7 @@ const MessageLocationFooter = ({
     await channel.stopLiveLocationSharing({ message_id: shared_location.message_id });
   }, [channel, shared_location]);
 
-  if (!end_at) {
+  if (end_at == null) {
     return null;
   }
   const isCurrentUser = user_id === client.user?.id;
@@ -129,7 +129,7 @@ const MessageLocationComponent = ({
         ref={mapRef}
         style={styles.mapView}
       >
-        {end_at ? (
+        {end_at != null ? (
           <Marker coordinate={region} ref={markerRef}>
             <View style={styles.markerWrapper}>
               <Image
