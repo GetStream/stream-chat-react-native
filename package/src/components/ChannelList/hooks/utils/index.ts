@@ -9,7 +9,7 @@ export const isChannelPinned = (channel: Channel) => {
 
   const member = channel.state.membership;
 
-  return !!member?.pinned_at;
+  return member?.pinned_at != null;
 };
 
 export const isChannelArchived = (channel: Channel) => {
@@ -19,7 +19,7 @@ export const isChannelArchived = (channel: Channel) => {
 
   const member = channel.state.membership;
 
-  return !!member?.archived_at;
+  return member?.archived_at != null;
 };
 
 export const shouldConsiderArchivedChannels = (filters: ChannelListProps['filters']) => {

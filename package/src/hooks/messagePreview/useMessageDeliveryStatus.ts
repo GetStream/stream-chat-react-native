@@ -64,7 +64,7 @@ export const useMessageDeliveryStatus = ({
 
     const currentUserId = client.user?.id;
     const isOwnMessage = !!currentUserId && lastMessage?.user?.id === currentUserId;
-    if (!lastMessage?.created_at || !isOwnMessage) {
+    if (lastMessage?.created_at == null || !isOwnMessage) {
       return undefined;
     }
 

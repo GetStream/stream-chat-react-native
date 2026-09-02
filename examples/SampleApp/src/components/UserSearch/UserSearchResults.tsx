@@ -219,7 +219,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 >
                   {item.name}
                 </Text>
-                {showOnlineStatus && (
+                {showOnlineStatus && item.last_active != null && (
                   <Text
                     style={[
                       styles.searchResultUserLastOnline,

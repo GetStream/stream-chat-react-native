@@ -91,7 +91,7 @@ export const isBouncedMessage = (message: LocalMessage) =>
  * @param message
  * @returns boolean
  */
-export const isEditedMessage = (message: LocalMessage) => !!message.message_text_updated_at;
+export const isEditedMessage = (message: LocalMessage) => message.message_text_updated_at != null;
 
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();

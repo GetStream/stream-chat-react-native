@@ -47,7 +47,7 @@ export const useHandleLiveLocationEvents = ({
         setLocationResponse(message.shared_location as SharedLocationResponse);
         onLocationUpdate?.(message.shared_location as SharedLocationResponse);
       }
-      if (shared_location.end_at && shared_location.end_at <= nowNs()) {
+      if (shared_location.end_at != null && shared_location.end_at <= nowNs()) {
         setIsLiveLocationStopped(true);
       }
     };

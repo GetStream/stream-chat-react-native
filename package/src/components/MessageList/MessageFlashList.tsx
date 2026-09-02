@@ -559,8 +559,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
       if (
         isMessageRemovedFromMessageList ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
+        (topMessageBeforeUpdate.current?.created_at != null &&
+          topMessageAfterUpdate?.created_at != null &&
           topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;
@@ -694,7 +694,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       const isMessageTypeDeleted = lastItem.item.type === 'deleted';
 
       if (
-        lastItem?.item?.created_at &&
         !isMessageTypeDeleted &&
         lastItem.item.created_at != null &&
         convertTimestampToDate(lastItem.item.created_at)?.toDateString() !==
@@ -765,7 +764,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         setIsUnreadNotificationOpen(false);
         return;
       }
-      if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+      if (unreadIndicatorDate != null && lastItemDate > unreadIndicatorDate) {
         setIsUnreadNotificationOpen(true);
       } else {
         setIsUnreadNotificationOpen(false);

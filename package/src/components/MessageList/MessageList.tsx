@@ -515,7 +515,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         const isMessageTypeDeleted = lastMessage.type === 'deleted';
 
         if (
-          lastMessage?.created_at &&
           !isMessageTypeDeleted &&
           lastMessage.created_at != null &&
           convertTimestampToDate(lastMessage.created_at)?.toDateString() !==
@@ -586,7 +585,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           setIsUnreadNotificationOpen(false);
           return;
         }
-        if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+        if (unreadIndicatorDate != null && lastItemDate > unreadIndicatorDate) {
           setIsUnreadNotificationOpen(true);
         } else {
           setIsUnreadNotificationOpen(false);

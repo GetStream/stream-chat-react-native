@@ -23,7 +23,7 @@ export const useUserActivityStatus = (user?: UserResponse): string => {
   return useMemo(() => {
     if (user?.online) return t('common.presence.online.label', 'Online');
 
-    if (user?.last_active) {
+    if (user?.last_active != null) {
       const lastSeen = getDateString({
         messageCreatedAt: convertTimestampToDate(user.last_active),
         t,

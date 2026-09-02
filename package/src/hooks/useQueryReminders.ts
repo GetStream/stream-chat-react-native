@@ -17,7 +17,7 @@ const selector = (nextValue: PaginatorState<ReminderResponseData>) =>
 // Utility to sort reminders by remind_at date in ascending order
 const sortRemindersByDate = (reminders: ReminderResponseData[]) => {
   return reminders.sort((a, b) => {
-    if (!a.remind_at || !b.remind_at) {
+    if (a.remind_at == null || b.remind_at == null) {
       return 0; // If either remind_at is missing, keep original order
     }
     // Sort by remind_at date
@@ -106,10 +106,10 @@ export const useQueryReminders = () => {
           return prevData; // No update needed if reminder not found
         }
 
-        if (existingReminder.remind_at && !event.reminder?.remind_at) {
+        if (existingReminder.remind_at != null && event.reminder?.remind_at == null) {
           return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
-        if (!existingReminder.remind_at && event.reminder?.remind_at) {
+        if (existingReminder.remind_at == null && event.reminder?.remind_at != null) {
           return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
         if (isReminderOverdue(existingReminder) && !isReminderOverdue(event.reminder)) {

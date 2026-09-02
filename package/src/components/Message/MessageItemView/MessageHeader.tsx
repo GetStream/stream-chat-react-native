@@ -109,8 +109,8 @@ export const MessageHeader = (props: MessageHeaderProps) => {
   const { alignment, message } = useMessageContext();
   const reminder = useMessageReminder(message.id);
 
-  const shouldShowSavedForLaterHeader = reminder && !reminder.remindAt;
-  const shouldShowReminderHeader = reminder && reminder.remindAt;
+  const shouldShowSavedForLaterHeader = reminder != null && reminder.remindAt == null;
+  const shouldShowReminderHeader = reminder?.remindAt != null;
   const shouldShowPinnedHeader = !!message?.pinned;
   const shouldShowSentToChannelHeader = !!message?.show_in_channel;
 
@@ -129,7 +129,7 @@ export const MessageHeader = (props: MessageHeaderProps) => {
       message={message}
       shouldShowSavedForLaterHeader={shouldShowSavedForLaterHeader}
       shouldShowPinnedHeader={shouldShowPinnedHeader}
-      shouldShowReminderHeader={!!shouldShowReminderHeader}
+      shouldShowReminderHeader={shouldShowReminderHeader}
       shouldShowSentToChannelHeader={shouldShowSentToChannelHeader}
       {...props}
     />
