@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { nsToDate, nsToMs, ReminderResponse, ReminderState } from 'stream-chat';
+import { nsToDate, nsToMs, ReminderResponseData, ReminderState } from 'stream-chat';
 import {
   useMessageReminder,
   useTheme,
@@ -14,7 +14,7 @@ const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,
 });
 
-export const ReminderBanner = (item: ReminderResponse) => {
+export const ReminderBanner = (item: ReminderResponseData) => {
   useTheme();
   const { accent_blue, accent_red } = useLegacyColors();
   const { t } = useTranslationContext();

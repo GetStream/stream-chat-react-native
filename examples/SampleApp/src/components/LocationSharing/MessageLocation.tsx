@@ -11,7 +11,7 @@ import {
 
 import MapView, { MapMarker, Marker } from 'react-native-maps';
 
-import { convertTimestampToDate, nowNs, SharedLocationResponse, StreamChat } from 'stream-chat';
+import { convertTimestampToDate, nowNs, SharedLocationResponseData, StreamChat } from 'stream-chat';
 import {
   MessageLocationProps,
   useChannelContext,
@@ -26,7 +26,7 @@ const MessageLocationFooter = ({
   shared_location,
 }: {
   client: StreamChat;
-  shared_location: SharedLocationResponse;
+  shared_location: SharedLocationResponseData;
 }) => {
   const { channel } = useChannelContext();
   const { end_at, user_id } = shared_location;
@@ -74,7 +74,7 @@ const MessageLocationFooter = ({
 const MessageLocationComponent = ({
   shared_location,
 }: {
-  shared_location: SharedLocationResponse;
+  shared_location: SharedLocationResponseData;
 }) => {
   const { client } = useChatContext();
   const { end_at, latitude, longitude } = shared_location || {};

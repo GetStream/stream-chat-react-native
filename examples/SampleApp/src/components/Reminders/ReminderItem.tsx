@@ -5,7 +5,7 @@ import { Alert, AlertButton, Pressable, StyleSheet, Text, View } from 'react-nat
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { ReminderResponse } from 'stream-chat';
+import { ReminderResponseData } from 'stream-chat';
 import {
   Delete,
   useMessagePreviewText,
@@ -21,7 +21,7 @@ import { useLegacyColors } from '../../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../../types';
 
 export const ReminderItem = (
-  item: ReminderResponse & { onDeleteHandler?: (id: string) => void },
+  item: ReminderResponseData & { onDeleteHandler?: (id: string) => void },
 ) => {
   const { channel, message } = item;
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
