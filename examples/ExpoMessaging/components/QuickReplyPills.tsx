@@ -25,6 +25,9 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: SPACE_4,
   },
+  list: {
+    flexGrow: 0,
+  },
   contentContainer: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -128,6 +131,7 @@ export default function QuickReplyPills({ replies, onPressItem }: Props) {
         renderItem={renderPill}
         keyExtractor={keyExtractor}
         horizontal
+        style={styles.list}
         showsHorizontalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'
         testID='quick-reply-pills-flatlist'
