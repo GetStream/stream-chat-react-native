@@ -6,11 +6,18 @@ export type MessageListItemWithNeighbours = {
   message: LocalMessage;
 };
 
+/**
+ * The stable identity of a message row, used both as the FlatList/FlashList render key and as the
+ * neighbour-cache key. Those two must agree: if they diverge for the same message the cache stores
+ * a row under one key while the list renders it under another, and memoisation silently never hits.
+ */
 export const getMessageListItemCacheKey = (item: LocalMessage, index: number) => {
   if (item.id) {
     return item.id;
   }
-  if (item.created_at) {
+  // Nullish, not truthy: `created_at` is unix nanoseconds and `0` is a legitimate value (the
+  // epoch). Treating it as absent falls through to the index, which shifts as pages load.
+  if (item.created_at != null) {
     return String(item.created_at);
   }
   return `index-${index}`;

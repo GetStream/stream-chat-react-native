@@ -31,6 +31,7 @@ import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecen
 
 import {
   buildMessageListWithNeighbours,
+  getMessageListItemCacheKey,
   MessageListItemWithNeighbours,
 } from './utils/buildMessageListWithNeighbours';
 
@@ -171,16 +172,9 @@ const useStyles = () => {
   );
 };
 
-const keyExtractor = (derivedItem: MessageListItemWithNeighbours) => {
-  const { message: item } = derivedItem;
-  if (item.id) {
-    return item.id;
-  }
-  if (item.created_at) {
-    return String(item.created_at);
-  }
-  return Date.now().toString();
-};
+// Delegates to the neighbour-cache key so the render key and the cache key cannot drift apart.
+const keyExtractor = (derivedItem: MessageListItemWithNeighbours, index: number) =>
+  getMessageListItemCacheKey(derivedItem.message, index);
 
 const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,

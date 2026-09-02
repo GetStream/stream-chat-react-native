@@ -24,6 +24,7 @@ import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
+import { getMessageListItemCacheKey } from './utils/buildMessageListWithNeighbours';
 
 import {
   AttachmentPickerContextValue,
@@ -82,15 +83,8 @@ try {
   FlashList = undefined;
 }
 
-const keyExtractor = (item: LocalMessage) => {
-  if (item.id) {
-    return item.id;
-  }
-  if (item.created_at) {
-    return String(item.created_at);
-  }
-  return Date.now().toString();
-};
+// Delegates to the neighbour-cache key so the render key and the cache key cannot drift apart.
+const keyExtractor = (item: LocalMessage, index: number) => getMessageListItemCacheKey(item, index);
 
 const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
