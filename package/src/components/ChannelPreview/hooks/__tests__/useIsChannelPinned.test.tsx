@@ -18,7 +18,9 @@ describe('useIsChannelPinned', () => {
   });
 
   it('returns true when membership has a pinned_at timestamp', () => {
-    const channel = buildMockChannel({ pinned_at: '2026-06-15T08:00:00.000Z' });
+    const channel = buildMockChannel({
+      pinned_at: convertDateToTimestamp('2026-06-15T08:00:00.000Z'),
+    });
     const { result } = renderHook(() => useIsChannelPinned(channel));
     expect(result.current).toBe(true);
   });

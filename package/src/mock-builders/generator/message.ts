@@ -9,23 +9,15 @@ type GenerateMessageOptions = Partial<LocalMessage> & {
   timestamp?: Date | number | string;
 };
 
-/** The message fields the API sends as unix-nanosecond numbers. */
-const TIMESTAMP_FIELDS = [
-  'created_at',
-  'updated_at',
-  'deleted_at',
-  'pinned_at',
-  'pin_expires',
-  'message_text_updated_at',
-] as const;
-
 // Returns a `LocalMessage`-shaped mock. Every timestamp is the unix-nanosecond number the API puts
 // on the wire, because that is what the SDK now consumes — a mock carrying `Date` objects cannot
-// catch the bugs that unit exists to prevent. Overrides may still be written as date literals; they
-// are normalized below.
+// catch the bugs that unit exists to prevent, and `Partial<LocalMessage>` makes the compiler say so.
+// `timestamp` is the shorthand for seeding the message's own dates from one wall-clock value; for
+// any other field, convert at the call site with `convertDateToTimestamp`.
 export const generateMessage = (options: GenerateMessageOptions = {}): LocalMessage => {
+  const { timestamp: seed, ...overrides } = options;
   const timestamp = convertDateToTimestamp(
-    options.timestamp ?? new Date(Date.now() - Math.floor(Math.random() * 100000)),
+    seed ?? new Date(Date.now() - Math.floor(Math.random() * 100000)),
   );
 
   const message = fromPartial<LocalMessage>({
@@ -41,17 +33,8 @@ export const generateMessage = (options: GenerateMessageOptions = {}): LocalMess
     type: 'regular',
     updated_at: timestamp,
     user: generateUser(),
-    ...options,
+    ...overrides,
   });
-
-  for (const field of TIMESTAMP_FIELDS) {
-    const value = (message as unknown as Record<string, unknown>)[field];
-    if (value != null && typeof value !== 'number') {
-      (message as unknown as Record<string, unknown>)[field] = convertDateToTimestamp(
-        value as Date | number | string,
-      );
-    }
-  }
 
   return message;
 };
