@@ -287,8 +287,8 @@ export const findInMessagesByDate = (
     const middleRightTimestamp = messages[middle + 1]?.created_at;
     if (
       middleTimestamp === targetTimestamp ||
-      (middleLeftTimestamp &&
-        middleRightTimestamp &&
+      (middleLeftTimestamp != null &&
+        middleRightTimestamp != null &&
         middleLeftTimestamp < targetTimestamp &&
         middleRightTimestamp > targetTimestamp)
     ) {

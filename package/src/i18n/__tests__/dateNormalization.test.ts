@@ -56,9 +56,9 @@ describe('wire timestamps at the i18n boundary', () => {
   });
 
   it('renders nothing for a wire timestamp that was never converted', () => {
-    // The formatters no longer rescale by magnitude, so a raw nanosecond value has no instant to
-    // show. `null` is what every caller already treats as "omit the element" — a missed conversion
-    // surfaces as a blank timestamp rather than a date ~50,000 years out.
+    // The formatters no longer rescale by magnitude, and a nanosecond value is out of `Date`'s
+    // range, so there is no instant to show. `null` is what every caller already treats as "omit
+    // the element", so a missed conversion surfaces as a blank timestamp.
     expect(render(1787870023772367000, 'timestamp.MessageTimestamp')).toBeNull();
   });
 
