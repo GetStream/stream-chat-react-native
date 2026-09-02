@@ -1,11 +1,11 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserResponse } from 'stream-chat';
+import { ClientUser } from 'stream-chat';
 
 export type UserContextValue = {
-  user: UserResponse | null;
-  logIn: (user: UserResponse) => Promise<void>;
+  user: ClientUser | null;
+  logIn: (user: ClientUser) => Promise<void>;
   logOut: () => Promise<void>;
 };
 
@@ -16,7 +16,7 @@ export const UserContext = createContext<UserContextValue>({
 });
 
 export const UserProvider = ({ children }: PropsWithChildren) => {
-  const [user, setUser] = useState<UserResponse | null>(null);
+  const [user, setUser] = useState<ClientUser | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,7 +26,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
     fetchUser();
   }, []);
 
-  const logIn = async (user: UserResponse) => {
+  const logIn = async (user: ClientUser) => {
     await AsyncStorage.setItem('@stream-io/expo-messaging-user', JSON.stringify(user));
     setUser(user);
   };

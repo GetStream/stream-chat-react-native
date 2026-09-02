@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, Pressable } from 'react-native';
 
-import { UserResponse } from 'stream-chat';
+import { ClientUser } from 'stream-chat';
 
 import { USERS } from '../constants/ChatUsers';
 import { useUserContext } from '../context/UserContext';
 
-const PredefinedUserItem = ({ item }: { item: UserResponse }) => {
+const PredefinedUserItem = ({ item }: { item: ClientUser }) => {
   const { logIn } = useUserContext();
   const handleUserSelect = useCallback(() => {
     logIn(item);
@@ -21,9 +21,9 @@ const PredefinedUserItem = ({ item }: { item: UserResponse }) => {
   );
 };
 
-const renderItem = ({ item }: { item: UserResponse }) => <PredefinedUserItem item={item} />;
+const renderItem = ({ item }: { item: ClientUser }) => <PredefinedUserItem item={item} />;
 
-const keyExtractor = (item: UserResponse) => item.id;
+const keyExtractor = (item: ClientUser) => item.id;
 
 const Separator = () => <View style={styles.separator} />;
 

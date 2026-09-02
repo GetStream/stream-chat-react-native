@@ -26,9 +26,25 @@ import { AppContext } from '../../context/AppContext';
 
 import type { AppTheme } from '@/types/theme';
 
-export type SharedLiveLocationParamsStringType = SharedLocationResponse & {
+/**
+ * Route params, which expo-router delivers as **strings** — the pressing screen stringifies every
+ * field of the shared location into the URL.
+ *
+ * Declared independently of `SharedLocationResponse` rather than intersected with it. Since v10 that
+ * type's date fields are unix-nanosecond `number`s, which both violate `useLocalSearchParams`' string
+ * constraint and misdescribe what actually arrives — `end_at` reaching `convertTimestampToDate` as a
+ * string made `Number.isFinite` false, so the "ended at" label silently rendered empty.
+ */
+export type SharedLiveLocationParamsStringType = {
+  channel_cid: string;
+  created_at: string;
+  created_by_device_id: string;
+  end_at?: string;
   latitude: string;
   longitude: string;
+  message_id: string;
+  updated_at: string;
+  user_id: string;
 };
 
 const MapScreenFooter = ({
@@ -38,7 +54,7 @@ const MapScreenFooter = ({
   isLiveLocationStopped,
 }: {
   client: StreamChat;
-  shared_location: SharedLocationResponse;
+  shared_location: SharedLiveLocationParamsStringType;
   locationResponse?: SharedLocationResponse;
   isLiveLocationStopped?: boolean;
 }) => {
@@ -49,10 +65,13 @@ const MapScreenFooter = ({
       colors: { accent_blue, accent_red, grey },
     },
   } = useTheme() as unknown as { theme: AppTheme };
-  // `end_at` is a unix-**nanosecond** wire timestamp: `new Date(ns)` is out of range, so the
-  // comparison is done in the wire unit and only the displayed value becomes a `Date`.
-  const liveLocationActive = !isLiveLocationStopped && end_at != null && end_at > nowNs();
-  const formattedEndedAt = convertTimestampToDate(end_at)?.toLocaleString() ?? '';
+  // `end_at` arrives as a route-param string holding a unix-**nanosecond** timestamp, so it is
+  // parsed back to a number before any comparison: `new Date(ns)` is out of range, and
+  // `convertTimestampToDate` rejects a string outright (`Number.isFinite('1788…')` is false).
+  const endAt = end_at != null ? Number(end_at) : undefined;
+  const liveLocationActive =
+    !isLiveLocationStopped && endAt !== undefined && Number.isFinite(endAt) && endAt > nowNs();
+  const formattedEndedAt = convertTimestampToDate(endAt)?.toLocaleString() ?? '';
 
   const stopSharingLiveLocation = useCallback(async () => {
     if (!channel || !locationResponse) {
