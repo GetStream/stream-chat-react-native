@@ -520,11 +520,11 @@ export const ImageGallery = (props: Props) => {
     <Animated.View
       accessibilityLabel='Image Gallery'
       pointerEvents={'auto'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
+      style={[StyleSheet.absoluteFill, showScreenStyle]}
     >
-      <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
+      <Animated.View style={[StyleSheet.absoluteFill, containerBackground]} />
       <GestureDetector gesture={Gesture.Simultaneous(singleTap, doubleTap, pinch, pan)}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
+        <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View style={[styles.animatedContainer, pagerStyle, pager]}>
             {imageGalleryAttachments.map((photo, i) =>
               photo.type === FileTypes.Video ? (

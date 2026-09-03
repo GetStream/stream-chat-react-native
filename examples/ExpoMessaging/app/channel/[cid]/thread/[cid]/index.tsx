@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Channel, Thread } from 'stream-chat-expo';
 import { Stack } from 'expo-router';
 import { AppContext } from '../../../../../context/AppContext';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ThreadScreen() {
