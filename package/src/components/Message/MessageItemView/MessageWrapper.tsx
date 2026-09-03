@@ -53,12 +53,12 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     noGroupByUser,
   });
 
-  const createdAtTimestamp = message.created_at && new Date(message.created_at).getTime();
+  // Wire timestamps throughout, directly comparable. `new Date(ns)` yielded NaN, so the unread
+  // separator never rendered.
+  const createdAtTimestamp = message.created_at;
   const nextMessageId = nextMessage?.id;
   const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
-  const nextMessageCreatedAt = nextMessage?.created_at
-    ? new Date(nextMessage.created_at).getTime()
-    : undefined;
+  const nextMessageCreatedAt = nextMessage?.created_at ?? undefined;
 
   // The unread separator belongs above the first UNREAD message from another user — i.e. on the row
   // whose newer neighbour is that first unread. We locate it per-message inside the selector so
@@ -85,14 +85,14 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
         // interleaved among the unreads: an own message sent after the boundary is not "read" by
         // this test, so `own → unread-from-another` transitions further down never start a second
         // separator. Chronological ordering guarantees exactly one read→unread transition.
-        const lastReadAtMs = snapshot.lastReadAt?.getTime() ?? 0;
+        const lastReadAt = snapshot.lastReadAt ?? 0;
         const nextIsUnreadFromOther =
           !!nextMessageId &&
           !nextMessageIsOwn &&
           nextMessageCreatedAt !== undefined &&
-          nextMessageCreatedAt > lastReadAtMs;
+          nextMessageCreatedAt > lastReadAt;
         const thisIsRead =
-          typeof createdAtTimestamp === 'number' && createdAtTimestamp <= lastReadAtMs;
+          typeof createdAtTimestamp === 'number' && createdAtTimestamp <= lastReadAt;
         showUnreadSeparator = nextIsUnreadFromOther && thisIsRead;
       } else {
         showUnreadSeparator = false;

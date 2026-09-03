@@ -49,7 +49,7 @@ export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
   } = useStateStore(channel.state, previewStateSelector) ?? {};
 
   const muted = muteStatus?.muted ?? false;
-  const pinned = Boolean(membership?.pinned_at);
+  const pinned = membership?.pinned_at != null;
   // muted channels always render a zeroed unread count
   const unread = muted ? 0 : (reactiveUnread ?? 0);
 

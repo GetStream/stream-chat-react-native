@@ -13,16 +13,38 @@ import MapView, { MapMarker, Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Channel, SharedLocationResponse, StreamChat } from 'stream-chat';
+import {
+  Channel,
+  convertTimestampToDate,
+  nowNs,
+  SharedLocationResponse,
+  StreamChat,
+} from 'stream-chat';
 import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-expo';
 
 import { AppContext } from '../../context/AppContext';
 
 import type { AppTheme } from '@/types/theme';
 
-export type SharedLiveLocationParamsStringType = SharedLocationResponse & {
+/**
+ * Route params, which expo-router delivers as **strings** — the pressing screen stringifies every
+ * field of the shared location into the URL.
+ *
+ * Declared independently of `SharedLocationResponse` rather than intersected with it. Since v10 that
+ * type's date fields are unix-nanosecond `number`s, which both violate `useLocalSearchParams`' string
+ * constraint and misdescribe what actually arrives — `end_at` reaching `convertTimestampToDate` as a
+ * string made `Number.isFinite` false, so the "ended at" label silently rendered empty.
+ */
+export type SharedLiveLocationParamsStringType = {
+  channel_cid: string;
+  created_at: string;
+  created_by_device_id: string;
+  end_at?: string;
   latitude: string;
   longitude: string;
+  message_id: string;
+  updated_at: string;
+  user_id: string;
 };
 
 const MapScreenFooter = ({
@@ -32,7 +54,7 @@ const MapScreenFooter = ({
   isLiveLocationStopped,
 }: {
   client: StreamChat;
-  shared_location: SharedLocationResponse;
+  shared_location: SharedLiveLocationParamsStringType;
   locationResponse?: SharedLocationResponse;
   isLiveLocationStopped?: boolean;
 }) => {
@@ -43,22 +65,24 @@ const MapScreenFooter = ({
       colors: { accent_blue, accent_red, grey },
     },
   } = useTheme() as unknown as { theme: AppTheme };
-  const endedAtDate = end_at ? new Date(end_at) : null;
-  const liveLocationActive = isLiveLocationStopped
-    ? false
-    : endedAtDate
-      ? endedAtDate > new Date()
-      : false;
-  const formattedEndedAt = endedAtDate ? endedAtDate.toLocaleString() : '';
+  // `end_at` arrives as a route-param string holding a unix-**nanosecond** timestamp, so it is
+  // parsed back to a number before any comparison: `new Date(ns)` is out of range, and
+  // `convertTimestampToDate` rejects a string outright (`Number.isFinite('1788…')` is false).
+  const endAt = end_at != null ? Number(end_at) : undefined;
+  const liveLocationActive =
+    !isLiveLocationStopped && endAt !== undefined && Number.isFinite(endAt) && endAt > nowNs();
+  const formattedEndedAt = convertTimestampToDate(endAt)?.toLocaleString() ?? '';
 
   const stopSharingLiveLocation = useCallback(async () => {
     if (!channel || !locationResponse) {
       return;
     }
-    await channel.stopLiveLocationSharing(locationResponse);
+    // The request shape, not the response: `stopLiveLocationSharing` stamps `end_at` itself, and
+    // the response's `end_at` is a wire number the request field cannot take.
+    await channel.stopLiveLocationSharing({ message_id: locationResponse.message_id });
   }, [channel, locationResponse]);
 
-  if (!end_at) {
+  if (end_at == null) {
     return null;
   }
 
@@ -183,7 +207,7 @@ export default function MapScreen() {
         ref={mapRef}
         style={styles.mapView}
       >
-        {shared_location.end_at ? (
+        {shared_location.end_at != null ? (
           <Marker
             coordinate={
               !locationResponse

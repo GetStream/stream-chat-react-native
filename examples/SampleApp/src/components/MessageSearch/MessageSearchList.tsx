@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
+import { convertTimestampToDate } from 'stream-chat';
 import type { MessageResponse } from 'stream-chat';
 import { Spinner, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
@@ -172,7 +173,7 @@ export const MessageSearchList = React.forwardRef<
                     },
                   ]}
                 >
-                  {dayjs(item.created_at).calendar(undefined, {
+                  {dayjs(convertTimestampToDate(item.created_at)).calendar(undefined, {
                     lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
                     lastWeek: 'DD/MM', // Last week ( Last Monday at 2:30 AM )
                     sameDay: 'h:mm A', // The same day ( Today at 2:30 AM )

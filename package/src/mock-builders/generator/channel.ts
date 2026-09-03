@@ -8,6 +8,7 @@ import type {
 } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
+import { convertDateToTimestamp } from './time';
 import { generateUser, getUserDefaults } from './user';
 
 const defaultCapabilities: ChannelOwnCapability[] = [
@@ -41,7 +42,7 @@ const defaultConfig = {
     },
   ],
   connect_events: true,
-  created_at: '2020-04-24T11:36:43.859020368Z',
+  created_at: convertDateToTimestamp('2020-04-24T11:36:43.859020368Z'),
   max_message_length: 5000,
   message_retention: 'infinite',
   mutes: true,
@@ -52,7 +53,7 @@ const defaultConfig = {
   replies: true,
   search: true,
   typing_events: true,
-  updated_at: '2020-04-24T11:36:43.859022903Z',
+  updated_at: convertDateToTimestamp('2020-04-24T11:36:43.859022903Z'),
   uploads: true,
   url_enrichment: true,
 };
@@ -85,13 +86,13 @@ const getChannelDefaults = (opts: GeneratedChannelIdType = {}): GeneratedChannel
         ...defaultConfig,
         name: type,
       } as GeneratedChannel['channel']['config'],
-      created_at: new Date('2020-04-28T11:20:48.578147Z'),
+      created_at: convertDateToTimestamp('2020-04-28T11:20:48.578147Z'),
       created_by: getUserDefaults(),
       frozen: false,
       id,
       own_capabilities: defaultCapabilities,
       type,
-      updated_at: new Date('2020-04-28T11:20:48.578147Z'),
+      updated_at: convertDateToTimestamp('2020-04-28T11:20:48.578147Z'),
     },
     cid: `${type}:${id}`,
     id,

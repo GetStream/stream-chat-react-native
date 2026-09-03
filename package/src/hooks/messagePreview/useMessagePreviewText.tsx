@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
 import {
   DraftMessage,
-  SharedLocation,
+  SharedLocationResponseData,
   LocalMessage,
   MessageResponse,
   PollState,
 } from 'stream-chat';
+
+import { nowNs } from 'stream-chat';
 
 import { useGroupedAttachments } from './useGroupedAttachments';
 
@@ -46,10 +48,12 @@ export const useMessagePreviewText = ({
   }
 
   if (message?.shared_location) {
-    // Draft messages type `shared_location` loosely, hence the cast. `end_at` is optional
-    // because a static location has no expiry — only a live one does.
-    const { end_at: endAt } = message.shared_location as SharedLocation;
-    if (endAt && new Date(endAt) > new Date()) {
+    // Draft messages type `shared_location` loosely, hence the cast. The RESPONSE shape, not the
+    // request one: the value here came off a message, so `end_at` is the wire number rather than
+    // the `Date` an outgoing request would carry. `end_at` is optional because a static location
+    // has no expiry — only a live one does.
+    const { end_at: endAt } = message.shared_location as SharedLocationResponseData;
+    if (endAt != null && endAt > nowNs()) {
       return t('messagePreview.liveLocation.label', 'Live Location');
     }
     return t('messagePreview.location.label', 'Location');

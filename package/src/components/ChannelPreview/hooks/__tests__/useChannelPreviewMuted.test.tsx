@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { Channel, StateStore } from 'stream-chat';
 
+import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { useIsChannelMuted } from '../useIsChannelMuted';
 
 describe('useChannelPreviewMuted', () => {
@@ -25,7 +26,7 @@ describe('useChannelPreviewMuted', () => {
 
     act(() => {
       channel.state.partialNext({
-        muteStatus: { createdAt: new Date(), expiresAt: null, muted: true },
+        muteStatus: { createdAt: convertDateToTimestamp(), expiresAt: null, muted: true },
       });
     });
 

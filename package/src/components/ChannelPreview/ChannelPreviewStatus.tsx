@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import type { ChannelPreviewProps } from './ChannelPreview';
 import type { ChannelPreviewViewPropsWithContext } from './ChannelPreviewView';
 
@@ -23,12 +25,12 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   const styles = useStyles();
 
   const created_at = lastMessage?.created_at;
-  const latestMessageDate = created_at ? new Date(created_at) : new Date();
+  const latestMessageDate = convertTimestampToDate(created_at);
 
   const formattedDate = useMemo(
     () =>
       getDateString({
-        messageCreatedAt: created_at,
+        messageCreatedAt: convertTimestampToDate(created_at),
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.ChannelPreviewStatus',
@@ -40,7 +42,7 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
     () =>
       getCalendarDateStringForA11y({
         calendarFormatOverrides: { sameDay: 'LT' },
-        messageCreatedAt: created_at,
+        messageCreatedAt: convertTimestampToDate(created_at),
         tDateTimeParser,
         userLanguage,
       }),

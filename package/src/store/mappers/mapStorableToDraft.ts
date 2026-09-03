@@ -4,6 +4,7 @@ import { mapStorableToChannel } from './mapStorableToChannel';
 import { mapStorableToDraftMessage } from './mapStorableToDraftMessage';
 
 import { mapStorableToMessage } from './mapStorableToMessage';
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
 
 import type { TableRow, TableRowJoinedDraftMessage, TableRowJoinedUser } from '../types';
 
@@ -33,7 +34,7 @@ export const mapStorableToDraft = ({
   return {
     channel: channel.channel,
     channel_cid: cid,
-    created_at: new Date(createdAt),
+    created_at: mapStorableToTimestamp(createdAt) ?? 0,
     message,
     parent_id: parentId,
     quoted_message: quotedMessage,

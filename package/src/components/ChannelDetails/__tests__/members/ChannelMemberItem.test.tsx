@@ -11,6 +11,7 @@ import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
+import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelMemberItem } from '../../components/members/ChannelMemberItem';
 import type { GetMemberRoles } from '../../hooks/members/useMemberRoles';
@@ -160,7 +161,7 @@ describe('ChannelMemberItem activity status', () => {
 
   it('shows a "Last seen ..." string for an offline member with last_active', () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-05-13T12:00:00Z'));
-    const tenMinutesAgo = new Date('2026-05-13T11:50:00Z');
+    const tenMinutesAgo = convertDateToTimestamp('2026-05-13T11:50:00Z');
 
     renderRow({ member: memberFor({ last_active: tenMinutesAgo, online: false }) });
 

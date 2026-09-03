@@ -995,7 +995,42 @@ If you call the `stream-chat` client/channel directly or annotate with its types
 guides in `stream-chat-js`: `v9-to-v10-migration-guide-{type-renames,other,sort,methods,logging,client-construction}.md`.
 Highlights that hit integrator code:
 
-- **Dates are `Date` objects** (not ISO strings) on response types (`created_at`, `updated_at`, …).
+- **Server-sent dates are unix-nanosecond `number`s** on every response and event type (`created_at`,
+  `updated_at`, `last_read`, …) — not `Date` objects and not ISO strings. Two consequences, neither
+  of which is a type error:
+  - **Every `Date`-based path is out of range** (`Date` tops out near 8.64e15 ms; a current
+    timestamp is ~1.79e18), and a date library reads a bare number as **milliseconds**, so both
+    land on an invalid instance rather than on a plausible wrong date. `.toISOString()` throws
+    `RangeError`; `dayjs(ns).format()` returns the literal string `Invalid Date`. In this SDK that
+    string is then swallowed by the `withoutInvalidDate` guard in `src/i18n/utils.ts`, so a missed
+    conversion shows up as a **blank timestamp** rather than as an error or a wrong date.
+  - **A unit mix-up between two `number`s is the silent one.** Comparing a wire timestamp against
+    `Date.now()`, or adding a millisecond duration to one, produces a plausible-looking number and
+    no complaint at all.
+
+  Convert at the boundary with the helpers `stream-chat` exports — `convertTimestampToDate(ts)`
+  (guarded, returns `undefined` for an absent or non-finite value), or `nsToDate` / `dateToNs` /
+  `nsToMs` / `msToNs` / `nowNs` when the value is known to be present. Compare and sort the raw
+  numbers directly; only convert where a `Date` is actually required.
+
+  What changed on **this SDK's** own surface:
+  - **`findInMessagesByDate(messages, targetTimestamp)`** takes a unix-nanosecond `number` (was a
+    `Date`). Exported from the package root.
+  - **`getChannelUnreadState`** returns `last_read` as a `number`, and `0` — not `new Date(0)` — is
+    the "never read" sentinel. Guard it with `!= null`, never with truthiness.
+  - **`useIsChannelMuted`**'s `muteStatus` mirrors core: `{ createdAt: number | null; expiresAt:
+    number | null; muted: boolean }`.
+  - **`getDateString` no longer rescales by magnitude.** The `normalizeTimestamp` helper in
+    `src/i18n/utils.ts` that used to convert an out-of-range number for you is gone, so a call site
+    that skips `convertTimestampToDate` now renders a **blank** timestamp (the `withoutInvalidDate`
+    guard turns `Invalid Date` into `null`) rather than being silently rescued.
+  - Presentational props are unchanged: `MessageFooter` / `MessageDeleted` still take
+    `date?: string | Date`, and `getDateSeparatorValue` still returns a `Date`. Convert where core
+    data enters the tree.
+- **Outgoing request date fields are still `Date`** — filter bounds (`created_at_before`,
+  `created_at_around`, …), `remind_at` and `message_timestamp`. `JSON.stringify` emits RFC3339 for a
+  `Date`, which is the format the request spec declares. Use `nsToDate` when handing a server-sent
+  timestamp back to the API.
 - **Type renames** — `EventTypes`→`EventType`, `Mute`→`UserMuteResponse`,
   `PollOption`→`PollOptionResponseData`, `ReadResponse`→`ReadStateResponse`,
   `AppSettingsAPIResponse`→`GetApplicationResponse`, `FormatMessageResponse`→`LocalMessage`,
@@ -1185,7 +1220,7 @@ The `MutedUsersState` type and the `channel.state.mutedUsersStore` handle are re
 |---|---|---|
 | `data` | `Channel['data']` | The server channel data (name/image/frozen/hidden/blocked/config/…). Republished on `channel.updated` / `channel.hidden` / `channel.visible` and on query/watch. |
 | `membership` | `ChannelMemberResponse` | The current user's own membership (role, `pinned_at`, `archived_at`). |
-| `muteStatus` | `{ muted: boolean; createdAt: Date \| null; expiresAt: Date \| null }` | Is **this channel** muted for the current user — mirrors `client.mutedChannels`. `channel.muteStatus()` (imperative) is unchanged. |
+| `muteStatus` | `{ muted: boolean; createdAt: number \| null; expiresAt: number \| null }` | Is **this channel** muted for the current user — mirrors `client.mutedChannels`. `channel.muteStatus()` (imperative) is unchanged. |
 | `initialized` / `offlineMode` / `pendingDisposal` | `boolean` | Lifecycle flags, now store-backed. `channel.initialized` etc. are transparent getters over these. `pendingDisposal` replaces `disconnected` — see §K.8. |
 | `watchStatus` | `ChannelWatchStatus` — `'watching'` \| `'wasWatching'` \| `'notWatching'` | Whether this client holds a server-side watch (i.e. whether channel events are flowing) and, when it doesn't, whether the watch should be restored. `Watching` once a `watch: true` query succeeds; `WasWatching` when the WS connection drops (the server keys watches by connection ID, so a reconnect issues a new id and every watch is gone — this records that a re-query is wanted); `NotWatching` when never watched, when the consumer called `stopWatching()`, or on teardown — a deliberate stop is never resurrected by a reconnect. Also makes `channel.watch()`'s silent downgrade — it drops to a non-watching query when there is no connection ID — observable. Read via `channel.watchStatus` or `useStateStore(channel.state, (s) => ({ watchStatus: s.watchStatus }))`; the `ChannelWatchStatus` const is exported from `stream-chat`. |
 

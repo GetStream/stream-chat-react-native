@@ -17,6 +17,7 @@ import { generateLocalFileUploadAttachmentData } from '../../../mock-builders/at
 
 import { generateMessage } from '../../../mock-builders/generator/message';
 
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
 import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
@@ -160,7 +161,7 @@ describe('SendMessageDisallowedIndicator', () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
         cid: channel.cid,
-        created_at: new Date(),
+        created_at: convertDateToTimestamp(),
         custom: {},
         type: 'channel.updated',
       });

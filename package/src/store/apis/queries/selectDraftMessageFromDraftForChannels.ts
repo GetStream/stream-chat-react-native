@@ -33,7 +33,7 @@ export const selectDraftMessageFromDraftForChannels = async (
     LEFT JOIN
       draftMessage b
     ON b.id = a.draftMessageId
-    WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
+    WHERE cid in (${questionMarks}) ORDER BY a.createdAt DESC`,
     cids,
   );
 

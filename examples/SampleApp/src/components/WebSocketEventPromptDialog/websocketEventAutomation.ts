@@ -1,3 +1,4 @@
+import { nowNs } from 'stream-chat';
 import type {
   Channel,
   Event,
@@ -211,7 +212,7 @@ const buildFreshMessageUpdatePayload = ({
     user: context.currentUser,
   });
   const targetMessage = getKnownMessage({ context, state }) ?? fallbackMessage;
-  const timestamp = new Date().toISOString();
+  const timestamp = nowNs();
   const message =
     eventType === 'message.deleted'
       ? ({

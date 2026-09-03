@@ -29,7 +29,7 @@ export const selectReactionsForMessages = async (
     : [];
   const createdAtSort = sort?.find((s) => s.field === 'created_at')?.direction;
   const orderByClause = createdAtSort
-    ? `ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ${createdAtSort === 1 ? 'ASC' : 'DESC'}`
+    ? `ORDER BY a.createdAt ${createdAtSort === 1 ? 'ASC' : 'DESC'}`
     : '';
 
   SqliteClient.logger?.('info', 'selectReactionsForMessages', {

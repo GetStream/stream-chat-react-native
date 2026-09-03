@@ -14,6 +14,7 @@ import {
   generateImageAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { useFileAttachmentListSections } from '../hooks/useFileAttachmentListSections';
 
@@ -35,7 +36,7 @@ const messageAt = (
 ): MessageResponse =>
   generateMessage({
     attachments: attachments as never,
-    created_at: new Date(createdAt),
+    created_at: convertDateToTimestamp(createdAt),
     id,
   }) as unknown as MessageResponse;
 

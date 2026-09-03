@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { nowNs } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -79,7 +80,7 @@ describe('ScrollToBottomButton', () => {
       state: generateChannelState({
         read: {
           me: {
-            last_read: new Date(),
+            last_read: nowNs(),
             unread_messages: 3,
             user: { id: 'me' },
           },

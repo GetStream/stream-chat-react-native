@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { SwipableMessageWrapper } from './MessageBubble';
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -210,11 +212,17 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     setQuotedMessage(message);
   });
 
+  // Hoisted: `MessageFooter` and `MessageDeleted` memoize on `prevDate === nextDate`.
+  const messageCreatedAt = useMemo(
+    () => convertTimestampToDate(message.created_at),
+    [message.created_at],
+  );
+
   const itemViewContent = (
     <View pointerEvents='box-none' style={styles.baseContainer} testID='message-item-view-wrapper'>
       {alignment === 'left' ? <MessageAuthor /> : null}
       {isMessageTypeDeleted ? (
-        <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
+        <MessageDeleted date={messageCreatedAt} groupStyle={groupStyle} />
       ) : (
         <View
           style={[
@@ -255,7 +263,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
           {reactionListPosition === 'bottom' && ReactionListBottom ? (
             <ReactionListBottom type={reactionListType} />
           ) : null}
-          <MessageFooter date={message.created_at} />
+          <MessageFooter date={messageCreatedAt} />
         </View>
       )}
       {MessageSpacer ? <MessageSpacer /> : null}

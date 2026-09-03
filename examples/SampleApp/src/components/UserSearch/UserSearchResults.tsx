@@ -12,6 +12,7 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
+import { convertTimestampToDate } from 'stream-chat';
 import type { UserResponse } from 'stream-chat';
 import { useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
@@ -218,7 +219,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 >
                   {item.name}
                 </Text>
-                {showOnlineStatus && (
+                {showOnlineStatus && item.last_active != null && (
                   <Text
                     style={[
                       styles.searchResultUserLastOnline,
@@ -227,7 +228,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                       },
                     ]}
                   >
-                    Last online {dayjs(item.last_active).calendar()}
+                    Last online {dayjs(convertTimestampToDate(item.last_active)).calendar()}
                   </Text>
                 )}
               </View>

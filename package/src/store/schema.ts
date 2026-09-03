@@ -38,32 +38,32 @@ export const tables: Tables = {
       cid: 'TEXT',
       config: 'TEXT',
       cooldown: 'BOOLEAN',
-      createdAt: 'TEXT',
+      createdAt: 'INTEGER',
       createdById: 'TEXT',
-      deletedAt: 'TEXT',
+      deletedAt: 'INTEGER',
       disabled: 'BOOLEAN DEFAULT FALSE',
       extraData: 'TEXT',
       frozen: 'BOOLEAN',
       hidden: 'BOOLEAN',
       id: 'TEXT',
       invites: 'TEXT',
-      lastMessageAt: 'TEXT',
+      lastMessageAt: 'INTEGER',
       memberCount: 'INTEGER',
       muted: 'BOOLEAN DEFAULT FALSE',
       ownCapabilities: 'TEXT',
       team: 'TEXT',
-      truncatedAt: 'TEXT',
+      truncatedAt: 'INTEGER',
       truncatedBy: 'TEXT',
       truncatedById: 'TEXT',
       type: 'TEXT',
-      updatedAt: 'TEXT',
+      updatedAt: 'INTEGER',
     },
     primaryKey: ['cid'],
   },
   draft: {
     columns: {
       cid: 'TEXT NOT NULL',
-      createdAt: 'TEXT',
+      createdAt: 'INTEGER',
       draftMessageId: 'TEXT NOT NULL',
       parentId: 'TEXT',
       quotedMessageId: 'TEXT',
@@ -108,13 +108,13 @@ export const tables: Tables = {
   locations: {
     columns: {
       channelCid: 'TEXT NOT NULL',
-      createdAt: 'TEXT',
+      createdAt: 'INTEGER',
       createdByDeviceId: 'TEXT',
-      endAt: 'TEXT',
+      endAt: 'INTEGER',
       latitude: 'REAL NOT NULL',
       longitude: 'REAL NOT NULL',
       messageId: 'TEXT NOT NULL',
-      updatedAt: 'TEXT',
+      updatedAt: 'INTEGER',
       userId: 'TEXT NOT NULL',
     },
     foreignKeys: [
@@ -136,19 +136,19 @@ export const tables: Tables = {
   },
   members: {
     columns: {
-      archivedAt: 'TEXT',
+      archivedAt: 'INTEGER',
       banned: 'BOOLEAN DEFAULT FALSE',
       channelRole: 'TEXT',
       cid: 'TEXT NOT NULL',
-      createdAt: 'TEXT',
-      inviteAcceptedAt: 'TEXT',
+      createdAt: 'INTEGER',
+      inviteAcceptedAt: 'INTEGER',
       invited: 'BOOLEAN',
-      inviteRejectedAt: 'TEXT',
+      inviteRejectedAt: 'INTEGER',
       isModerator: 'BOOLEAN',
-      pinnedAt: 'TEXT',
+      pinnedAt: 'INTEGER',
       role: 'TEXT',
       shadowBanned: 'BOOLEAN DEFAULT FALSE',
-      updatedAt: 'TEXT',
+      updatedAt: 'INTEGER',
       userId: 'TEXT',
     },
     foreignKeys: [
@@ -172,18 +172,18 @@ export const tables: Tables = {
     columns: {
       attachments: 'TEXT',
       cid: 'TEXT NOT NULL',
-      createdAt: 'TEXT',
-      deletedAt: 'TEXT',
+      createdAt: 'INTEGER',
+      deletedAt: 'INTEGER',
       deletedForMe: 'BOOLEAN DEFAULT FALSE',
       extraData: 'TEXT',
       id: 'TEXT',
-      messageTextUpdatedAt: 'TEXT',
+      messageTextUpdatedAt: 'INTEGER',
       poll_id: 'TEXT',
       reactionGroups: 'TEXT',
       shared_location: 'TEXT',
       text: "TEXT DEFAULT ''",
       type: 'TEXT',
-      updatedAt: 'TEXT',
+      updatedAt: 'INTEGER',
       userId: 'TEXT',
     },
     foreignKeys: [
@@ -220,7 +220,7 @@ export const tables: Tables = {
       allow_answers: 'BOOLEAN DEFAULT FALSE',
       allow_user_suggested_options: 'BOOLEAN DEFAULT FALSE',
       answers_count: 'INTEGER DEFAULT 0',
-      created_at: 'TEXT',
+      created_at: 'INTEGER',
       created_by: 'TEXT',
       created_by_id: 'TEXT',
       description: 'TEXT',
@@ -233,7 +233,7 @@ export const tables: Tables = {
       name: 'TEXT',
       options: 'TEXT',
       own_votes: 'TEXT',
-      updated_at: 'TEXT',
+      updated_at: 'INTEGER',
       vote_count: 'INTEGER DEFAULT 0',
       vote_counts_by_option: 'TEXT',
       voting_visibility: 'TEXT',
@@ -242,12 +242,12 @@ export const tables: Tables = {
   },
   reactions: {
     columns: {
-      createdAt: 'TEXT',
+      createdAt: 'INTEGER',
       extraData: 'TEXT',
       messageId: 'TEXT',
       score: 'INTEGER DEFAULT 0',
       type: 'TEXT',
-      updatedAt: 'TEXT',
+      updatedAt: 'INTEGER',
       userId: 'TEXT',
     },
     foreignKeys: [
@@ -270,9 +270,9 @@ export const tables: Tables = {
   reads: {
     columns: {
       cid: 'TEXT NOT NULL',
-      lastDeliveredAt: 'TEXT',
+      lastDeliveredAt: 'INTEGER',
       lastDeliveredMessageId: 'TEXT',
-      lastRead: 'TEXT NOT NULL',
+      lastRead: 'INTEGER NOT NULL DEFAULT 0',
       lastReadMessageId: 'TEXT',
       unreadMessages: 'INTEGER DEFAULT 0',
       userId: 'TEXT',
@@ -289,10 +289,10 @@ export const tables: Tables = {
   reminders: {
     columns: {
       channelCid: 'TEXT NOT NULL',
-      createdAt: 'TEXT',
+      createdAt: 'INTEGER',
       messageId: 'TEXT NOT NULL',
-      remindAt: 'TEXT',
-      updatedAt: 'TEXT',
+      remindAt: 'INTEGER',
+      updatedAt: 'INTEGER',
       userId: 'TEXT NOT NULL',
     },
     foreignKeys: [
@@ -315,13 +315,13 @@ export const tables: Tables = {
   users: {
     columns: {
       banned: 'BOOLEAN DEFAULT FALSE',
-      createdAt: 'TEXT',
+      createdAt: 'INTEGER',
       extraData: 'TEXT',
       id: 'TEXT',
-      lastActive: 'TEXT',
+      lastActive: 'INTEGER',
       online: 'INTEGER',
       role: 'TEXT',
-      updatedAt: 'TEXT',
+      updatedAt: 'INTEGER',
     },
     indexes: [
       {
@@ -357,27 +357,27 @@ export type Schema = {
     autoTranslationLanguage?: string;
     config?: string;
     cooldown?: number;
-    createdAt?: string;
+    createdAt?: number | null;
     createdById?: string;
-    deletedAt?: string;
+    deletedAt?: number | null;
     disabled?: boolean;
     frozen?: boolean;
     hidden?: boolean;
     invites?: string;
-    lastMessageAt?: string;
+    lastMessageAt?: number | null;
     memberCount?: number;
     muted?: boolean;
     ownCapabilities?: string;
     team?: string;
-    truncatedAt?: string;
+    truncatedAt?: number | null;
     truncatedBy?: string;
     truncatedById?: string;
-    updatedAt?: string;
+    updatedAt?: number | null;
   };
   draft: {
     draftMessageId: string;
     cid: string;
-    createdAt: string;
+    createdAt: number | null;
     parentId?: string;
     quotedMessageId?: string;
   };
@@ -399,35 +399,35 @@ export type Schema = {
     type?: MessageLabel;
   };
   members: {
-    archivedAt?: string;
+    archivedAt?: number | null;
     cid: string;
     banned?: boolean;
     channelRole?: string;
-    createdAt?: string;
-    inviteAcceptedAt?: string;
+    createdAt?: number | null;
+    inviteAcceptedAt?: number | null;
     invited?: boolean;
-    inviteRejectedAt?: string;
+    inviteRejectedAt?: number | null;
     isModerator?: boolean;
     role?: string;
     shadowBanned?: boolean;
-    updatedAt?: string;
+    updatedAt?: number | null;
     userId?: string;
-    pinnedAt?: string;
+    pinnedAt?: number | null;
   };
   messages: {
     attachments: string;
     cid: string;
-    createdAt: string;
-    deletedAt: string;
+    createdAt: number | null;
+    deletedAt: number | null;
     deletedForMe?: boolean;
     extraData: string;
     id: string;
-    messageTextUpdatedAt: string;
+    messageTextUpdatedAt: number | null;
     poll_id: string;
     reactionGroups: string;
     shared_location: string;
     type: MessageLabel;
-    updatedAt: string;
+    updatedAt: number | null;
     text?: string;
     userId?: string;
   };
@@ -443,7 +443,7 @@ export type Schema = {
   };
   poll: {
     answers_count: number;
-    created_at: string;
+    created_at: number | null;
     created_by: string;
     created_by_id: string;
     enforce_unique_vote: boolean;
@@ -453,7 +453,7 @@ export type Schema = {
     max_votes_allowed: number;
     name: string;
     options: string;
-    updated_at: string;
+    updated_at: number | null;
     vote_count: number;
     vote_counts_by_option: string;
     allow_answers?: boolean;
@@ -464,51 +464,51 @@ export type Schema = {
     voting_visibility?: string;
   };
   reactions: {
-    createdAt: string;
+    createdAt: number | null;
     messageId: string;
     type: string;
-    updatedAt: string;
+    updatedAt: number | null;
     extraData?: string;
     score?: number;
     userId?: string;
   };
   reads: {
     cid: string;
-    lastRead: string;
+    lastRead: number;
     lastReadMessageId?: string;
     unreadMessages?: number;
     userId?: string;
-    lastDeliveredAt?: string;
+    lastDeliveredAt?: number | null;
     lastDeliveredMessageId?: string;
   };
   reminders: {
     channelCid: string;
-    createdAt: string;
+    createdAt: number | null;
     messageId: string;
-    updatedAt: string;
+    updatedAt: number | null;
     userId: string;
-    remindAt?: string;
+    remindAt?: number | null;
   };
   locations: {
     channelCid: string;
-    createdAt: string;
+    createdAt: number | null;
     createdByDeviceId: string;
-    endAt?: string;
+    endAt?: number | null;
     latitude: number;
     longitude: number;
     messageId: string;
-    updatedAt: string;
+    updatedAt: number | null;
     userId: string;
   };
   users: {
     id: string;
     banned?: boolean;
-    createdAt?: string;
+    createdAt?: number | null;
     extraData?: string;
-    lastActive?: string;
+    lastActive?: number | null;
     online?: boolean;
     role?: string;
-    updatedAt?: string;
+    updatedAt?: number | null;
   };
   userSyncStatus: {
     appSettings: string;

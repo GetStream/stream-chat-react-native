@@ -181,6 +181,14 @@ where a plural is the bare `<key>`; a dictionary needs the `_one` / `_other` ent
 
 ## Date and time
 
+> **Before anything on this page:** every timestamp you hand a formatter is now a unix-**nanosecond**
+> number, and the `t('timestamp.X', { timestamp })` path is **not type-checked** — i18next's
+> interpolation bag is untyped, so a raw wire number compiles. This SDK's `getDateString` wrapper
+> suppresses the resulting `Invalid Date`, so a missed conversion renders a **blank** timestamp rather
+> than an error. The magnitude-based rescue that used to cover this (`normalizeTimestamp` in
+> `src/i18n/utils.ts`) is gone. If a timestamp is blank, check the conversion first; see
+> [Part I](./ai-migration-v9-to-v10.md) on server-sent dates.
+
 Two steps, and the second is the one that gets missed.
 
 ### Step 1 — the dayjs locale

@@ -13,7 +13,7 @@ export type TableRowJoinedDraftMessage<T extends Table> = Schema[T] & {
 };
 
 export type TableColumnNames<T extends Table> = keyof Schema[T];
-export type TableColumnValue = string | boolean | number | undefined;
+export type TableColumnValue = string | boolean | number | null | undefined;
 export type Scalar = string | number | boolean | null | ArrayBuffer | ArrayBufferView;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedQueries = [string] | [string, Array<any>];

@@ -11,7 +11,7 @@ import type {
   StreamChat,
   UserResponse,
 } from 'stream-chat';
-import { localMessageToNewMessagePayload } from 'stream-chat';
+import { dateToNs, localMessageToNewMessagePayload, nowNs } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Channel as ChannelRaw } from '../../components/Channel/Channel';
@@ -127,7 +127,8 @@ export const OptimisticUpdates = () => {
       const allMembers: ChannelMemberResponse[] = [];
       const allReactions: ReactionResponse[] = [];
       const allReads: Array<{
-        last_read: Date;
+        /** Unix nanoseconds, as the API sends it. */
+        last_read: number;
         unread_messages: number;
         user: ReturnType<typeof generateUser> | undefined;
       }> = [];
@@ -168,7 +169,9 @@ export const OptimisticUpdates = () => {
         });
 
       const reads = members.map((member: ChannelMemberResponse) => ({
-        last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
+        last_read: dateToNs(
+          new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
+        ),
         unread_messages: getRandomInt(0, messages.length),
         user: member.user,
       }));
@@ -583,9 +586,9 @@ export const OptimisticUpdates = () => {
                 };
                 const editedMessage = {
                   ...message,
-                  message_text_updated_at: new Date(),
+                  message_text_updated_at: nowNs(),
                   text: editedText,
-                  updated_at: new Date(),
+                  updated_at: nowNs(),
                 };
                 await getOfflineDb(chatClient).addPendingTask({
                   channelId: channel.id,

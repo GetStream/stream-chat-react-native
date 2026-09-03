@@ -13,6 +13,8 @@ import Animated from 'react-native-reanimated';
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, EventPayload, LocalMessage } from 'stream-chat';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
 
@@ -22,6 +24,7 @@ import { useTypingUsers } from './hooks/useTypingUsers';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecentThreadIndicator';
+import { getMessageListItemCacheKey } from './utils/buildMessageListWithNeighbours';
 
 import {
   AttachmentPickerContextValue,
@@ -80,15 +83,8 @@ try {
   FlashList = undefined;
 }
 
-const keyExtractor = (item: LocalMessage) => {
-  if (item.id) {
-    return item.id;
-  }
-  if (item.created_at) {
-    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
-  }
-  return Date.now().toString();
-};
+// Delegates to the neighbour-cache key so the render key and the cache key cannot drift apart.
+const keyExtractor = (item: LocalMessage, index: number) => getMessageListItemCacheKey(item, index);
 
 const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
@@ -563,8 +559,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
       if (
         isMessageRemovedFromMessageList ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
+        (topMessageBeforeUpdate.current?.created_at != null &&
+          topMessageAfterUpdate?.created_at != null &&
           topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;
@@ -698,13 +694,13 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       const isMessageTypeDeleted = lastItem.item.type === 'deleted';
 
       if (
-        lastItem?.item?.created_at &&
         !isMessageTypeDeleted &&
-        typeof lastItem.item.created_at !== 'string' &&
-        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+        lastItem.item.created_at != null &&
+        convertTimestampToDate(lastItem.item.created_at)?.toDateString() !==
+          stickyHeaderDateRef.current?.toDateString()
       ) {
-        stickyHeaderDateRef.current = lastItem.item.created_at;
-        setStickyHeaderDate(lastItem.item.created_at);
+        stickyHeaderDateRef.current = convertTimestampToDate(lastItem.item.created_at);
+        setStickyHeaderDate(convertTimestampToDate(lastItem.item.created_at));
       }
     },
   );
@@ -745,8 +741,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       const lastItemMessage = lastItem.item;
       const lastItemCreatedAt = lastItemMessage.created_at;
 
-      const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
-      const lastItemDate = lastItemCreatedAt.getTime();
+      const unreadIndicatorDate = channelUnreadState?.last_read;
+      const lastItemDate = lastItemCreatedAt;
 
       if (
         !channel.messagePaginator.hasMoreTail &&
@@ -768,7 +764,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         setIsUnreadNotificationOpen(false);
         return;
       }
-      if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+      if (unreadIndicatorDate != null && lastItemDate > unreadIndicatorDate) {
         setIsUnreadNotificationOpen(true);
       } else {
         setIsUnreadNotificationOpen(false);

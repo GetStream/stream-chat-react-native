@@ -1,3 +1,4 @@
+import { nowNs } from 'stream-chat';
 import type {
   Channel,
   ChannelResponse,
@@ -42,8 +43,6 @@ type MessagePaginatorLike = {
   };
 };
 
-const nowIso = () => new Date().toISOString();
-
 const normalizeUser = (user: Partial<UserResponse> | null | undefined, fallbackId: string) => {
   const id = user?.id || fallbackId;
 
@@ -53,7 +52,7 @@ const normalizeUser = (user: Partial<UserResponse> | null | undefined, fallbackI
     name: user?.name || id,
     online: user?.online ?? true,
     role: user?.role || 'user',
-    updated_at: user?.updated_at || nowIso(),
+    updated_at: user?.updated_at ?? nowNs(),
   } as UserResponse;
 };
 
@@ -153,14 +152,8 @@ export const toMessageResponse = (
   message: LocalMessage | MessageResponse,
   context: WebSocketEventTemplateContext,
 ) => {
-  const createdAt =
-    message.created_at instanceof Date
-      ? message.created_at.toISOString()
-      : message.created_at || nowIso();
-  const updatedAt =
-    message.updated_at instanceof Date
-      ? message.updated_at.toISOString()
-      : message.updated_at || createdAt;
+  const createdAt = message.created_at ?? nowNs();
+  const updatedAt = message.updated_at ?? createdAt;
   const user = message.user ? normalizeUser(message.user, message.user.id) : context.currentUser;
 
   return {
@@ -197,7 +190,7 @@ const buildBasePayload = (
     channel_id: context.channelData.id,
     channel_type: context.channelData.type,
     cid: context.cid,
-    created_at: nowIso(),
+    created_at: nowNs(),
     type: eventType,
     user,
     user_id: user.id,
@@ -216,7 +209,7 @@ export const buildMessage = ({
   type?: MessageResponse['type'];
   user: UserResponse;
 }) => {
-  const timestamp = nowIso();
+  const timestamp = nowNs();
 
   return {
     cid: context.cid,
@@ -250,7 +243,7 @@ export const buildReaction = ({
   reactionUserShape: ReactionUserShape;
   user: UserResponse;
 }) => {
-  const timestamp = nowIso();
+  const timestamp = nowNs();
 
   return {
     created_at: timestamp,
@@ -279,7 +272,7 @@ export const buildMessageWithReaction = ({
   removed?: boolean;
 }) => {
   const reactionUserId = getReactionUserId(reaction);
-  const timestamp = nowIso();
+  const timestamp = nowNs();
   const sameReaction = (candidate: ReactionResponse) =>
     candidate.type === reaction.type && getReactionUserId(candidate) === reactionUserId;
   const baseLatestReactions = message.latest_reactions ?? [];
@@ -309,7 +302,7 @@ export const buildMessageWithReaction = ({
     ...currentGroups,
     [reaction.type]: {
       count: nextCount,
-      first_reaction_at: currentGroup?.first_reaction_at || timestamp,
+      first_reaction_at: currentGroup?.first_reaction_at ?? timestamp,
       last_reaction_at: timestamp,
       sum_scores: nextCount,
     },
@@ -430,7 +423,7 @@ export const buildDefaultWebSocketEventPayload = ({
         message: {
           ...latestMessage,
           text: `${latestMessage.text || 'Synthetic chat traffic'} (updated)`,
-          updated_at: nowIso(),
+          updated_at: nowNs(),
         } as MessageResponse,
         message_id: latestMessage.id,
       };
@@ -440,10 +433,10 @@ export const buildDefaultWebSocketEventPayload = ({
         ...basePayload,
         message: {
           ...latestMessage,
-          deleted_at: nowIso(),
+          deleted_at: nowNs(),
           text: '',
           type: 'deleted',
-          updated_at: nowIso(),
+          updated_at: nowNs(),
         } as MessageResponse,
         message_id: latestMessage.id,
       };

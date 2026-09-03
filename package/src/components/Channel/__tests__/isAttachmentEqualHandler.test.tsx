@@ -15,6 +15,7 @@ import { toChannelResponse } from '../../../mock-builders/event/utils';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Channel } from '../../Channel/Channel';
@@ -114,7 +115,7 @@ describe('isAttachmentEqualHandler', () => {
           attachments: [
             { customField: 'custom-field-2', type: 'test' } as AttachmentWithCustomField,
           ],
-          updated_at: new Date(),
+          updated_at: convertDateToTimestamp(),
         },
         toChannelResponse(channel),
       );

@@ -1,5 +1,7 @@
 import type { ReminderResponseData } from 'stream-chat';
 
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
+
 import type { TableRow } from '../types';
 
 export const mapStorableToReminder = (row: TableRow<'reminders'>): ReminderResponseData => {
@@ -7,10 +9,10 @@ export const mapStorableToReminder = (row: TableRow<'reminders'>): ReminderRespo
 
   return {
     channel_cid: channelCid,
-    created_at: new Date(createdAt),
+    created_at: mapStorableToTimestamp(createdAt) ?? 0,
     message_id: messageId,
-    remind_at: remindAt ? new Date(remindAt) : undefined,
-    updated_at: new Date(updatedAt),
+    remind_at: mapStorableToTimestamp(remindAt),
+    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
     user_id: userId,
   };
 };

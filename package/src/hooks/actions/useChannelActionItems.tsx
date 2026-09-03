@@ -353,8 +353,8 @@ export const useChannelActionItems = ({
   const membership = useChannelMembershipState(channel);
   const channelActions = useChannelActions(channel);
   const isDirectChat = useIsDirectChat(channel);
-  const isPinned = Boolean(membership?.pinned_at);
-  const isArchived = Boolean(membership?.archived_at);
+  const isPinned = membership?.pinned_at != null;
+  const isArchived = membership?.archived_at != null;
 
   const { muted: channelMuteActive } = useIsChannelMuted(channel);
   const otherUser = isDirectChat ? getOtherUserInDirectChannel(channel)?.user : undefined;

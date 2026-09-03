@@ -4,5 +4,5 @@ import { useChannelMembershipState } from '../../../hooks/useChannelMembershipSt
 
 export const useIsChannelPinned = (channel: Channel) => {
   const membership = useChannelMembershipState(channel);
-  return Boolean(membership?.pinned_at);
+  return membership?.pinned_at != null;
 };

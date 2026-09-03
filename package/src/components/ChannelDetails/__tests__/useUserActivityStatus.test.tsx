@@ -7,6 +7,7 @@ import {
   TranslationProvider,
   type TranslationContextValue,
 } from '../../../contexts/translationContext/TranslationContext';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { useUserActivityStatus } from '../hooks/useUserActivityStatus';
 
@@ -46,7 +47,7 @@ describe('useUserActivityStatus', () => {
 
   it('returns a relative "Last seen ..." string when offline with a valid last_active', () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-05-13T12:00:00Z'));
-    const tenMinutesAgo = new Date('2026-05-13T11:50:00Z');
+    const tenMinutesAgo = convertDateToTimestamp('2026-05-13T11:50:00Z');
 
     const { result } = renderHook(
       () => useUserActivityStatus(userFor({ last_active: tenMinutesAgo, online: false })),

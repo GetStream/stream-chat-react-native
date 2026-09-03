@@ -1,5 +1,7 @@
 import { SharedLocationResponseData } from 'stream-chat';
 
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
+
 import type { TableRow } from '../types';
 
 export const mapStorableToSharedLocation = (
@@ -19,13 +21,13 @@ export const mapStorableToSharedLocation = (
 
   return {
     channel_cid: channelCid,
-    created_at: new Date(createdAt),
+    created_at: mapStorableToTimestamp(createdAt) ?? 0,
     created_by_device_id: createdByDeviceId,
-    end_at: endAt ? new Date(endAt) : undefined,
+    end_at: mapStorableToTimestamp(endAt),
     latitude,
     longitude,
     message_id: messageId,
-    updated_at: new Date(updatedAt),
+    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
     user_id: userId,
   };
 };

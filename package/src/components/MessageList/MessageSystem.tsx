@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { LocalMessage } from 'stream-chat';
+import { convertTimestampToDate, LocalMessage } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -44,7 +44,7 @@ export const MessageSystem = (props: MessageSystemProps) => {
   const formattedDate = useMemo(
     () =>
       getDateString({
-        messageCreatedAt: createdAt,
+        messageCreatedAt: convertTimestampToDate(createdAt),
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.MessageSystem',

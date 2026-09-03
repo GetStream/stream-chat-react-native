@@ -1,6 +1,13 @@
 import { makeMutable, SharedValue } from 'react-native-reanimated';
 
-import { Attachment, LocalMessage, StateStore, Unsubscribe, UserResponse } from 'stream-chat';
+import {
+  Attachment,
+  convertTimestampToDate,
+  LocalMessage,
+  StateStore,
+  Unsubscribe,
+  UserResponse,
+} from 'stream-chat';
 
 import { VideoPlayerPool } from './video-player-pool';
 
@@ -138,7 +145,7 @@ export class ImageGalleryStateStore {
 
         return {
           channelId: message?.cid,
-          created_at: message?.created_at,
+          created_at: convertTimestampToDate(message?.created_at),
           id: assetId,
           messageId: message?.id,
           mime_type: attachment.type === 'giphy' ? giphyMimeType : attachment.custom?.mime_type,

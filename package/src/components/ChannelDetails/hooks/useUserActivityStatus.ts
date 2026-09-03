@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 
 import type { UserResponse } from 'stream-chat';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { getDateString } from '../../../i18n/utils';
 
@@ -21,9 +23,9 @@ export const useUserActivityStatus = (user?: UserResponse): string => {
   return useMemo(() => {
     if (user?.online) return t('common.presence.online.label', 'Online');
 
-    if (user?.last_active) {
+    if (user?.last_active != null) {
       const lastSeen = getDateString({
-        messageCreatedAt: user.last_active,
+        messageCreatedAt: convertTimestampToDate(user.last_active),
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.UserActivityStatus',

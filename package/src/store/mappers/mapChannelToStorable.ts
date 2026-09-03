@@ -1,6 +1,6 @@
 import type { Channel, ChannelResponse } from 'stream-chat';
 
-import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+import { mapTimestampToStorable } from './mapTimestampToStorable';
 
 import type { TableRow } from '../types';
 
@@ -40,22 +40,22 @@ export const mapChannelToStorable = (channel: Channel): TableRow<'channels'> | u
     cid,
     config: config && JSON.stringify(config),
     cooldown,
-    createdAt: mapDateTimeToStorable(created_at),
-    deletedAt: mapDateTimeToStorable(deleted_at),
+    createdAt: mapTimestampToStorable(created_at),
+    deletedAt: mapTimestampToStorable(deleted_at),
     disabled,
     extraData: JSON.stringify(extraData),
     frozen,
     hidden,
     id,
-    lastMessageAt: mapDateTimeToStorable(last_message_at),
+    lastMessageAt: mapTimestampToStorable(last_message_at),
     memberCount: member_count,
     muted,
     ownCapabilities: own_capabilities && JSON.stringify(own_capabilities),
     team,
-    truncatedAt: mapDateTimeToStorable(truncated_at),
+    truncatedAt: mapTimestampToStorable(truncated_at),
     truncatedBy: truncated_by && JSON.stringify(truncated_by),
     truncatedById: truncated_by?.id,
     type,
-    updatedAt: mapDateTimeToStorable(updated_at),
+    updatedAt: mapTimestampToStorable(updated_at),
   };
 };

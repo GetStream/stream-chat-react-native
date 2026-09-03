@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PollVoteResponseData as PollVoteClass } from 'stream-chat';
+import { convertTimestampToDate, PollVoteResponseData as PollVoteClass } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
 import { getDateString } from '../../../../i18n/utils';
@@ -28,7 +28,7 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        messageCreatedAt: vote.created_at,
+        messageCreatedAt: convertTimestampToDate(vote.created_at),
         t,
         tDateTimeParser,
         timestampTranslationKey: 'timestamp.PollVote',

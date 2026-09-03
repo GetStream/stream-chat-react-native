@@ -4,6 +4,7 @@ import { mapStorableToPoll } from './mapStorableToPoll';
 import { mapStorableToReaction } from './mapStorableToReaction';
 
 import { mapStorableToReminder } from './mapStorableToReminder';
+import { mapStorableToTimestamp } from './mapStorableToTimestamp';
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { TableRow, TableRowJoinedUser } from '../types';
@@ -41,16 +42,16 @@ export const mapStorableToMessage = ({
   return {
     ...rest,
     attachments: messageRow.attachments ? JSON.parse(messageRow.attachments) : [],
-    created_at: createdAt,
-    deleted_at: deletedAt,
+    created_at: mapStorableToTimestamp(createdAt) ?? 0,
+    deleted_at: mapStorableToTimestamp(deletedAt),
     deleted_for_me: deletedForMe,
     latest_reactions: latestReactions,
-    message_text_updated_at: messageTextUpdatedAt,
+    message_text_updated_at: mapStorableToTimestamp(messageTextUpdatedAt),
     own_reactions: ownReactions,
     poll_id,
     reaction_groups: reactionGroups ? JSON.parse(reactionGroups) : {},
     shared_location: shared_location ? JSON.parse(shared_location) : null,
-    updated_at: updatedAt,
+    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
     user: mapStorableToUser(user),
     ...(pollRow ? { poll: mapStorableToPoll(pollRow) } : {}),
     ...(extraData ? JSON.parse(extraData) : {}),

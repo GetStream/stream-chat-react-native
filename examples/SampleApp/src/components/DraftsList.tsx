@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   ChannelResponse,
+  convertTimestampToDate,
   DraftMessage,
   DraftResponse,
   LocalMessage,
@@ -31,7 +32,8 @@ dayjs.extend(relativeTime);
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
   channel?: ChannelResponse;
-  date?: string;
+  /** Unix nanoseconds, as the API sends it. */
+  date?: number;
   message: DraftMessage;
   // TODO: Fix the type for thread
   thread?: MessageResponseBase;
@@ -75,7 +77,9 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
         <Text style={styles.name}>
           {type === 'channel' ? `# ${channelName}` : `Thread in # ${channelName}`}
         </Text>
-        <Text style={[styles.date, { color: grey }]}>{dayjs(date).fromNow()}</Text>
+        <Text style={[styles.date, { color: grey }]}>
+          {date === undefined ? '' : dayjs(convertTimestampToDate(date)).fromNow()}
+        </Text>
       </View>
       <View style={styles.content}>
         <View style={styles.icon}>

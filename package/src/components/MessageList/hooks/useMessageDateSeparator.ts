@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { LocalMessage } from 'stream-chat';
+import { nsToDate } from 'stream-chat';
 
 export const getDateSeparatorValue = ({
   hideDateSeparators,
@@ -15,11 +16,19 @@ export const getDateSeparatorValue = ({
     return undefined;
   }
 
-  const previousMessageDate = previousMessage?.created_at.toDateString();
-  const messageDate = message?.created_at.toDateString();
+  // Nullish rather than truthy: `0` is a legitimate wire timestamp (the epoch), and treating it as
+  // "no date" would collapse the grouping key and suppress the separator.
+  const previousMessageDate =
+    previousMessage?.created_at != null
+      ? nsToDate(previousMessage.created_at).toDateString()
+      : undefined;
+  const messageDate =
+    message?.created_at != null ? nsToDate(message.created_at).toDateString() : undefined;
 
   if (previousMessageDate !== messageDate) {
-    return message?.created_at;
+    // A `Date`, because the separator components that render this are presentational and keep their
+    // `date?: Date` props. Converted once, here, where core data leaves the message.
+    return message?.created_at != null ? nsToDate(message.created_at) : undefined;
   }
 
   return undefined;

@@ -1,3 +1,4 @@
+import { convertTimestampToDate } from 'stream-chat';
 import type { UserResponse } from 'stream-chat';
 import type { TranslationContextValue } from 'stream-chat-react-native';
 
@@ -6,8 +7,11 @@ import type { TranslationContextValue } from 'stream-chat-react-native';
  * which is why the subtitle follows the language picked in the drawer's secret menu.
  *
  * `timestamp.UserActivityStatus` carries the relative time as a formatter expression, so `t` is
- * given the raw date and dayjs renders it in the active locale. Formatting it here with
+ * given a `Date` and dayjs renders it in the active locale. Formatting it here with
  * `Dayjs().fromNow()` would bypass that and pin the wording to English.
+ *
+ * `last_active` arrives as a unix-**nanosecond** number, which the formatter would read as
+ * milliseconds — hence the conversion.
  */
 export const getUserActivityStatus = (
   t: TranslationContextValue['t'],
@@ -21,9 +25,11 @@ export const getUserActivityStatus = (
     return t('common.presence.online.label', 'Online');
   }
 
-  if (!user.last_active) {
+  if (user.last_active == null) {
     return '';
   }
 
-  return t('timestamp.UserActivityStatus', { timestamp: user.last_active });
+  return t('timestamp.UserActivityStatus', {
+    timestamp: convertTimestampToDate(user.last_active),
+  });
 };

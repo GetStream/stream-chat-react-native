@@ -17,6 +17,8 @@ import debounce from 'lodash/debounce';
 
 import type { Channel, EventPayload, LocalMessage } from 'stream-chat';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
 
@@ -29,6 +31,7 @@ import { InlineLoadingMoreRecentThreadIndicator } from './InlineLoadingMoreRecen
 
 import {
   buildMessageListWithNeighbours,
+  getMessageListItemCacheKey,
   MessageListItemWithNeighbours,
 } from './utils/buildMessageListWithNeighbours';
 
@@ -169,16 +172,9 @@ const useStyles = () => {
   );
 };
 
-const keyExtractor = (derivedItem: MessageListItemWithNeighbours) => {
-  const { message: item } = derivedItem;
-  if (item.id) {
-    return item.id;
-  }
-  if (item.created_at) {
-    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
-  }
-  return Date.now().toString();
-};
+// Delegates to the neighbour-cache key so the render key and the cache key cannot drift apart.
+const keyExtractor = (derivedItem: MessageListItemWithNeighbours, index: number) =>
+  getMessageListItemCacheKey(derivedItem.message, index);
 
 const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
@@ -519,13 +515,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         const isMessageTypeDeleted = lastMessage.type === 'deleted';
 
         if (
-          lastMessage?.created_at &&
           !isMessageTypeDeleted &&
-          typeof lastMessage.created_at !== 'string' &&
-          lastMessage.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
+          lastMessage.created_at != null &&
+          convertTimestampToDate(lastMessage.created_at)?.toDateString() !==
+            stickyHeaderDateRef.current?.toDateString()
         ) {
-          stickyHeaderDateRef.current = lastMessage.created_at;
-          setStickyHeaderDate(lastMessage.created_at);
+          stickyHeaderDateRef.current = convertTimestampToDate(lastMessage.created_at);
+          setStickyHeaderDate(convertTimestampToDate(lastMessage.created_at));
         }
       }
     },
@@ -566,8 +562,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         const lastItemMessage = lastItem.message;
         const lastItemCreatedAt = lastItemMessage.created_at;
 
-        const unreadIndicatorDate = channelUnreadState?.last_read?.getTime();
-        const lastItemDate = lastItemCreatedAt.getTime();
+        const unreadIndicatorDate = channelUnreadState?.last_read;
+        const lastItemDate = lastItemCreatedAt;
 
         if (
           !channel.messagePaginator.hasMoreTail &&
@@ -589,7 +585,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           setIsUnreadNotificationOpen(false);
           return;
         }
-        if (unreadIndicatorDate && lastItemDate > unreadIndicatorDate) {
+        if (unreadIndicatorDate != null && lastItemDate > unreadIndicatorDate) {
           setIsUnreadNotificationOpen(true);
         } else {
           setIsUnreadNotificationOpen(false);
@@ -727,8 +723,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
       if (
         isMessageRemovedFromMessageList ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
+        (topMessageBeforeUpdate.current?.created_at != null &&
+          topMessageAfterUpdate?.created_at != null &&
           topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;

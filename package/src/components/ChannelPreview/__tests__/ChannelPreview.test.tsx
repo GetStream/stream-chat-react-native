@@ -26,6 +26,7 @@ import dispatchNotificationMarkUnread from '../../../mock-builders/event/notific
 import { toChannelResponse } from '../../../mock-builders/event/utils';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
@@ -85,7 +86,7 @@ const seedUnread = (channel: Channel, userId: string, unread_messages: number) =
     read: {
       ...channel.state.read,
       [userId]: {
-        last_read: new Date(),
+        last_read: convertDateToTimestamp(),
         unread_messages,
         user: { id: userId } as UserResponse,
       },
@@ -302,7 +303,7 @@ describe('ChannelPreview', () => {
           chatClient,
           { cid: channel?.cid },
           {
-            last_read_at: new Date(),
+            last_read_at: convertDateToTimestamp(),
             unread_channels: 2,
             unread_messages: 5,
             user: { id: clientUser.id } as UserResponseCommonFields,

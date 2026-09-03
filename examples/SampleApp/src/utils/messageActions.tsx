@@ -77,7 +77,7 @@ export function channelMessageActions({
   //               chatClient.reminders
   //                 .upsertReminder({
   //                   messageId: params.message.id,
-  //                   remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
+  //                   remind_at: new Date(Date.now() + offsetMs),
   //                 })
   //                 .catch((_error) => {
   //                   console.error('Error creating reminder:', _error);
