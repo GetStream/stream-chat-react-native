@@ -10,7 +10,7 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
-import { useHeaderHeight } from '@react-navigation/elements';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import InputButtons from '../../../components/InputButtons';
 import { MessageLocation } from '../../../components/LocationSharing/MessageLocation';
 import { SafeAreaView } from 'react-native-safe-area-context';

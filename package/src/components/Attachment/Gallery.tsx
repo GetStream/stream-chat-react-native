@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
@@ -401,7 +401,7 @@ const GalleryThumbnail = ({
       {colIndex === numOfColumns - 1 && rowIndex === numOfRows - 1 && imagesAndVideos.length > 4 ? (
         <View
           style={[
-            StyleSheet.absoluteFillObject,
+            StyleSheet.absoluteFill,
             styles.moreImagesContainer,
             { backgroundColor: overlay },
             moreImagesContainer,
@@ -705,7 +705,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   imageReloadContainerStyle: {
-    ...StyleSheet.absoluteFillObject,
+    // Cast because RN <= 0.85 types `absoluteFill` as an opaque `RegisteredStyle<...>` which
+    // TypeScript refuses to spread (ts2698); RN 0.86 types it as a plain object, where the cast is
+    // a no-op. It is a plain object at runtime on every version we support (react-native >= 0.73).
+    ...(StyleSheet.absoluteFill as ViewStyle),
     alignItems: 'center',
     justifyContent: 'center',
   },

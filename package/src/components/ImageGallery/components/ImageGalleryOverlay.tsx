@@ -84,7 +84,7 @@ export const ImageGalleryOverlay = (props: Props) => {
     >
       <Animated.View
         style={[
-          StyleSheet.absoluteFillObject,
+          StyleSheet.absoluteFill,
           { backgroundColor: overlayColor },
           overlay,
           showOverlayStyle,
