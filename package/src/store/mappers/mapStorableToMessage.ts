@@ -42,7 +42,7 @@ export const mapStorableToMessage = ({
   return {
     ...rest,
     attachments: messageRow.attachments ? JSON.parse(messageRow.attachments) : [],
-    created_at: mapStorableToTimestamp(createdAt),
+    created_at: mapStorableToTimestamp(createdAt) ?? 0,
     deleted_at: mapStorableToTimestamp(deletedAt),
     deleted_for_me: deletedForMe,
     latest_reactions: latestReactions,
@@ -51,7 +51,7 @@ export const mapStorableToMessage = ({
     poll_id,
     reaction_groups: reactionGroups ? JSON.parse(reactionGroups) : {},
     shared_location: shared_location ? JSON.parse(shared_location) : null,
-    updated_at: mapStorableToTimestamp(updatedAt),
+    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
     user: mapStorableToUser(user),
     ...(pollRow ? { poll: mapStorableToPoll(pollRow) } : {}),
     ...(extraData ? JSON.parse(extraData) : {}),

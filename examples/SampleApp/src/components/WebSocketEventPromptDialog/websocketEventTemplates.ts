@@ -302,7 +302,7 @@ export const buildMessageWithReaction = ({
     ...currentGroups,
     [reaction.type]: {
       count: nextCount,
-      first_reaction_at: currentGroup?.first_reaction_at || timestamp,
+      first_reaction_at: currentGroup?.first_reaction_at ?? timestamp,
       last_reaction_at: timestamp,
       sum_scores: nextCount,
     },

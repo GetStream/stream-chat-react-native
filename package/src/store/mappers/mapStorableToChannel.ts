@@ -44,7 +44,7 @@ export const mapStorableToChannel = (
       cid,
       config: config && JSON.parse(config),
       cooldown,
-      created_at: mapStorableToTimestamp(createdAt),
+      created_at: mapStorableToTimestamp(createdAt) ?? 0,
       created_by_id: createdById,
       deleted_at: mapStorableToTimestamp(deletedAt),
       disabled,
@@ -61,7 +61,7 @@ export const mapStorableToChannel = (
       truncated_by: truncatedBy,
       truncated_by_id: truncatedById,
       type,
-      updated_at: mapStorableToTimestamp(updatedAt),
+      updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
       ...(extraData ? JSON.parse(extraData) : {}),
     },
   };

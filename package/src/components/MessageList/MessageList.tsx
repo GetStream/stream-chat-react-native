@@ -723,8 +723,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
       if (
         isMessageRemovedFromMessageList ||
-        (topMessageBeforeUpdate.current?.created_at &&
-          topMessageAfterUpdate?.created_at &&
+        (topMessageBeforeUpdate.current?.created_at != null &&
+          topMessageAfterUpdate?.created_at != null &&
           topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;

@@ -11,11 +11,11 @@ export const mapStorableToReaction = (
   const { createdAt, extraData, messageId, score, type, updatedAt, user } = reactionRow;
 
   return {
-    created_at: mapStorableToTimestamp(createdAt),
+    created_at: mapStorableToTimestamp(createdAt) ?? 0,
     message_id: messageId,
     score,
     type,
-    updated_at: mapStorableToTimestamp(updatedAt),
+    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
     user: mapStorableToUser(user),
     ...(extraData ? JSON.parse(extraData) : {}),
   };
