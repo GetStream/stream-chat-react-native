@@ -79,14 +79,11 @@ android {
   }
 
   compileOptions {
-    // Must match the Kotlin jvmTarget below. AGP 9 (React Native 0.87) fails the build on an
-    // inconsistent JVM-target between the Java and Kotlin compilation tasks.
+    // Must match the Kotlin jvmTarget set on the KotlinCompile tasks below: an inconsistent
+    // JVM-target between the Java and Kotlin compilation tasks fails the build. On AGP 9 this
+    // is also what AGP's built-in Kotlin derives the Kotlin jvmTarget from.
     sourceCompatibility JavaVersion.VERSION_17
     targetCompatibility JavaVersion.VERSION_17
-  }
-
-  kotlinOptions {
-    jvmTarget = "17"
   }
 
   sourceSets {
@@ -141,6 +138,12 @@ tasks.matching { it.name == "preBuild" }.configureEach {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
   dependsOn("syncSharedShimmerSources")
+  // Set here rather than via `android.kotlinOptions`: that DSL is contributed by the Kotlin
+  // Gradle plugin, which is deliberately not applied when AGP registers the `kotlin`
+  // extension itself (see the guard at the top of this file). This form works either way.
+  compilerOptions {
+    jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+  }
 }
 
 repositories {
