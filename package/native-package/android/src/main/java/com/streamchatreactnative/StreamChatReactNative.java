@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
@@ -110,6 +111,16 @@ public class StreamChatReactNative {
     Canvas canvas = new Canvas(flattened);
     canvas.drawColor(color);
     canvas.drawBitmap(source, 0, 0, null);
+
+    // Every pixel is opaque once an opaque colour has been drawn underneath, but the bitmap
+    // still *declares* an alpha channel, and the PNG and WebP encoders emit one whenever it
+    // does - roughly a third more bytes for a channel that carries no information. Clearing
+    // the flag matches iOS, whose opaque graphics context has no alpha channel at all. JPEG is
+    // unaffected either way, since it cannot store alpha. Guarded on the colour really being
+    // opaque: for a translucent colour the remaining transparency is real and must be kept.
+    if (Color.alpha(color) == 255) {
+      flattened.setHasAlpha(false);
+    }
 
     return flattened;
   }

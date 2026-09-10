@@ -78,7 +78,16 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
 
     // Flatten any alpha channel onto the requested colour before encoding, so transparent
     // areas do not come out black in a format that has no alpha channel.
-    if (backgroundColor != null) {
+    //
+    // Only images that actually carry an alpha channel need this. hasAlpha() is a flag lookup
+    // rather than a pixel scan, and is false for anything decoded from a JPEG, so the common
+    // case - a camera photo - skips a second full-size bitmap allocation. Skipping is safe
+    // because it cannot change the output: drawing a fully opaque bitmap over any colour
+    // reproduces that bitmap exactly. It also removes an OOM risk that mattered: the SDK asks
+    // for the source's own dimensions, so this decodes at full resolution (~48 MB for a 12 MP
+    // photo), and an OOM here surfaces as an IOException that compressImage swallows - the
+    // upload then silently proceeds with the original, uncompressed image.
+    if (backgroundColor != null && scaledImage.hasAlpha()) {
       Bitmap flattenedImage = StreamChatReactNative.flattenOntoBackground(scaledImage, backgroundColor);
 
       if (flattenedImage == null) {
