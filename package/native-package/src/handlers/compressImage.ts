@@ -6,8 +6,7 @@ export type CompressImageParams = {
    * Painted behind the image, flattening any alpha channel onto this colour.
    *
    * This handler always encodes to JPEG, which has no alpha channel, so without a background
-   * any transparent area of a PNG or WebP comes out **black**. Pass `'#FFFFFF'` to get the
-   * white backdrop a browser canvas would give you instead.
+   * any transparent area of a PNG or WebP depends on platform behavior. Pass a color value to explicitly control background color.
    *
    * Only supported by `stream-chat-react-native` (React Native CLI). `stream-chat-expo` has no
    * equivalent.
