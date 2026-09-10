@@ -1,6 +1,5 @@
-import type { ColorValue } from 'react-native';
-
 import StreamChatReactNative from '../native';
+import type { BackgroundColor } from '../native/types';
 
 export type CompressImageParams = {
   /**
@@ -15,7 +14,7 @@ export type CompressImageParams = {
    *
    * (Default: undefined - no background is painted)
    */
-  backgroundColor?: ColorValue;
+  backgroundColor?: BackgroundColor;
   compressImageQuality: number;
   height: number;
   uri: string;
