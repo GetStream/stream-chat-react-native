@@ -235,9 +235,9 @@ static UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool 
         newSize = CGSizeMake(roundf(imageSize.width * scale), roundf(imageSize.height * scale));
     }
 
-    // A non-opaque context initialises to transparent black (0,0,0,0). Encoders
+    // A non-opaque context initialises to white (tested on iOS 26). Encoders
     // without an alpha channel (JPEG) then drop the alpha and keep the RGB, which
-    // is why transparent areas come out black. When a backdrop is requested we
+    // is why transparent areas come out white. When a backdrop is requested we
     // make the context opaque and fill it first, so the image composites onto the
     // colour in the same render pass - no extra bitmap, and an opaque context is
     // cheaper than an alpha one.

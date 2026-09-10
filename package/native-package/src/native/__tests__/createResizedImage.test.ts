@@ -71,18 +71,28 @@ describe('native createResizedImage', () => {
     );
   });
 
-  it('accepts a named colour and an integer as well as a hex string', async () => {
+  it('accepts a named colour and an integer, rotating the integer to 0xAARRGGBB', async () => {
     const { createResizedImage } = loadModule();
 
     await createResizedImage('file:///in.webp', 1200, 900, 'JPEG', 80, 0, null, {
       backgroundColor: 'white',
     });
+    // processColor reads a *number* as 0xRRGGBBAA, so the alpha byte is the last one, not the
+    // first. 0x123456ff is therefore opaque, and every byte differs, so a rotation applied in
+    // the wrong direction cannot pass this assertion.
     await createResizedImage('file:///in.webp', 1200, 900, 'JPEG', 80, 0, null, {
-      backgroundColor: 0xff00ff00,
+      backgroundColor: 0x123456ff,
     });
 
     expect(nativeCreateResizedImage.mock.calls[0].at(-1)).toBe(processColor('white'));
-    expect(nativeCreateResizedImage.mock.calls[1].at(-1)).toBe(processColor(0xff00ff00));
+
+    // Asserted against a literal rather than processColor(): what matters is that the native
+    // side receives 0xAARRGGBB, and `processColor(x) === processColor(x)` cannot show that.
+    // `>>> 0` normalises the sign, because processColor returns a signed int32 on Android and
+    // an unsigned one on iOS.
+    const forwarded = nativeCreateResizedImage.mock.calls[1].at(-1);
+    expect(typeof forwarded).toBe('number');
+    expect(forwarded >>> 0).toBe(0xff123456);
   });
 
   it('sends null when no background colour is given, leaving the other arguments untouched', async () => {
