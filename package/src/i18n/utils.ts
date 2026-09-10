@@ -3,7 +3,7 @@ import {
   getCalendarDateStringForA11y as coreGetCalendarDateStringForA11y,
   getDateString as coreGetDateString,
   getDateStringForA11y as coreGetDateStringForA11y,
-} from 'stream-chat/i18n';
+} from '@stream-io/i18n';
 
 import type { StreamTFunction } from './types';
 
@@ -18,7 +18,7 @@ export const defaultTranslatorFunction: StreamTFunction =
   createDefaultTranslatorFunction() as StreamTFunction;
 
 /**
- * The date/time and key helpers now live in `stream-chat/i18n`, shared with the React SDK.
+ * The date/time and key helpers now live in `@stream-io/i18n`, shared with the React SDK.
  *
  * Re-exported from here rather than rewritten at ~15 call sites, so the internal module path stays
  * stable. `getDateString` and the type guards behave identically; `predefinedFormatters` gains
@@ -33,7 +33,7 @@ export {
   isDayOrMoment,
   isNumberOrString,
   predefinedFormatters,
-} from 'stream-chat/i18n';
+} from '@stream-io/i18n';
 
 /**
  * `null` means "nothing renderable", which every caller already handles by omitting the element.

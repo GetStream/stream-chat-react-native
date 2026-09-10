@@ -1795,7 +1795,7 @@ agent grepping this file finds i18n at all, and knows the three shapes of change
    error.
 2. **English is the only bundled language.** The 12 non-English dictionaries and the `*Translations` exports
    are gone. An integrator supplies their own, additively; a key they omit still renders English.
-3. **The runtime moved to `stream-chat/i18n`**, shared with the React SDK. Imports are unchanged — everything
+3. **The runtime moved to `@stream-io/i18n`**, shared with the React SDK. Imports are unchanged — everything
    is still exported from `stream-chat-react-native` / `stream-chat-expo`, and `Streami18n` keeps its name
    — but reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`,
    `getTranslators()` is now `init()`, and a few date-helper parameters were renamed to the one name both

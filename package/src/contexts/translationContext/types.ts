@@ -1,7 +1,7 @@
 import type { StreamTFunction } from '../../i18n/types';
 
 /**
- * The date/time parser types come from `stream-chat/i18n`, shared with the React SDK.
+ * The date/time parser types come from `@stream-io/i18n`, shared with the React SDK.
  *
  * They used to be declared here, and `TDateTimeParserOutput` referenced `Moment` from
  * `moment-timezone` — a *devDependency*, so the type leaked into the published `.d.ts` and failed to
@@ -12,7 +12,7 @@ export type {
   TDateTimeParser,
   TDateTimeParserInput,
   TDateTimeParserOutput,
-} from 'stream-chat/i18n';
+} from '@stream-io/i18n';
 
 export type TranslatorFunctions = {
   /**
@@ -24,5 +24,5 @@ export type TranslatorFunctions = {
    * global and would force an integrator's own unrelated `t()` calls to satisfy our key union.
    */
   t: StreamTFunction;
-  tDateTimeParser: import('stream-chat/i18n').TDateTimeParser;
+  tDateTimeParser: import('@stream-io/i18n').TDateTimeParser;
 };

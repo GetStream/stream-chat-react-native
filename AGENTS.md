@@ -56,7 +56,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
 - `state-store/` — client-side stores on `useSyncExternalStore` with a selector pattern (audio player, video player, image gallery, message overlay, attachment picker, …)
 - `store/` — offline SQLite persistence: `OfflineDB.ts`, `SqliteClient.ts`, `schema.ts`, `mappers/`, `apis/`
 - `theme/` — theming system + `topologicalResolution.ts` + `generated/` tokens
-- `i18n/` — the translation key layer: generated `keys.ts` catalog, `types.ts`, `runtimeDefaults.ts`, `utils.ts`. No locale JSON — the SDK ships English only. The runtime lives in `stream-chat/i18n`, shared with the React SDK; `utils/i18n/Streami18n.ts` is a thin subclass injecting this package's bundled data
+- `i18n/` — the translation key layer: generated `keys.ts` catalog, `types.ts`, `runtimeDefaults.ts`, `utils.ts`. No locale JSON — the SDK ships English only. The runtime lives in `@stream-io/i18n`, shared with the React SDK; `utils/i18n/Streami18n.ts` is a thin subclass injecting this package's bundled data
 - `a11y/` — accessibility primitives (`a11yUtils.ts`, `hooks/`)
 - `middlewares/` — command UI middlewares (`attachments.ts`, `emojiControl.ts`)
 - `icons/` — SVG icon components
@@ -291,10 +291,16 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   `package/src/i18n/runtimeDefaults.ts` — the only translation data that ships. `runtimeDefaults`
   holds just the keys with no inline copy to fall back on: `timestamp.*` / `duration.*` formatter
   expressions passed around as prop values, and keys built from a runtime value.
-- **The runtime is `stream-chat/i18n`**, shared with the React SDK — one `Streami18n`, one set of
+- **The runtime is `@stream-io/i18n`**, shared with the React SDK — one `Streami18n`, one set of
   formatters, one date layer. `package/src/utils/i18n/Streami18n.ts` is a ~30-line subclass that
   injects this package's `runtimeDefaults` (core cannot import them: the catalog is generated from
-  *this* package's call sites). A behavioural fix belongs in `stream-chat`, not here. Access `t` via
+  *this* package's call sites). A behavioural fix belongs in `@stream-io/i18n`, not here — and note
+  it is a **regular dependency** here, as it is in the React SDK — an integrator never imports it
+  directly, they use the `Streami18n` this package re-exports. `dayjs` stays a direct dependency too,
+  because
+  this package uses it outside i18n (`utils.ts`, the audio recorder, the attachment picker); keep
+  both ranges at `^1.11.13` so they dedupe to one copy — dayjs locale registration is global state,
+  so two copies would mean locales registered on one are invisible to the other. Access `t` via
   `useTranslationContext()`. `registerTranslation` **merges**, so a partial dictionary can never
   knock out the bundled formatter keys.
 - **Reactivity is a `StateStore`,** not listeners. `i18n.state` publishes
@@ -319,7 +325,7 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   belongs to the calendar plugin) — a new language needs both `import 'dayjs/locale/xx'` and a
   `calendar` config, or relative dates render English scaffolding around translated day names.
 - Generation: `build-translations` runs `package/scripts/generate-i18n-keys.mts`, now a ~40-line
-  config shim over the generator in `stream-chat/i18n/codegen` (also shared with the React SDK). Four
+  config shim over the generator in `@stream-io/i18n/codegen` (also shared with the React SDK). Four
   hard-fail guards: conflicting inline copy, unresolvable key, shadowed key, strict prefix. The
   external-string drift guard is gone with `externalStrings.ts`. The fixture tests live in
   `stream-chat`'s own suite — there is no longer a `node --test` step here.

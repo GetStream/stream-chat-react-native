@@ -22,7 +22,7 @@ import type {
 /**
  * The i18n public surface, pinned.
  *
- * Moving the runtime into `stream-chat/i18n` silently dropped `CalendarFormats` and `DayjsLocaleConfig`
+ * Moving the runtime into `@stream-io/i18n` silently dropped `CalendarFormats` and `DayjsLocaleConfig`
  * from this package's exports: they had been re-exported from the deleted `utils/i18n/types.ts`, and
  * nothing here imports them, so neither the build nor the type gate noticed. Both are documented in
  * `ai-docs/i18n-v10-migration.md`'s type table, so an integrator would have hit it first.

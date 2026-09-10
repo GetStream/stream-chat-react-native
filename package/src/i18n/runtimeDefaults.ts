@@ -10,14 +10,14 @@
  * and the `timestamp/<Component>` values these keys replace. Every other namespace is lower
  * camelCase.
  *
- * Two namespaces are typed into the catalog but supplied by `stream-chat/i18n` rather than declared
+ * Two namespaces are typed into the catalog but supplied by `@stream-io/i18n` rather than declared
  * here. `language.*` (ISO language names, generated from core's `TranslationLanguage` union) is
  * merged in by the `Streami18n` subclass in `utils/i18n/Streami18n.ts`, underneath this file, so an
  * individual name stays overridable. `relativeTime.*` needs no data at all: core's
  * `timestampFormatter(relativeCompact: true)` passes its English inline the same way a call site
  * does. There is
  * no `translationBuilderTopic.*` — this SDK registers no i18next postProcessor; the formatter
- * registry in `stream-chat/i18n` is the whole extension surface.
+ * registry in `@stream-io/i18n` is the whole extension surface.
  *
  * `yarn build-translations` joins this file with the inline defaults to generate
  * `src/i18n/keys.ts`; `yarn i18n:export` writes the joined catalog as JSON.
