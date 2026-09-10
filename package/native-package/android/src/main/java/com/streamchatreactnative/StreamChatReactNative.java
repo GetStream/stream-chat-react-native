@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
@@ -81,6 +82,36 @@ public class StreamChatReactNative {
     }
 
     return newImage;
+  }
+
+  /**
+   * Composite the given bitmap onto an opaque background of the given colour, so that any
+   * alpha channel is flattened rather than dropped.
+   *
+   * Encoders without an alpha channel (JPEG) discard alpha and keep the underlying RGB, which
+   * turns transparent areas black. Drawing onto a filled canvas first blends semi-transparent
+   * pixels toward the colour and replaces fully transparent ones with it.
+   *
+   * Returns null if the intermediate bitmap can't be allocated. The caller owns the result and
+   * should recycle the source.
+   */
+  public static Bitmap flattenOntoBackground(Bitmap source, int color) {
+    if (source == null) {
+      return null;
+    }
+
+    Bitmap flattened;
+    try {
+      flattened = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Bitmap.Config.ARGB_8888);
+    } catch (OutOfMemoryError e) {
+      return null;
+    }
+
+    Canvas canvas = new Canvas(flattened);
+    canvas.drawColor(color);
+    canvas.drawBitmap(source, 0, 0, null);
+
+    return flattened;
   }
 
   /**

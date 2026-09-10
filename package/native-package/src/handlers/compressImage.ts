@@ -1,6 +1,21 @@
+import type { ColorValue } from 'react-native';
+
 import StreamChatReactNative from '../native';
 
-type CompressImageParams = {
+export type CompressImageParams = {
+  /**
+   * Painted behind the image, flattening any alpha channel onto this colour.
+   *
+   * This handler always encodes to JPEG, which has no alpha channel, so without a background
+   * any transparent area of a PNG or WebP comes out **black**. Pass `'#FFFFFF'` to get the
+   * white backdrop a browser canvas would give you instead.
+   *
+   * Only supported by `stream-chat-react-native` (React Native CLI). `stream-chat-expo` has no
+   * equivalent.
+   *
+   * (Default: undefined - no background is painted)
+   */
+  backgroundColor?: ColorValue;
   compressImageQuality: number;
   height: number;
   uri: string;
@@ -8,6 +23,7 @@ type CompressImageParams = {
 };
 
 export const compressImage = async ({
+  backgroundColor,
   compressImageQuality = 1,
   height,
   uri,
@@ -22,7 +38,7 @@ export const compressImage = async ({
       Math.min(Math.max(0, compressImageQuality), 1) * 100,
       0,
       undefined,
-      { mode: 'cover' },
+      { backgroundColor, mode: 'cover' },
     );
     return compressedUri;
   } catch (error) {

@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, processColor } from 'react-native';
 
 import type { Options, ResizeFormat, Response } from './types';
 export type { ResizeFormat, ResizeMode, Response } from './types';
@@ -26,7 +26,23 @@ async function createResizedImage(
   outputPath?: string | null,
   options: Options = defaultOptions,
 ): Promise<Response> {
-  const { mode, onlyScaleDown } = { ...defaultOptions, ...options };
+  const { backgroundColor, mode, onlyScaleDown } = { ...defaultOptions, ...options };
+
+  // The colour has to reach the native side as a plain ARGB integer, so anything
+  // processColor cannot reduce to a number (PlatformColor, an unparseable string)
+  // is rejected here rather than silently dropped.
+  let processedBackgroundColor: number | null = null;
+  if (backgroundColor !== undefined && backgroundColor !== null) {
+    const processed = processColor(backgroundColor);
+    if (typeof processed !== 'number') {
+      throw new Error(
+        `createResizedImage: unsupported backgroundColor \`${String(
+          backgroundColor,
+        )}\`. Pass a colour string such as '#FFFFFF' or an integer; PlatformColor and DynamicColorIOS are not supported.`,
+      );
+    }
+    processedBackgroundColor = processed;
+  }
 
   return await ImageResizer.createResizedImage(
     uri,
@@ -38,6 +54,7 @@ async function createResizedImage(
     onlyScaleDown,
     rotation,
     outputPath,
+    processedBackgroundColor,
   );
 }
 
