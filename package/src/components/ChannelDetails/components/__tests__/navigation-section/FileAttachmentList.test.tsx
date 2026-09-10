@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 
 import Dayjs from 'dayjs';
-import { StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
 import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
 import {

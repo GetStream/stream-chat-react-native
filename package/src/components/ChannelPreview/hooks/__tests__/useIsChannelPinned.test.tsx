@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
-import { Channel, ChannelMemberResponse, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { useIsChannelPinned } from '../useIsChannelPinned';

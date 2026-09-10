@@ -1,13 +1,7 @@
 import { makeMutable, SharedValue } from 'react-native-reanimated';
 
-import {
-  Attachment,
-  convertTimestampToDate,
-  LocalMessage,
-  StateStore,
-  Unsubscribe,
-  UserResponse,
-} from 'stream-chat';
+import { StateStore, Unsubscribe } from '@stream-io/state-store';
+import { Attachment, convertTimestampToDate, LocalMessage, UserResponse } from 'stream-chat';
 
 import { VideoPlayerPool } from './video-player-pool';
 

@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
 
 import { normalizeAudioLevel } from '../components/MessageInput/utils/normalizeAudioLevel';
 import {
