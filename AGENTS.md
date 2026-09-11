@@ -299,7 +299,7 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   directly, they use the `Streami18n` this package re-exports. `dayjs` stays a direct dependency too,
   because
   this package uses it outside i18n (`utils.ts`, the audio recorder, the attachment picker); keep
-  both ranges at `^1.11.13` so they dedupe to one copy — dayjs locale registration is global state,
+  both ranges at `^1.11.23` so they dedupe to one copy — dayjs locale registration is global state,
   so two copies would mean locales registered on one are invisible to the other. Access `t` via
   `useTranslationContext()`. `registerTranslation` **merges**, so a partial dictionary can never
   knock out the bundled formatter keys.
@@ -317,10 +317,10 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   a new core identifier is a compile error until it is mapped. Never match on `notification.message`;
   that is untranslated English whose wording is not part of core's contract. Poll field errors are
   keyed the same way, on `POLL_COMPOSER_VALIDATION_CODE`.
-- **`dayjs` must resolve to exactly one copy.** Its range here has to stay compatible with core's
-  (`^1.11.13`) — an exact pin installs a second copy, `instanceof Dayjs` starts failing, and an
-  integrator's `import 'dayjs/locale/de'` lands on an instance the SDK never formats with. Do not
-  declare `i18next` at all; it arrives through `stream-chat`.
+- **`dayjs` must resolve to exactly one copy.** Its range here has to stay identical to
+  `@stream-io/i18n`'s (`^1.11.23`) — a disagreeing pin installs a second copy, `instanceof Dayjs`
+  starts failing, and an integrator's `import 'dayjs/locale/de'` lands on an instance the SDK never
+  formats with. Do not declare `i18next` at all; it arrives through `@stream-io/i18n`.
 - Only the `en` dayjs locale is bundled, and **no dayjs locale defines `calendar`** (that field
   belongs to the calendar plugin) — a new language needs both `import 'dayjs/locale/xx'` and a
   `calendar` config, or relative dates render English scaffolding around translated day names.
@@ -328,7 +328,7 @@ Integrators add languages additively — there is nothing in the SDK to fork or 
   config shim over the generator in `@stream-io/i18n/codegen` (also shared with the React SDK). Four
   hard-fail guards: conflicting inline copy, unresolvable key, shadowed key, strict prefix. The
   external-string drift guard is gone with `externalStrings.ts`. The fixture tests live in
-  `stream-chat`'s own suite — there is no longer a `node --test` step here.
+  `@stream-io/i18n`'s own suite — there is no longer a `node --test` step here.
 - Validation: `validate-translations` runs inside `yarn lint` and in CI. It is a **drift gate** —
   it regenerates `keys.ts` and fails if the result differs from what is committed.
 - Adding a string: call `t('some.dotted.key', 'English copy')` → run `build-translations` → commit

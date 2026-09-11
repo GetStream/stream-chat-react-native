@@ -21,11 +21,10 @@ The 13 JSON files were 392,103 raw / 70,972 gzip and shipped in both targets. Wh
 409-entry typed catalog costs nothing at runtime.
 
 The extra ~13 KB gzip beyond the locale files is the `Streami18n` runtime itself, which moved to
-`@stream-io/i18n` (see below). **That is a move, not a saving** — the code now ships in `stream-chat`
-instead, at 11,711 bytes gzip for its own subpath bundle, so the total your app downloads is roughly
-unchanged on that portion. What genuinely goes away is the 70,972 gzip of locale JSON. `stream-chat`'s
-root bundle is unaffected: the i18n layer is a separate entry point, and a build-time assertion in
-`stream-chat` fails if `i18next` or `dayjs` reach the root.
+`@stream-io/i18n` (see below). **That is a move, not a saving** — the code now ships in that package
+instead, so the total your app downloads is roughly unchanged on that portion. What genuinely goes
+away is the 70,972 gzip of locale JSON. `stream-chat` is unaffected either way: it no longer contains
+the translation layer at all, and no longer depends on `i18next` or `dayjs`.
 
 ## Why the keys changed at all
 
@@ -419,7 +418,7 @@ last segment is the modality: `.label`, `.title`, `.text`, `.placeholder`, `.des
 `.accessibilityLabel`. The `timestamp.*` and `duration.*` leaf stays PascalCase after the consuming component, matching
 the `timestamp/<Component>` keys it replaces.
 
-## The runtime moved to `stream-chat`
+## The runtime moved to `@stream-io/i18n`
 
 `Streami18n` is no longer implemented here. The class, the formatters and the whole date layer live in
 `@stream-io/i18n`, shared with the React SDK, and this package exports a thin subclass that injects its own
@@ -596,10 +595,11 @@ register a dayjs locale directly, `@stream-io/i18n` exports `addOrUpdateDayjsLoc
 
 ### `dayjs` must resolve to one copy
 
-Declare it compatibly with `stream-chat`'s range (`^1.11.13`), or don't declare it at all. An exact pin that
-disagrees installs a second copy, and then your `import 'dayjs/locale/de'` extends an instance the SDK never
-formats with — dates stay English with no error anywhere. Don't declare `i18next`; it arrives through
-`stream-chat`.
+Declare it compatibly with `@stream-io/i18n`'s range (`^1.11.23`), or don't declare it at all. An exact pin
+that disagrees installs a second copy, and then your `import 'dayjs/locale/de'` extends an instance the SDK
+never formats with — dates stay English with no error anywhere. Don't declare `i18next`; it arrives through
+`@stream-io/i18n`, which registers dictionaries on its own `createInstance()` rather than a global, so a
+second copy of *that* would be harmless anyway.
 
 ## Type reference
 

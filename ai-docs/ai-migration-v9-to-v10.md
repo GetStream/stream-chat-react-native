@@ -1803,8 +1803,8 @@ agent grepping this file finds i18n at all, and knows the three shapes of change
 
 Two dependency rules that produce silent breakage rather than errors:
 
-- **`dayjs` must resolve to a single copy.** Declare it compatibly with `stream-chat`'s range (`^1.11.13`) or
-  not at all. A disagreeing exact pin installs a second copy, and an app's `import 'dayjs/locale/de'` then
+- **`dayjs` must resolve to a single copy.** Declare it compatibly with `@stream-io/i18n`'s range (`^1.11.23`)
+  or not at all. A disagreeing exact pin installs a second copy, and an app's `import 'dayjs/locale/de'` then
   extends an instance the SDK never formats with — dates stay English, nothing throws.
-- **Do not declare `i18next`.** It arrives through `stream-chat`. Two copies mean dictionaries registered on
-  one instance and read from the other.
+- **Do not declare `i18next`.** It arrives through `@stream-io/i18n`, which registers dictionaries on its own
+  `createInstance()` rather than a global — so unlike dayjs, a second copy would be harmless. Skip it anyway.
