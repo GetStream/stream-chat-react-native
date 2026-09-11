@@ -5857,10 +5857,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stream-io/i18n@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@stream-io/i18n@npm:1.0.1"
+  dependencies:
+    "@stream-io/state-store": "npm:^1.1.6"
+    dayjs: "npm:^1.11.23"
+    i18next: "npm:^26.4.2"
+    use-sync-external-store: "npm:^1.7.0"
+  peerDependencies:
+    react: ^17 || ^18 || ^19
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 10c0/91e2b76256926314af5fc53ae67069feecda183bbe50fb1c093b36ee8c97d05037715138db283da7bf50668b711410c95bcec29f1d06a4d39bf49575f1a5ec81
+  languageName: node
+  linkType: hard
+
 "@stream-io/logger@npm:^2.0.0":
   version: 2.0.0
   resolution: "@stream-io/logger@npm:2.0.0"
   checksum: 10c0/b12b1a8005b99b7fbdcfd91dbda08b5021da9044f861bb574005975d43dcfe9f406795015c6ddadc3a18cb9dda0c949e303b6c454b9f5139fa24701bed5a0bd7
+  languageName: node
+  linkType: hard
+
+"@stream-io/state-store@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "@stream-io/state-store@npm:1.1.6"
+  peerDependencies:
+    react: ^17 || ^18 || ^19
+    use-sync-external-store: ^1.5.0
+  peerDependenciesMeta:
+    react:
+      optional: true
+    use-sync-external-store:
+      optional: true
+  checksum: 10c0/42927cdb6a5bf6ba5f4ec11bb5e530db0a04edc65abd5348eb423780e40a3e53f57125e328d0318a0dc6b24ca0fcb28e8b91895a14a62ed8d82645f67ebcee5a
   languageName: node
   linkType: hard
 
@@ -6578,7 +6610,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-web: "npm:^0.21.2"
     react-native-worklets: "npm:0.11.1"
-    stream-chat: "npm:^10.0.0-rc.9"
+    stream-chat: "npm:^10.0.0-rc.10"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -8534,7 +8566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.11.13, dayjs@npm:^1.8.15":
+"dayjs@npm:^1.11.23, dayjs@npm:^1.8.15":
   version: 1.11.23
   resolution: "dayjs@npm:1.11.23"
   checksum: 10c0/69ab04bf19c676e44ab50cc2fca223d265f3dafd107151ef3b0f3ad74d360c37caa602abe62f87cb25d90bd9f6bee003698af47df5b0dbf10a998b7b5f3bb3f1
@@ -11360,15 +11392,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^26.3.6":
-  version: 26.3.6
-  resolution: "i18next@npm:26.3.6"
+"i18next@npm:^26.4.2":
+  version: 26.4.2
+  resolution: "i18next@npm:26.4.2"
   peerDependencies:
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/5920ac8fb6b647a2bdd439d121de04e5297246e52c4d95d13f5faae0824fd45b2faeb66038bcd61fc62362daa815f9c32fb992d6faa3787607d1dfe768e9a8b1
+  checksum: 10c0/f2c9613e03e09e56a84aee939d8fbe3442a58622915e11f97e47f9ab358dfa65be783230b37a21483152711f786fccfe697d7f5ea9269c54f16179dc59960e4b
   languageName: node
   linkType: hard
 
@@ -17551,11 +17583,12 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.18.3"
     "@rnx-kit/metro-config": "npm:^2.1.0"
     "@shopify/flash-list": "npm:^2.3.2"
+    "@stream-io/state-store": "npm:^1.1.6"
     "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
     "@types/react": "npm:^19.2.0"
     babel-plugin-react-compiler: "npm:^1.0.0"
-    dayjs: "npm:^1.11.13"
+    dayjs: "npm:^1.11.23"
     emoji-mart: "npm:^5.6.0"
     lodash.mergewith: "npm:^4.6.2"
     react: "npm:19.2.3"
@@ -17575,7 +17608,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-video: "npm:^6.19.2"
     react-native-worklets: "npm:^0.12.1"
-    stream-chat: "npm:^10.0.0-rc.9"
+    stream-chat: "npm:^10.0.0-rc.10"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18276,6 +18309,8 @@ __metadata:
     "@react-native/babel-preset": "npm:0.87.0"
     "@react-native/jest-preset": "npm:0.87.0"
     "@shopify/flash-list": "npm:^2.3.2"
+    "@stream-io/i18n": "npm:^1.0.1"
+    "@stream-io/state-store": "npm:^1.1.6"
     "@stream-io/typescript-config": "workspace:^"
     "@testing-library/jest-native": "npm:^5.4.3"
     "@testing-library/react-native": "npm:13.2.0"
@@ -18296,7 +18331,7 @@ __metadata:
     babel-loader: "npm:10.1.1"
     babel-plugin-module-resolver: "npm:5.0.3"
     better-sqlite3: "npm:12.11.1"
-    dayjs: "npm:^1.11.13"
+    dayjs: "npm:^1.11.23"
     emoji-regex: "npm:^10.4.0"
     intl-pluralrules: "npm:^2.0.1"
     jest: "npm:^30.4.2"
@@ -18317,9 +18352,9 @@ __metadata:
     react-native-worklets: "npm:^0.12.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0-rc.9"
+    stream-chat: "npm:^10.0.0-rc.10"
     typescript: "npm:6.0.3"
-    use-sync-external-store: "npm:^1.5.0"
+    use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
   peerDependencies:
     "@emoji-mart/data": ">=1.1.0"
@@ -18391,21 +18426,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.0-rc.9":
-  version: 10.0.0-rc.9
-  resolution: "stream-chat@npm:10.0.0-rc.9"
+"stream-chat@npm:^10.0.0-rc.10":
+  version: 10.0.0-rc.10
+  resolution: "stream-chat@npm:10.0.0-rc.10"
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
+    "@stream-io/state-store": "npm:^1.1.6"
     axios: "npm:^1.19.0"
-    dayjs: "npm:^1.11.13"
-    i18next: "npm:^26.3.6"
     linkifyjs: "npm:^4.3.3"
   dependenciesMeta:
     esbuild:
       built: true
     husky:
       built: true
-  checksum: 10c0/4409003abe465e7d75d5b55daf6a197aeec346a9dcbbb84ad729dc2c31155899b6cf464d3a3be3249cf132b1cb3b67e4e7d0e3356379f22160779581b7b38dd1
+  checksum: 10c0/00eb4de2b390f633a7b7e2613a6a2aa30543c6e0bcda96bbf10ac257cef07bd14b78e2c5677ad36c2b91d64d820baff63fa65782581f568755a9984f18843dc0
   languageName: node
   linkType: hard
 
@@ -19518,12 +19552,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.5.0":
-  version: 1.6.0
-  resolution: "use-sync-external-store@npm:1.6.0"
+"use-sync-external-store@npm:^1.5.0, use-sync-external-store@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "use-sync-external-store@npm:1.7.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/35e1179f872a53227bdf8a827f7911da4c37c0f4091c29b76b1e32473d1670ebe7bcd880b808b7549ba9a5605c233350f800ffab963ee4a4ee346ee983b6019b
+  checksum: 10c0/6bae7cb778ce611131ec830c4e469fbc2872acefc25d2e4cf1c28b8628690689770742a9f2f0642c95134f9c77041fee60f0352f81ca43f96643b0ed01774726
   languageName: node
   linkType: hard
 

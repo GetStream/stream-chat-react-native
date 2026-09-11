@@ -8,7 +8,7 @@
 //
 // Run by `yarn build-translations`, from the `package` workspace root — every path below is relative to
 // it. `yarn validate-translations` runs it and fails on any diff, which is the drift gate.
-import ts from 'typescript';
+import * as ts from 'typescript';
 import { generateI18nKeys } from '@stream-io/i18n/codegen';
 
 const jsonFlag = process.argv.indexOf('--json');
