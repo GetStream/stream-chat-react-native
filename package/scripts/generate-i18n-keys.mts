@@ -2,14 +2,14 @@
 // copy. The i18n types derive `TranslationKey` / `StreamTFunction` from it, so a typo'd key is a compile
 // error rather than a string that silently stops rendering.
 //
-// The generator itself lives in `stream-chat/i18n/codegen`, shared with the React SDK. Only this
+// The generator itself lives in `@stream-io/i18n/codegen`, shared with the React SDK. Only this
 // package's paths and prefixes are configured here; the call-site reader, the four hard-fail guards and
 // the emitter are all core's, and core owns their fixture tests.
 //
 // Run by `yarn build-translations`, from the `package` workspace root — every path below is relative to
 // it. `yarn validate-translations` runs it and fails on any diff, which is the drift gate.
 import ts from 'typescript';
-import { generateI18nKeys } from 'stream-chat/i18n/codegen';
+import { generateI18nKeys } from '@stream-io/i18n/codegen';
 
 const jsonFlag = process.argv.indexOf('--json');
 const jsonOut = jsonFlag === -1 ? undefined : process.argv[jsonFlag + 1];
@@ -25,7 +25,7 @@ try {
     // `keys.ts` is type-only, so no runtime test can iterate it. This is its data twin, used by
     // `catalogRenders.test.ts`, and it lives under `__tests__` so it never reaches the published build.
     fixtureOut: 'src/i18n/__tests__/catalog.fixture.json',
-    // `language.*` comes from `stream-chat/i18n` rather than this package's runtimeDefaults, so it is
+    // `language.*` comes from `@stream-io/i18n` rather than this package's runtimeDefaults, so it is
     // excluded from the translator export alongside the formatter expressions.
     extraFormatterPrefixes: ['language.'],
     json: jsonOut ? { includeFormats: process.argv.includes('--all'), out: jsonOut } : undefined,

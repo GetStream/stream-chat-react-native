@@ -1,4 +1,5 @@
-import { LocalMessage, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { LocalMessage } from 'stream-chat';
 
 export type MessagePreviousAndNextMessageStoreType = {
   messageList: Record<

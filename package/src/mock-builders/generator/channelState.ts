@@ -1,4 +1,5 @@
-import { ChannelWatchStatus, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { ChannelWatchStatus } from 'stream-chat';
 
 /**
  * Builds a mock `channel.state` as a REAL `StateStore` — the shape v10 hooks require

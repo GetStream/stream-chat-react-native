@@ -1,5 +1,6 @@
+import { StateStore } from '@stream-io/state-store';
 import { act, renderHook } from '@testing-library/react-native';
-import { Channel, StateStore } from 'stream-chat';
+import { Channel } from 'stream-chat';
 
 import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { useIsChannelMuted } from '../useIsChannelMuted';

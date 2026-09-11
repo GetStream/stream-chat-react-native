@@ -1,4 +1,5 @@
-import { Notification, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { Notification } from 'stream-chat';
 
 export type InAppNotificationsState = {
   notifications: Notification[];

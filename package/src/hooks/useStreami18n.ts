@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import type { Streami18nState } from 'stream-chat/i18n';
+import type { Streami18nState } from '@stream-io/i18n';
 
 import { useStateStore } from './useStateStore';
 

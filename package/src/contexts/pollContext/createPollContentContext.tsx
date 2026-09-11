@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
 
 import { MessageInputContextValue } from '../messageInputContext/MessageInputContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';

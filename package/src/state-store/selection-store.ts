@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
 
 import { useStateStore } from '../hooks/useStateStore';
 

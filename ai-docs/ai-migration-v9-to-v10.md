@@ -1795,7 +1795,7 @@ agent grepping this file finds i18n at all, and knows the three shapes of change
    error.
 2. **English is the only bundled language.** The 12 non-English dictionaries and the `*Translations` exports
    are gone. An integrator supplies their own, additively; a key they omit still renders English.
-3. **The runtime moved to `stream-chat/i18n`**, shared with the React SDK. Imports are unchanged — everything
+3. **The runtime moved to `@stream-io/i18n`**, shared with the React SDK. Imports are unchanged — everything
    is still exported from `stream-chat-react-native` / `stream-chat-expo`, and `Streami18n` keeps its name
    — but reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`,
    `getTranslators()` is now `init()`, and a few date-helper parameters were renamed to the one name both
@@ -1803,8 +1803,8 @@ agent grepping this file finds i18n at all, and knows the three shapes of change
 
 Two dependency rules that produce silent breakage rather than errors:
 
-- **`dayjs` must resolve to a single copy.** Declare it compatibly with `stream-chat`'s range (`^1.11.13`) or
-  not at all. A disagreeing exact pin installs a second copy, and an app's `import 'dayjs/locale/de'` then
+- **`dayjs` must resolve to a single copy.** Declare it compatibly with `@stream-io/i18n`'s range (`^1.11.23`)
+  or not at all. A disagreeing exact pin installs a second copy, and an app's `import 'dayjs/locale/de'` then
   extends an instance the SDK never formats with — dates stay English, nothing throws.
-- **Do not declare `i18next`.** It arrives through `stream-chat`. Two copies mean dictionaries registered on
-  one instance and read from the other.
+- **Do not declare `i18next`.** It arrives through `@stream-io/i18n`, which registers dictionaries on its own
+  `createInstance()` rather than a global — so unlike dayjs, a second copy would be harmless. Skip it anyway.

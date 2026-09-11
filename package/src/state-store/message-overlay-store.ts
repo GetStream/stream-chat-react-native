@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { makeMutable, type SharedValue } from 'react-native-reanimated';
 
-import { StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { useStateStore } from '../hooks';

@@ -4,7 +4,8 @@ import { StyleSheet, Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
-import { PollComposerState, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { PollComposerState } from 'stream-chat';
 
 import { CreatePollOptions, CurrentOptionPositionsCache } from './components';
 

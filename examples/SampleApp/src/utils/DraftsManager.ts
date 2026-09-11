@@ -1,4 +1,5 @@
-import { DraftFilters, DraftResponse, SortParamRequest, StateStore, StreamChat } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { DraftFilters, DraftResponse, SortParamRequest, StreamChat } from 'stream-chat';
 
 import { WithSubscriptions } from './WithSubscription';
 

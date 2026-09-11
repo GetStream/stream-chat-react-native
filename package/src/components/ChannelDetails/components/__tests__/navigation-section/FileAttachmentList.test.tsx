@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { render, screen } from '@testing-library/react-native';
 
 import Dayjs from 'dayjs';
-import { StateStore } from 'stream-chat';
 import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
 import {

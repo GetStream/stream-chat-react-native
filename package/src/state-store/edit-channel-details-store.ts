@@ -1,4 +1,5 @@
-import { Channel, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { Channel } from 'stream-chat';
 
 import { useStateStore } from '../hooks/useStateStore';
 import type { File } from '../types/types';

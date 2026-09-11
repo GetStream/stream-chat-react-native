@@ -2,14 +2,16 @@ import {
   addOrUpdateDayjsLocale,
   DEFAULT_LANGUAGE,
   isDayjsLike,
-  languageNameDefaults,
   Streami18n as CoreStreami18n,
-} from 'stream-chat/i18n';
+} from '@stream-io/i18n';
+// The names of the languages the API can auto-translate a message into. Chat API metadata, so it
+// stays in `stream-chat` rather than moving to the generic i18n package.
 import type {
   CalendarFormats,
   Streami18nOptions as CoreStreami18nOptions,
   DateTimeParserModule,
-} from 'stream-chat/i18n';
+} from '@stream-io/i18n';
+import { languageNameDefaults } from 'stream-chat';
 
 import type { BundledTranslationKey } from '../../i18n/keys';
 import { runtimeDefaults } from '../../i18n/runtimeDefaults';
@@ -78,7 +80,7 @@ export type Streami18nOptions = CoreStreami18nOptions<TranslationCatalog>;
  * Wrapper around [i18next](https://www.i18next.com/) for this SDK's translations. Pass an instance to
  * `<Chat i18nInstance={…}>` to control language and copy.
  *
- * The implementation lives in `stream-chat/i18n`, shared with the React SDK, so both behave identically
+ * The implementation lives in `@stream-io/i18n`, shared with the React SDK, so both behave identically
  * and a fix reaches both at once. What is added here is this SDK's own bundled translation data — core
  * cannot import it, because the key catalog is generated from *this* package's `t()` call sites.
  *
