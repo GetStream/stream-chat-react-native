@@ -8,11 +8,7 @@ import type { StreamTFunction } from '../../i18n/types';
  * resolve for any consumer who had not separately installed it. Core's structural `DateTimeLike`
  * covers a Dayjs or a Moment without depending on either.
  */
-export type {
-  TDateTimeParser,
-  TDateTimeParserInput,
-  TDateTimeParserOutput,
-} from '@stream-io/i18n';
+export type { TDateTimeParser, TDateTimeParserInput, TDateTimeParserOutput } from '@stream-io/i18n';
 
 export type TranslatorFunctions = {
   /**

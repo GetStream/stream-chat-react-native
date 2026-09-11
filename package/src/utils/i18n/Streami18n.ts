@@ -6,12 +6,12 @@ import {
 } from '@stream-io/i18n';
 // The names of the languages the API can auto-translate a message into. Chat API metadata, so it
 // stays in `stream-chat` rather than moving to the generic i18n package.
-import { languageNameDefaults } from 'stream-chat';
 import type {
   CalendarFormats,
   Streami18nOptions as CoreStreami18nOptions,
   DateTimeParserModule,
 } from '@stream-io/i18n';
+import { languageNameDefaults } from 'stream-chat';
 
 import type { BundledTranslationKey } from '../../i18n/keys';
 import { runtimeDefaults } from '../../i18n/runtimeDefaults';

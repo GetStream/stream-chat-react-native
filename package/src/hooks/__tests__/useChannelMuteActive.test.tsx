@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 
-import { renderHook } from '@testing-library/react-native';
 import { StateStore } from '@stream-io/state-store';
+import { renderHook } from '@testing-library/react-native';
 import { Channel, ChannelMute, UserMuteResponse } from 'stream-chat';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';

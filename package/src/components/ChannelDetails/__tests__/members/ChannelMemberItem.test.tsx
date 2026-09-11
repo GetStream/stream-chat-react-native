@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { StateStore } from '@stream-io/state-store';
 import { type Channel, type ChannelMemberResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../../contexts';

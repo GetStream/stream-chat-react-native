@@ -1,8 +1,7 @@
-import Dayjs from 'dayjs';
-import 'dayjs/locale/de';
-
 import { addOrUpdateDayjsLocale } from '@stream-io/i18n';
 import type { CalendarFormats } from '@stream-io/i18n';
+import Dayjs from 'dayjs';
+import 'dayjs/locale/de';
 
 import { runtimeDefaults } from '../../i18n/runtimeDefaults';
 import { getDateString } from '../../i18n/utils';

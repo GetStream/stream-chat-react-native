@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { StateStore } from '@stream-io/state-store';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import type { ChannelMemberResponse, SearchSourceState } from 'stream-chat';
 
 import {
