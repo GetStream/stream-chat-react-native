@@ -69,34 +69,13 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
     Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.valueOf(compressFormatString);
     Uri imageUri = Uri.parse(imagePath);
 
+    // The background colour is applied inside the resize, as part of the same canvas pass that
+    // scales the image, so no second full-size bitmap is allocated for it.
     Bitmap scaledImage = StreamChatReactNative.createResizedImage(this.getReactApplicationContext(), imageUri, newWidth, newHeight, quality, rotation,
-      options.getString("mode"), options.getBoolean("onlyScaleDown"));
+      options.getString("mode"), options.getBoolean("onlyScaleDown"), backgroundColor);
 
     if (scaledImage == null) {
       throw new IOException("The image failed to be resized; invalid Bitmap result.");
-    }
-
-    // Flatten any alpha channel onto the requested colour before encoding, so transparent
-    // areas do not come out black in a format that has no alpha channel.
-    //
-    // Only images that actually carry an alpha channel need this. hasAlpha() is a flag lookup
-    // rather than a pixel scan, and is false for anything decoded from a JPEG, so the common
-    // case - a camera photo - skips a second full-size bitmap allocation. Skipping is safe
-    // because it cannot change the output: drawing a fully opaque bitmap over any colour
-    // reproduces that bitmap exactly. It also removes an OOM risk that mattered: the SDK asks
-    // for the source's own dimensions, so this decodes at full resolution (~48 MB for a 12 MP
-    // photo), and an OOM here surfaces as an IOException that compressImage swallows - the
-    // upload then silently proceeds with the original, uncompressed image.
-    if (backgroundColor != null && scaledImage.hasAlpha()) {
-      Bitmap flattenedImage = StreamChatReactNative.flattenOntoBackground(scaledImage, backgroundColor);
-
-      if (flattenedImage == null) {
-        scaledImage.recycle();
-        throw new IOException("Unable to apply the background colour. Most likely due to not enough memory.");
-      }
-
-      scaledImage.recycle();
-      scaledImage = flattenedImage;
     }
 
     // Save the resulting image
