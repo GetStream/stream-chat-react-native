@@ -41,7 +41,15 @@ async function createResizedImage(
         )}\`. Pass a colour string such as '#FFFFFF' or an integer; PlatformColor and DynamicColorIOS are not supported.`,
       );
     }
-    processedBackgroundColor = processed;
+    // Force the colour opaque. A background with any transparency is at best a silent no-op:
+    // processColor('transparent') is 0, which passes the check above, and an encoder without an
+    // alpha channel then drops it again and leaves exactly the platform-dependent result this
+    // option exists to prevent. Partial alpha is worse, because it is resolved at a different
+    // stage on each platform - '#FFFFFF00' comes out white on iOS and black on Android - so
+    // there is no reason the two agree. Overriding the alpha byte makes the option always mean
+    // what it says. `>>> 0` normalises to the unsigned form, which both native sides accept
+    // (see the Double -> int conversion in StreamChatReactNativeModule.createResizedImage).
+    processedBackgroundColor = (processed | 0xff000000) >>> 0;
   }
 
   return await ImageResizer.createResizedImage(

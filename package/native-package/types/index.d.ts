@@ -10,6 +10,10 @@ type NativeHandlers = Parameters<typeof registerNativeHandlers>[0];
  * channel order, `0xRRGGBBAA`, so opaque white is `0xFFFFFFFF`. `null` is treated the same
  * as omitting it: no background is painted.
  *
+ * The colour's own alpha is ignored — the background is always painted fully opaque. A
+ * see-through background would be flattened away again by the first encoder without an alpha
+ * channel, leaving the platform-dependent result this option exists to replace.
+ *
  * Narrower than react-native's `ColorValue` on purpose. `ColorValue` admits
  * `PlatformColor`/`DynamicColorIOS`, which cannot cross the bridge as an integer and are
  * rejected at runtime — and `compressImage` swallows that rejection and silently returns the

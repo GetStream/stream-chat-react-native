@@ -1,4 +1,4 @@
-import { NativeModules, processColor } from 'react-native';
+import { NativeModules } from 'react-native';
 
 import type { Options, ResizeFormat } from '../types';
 
@@ -67,7 +67,7 @@ describe('native createResizedImage', () => {
       false,
       0,
       null,
-      processColor('#FFFFFF'),
+      0xffffffff,
     );
   });
 
@@ -84,15 +84,30 @@ describe('native createResizedImage', () => {
       backgroundColor: 0x123456ff,
     });
 
-    expect(nativeCreateResizedImage.mock.calls[0].at(-1)).toBe(processColor('white'));
+    // Asserted against literals rather than processColor(): what matters is that the native side
+    // receives 0xAARRGGBB, and `processColor(x) === processColor(x)` cannot show that. The values
+    // are unsigned on both platforms, because the wrapper normalises the sign processColor leaves
+    // platform-dependent.
+    expect(nativeCreateResizedImage.mock.calls[0].at(-1)).toBe(0xffffffff);
+    expect(nativeCreateResizedImage.mock.calls[1].at(-1)).toBe(0xff123456);
+  });
 
-    // Asserted against a literal rather than processColor(): what matters is that the native
-    // side receives 0xAARRGGBB, and `processColor(x) === processColor(x)` cannot show that.
-    // `>>> 0` normalises the sign, because processColor returns a signed int32 on Android and
-    // an unsigned one on iOS.
-    const forwarded = nativeCreateResizedImage.mock.calls[1].at(-1);
-    expect(typeof forwarded).toBe('number');
-    expect(forwarded >>> 0).toBe(0xff123456);
+  it('forces the colour opaque, so a see-through background is not a silent no-op', async () => {
+    const { createResizedImage } = loadModule();
+
+    // Left as given, every one of these would reach a JPEG encoder that has no alpha channel to
+    // put them in, and the transparent areas would come out platform-dependent again - which is
+    // the whole thing this option exists to prevent. `transparent` is the sharpest case:
+    // processColor reduces it to 0, a number, so nothing upstream rejects it.
+    for (const backgroundColor of ['transparent', '#FFFFFF00', 0xffffff00, '#12345680']) {
+      await createResizedImage('file:///in.png', 1200, 900, 'JPEG', 80, 0, null, {
+        backgroundColor,
+      });
+    }
+
+    expect(nativeCreateResizedImage.mock.calls.map((call) => call.at(-1))).toEqual([
+      0xff000000, 0xffffffff, 0xffffffff, 0xff123456,
+    ]);
   });
 
   it('sends null when no background colour is given, leaving the other arguments untouched', async () => {
