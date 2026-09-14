@@ -47,9 +47,14 @@ type BackgroundColor = string | number | null;
  * image so an alpha channel is flattened onto it instead of being dropped by an encoder that
  * has none (JPEG).
  *
+ * Defaults to `'#FFFFFF'`. Left to the platform the same transparent PNG comes out black on
+ * Android and white on iOS, so the default exists to make the two agree; pass `null` to opt out
+ * and get that platform behaviour back.
+ *
  * `stream-chat-expo` has no equivalent — `expo-image-manipulator` can only fill a background
  * while *extending* an image, and marks that option `@platform web` — which is why the
- * widening lives on this wrapper rather than in core's shared contract.
+ * widening lives on this wrapper rather than in core's shared contract. An Expo app therefore
+ * keeps the platform default.
  */
 type CompressImageWithBackground = (params: {
   backgroundColor?: BackgroundColor;

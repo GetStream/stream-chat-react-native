@@ -10,7 +10,7 @@ describe('native compressImage', () => {
     }));
 
     return require('../compressImage').compressImage as (params: {
-      backgroundColor?: string;
+      backgroundColor?: string | number | null;
       compressImageQuality: number;
       height: number;
       uri: string;
@@ -52,7 +52,9 @@ describe('native compressImage', () => {
     );
   });
 
-  it('leaves the colour undefined when none is given, so the native layer receives null', async () => {
+  it('defaults to white when no colour is given', async () => {
+    // The encoder is JPEG either way, so the alpha channel cannot survive. Without a default the
+    // resulting colour is the platform's: black on Android, white on iOS.
     const compressImage = loadHandler();
 
     await compressImage({
@@ -62,9 +64,26 @@ describe('native compressImage', () => {
       width: 1200,
     });
 
+    expect(createResizedImage.mock.calls[0].at(-1)).toEqual({
+      backgroundColor: '#FFFFFF',
+      mode: 'cover',
+    });
+  });
+
+  it('treats an explicit null as opting out, not as "use the default"', async () => {
+    const compressImage = loadHandler();
+
+    await compressImage({
+      backgroundColor: null,
+      compressImageQuality: 0.5,
+      height: 900,
+      uri: 'file:///in.png',
+      width: 1200,
+    });
+
     const options = createResizedImage.mock.calls[0].at(-1);
-    expect(options).toEqual({ backgroundColor: undefined, mode: 'cover' });
-    expect(options.backgroundColor).toBeUndefined();
+    expect(options).toEqual({ backgroundColor: null, mode: 'cover' });
+    expect(options.backgroundColor).toBeNull();
   });
 
   it('still clamps the quality and keeps cover mode', async () => {
