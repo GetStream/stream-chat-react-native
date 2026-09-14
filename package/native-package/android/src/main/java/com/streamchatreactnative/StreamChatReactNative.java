@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import androidx.annotation.Nullable;
@@ -129,16 +128,6 @@ public class StreamChatReactNative {
     // FILTER_BITMAP_FLAG matches the `filter = true` that createScaledBitmap is called with on
     // the path this replaces, so scaling quality is unchanged.
     canvas.drawBitmap(source, scale, new Paint(Paint.FILTER_BITMAP_FLAG));
-
-    // Every pixel is opaque once an opaque colour has been drawn underneath, but the bitmap
-    // still *declares* an alpha channel, and the PNG and WebP encoders emit one whenever it
-    // does - roughly a third more bytes for a channel that carries no information. Clearing
-    // the flag matches iOS, whose opaque graphics context has no alpha channel at all. JPEG is
-    // unaffected either way, since it cannot store alpha. The JS wrapper forces the alpha byte
-    // to 255, so the guard only holds the line for a caller reaching the native module directly.
-    if (Color.alpha(color) == 255) {
-      flattened.setHasAlpha(false);
-    }
 
     return flattened;
   }
