@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  AccessibilityInfo,
   AppState,
   AppStateStatus,
   Dimensions,
@@ -97,17 +96,18 @@ export class KeyboardCompatibleView extends React.Component<
     this.viewRef = React.createRef();
   }
 
-  async _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number> {
+  _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): number {
     const frame = this._frame;
     if (!frame || !keyboardFrame) {
       return 0;
     }
 
-    if (
-      Platform.OS === 'ios' &&
-      keyboardFrame.screenY === 0 &&
-      (await AccessibilityInfo.prefersCrossFadeTransitions())
-    ) {
+    // iOS reports a zeroed keyboard frame in more cases than just Prefer
+    // Cross-Fade Transitions — notably when the device is locked with a text
+    // input focused. A screenY of 0 is never a real keyboard position, and
+    // letting it through makes the height math below resolve to this view's own
+    // bottom edge, so reject it regardless of the accessibility setting.
+    if (Platform.OS === 'ios' && keyboardFrame.screenY === 0) {
       return 0;
     }
 
@@ -169,7 +169,7 @@ export class KeyboardCompatibleView extends React.Component<
     this._updateBottomIfNecessary();
   };
 
-  _onLayout: (event: LayoutChangeEvent) => void = async (event) => {
+  _onLayout: (event: LayoutChangeEvent) => void = (event) => {
     event.persist();
 
     const oldFrame = this._frame;
@@ -181,7 +181,7 @@ export class KeyboardCompatibleView extends React.Component<
 
     // update bottom height for the first time or when the height is changed
     if (!oldFrame || oldFrame.height !== this._frame.height) {
-      await this._updateBottomIfNecessary();
+      this._updateBottomIfNecessary();
     }
 
     if (this.props.onLayout) {
@@ -198,14 +198,14 @@ export class KeyboardCompatibleView extends React.Component<
     }
   };
 
-  _updateBottomIfNecessary = async () => {
+  _updateBottomIfNecessary = () => {
     if (this._keyboardEvent == null) {
       this._setBottom(0);
       return;
     }
 
     const { endCoordinates } = this._keyboardEvent;
-    const height = await this._relativeKeyboardHeight(endCoordinates);
+    const height = this._relativeKeyboardHeight(endCoordinates);
 
     if (this._bottom === height) {
       return;
