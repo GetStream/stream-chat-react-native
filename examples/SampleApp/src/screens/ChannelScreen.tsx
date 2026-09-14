@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Pressable, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Pressable, StyleSheet, View } from 'react-native';
 
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -297,7 +297,18 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
           />
         )}
         <AITypingIndicatorView channel={channel} />
-        <MessageComposer />
+        {/*
+          Repro: nested keyboard avoidance — an RN KeyboardAvoidingView in
+          'padding' mode inside Channel's own KeyboardCompatibleView (also
+          'padding'). On a physical iOS device, locking the screen while the
+          composer is focused makes iOS emit keyboardWillShow/DidShow events
+          with all-zero coordinates; this inner view processes them (it has no
+          AppState handling, unlike KeyboardCompatibleView which unsubscribes
+          on background) and grows unboundedly, collapsing the message list.
+        */}
+        <KeyboardAvoidingView behavior='padding'>
+          <MessageComposer />
+        </KeyboardAvoidingView>
         {modalVisible && (
           <MessageInfoBottomSheet
             visible={modalVisible}
