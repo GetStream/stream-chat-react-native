@@ -35,6 +35,10 @@ import type { StreamThemeWithColors } from '../theme/AppTheme';
 
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
+import {
+  isMockDateSeparatorChannel,
+  seedMockDateSeparatorMessages,
+} from '../utils/mockDateSeparatorChannel';
 import { useCreateDraftFocusEffect } from '../utils/useCreateDraftFocusEffect.tsx';
 import { useScreenReaderComposerFocusEffect } from '../utils/useScreenReaderComposerFocusEffect.tsx';
 // import { CustomAttachmentPickerSelectionBar } from '../components/AttachmentPickerSelectionBar.tsx';
@@ -132,6 +136,22 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
   const [selectedThread, setSelectedThread] = useState<ThreadContextValue['thread']>();
+
+  /**
+   * Seed the local-only mock history for the date-separator demo channel before
+   * <Channel> mounts: it reads channel.state.messages on mount, so anything
+   * added afterwards would not appear in the initial list.
+   */
+  const [mockSeeded, setMockSeeded] = useState(false);
+  useEffect(() => {
+    if (!channel) {
+      return;
+    }
+    if (isMockDateSeparatorChannel(channel)) {
+      seedMockDateSeparatorMessages(channel);
+    }
+    setMockSeeded(true);
+  }, [channel]);
 
   useEffect(() => {
     const initChannel = async () => {
@@ -258,7 +278,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     [chatClient, t, colors, semantics, handleMessageInfo],
   );
 
-  if (!channel || !chatClient) {
+  if (!channel || !chatClient || !mockSeeded) {
     return null;
   }
 
