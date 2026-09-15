@@ -246,33 +246,68 @@ describe('MessageList', () => {
     });
   });
 
-  it('should render the is offline error', async () => {
-    const user1 = generateUser();
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [generateMessage({ user: user1 })],
+  describe('the connection banner', () => {
+    const renderConnected = async () => {
+      const user1 = generateUser();
+      const mockedChannel = generateChannelResponse({
+        members: [generateMember({ user: user1 })],
+        messages: [generateMessage({ user: user1 })],
+      });
+
+      const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+
+      const utils = render(
+        <OverlayProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel}>
+              <MessageList />
+            </Channel>
+          </Chat>
+        </OverlayProvider>,
+      );
+
+      return { chatClient, ...utils };
+    };
+
+    it('shows nothing while the socket is up and the network is merely unknown', async () => {
+      // `undefined` network is the normal React Native state until NetInfo reports. A guard written
+      // as `!isOnline` would render the banner here and never clear it.
+      const { queryByTestId } = await renderConnected();
+
+      await waitFor(() => expect(queryByTestId('error-notification')).toBeNull());
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
-    await channel.watch();
+    it('says Reconnecting when the socket drops on a working network', async () => {
+      const { chatClient, getByTestId, getByText } = await renderConnected();
 
-    const { getByTestId, getByText, queryAllByTestId } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+      act(() => {
+        chatClient.networkConnection.setStatus(true);
+        // eslint-disable-next-line no-underscore-dangle
+        chatClient.wsConnection._setStatus({ isOnline: false });
+      });
 
-    await waitFor(() => {
-      expect(queryAllByTestId('message-system')).toHaveLength(0);
-      expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
-      expect(getByTestId('error-notification')).toBeTruthy();
-      expect(getByText('Reconnecting...')).toBeTruthy();
+      await waitFor(() => {
+        expect(getByTestId('error-notification')).toBeTruthy();
+        expect(getByText('Reconnecting...')).toBeTruthy();
+      });
+    });
+
+    it('says Waiting for network when the device itself is offline', async () => {
+      // The whole point of the split: this used to read as "Reconnecting" too, blaming the socket
+      // for something the device did.
+      const { chatClient, getByTestId, getByText } = await renderConnected();
+
+      act(() => {
+        chatClient.networkConnection.setStatus(false);
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('error-notification')).toBeTruthy();
+        expect(getByText('Waiting for network...')).toBeTruthy();
+      });
     });
   });
 

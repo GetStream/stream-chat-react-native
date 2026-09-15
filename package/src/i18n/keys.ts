@@ -197,6 +197,7 @@ export type TranslationCatalog = {
   'common.reconnecting.text': 'Reconnecting...';
   'common.sendMessageFailed.error': 'Send message request failed';
   'common.unknownUser.label': 'Unknown User';
+  'common.waitingForNetwork.text': 'Waiting for network...';
   'common.you.label': 'You';
   'duration.messageReminder': '{{ milliseconds | durationFormatter(withSuffix: true) }}';
   'imageGallery.footer.grid.accessibilityLabel': 'Grid Icon';

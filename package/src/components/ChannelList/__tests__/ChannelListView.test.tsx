@@ -5,7 +5,6 @@ import type { Channel, StreamChat, UserResponse } from 'stream-chat';
 
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
-import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -27,20 +26,14 @@ const queryChannelsOverride: ChannelListQueryChannelsOverride = () =>
  */
 const Component = () => (
   <Chat client={chatClient}>
-    <ChatContext.Consumer>
-      {(context) => (
-        <ChatProvider value={{ ...context, isOnline: true }}>
-          <ChannelList
-            filters={{
-              members: {
-                $in: ['vishal', 'neil'],
-              },
-            }}
-            queryChannelsOverride={queryChannelsOverride}
-          />
-        </ChatProvider>
-      )}
-    </ChatContext.Consumer>
+    <ChannelList
+      filters={{
+        members: {
+          $in: ['vishal', 'neil'],
+        },
+      }}
+      queryChannelsOverride={queryChannelsOverride}
+    />
   </Chat>
 );
 
@@ -58,36 +51,30 @@ const ComponentWithContextOverrides = ({
   loadingChannels: boolean;
 }) => (
   <Chat client={chatClient}>
-    <ChatContext.Consumer>
-      {(context) => (
-        <ChatProvider value={{ ...context, isOnline: true }}>
-          <ChannelsProvider
-            value={
-              {
-                additionalFlatListProps: {},
-                channelListInitialized: !loadingChannels && !error,
-                channels: error ? null : [],
-                error: error ? new Error('test error') : undefined,
-                forceUpdate: 0,
-                hasNextPage: false,
-                loadingChannels,
-                loadingNextPage: false,
-                loadMoreThreshold: 0.1,
-                loadNextPage: noop,
-                maxUnreadCount: 255,
-                numberOfSkeletons: 8,
-                refreshing: false,
-                refreshList: noop,
-                reloadList: noop,
-                setFlatListRef: noop,
-              } as unknown as ChannelsContextValue
-            }
-          >
-            <ChannelListView />
-          </ChannelsProvider>
-        </ChatProvider>
-      )}
-    </ChatContext.Consumer>
+    <ChannelsProvider
+      value={
+        {
+          additionalFlatListProps: {},
+          channelListInitialized: !loadingChannels && !error,
+          channels: error ? null : [],
+          error: error ? new Error('test error') : undefined,
+          forceUpdate: 0,
+          hasNextPage: false,
+          loadingChannels,
+          loadingNextPage: false,
+          loadMoreThreshold: 0.1,
+          loadNextPage: noop,
+          maxUnreadCount: 255,
+          numberOfSkeletons: 8,
+          refreshing: false,
+          refreshList: noop,
+          reloadList: noop,
+          setFlatListRef: noop,
+        } as unknown as ChannelsContextValue
+      }
+    >
+      <ChannelListView />
+    </ChannelsProvider>
   </Chat>
 );
 

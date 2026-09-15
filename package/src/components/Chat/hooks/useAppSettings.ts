@@ -6,7 +6,7 @@ import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 export const useAppSettings = (
   client: StreamChat,
-  isOnline: boolean | null,
+  isNetworkOnline: boolean | undefined,
   enableOfflineSupport: boolean,
   initialisedDatabase: boolean,
 ): GetApplicationResponse | null => {
@@ -35,7 +35,7 @@ export const useAppSettings = (
 
       const userId = client.userID as string;
 
-      if (!isOnline && client.offlineDb) {
+      if (isNetworkOnline === false && client.offlineDb) {
         const appSettings = await client.offlineDb.getAppSettings({ userId });
         setAppSettings(appSettings);
         return;
@@ -59,7 +59,7 @@ export const useAppSettings = (
     };
 
     enforceAppSettings();
-  }, [client, isOnline, initialisedDatabase, isMounted, enableOfflineSupport]);
+  }, [client, isNetworkOnline, initialisedDatabase, isMounted, enableOfflineSupport]);
 
   return appSettings;
 };
