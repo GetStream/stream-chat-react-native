@@ -44,6 +44,12 @@ export type ChannelContextValue = {
   enforceUniqueReaction: boolean;
   error: boolean | Error;
   /**
+   * Render the inline date separator above a system message when that message is the first of
+   * its day. Off by default: without it a system message on a day boundary consumes the boundary
+   * and renders nothing, so that day gets no separator at all.
+   */
+  allowDateSeparatorForSystemMessages: boolean;
+  /**
    * Hide inline date separators on channel
    */
   hideDateSeparators: boolean;

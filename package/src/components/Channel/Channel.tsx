@@ -197,6 +197,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
       | 'hideStickyDateHeader'
+      | 'allowDateSeparatorForSystemMessages'
       | 'hideDateSeparators'
       | 'maxTimeBetweenGroupedMessages'
       | 'maximumMessageLimit'
@@ -448,6 +449,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
+    allowDateSeparatorForSystemMessages = false,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
     initialScrollToFirstUnreadMessage = false,
@@ -1601,6 +1603,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
+    allowDateSeparatorForSystemMessages,
     hideDateSeparators,
     hideStickyDateHeader,
     highlightedMessageId,
