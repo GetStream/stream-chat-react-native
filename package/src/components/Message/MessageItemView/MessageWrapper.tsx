@@ -28,10 +28,20 @@ export type MessageWrapperProps = {
   message: LocalMessage;
   previousMessage?: LocalMessage;
   nextMessage?: LocalMessage;
+  /** Set only when a `getDateSeparators` override resolved the separators at the list level. */
+  dateSeparatorDate?: Date;
+  /** The separator above the next message, needed to close a message group. Same condition. */
+  nextMessageDateSeparatorDate?: Date;
 };
 
 export const MessageWrapper = React.memo(function MessageWrapper(props: MessageWrapperProps) {
-  const { message, previousMessage, nextMessage } = props;
+  const {
+    message,
+    previousMessage,
+    nextMessage,
+    dateSeparatorDate: resolvedDateSeparatorDate,
+    nextMessageDateSeparatorDate: resolvedNextMessageDateSeparatorDate,
+  } = props;
   const { client } = useChatContext();
   const {
     channelUnreadStateStore,
@@ -43,14 +53,32 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   } = useChannelContext();
   const { InlineDateSeparator, InlineUnreadIndicator, Message, MessageSystem } =
     useComponentsContext();
-  const { getMessageGroupStyle, myMessageTheme, shouldShowUnreadUnderlay } = useMessagesContext();
+  const { getDateSeparators, getMessageGroupStyle, myMessageTheme, shouldShowUnreadUnderlay } =
+    useMessagesContext();
   const { goToMessage, onThreadSelect, noGroupByUser, modifiedTheme } = useMessageListItemContext();
 
-  const dateSeparatorDate = useMessageDateSeparator({
+  // With an override the list resolved every separator already; without one the rule is
+  // neighbour-local, so the row derives its own and the list walks nothing.
+  const separatorsResolved = !!getDateSeparators;
+
+  // The default rule is neighbour-local, so the row derives it without the list walking anything.
+  const localDateSeparatorDate = useMessageDateSeparator({
     hideDateSeparators,
     message,
     previousMessage,
+    skip: separatorsResolved,
   });
+  // Needed to close a message group when the next row starts a new day.
+  const localNextMessageDateSeparatorDate = useMessageDateSeparator({
+    message: nextMessage,
+    previousMessage: message,
+    skip: separatorsResolved,
+  });
+
+  const dateSeparatorDate = separatorsResolved ? resolvedDateSeparatorDate : localDateSeparatorDate;
+  const nextMessageDateSeparatorDate = separatorsResolved
+    ? resolvedNextMessageDateSeparatorDate
+    : localNextMessageDateSeparatorDate;
 
   const isNewestMessage = nextMessage === undefined;
   const groupStyles = useMessageGroupStyles({
@@ -60,6 +88,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     message,
     previousMessage,
     nextMessage,
+    nextMessageDateSeparatorDate,
     noGroupByUser,
   });
 
@@ -111,7 +140,10 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   return (
     <View testID={`message-list-item-${message.id}`}>
       {message.type === 'system' ? (
-        <MessageSystem message={message} style={messageContainer} />
+        <>
+          {renderDateSeperator}
+          <MessageSystem message={message} style={messageContainer} />
+        </>
       ) : wrapMessageInTheme ? (
         <ThemeProvider mergedStyle={modifiedTheme}>
           {renderDateSeperator}

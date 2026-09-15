@@ -128,6 +128,23 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    */
   forceAlignMessages?: Alignment | boolean;
 
+  /**
+   * Overrides where date separators are rendered in the message list.
+   *
+   * Receives every loaded message, oldest first, and returns a map of message id to the date
+   * separator rendered above that message. Compose with `getDefaultDateSeparators` to build on
+   * the SDK's own rule rather than reimplementing it.
+   *
+   * Must be referentially stable - wrap it in `useCallback`. The messages context is memoized on
+   * a curated dependency list, so an unstable value is captured once and later versions are
+   * ignored. Close over stable references (e.g. `channel`) and read changing state inside the
+   * callback rather than depending on it.
+   */
+  getDateSeparators?: (params: {
+    messages: LocalMessage[];
+    hideDateSeparators?: boolean;
+  }) => Record<string, Date>;
+
   getMessageGroupStyle?: (params: MessageGroupStylesParams) => GroupStyle[];
   /**
    * Handler to access when a ban user action is invoked.

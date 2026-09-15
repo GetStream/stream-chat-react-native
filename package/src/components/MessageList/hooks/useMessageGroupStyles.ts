@@ -10,15 +10,7 @@ import { getGroupStyle } from '../utils/getGroupStyles';
 /**
  * Hook to get the group styles for a message
  */
-export const useMessageGroupStyles = ({
-  noGroupByUser,
-  dateSeparatorDate,
-  maxTimeBetweenGroupedMessages,
-  message,
-  previousMessage,
-  nextMessage,
-  getMessageGroupStyle = getGroupStyle,
-}: {
+export const useMessageGroupStyles = (params: {
   noGroupByUser?: boolean;
   getMessageGroupStyle: MessagesContextValue['getMessageGroupStyle'];
   dateSeparatorDate?: Date;
@@ -26,12 +18,33 @@ export const useMessageGroupStyles = ({
   message: LocalMessage;
   previousMessage?: LocalMessage;
   nextMessage?: LocalMessage;
+  /**
+   * The separator rendered above the next message - it closes the current group. Supplied by the
+   * message list when a `getDateSeparators` override resolved it. Omit the key entirely and the
+   * hook derives it from `nextMessage`, which is what a standalone caller wants.
+   */
+  nextMessageDateSeparatorDate?: Date;
 }) => {
-  // This is needed to calculate the group styles for the next message
-  const nextMessageDateSeparatorDate = useMessageDateSeparator({
+  const {
+    noGroupByUser,
+    dateSeparatorDate,
+    maxTimeBetweenGroupedMessages,
+    message,
+    previousMessage,
+    nextMessage,
+    getMessageGroupStyle = getGroupStyle,
+  } = params;
+
+  // presence of the key, not its value, `undefined` is a meaningful resolved answer.
+  const isResolvedByCaller = 'nextMessageDateSeparatorDate' in params;
+  const derivedNextMessageDateSeparatorDate = useMessageDateSeparator({
     message: nextMessage,
     previousMessage: message,
+    skip: isResolvedByCaller,
   });
+  const nextMessageDateSeparatorDate = isResolvedByCaller
+    ? params.nextMessageDateSeparatorDate
+    : derivedNextMessageDateSeparatorDate;
 
   const groupStyles = useMemo(() => {
     if (noGroupByUser) {

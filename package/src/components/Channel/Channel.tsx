@@ -245,6 +245,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'urlPreviewType'
       | 'FlatList'
       | 'forceAlignMessages'
+      | 'getDateSeparators'
       | 'getMessageGroupStyle'
       | 'giphyVersion'
       | 'handleBan'
@@ -426,6 +427,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     FlatList = NativeHandlers.FlatList,
     focusInputOnPickerClose = true,
     forceAlignMessages,
+    getDateSeparators,
     getMessageGroupStyle,
     handleAttachButtonPress,
     handleBan,
@@ -1693,6 +1695,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enableSwipeToReply,
     FlatList,
     forceAlignMessages,
+    getDateSeparators,
     getMessageGroupStyle,
     giphyVersion,
     handleBan,

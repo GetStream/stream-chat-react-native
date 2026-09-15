@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated';
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
+import { useDateSeparatorDates } from './hooks/useDateSeparatorDates';
 import { useMessageList } from './hooks/useMessageList';
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
@@ -409,6 +410,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     threadList,
   });
 
+  // This list is ordered oldest -> newest, unlike the inverted `MessageList`.
+  const dateSeparatorDates = useDateSeparatorDates(processedMessageList, false);
+
   const renderItem = useCallback(
     ({ item: message, index }: { item: LocalMessage; index: number }) => {
       const previousMessage = processedMessageList[index - 1];
@@ -418,10 +422,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
           message={message}
           previousMessage={previousMessage}
           nextMessage={nextMessage}
+          dateSeparatorDate={dateSeparatorDates?.[index]}
+          nextMessageDateSeparatorDate={dateSeparatorDates?.[index + 1]}
         />
       );
     },
-    [processedMessageList],
+    [processedMessageList, dateSeparatorDates],
   );
 
   /**

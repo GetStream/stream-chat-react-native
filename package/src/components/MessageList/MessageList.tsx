@@ -16,6 +16,7 @@ import debounce from 'lodash/debounce';
 
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
+import { useDateSeparatorDates } from './hooks/useDateSeparatorDates';
 import { useMessageList } from './hooks/useMessageList';
 import { useScrollToBottomAccessibilityAction } from './hooks/useScrollToBottomAccessibilityAction';
 import { useShouldScrollToRecentOnNewOwnMessage } from './hooks/useShouldScrollToRecentOnNewOwnMessage';
@@ -413,6 +414,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const previousDerivedItemsRef = useRef<Map<string, MessageListItemWithNeighbours>>(undefined);
 
+  const dateSeparatorDates = useDateSeparatorDates(processedMessageList, true);
+
   const processedMessageListWithNeighbors = useMemo(() => {
     if (!previousDerivedItemsRef.current) {
       previousDerivedItemsRef.current = new Map();
@@ -421,19 +424,28 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const { items, nextDerivedItems } = buildMessageListWithNeighbours(
       processedMessageList,
       previousDerivedItemsRef.current,
+      dateSeparatorDates,
     );
     previousDerivedItemsRef.current = nextDerivedItems;
 
     return items;
-  }, [processedMessageList]);
+  }, [processedMessageList, dateSeparatorDates]);
 
   const renderItem = useStableCallback(({ item }: { item: MessageListItemWithNeighbours }) => {
-    const { message, previousMessage, nextMessage } = item;
+    const {
+      message,
+      previousMessage,
+      nextMessage,
+      dateSeparatorDate,
+      nextMessageDateSeparatorDate,
+    } = item;
     return (
       <MessageWrapper
         message={message}
         previousMessage={previousMessage}
         nextMessage={nextMessage}
+        dateSeparatorDate={dateSeparatorDate}
+        nextMessageDateSeparatorDate={nextMessageDateSeparatorDate}
       />
     );
   });
@@ -531,10 +543,14 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           return;
         }
         const isMessageTypeDeleted = lastMessage.type === 'deleted';
+        // System messages do not anchor date separators in the list, so they must not drive the
+        // sticky header either - otherwise the header announces a day the list never separates.
+        const isMessageTypeSystem = lastMessage.type === 'system';
 
         if (
           lastMessage?.created_at &&
           !isMessageTypeDeleted &&
+          !isMessageTypeSystem &&
           typeof lastMessage.created_at !== 'string' &&
           lastMessage.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
         ) {
