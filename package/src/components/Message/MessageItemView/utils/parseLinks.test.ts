@@ -15,7 +15,7 @@ describe('parseLinksFromText', () => {
       'https://localhost/with/path?and=query#fragment',
     ],
     ['reactnative.dev', 'http://reactnative.dev'],
-    ['hinge.health/schedule-with-a-coach', 'http://hinge.health/schedule-with-a-coach'],
+    ['example.com/some-page', 'http://example.com/some-page'],
     ['https://zh.wikipedia.org/wiki/挪威牛油危機', 'https://zh.wikipedia.org/wiki/挪威牛油危機'],
     [
       'https://getstream.io/chat/docs/react-native/?language=javascript',
