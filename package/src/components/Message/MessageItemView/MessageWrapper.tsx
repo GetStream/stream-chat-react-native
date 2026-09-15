@@ -111,7 +111,10 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   return (
     <View testID={`message-list-item-${message.id}`}>
       {message.type === 'system' ? (
-        <MessageSystem message={message} style={messageContainer} />
+        <>
+          {renderDateSeperator}
+          <MessageSystem message={message} style={messageContainer} />
+        </>
       ) : wrapMessageInTheme ? (
         <ThemeProvider mergedStyle={modifiedTheme}>
           {renderDateSeperator}

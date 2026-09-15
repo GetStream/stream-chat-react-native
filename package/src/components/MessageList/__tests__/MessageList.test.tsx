@@ -93,6 +93,44 @@ describe('MessageList', () => {
     });
   });
 
+  it('should render a date separator for a day whose first message is a system message', async () => {
+    const user1 = generateUser();
+    // Day 1 holds a regular message; day 2 opens with a system message. The
+    // separator for day 2 is attached to that system message, so it used to be
+    // swallowed entirely — the following regular message shares the day with it
+    // and therefore never gets one either.
+    const dayOne = new Date('2024-01-01T10:00:00.000Z');
+    const dayTwo = new Date('2024-01-02T10:00:00.000Z');
+    const dayTwoLater = new Date('2024-01-02T11:00:00.000Z');
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ timestamp: dayOne, user: user1 }),
+        generateMessage({ timestamp: dayTwo, type: 'system', user: undefined }),
+        generateMessage({ timestamp: dayTwoLater, user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { queryAllByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('date-separator')).toHaveLength(2);
+    });
+  });
+
   it('should render deleted message in the list', async () => {
     const user1 = generateUser();
     const mockedChannel = generateChannelResponse({
