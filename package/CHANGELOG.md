@@ -1,5 +1,16 @@
 # Change Log
 
+## [9.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.2...v9.9.0) (2026-09-15)
+
+### Bug Fixes
+
+* **android:** set the Kotlin jvmTarget without requiring the Kotlin G… ([#3799](https://github.com/GetStream/stream-chat-react-native/issues/3799)) ([cb145c7](https://github.com/GetStream/stream-chat-react-native/commit/cb145c70e652e10816bde777c673600a8e96b6cc))
+* **android:** skip explicit Kotlin plugin when AGP registers the kotlin extension ([#3798](https://github.com/GetStream/stream-chat-react-native/issues/3798)) ([ca5692a](https://github.com/GetStream/stream-chat-react-native/commit/ca5692a23217b79c5ae84adb6986f562e09b736b))
+
+### Features
+
+* allow providing background color when transforming images with alpha channel to a format without it ([#3800](https://github.com/GetStream/stream-chat-react-native/issues/3800)) ([1d46a53](https://github.com/GetStream/stream-chat-react-native/commit/1d46a536e2c6391f15e38b0164c8b2154e689726))
+
 ## [9.8.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.1...v9.8.2) (2026-08-27)
 
 ### Bug Fixes
