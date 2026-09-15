@@ -8566,7 +8566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.11.23, dayjs@npm:^1.8.15":
+"dayjs@npm:^1.11.13, dayjs@npm:^1.11.23, dayjs@npm:^1.8.15":
   version: 1.11.23
   resolution: "dayjs@npm:1.11.23"
   checksum: 10c0/69ab04bf19c676e44ab50cc2fca223d265f3dafd107151ef3b0f3ad74d360c37caa602abe62f87cb25d90bd9f6bee003698af47df5b0dbf10a998b7b5f3bb3f1
@@ -11392,7 +11392,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^26.4.2":
+"i18next@npm:^26.3.6, i18next@npm:^26.4.2":
   version: 26.4.2
   resolution: "i18next@npm:26.4.2"
   peerDependencies:
@@ -18426,22 +18426,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.0-rc.10":
-  version: 10.0.0-rc.10
-  resolution: "stream-chat@npm:10.0.0-rc.10"
+"stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A."
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
-    "@stream-io/state-store": "npm:^1.1.6"
     axios: "npm:^1.19.0"
+    dayjs: "npm:^1.11.13"
+    i18next: "npm:^26.3.6"
     linkifyjs: "npm:^4.3.3"
   dependenciesMeta:
     esbuild:
       built: true
     husky:
       built: true
-  checksum: 10c0/00eb4de2b390f633a7b7e2613a6a2aa30543c6e0bcda96bbf10ac257cef07bd14b78e2c5677ad36c2b91d64d820baff63fa65782581f568755a9984f18843dc0
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "stream-combiner2@npm:~1.1.1":
   version: 1.1.1

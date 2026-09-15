@@ -83,12 +83,18 @@ const getOfflineDb = (client: StreamChat): TestOfflineDb =>
 // request fails" tests below therefore force this offline case (they still pass an errored API mock,
 // but the offline short-circuit is what queues the task), NOT a raw 500.
 const markConnectionUnhealthy = (client: StreamChat) => {
-  (client.wsConnection as unknown as { isHealthy: boolean }).isHealthy = false;
+  // `_setStatus` is the SDK's own documented hook for faking socket status in tests — there is no
+  // public setter, because only the socket itself is supposed to write this.
+  // eslint-disable-next-line no-underscore-dangle
+  client.wsConnection._setStatus({ isOnline: false });
 };
 
 /** The counterpart of {@link markConnectionUnhealthy}, for tests that go offline and then reconnect. */
 const markConnectionHealthy = (client: StreamChat) => {
-  (client.wsConnection as unknown as { isHealthy: boolean }).isHealthy = true;
+  // `_setStatus` is the SDK's own documented hook for faking socket status in tests — there is no
+  // public setter, because only the socket itself is supposed to write this.
+  // eslint-disable-next-line no-underscore-dangle
+  client.wsConnection._setStatus({ isOnline: true, connectionId: 'dummy_connection_id' });
 };
 
 // React flushes passive effects child-first, so the test-callback effect below runs BEFORE `Channel`'s
@@ -212,10 +218,10 @@ export const OptimisticUpdates = () => {
         channels: [channelResponse] as unknown as Parameters<typeof upsertChannels>[0]['channels'],
         isLatestMessagesSet: true,
       });
-      chatClient.wsConnection = {
-        isHealthy: true,
-        onlineStatusChanged: jest.fn(),
-      } as unknown as StreamChat['wsConnection'];
+      // `getTestClientWithUser` already marks the socket up on the real `WSConnection`. Replacing the
+      // object wholesale would drop its `state` store, which `markConnectionHealthy` /
+      // `markConnectionUnhealthy` and the connection hooks both read.
+      markConnectionHealthy(chatClient);
     });
 
     afterEach(() => {
@@ -1157,6 +1163,14 @@ export const OptimisticUpdates = () => {
     });
 
     describe('pending task execution', () => {
+      // Every test in this block drives a real reconnect, and since `connection.changed` gained its
+      // `connection` discriminator these events actually reach `ConnectionRecoveryManager` — so each
+      // one now runs a genuine recovery (`channel.reload()`) plus real SQLite pending-task I/O on top
+      // of a full render. That lands around 2s alone but exceeded the 5s default under the suite's
+      // parallel load, flaking roughly one run in two. The work is legitimate, not a hang; the
+      // default was simply sized for the old no-op path.
+      jest.setTimeout(20_000);
+
       it('pending task should be executed after connection is recovered', async () => {
         const message = channel.messagePaginator.headItems[0];
         const reaction = generateReaction();

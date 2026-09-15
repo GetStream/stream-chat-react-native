@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { Channel, OfflineDBState } from 'stream-chat';
+import { Channel, NetworkConnectionState, OfflineDBState } from 'stream-chat';
 
 import { useClientMutedUsers } from './hooks';
 import { useAppSettings } from './hooks/useAppSettings';
@@ -202,6 +202,10 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     style?: ThemeStyle;
   };
 
+const networkSelector = (nextValue: NetworkConnectionState) => ({
+  isOnline: nextValue.isOnline,
+});
+
 const selector = (nextValue: OfflineDBState) =>
   ({
     initialized: nextValue.initialized,
@@ -254,7 +258,10 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   /**
    * Setup connection event listeners
    */
-  const { connectionRecovering, isOnline } = useIsOnline(client, closeConnectionOnBackground);
+  useIsOnline(client, closeConnectionOnBackground);
+
+  // The device's network, for the one consumer that needs it before the context exists.
+  const isNetworkOnline = useStateStore(client.networkConnection?.state, networkSelector)?.isOnline;
 
   const { initialized: offlineDbInitialized, userId: offlineDbUserId } =
     useStateStore(client.offlineDb?.state, selector) ?? {};
@@ -334,16 +341,19 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 
   const initialisedDatabase = !!offlineDbInitialized && userID === offlineDbUserId;
 
-  const appSettings = useAppSettings(client, isOnline, enableOfflineSupport, initialisedDatabase);
+  const appSettings = useAppSettings(
+    client,
+    isNetworkOnline,
+    enableOfflineSupport,
+    initialisedDatabase,
+  );
 
   const chatContext = useCreateChatContext({
     appSettings,
     channel,
     client,
-    connectionRecovering,
     enableOfflineSupport,
     isMessageAIGenerated,
-    isOnline,
     mutedUsers,
     setActiveChannel,
   });
@@ -370,8 +380,9 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
  *
  * - channel - currently active channel
  * - client - client connection
- * - connectionRecovering - whether or not websocket is reconnecting
- * - isOnline - whether or not set user is active
+ *
+ * Connection status is NOT on this context. Read it with `useWSConnectionState()` (our socket)
+ * or `useNetworkConnectionState()` (the device's network) — they are separate facts.
  * - setActiveChannel - function to set the currently active channel
  */
 export const Chat = (props: PropsWithChildren<ChatProps>) => {

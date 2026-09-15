@@ -28,7 +28,10 @@ type MockableStreamChat = StreamChat & {
 export const setUser = (client: StreamChat, user: MockUser): Promise<void> =>
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
-    c.connectionId = 'dumm_connection_id';
+    // A connected client means a live socket with a connection id — `channel.watch()` and
+    // `client.queryChannels()` now wait for one instead of degrading to `watch: false`, so a
+    // fixture that leaves the socket down makes every one of them wait out its timeout.
+    client.wsConnection._setStatus({ isOnline: true, connectionId: 'dummy_connection_id' });
     // `userID` is now a read-only getter derived from `user.id`, so setting `user` is enough.
     c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
     c._user = { ...c.user };

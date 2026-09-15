@@ -3,13 +3,14 @@ import { ImageProps } from 'react-native';
 
 import FastImage from '@d11/react-native-fast-image';
 import type { FastImageProps } from '@d11/react-native-fast-image';
-import { useChatContext } from 'stream-chat-react-native';
+import { useNetworkConnectionState } from 'stream-chat-react-native';
 
 type FastImageAdapterProps = Omit<ImageProps, 'source'> &
   Pick<FastImageProps, 'source' | 'transition'>;
 
 export const FastImageAdapter = React.memo((props: ImageProps) => {
-  const { isOnline } = useChatContext();
+  // The device's network, not the socket: these are plain HTTP image fetches.
+  const isOnline = useNetworkConnectionState()?.isOnline;
   const {
     source,
     transition = FastImage.transition.fade,

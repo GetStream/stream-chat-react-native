@@ -85,6 +85,7 @@ import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { getFileNameFromPath, isLocalUrl, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
+import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
@@ -171,8 +172,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'maximumMessageLimit'
     >
   > &
-  Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
-  Partial<
+  Pick<ChatContextValue, 'client' | 'enableOfflineSupport'> & { isOnline: boolean } & Partial<
     Pick<
       InputMessageInputContextValue,
       | 'additionalTextInputProps'
@@ -691,7 +691,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // landed, so `hasMoreHead` read here reflects the refreshed window. Channel view only, and only
     // when that window is at the newest, only if the user has paginated up into older history so leave
     // their read state alone.
-    const { unsubscribe } = client.on('connection.recovered', () => {
+    const { unsubscribe } = client.on('connection.recovered', (event) => {
+      if (event.connection !== 'ws') {
+        return;
+      }
       if (thread || channel.messagePaginator.hasMoreHead) {
         return;
       }
@@ -1088,7 +1091,8 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
-  const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
+  const { client, enableOfflineSupport, isMessageAIGenerated } = useChatContext();
+  const isOnline = !!useWSConnectionState()?.isOnline;
   const { t } = useTranslationContext();
   const notificationHostId =
     props.notificationHostId ??

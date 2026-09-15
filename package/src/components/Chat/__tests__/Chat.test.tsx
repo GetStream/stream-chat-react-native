@@ -10,8 +10,6 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { sqliteMock } from '../../../mock-builders/DB/mock';
-import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
-import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient, getTestClientWithUser, setUser } from '../../../mock-builders/mock';
 import { DEFAULT_MAX_SYNC_EVENTS_LIMIT } from '../../../store/constants';
 import { SqliteClient, SqliteClientError } from '../../../store/SqliteClient';
@@ -45,30 +43,63 @@ describe('Chat', () => {
     await waitFor(() => expect(getByTestId('children')).toBeTruthy());
   });
 
-  it('listens and updates state on a connection changed event', async () => {
-    let context: ChatContextValue = {} as ChatContextValue;
-
+  it('installs a NetInfo registrar that feeds client.networkConnection', async () => {
+    // The whole RN integration: the client cannot detect device network status itself, so <Chat>
+    // has to register a listener. Driving the captured callback proves the wiring end to end.
     render(
       <Chat client={chatClient}>
-        <ChatContextConsumer
-          fn={(ctx) => {
-            context = ctx;
-          }}
-        />
+        <View testID='children' />
       </Chat>,
     );
 
-    await waitFor(() => expect(NetInfo.fetch).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(NetInfo.addEventListener).toHaveBeenCalled());
+    const report = (NetInfo.addEventListener as jest.Mock).mock.calls[0][0];
 
-    const { connectionRecovering } = context;
-    act(() => dispatchConnectionChangedEvent(chatClient, false));
-    await waitFor(() => {
-      expect(context.connectionRecovering).toStrictEqual(!connectionRecovering);
-      expect(context.isOnline).toBeFalsy();
-    });
+    act(() => report({ isConnected: false, isInternetReachable: false }));
+    expect(chatClient.networkConnection.isOnline).toBe(false);
+
+    act(() => report({ isConnected: true, isInternetReachable: true }));
+    expect(chatClient.networkConnection.isOnline).toBe(true);
   });
 
-  it('listens and updates state on a connection recovered event', async () => {
+  it('prefers isInternetReachable, falling back to isConnected while it is null', async () => {
+    render(
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(NetInfo.addEventListener).toHaveBeenCalled());
+    const report = (NetInfo.addEventListener as jest.Mock).mock.calls[0][0];
+
+    // Connected to a network that cannot actually reach the internet is offline for our purposes.
+    act(() => report({ isConnected: true, isInternetReachable: false }));
+    expect(chatClient.networkConnection.isOnline).toBe(false);
+
+    // ...but until NetInfo has probed, isInternetReachable is null and isConnected is all we have.
+    act(() => report({ isConnected: true, isInternetReachable: null }));
+    expect(chatClient.networkConnection.isOnline).toBe(true);
+  });
+
+  it('releases the NetInfo listener on unmount', async () => {
+    const unsubscribe = jest.fn();
+    (NetInfo.addEventListener as jest.Mock).mockReturnValueOnce(unsubscribe);
+
+    const { unmount } = render(
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(NetInfo.addEventListener).toHaveBeenCalled());
+    unmount();
+
+    expect(unsubscribe).toHaveBeenCalled();
+  });
+
+  it('keeps connection status off the chat context', async () => {
+    // It lives on the client's own stores, read through useWSConnectionState /
+    // useNetworkConnectionState — so a socket flap no longer re-renders every context consumer.
     let context: ChatContextValue = {} as ChatContextValue;
 
     render(
@@ -81,9 +112,9 @@ describe('Chat', () => {
       </Chat>,
     );
 
-    act(() => dispatchConnectionRecoveredEvent(chatClient));
-
-    await waitFor(() => expect(context.connectionRecovering).toStrictEqual(false));
+    await waitFor(() => expect(context.client).toBe(chatClient));
+    expect('isOnline' in context).toBe(false);
+    expect('connectionRecovering' in context).toBe(false);
   });
 });
 
@@ -107,7 +138,6 @@ describe('ChatContext', () => {
       expect(context).toBeInstanceOf(Object);
       expect(context.channel).toBeUndefined();
       expect(context.client).toBe(chatClient);
-      expect(context.connectionRecovering).toBeFalsy();
       expect(context.setActiveChannel).toBeInstanceOf(Function);
     });
   });
