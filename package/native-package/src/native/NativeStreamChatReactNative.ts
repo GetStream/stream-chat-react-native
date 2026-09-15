@@ -13,6 +13,7 @@ export interface Spec extends TurboModule {
     onlyScaleDown: boolean,
     rotation?: number,
     outputPath?: string | null,
+    backgroundColor?: number | null,
   ): Promise<{
     base64: string;
     height: number;

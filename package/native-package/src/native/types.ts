@@ -12,7 +12,37 @@ export interface VideoThumbnailResponse extends Response {}
 export type ResizeFormat = 'PNG' | 'JPEG' | 'WEBP';
 export type ResizeMode = 'contain' | 'cover' | 'stretch';
 
+/**
+ * A colour `processColor` can reduce to a plain ARGB integer: a colour string
+ * (`'#FFFFFF'`, `'white'`, `'rgba(255, 255, 255, 1)'`) or an RGBA integer — note the channel
+ * order, `0xRRGGBBAA`, so opaque white is `0xFFFFFFFF`. `null` is treated the same as
+ * omitting it: no background is painted.
+ *
+ * The colour's own alpha is ignored — the background is always painted fully opaque. A
+ * see-through background would be flattened away again by the first encoder without an alpha
+ * channel, leaving the platform-dependent result this option exists to replace.
+ *
+ * Narrower than react-native's `ColorValue`, which also admits
+ * `PlatformColor`/`DynamicColorIOS`. Those cannot cross the bridge as a plain integer and are
+ * rejected at runtime — and `compressImage` swallows that rejection and silently returns the
+ * uncompressed image, so this type is the only guardrail a caller actually gets.
+ */
+export type BackgroundColor = string | number | null;
+
 export type Options = {
+  /**
+   * Painted behind the image, flattening any alpha channel onto this colour.
+   *
+   * When converting to a format without alpha channel without a background any transparent area of a PNG or WebP depends on platform behavior. Pass a color value to explicitly control background color.
+   *
+   * Always painted fully opaque; any alpha in the colour is ignored.
+   *
+   * Only supported by `stream-chat-react-native` (React Native CLI). `stream-chat-expo` has no
+   * equivalent.
+   *
+   * (Default: undefined - no background is painted)
+   */
+  backgroundColor?: BackgroundColor;
   /**
    * Either `contain` (the default), `cover`, or `stretch`. Similar to
    * [react-native <Image>'s resizeMode](https://reactnative.dev/docs/image#resizemode)

@@ -5,7 +5,10 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -34,9 +37,15 @@ public class StreamChatReactNative {
   private final static String SCHEME_HTTPS = "https";
   /**
    * Resize the specified bitmap.
+   *
+   * When backgroundColor is non-null the colour is painted first and the image composited over
+   * it, flattening any alpha channel instead of leaving it for the encoder to drop. That happens
+   * inside this scale pass rather than after it, so it costs no extra bitmap - the same thing
+   * iOS does by filling its graphics context before drawing into it.
    */
   private static Bitmap resizeImage(Bitmap image, int newWidth, int newHeight,
-                                    String mode, boolean onlyScaleDown) {
+                                    String mode, boolean onlyScaleDown,
+                                    @Nullable Integer backgroundColor) {
     Bitmap newImage = null;
     if (image == null) {
       return null; // Can't load the image from the given path.
@@ -73,6 +82,14 @@ public class StreamChatReactNative {
         finalHeight = (int) Math.round(height * ratio);
       }
 
+      // Only images that actually carry an alpha channel need a background: drawing a fully
+      // opaque bitmap over any colour reproduces that bitmap exactly, so for everything else
+      // this would be a pixel-for-pixel no-op - and not a cheap one. createScaledBitmap hands
+      // back the source object untouched when the requested size already matches
+      if (backgroundColor != null && image.hasAlpha()) {
+        return scaleOntoBackground(image, finalWidth, finalHeight, backgroundColor);
+      }
+
       try {
         newImage = Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true);
       } catch (OutOfMemoryError e) {
@@ -81,6 +98,38 @@ public class StreamChatReactNative {
     }
 
     return newImage;
+  }
+
+  /**
+   * Scale the given bitmap into a new one of the given size, over a fill of the given colour, so
+   * that any alpha channel is flattened rather than dropped.
+   *
+   * Encoders without an alpha channel (JPEG) discard alpha and keep the underlying RGB, which
+   * turns transparent areas black. Drawing onto a filled canvas first blends semi-transparent
+   * pixels toward the colour and replaces fully transparent ones with it.
+   *
+   * This replaces the createScaledBitmap call it stands in for rather than running after it, so
+   * the fill costs no second full-size bitmap. Returns null if the bitmap can't be allocated.
+   * The caller owns the result and should recycle the source.
+   */
+  private static Bitmap scaleOntoBackground(Bitmap source, int newWidth, int newHeight, int color) {
+    Bitmap flattened;
+    try {
+      flattened = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
+    } catch (OutOfMemoryError e) {
+      return null;
+    }
+
+    Matrix scale = new Matrix();
+    scale.setScale((float) newWidth / source.getWidth(), (float) newHeight / source.getHeight());
+
+    Canvas canvas = new Canvas(flattened);
+    canvas.drawColor(color);
+    // FILTER_BITMAP_FLAG matches the `filter = true` that createScaledBitmap is called with on
+    // the path this replaces, so scaling quality is unchanged.
+    canvas.drawBitmap(source, scale, new Paint(Paint.FILTER_BITMAP_FLAG));
+
+    return flattened;
   }
 
   /**
@@ -390,7 +439,8 @@ public class StreamChatReactNative {
    */
   public static Bitmap createResizedImage(Context context, Uri imageUri, int newWidth,
                                           int newHeight, int quality, int rotation,
-                                          String mode, boolean onlyScaleDown) throws IOException  {
+                                          String mode, boolean onlyScaleDown,
+                                          @Nullable Integer backgroundColor) throws IOException  {
     Bitmap sourceImage = null;
     String imageUriScheme = imageUri.getScheme();
 
@@ -425,8 +475,9 @@ public class StreamChatReactNative {
       sourceImage.recycle();
     }
 
-    // Scale image
-    Bitmap scaledImage = StreamChatReactNative.resizeImage(rotatedImage, newWidth, newHeight, mode, onlyScaleDown);
+    // Scale image, painting the requested background behind it on the way if it has an alpha
+    // channel to flatten.
+    Bitmap scaledImage = StreamChatReactNative.resizeImage(rotatedImage, newWidth, newHeight, mode, onlyScaleDown, backgroundColor);
 
     if(scaledImage == null){
       throw new IOException("Unable to resize image. Most likely due to not enough memory.");
