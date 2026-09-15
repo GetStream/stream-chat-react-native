@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
-import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -31,7 +31,14 @@ describe('Chat', () => {
     cleanup();
     jest.clearAllMocks();
   });
-  const chatClient = getTestClient();
+
+  // A fresh client per test. The NetInfo registrar is installed once per CLIENT and deliberately
+  // never torn down on unmount, so a client shared across tests would only ever subscribe in the
+  // first one — and `clearAllMocks` would then hide that it had happened at all.
+  let chatClient: ReturnType<typeof getTestClient>;
+  beforeEach(() => {
+    chatClient = getTestClient();
+  });
 
   it('renders children without crashing', async () => {
     const { getByTestId } = render(
@@ -81,7 +88,10 @@ describe('Chat', () => {
     expect(chatClient.networkConnection.isOnline).toBe(true);
   });
 
-  it('releases the NetInfo listener on unmount', async () => {
+  it('keeps the NetInfo listener alive after unmount, because the client outlives <Chat>', async () => {
+    // The registrar's lifetime is the CLIENT's, not this component's. Releasing it here would leave
+    // `isOnline` frozen at a stale value (`setStatusListenerRegistrar(null)` keeps the last status by
+    // design), and the client is still used outside the React tree — push handling, background work.
     const unsubscribe = jest.fn();
     (NetInfo.addEventListener as jest.Mock).mockReturnValueOnce(unsubscribe);
 
@@ -94,7 +104,29 @@ describe('Chat', () => {
     await waitFor(() => expect(NetInfo.addEventListener).toHaveBeenCalled());
     unmount();
 
-    expect(unsubscribe).toHaveBeenCalled();
+    expect(unsubscribe).not.toHaveBeenCalled();
+  });
+
+  it('does not stack NetInfo listeners when <Chat> remounts with the same client', async () => {
+    // The regression guard for dropping the teardown: the registrar is a stable module-scope
+    // reference, so `ConfigController`'s no-op write check and `setStatusListenerRegistrar`'s identity
+    // guard both short-circuit a re-install. An inline registrar would subscribe again every mount.
+    const { unmount } = render(
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
+    );
+    await waitFor(() => expect(NetInfo.addEventListener).toHaveBeenCalledTimes(1));
+    unmount();
+
+    render(
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+    expect(NetInfo.addEventListener).toHaveBeenCalledTimes(1);
   });
 
   it('keeps connection status off the chat context', async () => {

@@ -58,11 +58,17 @@ export const useIsOnline = (client: StreamChat, closeConnectionOnBackground = tr
       },
     });
 
-    return () => {
-      // Leaves the last known status in place rather than reverting it to unknown; an edge is not a
-      // state, and forgetting what we were last told would be a regression.
-      client.networkConnection.setStatusListenerRegistrar(null);
-    };
+    // Deliberately no teardown. The registrar's lifetime is the CLIENT's, not this component's: the
+    // client outlives `<Chat>` (push handling, background work), and `isOnline` is supposed to stay
+    // true about the device for as long as the client exists. Tearing it down here would also leave a
+    // stale value rather than a cleared one — `setStatusListenerRegistrar(null)` keeps the last known
+    // status by design — so consumers would read an authoritative-looking `isOnline` that nothing is
+    // updating any more.
+    //
+    // Re-running this is safe and cannot stack listeners: `netInfoStatusListenerRegistrar` is a stable
+    // module-scope reference, so `ConfigController`'s no-op write check and
+    // `setStatusListenerRegistrar`'s identity guard both short-circuit. A *different* client re-runs
+    // the effect through the dependency array and installs a fresh registrar for it.
   }, [client, clientExists]);
 };
 
