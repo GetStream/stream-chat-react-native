@@ -7,6 +7,16 @@ const getChatStyle = (
   // React Native 0.87 types `useColorScheme()` as `ColorSchemeName | null`.
   colorScheme: ColorSchemeName | null,
 ): DeepPartial<Theme> & { colors: Record<string, string> } => ({
+  messageList: {
+    /**
+     * `MessageWrapper` wraps whatever `InlineDateSeparator` renders in a `View`
+     * carrying this style on top of `paddingVertical: primitives.spacingXs`.
+     * `SystemAwareInlineDateSeparator` hides itself on system-message-only days,
+     * and without this the SDK's padding would stay behind as an empty gap, so we
+     * zero it here and let the override supply its own spacing when it renders.
+     */
+    inlineDateSeparatorContainer: { paddingVertical: 0 },
+  },
   colors:
     colorScheme === 'dark'
       ? {

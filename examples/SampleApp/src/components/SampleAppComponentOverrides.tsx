@@ -9,6 +9,7 @@ import { CustomAttachmentPickerContent } from './AttachmentPickerContent';
 import { FastImageAdapter } from './FastImageAdapter';
 import { MessageLocation } from './LocationSharing/MessageLocation';
 import type { MessageOverlayBackdropConfigItem } from './SecretMenu';
+import { SystemAwareInlineDateSeparator } from './SystemAwareInlineDateSeparator';
 
 const MessageOverlayBlurBackground: NonNullable<
   ComponentOverrides['MessageOverlayBackground']
@@ -46,6 +47,7 @@ export const useSampleAppComponentOverrides = (
       AttachmentPickerContent: CustomAttachmentPickerContent,
       ChannelListHeaderNetworkDownIndicator: RenderNull,
       ImageComponent: FastImageAdapter,
+      InlineDateSeparator: SystemAwareInlineDateSeparator,
       MessageLocation,
       NetworkDownIndicator: RenderNull,
       ...(messageOverlayBackdrop === 'blurview'
