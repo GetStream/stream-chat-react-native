@@ -512,10 +512,13 @@ describe('ChannelList', () => {
       });
 
       // v10 removed the implicit "float to top" on events: the `ChannelManager` no longer boosts a
-      // channel on `message.new`; order is governed purely by `sort` (default = stable, by cid). A new
-      // message therefore updates the channel's preview in place without relocating it. (To force a
-      // channel to the top an integrator now calls `paginator.boost(cid)`.)
-      it('should keep the channel in place on a new message with the default sort', async () => {
+      // channel on `message.new`, so nothing relocates a channel except `sort` itself. (To force a
+      // channel to the top regardless of the sort an integrator now calls `paginator.boost(cid)`.)
+      // `ChannelList`'s default `sort` is `[]`, which the paginator reads as "unspecified" and
+      // resolves to the backend default — `last_message_at` descending — so the receiving channel does
+      // rise to the top here, on recency rather than on an event-driven boost. These mock channels
+      // carry no messages, so every other channel stays tied and keeps its cid order.
+      it('should float the channel to the top on a new message with the default sort', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
@@ -533,12 +536,16 @@ describe('ChannelList', () => {
           expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
-        // The new message renders inside the receiving channel's own row (its preview updated in place)…
+        // The new message renders inside the receiving channel's own row (its preview updated)…
         expect(
           within(screen.getByTestId(testChannel3.channel.id)).getByText(newMessage.text as string),
         ).toBeTruthy();
-        // …and the list order is unchanged (no float-to-top).
-        expect(getRenderedOrder()).toEqual(orderBefore);
+        // …and that channel is now the most recent one, so it leads the list while the rest hold
+        // their relative order.
+        expect(getRenderedOrder()).toEqual([
+          testChannel3.channel.id,
+          ...orderBefore.filter((id) => id !== testChannel3.channel.id),
+        ]);
       });
 
       // v10: a `message.new` alone no longer un-hides a channel client-side (only `channel.visible`

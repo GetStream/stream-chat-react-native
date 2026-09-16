@@ -11,7 +11,7 @@ export const deleteReactionsForMessage = async ({
   const query = createDeleteQuery('reactions', {
     messageId,
   });
-  console.log('deleteReactionsForMessage', {
+  SqliteClient.logger?.('info', 'deleteReactionsForMessage', {
     execute,
     messageId,
   });

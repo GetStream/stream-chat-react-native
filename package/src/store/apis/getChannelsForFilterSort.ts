@@ -1,12 +1,12 @@
 import type {
   ChannelFilters,
   ChannelOptions,
+  DBGetChannelsForQueryResult,
   SortParamRequest,
-  ChannelStateResponseFields,
 } from 'stream-chat';
 
 import { getChannels } from './getChannels';
-import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
+import { selectChannelQueryForFilterSort } from './queries/selectChannelQueryForFilterSort';
 
 import { SqliteClient } from '../SqliteClient';
 
@@ -18,7 +18,8 @@ import { SqliteClient } from '../SqliteClient';
  * @param {Object} param.filters Filters for channels https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=su#query-parameters
  * @param {Object} param.sort Sort for channels https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=su#query-parameters
  *
- * @returns Array of channels corresponding to filters & sort. Returns null if filters + sort query doesn't exist in "channelQueries" table.
+ * @returns The channels corresponding to filters & sort, together with the predefined-filter metadata
+ * they were cached with. Returns null if filters + sort query doesn't exist in "channelQueries" table.
  */
 export const getChannelsForFilterSort = async ({
   currentUserId,
@@ -30,7 +31,7 @@ export const getChannelsForFilterSort = async ({
   filters?: ChannelFilters;
   options?: ChannelOptions;
   sort?: SortParamRequest[];
-}): Promise<Omit<ChannelStateResponseFields, 'duration'>[] | null> => {
+}): Promise<DBGetChannelsForQueryResult | null> => {
   if (!filters && !sort && !options?.predefined_filter) {
     console.warn(
       'Please provide the query (filters/sort/options.predefined_filter) to fetch channels from the DB.',
@@ -40,18 +41,23 @@ export const getChannelsForFilterSort = async ({
 
   SqliteClient.logger?.('info', 'getChannelsForFilterSort', { filters, options, sort });
 
-  const channelIds = await selectChannelIdsForFilterSort({ filters, options, sort });
+  const cachedQuery = await selectChannelQueryForFilterSort({ filters, options, sort });
 
-  if (!channelIds) {
+  if (!cachedQuery) {
     return null;
   }
 
-  if (channelIds.length === 0) {
-    return [];
+  const { cids, predefinedFilter } = cachedQuery;
+
+  if (cids.length === 0) {
+    return { channels: [], predefinedFilter };
   }
 
-  return await getChannels({
-    channelIds,
-    currentUserId,
-  });
+  return {
+    channels: await getChannels({
+      channelIds: cids,
+      currentUserId,
+    }),
+    predefinedFilter,
+  };
 };
