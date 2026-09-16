@@ -168,7 +168,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
       | 'maxTimeBetweenGroupedMessages'
-      | 'maximumMessageLimit'
     >
   > &
   Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
@@ -455,7 +454,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     topInset = 0,
-    maximumMessageLimit,
     initializeOnMount = true,
     urlPreviewType = 'full',
   } = props;
@@ -914,7 +912,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     loadChannelAroundMessage,
     loadChannelAtFirstUnreadMessage,
     loading: channelMessagesState.loading,
-    maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
     reloadChannel,
     scrollToFirstUnreadThreshold,

@@ -15,7 +15,6 @@ export const useCreateChannelContext = ({
   loadChannelAtFirstUnreadMessage,
   loading,
   maxTimeBetweenGroupedMessages,
-  maximumMessageLimit,
   reloadChannel,
   scrollToFirstUnreadThreshold,
   hasPendingInitialTargetLoad,
@@ -36,7 +35,6 @@ export const useCreateChannelContext = ({
       loadChannelAroundMessage,
       loadChannelAtFirstUnreadMessage,
       loading,
-      maximumMessageLimit,
       maxTimeBetweenGroupedMessages,
       reloadChannel,
       scrollToFirstUnreadThreshold,
@@ -44,15 +42,7 @@ export const useCreateChannelContext = ({
       threadList,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      channelId,
-      disabled,
-      isChannelActive,
-      highlightedMessageId,
-      loading,
-      threadList,
-      maximumMessageLimit,
-    ],
+    [channelId, disabled, isChannelActive, highlightedMessageId, loading, threadList],
   );
 
   return channelContext;
