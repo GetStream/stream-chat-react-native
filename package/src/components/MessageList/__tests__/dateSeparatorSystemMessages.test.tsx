@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { LocalMessage } from 'stream-chat';
+import { Channel as ChannelType, LocalMessage } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -39,7 +39,10 @@ type TestMessage = ReturnType<typeof message>;
 const renderMessageList = async (
   messages: TestMessage[],
   channelProps: Partial<React.ComponentProps<typeof Channel>> = {},
-  components: React.ComponentProps<typeof WithComponents>['overrides'] = {},
+  components:
+    | React.ComponentProps<typeof WithComponents>['overrides']
+    | ((channel: ChannelType) => React.ComponentProps<typeof WithComponents>['overrides']) = {},
+  { hasPrev }: { hasPrev?: boolean } = {},
 ) => {
   const mockedChannel = generateChannelResponse({
     members: [generateMember({ user })],
@@ -50,10 +53,19 @@ const renderMessageList = async (
   const channel = chatClient.channel('messaging', mockedChannel.channel.id);
   await channel.watch();
 
+  if (hasPrev !== undefined) {
+    const currentSet = channel.state.messageSets.find((set) => set.isCurrent);
+    if (currentSet) {
+      currentSet.pagination = { hasNext: false, hasPrev };
+    }
+  }
+
+  const overrides = typeof components === 'function' ? components(channel) : components;
+
   const result = render(
     <OverlayProvider>
       <Chat client={chatClient}>
-        <WithComponents overrides={components}>
+        <WithComponents overrides={overrides}>
           <Channel channel={channel} {...channelProps}>
             <MessageList />
           </Channel>
@@ -273,5 +285,89 @@ describe('a channel that writes a system message at every session boundary', () 
     const { queryAllByTestId } = await renderSessionChannel(messages);
 
     expect(queryAllByTestId('date-separator')).toHaveLength(1);
+  });
+});
+
+describe('reading the list from the channel instead of context', () => {
+  afterEach(cleanup);
+
+  /**
+   * The same rule, written against the `channel` the integration already holds rather than the
+   * message list context. `hasMore` on `PaginatedMessageListContext` is set from
+   * `channel.state.messagePagination.hasPrev` at every call site, so the two are equivalent.
+   */
+  const channelBackedSeparator =
+    (channel: ChannelType) =>
+    ({ date }: InlineDateSeparatorProps) => {
+      if (!date) {
+        return null;
+      }
+
+      const { messages } = channel.state;
+      const day = date.toDateString();
+      const hasRealMessage = messages.some(
+        (item) => item.type !== 'system' && item.created_at.toDateString() === day,
+      );
+      const dayIsPartiallyLoaded =
+        day === messages[0]?.created_at.toDateString() && channel.state.messagePagination.hasPrev;
+
+      if (!hasRealMessage && !dayIsPartiallyLoaded) {
+        return null;
+      }
+
+      return <InlineDateSeparator date={date} />;
+    };
+
+  const labels = (
+    queryAllByTestId: Awaited<ReturnType<typeof renderMessageList>>['queryAllByTestId'],
+  ) =>
+    queryAllByTestId('date-separator')
+      .map((node) => node.props.children?.props?.accessibilityLabel)
+      .reverse();
+
+  it('suppresses the abandoned session day, same as the context-backed version', async () => {
+    const messages = [
+      systemMessage(1, 9),
+      message(1, 10),
+      systemMessage(2, 14), // opened and abandoned
+      systemMessage(3, 8),
+      message(3, 9),
+    ];
+
+    const { queryAllByTestId } = await renderMessageList(
+      messages,
+      { allowDateSeparatorForSystemMessages: true },
+      (channel) => ({ InlineDateSeparator: channelBackedSeparator(channel) }),
+    );
+
+    expect(labels(queryAllByTestId)).toEqual(['January 1, 2026', 'January 3, 2026']);
+  });
+
+  it('keeps the oldest loaded day while older pages remain', async () => {
+    // day 1 holds only a marker so far - suppressing it now would mean inserting the separator
+    // mid-scroll once loadMore brings that day's messages in
+    const messages = [systemMessage(1, 9), systemMessage(2, 8), message(2, 9)];
+
+    const { queryAllByTestId } = await renderMessageList(
+      messages,
+      { allowDateSeparatorForSystemMessages: true },
+      (channel) => ({ InlineDateSeparator: channelBackedSeparator(channel) }),
+      { hasPrev: true },
+    );
+
+    expect(labels(queryAllByTestId)).toEqual(['January 1, 2026', 'January 2, 2026']);
+  });
+
+  it('suppresses that same day once the history is fully loaded', async () => {
+    const messages = [systemMessage(1, 9), systemMessage(2, 8), message(2, 9)];
+
+    const { queryAllByTestId } = await renderMessageList(
+      messages,
+      { allowDateSeparatorForSystemMessages: true },
+      (channel) => ({ InlineDateSeparator: channelBackedSeparator(channel) }),
+      { hasPrev: false },
+    );
+
+    expect(labels(queryAllByTestId)).toEqual(['January 2, 2026']);
   });
 });
