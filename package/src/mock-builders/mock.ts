@@ -16,7 +16,6 @@ type MockUser = Pick<UserResponse, 'id'> & Partial<UserResponse>;
 // Tests reach into private/internal StreamChat fields to set up a mocked
 // authenticated client without going through the real network handshake.
 type MockableStreamChat = StreamChat & {
-  connectionId?: string;
   user?: OwnUserResponse;
   _user?: OwnUserResponse;
   userToken?: string;
@@ -28,7 +27,10 @@ type MockableStreamChat = StreamChat & {
 export const setUser = (client: StreamChat, user: MockUser): Promise<void> =>
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
-    c.connectionId = 'dumm_connection_id';
+    // v10 keeps the connection id on `client.connectionIdManager`; requests that register a
+    // watch/presence subscription await it, so a mocked connect has to publish one or every
+    // `queryChannels()`/`channel.watch()` in the tests throws.
+    c.connectionIdManager.resolveConnectionId('dumm_connection_id');
     // `userID` is now a read-only getter derived from `user.id`, so setting `user` is enough.
     c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
     c._user = { ...c.user };
