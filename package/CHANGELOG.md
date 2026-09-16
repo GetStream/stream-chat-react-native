@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.0...v9.9.1) (2026-09-16)
+
+### Bug Fixes
+
+* add optional separator above system messages ([#3810](https://github.com/GetStream/stream-chat-react-native/issues/3810)) ([709e78f](https://github.com/GetStream/stream-chat-react-native/commit/709e78f57327d418a42954a541ad2a9d9bba6dd8))
+* add optional separator above system messages ([#3810](https://github.com/GetStream/stream-chat-react-native/issues/3810)) ([f7f830e](https://github.com/GetStream/stream-chat-react-native/commit/f7f830e92f56ec3ec9eb9e4380f4f0b2d1738758))
+
 ## [9.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.2...v9.9.0) (2026-09-15)
 
 ### Bug Fixes
