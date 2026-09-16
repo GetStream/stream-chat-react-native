@@ -1745,6 +1745,96 @@ cheaper than they were before this release, not more expensive.
 
 ---
 
+# Part N — Offline channel-list cache
+
+Four changes to how a channel list is cached offline and ordered. Three are only visible if you
+implement `AbstractOfflineDB` yourself or read `syncManager` directly; the fourth (§N.4) changes
+visible ordering for **every integrator who does not pass a `sort` prop**, so read that one even if
+you do not use offline support.
+
+## N.1 `OfflineDBApi.getChannelsForQuery` returns an object (breaking — `stream-chat`)
+
+```diff
+- getChannelsForQuery: (o) => Promise<Omit<ChannelStateResponseFields, 'duration'>[] | null>
++ getChannelsForQuery: (o) => Promise<DBGetChannelsForQueryResult | null>
+```
+
+where `DBGetChannelsForQueryResult` is `{ channels, predefinedFilter? }`. `DBUpsertCidsForQueryType`
+gained a matching `predefinedFilter?: ParsedPredefinedFilterResponse`.
+
+For a `predefined_filter` list the server decides the filter and the sort, and the client only learns
+them from `QueryChannelsResponse.predefined_filter`. The offline cache used to store only the cid
+order a query produced, not the rule that produced it — so a cache-seeded list matched against the
+*local* filters and sorted by the backend default until the first query landed. Both are now stored
+and restored together, in one read, because they are one cache row.
+
+**Affects:** custom `AbstractOfflineDB` implementations, and anyone calling
+`OfflineStoreApis.getChannelsForFilterSort` from `stream-chat-react-native`.
+
+**→** read `.channels` instead of the array; accept `predefinedFilter` in `upsertCidsForQuery`, persist
+it, and return it from `getChannelsForQuery`. If you persist nothing for it, the list still works — it
+falls back to exactly the pre-v10 behaviour.
+
+## N.2 `SqliteClient.dbVersion` 17 → 18 (not breaking; one-time cache loss)
+
+The RN `channelQueries` table gained a `predefinedFilter TEXT` column for §N.1. Schema versioning uses
+`PRAGMA user_version` and there are **no incremental migrations**, so the first launch after upgrading
+reinitializes the database.
+
+That is a one-time loss of the **offline cache**, not of user data: channels, messages and reads are
+re-fetched from the server on the next query. Queued offline writes (pending tasks) are in the same
+database, so an install that is upgraded while holding unsent messages loses them. Nothing to do,
+but do not be surprised by a cold first launch.
+
+## N.3 `OfflineDBSyncManager.syncStatus` → `isSynced` (breaking — `stream-chat`)
+
+```diff
+- client.offlineDb.syncManager.syncStatus   // boolean
++ client.offlineDb.syncManager.isSynced
+```
+
+`public`, so an integrator reading it directly is affected. The SDK itself never referenced it, so
+there is no RN-side change.
+
+The `SyncStatus` name family deliberately stays: `onSyncStatusChange`,
+`scheduleSyncStatusChangeCallback`, `invokeSyncStatusListeners`. "Sync status" is the concept,
+`isSynced` is its current value, and the listeners fire when that status changes.
+
+## N.4 An empty `sort` now means the backend default (behavioral — affects every default-sorted list)
+
+`ChannelPaginator` treated `sort` with `??`, which does not catch `[]`. An empty array is now read as
+"unspecified" and resolves to `DEFAULT_BACKEND_SORT` — `[{ last_message_at: -1 }, { updated_at: -1 }]`.
+
+`<ChannelList>` ships `DEFAULT_SORT = []`, so **this is the default integrator experience**, offline
+support or not. Before, the comparator was built from zero sort fields: every comparison tied, the cid
+tiebreaker decided, and the list held server order until the first live ingest re-sorted the whole
+window alphabetically by cid. Now such a list is ordered by recency and reorders live.
+
+Visible delta for a list with no `sort` prop:
+
+- a new message **moves its channel to the top**, where previously nothing moved
+- the alphabetical-by-cid collapse on the first ingest is gone
+- `paginator.sort` returns `DEFAULT_BACKEND_SORT` rather than the `[]` you passed, so an assertion of
+  `toStrictEqual([])` on it fails
+
+**→** nothing to do if recency is what you wanted. Pass an explicit `sort` to `<ChannelList>` to pin a
+different order — including a `pinned_at`-first sort if you want pinned channels to stay on top, which
+the backend default does not do. Note that "sort by nothing" is not expressible and never was: the
+server applies its own default whenever a request carries no sort, so honouring `[]` client-side could
+only ever produce an order the server would never return.
+
+## N.5 `InternalSearchControllerState` removed (breaking — `stream-chat`, documented-unstable)
+
+The exported type `InternalSearchControllerState` and the `SearchController._internalState` store it
+typed (which held only `focusedMessage`) are gone. Both carried an explicit JSDoc disclaimer that they
+were not for integrator use and could be removed without notice, so this is a documented-unstable
+removal rather than a contract break. The RN SDK never referenced either.
+
+**→** if you read `searchController._internalState.getLatestValue().focusedMessage`, track the focused
+message in your own state; there is no replacement on `SearchController`.
+
+---
+
 ## 19. Verify
 
 - Typecheck the customer app; removed symbols surface as "Property does not
@@ -1761,6 +1851,14 @@ cheaper than they were before this release, not more expensive.
   `channel.updated`; pull-to-refresh and reconnect (the list re-queries, no
   blank); and confirm a pinned-first `sort` keeps pinned channels on top when
   other channels receive messages.
+- **Offline channel-list cache** (§N), with `enableOfflineSupport`: upgrade an existing
+  install and confirm the first launch reinitializes cleanly (§N.2 — expect one cold
+  load, and note any queued unsent messages are lost with it). With a
+  `predefined_filter` list, load it once online, kill the app, then cold-start: the
+  cached page must come back matching and ordered by the *server's* rule, not by your
+  local filters — a pinned channel stays on top even while a channel with a newer
+  message is replayed underneath it. With no `sort` prop, confirm a new message now
+  moves its channel to the top (§N.4).
 - **Unified `channel.state`** (§K): a `channel.updated` rename/avatar reflects live
   (header + preview); muting/unmuting a channel updates its muted indicator;
   pin/archive updates membership-driven UI; and — with `<Channel>` mounted —

@@ -18352,7 +18352,7 @@ __metadata:
     react-native-worklets: "npm:^0.12.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0-rc.10"
+    stream-chat: "npm:^10.0.0-rc.11"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
@@ -18440,6 +18440,23 @@ __metadata:
     husky:
       built: true
   checksum: 10c0/00eb4de2b390f633a7b7e2613a6a2aa30543c6e0bcda96bbf10ac257cef07bd14b78e2c5677ad36c2b91d64d820baff63fa65782581f568755a9984f18843dc0
+  languageName: node
+  linkType: hard
+
+"stream-chat@npm:^10.0.0-rc.11":
+  version: 10.0.0-rc.11
+  resolution: "stream-chat@npm:10.0.0-rc.11"
+  dependencies:
+    "@stream-io/logger": "npm:^2.0.0"
+    "@stream-io/state-store": "npm:^1.1.6"
+    axios: "npm:^1.19.0"
+    linkifyjs: "npm:^4.3.3"
+  dependenciesMeta:
+    esbuild:
+      built: true
+    husky:
+      built: true
+  checksum: 10c0/681c8dd92559843474ea26c12ea3e07b23dda254bfbc82295f1db326b210e2064d2911e8315bcce78b0606ef836c34ab890918aed0e831efb903dac8f25b1721
   languageName: node
   linkType: hard
 
