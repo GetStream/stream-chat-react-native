@@ -68,8 +68,8 @@ export function usePrunableMessageList({ paginator }: { paginator?: MessagePagin
       if (first === Infinity) return;
       const rangeConfig = { first, inverted, last };
       visibleRangeConfigRef.current = rangeConfig;
-      paginator?.setPruningAllowed(
-        !isNearEnd({ maximumMessageLimit: maxLoadedItems, rangeConfig }),
+      paginator?.setPruningSuspended(
+        isNearEnd({ maximumMessageLimit: maxLoadedItems, rangeConfig }),
       );
     },
   );
@@ -78,7 +78,7 @@ export function usePrunableMessageList({ paginator }: { paginator?: MessagePagin
    * The paginator outlives this list, so a suspension must not outlive it either — leaving it set
    * would keep the window growing unbounded long after the user navigated away.
    */
-  useEffect(() => () => paginator?.setPruningAllowed(true), [paginator]);
+  useEffect(() => () => paginator?.setPruningSuspended(false), [paginator]);
 
   return { maxLoadedItems, viewabilityChangedCallback };
 }

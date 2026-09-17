@@ -45,7 +45,7 @@ describe('usePrunableMessageList', () => {
   });
 
   it('suspends pruning while the viewport is near the oldest loaded message', () => {
-    const spy = jest.spyOn(channel.messagePaginator, 'setPruningAllowed');
+    const spy = jest.spyOn(channel.messagePaginator, 'setPruningSuspended');
     const { result } = renderHook(() =>
       usePrunableMessageList({ paginator: channel.messagePaginator }),
     );
@@ -57,20 +57,20 @@ describe('usePrunableMessageList', () => {
         viewableItems: viewable([8, 9]),
       });
     });
-    expect(spy).toHaveBeenLastCalledWith(false);
+    expect(spy).toHaveBeenLastCalledWith(true);
 
-    // Back at the newest end ⇒ safe again.
+    // Back at the newest end ⇒ the suspension lifts.
     act(() => {
       result.current.viewabilityChangedCallback({
         inverted: true,
         viewableItems: viewable([0, 1]),
       });
     });
-    expect(spy).toHaveBeenLastCalledWith(true);
+    expect(spy).toHaveBeenLastCalledWith(false);
   });
 
   it('reads the non-inverted (FlashList) axis the other way round', () => {
-    const spy = jest.spyOn(channel.messagePaginator, 'setPruningAllowed');
+    const spy = jest.spyOn(channel.messagePaginator, 'setPruningSuspended');
     const { result } = renderHook(() =>
       usePrunableMessageList({ paginator: channel.messagePaginator }),
     );
@@ -82,7 +82,7 @@ describe('usePrunableMessageList', () => {
         viewableItems: viewable([0, 1]),
       });
     });
-    expect(spy).toHaveBeenLastCalledWith(false);
+    expect(spy).toHaveBeenLastCalledWith(true);
 
     act(() => {
       result.current.viewabilityChangedCallback({
@@ -90,12 +90,12 @@ describe('usePrunableMessageList', () => {
         viewableItems: viewable([8, 9]),
       });
     });
-    expect(spy).toHaveBeenLastCalledWith(true);
+    expect(spy).toHaveBeenLastCalledWith(false);
   });
 
   it('does nothing at all when the paginator has no cap configured', () => {
     channel.messagePaginator.updateConfig({ maxLoadedItems: undefined });
-    const spy = jest.spyOn(channel.messagePaginator, 'setPruningAllowed');
+    const spy = jest.spyOn(channel.messagePaginator, 'setPruningSuspended');
     const { result } = renderHook(() =>
       usePrunableMessageList({ paginator: channel.messagePaginator }),
     );
@@ -112,7 +112,7 @@ describe('usePrunableMessageList', () => {
   });
 
   it('lifts a suspension on unmount, so an unmounted list cannot pin the window open', () => {
-    const spy = jest.spyOn(channel.messagePaginator, 'setPruningAllowed');
+    const spy = jest.spyOn(channel.messagePaginator, 'setPruningSuspended');
     const { result, unmount } = renderHook(() =>
       usePrunableMessageList({ paginator: channel.messagePaginator }),
     );
@@ -123,10 +123,10 @@ describe('usePrunableMessageList', () => {
         viewableItems: viewable([8, 9]),
       });
     });
-    expect(spy).toHaveBeenLastCalledWith(false);
+    expect(spy).toHaveBeenLastCalledWith(true);
 
     unmount();
-    expect(spy).toHaveBeenLastCalledWith(true);
+    expect(spy).toHaveBeenLastCalledWith(false);
   });
 
   // The hook only decides WHEN; proving the two halves actually meet is what makes it worth having.
