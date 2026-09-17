@@ -119,7 +119,6 @@ type MessageFlashListPropsWithContext = Pick<
     | 'scrollToFirstUnreadThreshold'
     | 'hasPendingInitialTargetLoad'
     | 'threadList'
-    | 'maximumMessageLimit'
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<
@@ -324,7 +323,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     loadMore,
     loadMoreRecent,
     markRead,
-    maximumMessageLimit,
     messageInputFloating,
     messageInputHeightStore,
     myMessageTheme,
@@ -394,12 +392,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [myMessageThemeString, scheme, theme],
   );
 
-  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
-    isFlashList: true,
-    isLiveStreaming,
-    maximumMessageLimit,
-    threadList,
-  });
+  const { maxLoadedItems, processedMessageList, rawMessageList, viewabilityChangedCallback } =
+    useMessageList({
+      isFlashList: true,
+      isLiveStreaming,
+      threadList,
+    });
 
   const renderItem = useCallback(
     ({ item: message, index }: { item: LocalMessage; index: number }) => {
@@ -576,14 +574,21 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       }
     };
 
-    if (isMessageRemovedFromMessageList && !maximumMessageLimit) {
-      scrollToBottomIfNeeded();
+    if (isMessageRemovedFromMessageList) {
+      if (maxLoadedItems) {
+        // The list shrank while a window cap is configured, so a prune is the likely cause. The
+        // trackers are keyed by list length, and a prune returns the length to a value already
+        // marked as consumed — leaving them would permanently wedge back-pagination.
+        resetPaginationTrackersRef.current();
+      } else {
+        scrollToBottomIfNeeded();
+      }
     }
 
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id, maximumMessageLimit]);
+  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id, maxLoadedItems]);
 
   useEffect(() => {
     if (!processedMessageList.length) {
@@ -1322,7 +1327,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     isChannelActive,
     loadChannelAroundMessage,
     loading,
-    maximumMessageLimit,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
@@ -1364,7 +1368,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         loadingMore,
         loadingMoreRecent,
         markRead,
-        maximumMessageLimit,
         messageInputFloating,
         messageInputHeightStore,
         myMessageTheme,
