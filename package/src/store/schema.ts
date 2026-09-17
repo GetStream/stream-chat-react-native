@@ -28,6 +28,7 @@ export const tables: Tables = {
     columns: {
       cids: 'TEXT',
       id: 'TEXT',
+      predefinedFilter: 'TEXT',
     },
     primaryKey: ['id'],
   },
@@ -347,6 +348,11 @@ export type Schema = {
   channelQueries: {
     cids: string;
     id: string;
+    /**
+     * The backend-resolved `predefined_filter` metadata this cid order was produced by, as JSON.
+     * Null for a plain `filter_conditions` query.
+     */
+    predefinedFilter?: string | null;
   };
   channels: {
     cid: string;

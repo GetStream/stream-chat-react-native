@@ -192,6 +192,15 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   const [selectedThread, setSelectedThread] = useState<LocalMessage | null>();
 
+  /**
+   * Message-list pruning is state-layer configuration now, not a `<Channel>` prop: the paginator
+   * bounds its own loaded window. Set on the instance so the secret-menu toggle applies to the open
+   * channel without a reload; `undefined` restores an unbounded list.
+   */
+  useEffect(() => {
+    channel?.messagePaginator.updateConfig({ maxLoadedItems: messageListPruning });
+  }, [channel, messageListPruning]);
+
   useEffect(() => {
     const initChannel = async () => {
       if (!chatClient || !channelId || channelFromProp) {
@@ -366,7 +375,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         messageId={messageId}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
-        maximumMessageLimit={messageListPruning}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />
