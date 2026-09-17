@@ -5,7 +5,7 @@ import { useAccessibilityAnnouncer } from './useAccessibilityAnnouncer';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
-import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 /**
  * Mirrors stream-chat-react's `<NotificationAnnouncer />`. RN does not yet have a
@@ -20,7 +20,7 @@ import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
 export const NotificationAnnouncer = () => {
   const { announceConnectionState, enabled } = useAccessibilityContext();
   const isNetworkOnline = useNetworkConnectionState()?.isOnline;
-  const isWSOnline = useWSConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
   // The socket is what 'connected' means to a chat user; the device network only decides which
   // of the two offline messages is truthful.
   const isOnline = !!isWSOnline;

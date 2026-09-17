@@ -5,11 +5,11 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
 import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
-import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 export const NetworkDownIndicator = () => {
   const isNetworkOnline = useNetworkConnectionState()?.isOnline;
-  const isWSOnline = useWSConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
   const styles = useStyles();
   const { t } = useTranslationContext();
 

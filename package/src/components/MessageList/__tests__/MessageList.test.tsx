@@ -255,6 +255,13 @@ describe('MessageList', () => {
       });
 
       const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+      // A socket drop is held back by `offlineNotificationDisplayDelayMs` (5s by default) so a
+      // sub-second flap never reaches the screen. These tests are about WHICH banner renders, not
+      // about the wait, so they opt out of it — the wait itself is covered in
+      // `useSettledWSConnectionHealth`'s own tests.
+      chatClient.config.set({
+        client: { wsConnection: { offlineNotificationDisplayDelayMs: 0 } },
+      });
       useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
       const channel = chatClient.channel('messaging', mockedChannel.channel.id);
       await channel.watch();
@@ -286,7 +293,7 @@ describe('MessageList', () => {
       act(() => {
         chatClient.networkConnection.setStatus(true);
         // eslint-disable-next-line no-underscore-dangle
-        chatClient.wsConnection._setStatus({ isOnline: false });
+        chatClient.wsConnection._setStatus({ isHealthy: false });
       });
 
       await waitFor(() => {

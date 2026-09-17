@@ -22,7 +22,7 @@ import {
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { transitions } from '../../../../utils/animations/transitions';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
-import { useWSConnectionState } from '../../../Chat/hooks/useWSConnectionState';
+import { useSettledWSConnectionHealth } from '../../../Chat/hooks/useWSConnectionState';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
 export type OutputButtonsProps = Partial<OutputButtonsWithContextProps>;
@@ -164,7 +164,7 @@ const MemoizedOutputButtonsWithContext = React.memo(
 
 export const OutputButtons = (props: OutputButtonsProps) => {
   // The socket, not the device network: a command round-trips through the server.
-  const isOnline = !!useWSConnectionState()?.isOnline;
+  const isOnline = useSettledWSConnectionHealth();
   const { channel } = useChannelContext();
   const {
     audioRecordingEnabled,

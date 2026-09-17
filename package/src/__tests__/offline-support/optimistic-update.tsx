@@ -84,17 +84,21 @@ const getOfflineDb = (client: StreamChat): TestOfflineDb =>
 // but the offline short-circuit is what queues the task), NOT a raw 500.
 const markConnectionUnhealthy = (client: StreamChat) => {
   // `_setStatus` is the SDK's own documented hook for faking socket status in tests — there is no
-  // public setter, because only the socket itself is supposed to write this.
+  // public setter, because only the socket itself is supposed to write this. The connection id is
+  // dropped alongside it, mirroring `StableWSConnection._applyHealth`, so a watched query issued
+  // while down waits for the reconnect instead of racing ahead with a dead id.
+  client.connectionIdManager.invalidate();
   // eslint-disable-next-line no-underscore-dangle
-  client.wsConnection._setStatus({ isOnline: false });
+  client.wsConnection._setStatus({ isHealthy: false });
 };
 
 /** The counterpart of {@link markConnectionUnhealthy}, for tests that go offline and then reconnect. */
 const markConnectionHealthy = (client: StreamChat) => {
-  // `_setStatus` is the SDK's own documented hook for faking socket status in tests — there is no
-  // public setter, because only the socket itself is supposed to write this.
+  // Resolved before the status flips, as the handshake does: anything parked on the id is released
+  // by this, and requests that need one would otherwise hang with no timeout to rescue them.
+  client.connectionIdManager.resolveConnectionId('dummy_connection_id');
   // eslint-disable-next-line no-underscore-dangle
-  client.wsConnection._setStatus({ isOnline: true, connectionId: 'dummy_connection_id' });
+  client.wsConnection._setStatus({ isHealthy: true });
 };
 
 // React flushes passive effects child-first, so the test-callback effect below runs BEFORE `Channel`'s
@@ -1163,7 +1167,7 @@ export const OptimisticUpdates = () => {
     });
 
     describe('pending task execution', () => {
-      // Every test in this block drives a real reconnect, and since `connection.changed` gained its
+      // Every test in this block drives a real reconnect, and since recovery became store-driven its
       // `connection` discriminator these events actually reach `ConnectionRecoveryManager` — so each
       // one now runs a genuine recovery (`channel.reload()`) plus real SQLite pending-task I/O on top
       // of a full render. That lands around 2s alone but exceeded the 5s default under the suite's

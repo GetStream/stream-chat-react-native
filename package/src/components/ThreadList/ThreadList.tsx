@@ -103,12 +103,9 @@ export const ThreadList = (props: ThreadListProps) => {
       return;
     }
 
-    const listener = client.on('connection.recovered', (event) => {
-      // The socket going down is what invalidates the loaded list; a network recovery is a
-      // different fact and not a reason to requery.
-      if (event.connection !== 'ws') {
-        return;
-      }
+    // Only the socket recovers — a device regaining its network has no reconnected socket yet, and
+    // the event is dispatched once the client's own post-reconnect reloads have landed.
+    const listener = client.on('connection.recovered', () => {
       client.threads.reload({ force: true });
     });
 

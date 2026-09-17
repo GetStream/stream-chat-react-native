@@ -48,7 +48,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
-import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 import { PollModal } from '../Poll/components/PollModal';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
@@ -612,7 +612,7 @@ export type MessageComposerProps = Partial<MessageComposerPropsWithContext>;
  * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
 export const MessageComposer = (props: MessageComposerProps) => {
-  const isOnline = !!useWSConnectionState()?.isOnline;
+  const isOnline = useSettledWSConnectionHealth();
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel } = useChannelContext();

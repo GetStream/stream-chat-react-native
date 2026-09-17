@@ -1,9 +1,15 @@
-import type { WSConnectionState } from 'stream-chat';
+import { useEffect, useState } from 'react';
+
+import type { WSConnectionConfig, WSConnectionState } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 
 const identity = (state: WSConnectionState) => state;
+const healthSelector = (state: WSConnectionState) => ({ isHealthy: state.isHealthy });
+const displayDelaySelector = (config: WSConnectionConfig) => ({
+  offlineNotificationDisplayDelayMs: config.offlineNotificationDisplayDelayMs,
+});
 
 /**
  * This client's WebSocket status.
@@ -13,12 +19,15 @@ const identity = (state: WSConnectionState) => state;
  * device drops while the socket has not noticed yet. Use this for "Reconnecting…"; use the network
  * hook for "you're offline".
  *
- * `isOnline` here is always a boolean — a socket always has a state — so `!isOnline` is safe, unlike
- * the network store's equivalent.
+ * `isHealthy` is always a boolean — a socket always has a state — so `!isHealthy` is safe, unlike the
+ * network store's `isOnline`, which is `undefined` until something reports.
  *
- * Reads the store rather than reacting to `connection.changed`, so it is correct on mount rather than
- * only after the first transition, and so it reports the paths the event is silent about
+ * Reads the store rather than reacting to an event, so it is correct on mount rather than only after
+ * the first transition, and so it reports the paths that were always silent
  * (`client.closeConnection()`, the mobile backgrounding path, dispatches nothing).
+ *
+ * This is the **raw** status, which flips on every flap. Anything user-visible wants
+ * {@link useSettledWSConnectionHealth} instead.
  *
  * Must be used under `<Chat>`.
  */
@@ -39,4 +48,49 @@ export const useWSConnectionStateSelector = <
 ) => {
   const { client } = useChatContext();
   return useStateStore(client?.wsConnection?.state, selector);
+};
+
+/**
+ * `isHealthy`, but a drop has to last before it is believed. What UI should render.
+ *
+ * Recovery is reported immediately and only the drop is held back, because the two are not
+ * symmetric: showing "Reconnecting…" a moment late costs nothing, leaving it up a moment too long
+ * makes a working app look broken.
+ *
+ * Most drops resolve in well under a second — a backgrounded socket, a handover between cells, a
+ * server closing an idle connection — and a banner that rendered all of them would flash constantly.
+ * The client used to hold this back itself, debouncing its offline event by a fixed five seconds;
+ * that timer outlived the socket that armed it, so it was removed in favour of the value living
+ * here, where whoever draws the banner owns it. The length is
+ * `client.config.set({ client: { wsConnection: { offlineNotificationDisplayDelayMs } } })`; zero
+ * holds nothing back.
+ *
+ * A socket that is already down when this mounts reads as down straight away — there is no flap to
+ * wait out, and the delay is not a grace period for the initial state.
+ *
+ * Must be used under `<Chat>`.
+ */
+export const useSettledWSConnectionHealth = () => {
+  const { client } = useChatContext();
+  const isHealthy = !!useStateStore(client?.wsConnection?.state, healthSelector)?.isHealthy;
+  const delay =
+    useStateStore(client?.wsConnection?.configState, displayDelaySelector)
+      ?.offlineNotificationDisplayDelayMs ?? 0;
+
+  const [settled, setSettled] = useState(isHealthy);
+
+  useEffect(() => {
+    // Up is immediate, and clearing any pending down with it: a socket that came back before the
+    // timer fired must never announce the drop it already recovered from — the exact bug that
+    // retiring the client-side timer was meant to end.
+    if (isHealthy || delay <= 0) {
+      setSettled(isHealthy);
+      return;
+    }
+
+    const timeout = setTimeout(() => setSettled(false), delay);
+    return () => clearTimeout(timeout);
+  }, [isHealthy, delay]);
+
+  return settled;
 };

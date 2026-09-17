@@ -16,7 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
-import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
@@ -25,7 +25,7 @@ export type ChannelListViewPropsWithContext = Omit<
 
 const StatusIndicator = () => {
   const isNetworkOnline = useNetworkConnectionState()?.isOnline;
-  const isWSOnline = useWSConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
   const styles = useStyles();
   const { error, loadingChannels, refreshList } = useChannelsContext();
   const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =

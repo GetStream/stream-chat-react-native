@@ -85,7 +85,7 @@ import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { getFileNameFromPath, isLocalUrl, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import { useWSConnectionState } from '../Chat/hooks/useWSConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
@@ -678,8 +678,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   // Mark-read after the LLC's reconnect reload. `connection.recovered` is dispatched by
   // `client.connectionRecovery` once that reload has landed, so `hasMoreHead` read here reflects the
-  // refreshed window — which is why this cannot hang off `connection.changed`. Only the reload moved
-  // into the LLC; whether a caught-up channel is marked read stays a UI decision (see `useMarkRead`).
+  // refreshed window — which is why this cannot hang off the socket's status store, which moves the
+  // moment the socket does. Only the reload moved into the LLC; whether a caught-up channel is
+  // marked read stays a UI decision (see `useMarkRead`).
   useEffect(() => {
     if (!shouldSyncChannel) {
       return;
@@ -689,10 +690,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // landed, so `hasMoreHead` read here reflects the refreshed window. Channel view only, and only
     // when that window is at the newest, only if the user has paginated up into older history so leave
     // their read state alone.
-    const { unsubscribe } = client.on('connection.recovered', (event) => {
-      if (event.connection !== 'ws') {
-        return;
-      }
+    const { unsubscribe } = client.on('connection.recovered', () => {
       if (thread || channel.messagePaginator.hasMoreHead) {
         return;
       }
@@ -1089,7 +1087,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, enableOfflineSupport, isMessageAIGenerated } = useChatContext();
-  const isOnline = !!useWSConnectionState()?.isOnline;
+  const isOnline = useSettledWSConnectionHealth();
   const { t } = useTranslationContext();
   const notificationHostId =
     props.notificationHostId ??

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 
 import NetInfo from '@react-native-community/netinfo';
 
-import type { NetworkStatusListenerRegistrar, StreamChat } from 'stream-chat';
+import type { NetworkStatusReporter, StreamChat } from 'stream-chat';
 
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 
@@ -13,7 +13,7 @@ import { useAppStateListener } from '../../../hooks/useAppStateListener';
  * `useNetworkConnectionState()` (the device) or `useWSConnectionState()` (our socket); both read the
  * client's own stores, so they are correct on mount rather than only after a transition.
  *
- * 1. **The network registrar.** The client cannot detect device network status itself — every
+ * 1. **The network reporter.** The client cannot detect device network status itself — every
  *    platform reports it differently — so it has to be told. On React Native that means NetInfo.
  * 2. **Background/foreground.** Close the socket when the app backgrounds and reopen it on
  *    foreground, because push notifications are only delivered while no socket is active.
@@ -45,45 +45,63 @@ export const useIsOnline = (client: StreamChat, closeConnectionOnBackground = tr
       return;
     }
 
-    // Registered through the declarative config rather than
-    // `client.networkConnection.setStatusListenerRegistrar(...)`. An imperatively installed registrar
-    // is torn down by the next configuration derivation — which includes every `client.config.set()`
-    // and the `disconnectUser()` -> `connectUser()` cycle and on React Native there is no platform
-    // default to replace it with, so the client would silently stop being told about the network.
+    // Declarative config rather than `client.networkConnection.setStatusReporter(...)`. Both survive
+    // a configuration derivation now, but this one states the reporter as part of the client's
+    // configuration rather than as an edit applied to it, so a `client.config.get('client')` shows
+    // what is actually installed.
+    //
+    // Installing one at all is not optional on React Native. Left alone the client falls back to a
+    // reporter that mirrors its own WebSocket, which cannot report that the network came back before
+    // the socket noticed — the entire reason the network signal is worth having.
     client.config.set({
       client: {
         networkConnection: {
-          statusListenerRegistrar: netInfoStatusListenerRegistrar,
+          statusReporter: netInfoStatusReporter,
         },
       },
     });
 
-    // Deliberately no teardown. The registrar's lifetime is the CLIENT's, not this component's: the
+    // Deliberately no teardown. The reporter's lifetime is the CLIENT's, not this component's: the
     // client outlives `<Chat>` (push handling, background work), and `isOnline` is supposed to stay
     // true about the device for as long as the client exists. Tearing it down here would also leave a
-    // stale value rather than a cleared one — `setStatusListenerRegistrar(null)` keeps the last known
-    // status by design — so consumers would read an authoritative-looking `isOnline` that nothing is
-    // updating any more.
+    // stale value rather than a cleared one — `setStatusReporter(null)` keeps the last known status by
+    // design — so consumers would read an authoritative-looking `isOnline` that nothing is updating
+    // any more.
     //
-    // Re-running this is safe and cannot stack listeners: `netInfoStatusListenerRegistrar` is a stable
-    // module-scope reference, so `ConfigController`'s no-op write check and
-    // `setStatusListenerRegistrar`'s identity guard both short-circuit. A *different* client re-runs
-    // the effect through the dependency array and installs a fresh registrar for it.
+    // Re-running this is safe and cannot stack listeners: `netInfoStatusReporter` is a stable
+    // module-scope reference, so `ConfigController`'s no-op write check and the observer's own
+    // installed-reporter identity guard both short-circuit. A *different* client re-runs the effect
+    // through the dependency array and installs a fresh reporter for it.
   }, [client, clientExists]);
 };
 
 /**
- * Subscribes to NetInfo and reports every change to the client.
+ * Subscribes to NetInfo and reports every change to the client. What `<Chat>` installs.
+ *
+ * Exported so it can be installed **at client construction** instead, which is strictly better if
+ * you build the client yourself:
+ *
+ * ```ts
+ * new StreamChat(apiKey, {
+ *   config: { client: { networkConnection: { statusReporter: netInfoStatusReporter } } },
+ * });
+ * ```
+ *
+ * `<Chat>` can only install it from an effect, so between the client being constructed and that
+ * effect running, the client falls back to a reporter that mirrors its own WebSocket. In that window
+ * a socket-only failure — an expired token, a server close — is recorded as the *device* having no
+ * network, and the UI blames the network for it. Installing here closes the window; the fallback is
+ * never reached.
  *
  * Module scope, so the same reference is handed to the client on every derivation — re-installing an
- * identical registrar is a no-op there, and rebuilding it per render would tear the native listener
+ * identical reporter is a no-op there, and rebuilding it per render would tear the native listener
  * down and recreate it for nothing.
  *
  * `NetInfo.addEventListener` fires once with the current state on subscribe, which satisfies the
- * registrar contract's "report the current status as soon as it is known" requirement — so no
+ * reporter contract's "report the current status as soon as it is known" requirement — so no
  * separate `NetInfo.fetch()` is needed.
  */
-const netInfoStatusListenerRegistrar: NetworkStatusListenerRegistrar = (onStatusChange) =>
+export const netInfoStatusReporter: NetworkStatusReporter = (onStatusChange) =>
   NetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
     // `isInternetReachable` is the stronger signal but is `null` until NetInfo has probed, so fall
     // back to `isConnected` until it resolves. Coerced because both are `boolean | null`.

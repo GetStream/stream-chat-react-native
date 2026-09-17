@@ -4,17 +4,65 @@ import { View } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
+import type { StreamChat } from 'stream-chat';
+
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { sqliteMock } from '../../../mock-builders/DB/mock';
+import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import { getTestClient, getTestClientWithUser, setUser } from '../../../mock-builders/mock';
 import { DEFAULT_MAX_SYNC_EVENTS_LIMIT } from '../../../store/constants';
 import { SqliteClient, SqliteClientError } from '../../../store/SqliteClient';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../Chat';
+
+/**
+ * Replaces the sync manager's socket subscription with a spy wrapping it, and hands back the spy.
+ *
+ * It is a bare unsubscribe function now rather than `{ unsubscribe }` — the status store's
+ * `subscribe` returns one directly — so "was the previous one released?" is answered by whether this
+ * was called. `init()` releases whatever is assigned at the time, which is what makes the swap work.
+ */
+const captureSyncSubscription = async (client: StreamChat) => {
+  await waitFor(() =>
+    expect(client.offlineDb!.syncManager.connectionChangedListener).toEqual(expect.any(Function)),
+  );
+
+  const released = jest.fn(client.offlineDb!.syncManager.connectionChangedListener!);
+  client.offlineDb!.syncManager.connectionChangedListener = released;
+  return released;
+};
+
+/**
+ * How many syncs one offline/online cycle sets off.
+ *
+ * This replaces counting `connection.changed` listeners on the client: the sync manager reads the
+ * socket's status store now, and a store subscription is not enumerable from outside. Counting the
+ * work a single reconnect produces tests the thing that assertion was a proxy for — a stacked
+ * subscription syncs twice — and does it without reaching into the store's internals.
+ */
+const syncsPerReconnect = async (client: StreamChat) => {
+  const syncManager = client.offlineDb!.syncManager as unknown as {
+    syncAndExecutePendingTasks: () => Promise<void>;
+  };
+  const sync = jest.spyOn(syncManager, 'syncAndExecutePendingTasks').mockResolvedValue(undefined);
+
+  // Awaited separately: the sync manager's handler is async, so the online edge must be allowed to
+  // settle before the spy is read.
+  await act(() => {
+    dispatchConnectionChangedEvent(client, false);
+  });
+  await act(() => {
+    dispatchConnectionChangedEvent(client, true);
+  });
+
+  const { length } = sync.mock.calls;
+  sync.mockRestore();
+  return length;
+};
 
 const ChatContextConsumer = ({ fn }: { fn: (ctx: ChatContextValue) => void }) => {
   fn(useChatContext());
@@ -32,7 +80,7 @@ describe('Chat', () => {
     jest.clearAllMocks();
   });
 
-  // A fresh client per test. The NetInfo registrar is installed once per CLIENT and deliberately
+  // A fresh client per test. The NetInfo reporter is installed once per CLIENT and deliberately
   // never torn down on unmount, so a client shared across tests would only ever subscribe in the
   // first one — and `clearAllMocks` would then hide that it had happened at all.
   let chatClient: ReturnType<typeof getTestClient>;
@@ -50,7 +98,7 @@ describe('Chat', () => {
     await waitFor(() => expect(getByTestId('children')).toBeTruthy());
   });
 
-  it('installs a NetInfo registrar that feeds client.networkConnection', async () => {
+  it('installs a NetInfo reporter that feeds client.networkConnection', async () => {
     // The whole RN integration: the client cannot detect device network status itself, so <Chat>
     // has to register a listener. Driving the captured callback proves the wiring end to end.
     render(
@@ -89,9 +137,9 @@ describe('Chat', () => {
   });
 
   it('keeps the NetInfo listener alive after unmount, because the client outlives <Chat>', async () => {
-    // The registrar's lifetime is the CLIENT's, not this component's. Releasing it here would leave
-    // `isOnline` frozen at a stale value (`setStatusListenerRegistrar(null)` keeps the last status by
-    // design), and the client is still used outside the React tree — push handling, background work.
+    // The reporter's lifetime is the CLIENT's, not this component's. Releasing it here would leave
+    // `isOnline` frozen at a stale value (`setStatusReporter(null)` keeps the last status by design),
+    // and the client is still used outside the React tree — push handling, background work.
     const unsubscribe = jest.fn();
     (NetInfo.addEventListener as jest.Mock).mockReturnValueOnce(unsubscribe);
 
@@ -108,9 +156,9 @@ describe('Chat', () => {
   });
 
   it('does not stack NetInfo listeners when <Chat> remounts with the same client', async () => {
-    // The regression guard for dropping the teardown: the registrar is a stable module-scope
-    // reference, so `ConfigController`'s no-op write check and `setStatusListenerRegistrar`'s identity
-    // guard both short-circuit a re-install. An inline registrar would subscribe again every mount.
+    // The regression guard for dropping the teardown: the reporter is a stable module-scope
+    // reference, so `ConfigController`'s no-op write check and the observer's installed-reporter
+    // identity guard both short-circuit a re-install. An inline reporter would subscribe every mount.
     const { unmount } = render(
       <Chat client={chatClient}>
         <View testID='children' />
@@ -313,31 +361,18 @@ describe('TranslationContext', () => {
     // initial mount and render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport key={1} />);
 
-    let unsubscribeSpy: jest.SpyInstance | undefined;
-    let listenersAfterInitialMount: Array<unknown> = [];
     const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
-
-    await waitFor(() => {
-      // the unsubscribe fn changes during init(), so we keep a reference to the spy
-      unsubscribeSpy = jest.spyOn(
-        chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
-        'unsubscribe' as never,
-      );
-      listenersAfterInitialMount = [
-        ...(chatClientWithUser.listeners.get('connection.changed') ?? []),
-      ];
-    });
+    const released = await captureSyncSubscription(chatClientWithUser);
 
     // remount
     rerender(<Chat client={chatClientWithUser} enableOfflineSupport key={2} />);
 
     await waitFor(() => {
       expect(initSpy).toHaveBeenCalledTimes(1);
-      expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
-      expect([...(chatClientWithUser.listeners.get('connection.changed') ?? [])].length).toBe(
-        listenersAfterInitialMount.length,
-      );
+      expect(released).toHaveBeenCalledTimes(0);
     });
+
+    expect(await syncsPerReconnect(chatClientWithUser)).toBe(1);
   });
 
   it('makes sure DBSyncManager listeners are cleaned up if the user changes', async () => {
@@ -346,20 +381,8 @@ describe('TranslationContext', () => {
     // initial render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
-    let unsubscribeSpy: jest.SpyInstance | undefined;
-    let listenersAfterInitialMount: Array<unknown> = [];
     const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
-
-    await waitFor(() => {
-      // the unsubscribe fn changes during init(), so we keep a reference to the spy
-      unsubscribeSpy = jest.spyOn(
-        chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
-        'unsubscribe' as never,
-      );
-      listenersAfterInitialMount = [
-        ...(chatClientWithUser.listeners.get('connection.changed') ?? []),
-      ];
-    });
+    const released = await captureSyncSubscription(chatClientWithUser);
 
     await act(async () => {
       await setUser(chatClientWithUser, { id: 'testID2' });
@@ -370,11 +393,11 @@ describe('TranslationContext', () => {
 
     await waitFor(() => {
       expect(initSpy).toHaveBeenCalledTimes(2);
-      expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
-      expect([...(chatClientWithUser.listeners.get('connection.changed') ?? [])].length).toBe(
-        listenersAfterInitialMount.length,
-      );
+      // The second init() released the first subscription before taking out its own.
+      expect(released).toHaveBeenCalledTimes(1);
     });
+
+    expect(await syncsPerReconnect(chatClientWithUser)).toBe(1);
   });
 
   it('makes sure DBSyncManager state stays intact during normal rerenders', async () => {
@@ -383,31 +406,18 @@ describe('TranslationContext', () => {
     // initial render
     const { rerender } = render(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
-    let unsubscribeSpy: jest.SpyInstance | undefined;
     const initSpy = jest.spyOn(chatClientWithUser.offlineDb!.syncManager, 'init');
-
-    await waitFor(() => {
-      // the unsubscribe fn changes during init(), so we keep a reference to the spy
-      unsubscribeSpy = jest.spyOn(
-        chatClientWithUser.offlineDb!.syncManager.connectionChangedListener as object,
-        'unsubscribe' as never,
-      );
-    });
-
-    const listenersAfterInitialMount = [
-      ...(chatClientWithUser.listeners.get('connection.changed') ?? []),
-    ];
+    const released = await captureSyncSubscription(chatClientWithUser);
 
     // rerender
     rerender(<Chat client={chatClientWithUser} enableOfflineSupport />);
 
     await waitFor(() => {
       expect(initSpy).toHaveBeenCalledTimes(1);
-      expect(unsubscribeSpy).toHaveBeenCalledTimes(0);
-      expect([...(chatClientWithUser.listeners.get('connection.changed') ?? [])].length).toBe(
-        listenersAfterInitialMount.length,
-      );
+      expect(released).toHaveBeenCalledTimes(0);
     });
+
+    expect(await syncsPerReconnect(chatClientWithUser)).toBe(1);
   });
 
   it('forwards maxSyncEventsLimit to the offline DB sync manager', async () => {
