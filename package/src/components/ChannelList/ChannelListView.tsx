@@ -9,13 +9,14 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useStableCallback } from '../../hooks';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
+import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
@@ -23,7 +24,8 @@ export type ChannelListViewPropsWithContext = Omit<
 >;
 
 const StatusIndicator = () => {
-  const { isOnline } = useChatContext();
+  const isNetworkOnline = useNetworkConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
   const styles = useStyles();
   const { error, loadingChannels, refreshList } = useChannelsContext();
   const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =
@@ -33,7 +35,9 @@ const StatusIndicator = () => {
     return null;
   }
 
-  if (!isOnline) {
+  // `=== false` for the network (unknown must not read as offline), plain falsy for the socket
+  // (always a boolean).
+  if (isNetworkOnline === false || !isWSOnline) {
     return (
       <View style={styles.statusIndicator}>
         <ChannelListHeaderNetworkDownIndicator />

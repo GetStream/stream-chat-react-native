@@ -27,10 +27,12 @@ type MockableStreamChat = StreamChat & {
 export const setUser = (client: StreamChat, user: MockUser): Promise<void> =>
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
-    // v10 keeps the connection id on `client.connectionIdManager`; requests that register a
-    // watch/presence subscription await it, so a mocked connect has to publish one or every
-    // `queryChannels()`/`channel.watch()` in the tests throws.
-    c.connectionIdManager.resolveConnectionId('dumm_connection_id');
+    // A connected client means a live socket with a connection id. The id lives on its own manager
+    // now, and `channel.watch()` / `client.queryChannels()` await it rather than degrading to
+    // `watch: false` — with no timeout — so a fixture that leaves it unset hangs every one of them
+    // until the test itself times out. The socket status goes with it: both halves of "connected".
+    client.connectionIdManager.resolveConnectionId('dummy_connection_id');
+    client.wsConnection._setStatus({ isHealthy: true });
     // `userID` is now a read-only getter derived from `user.id`, so setting `user` is enough.
     c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
     c._user = { ...c.user };

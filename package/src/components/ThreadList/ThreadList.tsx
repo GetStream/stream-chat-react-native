@@ -103,6 +103,8 @@ export const ThreadList = (props: ThreadListProps) => {
       return;
     }
 
+    // Only the socket recovers — a device regaining its network has no reconnected socket yet, and
+    // the event is dispatched once the client's own post-reconnect reloads have landed.
     const listener = client.on('connection.recovered', () => {
       client.threads.reload({ force: true });
     });

@@ -6,20 +6,20 @@ import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/nati
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { LocalMessage, Channel as StreamChatChannel, StreamChat } from 'stream-chat';
 import {
+  AITypingIndicatorView,
   AlsoSentToChannelHeaderPressPayload,
   Channel,
+  ChannelAvatar,
+  MessageActionsParams,
   MessageComposer,
-  MessageList,
   MessageFlashList,
+  MessageList,
+  PortalWhileClosingView,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
-  useChatContext,
   useTheme,
-  AITypingIndicatorView,
   useTranslationContext,
-  MessageActionsParams,
-  ChannelAvatar,
-  PortalWhileClosingView,
+  useSettledWSConnectionHealth,
 } from 'stream-chat-react-native';
 
 import { ThreadType } from 'stream-chat-react-native-core';
@@ -60,7 +60,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-  const { isOnline } = useChatContext();
+  const isOnline = useSettledWSConnectionHealth();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
 
