@@ -150,6 +150,49 @@ describe('connection state hooks', () => {
       jest.useRealTimers();
     });
 
+    it('says so at once when the device has no network, without waiting out the delay', () => {
+      // The delay is for a socket that might come straight back. A device with no network is not
+      // that — NetInfo already knows, and five seconds of "connected" is five seconds of lying.
+      jest.useFakeTimers();
+
+      client = getTestClient();
+      client.config.set({
+        client: { wsConnection: { offlineNotificationDisplayDelayMs: 5000 } },
+      });
+      client.networkConnection.setStatus(false);
+
+      const { result } = renderHook(() => useSettledWSConnectionHealth(), { wrapper });
+
+      expect(result.current).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it('reports the network dropping mid-session without the delay, but still debounces a socket-only drop', () => {
+      jest.useFakeTimers();
+
+      client.config.set({
+        client: { wsConnection: { offlineNotificationDisplayDelayMs: 5000 } },
+      });
+
+      const { result } = renderHook(() => useSettledWSConnectionHealth(), { wrapper });
+      expect(result.current).toBe(true);
+
+      // Socket-only drop on a working network: debounced, because it may come straight back.
+      act(() => {
+        client.wsConnection._setStatus({ isHealthy: false });
+      });
+      expect(result.current).toBe(true);
+
+      // The device losing its network is authoritative — report it now.
+      act(() => {
+        client.networkConnection.setStatus(false);
+      });
+      expect(result.current).toBe(false);
+
+      jest.useRealTimers();
+    });
+
     it('still surfaces a first connect that never completes', () => {
       // The other half: being optimistic must not mean being silent forever.
       jest.useFakeTimers();

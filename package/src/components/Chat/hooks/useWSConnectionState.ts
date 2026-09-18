@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { WSConnectionConfig, WSConnectionState } from 'stream-chat';
+import type { NetworkConnectionState, WSConnectionConfig, WSConnectionState } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks/useStateStore';
@@ -13,6 +13,7 @@ const healthSelector = (state: WSConnectionState) => ({
 const displayDelaySelector = (config: WSConnectionConfig) => ({
   offlineNotificationDisplayDelayMs: config.offlineNotificationDisplayDelayMs,
 });
+const networkSelector = (state: NetworkConnectionState) => ({ isOnline: state.isOnline });
 
 /**
  * This client's WebSocket status.
@@ -82,27 +83,33 @@ export const useSettledWSConnectionHealth = () => {
   const status = useStateStore(client?.wsConnection?.state, healthSelector);
   const isHealthy = !!status?.isHealthy;
   const hasBeenHealthy = !!status?.lastHealthyAt;
+  // `=== false` is the device telling us it has no network, which is a different thing from
+  // `undefined`, meaning nobody has reported yet.
+  const networkIsDown =
+    useStateStore(client?.networkConnection?.state, networkSelector)?.isOnline === false;
   const delay =
     useStateStore(client?.wsConnection?.configState, displayDelaySelector)
       ?.offlineNotificationDisplayDelayMs ?? 0;
 
-  // Optimistic unless we are mounting into a drop that already happened. A first connect is not a
-  // drop — you cannot lose a connection you never had — so it gets the benefit of the doubt and the
-  // delay below decides, which means a handshake that never completes still surfaces.
-  const [settled, setSettled] = useState(() => isHealthy || !hasBeenHealthy);
+  const [settled, setSettled] = useState(() => isHealthy || (!hasBeenHealthy && !networkIsDown));
 
   useEffect(() => {
     // Up is immediate, and clearing any pending down with it: a socket that came back before the
     // timer fired must never announce the drop it already recovered from — the exact bug that
     // retiring the client-side timer was meant to end.
-    if (isHealthy || delay <= 0) {
-      setSettled(isHealthy);
+    if (isHealthy) {
+      setSettled(true);
+      return;
+    }
+
+    if (delay <= 0 || networkIsDown) {
+      setSettled(false);
       return;
     }
 
     const timeout = setTimeout(() => setSettled(false), delay);
     return () => clearTimeout(timeout);
-  }, [isHealthy, delay]);
+  }, [isHealthy, delay, networkIsDown]);
 
   return settled;
 };
