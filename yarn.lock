@@ -18426,9 +18426,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "stream-chat@portal:/Users/isekovanic/Projects/stream-chat-js::locator=root%40workspace%3A."
+"stream-chat@npm:^10.0.0-rc.12":
+  version: 10.0.0-rc.12
+  resolution: "stream-chat@npm:10.0.0-rc.12"
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
     "@stream-io/state-store": "npm:^1.1.6"
@@ -18439,8 +18439,9 @@ __metadata:
       built: true
     husky:
       built: true
+  checksum: 10c0/908d8cdd440481cb84cf903eb0b7e840ca59615e95216a850765896433a7bcb6d438edfeccbe4ee601e4836dfe964e1c43ec7cbca9444cd980ebf9f4517b5d91
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "stream-combiner2@npm:~1.1.1":
   version: 1.1.1
