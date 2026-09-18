@@ -124,6 +124,53 @@ describe('connection state hooks', () => {
       jest.useRealTimers();
     });
 
+    it('shows nothing while the very first connect is still in flight', () => {
+      // The regression: `isHealthy` is `false` from construction, so a socket that has never been up
+      // read as "dropped" and every app start painted a connection banner for the length of the
+      // handshake. A first connect is not a drop.
+      jest.useFakeTimers();
+
+      client = getTestClient(); // never connected: isHealthy false, lastHealthyAt null
+      client.config.set({
+        client: { wsConnection: { offlineNotificationDisplayDelayMs: 5000 } },
+      });
+
+      const { result } = renderHook(() => useSettledWSConnectionHealth(), { wrapper });
+
+      expect(result.current).toBe(true);
+
+      act(() => {
+        client.wsConnection._setStatus({ isHealthy: true }); // handshake lands
+      });
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+      expect(result.current).toBe(true);
+
+      jest.useRealTimers();
+    });
+
+    it('still surfaces a first connect that never completes', () => {
+      // The other half: being optimistic must not mean being silent forever.
+      jest.useFakeTimers();
+
+      client = getTestClient();
+      client.config.set({
+        client: { wsConnection: { offlineNotificationDisplayDelayMs: 5000 } },
+      });
+
+      const { result } = renderHook(() => useSettledWSConnectionHealth(), { wrapper });
+
+      expect(result.current).toBe(true);
+
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(result.current).toBe(false);
+
+      jest.useRealTimers();
+    });
+
     it('reports recovery immediately', async () => {
       jest.useFakeTimers();
 

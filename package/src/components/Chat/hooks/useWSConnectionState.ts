@@ -6,7 +6,10 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 
 const identity = (state: WSConnectionState) => state;
-const healthSelector = (state: WSConnectionState) => ({ isHealthy: state.isHealthy });
+const healthSelector = (state: WSConnectionState) => ({
+  isHealthy: state.isHealthy,
+  lastHealthyAt: state.lastHealthyAt,
+});
 const displayDelaySelector = (config: WSConnectionConfig) => ({
   offlineNotificationDisplayDelayMs: config.offlineNotificationDisplayDelayMs,
 });
@@ -26,8 +29,11 @@ const displayDelaySelector = (config: WSConnectionConfig) => ({
  * the first transition, and so it reports the paths that were always silent
  * (`client.closeConnection()`, the mobile backgrounding path, dispatches nothing).
  *
- * This is the **raw** status, which flips on every flap. Anything user-visible wants
- * {@link useSettledWSConnectionHealth} instead.
+ * This is the **raw** status, and it has a trap: `isHealthy` is `false` from construction, so it
+ * reads the same before the first connect as it does after a drop. Those need opposite UI — one is
+ * "connecting", the other is "we lost it" — and only `lastHealthyAt === null` tells them apart.
+ * Anything user-visible wants {@link useSettledWSConnectionHealth}, which handles that and the flap
+ * debounce; reach for this one only when you genuinely want the unfiltered store.
  *
  * Must be used under `<Chat>`.
  */
@@ -66,18 +72,24 @@ export const useWSConnectionStateSelector = <
  * holds nothing back.
  *
  * A socket that is already down when this mounts reads as down straight away — there is no flap to
- * wait out, and the delay is not a grace period for the initial state.
+ * wait out. A socket that has never been up is a different case: that is a first connect, not a
+ * drop, so it reads as healthy until the delay says otherwise.
  *
  * Must be used under `<Chat>`.
  */
 export const useSettledWSConnectionHealth = () => {
   const { client } = useChatContext();
-  const isHealthy = !!useStateStore(client?.wsConnection?.state, healthSelector)?.isHealthy;
+  const status = useStateStore(client?.wsConnection?.state, healthSelector);
+  const isHealthy = !!status?.isHealthy;
+  const hasBeenHealthy = !!status?.lastHealthyAt;
   const delay =
     useStateStore(client?.wsConnection?.configState, displayDelaySelector)
       ?.offlineNotificationDisplayDelayMs ?? 0;
 
-  const [settled, setSettled] = useState(isHealthy);
+  // Optimistic unless we are mounting into a drop that already happened. A first connect is not a
+  // drop — you cannot lose a connection you never had — so it gets the benefit of the doubt and the
+  // delay below decides, which means a handshake that never completes still surfaces.
+  const [settled, setSettled] = useState(() => isHealthy || !hasBeenHealthy);
 
   useEffect(() => {
     // Up is immediate, and clearing any pending down with it: a socket that came back before the
