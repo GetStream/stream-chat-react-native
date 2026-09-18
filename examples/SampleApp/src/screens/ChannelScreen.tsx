@@ -19,7 +19,7 @@ import {
   useChannelPreviewDisplayName,
   useTheme,
   useTranslationContext,
-  useWSConnectionState,
+  useSettledWSConnectionHealth,
 } from 'stream-chat-react-native';
 
 import { ThreadType } from 'stream-chat-react-native-core';
@@ -60,7 +60,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-  const isOnline = !!useWSConnectionState()?.isOnline;
+  const isOnline = useSettledWSConnectionHealth();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
 
