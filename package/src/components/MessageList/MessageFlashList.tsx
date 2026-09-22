@@ -3,6 +3,8 @@ import { LayoutChangeEvent, ScrollViewProps, StyleSheet, View, useColorScheme } 
 
 import Animated from 'react-native-reanimated';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
@@ -48,6 +50,7 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
+import { useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { isVideoPlayerAvailable } from '../../native';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -393,6 +396,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const channelResyncScrollSet = useRef<boolean>(true);
   const { theme } = useTheme();
   const styles = useStyles();
+  const horizontalInsets = useHorizontalInsets();
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
   const scheme = useColorScheme();
@@ -1125,7 +1129,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, horizontalInsets]}>
         <LoadingIndicator listType='message' />
       </View>
     );
@@ -1138,7 +1142,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }
 
   return (
-    <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
+    <View
+      onLayout={onLayout}
+      style={[styles.container, horizontalInsets]}
+      testID='message-flat-list-wrapper'
+    >
       {processedMessageList.length === 0 && !thread ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
@@ -1384,6 +1392,8 @@ const useStyles = () => {
 
   const { backgroundCoreApp } = semantics;
 
+  const insets = useSafeAreaInsets();
+
   return useMemo(
     () =>
       StyleSheet.create({
@@ -1417,21 +1427,23 @@ const useStyles = () => {
         },
         scrollToBottomButtonContainer: {
           position: 'absolute',
-          right: 16,
+          // Absolute children are offset from the border box, so the container's horizontal
+          // padding does not reach them: the inset has to be added here.
+          right: 16 + insets.right,
           ...scrollToBottomButtonContainer,
         },
         stickyHeaderContainer: {
-          left: 0,
+          left: insets.left,
           position: 'absolute',
-          right: 0,
+          right: insets.right,
           top: primitives.spacingMd,
           ...stickyHeaderContainer,
         },
         unreadMessagesNotificationContainer: {
           position: 'absolute',
           top: primitives.spacingMd,
-          left: 0,
-          right: 0,
+          left: insets.left,
+          right: insets.right,
           alignItems: 'center',
           ...unreadMessagesNotificationContainer,
         },
@@ -1445,6 +1457,8 @@ const useStyles = () => {
       stickyHeaderContainer,
       unreadMessagesNotificationContainer,
       suggestionListContainer,
+      insets.left,
+      insets.right,
     ],
   );
 };

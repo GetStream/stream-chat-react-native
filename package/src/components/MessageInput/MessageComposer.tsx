@@ -61,6 +61,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { left: leftInset, right: rightInset } = useSafeAreaInsets();
   return useMemo(() => {
     return StyleSheet.create({
       autocompleteInputContainer: {
@@ -125,16 +126,18 @@ const useStyles = () => {
         width: '100%',
       },
       wrapper: {
-        paddingHorizontal: primitives.spacingMd,
+        paddingLeft: leftInset + primitives.spacingMd,
+        paddingRight: rightInset + primitives.spacingMd,
         paddingTop: primitives.spacingMd,
       },
       audioLockIndicatorWrapper: {
         position: 'absolute',
-        right: primitives.spacingMd,
+        // Absolute child of `wrapper`, so its padding does not reach this - inset it directly.
+        right: rightInset + primitives.spacingMd,
         padding: 4,
       },
     });
-  }, [semantics]);
+  }, [semantics, leftInset, rightInset]);
 };
 
 type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &

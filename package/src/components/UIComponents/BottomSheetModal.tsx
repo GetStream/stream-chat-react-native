@@ -661,6 +661,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const { left: leftInset, right: rightInset } = useSafeAreaInsets();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -671,6 +672,8 @@ const useStyles = () => {
         },
         contentContainer: {
           flex: 1,
+          paddingLeft: leftInset,
+          paddingRight: rightInset,
         },
         handle: {
           alignSelf: 'center',
@@ -691,6 +694,6 @@ const useStyles = () => {
           flex: 1,
         },
       }),
-    [semantics.backgroundCoreScrim, semantics.backgroundCoreElevation1],
+    [semantics.backgroundCoreScrim, semantics.backgroundCoreElevation1, leftInset, rightInset],
   );
 };

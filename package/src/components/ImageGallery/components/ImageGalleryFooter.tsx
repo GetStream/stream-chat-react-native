@@ -127,7 +127,10 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView edges={['bottom']} style={[styles.container, footerStyle]}>
+      <ReanimatedSafeAreaView
+        edges={['bottom', 'left', 'right']}
+        style={[styles.container, footerStyle]}
+      >
         {asset.type === FileTypes.Video ? (
           ImageGalleryVideoControls ? (
             <ImageGalleryVideoControls attachmentId={asset.id} />
