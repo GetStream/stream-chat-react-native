@@ -198,12 +198,7 @@ type MessageListPropsWithContext = Pick<
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
-    | 'channel'
-    | 'disabled'
-    | 'hideStickyDateHeader'
-    | 'scrollToFirstUnreadThreshold'
-    | 'threadList'
-    | 'maximumMessageLimit'
+    'channel' | 'disabled' | 'hideStickyDateHeader' | 'scrollToFirstUnreadThreshold' | 'threadList'
   > &
   Pick<ChatContextValue, 'client'> & {
     loadMore: () => Promise<void>;
@@ -339,7 +334,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     loadMore,
     loadMoreRecent,
     markRead,
-    maximumMessageLimit,
     messageInputFloating,
     messageInputHeightStore,
     myMessageTheme,
@@ -392,11 +386,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    * NOTE: rawMessageList changes only when messages array state changes
    * processedMessageList changes on any state change
    */
-  const { processedMessageList, rawMessageList, viewabilityChangedCallback } = useMessageList({
-    isLiveStreaming,
-    maximumMessageLimit,
-    threadList,
-  });
+  const { maxLoadedItems, processedMessageList, rawMessageList, viewabilityChangedCallback } =
+    useMessageList({
+      isLiveStreaming,
+      threadList,
+    });
 
   const previousDerivedItemsRef = useRef<Map<string, MessageListItemWithNeighbours>>(undefined);
 
@@ -748,7 +742,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     };
 
     if (threadList || isMessageRemovedFromMessageList) {
-      if (maximumMessageLimit) {
+      if (maxLoadedItems) {
         // pruning has happened, reset the trackers
         resetPaginationTrackersRef.current();
       } else {
@@ -759,7 +753,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id, maximumMessageLimit]);
+  }, [threadList, messageListLengthAfterUpdate, topMessageAfterUpdate?.id, maxLoadedItems]);
 
   useEffect(() => {
     if (threadList) {
@@ -796,7 +790,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     // we don't want this behaviour while pruning, as it may scroll unnecessarily in
     // certain scenarios
-    if ((maximumMessageLimit && shouldForceScrollToRecent) || !maximumMessageLimit) {
+    if ((maxLoadedItems && shouldForceScrollToRecent) || !maxLoadedItems) {
       setAutoscrollToRecent(shouldForceScrollToRecent);
     }
 
@@ -818,7 +812,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     threadList,
     processedMessageList,
     shouldScrollToRecentOnNewOwnMessageRef,
-    maximumMessageLimit,
+    maxLoadedItems,
   ]);
 
   // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump
@@ -1432,7 +1426,6 @@ export const MessageList = (props: MessageListProps) => {
     disabled,
     enableMessageGroupingByUser,
     hideStickyDateHeader,
-    maximumMessageLimit,
     scrollToFirstUnreadThreshold,
     threadList,
   } = useChannelContext();
@@ -1466,7 +1459,6 @@ export const MessageList = (props: MessageListProps) => {
         loadMore,
         loadMoreRecent,
         markRead,
-        maximumMessageLimit,
         messageInputFloating,
         messageInputHeightStore,
         myMessageTheme,

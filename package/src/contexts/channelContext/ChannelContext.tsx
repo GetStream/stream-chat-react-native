@@ -72,12 +72,6 @@ export type ChannelContextValue = {
    * to still consider them grouped together
    */
   maxTimeBetweenGroupedMessages?: number;
-  /**
-   * The maximum number of messages that can be loaded into the state when new messages arrive.
-   * Any excess messages will be pruned from the back of the list (oldest first), unless we are
-   * currently near them within the viewport.
-   */
-  maximumMessageLimit?: number;
   threadList?: boolean;
 };
 

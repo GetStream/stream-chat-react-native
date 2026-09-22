@@ -16,7 +16,6 @@ type MockUser = Pick<UserResponse, 'id'> & Partial<UserResponse>;
 // Tests reach into private/internal StreamChat fields to set up a mocked
 // authenticated client without going through the real network handshake.
 type MockableStreamChat = StreamChat & {
-  connectionId?: string;
   user?: OwnUserResponse;
   _user?: OwnUserResponse;
   userToken?: string;
@@ -28,12 +27,12 @@ type MockableStreamChat = StreamChat & {
 export const setUser = (client: StreamChat, user: MockUser): Promise<void> =>
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
-    // v10 moved the connection id into `ConnectionIdManager`; `client.connectionId` is no longer
-    // read by anything, so setting it left every watch/presence request waiting for an id that never
-    // arrived. `arm()` + `resolveConnectionId()` is the same pair `StableWSConnection` performs when
-    // a socket opens.
-    client.connectionIdManager.arm();
-    client.connectionIdManager.resolveConnectionId('dumm_connection_id');
+    // A connected client means a live socket with a connection id. The id lives on its own manager
+    // now, and `channel.watch()` / `client.queryChannels()` await it rather than degrading to
+    // `watch: false` — with no timeout — so a fixture that leaves it unset hangs every one of them
+    // until the test itself times out. The socket status goes with it: both halves of "connected".
+    client.connectionIdManager.resolveConnectionId('dummy_connection_id');
+    client.wsConnection._setStatus({ isHealthy: true });
     // `userID` is now a read-only getter derived from `user.id`, so setting `user` is enough.
     c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
     c._user = { ...c.user };

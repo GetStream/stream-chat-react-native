@@ -109,6 +109,9 @@ rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
 rg '\b(recoverState|recoverStateOnReconnect|preventThreadCleanup)\b' src/
 rg 'connection\.(changed|recovered)' src/
 
+# §O — message-list pruning moved to paginator configuration
+rg '\bmaximumMessageLimit\b' src/
+
 # §K — unified channel.state (removed *Store handles, in-place data mutation)
 rg '\bchannel\.state\.(read|typing|members|watcher|ownCapabilities)Store\b' src/
 rg '\bchannel\.state\.mutedUsersStore\b' src/
@@ -1903,6 +1906,63 @@ message in your own state; there is no replacement on `SearchController`.
   (exactly one recovery, no double load). Also scroll up into old history, send a
   message that fails, then reconnect — the unsent message must still be in the list
   (§L.8).
+
+---
+
+# Part O — Message-list pruning (`maximumMessageLimit` → `maxLoadedItems`)
+
+## O.1 `<Channel maximumMessageLimit>` removed; the cap is paginator configuration
+
+```diff
+- <Channel channel={channel} maximumMessageLimit={200}>
++ <Channel channel={channel}>
+```
+
+```diff
++ // any ONE of these
++ channel.messagePaginator.updateConfig({ maxLoadedItems: 200 });
++ client.config.set({ messagePaginator: { maxLoadedItems: 200 } });            // every message list
++ client.config.set({ channel: { messagePaginator: { maxLoadedItems: 200 } } }); // channel lists only
++ client.config.set({ thread:  { messagePaginator: { maxLoadedItems: 100 } } }); // thread replies only
+```
+
+Bounding the loaded window is state-layer work — it is the paginator that owns the loaded set, its
+pagination cursors and its store membership — so in v10 it is paginator configuration rather than a
+component prop. Same default (unset ⇒ unbounded) and the same purpose: a livestream channel that would
+otherwise accumulate every message it has ever received.
+
+Three things the prop could not give you, which the config route does:
+
+- **Per-surface control.** The prop capped the channel list only. `thread.messagePaginator` can now be
+  capped separately, or both together through the shared `messagePaginator` key.
+- **Runtime changes.** `updateConfig` applies to an open channel immediately.
+- **It works outside React.** Nothing has to render for the cap to be in force.
+
+**Affects:** anyone passing `maximumMessageLimit`. The prop is **removed, not deprecated** — TypeScript
+flags it, and there is no silent-fallback case to worry about.
+
+## O.2 Pruning actually prunes again (behavioural)
+
+In v9 the cap was enforced by `channel.state.pruneOldest()`, which went away with `channel.state.messages`.
+For part of the v10 pre-release line `maximumMessageLimit` was therefore **inert** — it altered some
+scroll behaviour but never bounded the window. If you set it during that period and saw no effect, that is
+why. `maxLoadedItems` enforces it.
+
+What a prune does now, which is worth knowing if you build on the paginator:
+
+- Drops the oldest messages from the loaded window and releases them from `client.messageStore`. A message
+  another collection still holds — a pinned message, or a `show_in_channel` reply in an open thread —
+  keeps its content; only this list's reference goes.
+- Re-opens `hasMoreTail` and re-points `cursor.tailward`, so scrolling back re-fetches. This happens even
+  if the list had already paginated to the very first message in the channel.
+- Never drops an unsent or failed message, which sorts by the time it was composed and would otherwise be
+  destroyed by a cap. The window sits slightly above the cap while one is pending.
+- Never runs while the user has jumped away from the newest window, and never while the SDK's viewability
+  tracking says the viewport is near the oldest loaded message.
+- Does **not** touch the offline database. A pruned message is still in SQLite.
+
+A value below the list's `pageSize` is raised to it: a cap smaller than a page would prune away the page a
+"load older" query had just fetched, and the list would immediately ask for it again.
 
 ---
 

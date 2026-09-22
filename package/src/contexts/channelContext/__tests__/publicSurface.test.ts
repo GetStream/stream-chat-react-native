@@ -67,11 +67,12 @@ describe('ChannelContext public surface', () => {
       'hideStickyDateHeader',
       'isChannelActive',
       'maxTimeBetweenGroupedMessages',
-      'maximumMessageLimit',
       'scrollToFirstUnreadThreshold',
       'threadList',
     ];
     // An assertion by construction: a removed member fails to compile in the array above.
-    expect(expected).toHaveLength(12);
+    // 11 since the V10 merge: message pruning removed `maximumMessageLimit` in favour of
+    // `maxLoadedItems`, derived inside `useMessageList`.
+    expect(expected).toHaveLength(11);
   });
 });

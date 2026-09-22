@@ -11,7 +11,6 @@ export const useCreateChannelContext = ({
   hideStickyDateHeader,
   isChannelActive,
   maxTimeBetweenGroupedMessages,
-  maximumMessageLimit,
   scrollToFirstUnreadThreshold,
   hasPendingInitialTargetLoad,
   threadList,
@@ -27,14 +26,13 @@ export const useCreateChannelContext = ({
       hideDateSeparators,
       hideStickyDateHeader,
       isChannelActive,
-      maximumMessageLimit,
       maxTimeBetweenGroupedMessages,
       scrollToFirstUnreadThreshold,
       hasPendingInitialTargetLoad,
       threadList,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelId, disabled, isChannelActive, threadList, maximumMessageLimit],
+    [channelId, disabled, isChannelActive, threadList],
   );
 
   return channelContext;

@@ -81,6 +81,7 @@ import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { getFileNameFromPath, isLocalUrl, ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
@@ -165,11 +166,9 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'hideStickyDateHeader'
       | 'hideDateSeparators'
       | 'maxTimeBetweenGroupedMessages'
-      | 'maximumMessageLimit'
     >
   > &
-  Pick<ChatContextValue, 'client' | 'enableOfflineSupport' | 'isOnline'> &
-  Partial<
+  Pick<ChatContextValue, 'client' | 'enableOfflineSupport'> & { isOnline: boolean } & Partial<
     Pick<
       InputMessageInputContextValue,
       | 'additionalTextInputProps'
@@ -455,7 +454,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     thread: threadFromProps,
     threadList,
     topInset = 0,
-    maximumMessageLimit,
     initializeOnMount = true,
     urlPreviewType = 'full',
   } = props;
@@ -660,8 +658,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   // Mark-read after the LLC's reconnect reload. `connection.recovered` is dispatched by
   // `client.connectionRecovery` once that reload has landed, so `hasMoreHead` read here reflects the
-  // refreshed window — which is why this cannot hang off `connection.changed`. Only the reload moved
-  // into the LLC; whether a caught-up channel is marked read stays a UI decision (see `useMarkRead`).
+  // refreshed window — which is why this cannot hang off the socket's status store, which moves the
+  // moment the socket does. Only the reload moved into the LLC; whether a caught-up channel is
+  // marked read stays a UI decision (see `useMarkRead`).
   useEffect(() => {
     if (!shouldSyncChannel) {
       return;
@@ -861,7 +860,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideDateSeparators,
     hideStickyDateHeader,
     isChannelActive: shouldSyncChannel,
-    maximumMessageLimit,
     maxTimeBetweenGroupedMessages,
     scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
@@ -1043,7 +1041,8 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
-  const { client, enableOfflineSupport, isOnline, isMessageAIGenerated } = useChatContext();
+  const { client, enableOfflineSupport, isMessageAIGenerated } = useChatContext();
+  const isOnline = useSettledWSConnectionHealth();
   const { t } = useTranslationContext();
   const notificationHostId =
     props.notificationHostId ??

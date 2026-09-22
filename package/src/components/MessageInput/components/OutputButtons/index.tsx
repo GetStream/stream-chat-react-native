@@ -8,9 +8,7 @@ import { EditButton } from './EditButton';
 
 import {
   ChannelContextValue,
-  ChatContextValue,
   useChannelContext,
-  useChatContext,
   useMessageComposerHasSendableData,
   useTheme,
 } from '../../../../contexts';
@@ -24,12 +22,15 @@ import {
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { transitions } from '../../../../utils/animations/transitions';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
+import { useSettledWSConnectionHealth } from '../../../Chat/hooks/useWSConnectionState';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
 export type OutputButtonsProps = Partial<OutputButtonsWithContextProps>;
 
-export type OutputButtonsWithContextProps = Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel'> &
+export type OutputButtonsWithContextProps = { isOnline: boolean } & Pick<
+  ChannelContextValue,
+  'channel'
+> &
   Pick<
     MessageInputContextValue,
     | 'asyncMessagesMinimumPressDuration'
@@ -162,7 +163,8 @@ const MemoizedOutputButtonsWithContext = React.memo(
 ) as typeof OutputButtonsWithContext;
 
 export const OutputButtons = (props: OutputButtonsProps) => {
-  const { isOnline } = useChatContext();
+  // The socket, not the device network: a command round-trips through the server.
+  const isOnline = useSettledWSConnectionHealth();
   const { channel } = useChannelContext();
   const {
     audioRecordingEnabled,

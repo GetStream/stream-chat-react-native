@@ -29,9 +29,7 @@ export type ChatContextValue = {
    * @overrideType StreamChat
    * */
   client: StreamChat;
-  connectionRecovering: boolean;
   enableOfflineSupport: boolean;
-  isOnline: boolean | null;
   mutedUsers: UserMuteResponse[];
   /**
    * @param newChannel Channel to set as active.

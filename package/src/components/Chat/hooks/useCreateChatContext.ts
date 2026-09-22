@@ -6,10 +6,8 @@ export const useCreateChatContext = ({
   appSettings,
   channel,
   client,
-  connectionRecovering,
   enableOfflineSupport,
   isMessageAIGenerated,
-  isOnline,
   mutedUsers,
   setActiveChannel,
 }: ChatContextValue) => {
@@ -26,15 +24,13 @@ export const useCreateChatContext = ({
       appSettings,
       channel,
       client,
-      connectionRecovering,
       enableOfflineSupport,
       isMessageAIGenerated,
-      isOnline,
       mutedUsers,
       setActiveChannel,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [appSettings, channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
+    [appSettings, channelId, clientValues, mutedUsersLength],
   );
 
   return chatContext;

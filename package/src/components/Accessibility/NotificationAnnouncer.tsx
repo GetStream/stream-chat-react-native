@@ -3,8 +3,9 @@ import { useEffect, useRef } from 'react';
 import { useAccessibilityAnnouncer } from './useAccessibilityAnnouncer';
 
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 /**
  * Mirrors stream-chat-react's `<NotificationAnnouncer />`. RN does not yet have a
@@ -18,7 +19,11 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
  */
 export const NotificationAnnouncer = () => {
   const { announceConnectionState, enabled } = useAccessibilityContext();
-  const { connectionRecovering, isOnline } = useChatContext();
+  const isNetworkOnline = useNetworkConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
+  // The socket is what 'connected' means to a chat user; the device network only decides which
+  // of the two offline messages is truthful.
+  const isOnline = !!isWSOnline;
   const announce = useAccessibilityAnnouncer();
   const { t } = useTranslationContext();
   const previousIsOnlineRef = useRef<boolean | null | undefined>(undefined);
@@ -36,13 +41,13 @@ export const NotificationAnnouncer = () => {
       announce(t('a11y.connection.connected.accessibilityLabel', 'Connected'), 'polite');
     } else {
       announce(
-        connectionRecovering
-          ? t('a11y.connection.reconnecting.accessibilityLabel', 'Reconnecting')
-          : t('a11y.connection.offline.accessibilityLabel', 'Offline'),
+        isNetworkOnline === false
+          ? t('a11y.connection.offline.accessibilityLabel', 'Offline')
+          : t('a11y.connection.reconnecting.accessibilityLabel', 'Reconnecting'),
         'assertive',
       );
     }
-  }, [announce, announceConnectionState, connectionRecovering, enabled, isOnline, t]);
+  }, [announce, announceConnectionState, enabled, isNetworkOnline, isOnline, t]);
 
   return null;
 };

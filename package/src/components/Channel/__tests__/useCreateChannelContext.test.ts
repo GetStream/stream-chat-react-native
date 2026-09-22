@@ -16,7 +16,6 @@ const baseInput = (overrides: Partial<ChannelContextValue> = {}) =>
     hideStickyDateHeader: false,
     isChannelActive: true,
     maxTimeBetweenGroupedMessages: 1000,
-    maximumMessageLimit: 100,
     scrollToFirstUnreadThreshold: 4,
     threadList: false,
     ...overrides,
@@ -43,7 +42,6 @@ describe('useCreateChannelContext', () => {
     ['disabled', { disabled: true }],
     ['isChannelActive', { isChannelActive: false }],
     ['threadList', { threadList: true }],
-    ['maximumMessageLimit', { maximumMessageLimit: 42 }],
   ])('builds a new object when %s changes', (_label, overrides) => {
     const { rerender, result } = renderHook(
       (props: ChannelContextValue) => useCreateChannelContext(props),
