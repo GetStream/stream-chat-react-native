@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -23,7 +23,6 @@ export const Toast = () => {
   const { closeInAppNotification, notifications } = useInAppNotificationsState();
 
   const { top } = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
   useTheme();
   const { overlay, white_smoke } = useLegacyColors();
 
@@ -39,7 +38,7 @@ export const Toast = () => {
           key={notification.id}
           entering={SlideInDown.easing(Easing.bezierFn(0.25, 0.1, 0.25, 1.0))}
           exiting={SlideOutDown}
-          style={[styles.toast, { backgroundColor: overlay, width: width * 0.9 }]}
+          style={[styles.toast, { backgroundColor: overlay }]}
         >
           <View style={[styles.icon, { backgroundColor: overlay }]}>
             <Text style={[styles.iconText, { color: white_smoke }]}>
@@ -66,6 +65,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   toast: {
+    // Percentage of the parent's content box, so the container's safe area padding is already
+    // accounted for. A window-derived width is not.
+    width: '90%',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
