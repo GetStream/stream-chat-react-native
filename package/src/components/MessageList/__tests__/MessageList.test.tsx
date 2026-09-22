@@ -3,10 +3,11 @@ import React from 'react';
 import { FlatList } from 'react-native';
 
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
-import type { UserResponse } from 'stream-chat';
+import type { LocalMessage, StreamChat as StreamChatClient, UserResponse } from 'stream-chat';
 
 import { msToNs } from 'stream-chat';
 
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
@@ -572,6 +573,144 @@ describe('MessageList', () => {
   });
 });
 
+describe('MessageList loading state', () => {
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
+
+  const renderList = (channel: ReturnType<StreamChatClient['channel']>) =>
+    render(
+      <OverlayProvider>
+        <Chat client={channel.getClient()}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+  const setup = async () => {
+    const user1 = generateUser();
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: Array.from({ length: 5 }, (_, i) =>
+        generateMessage({ text: `message-${i}`, timestamp: new Date(base + i * 1000) }),
+      ),
+    });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    return channel;
+  };
+
+  // `loading` is selected off the paginator inside the list now, not handed down from <Channel>.
+  // It means "querying with nothing to show yet", so a query over a loaded list must NOT blank it.
+  it('shows the loading indicator while querying an empty list', async () => {
+    const channel = await setup();
+    channel.messagePaginator.state.partialNext({ isLoading: true, items: undefined });
+
+    const { queryByTestId } = await renderList(channel);
+
+    await waitFor(() => expect(queryByTestId('loading')).toBeTruthy());
+  });
+
+  it('keeps the list rendered while querying over loaded messages', async () => {
+    const channel = await setup();
+
+    const { getByTestId, queryByTestId } = await renderList(channel);
+    await waitFor(() => expect(getByTestId('message-flat-list')).toBeTruthy());
+
+    act(() => {
+      channel.messagePaginator.state.partialNext({ isLoading: true });
+    });
+
+    await waitFor(() => expect(getByTestId('message-flat-list')).toBeTruthy());
+    expect(queryByTestId('loading')).toBeNull();
+  });
+});
+
+describe('MessageList message targeting', () => {
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
+
+  it('highlights only the focused row, and follows the signal when it moves', async () => {
+    const user1 = generateUser();
+    const messages = Array.from({ length: 5 }, (_, i) =>
+      generateMessage({ text: `message-${i}`, user: user1 }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages,
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    channel.state.partialNext({ read: {} });
+    channel.messagePaginator.state.partialNext({ items: messages });
+
+    // `isTargetedMessage` is read per-row off the paginator's focus signal now, not handed down
+    // through ChannelContext — so capture it at the component that actually consumes it.
+    const targeted = new Map<string, boolean>();
+    // `isTargetedMessage` reaches `Message` as a PROP from MessageWrapper, so swap the component
+    // out and read the prop — a MessageContext consumer would need the real Message to provide it.
+    const CaptureMessage = ({
+      isTargetedMessage,
+      message,
+    }: {
+      isTargetedMessage?: boolean;
+      message: LocalMessage;
+    }) => {
+      targeted.set(message.id, !!isTargetedMessage);
+      return null;
+    };
+
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ Message: CaptureMessage }}>
+            <Channel channel={channel}>
+              <MessageList />
+            </Channel>
+          </WithComponents>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => expect(targeted.size).toBeGreaterThan(0));
+    expect([...targeted.values()].every((value) => value === false)).toBe(true);
+
+    act(() => {
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: messages[2].id,
+        reason: 'jump-to-message',
+        ttlMs: 3000,
+      });
+    });
+
+    await waitFor(() => expect(targeted.get(messages[2].id)).toBe(true));
+    expect(targeted.get(messages[1].id)).toBe(false);
+    expect(targeted.get(messages[3].id)).toBe(false);
+
+    act(() => {
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: messages[4].id,
+        reason: 'jump-to-message',
+        ttlMs: 3000,
+      });
+    });
+
+    await waitFor(() => expect(targeted.get(messages[4].id)).toBe(true));
+    expect(targeted.get(messages[2].id)).toBe(false);
+  });
+});
+
 describe('MessageList pagination', () => {
   afterEach(() => {
     cleanup();
@@ -587,9 +726,6 @@ describe('MessageList pagination', () => {
     return jest
       .spyOn(MessageListPaginationHook, 'useMessageListPagination')
       .mockImplementation(() => ({
-        loadChannelAroundMessage: jest.fn(),
-        loadChannelAtFirstUnreadMessage: jest.fn(),
-        loadLatestMessages: jest.fn(),
         loadMore: jest.fn(),
         loadMoreRecent: jest.fn(),
         state: { ...channelInitialState, messages },
@@ -638,15 +774,18 @@ describe('MessageList pagination', () => {
       });
     }
 
-    return render(
-      <OverlayProvider accessibility={accessibility}>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageList additionalFlatListProps={additionalFlatListProps} />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    return {
+      ...render(
+        <OverlayProvider accessibility={accessibility}>
+          <Chat client={chatClient}>
+            <Channel channel={channel}>
+              <MessageList additionalFlatListProps={additionalFlatListProps} />
+            </Channel>
+          </Chat>
+        </OverlayProvider>,
+      ),
+      channel,
+    };
   };
 
   it('should load more recent messages when the user scrolls to the start of the list', async () => {
@@ -764,8 +903,11 @@ describe('MessageList pagination', () => {
       items: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
     });
 
-    const loadLatestMessages = jest.fn(() => Promise.resolve());
-    mockedHook({ loadLatestMessages });
+    // "Go to latest" is the paginator's own jump now — the list calls it directly rather than
+    // going through a callback handed down from <Channel>.
+    const jumpToTheLatestMessage = jest
+      .spyOn(channel.messagePaginator, 'jumpToTheLatestMessage')
+      .mockResolvedValue(undefined as never);
 
     const { getByTestId } = render(
       <OverlayProvider>
@@ -795,7 +937,7 @@ describe('MessageList pagination', () => {
 
       fireEvent.press(scrollToBottomButton);
 
-      expect(loadLatestMessages).toHaveBeenCalledTimes(1);
+      expect(jumpToTheLatestMessage).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -852,12 +994,12 @@ describe('MessageList pagination', () => {
   });
 
   it('should expose scroll to bottom as a message list accessibility action when visible', async () => {
-    const loadLatestMessages = jest.fn(() => Promise.resolve());
-    mockedHook({ loadLatestMessages });
-
-    const { getByTestId } = await renderMessageListForScrollToBottom({
+    const { channel, getByTestId } = await renderMessageListForScrollToBottom({
       staleChannelState: true,
     });
+    const jumpToTheLatestMessage = jest
+      .spyOn(channel.messagePaginator, 'jumpToTheLatestMessage')
+      .mockResolvedValue(undefined as never);
 
     act(() => {
       fireEvent(getByTestId('message-flat-list'), 'scroll', {
@@ -886,21 +1028,22 @@ describe('MessageList pagination', () => {
       });
     });
 
-    expect(loadLatestMessages).toHaveBeenCalledTimes(1);
+    expect(jumpToTheLatestMessage).toHaveBeenCalledTimes(1);
   });
 
   it('should preserve additional message list accessibility actions', async () => {
-    const loadLatestMessages = jest.fn(() => Promise.resolve());
     const onAccessibilityAction = jest.fn();
-    mockedHook({ loadLatestMessages });
 
-    const { getByTestId } = await renderMessageListForScrollToBottom({
+    const { channel, getByTestId } = await renderMessageListForScrollToBottom({
       additionalFlatListProps: {
         accessibilityActions: [{ label: 'Custom action', name: 'customAction' }],
         onAccessibilityAction,
       },
       staleChannelState: true,
     });
+    const jumpToTheLatestMessage = jest
+      .spyOn(channel.messagePaginator, 'jumpToTheLatestMessage')
+      .mockResolvedValue(undefined as never);
 
     act(() => {
       fireEvent(getByTestId('message-flat-list'), 'scroll', {
@@ -937,7 +1080,7 @@ describe('MessageList pagination', () => {
       });
     });
 
-    expect(loadLatestMessages).toHaveBeenCalledTimes(1);
+    expect(jumpToTheLatestMessage).toHaveBeenCalledTimes(1);
     expect(onAccessibilityAction).toHaveBeenCalledTimes(1);
   });
 });

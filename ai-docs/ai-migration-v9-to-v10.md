@@ -67,8 +67,9 @@ rg '\b(channelUnreadStateStore|setChannelUnreadState|ScrollToBottomButton|Unread
 rg '\bunreadCount\b' src/
 rg '\bchannel[.?]*\.disconnected\b' src/
 
-# §8 — ChannelContext loader signatures
-rg '\b(loadChannelAroundMessage|loadChannelAtFirstUnreadMessage)\b' src/
+# §8 — ChannelContext loaders REMOVED (jump through the paginator instead)
+rg '\b(loadChannelAroundMessage|loadChannelAtFirstUnreadMessage|reloadChannel)\b' src/
+rg 'useChannelContext\(\)' -A8 src/ | rg '\b(loading|highlightedMessageId)\b'
 
 # §9 — message operations off MessagesContext
 rg 'useMessagesContext\(\)' -A10 src/ | rg '\b(sendReaction|deleteReaction|deleteMessage|removeMessage|retrySendMessage|updateMessage)\b'
@@ -146,12 +147,12 @@ means changed. Details in the linked section.
 | `channel.serverConfig?.typing_events` (and the other gated flags) | `channel.config.typingEvents.enabled` — resolved, server ANDed with yours | §13.1 |
 | `client.setMessageComposerSetupFunction(fn)` | `client.config.setSetupFunction('messageComposer', fn)` | §13.1 |
 | re-setting `channel.messagePaginator.pageSize` after mount | `client.config.set({ channel: { messagePaginator: { pageSize } } })` | §13.1, §16.1 |
-| `useTargetedMessage()` / `setTargetedMessage(id)` | `useChannelContext().loadChannelAroundMessage({ messageId })`; read `highlightedMessageId` | §6 |
+| `useTargetedMessage()` / `setTargetedMessage(id)` | `useActiveMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
 | `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state` `read` (override the component to control) | §7 |
 | app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.activeChannels` | §7.1 |
 | `useMessagesContext()` → `sendReaction` / `deleteReaction` / `deleteMessage` / `removeMessage` / `retrySendMessage` / `updateMessage` | `useMessageOperations()` (same names) | §9 |
-| `useMessagesContext().targetedMessage` | `useChannelContext().highlightedMessageId` | §6 |
+| `useMessagesContext().targetedMessage` | `useIsTargetedMessage(messageId)` (per row) | §6 |
 | `useThreadContext().thread` (parent message) | `useStateStore(threadInstance.state, s => ({ parentMessage: s.parentMessage }))` | §10 |
 | `useThreadContext().threadMessages` | `threadInstance.messagePaginator.state.items` | §10 |
 | `useThreadContext().loadMoreThread()` / `loadMoreRecentThread()` | `threadInstance.messagePaginator.toTail()` / `.toHead()` | §10 |
@@ -387,8 +388,11 @@ Removed symbols: `ChannelContext.targetedMessage`,
 `targetedMessage` / `setTargetedMessage` are removed too (see §12).
 
 Highlighting is now driven by the paginator's `messageFocusSignal`, which
-auto-clears after `DEFAULT_HIGHLIGHT_DURATION` (3000ms). The current highlight
-is still readable on `ChannelContext.highlightedMessageId`.
+auto-clears after `DEFAULT_HIGHLIGHT_DURATION` (3000ms). Read it per row with
+`useIsTargetedMessage(messageId)` — `ChannelContext.highlightedMessageId` is
+**removed**, because a context value that changed on every jump re-rendered every
+consumer (i.e. every message row) instead of just the two rows whose highlight
+actually changed.
 
 **Before (v9):**
 
@@ -400,11 +404,19 @@ setTargetedMessage(messageId);
 **After (v10):**
 
 ```tsx
-const { loadChannelAroundMessage, highlightedMessageId } = useChannelContext();
-// Jump to + highlight a message (loads it if not in the current window):
-await loadChannelAroundMessage({ messageId });
-// `highlightedMessageId` reflects the currently-highlighted message and
-// auto-clears after ~3s.
+import { useActiveMessagePaginator, useIsTargetedMessage, DEFAULT_HIGHLIGHT_DURATION } from 'stream-chat-react-native';
+
+// Jump to + highlight a message (loads it if not in the current window).
+// useActiveMessagePaginator resolves to the open thread's reply list when
+// `threadList` is set, and the channel's main list otherwise.
+const paginator = useActiveMessagePaginator();
+await paginator?.jumpToMessage(messageId, {
+  focusReason: 'jump-to-message',
+  focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+});
+
+// Is THIS row the highlighted one? (auto-clears after ~3s)
+const isTargeted = useIsTargetedMessage(messageId);
 ```
 
 ## 7. Unread state moved to the paginator
@@ -445,18 +457,33 @@ const total = Object.values(client.activeChannels).reduce(
 );
 ```
 
-## 8. `ChannelContext` loader signatures narrowed
+## 8. `ChannelContext` loaders removed — jump through the paginator
 
-The jump/load helpers dropped their old callback arguments; passing them is now
-a TypeScript error.
+Removed symbols: `ChannelContext.loadChannelAroundMessage`,
+`ChannelContext.loadChannelAtFirstUnreadMessage`, `ChannelContext.reloadChannel`,
+`ChannelContext.loading`, `ChannelContext.highlightedMessageId`.
 
-| v9 signature | v10 signature |
+These were read-only context values (never `<Channel>` props), so the only code
+affected is code that *read* them from `useChannelContext()`. Every one of them
+has a direct equivalent on the paginator, which is where the state already lived
+— the context was forwarding it, and that forwarding re-rendered every consumer
+on channel traffic.
+
+| v9 / early-v10 | v10 |
 |---|---|
-| `loadChannelAroundMessage({ messageId, setTargetedMessage })` | `loadChannelAroundMessage({ limit?, messageId? })` |
-| `loadChannelAtFirstUnreadMessage({ channelUnreadState, setChannelUnreadState, setTargetedMessage })` | `loadChannelAtFirstUnreadMessage(options?: { limit?: number })` |
+| `loadChannelAroundMessage({ messageId })` | `paginator.jumpToMessage(messageId, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })` |
+| `loadChannelAtFirstUnreadMessage()` | `paginator.jumpToTheFirstUnreadMessage({ focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })` |
+| `reloadChannel()` | `paginator.jumpToTheLatestMessage()` |
+| `loading` | `useStateStore(paginator.state, (s) => ({ loading: !!s.isLoading && !s.items?.length }))` |
+| `highlightedMessageId` | `useIsTargetedMessage(messageId)` (§6) |
 
-Highlighting/targeting is handled internally by the `messageFocusSignal` (§6),
-so the `set*` callbacks are no longer needed.
+where `const paginator = useActiveMessagePaginator()` — thread-aware: the open
+thread's reply paginator when `threadList` is set, the channel's otherwise. Use
+`channel.messagePaginator` directly if you specifically want the channel list.
+
+The jump methods emit `messageFocusSignal`, which drives both the highlight and
+the scroll-to-target, so the old `setTargetedMessage` callbacks have no analogue
+and are not needed.
 
 ---
 

@@ -28,7 +28,12 @@ type MockableStreamChat = StreamChat & {
 export const setUser = (client: StreamChat, user: MockUser): Promise<void> =>
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
-    c.connectionId = 'dumm_connection_id';
+    // v10 moved the connection id into `ConnectionIdManager`; `client.connectionId` is no longer
+    // read by anything, so setting it left every watch/presence request waiting for an id that never
+    // arrived. `arm()` + `resolveConnectionId()` is the same pair `StableWSConnection` performs when
+    // a socket opens.
+    client.connectionIdManager.arm();
+    client.connectionIdManager.resolveConnectionId('dumm_connection_id');
     // `userID` is now a read-only getter derived from `user.id`, so setting `user` is enough.
     c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
     c._user = { ...c.user };

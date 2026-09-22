@@ -32,6 +32,9 @@ export * from './AutoCompleteInput/mentionItems';
 
 export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
+// Only the constant, not the module: `useMessageListPagination` is internal, but integrators doing
+// their own `jumpToMessage` need the TTL the SDK's own highlight uses, or they hardcode 3000 and drift.
+export { DEFAULT_HIGHLIGHT_DURATION } from './Channel/hooks/useMessageListPagination';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
 export * from './Channel/hooks/useCreateThreadContext';
