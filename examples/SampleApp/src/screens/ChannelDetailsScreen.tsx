@@ -4,6 +4,7 @@ import { useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
+  asDynamicKey,
   ChannelDetails,
   ChannelDetailsActionsSection,
   ChannelDetailsNavigationSection,
@@ -91,7 +92,10 @@ const ChannelDetailsScreenInner = () => {
           },
           Icon: SendDirectMessage,
           id: 'sendDirectMessage',
-          label: context.t('Send Direct Message'),
+          label: context.t(
+            asDynamicKey('sampleApp.channelDetails.sendDirectMessage.label'),
+            'Send Direct Message',
+          ),
           type: 'standard',
         },
         ...defaultItems,

@@ -14,7 +14,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { convertTimestampToDate, nowNs, SharedLocationResponse, StreamChat } from 'stream-chat';
+import {
+  convertTimestampToDate,
+  nowNs,
+  SharedLocationResponse,
+  SharedLocationResponseData,
+  StreamChat,
+} from 'stream-chat';
 import { useChatContext, useHandleLiveLocationEvents, useTheme } from 'stream-chat-react-native';
 
 import { useStreamChatContext } from '../context/StreamChatContext';
@@ -43,7 +49,7 @@ const MapScreenFooter = ({
   isLiveLocationStopped,
 }: {
   client: StreamChat;
-  shared_location: SharedLocationResponse;
+  shared_location: SharedLocationResponseData;
   locationResponse?: SharedLocationResponse;
   isLiveLocationStopped: boolean | null;
 }) => {
@@ -115,7 +121,7 @@ const MapScreenFooter = ({
 
 export const MapScreen = ({ route }: MapScreenProps) => {
   const { client } = useChatContext();
-  const shared_location = route.params as SharedLocationResponse;
+  const shared_location = route.params;
   const { channel } = useStreamChatContext();
   const mapRef = useRef<MapView | null>(null);
   const markerRef = useRef<MapMarker | null>(null);

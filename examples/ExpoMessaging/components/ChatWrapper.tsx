@@ -29,8 +29,13 @@ const streami18n = new Streami18n({
 // A key the app owns rather than the SDK. `TranslationDictionary` only accepts the SDK's own keys,
 // so annotating the variable with `LooseTranslationDictionary` is how you opt into your own —
 // at the cost of no longer catching a stale or mistyped SDK key in this object.
+//
+// The `duration.` prefix is load-bearing twice over: `t()` matches formatter keys by prefix, so it
+// is what lets the call site stay a plain literal instead of needing `asDynamicKey`, and it names
+// the expression for what it actually is. This was `timestamp/Location end at` under v9 — a
+// duration expression filed under `timestamp`, fed `milliseconds` by its one caller.
 const appTranslations: LooseTranslationDictionary = {
-  'timestamp/Location end at': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+  'duration.locationEndAt': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
 };
 
 // Registered once at module scope; calling this from a component body re-registers on every render.

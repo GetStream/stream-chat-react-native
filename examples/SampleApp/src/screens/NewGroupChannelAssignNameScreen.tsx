@@ -101,8 +101,8 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
     }
 
     const channel = chatClient.channel('messaging', generateRandomId(), {
-      members: [...selectedUserIds, chatClient.user?.id],
-      name: groupName,
+      members: [...selectedUserIds, chatClient.user.id].map((user_id) => ({ user_id })),
+      custom: { name: groupName },
     });
 
     // TODO: Maybe there is a better way to do this.

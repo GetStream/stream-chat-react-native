@@ -2,6 +2,7 @@ import { nowNs } from 'stream-chat';
 import type {
   Channel,
   ChannelResponse,
+  CustomEventData,
   LocalMessage,
   MessageResponse,
   ReactionGroupResponse,
@@ -87,21 +88,27 @@ export const getChannelMessages = (channel: Channel) => {
   return legacyMessages ?? [];
 };
 
-const createChannelData = (channel: Channel) => {
+const createChannelData = (channel: Channel): ChannelResponse => {
   const data = (channel.data ?? {}) as Partial<ChannelResponse>;
   const cid = channel.cid || data.cid || `${channel.type}:${channel.id || fallbackChannelId}`;
   const [cidType = channel.type || 'messaging', cidId = channel.id || fallbackChannelId] =
     cid.split(':');
+  const timestamp = nowNs();
 
   return {
     ...data,
     cid,
+    // `created_at` / `updated_at` / `custom` are required on `ChannelResponse` but are not
+    // guaranteed on a live `channel.data`, so fall back rather than asserting they are there.
+    created_at: data.created_at ?? timestamp,
+    custom: data.custom ?? {},
     disabled: data.disabled ?? false,
     frozen: data.frozen ?? false,
     id: channel.id || data.id || cidId,
     member_count:
       data.member_count ?? (Object.keys(channel.state?.members ?? {}).length || undefined),
     type: channel.type || data.type || cidType,
+    updated_at: data.updated_at ?? timestamp,
   };
 };
 
@@ -151,27 +158,38 @@ export const getEventActor = (
 export const toMessageResponse = (
   message: LocalMessage | MessageResponse,
   context: WebSocketEventTemplateContext,
-) => {
+): MessageResponse => {
   const createdAt = message.created_at ?? nowNs();
   const updatedAt = message.updated_at ?? createdAt;
   const user = message.user ? normalizeUser(message.user, message.user.id) : context.currentUser;
 
   return {
     ...message,
+    attachments: message.attachments ?? [],
     cid: message.cid || context.cid,
     created_at: createdAt,
+    custom: message.custom ?? {},
+    deleted_reply_count: message.deleted_reply_count ?? 0,
+    html: message.html ?? '',
     id: message.id,
     latest_reactions: message.latest_reactions ?? [],
+    mentioned_channel: message.mentioned_channel ?? false,
+    mentioned_here: message.mentioned_here ?? false,
+    mentioned_users: message.mentioned_users ?? [],
     own_reactions: message.own_reactions ?? [],
+    pinned: message.pinned ?? false,
     reaction_counts: message.reaction_counts ?? {},
     reaction_groups: message.reaction_groups ?? {},
     reaction_scores: message.reaction_scores ?? {},
+    reply_count: message.reply_count ?? 0,
+    restricted_visibility: message.restricted_visibility ?? [],
+    shadowed: message.shadowed ?? false,
+    silent: message.silent ?? false,
     text: message.text ?? '',
     type: message.type ?? 'regular',
     updated_at: updatedAt,
     user,
-    user_id: message.user_id || user.id,
-  } as MessageResponse;
+  };
 };
 
 export const getLatestMessage = (context: WebSocketEventTemplateContext) => {
@@ -180,21 +198,41 @@ export const getLatestMessage = (context: WebSocketEventTemplateContext) => {
   return messages.length ? toMessageResponse(messages[messages.length - 1], context) : undefined;
 };
 
-const buildBasePayload = (
+/**
+ * The fields every supported event shares.
+ *
+ * `type` is deliberately absent: it is the union's discriminant, so each builder supplies it as a
+ * literal. Spreading a base that carries `type: SupportedWebSocketEventType` would widen the
+ * discriminant and match no single member.
+ */
+export type WebSocketEventBase = {
+  channel: ChannelResponse;
+  channel_id: string;
+  channel_type: string;
+  cid: string;
+  created_at: number;
+  custom: CustomEventData;
+  user: UserResponse;
+  user_id: string;
+};
+
+export const buildEventBase = (
   context: WebSocketEventTemplateContext,
-  eventType: SupportedWebSocketEventType,
   user: UserResponse,
-) =>
-  ({
-    channel: context.channelData,
-    channel_id: context.channelData.id,
-    channel_type: context.channelData.type,
-    cid: context.cid,
-    created_at: nowNs(),
-    type: eventType,
-    user,
-    user_id: user.id,
-  }) as WebSocketEventPayload;
+): WebSocketEventBase => ({
+  channel: context.channelData,
+  channel_id: context.channelData.id,
+  channel_type: context.channelData.type,
+  cid: context.cid,
+  created_at: nowNs(),
+  custom: {},
+  user,
+  user_id: user.id,
+});
+
+/** `message.new` / `notification.message_new` both require it, and the live value is the honest one. */
+export const getWatcherCount = (context: WebSocketEventTemplateContext) =>
+  context.channel.state?.watcher_count ?? 0;
 
 export const buildMessage = ({
   context,
@@ -208,29 +246,36 @@ export const buildMessage = ({
   text: string;
   type?: MessageResponse['type'];
   user: UserResponse;
-}) => {
+}): MessageResponse => {
   const timestamp = nowNs();
 
   return {
+    attachments: [],
     cid: context.cid,
     created_at: timestamp,
+    custom: {},
+    deleted_reply_count: 0,
     html: `<p>${text}</p>`,
     id,
     latest_reactions: [],
+    mentioned_channel: false,
+    mentioned_here: false,
+    mentioned_users: [],
     own_reactions: [],
+    pinned: false,
     reaction_counts: {},
     reaction_groups: {},
     reaction_scores: {},
+    reply_count: 0,
+    restricted_visibility: [],
+    shadowed: false,
+    silent: false,
     text,
     type,
     updated_at: timestamp,
     user,
-    user_id: user.id,
-  } as MessageResponse;
+  };
 };
-
-const getReactionUserFields = (user: UserResponse, reactionUserShape: ReactionUserShape) =>
-  reactionUserShape === 'userIdOnly' ? { user_id: user.id } : { user, user_id: user.id };
 
 export const buildReaction = ({
   messageId,
@@ -242,16 +287,23 @@ export const buildReaction = ({
   reactionType: string;
   reactionUserShape: ReactionUserShape;
   user: UserResponse;
-}) => {
+}): ReactionResponse => {
   const timestamp = nowNs();
 
   return {
     created_at: timestamp,
+    custom: {},
     message_id: messageId,
     score: 1,
     type: reactionType,
     updated_at: timestamp,
-    ...getReactionUserFields(user, reactionUserShape),
+    user_id: user.id,
+    // `userIdOnly` reproduces the wire shape where the server sends `user_id` and no nested `user`,
+    // so the key has to be genuinely absent rather than present-and-undefined — telling those two
+    // apart is the entire point of the option. `ReactionResponse` types `user` as required, so the
+    // omission is asserted here. This is the one place the simulator knowingly emits a shape the
+    // v10 types do not model; every other builder now satisfies them outright.
+    ...(reactionUserShape === 'userIdOnly' ? {} : { user }),
   } as ReactionResponse;
 };
 
@@ -270,7 +322,7 @@ export const buildMessageWithReaction = ({
   reaction: ReactionResponse;
   enforceUnique?: boolean;
   removed?: boolean;
-}) => {
+}): MessageResponse => {
   const reactionUserId = getReactionUserId(reaction);
   const timestamp = nowNs();
   const sameReaction = (candidate: ReactionResponse) =>
@@ -304,6 +356,7 @@ export const buildMessageWithReaction = ({
       count: nextCount,
       first_reaction_at: currentGroup?.first_reaction_at ?? timestamp,
       last_reaction_at: timestamp,
+      latest_reactions_by: currentGroup?.latest_reactions_by ?? [],
       sum_scores: nextCount,
     },
   });
@@ -329,7 +382,7 @@ export const buildMessageWithReaction = ({
     reaction_groups,
     reaction_scores,
     updated_at: timestamp,
-  } as MessageResponse;
+  };
 };
 
 const buildReactionPayload = ({
@@ -346,7 +399,7 @@ const buildReactionPayload = ({
   options: WebSocketEventBuildOptions;
   reactionType: string;
   user: UserResponse;
-}) => {
+}): WebSocketEventPayload => {
   const reaction = buildReaction({
     messageId: message.id,
     reactionType,
@@ -360,12 +413,27 @@ const buildReactionPayload = ({
     removed: eventType === 'reaction.deleted',
   });
 
-  return {
-    ...buildBasePayload(context, eventType, user),
+  const base = {
+    ...buildEventBase(context, user),
     message: payloadMessage,
     message_id: message.id,
     reaction,
   };
+
+  // One branch per type: `eventType` is a three-way union here, and a union-valued discriminant is
+  // not assignable to any single member of `Event`.
+  switch (eventType) {
+    case 'reaction.new':
+      return { ...base, type: 'reaction.new' };
+    case 'reaction.updated':
+      return { ...base, type: 'reaction.updated' };
+    case 'reaction.deleted':
+      return { ...base, type: 'reaction.deleted' };
+    default: {
+      const unsupported: never = eventType;
+      throw new Error(`WebSocket simulator: unsupported reaction event '${unsupported}'.`);
+    }
+  }
 };
 
 export const buildDefaultWebSocketEventPayload = ({
@@ -386,7 +454,7 @@ export const buildDefaultWebSocketEventPayload = ({
       text: 'Synthetic chat traffic',
       user,
     });
-  const basePayload = buildBasePayload(context, eventType, user);
+  const basePayload = buildEventBase(context, user);
 
   switch (eventType) {
     case 'message.new': {
@@ -401,6 +469,8 @@ export const buildDefaultWebSocketEventPayload = ({
         ...basePayload,
         message,
         message_id: message.id,
+        type: 'message.new',
+        watcher_count: getWatcherCount(context),
       };
     }
     case 'notification.message_new': {
@@ -415,6 +485,8 @@ export const buildDefaultWebSocketEventPayload = ({
         ...basePayload,
         message,
         message_id: message.id,
+        type: 'notification.message_new',
+        watcher_count: getWatcherCount(context),
       };
     }
     case 'message.updated': {
@@ -424,21 +496,26 @@ export const buildDefaultWebSocketEventPayload = ({
           ...latestMessage,
           text: `${latestMessage.text || 'Synthetic chat traffic'} (updated)`,
           updated_at: nowNs(),
-        } as MessageResponse,
+        },
         message_id: latestMessage.id,
+        type: 'message.updated',
       };
     }
     case 'message.deleted': {
       return {
         ...basePayload,
+        // `hard_delete` is required on this event; the simulator models the soft-delete path, which
+        // is what leaves a tombstone row in the list for the benchmark to re-render.
+        hard_delete: false,
         message: {
           ...latestMessage,
           deleted_at: nowNs(),
           text: '',
           type: 'deleted',
           updated_at: nowNs(),
-        } as MessageResponse,
+        },
         message_id: latestMessage.id,
+        type: 'message.deleted',
       };
     }
     case 'reaction.new':
@@ -453,10 +530,13 @@ export const buildDefaultWebSocketEventPayload = ({
         user,
       });
     case 'typing.start':
+      return { ...basePayload, type: 'typing.start' };
     case 'typing.stop':
-      return basePayload;
-    default:
-      return basePayload;
+      return { ...basePayload, type: 'typing.stop' };
+    default: {
+      const unsupported: never = eventType;
+      throw new Error(`WebSocket simulator: unsupported event '${unsupported}'.`);
+    }
   }
 };
 

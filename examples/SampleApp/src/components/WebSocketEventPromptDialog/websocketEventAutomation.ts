@@ -1,7 +1,6 @@
 import { nowNs } from 'stream-chat';
 import type {
   Channel,
-  Event,
   MessageResponse,
   ReactionResponse,
   StreamChat,
@@ -18,7 +17,7 @@ import type {
   WebSocketEventTemplateContext,
 } from './types';
 import {
-  buildDefaultWebSocketEventPayload,
+  buildEventBase,
   buildMessage,
   buildMessageWithReaction,
   buildReaction,
@@ -27,6 +26,7 @@ import {
   getEventActor,
   getLatestMessage,
   getNextReactionType,
+  getWatcherCount,
   toMessageResponse,
 } from './websocketEventTemplates';
 
@@ -168,7 +168,7 @@ const buildFreshMessagePayload = ({
   eventType: 'message.new' | 'notification.message_new';
   state: SimulationState;
   user: ReturnType<typeof getEventActor>;
-}) => {
+}): WebSocketEventPayload => {
   state.messageSequence += 1;
 
   const message = buildMessage({
@@ -178,20 +178,18 @@ const buildFreshMessagePayload = ({
     user,
   });
 
-  return {
-    ...buildDefaultWebSocketEventPayload({
-      context,
-      eventType,
-      options: {
-        actorMode: user.id === context.currentUser.id ? 'current' : 'other',
-        reactionUserShape: 'nestedUser',
-      },
-    }),
+  // Built from the shared base rather than by spreading a finished event and overriding it: the
+  // discriminant has to be a literal, so each type gets its own branch.
+  const base = {
+    ...buildEventBase(context, user),
     message,
     message_id: message.id,
-    user,
-    user_id: user.id,
-  } as WebSocketEventPayload;
+    watcher_count: getWatcherCount(context),
+  };
+
+  return eventType === 'message.new'
+    ? { ...base, type: 'message.new' }
+    : { ...base, type: 'notification.message_new' };
 };
 
 const buildFreshMessageUpdatePayload = ({
@@ -204,7 +202,7 @@ const buildFreshMessageUpdatePayload = ({
   eventType: 'message.deleted' | 'message.updated';
   state: SimulationState;
   user: ReturnType<typeof getEventActor>;
-}) => {
+}): WebSocketEventPayload => {
   const fallbackMessage = buildMessage({
     context,
     id: `sampleapp-sim-update-message-${Date.now()}-${state.messageSequence}`,
@@ -213,35 +211,33 @@ const buildFreshMessageUpdatePayload = ({
   });
   const targetMessage = getKnownMessage({ context, state }) ?? fallbackMessage;
   const timestamp = nowNs();
-  const message =
+  // No cast needed now that `buildMessage` / `toMessageResponse` produce complete `MessageResponse`
+  // objects: spreading one keeps every required field.
+  const message: MessageResponse =
     eventType === 'message.deleted'
-      ? ({
+      ? {
           ...targetMessage,
           deleted_at: timestamp,
           text: '',
           type: 'deleted',
           updated_at: timestamp,
-        } as MessageResponse)
-      : ({
+        }
+      : {
           ...targetMessage,
           text: `${targetMessage.text || 'Synthetic chat traffic'} (updated)`,
           updated_at: timestamp,
-        } as MessageResponse);
+        };
 
-  return {
-    ...buildDefaultWebSocketEventPayload({
-      context,
-      eventType,
-      options: {
-        actorMode: user.id === context.currentUser.id ? 'current' : 'other',
-        reactionUserShape: 'nestedUser',
-      },
-    }),
+  const base = {
+    ...buildEventBase(context, user),
     message,
     message_id: message.id,
-    user,
-    user_id: user.id,
-  } as WebSocketEventPayload;
+  };
+
+  return eventType === 'message.deleted'
+    ? // `hard_delete` is required on this event; the simulator models the soft-delete path.
+      { ...base, hard_delete: false, type: 'message.deleted' }
+    : { ...base, type: 'message.updated' };
 };
 
 const buildFreshReactionPayload = ({
@@ -256,7 +252,7 @@ const buildFreshReactionPayload = ({
   options: Pick<WebSocketEventBuildOptions, 'reactionUserShape'>;
   state: SimulationState;
   user: ReturnType<typeof getEventActor>;
-}) => {
+}): WebSocketEventPayload => {
   state.reactionSequence += 1;
 
   const trackedReaction =
@@ -290,21 +286,25 @@ const buildFreshReactionPayload = ({
     removed: eventType === 'reaction.deleted',
   });
 
-  return {
-    ...buildDefaultWebSocketEventPayload({
-      context,
-      eventType,
-      options: {
-        actorMode: user.id === context.currentUser.id ? 'current' : 'other',
-        reactionUserShape: options.reactionUserShape,
-      },
-    }),
+  const base = {
+    ...buildEventBase(context, reactionUser),
     message: payloadMessage,
     message_id: targetMessage.id,
     reaction,
-    user: reactionUser,
-    user_id: reactionUser.id,
-  } as WebSocketEventPayload;
+  };
+
+  switch (eventType) {
+    case 'reaction.new':
+      return { ...base, type: 'reaction.new' };
+    case 'reaction.updated':
+      return { ...base, type: 'reaction.updated' };
+    case 'reaction.deleted':
+      return { ...base, type: 'reaction.deleted' };
+    default: {
+      const unsupported: never = eventType;
+      throw new Error(`WebSocket simulator: unsupported reaction event '${unsupported}'.`);
+    }
+  }
 };
 
 export const buildFreshWebSocketEventPayload = ({
@@ -345,11 +345,12 @@ export const buildFreshWebSocketEventPayload = ({
     });
   }
 
-  return {
-    ...buildDefaultWebSocketEventPayload({ context, eventType, options }),
-    user,
-    user_id: user.id,
-  };
+  // Only `typing.start` / `typing.stop` reach here; the shared base already carries the actor.
+  const base = buildEventBase(context, user);
+
+  return eventType === 'typing.start'
+    ? { ...base, type: 'typing.start' }
+    : { ...base, type: 'typing.stop' };
 };
 
 export const trackSimulationStateFromPayload = ({
@@ -361,11 +362,16 @@ export const trackSimulationStateFromPayload = ({
   payload: WebSocketEventPayload;
   state: SimulationState;
 }) => {
-  if (!payload.message?.id) return;
+  // `message` and `reaction` are not on every member of the union — `typing.*` carries neither — so
+  // read them through an `in` narrowing rather than widening the payload type back out.
+  const payloadMessage = 'message' in payload ? payload.message : undefined;
+  const payloadReaction = 'reaction' in payload ? payload.reaction : undefined;
+
+  if (!payloadMessage?.id) return;
 
   const context = createWebSocketEventTemplateContext({ channel });
   const currentMessages = state.messagesByCid[context.cid] ?? [];
-  const nextMessage = toMessageResponse(payload.message, context);
+  const nextMessage = toMessageResponse(payloadMessage, context);
   const existingMessageIndex = currentMessages.findIndex(
     (message) => message.id === nextMessage.id,
   );
@@ -379,15 +385,15 @@ export const trackSimulationStateFromPayload = ({
   state.messagesByCid[context.cid] = nextMessages.slice(-1500);
   state.messageIdsByCid[context.cid] = getMessageIdList(state.messagesByCid[context.cid]);
 
-  if (!payload.reaction) return;
+  if (!payloadReaction) return;
 
-  const user = getReactionUser(payload.reaction);
+  const user = getReactionUser(payloadReaction);
   if (!user) return;
 
   const currentReactionRecords = state.reactionRecordsByCid[context.cid] ?? [];
   const reactionRecord: SimulatedReactionRecord = {
-    messageId: payload.message.id,
-    reactionType: payload.reaction.type,
+    messageId: payloadMessage.id,
+    reactionType: payloadReaction.type,
     user,
   };
   const isSameReaction = (record: SimulatedReactionRecord) =>
@@ -421,12 +427,17 @@ export const emitWebSocketEventPayload = ({
   eventType: SupportedWebSocketEventType;
   payload: WebSocketEventPayload;
 }) => {
-  const emittedPayload = {
-    ...payload,
-    type: eventType,
-  } as Event;
+  // No `type` override any more: each builder stamps its own literal discriminant, and re-stamping
+  // it from the `SupportedWebSocketEventType` union is exactly what used to widen the payload back
+  // out of the `Event` union. `eventType` is kept as a parameter because callers pass it for
+  // telemetry, and asserting the two agree is cheap.
+  if (payload.type !== eventType) {
+    throw new Error(
+      `WebSocket simulator: built a '${payload.type}' payload for a '${eventType}' step.`,
+    );
+  }
 
-  client.dispatchEvent(emittedPayload);
+  client.dispatchEvent(payload);
 
-  return emittedPayload as WebSocketEventPayload;
+  return payload;
 };
