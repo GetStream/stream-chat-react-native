@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
@@ -113,6 +115,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route }) => {
+  const insets = useSafeAreaInsets();
   const { channel: channelFromProp, channelId, messageId } = route.params;
   const {
     chatClient,
@@ -270,6 +273,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     >
       <Channel
         audioRecordingEnabled={true}
+        bottomInset={insets.bottom}
         channel={channel}
         setInputRef={setInputRef}
         messageInputFloating={messageInputFloating}

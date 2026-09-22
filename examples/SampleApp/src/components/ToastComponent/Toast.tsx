@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -6,8 +6,6 @@ import type { Notification } from 'stream-chat';
 import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
 
 import { useLegacyColors } from '../../theme/useLegacyColors';
-
-const { width } = Dimensions.get('window');
 
 type KnownSeverity = 'error' | 'success' | 'warning' | 'info';
 
@@ -25,6 +23,7 @@ export const Toast = () => {
   const { closeInAppNotification, notifications } = useInAppNotificationsState();
 
   const { top } = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   useTheme();
   const { overlay, white_smoke } = useLegacyColors();
 
@@ -40,7 +39,7 @@ export const Toast = () => {
           key={notification.id}
           entering={SlideInDown.easing(Easing.bezierFn(0.25, 0.1, 0.25, 1.0))}
           exiting={SlideOutDown}
-          style={[styles.toast, { backgroundColor: overlay }]}
+          style={[styles.toast, { backgroundColor: overlay, width: width * 0.9 }]}
         >
           <View style={[styles.icon, { backgroundColor: overlay }]}>
             <Text style={[styles.iconText, { color: white_smoke }]}>
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   toast: {
-    width: width * 0.9,
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,

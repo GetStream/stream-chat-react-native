@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -107,9 +109,11 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
     <View style={[styles.flex]}>
       <ScreenHeader titleText='Pinned Messages' />
       <ChannelDetailsContextProvider channel={channel}>
-        <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
-          <PinnedMessageList />
-        </WithComponents>
+        <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+          <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
+            <PinnedMessageList />
+          </WithComponents>
+        </SafeAreaView>
       </ChannelDetailsContextProvider>
     </View>
   );

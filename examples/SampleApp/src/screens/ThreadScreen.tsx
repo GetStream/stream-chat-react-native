@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
@@ -74,6 +76,7 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 };
 
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route }) => {
+  const insets = useSafeAreaInsets();
   const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
   const {
     theme: { semantics },
@@ -152,6 +155,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
     >
       <Channel
         audioRecordingEnabled={true}
+        bottomInset={insets.bottom}
         channel={channel}
         setInputRef={setInputRef}
         keyboardVerticalOffset={0}
