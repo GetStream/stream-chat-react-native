@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useLayoutEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
 import {
+  DEFAULT_HIGHLIGHT_DURATION,
   AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageActionsParams,
@@ -75,6 +76,28 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route }) => {
   const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
+
+  /**
+   * Targeting a reply. `<Channel>` has no `messageId` prop any more — jumping is the paginator's
+   * job, so the caller does it. This screen is a thread (`threadList`), so the target lives in the
+   * THREAD's reply paginator, not the channel's.
+   *
+   * `useLayoutEffect`, not `useEffect`: React runs layout effects before passive ones, and the
+   * message list picks its initial anchor in a passive effect — so the jump lands first and there
+   * is no scroll-then-jump.
+   */
+  const threadInstanceForJump = (thread as ThreadType)?.threadInstance;
+  useLayoutEffect(() => {
+    if (!threadInstanceForJump || !targetedMessageIdFromParams) {
+      return;
+    }
+    threadInstanceForJump.messagePaginator
+      .jumpToMessage(targetedMessageIdFromParams, {
+        focusReason: 'jump-to-message',
+        focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+      })
+      .catch((error: unknown) => console.warn('Jump to reply failed:', error));
+  }, [threadInstanceForJump, targetedMessageIdFromParams]);
   const {
     theme: { semantics },
   } = useTheme();
@@ -161,7 +184,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
         thread={thread}
         threadList
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-        messageId={targetedMessageIdFromParams}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ThreadHeader thread={thread} />
