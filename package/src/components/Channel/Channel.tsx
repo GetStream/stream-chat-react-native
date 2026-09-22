@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import {
   ChannelConfig,
-  EventHandler,
   LocalMessage,
   MessageComposerConfig,
   SendMessageAPIResponse,
@@ -24,10 +23,7 @@ import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitie
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
-import {
-  DEFAULT_HIGHLIGHT_DURATION,
-  useMessageListPagination,
-} from './hooks/useMessageListPagination';
+import { DEFAULT_HIGHLIGHT_DURATION } from './hooks/useMessageListPagination';
 
 import {
   AttachmentPickerContextValue,
@@ -91,6 +87,7 @@ import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
+import { useNotificationApi } from '../Notifications';
 import { getChannelNotificationHostId } from '../Notifications/notificationTarget';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
@@ -299,7 +296,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     /**
      * Load the channel at a specified message instead of the most recent message.
      */
-    messageId?: string;
     notificationHostId?: string;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
     /**
@@ -324,8 +320,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     initializeOnMount?: boolean;
   };
 
-// The highlighted message id is derived from the paginator's messageFocusSignal (LLC), which is
-// emitted by the jump fns and auto-cleared after its TTL — no separate targeted-message React state.
 /**
  * Poll composition, resolved: the channel type's `polls` flag already ANDed with anything registered
  * through `client.config.set({ messageComposer: { polls } })`. Module scope keeps the reference stable.
@@ -342,12 +336,8 @@ const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
 
-const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
-  lastQueryError: state.lastQueryError,
-});
-
-const messageFocusSignalSelector = (state: { signal: { messageId?: string } | null }) => ({
-  highlightedMessageId: state.signal?.messageId,
+const channelQuerySelector = (state: { items?: unknown[]; lastQueryError?: Error }) => ({
+  blockingError: state.items?.length ? undefined : state.lastQueryError,
 });
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
@@ -433,7 +423,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ],
     messageOverlayTargetId,
     messageInputFloating = false,
-    messageId,
     messageSwipeToReplyHitSlop,
     messageTextNumberOfLines,
     myMessageTheme,
@@ -488,22 +477,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
-  const { highlightedMessageId } = useStateStore(
-    (threadInstance ?? channel).messagePaginator.messageFocusSignal,
-    messageFocusSignalSelector,
-  );
-
-  const { lastQueryError: error } = useStateStore(
-    (threadInstance ?? channel).messagePaginator.state,
-    lastQueryErrorSelector,
-  );
-
-  /**
-   * This ref keeps track of message IDs which have already been optimistically updated.
-   * We need it to make sure we don't react on message.new/notification.message_new events
-   * if this is indeed the case, as it's a full list update for nothing.
-   */
-  const optimisticallyUpdatedNewMessages = useMemo<Set<string>>(() => new Set(), []);
+  // The CHANNEL's paginator. A thread's reply query fails on its own paginator and is rendered by
+  // `<Thread>` — this component has no business replacing the thread UI with a channel-level error.
+  const { blockingError } =
+    useStateStore(channel.messagePaginator.state, channelQuerySelector) ?? {};
 
   const channelId = channel?.id || '';
   const { pollsEnabled } = useStateStore(
@@ -512,17 +489,44 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   ) ?? { pollsEnabled: false };
   const pollCreationEnabled = !channel.pendingDisposal && !!channel?.id && pollsEnabled;
 
-  const {
-    loadChannelAroundMessage: loadChannelAroundMessageFn,
-    loadChannelAtFirstUnreadMessage,
-    loadLatestMessages,
-    state: channelMessagesState,
-  } = useMessageListPagination({
-    channel,
+  const { addNotification } = useNotificationApi();
+
+  const notifyJumpToFirstUnreadError = useStableCallback((error: unknown) => {
+    addNotification({
+      message: t(
+        'channel.jumpToFirstUnreadFailed.error',
+        'Failed to jump to the first unread message',
+      ),
+      options: {
+        ...(error instanceof Error ? { originalError: error } : {}),
+        severity: 'error',
+        type: 'channel:jumpToFirstUnread:failed',
+      },
+      origin: { context: { feature: 'jumpToFirstUnread' }, emitter: 'Channel' },
+    });
   });
 
+  /**
+   * Whether this list is already aimed at a message.
+   *
+   * There is no `messageId` prop any more: jumping is the paginator's job, so an integrator targets a
+   * message by calling `paginator.jumpToMessage(...)` — from a `useLayoutEffect`, or before this
+   * mounts at all — and the focus signal is what that leaves behind. `<Channel>` reads the signal so
+   * it can tell a jump already happened and not overwrite it with its own jump to the first unread.
+   *
+   * A `useLayoutEffect` is early enough: the one consumer that races this
+   * (`MessageFlashList`'s initial anchor) asks inside a passive `useEffect`, which React runs after
+   * every layout effect.
+   *
+   * Read imperatively, not through `useStateStore`: every caller is an effect or a one-shot
+   * decision, and subscribing would re-render `Channel` on every jump for no benefit.
+   */
+  const hasFocusTarget = useStableCallback(
+    () => !!(threadInstance ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
+  );
+
   const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
-    if (messageId || !initialScrollToFirstUnreadMessage || !client.user) {
+    if (hasFocusTarget() || !initialScrollToFirstUnreadMessage || !client.user) {
       return false;
     }
 
@@ -530,43 +534,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const hasPendingInitialTargetLoad = useStableCallback(() => {
-    return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
-  });
-
-  const handleEvent: EventHandler = useStableCallback((event) => {
-    if (shouldSyncChannel) {
-      /**
-       * Ignore user.watching.start and user.watching.stop as we should not copy the entire state when
-       * they occur. Also ignore all poll related events since they're being handled in their own
-       * reactive state and have no business having an effect on the Channel component.
-       */
-      if (
-        event.type.startsWith('poll.') ||
-        event.type === 'user.watching.start' ||
-        event.type === 'user.watching.stop'
-      ) {
-        return;
-      }
-
-      // Typing state is sourced reactively from channel.state; nothing to copy here.
-      if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        return;
-      }
-
-      // notification.mark_unread + channel.truncated update channel.messagePaginator.unreadStateSnapshot
-      // in the LLC (the single source of truth for unread state), so no manual handling here.
-
-      // The message list is backed reactively by channel.messagePaginator (channel._handleChannelEvent
-      // ingests message.new/updated/deleted + reaction events), and read/typing/members come from
-      // their reactive stores — so the WS handler no longer copies channel.state into React state.
-      if (event.type === 'message.new' || event.type === 'notification.message_new') {
-        optimisticallyUpdatedNewMessages.delete(event.message?.id ?? '');
-      }
-    }
+    return hasFocusTarget() || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
   useEffect(() => {
-    let listener: ReturnType<typeof channel.on>;
     const initChannel = async () => {
       lastReadRef.current = new Date();
       const unreadCount = channel.countUnread();
@@ -605,11 +576,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // target all go stale on reopen. Mirrors stream-chat-react, which re-seeds by re-querying on open.
       channel.messagePaginator.seedUnreadSnapshot();
 
-      if (messageId) {
-        await loadChannelAroundMessage({ messageId });
-      } else if (shouldLoadAtFirstUnread) {
-        // jumpToTheFirstUnreadMessage resolves the first-unread id from the paginator's snapshot.
-        await loadChannelAtFirstUnreadMessage();
+      if (shouldLoadAtFirstUnread) {
+        try {
+          // jumpToTheFirstUnreadMessage resolves the first-unread id from the paginator's snapshot,
+          // and emits messageFocusSignal for the highlight + scroll.
+          await channel.messagePaginator.jumpToTheFirstUnreadMessage({
+            focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+          });
+        } catch (error) {
+          notifyJumpToFirstUnreadError(error);
+        }
       }
 
       if (unreadCount > 0 && markReadOnMount) {
@@ -618,17 +594,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         // catches up (a subsequent markRead with the default updateChannelUnreadState: true).
         await markRead({ updateChannelUnreadState: false });
       }
-
-      listener = channel.on(handleEvent);
     };
 
     initChannel();
-
-    return () => {
-      listener?.unsubscribe();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.cid, messageId, shouldSyncChannel]);
+  }, [channel.cid, shouldSyncChannel]);
 
   // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
   // Channel instance shared with the channel-list preview or a thread stays active until the last
@@ -713,35 +683,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const { availableCommands } = useStateStore(channel?.configState, availableCommandsSelector) ?? {
     availableCommands: [],
   };
-
-  const reloadChannel = useStableCallback(async () => {
-    try {
-      await loadLatestMessages();
-    } catch (err) {
-      console.warn('Reloading channel failed with error:', err);
-    }
-  });
-
-  const loadChannelAroundMessage: ChannelContextValue['loadChannelAroundMessage'] =
-    useStableCallback(async ({ messageId: messageIdToLoadAround }): Promise<void> => {
-      if (!messageIdToLoadAround) {
-        return;
-      }
-      try {
-        if (thread) {
-          await threadInstance?.messagePaginator?.jumpToMessage(messageIdToLoadAround, {
-            focusReason: 'jump-to-message',
-            focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
-          });
-        } else {
-          await loadChannelAroundMessageFn({
-            messageId: messageIdToLoadAround,
-          });
-        }
-      } catch (err) {
-        console.warn('Loading channel around message failed with error:', err);
-      }
-    });
 
   /**
    * MESSAGE METHODS
@@ -908,13 +849,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     enforceUniqueReaction,
     hideDateSeparators,
     hideStickyDateHeader,
-    highlightedMessageId,
     isChannelActive: shouldSyncChannel,
-    loadChannelAroundMessage,
-    loadChannelAtFirstUnreadMessage,
-    loading: channelMessagesState.loading,
     maxTimeBetweenGroupedMessages,
-    reloadChannel,
     scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
@@ -988,7 +924,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBlockUser,
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
-    initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
+    // A message is already targeted (by the prop or by the integrator's own jump), so first-unread
+    // must not take the scroll off it.
+    initialScrollToFirstUnreadMessage: !hasFocusTarget() && initialScrollToFirstUnreadMessage,
     isAttachmentEqual,
     isMessageAIGenerated,
     markdownRules,
@@ -1030,8 +968,17 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return null;
   }
 
-  if (!channel || (error && !channelMessagesState.messages?.length)) {
-    return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;
+  if (!channel || blockingError) {
+    // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
+    // which is the `error` this indicator renders off — so the warn is all the handling needed.
+    const retry = () =>
+      channel?.messagePaginator
+        ?.jumpToTheLatestMessage()
+        .catch((err: unknown) =>
+          console.warn('Reloading the message list failed with error:', err),
+        );
+
+    return <LoadingErrorIndicator error={blockingError} listType='message' retry={retry} />;
   }
 
   if (!channel?.cid || !channel.watch) {

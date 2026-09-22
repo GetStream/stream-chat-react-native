@@ -1,3 +1,5 @@
+export * from './useActiveMessagePaginator';
+export * from './useIsTargetedMessage';
 export * from '../a11y';
 export * from './actions';
 export * from './useAppStateListener';

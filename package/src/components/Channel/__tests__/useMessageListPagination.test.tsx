@@ -7,15 +7,6 @@ import { useMessageListPagination } from '../hooks/useMessageListPagination';
 // jest resolution. Everything from `stream-chat` here is a type-only import, and the paginator is
 // faked, so no runtime `require('stream-chat')` happens.
 
-jest.mock('../../Notifications', () => ({
-  useNotificationApi: () => ({ addNotification: jest.fn() }),
-}));
-jest.mock('../../../contexts/translationContext/TranslationContext', () => ({
-  useTranslationContext: () => ({
-    t: (key: string, d?: unknown) => (typeof d === 'string' ? d : key),
-  }),
-}));
-
 type PaginatorStateValue = {
   hasMoreHead: boolean;
   hasMoreTail: boolean;
@@ -28,15 +19,10 @@ const makeStore = <T,>(value: T) => ({
   subscribeWithSelector: () => () => {},
 });
 
-const makePaginator = (state: PaginatorStateValue, focusedMessageId?: string) => ({
+const makePaginator = (state: PaginatorStateValue) => ({
   hasMoreHead: state.hasMoreHead,
   hasMoreTail: state.hasMoreTail,
-  jumpToMessage: jest.fn().mockResolvedValue(true),
-  jumpToTheFirstUnreadMessage: jest.fn().mockResolvedValue(true),
-  jumpToTheLatestMessage: jest.fn().mockResolvedValue(true),
-  messageFocusSignal: makeStore({
-    signal: focusedMessageId ? { messageId: focusedMessageId } : null,
-  }),
+  messageFocusSignal: makeStore({ signal: null }),
   state: makeStore(state),
   toHead: jest.fn().mockResolvedValue(undefined),
   toTail: jest.fn().mockResolvedValue(undefined),
@@ -114,54 +100,5 @@ describe('useMessageListPagination', () => {
     });
     expect(paginator.toTail).not.toHaveBeenCalled();
     expect(paginator.toHead).not.toHaveBeenCalled();
-  });
-
-  it('loadLatestMessages delegates to paginator.jumpToTheLatestMessage()', async () => {
-    const paginator = makePaginator({
-      hasMoreHead: true,
-      hasMoreTail: true,
-      isLoading: false,
-      items: [],
-    });
-    const { result } = renderHook(() =>
-      useMessageListPagination({ channel: makeChannel(paginator) }),
-    );
-    await act(async () => {
-      await result.current.loadLatestMessages();
-    });
-    expect(paginator.jumpToTheLatestMessage).toHaveBeenCalledTimes(1);
-  });
-
-  it('loadChannelAroundMessage jumps to the message (emitting the focus signal)', async () => {
-    const paginator = makePaginator({
-      hasMoreHead: true,
-      hasMoreTail: true,
-      isLoading: false,
-      items: [],
-    });
-    const { result } = renderHook(() =>
-      useMessageListPagination({ channel: makeChannel(paginator) }),
-    );
-    await act(async () => {
-      await result.current.loadChannelAroundMessage({ messageId: 'm7' });
-    });
-    expect(paginator.jumpToMessage).toHaveBeenCalledWith(
-      'm7',
-      expect.objectContaining({ focusReason: 'jump-to-message' }),
-    );
-  });
-
-  it('loadChannelAtFirstUnreadMessage jumps to first unread (emitting the focus signal)', async () => {
-    const paginator = makePaginator(
-      { hasMoreHead: true, hasMoreTail: true, isLoading: false, items: [] },
-      'm5',
-    );
-    const { result } = renderHook(() =>
-      useMessageListPagination({ channel: makeChannel(paginator) }),
-    );
-    await act(async () => {
-      await result.current.loadChannelAtFirstUnreadMessage();
-    });
-    expect(paginator.jumpToTheFirstUnreadMessage).toHaveBeenCalledTimes(1);
   });
 });

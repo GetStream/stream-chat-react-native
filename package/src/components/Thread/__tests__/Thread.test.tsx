@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type {
   Channel as ChannelType,
   LocalMessage,
@@ -202,6 +202,118 @@ describe('Thread', () => {
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  describe('reply query errors', () => {
+    const makeThread = () => {
+      const cid = 'messaging:test-channel';
+      const parentMessage = generateMessage({ cid, text: 'Parent' });
+      const threadInstance = new ThreadClass({
+        channel,
+        client: chatClient,
+        parentMessage,
+      });
+      return { parentMessage, threadInstance };
+    };
+
+    it('renders the error indicator when the reply query failed and nothing loaded', async () => {
+      const { parentMessage, threadInstance } = makeThread();
+      // A failed first page leaves `items` undefined — the error belongs to the THREAD's paginator,
+      // so <Channel> must not be the one showing it.
+      jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockRejectedValue(new Error('replies boom'));
+      act(() => {
+        threadInstance.messagePaginator.state.partialNext({
+          lastQueryError: new Error('replies boom'),
+        });
+      });
+
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading-error')).toBeTruthy();
+      });
+    });
+
+    it('retries the reply query — and only the reply query — from the indicator', async () => {
+      const { parentMessage, threadInstance } = makeThread();
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockRejectedValue(new Error('replies boom'));
+      const channelToTail = jest.spyOn(channel.messagePaginator, 'toTail');
+      act(() => {
+        threadInstance.messagePaginator.state.partialNext({
+          lastQueryError: new Error('replies boom'),
+        });
+      });
+
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+
+      const indicator = await waitFor(() => screen.getByTestId('loading-error'));
+      // Clear AFTER mount: <Channel> seeds its own list on open, which is not what this asserts.
+      toTail.mockClear();
+      channelToTail.mockClear();
+
+      await act(async () => {
+        fireEvent.press(indicator);
+        await Promise.resolve();
+      });
+
+      expect(toTail).toHaveBeenCalledTimes(1);
+      expect(channelToTail).not.toHaveBeenCalled();
+    });
+
+    it('does not refetch in a loop while the query is failing', async () => {
+      const { parentMessage, threadInstance } = makeThread();
+      // The first-page effect reruns whenever `isLoading` settles back to false. Without the
+      // `lastQueryError` guard it would refetch forever and the indicator could never stay up.
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockImplementation(() => {
+          threadInstance.messagePaginator.state.partialNext({
+            isLoading: false,
+            lastQueryError: new Error('replies boom'),
+          });
+          return Promise.resolve();
+        });
+
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading-error')).toBeTruthy();
+      });
+      expect(toTail).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the reply list when a later query fails but replies are already loaded', async () => {
+      const { parentMessage, threadInstance } = makeThread();
+      act(() => {
+        threadInstance.messagePaginator.setItems({
+          valueOrFactory: [
+            channel.state.formatMessage(
+              generateMessage({
+                cid: 'messaging:test-channel',
+                parent_id: parentMessage.id,
+                text: 'Loaded reply',
+              }) as unknown as MessageResponse,
+            ),
+          ],
+          isFirstPage: true,
+          isLastPage: true,
+        });
+        threadInstance.messagePaginator.state.partialNext({
+          lastQueryError: new Error('replies boom'),
+        });
+      });
+
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+
+      await waitFor(() => {
+        expect(screen.getByText('Loaded reply')).toBeTruthy();
+      });
+      expect(screen.queryByTestId('loading-error')).toBeNull();
     });
   });
 });

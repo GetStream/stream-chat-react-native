@@ -10,6 +10,8 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
+import { DEFAULT_HIGHLIGHT_DURATION } from '../Channel/hooks/useMessageListPagination';
+import { useNotificationApi } from '../Notifications';
 import { Button } from '../ui';
 
 export type UnreadMessagesNotificationProps = {
@@ -40,7 +42,8 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
   const { markRead, onCloseHandler, onPressHandler, unreadCount } = props;
   const { t } = useTranslationContext();
   const { icons } = useComponentsContext();
-  const { channel, loadChannelAtFirstUnreadMessage } = useChannelContext();
+  const { channel } = useChannelContext();
+  const { addNotification } = useNotificationApi();
   const { unread_messages } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,
     unreadCountSelector,
@@ -52,7 +55,28 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     if (onPressHandler) {
       await onPressHandler();
     } else {
-      await loadChannelAtFirstUnreadMessage();
+      try {
+        // The paginator emits `messageFocusSignal`, which drives both the highlight and the scroll.
+        await channel.messagePaginator.jumpToTheFirstUnreadMessage({
+          focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+        });
+      } catch (error) {
+        addNotification({
+          message: t(
+            'channel.jumpToFirstUnreadFailed.error',
+            'Failed to jump to the first unread message',
+          ),
+          options: {
+            ...(error instanceof Error ? { originalError: error } : {}),
+            severity: 'error',
+            type: 'channel:jumpToFirstUnread:failed',
+          },
+          origin: {
+            context: { feature: 'jumpToFirstUnread' },
+            emitter: 'UnreadMessagesNotification',
+          },
+        });
+      }
     }
   };
 
