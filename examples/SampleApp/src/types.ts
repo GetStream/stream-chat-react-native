@@ -1,5 +1,5 @@
 import type { Theme } from '@react-navigation/native';
-import type { Channel, LocalMessage, SharedLocationResponse, UserResponse } from 'stream-chat';
+import type { Channel, LocalMessage, SharedLocationResponseData, UserResponse } from 'stream-chat';
 import type { ThreadType } from 'stream-chat-react-native';
 
 export type DrawerNavigatorParamList = {
@@ -23,7 +23,7 @@ export type StackNavigatorParamList = {
     channelId?: string;
     messageId?: string;
   };
-  MapScreen: SharedLocationResponse;
+  MapScreen: SharedLocationResponseData;
   ChannelDetailsScreen: {
     channel: Channel;
   };

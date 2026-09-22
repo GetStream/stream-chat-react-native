@@ -121,11 +121,16 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
     const members = [chatClient.user.id, ...selectedUserIds];
     channel.initialized = false;
     const newChannel = chatClient.channel('messaging', {
-      members,
+      members: members.map((user_id) => ({ user_id })),
     });
     try {
       await newChannel.watch();
-      await newChannel.sendMessage(composition.message, composition.sendOptions);
+      // v10 takes one request object: the message body plus the send flags that were the second
+      // positional argument in v9.
+      await newChannel.sendMessage({
+        message: composition.message,
+        ...composition.sendOptions,
+      });
       messageComposer.clear();
       navigation.replace('ChannelScreen', {
         channelId: newChannel.id,

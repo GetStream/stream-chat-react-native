@@ -22,6 +22,7 @@ import Geolocation, {
   GeolocationResponse,
 } from '@react-native-community/geolocation';
 import {
+  asDynamicKey,
   useChatContext,
   useMessageComposer,
   useTheme,
@@ -215,7 +216,7 @@ export const LiveLocationCreateModal = ({
       description: 'Share your location in real-time',
       onPress: () => {
         const options: AlertButton[] = endedAtDurations.map((offsetMs) => ({
-          text: t('duration/Location end at', { milliseconds: offsetMs }),
+          text: t('duration.locationEndAt', { milliseconds: offsetMs }),
           onPress: async () => {
             if (location) {
               await messageComposer.locationComposer.setData({
@@ -314,7 +315,11 @@ export const LiveLocationCreateModal = ({
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={accent_blue} />
           <Text style={[styles.loadingText, { color: grey }]}>
-            {locationError || t('Fetching your current location...')}
+            {locationError ||
+              t(
+                asDynamicKey('sampleApp.locationSharing.fetchingLocation.text'),
+                'Fetching your current location...',
+              )}
           </Text>
           {permissionBlocked || (Platform.OS === 'ios' && locationPermissionIssue) ? (
             <Pressable
@@ -325,7 +330,7 @@ export const LiveLocationCreateModal = ({
               ]}
             >
               <Text style={[styles.settingsButtonText, { color: accent_blue }]}>
-                {t('Open Settings')}
+                {t(asDynamicKey('sampleApp.locationSharing.openSettings.label'), 'Open Settings')}
               </Text>
             </Pressable>
           ) : locationPermissionIssue && Platform.OS === 'android' ? (
@@ -337,7 +342,7 @@ export const LiveLocationCreateModal = ({
               ]}
             >
               <Text style={[styles.settingsButtonText, { color: accent_blue }]}>
-                {t('Allow Location')}
+                {t(asDynamicKey('sampleApp.locationSharing.allowLocation.label'), 'Allow Location')}
               </Text>
             </Pressable>
           ) : null}

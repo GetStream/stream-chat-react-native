@@ -341,7 +341,7 @@ const DrawerNavigator: React.FC = () => (
   </LiveLocationManagerProvider>
 );
 
-const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
+const isMessageAIGenerated = (message: LocalMessage) => !!message.custom?.ai_generated;
 
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;

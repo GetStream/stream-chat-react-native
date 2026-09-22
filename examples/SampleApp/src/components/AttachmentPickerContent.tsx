@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
 import {
+  asDynamicKey,
   useAttachmentPickerState,
   AttachmentPickerContentProps,
   AttachmentPickerContent,
@@ -42,8 +43,11 @@ export const CustomAttachmentPickerContent = (props: AttachmentPickerContentProp
           Icon={Icon}
           onPress={onOpenModal}
           height={props.height}
-          buttonText={t('Share Location')}
-          description={t('Share your location with everyone')}
+          buttonText={t(asDynamicKey('sampleApp.locationSharing.share.label'), 'Share Location')}
+          description={t(
+            asDynamicKey('sampleApp.locationSharing.share.description'),
+            'Share your location with everyone',
+          )}
         />
         {modalVisible ? (
           <LiveLocationCreateModal visible={modalVisible} onRequestClose={onRequestClose} />

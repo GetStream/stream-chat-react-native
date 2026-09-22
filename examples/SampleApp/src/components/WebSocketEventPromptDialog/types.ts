@@ -1,6 +1,12 @@
 import type { ProfilerOnRenderCallback } from 'react';
 
-import type { Channel, Event, MessageResponse, ReactionResponse, UserResponse } from 'stream-chat';
+import type {
+  Channel,
+  ChannelResponse,
+  EventPayload,
+  MessageResponse,
+  UserResponse,
+} from 'stream-chat';
 
 export const supportedWebsocketEventTypes = [
   'message.new',
@@ -30,15 +36,12 @@ export type SimulatedReactionRecord = {
 
 export type WebSocketEventTemplateContext = {
   channel: Channel;
-  channelData: {
-    cid: string;
-    disabled: boolean;
-    frozen: boolean;
-    id: string;
-    member_count?: number;
-    type: string;
-    [key: string]: unknown;
-  };
+  /**
+   * A complete `ChannelResponse`, not a loose bag: v10's event types require the real thing on
+   * `reaction.*` and `notification.message_new`, so the simulator has to synthesise the fields the
+   * live `channel.data` may not carry rather than widening its way past them.
+   */
+  channelData: ChannelResponse;
   cid: string;
   currentUser: UserResponse;
   otherUsers: UserResponse[];
@@ -60,10 +63,17 @@ export type SimulationState = {
   userIndexByCid: Record<string, number>;
 };
 
-export type WebSocketEventPayload = Event & {
-  message?: MessageResponse;
-  reaction?: ReactionResponse;
-};
+/**
+ * Exactly the events this simulator can emit.
+ *
+ * v10 made `Event` a discriminated union of ~83 members, each with its own required fields. The old
+ * `Event & { message?; reaction? }` distributed that intersection across every member, so a partial
+ * synthetic payload matched none of them. Narrowing to the nine supported types instead means the
+ * builders are checked against the real contract — `hard_delete` on `message.deleted`,
+ * `watcher_count` on `message.new`, a full `channel` on `reaction.*` — and each builder now emits a
+ * complete event rather than being cast into shape.
+ */
+export type WebSocketEventPayload = EventPayload<SupportedWebSocketEventType>;
 
 export type BenchmarkDispatchSample = {
   commitLatencyMs?: number;

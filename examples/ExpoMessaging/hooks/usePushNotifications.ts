@@ -101,23 +101,28 @@ export const usePushNotifications = ({ chatClient }: { chatClient: StreamChat | 
       const push_provider = 'firebase';
       const push_provider_name = 'rn-expo-app'; // name an alias for your push provider (optional)
 
-      await chatClient.addDevice(
-        token,
-        push_provider as PushProvider,
-        chatClient.userID,
+      // v10 takes one request object and infers the user from the connection, so the `userID`
+      // argument v9 needed here is gone.
+      await chatClient.createDevice({
+        id: token,
+        push_provider: push_provider as PushProvider,
         push_provider_name,
-      );
+      });
 
       const removeOldToken = async () => {
         const oldToken = await AsyncStorage.getItem('@current_push_token');
         if (oldToken !== null) {
-          await chatClient.removeDevice(oldToken);
+          await chatClient.deleteDevice({ id: oldToken });
         }
       };
 
       const unsubscribeTokenRefresh = onTokenRefresh(messaging, async (newToken) => {
         await removeOldToken();
-        chatClient.addDevice(newToken, push_provider, chatClient.userID, push_provider_name);
+        chatClient.createDevice({
+          id: newToken,
+          push_provider,
+          push_provider_name,
+        });
         AsyncStorage.setItem('@current_push_token', newToken);
       });
 

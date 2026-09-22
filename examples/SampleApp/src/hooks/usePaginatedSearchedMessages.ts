@@ -51,31 +51,27 @@ export const usePaginatedSearchedMessages = (messageFilters: string | MessageFil
         return;
       }
 
-      // v10 takes ONE request object with everything under `payload`. The v9 call was three
-      // positional arguments (channel filters, message filters, options); the new signature is
-      // `search({ payload })`, so those extra arguments were silently dropped and every search went
-      // out with an empty payload — which is why this returned 0 results for messages that plainly
-      // existed. `sort` is an array of `{ field, direction }` now, not an object.
+      // v10 collapses `search(filters, query, options)` into one payload object, and sort is an
+      // array of `{ field, direction }` rather than a `{ field: direction }` map.
       const res = await chatClient?.search({
         payload: {
           filter_conditions: {
-            members: { $in: [chatClient?.user?.id || ''] },
+            members: {
+              $in: [chatClient?.user?.id ?? ''],
+            },
           },
-          limit: DEFAULT_PAGINATION_LIMIT,
-          offset: offset.current,
-          sort: [{ direction: -1, field: 'updated_at' }],
-          // A plain string is free text; an object is a structured message filter.
           ...(typeof messageFilters === 'string'
             ? { query: messageFilters }
             : { message_filter_conditions: messageFilters }),
+          limit: DEFAULT_PAGINATION_LIMIT,
+          offset: offset.current,
+          sort: [{ field: 'updated_at', direction: -1 }],
         },
       });
 
-      // `results` entries carry an OPTIONAL message, so drop the empty ones rather than letting
-      // `undefined` through into the list.
       const newMessages = res?.results
         .map((r) => r.message)
-        .filter((m): m is SearchResultMessage => !!m);
+        .filter((m): m is SearchResultMessage => m !== undefined);
       if (!newMessages) {
         queryInProgress.current = false;
         done();
