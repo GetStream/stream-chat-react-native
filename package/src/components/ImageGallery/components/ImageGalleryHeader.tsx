@@ -12,6 +12,7 @@ import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/Im
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { addInset } from '../../../hooks/useHorizontalInsets';
 import { useStateStore } from '../../../hooks/useStateStore';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
@@ -104,6 +105,7 @@ const useStyles = () => {
       imageGallery: { header },
     },
   } = useTheme();
+  const { left = 0, right = 0 } = useContext(SafeAreaInsetsContext) ?? {};
   return useMemo(
     () =>
       StyleSheet.create({
@@ -133,6 +135,18 @@ const useStyles = () => {
           borderBottomWidth: 1,
           borderBottomColor: semantics.borderCoreSubtle,
           ...header.innerContainer,
+          // Added to the base padding, not substituted: a longhand overrides the `padding`
+          // shorthand for that side.
+          paddingLeft: addInset(
+            header.innerContainer?.paddingLeft ?? header.innerContainer?.padding,
+            primitives.spacingSm,
+            left,
+          ),
+          paddingRight: addInset(
+            header.innerContainer?.paddingRight ?? header.innerContainer?.padding,
+            primitives.spacingSm,
+            right,
+          ),
         },
         leftContainer: {
           flex: 1,
@@ -150,6 +164,6 @@ const useStyles = () => {
           ...header.usernameText,
         },
       }),
-    [semantics, header],
+    [semantics, header, left, right],
   );
 };

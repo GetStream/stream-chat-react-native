@@ -50,7 +50,7 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
-import { useHorizontalInsets } from '../../hooks/useHorizontalInsets';
+import { addInset, useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { isVideoPlayerAvailable } from '../../native';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -1400,8 +1400,11 @@ const useStyles = () => {
         suggestionsListContainer: {
           backgroundColor: 'transparent',
           position: 'absolute',
-          width: '100%',
           ...suggestionListContainer,
+          // left/right rather than `width: '100%'`, which resolves against the border box and so
+          // ignored the container's horizontal padding.
+          left: addInset(suggestionListContainer?.left, 0, insets.left),
+          right: addInset(suggestionListContainer?.right, 0, insets.right),
         },
         container: {
           flex: 1,
@@ -1425,27 +1428,27 @@ const useStyles = () => {
           width: '100%',
           ...listContainer,
         },
+        // Absolute children are offset from the border box, so the container's horizontal
+        // padding does not reach them: each carries the inset itself.
         scrollToBottomButtonContainer: {
           position: 'absolute',
-          // Absolute children are offset from the border box, so the container's horizontal
-          // padding does not reach them: the inset has to be added here.
-          right: 16 + insets.right,
           ...scrollToBottomButtonContainer,
+          right: addInset(scrollToBottomButtonContainer?.right, 16, insets.right),
         },
         stickyHeaderContainer: {
-          left: insets.left,
           position: 'absolute',
-          right: insets.right,
           top: primitives.spacingMd,
           ...stickyHeaderContainer,
+          left: addInset(stickyHeaderContainer?.left, 0, insets.left),
+          right: addInset(stickyHeaderContainer?.right, 0, insets.right),
         },
         unreadMessagesNotificationContainer: {
           position: 'absolute',
           top: primitives.spacingMd,
-          left: insets.left,
-          right: insets.right,
           alignItems: 'center',
           ...unreadMessagesNotificationContainer,
+          left: addInset(unreadMessagesNotificationContainer?.left, 0, insets.left),
+          right: addInset(unreadMessagesNotificationContainer?.right, 0, insets.right),
         },
       }),
     [

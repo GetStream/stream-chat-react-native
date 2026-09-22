@@ -1,6 +1,18 @@
 import { useMemo } from 'react';
-import { ViewStyle } from 'react-native';
+import { DimensionValue, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+/**
+ * Adds a safe area inset to an offset or padding a consumer's theme may already have set.
+ *
+ * Call it *after* the theme spread: spreading an override over a value that already carries the
+ * inset drops it. A themed percentage is returned untouched - an inset cannot be expressed in one.
+ */
+export const addInset = (
+  themed: DimensionValue | undefined,
+  base: number,
+  inset: number,
+): DimensionValue => (typeof themed === 'string' ? themed : (themed ?? base) + inset);
 
 /**
  * Horizontal safe area padding for a surface that spans the full window width.
