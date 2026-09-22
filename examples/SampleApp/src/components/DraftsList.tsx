@@ -12,7 +12,7 @@ import {
   DraftMessage,
   DraftResponse,
   LocalMessage,
-  MessageResponseBase,
+  MessageResponse,
 } from 'stream-chat';
 import {
   useChatContext,
@@ -36,7 +36,7 @@ export type DraftItemProps = {
   date?: number;
   message: DraftMessage;
   // TODO: Fix the type for thread
-  thread?: MessageResponseBase;
+  thread?: MessageResponse;
 };
 
 export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
@@ -45,7 +45,7 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const { client } = useChatContext();
   const messagePreviewText = useMessagePreviewText({ message });
-  const channelName = channel?.name ? channel.name : 'Channel';
+  const channelName = channel?.custom?.name ? channel.custom.name : 'Channel';
 
   const onNavigationHandler = async () => {
     if (channel?.type && channel.id) {

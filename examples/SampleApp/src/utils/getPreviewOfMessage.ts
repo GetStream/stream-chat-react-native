@@ -1,5 +1,5 @@
 import { DraftMessage, LocalMessage, MessageResponse } from 'stream-chat';
-import { FileTypes, TranslationContextValue } from 'stream-chat-react-native';
+import { asDynamicKey, FileTypes, TranslationContextValue } from 'stream-chat-react-native';
 
 export const attachmentTypeIconMap = {
   audio: '🔈',
@@ -32,7 +32,7 @@ export const getPreviewFromMessage = ({
         { bold: false, text: attachmentIcon },
         {
           bold: false,
-          text: t('Voice message'),
+          text: t(asDynamicKey('sampleApp.messagePreview.voiceMessage.text'), 'Voice message'),
         },
       ];
     }

@@ -73,7 +73,7 @@ export const useChatClient = () => {
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance(config.apiKey, {
-      timeout: 6000,
+      axiosRequestConfig: { timeout: 6000 },
       // logger: (type, msg) => console.log(type, msg)
     });
 
@@ -129,13 +129,23 @@ export const useChatClient = () => {
           ? providerNameOverride
           : (provider?.name ?? 'rn-fcm');
       const token = id === 'firebase' ? firebaseToken : (apnsToken ?? firebaseToken);
-      await client.addDevice(token, id as PushProvider, client.userID, name);
+      // v10 takes one request object and infers the user from the connection, so the `userID`
+      // argument v9 needed here is gone.
+      await client.createDevice({
+        id: token,
+        push_provider: id as PushProvider,
+        push_provider_name: name,
+      });
 
       // Listen to new FCM tokens and register them with stream chat server.
       const unsubscribeTokenRefresh = messaging.onTokenRefresh(async (newFirebaseToken) => {
         const newApnsToken = await messaging.getAPNSToken();
         const newToken = id === 'firebase' ? newFirebaseToken : (newApnsToken ?? firebaseToken);
-        await client.addDevice(newToken, id as PushProvider, client.userID, name);
+        await client.createDevice({
+          id: newToken,
+          push_provider: id as PushProvider,
+          push_provider_name: name,
+        });
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging.onMessage(async (remoteMessage) => {

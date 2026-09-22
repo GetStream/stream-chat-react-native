@@ -4,7 +4,7 @@ import {
   setBackgroundMessageHandler,
 } from '@react-native-firebase/messaging';
 import { getMessaging } from '@react-native-firebase/messaging';
-import { DeliveredMessageConfirmation, StreamChat } from 'stream-chat';
+import { DeliveredMessagePayload, StreamChat } from 'stream-chat';
 
 import AsyncStore from './AsyncStore';
 
@@ -59,7 +59,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
     ];
 
     await chatClient?.markChannelsDelivered({
-      latest_delivered_messages: deliverMessageConfirmation as DeliveredMessageConfirmation[],
+      latest_delivered_messages: deliverMessageConfirmation as DeliveredMessagePayload[],
     });
     // create the android channel to send the notification to
     const channelId = await notifee.createChannel({
