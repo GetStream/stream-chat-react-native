@@ -311,6 +311,34 @@ describe('MediaList', () => {
     expect(screen.queryByTestId('media-list')).toBeNull();
   });
 
+  it('still calls consumer scroll and content-size handlers alongside its own', () => {
+    const onScroll = jest.fn();
+    const onContentSizeChange = jest.fn();
+    render(
+      tree(
+        makeSearchSource({ items: [messageWithAttachments('m-1', [generateImageAttachment()])] }),
+        { additionalFlatListProps: { onContentSizeChange, onScroll } },
+      ),
+    );
+
+    const list = screen.getByTestId('media-list');
+    const event = {
+      nativeEvent: {
+        contentInset: { bottom: 0, left: 0, right: 0, top: 0 },
+        contentOffset: { x: 0, y: 120 },
+        contentSize: { height: 800, width: 390 },
+        layoutMeasurement: { height: 600, width: 390 },
+        zoomScale: 1,
+      },
+      timeStamp: 1,
+    };
+    list.props.onScroll(event);
+    list.props.onContentSizeChange(390, 800);
+
+    expect(onScroll).toHaveBeenCalledTimes(1);
+    expect(onContentSizeChange).toHaveBeenCalledWith(390, 800);
+  });
+
   it('targets the channel-details panel with a channel-scoped notification host', () => {
     render(tree(makeSearchSource()));
 

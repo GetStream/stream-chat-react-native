@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  type FlatListProps,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import {
   formatMessage,
@@ -11,6 +19,7 @@ import {
 import { type MediaItemPressParams } from './MediaItem';
 import { getNumberOfColumns, MEDIA_GRID_GAP } from './mediaListColumns';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
+import { useGridScrollAnchor } from './useGridScrollAnchor';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
@@ -132,6 +141,30 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
     [width, columns],
   );
 
+  const { listRef, onContentSizeChange, onScroll } = useGridScrollAnchor<MediaTile>({
+    columns,
+    itemCount: tiles.length,
+    rowStride: tileSize + MEDIA_GRID_GAP,
+  });
+
+  // Applied after the consumer's props so the anchor keeps working, while still calling theirs.
+  const consumerOnScroll = additionalFlatListProps?.onScroll;
+  const consumerOnContentSizeChange = additionalFlatListProps?.onContentSizeChange;
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      onScroll(event);
+      consumerOnScroll?.(event);
+    },
+    [consumerOnScroll, onScroll],
+  );
+  const handleContentSizeChange = useCallback(
+    (contentWidth: number, contentHeight: number) => {
+      onContentSizeChange(contentWidth, contentHeight);
+      consumerOnContentSizeChange?.(contentWidth, contentHeight);
+    },
+    [consumerOnContentSizeChange, onContentSizeChange],
+  );
+
   // Opens the fullscreen gallery over the whole loaded collection, selecting the tapped attachment.
   // Mirrors the in-message gallery (`components/Attachment/Gallery.tsx`), but passes every loaded
   // message so the viewer can swipe across all media in the list rather than a single message.
@@ -197,8 +230,8 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
         keyExtractor={keyExtractor}
         ListEmptyComponent={emptyState}
         ListFooterComponent={loadingMoreIndicator}
-        // FlatList rejects a `numColumns` change on a mounted list, so the count must key a
-        // remount. Only fires when the count changes, but costs scroll position when it does.
+        // FlatList rejects a `numColumns` change on a mounted list, so the count keys a remount;
+        // `useGridScrollAnchor` restores the scroll position it would otherwise lose.
         key={columns}
         numColumns={columns}
         onEndReached={loadMore}
@@ -207,6 +240,9 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
         style={[styles.list, mediaList.list]}
         testID='media-list'
         {...additionalFlatListProps}
+        onContentSizeChange={handleContentSizeChange}
+        onScroll={handleScroll}
+        ref={listRef}
       />
       <NotificationList />
     </View>
