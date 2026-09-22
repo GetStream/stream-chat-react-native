@@ -337,17 +337,8 @@ const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
 
-const lastQueryErrorSelector = (state: { lastQueryError?: Error }) => ({
-  lastQueryError: state.lastQueryError,
-});
-
-/**
- * One boolean, and only the one `Channel` renders on: whether there is anything to show when a query
- * errors. Selecting `items` would re-render on every message; selecting `isLoading` — which nothing
- * here reads — re-rendered it on every query, since `useStateStore` compares the selected keys.
- */
-const channelMessagesSelector = (state: { items?: unknown[] }) => ({
-  hasMessages: !!state.items?.length,
+const channelQuerySelector = (state: { items?: unknown[]; lastQueryError?: Error }) => ({
+  blockingError: state.items?.length ? undefined : state.lastQueryError,
 });
 
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
@@ -488,12 +479,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
-  // The CHANNEL's query error. A thread's reply query fails on its own paginator and is rendered by
+  // The CHANNEL's paginator. A thread's reply query fails on its own paginator and is rendered by
   // `<Thread>` — this component has no business replacing the thread UI with a channel-level error.
-  const { lastQueryError: error } = useStateStore(
-    channel.messagePaginator.state,
-    lastQueryErrorSelector,
-  );
+  const { blockingError } =
+    useStateStore(channel.messagePaginator.state, channelQuerySelector) ?? {};
 
   const channelId = channel?.id || '';
   const { pollsEnabled } = useStateStore(
@@ -501,11 +490,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     composerPollsSelector,
   ) ?? { pollsEnabled: false };
   const pollCreationEnabled = !channel.pendingDisposal && !!channel?.id && pollsEnabled;
-
-  // Only what `Channel` itself renders on: whether there is anything to show when a query errors.
-  // Never the items array — that would re-render on every message publish.
-  const { hasMessages } =
-    useStateStore(channel.messagePaginator.state, channelMessagesSelector) ?? {};
 
   const { addNotification } = useNotificationApi();
 
@@ -976,7 +960,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     return null;
   }
 
-  if (!channel || (error && !hasMessages)) {
+  if (!channel || blockingError) {
     // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
     // which is the `error` this indicator renders off — so the warn is all the handling needed.
     const retry = () =>
@@ -986,7 +970,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
           console.warn('Reloading the message list failed with error:', err),
         );
 
-    return <LoadingErrorIndicator error={error} listType='message' retry={retry} />;
+    return <LoadingErrorIndicator error={blockingError} listType='message' retry={retry} />;
   }
 
   if (!channel?.cid || !channel.watch) {
