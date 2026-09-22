@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { MessageFilters, MessageResponse } from 'stream-chat';
+import type { MessageFilters, SearchResultMessage } from 'stream-chat';
 
 import { useAppContext } from '../context/AppContext';
 
@@ -10,7 +10,7 @@ export const usePaginatedSearchedMessages = (messageFilters: string | MessageFil
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse[]>();
+  const [messages, setMessages] = useState<SearchResultMessage[]>();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
@@ -51,21 +51,31 @@ export const usePaginatedSearchedMessages = (messageFilters: string | MessageFil
         return;
       }
 
-      const res = await chatClient?.search(
-        {
-          members: {
-            $in: [chatClient?.user?.id || null],
+      // v10 takes ONE request object with everything under `payload`. The v9 call was three
+      // positional arguments (channel filters, message filters, options); the new signature is
+      // `search({ payload })`, so those extra arguments were silently dropped and every search went
+      // out with an empty payload — which is why this returned 0 results for messages that plainly
+      // existed. `sort` is an array of `{ field, direction }` now, not an object.
+      const res = await chatClient?.search({
+        payload: {
+          filter_conditions: {
+            members: { $in: [chatClient?.user?.id || ''] },
           },
-        },
-        messageFilters,
-        {
           limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
-          sort: { updated_at: -1 },
+          sort: [{ direction: -1, field: 'updated_at' }],
+          // A plain string is free text; an object is a structured message filter.
+          ...(typeof messageFilters === 'string'
+            ? { query: messageFilters }
+            : { message_filter_conditions: messageFilters }),
         },
-      );
+      });
 
-      const newMessages = res?.results.map((r) => r.message);
+      // `results` entries carry an OPTIONAL message, so drop the empty ones rather than letting
+      // `undefined` through into the list.
+      const newMessages = res?.results
+        .map((r) => r.message)
+        .filter((m): m is SearchResultMessage => !!m);
       if (!newMessages) {
         queryInProgress.current = false;
         done();

@@ -547,31 +547,31 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 
-  it('should call the loadChannelAroundMessage when messageId is passed to a channel', async () => {
+  it('leaves targeting to the caller — <Channel> no longer jumps on its own', async () => {
+    // The `messageId` prop is gone. Jumping is the paginator's job, so nothing here should issue a
+    // jump: the integrator calls `paginator.jumpToMessage(...)` themselves, from a `useLayoutEffect`
+    // or before mount. See 'does not override a jump the integrator made before mount' for the other
+    // half of the contract — that <Channel> then keeps its hands off it.
     const messages = Array.from({ length: 105 }, (_, i) => generateMessage({ id: String(i) }));
-    const messageToSearch = messages[50];
-    const mockedChannel = generateChannelResponse({
-      messages,
-    });
+    const mockedChannel = generateChannelResponse({ messages });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    // A `messageId` now drives channel.messagePaginator.jumpToMessage (load-around + focus signal),
-    // replacing the removed channel.state.loadMessageIntoState.
     const jumpToMessageSpy = jest
       .spyOn(channel.messagePaginator, 'jumpToMessage')
       .mockResolvedValue(undefined as never);
+    const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
 
-    renderComponent({ channel, markReadOnMount: false, messageId: messageToSearch.id });
+    renderComponent({ channel, markReadOnMount: false });
 
+    // Gate on the initial-load effect reaching its decision point, so the negative below is not
+    // just "it has not happened yet".
     await waitFor(() => {
-      expect(jumpToMessageSpy).toHaveBeenCalledWith(
-        messageToSearch.id,
-        expect.objectContaining({ focusReason: 'jump-to-message' }),
-      );
+      expect(seedSpy).toHaveBeenCalled();
     });
+    expect(jumpToMessageSpy).not.toHaveBeenCalled();
   });
 
   describe('initialScrollToFirstUnreadMessage', () => {
@@ -617,6 +617,60 @@ describe('Channel initial load useEffect', () => {
       await waitFor(() => {
         expect(jumpToTheFirstUnreadMessageSpy).not.toHaveBeenCalled();
       });
+    });
+
+    it('does not override a jump the integrator made before mount', async () => {
+      const messages = Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ id: `m${i}`, text: `message-${i}` }),
+      );
+      const mockedChannel = generateChannelResponse({ messages });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+
+      const user = generateUser();
+      const read_data: typeof channel.state.read = {};
+      read_data[chatClient.user!.id] = {
+        last_read: convertDateToTimestamp(),
+        unread_messages: 15,
+        user,
+      };
+      channel.state.partialNext({ read: read_data });
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => 15);
+
+      const jumpToTheFirstUnreadMessageSpy = jest
+        .spyOn(channel.messagePaginator, 'jumpToTheFirstUnreadMessage')
+        .mockResolvedValue(undefined as never);
+      // `initChannel` always re-seeds the unread snapshot, and does so on the line BEFORE it decides
+      // whether to jump. Waiting on it is what makes the negative assertion below mean anything: a
+      // bare `waitFor(() => expect(spy).not.toHaveBeenCalled())` passes on the first tick, before the
+      // effect has run at all.
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      // THE INTEGRATOR'S OWN JUMP, before <Channel> mounts. No `messageId` prop is passed.
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: 'm4',
+        reason: 'jump-to-message',
+        ttlMs: 3000,
+      });
+
+      renderComponent({
+        channel,
+        initialScrollToFirstUnreadMessage: true,
+        markReadOnMount: false,
+      });
+
+      // Wait until the initial-load effect has actually reached its decision point.
+      await waitFor(() => {
+        expect(seedSpy).toHaveBeenCalled();
+      });
+
+      // Channel must NOT hijack the scroll to the first unread message...
+      expect(jumpToTheFirstUnreadMessageSpy).not.toHaveBeenCalled();
+      // ...and the integrator's target must still be the focused one.
+      expect(channel.messagePaginator.messageFocusSignal.getLatestValue().signal?.messageId).toBe(
+        'm4',
+      );
     });
 
     it("should jump to the first unread message if channel's unread count is greater than 0", async () => {

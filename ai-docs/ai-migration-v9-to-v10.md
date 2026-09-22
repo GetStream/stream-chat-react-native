@@ -475,10 +475,45 @@ on channel traffic.
 | v9 / early-v10 | v10 |
 |---|---|
 | `loadChannelAroundMessage({ messageId })` | `paginator.jumpToMessage(messageId, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })` |
+| `<Channel messageId={id} />` | the same `paginator.jumpToMessage(...)`, from a `useLayoutEffect` or before `<Channel>` mounts — the prop is **removed** (see below) |
 | `loadChannelAtFirstUnreadMessage()` | `paginator.jumpToTheFirstUnreadMessage({ focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })` |
 | `reloadChannel()` | `paginator.jumpToTheLatestMessage()` |
 | `loading` | `useStateStore(paginator.state, (s) => ({ loading: !!s.isLoading && !s.items?.length }))` |
 | `highlightedMessageId` | `useIsTargetedMessage(messageId)` (§6) |
+
+### The `messageId` prop is removed
+
+`<Channel messageId={id} />` only ever called `jumpToMessage` for you, so it is gone: target a
+message by calling the paginator yourself.
+
+```tsx
+useLayoutEffect(() => {
+  if (!channel || !messageId) return;
+  channel.messagePaginator.jumpToMessage(messageId, {
+    focusReason: 'jump-to-message',
+    focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+  });
+}, [channel, messageId]);
+```
+
+**Use `useLayoutEffect`, not `useEffect`.** React runs every layout effect before any passive one,
+and the message list decides its initial anchor in a passive effect — so a layout effect lands first
+and you get no scroll-to-bottom-then-jump. Starting the jump before `<Channel>` mounts works too.
+
+`<Channel>` reads the paginator's focus signal, so it will not override a jump you have **already
+completed** with its own jump to the first unread.
+
+**If you also use `initialScrollToFirstUnreadMessage`, turn it off while deep-linking:**
+
+```tsx
+<Channel channel={channel} initialScrollToFirstUnreadMessage={!messageId} />
+```
+
+Opening at the first unread and jumping to a specific message are two answers to the same question,
+and `<Channel>` cannot see a jump that is still *in flight* — `jumpToMessage` emits its focus signal
+only once the query lands, which for a message that is not loaded yet is a round trip away. The
+removed prop encoded this precedence internally (`!messageId && initialScrollToFirstUnreadMessage`);
+the caller states it now. With both enabled at once the two jumps race and the last one wins.
 
 where `const paginator = useActiveMessagePaginator()` — thread-aware: the open
 thread's reply paginator when `threadList` is set, the channel's otherwise. Use

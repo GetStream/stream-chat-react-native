@@ -296,7 +296,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     /**
      * Load the channel at a specified message instead of the most recent message.
      */
-    messageId?: string;
     notificationHostId?: string;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
     /**
@@ -424,7 +423,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     ],
     messageOverlayTargetId,
     messageInputFloating = false,
-    messageId,
     messageSwipeToReplyHitSlop,
     messageTextNumberOfLines,
     myMessageTheme,
@@ -508,8 +506,27 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     });
   });
 
+  /**
+   * Whether this list is already aimed at a message.
+   *
+   * There is no `messageId` prop any more: jumping is the paginator's job, so an integrator targets a
+   * message by calling `paginator.jumpToMessage(...)` — from a `useLayoutEffect`, or before this
+   * mounts at all — and the focus signal is what that leaves behind. `<Channel>` reads the signal so
+   * it can tell a jump already happened and not overwrite it with its own jump to the first unread.
+   *
+   * A `useLayoutEffect` is early enough: the one consumer that races this
+   * (`MessageFlashList`'s initial anchor) asks inside a passive `useEffect`, which React runs after
+   * every layout effect.
+   *
+   * Read imperatively, not through `useStateStore`: every caller is an effect or a one-shot
+   * decision, and subscribing would re-render `Channel` on every jump for no benefit.
+   */
+  const hasFocusTarget = useStableCallback(
+    () => !!(threadInstance ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
+  );
+
   const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
-    if (messageId || !initialScrollToFirstUnreadMessage || !client.user) {
+    if (hasFocusTarget() || !initialScrollToFirstUnreadMessage || !client.user) {
       return false;
     }
 
@@ -517,7 +534,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   const hasPendingInitialTargetLoad = useStableCallback(() => {
-    return !!messageId || shouldLoadInitialChannelAtFirstUnreadMessage();
+    return hasFocusTarget() || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
   useEffect(() => {
@@ -559,18 +576,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // target all go stale on reopen. Mirrors stream-chat-react, which re-seeds by re-querying on open.
       channel.messagePaginator.seedUnreadSnapshot();
 
-      if (messageId) {
-        try {
-          // jumpToMessage loads-around the target AND emits messageFocusSignal, which drives both
-          // the highlight and the scroll-to-target — no separate targeted-message React state needed.
-          await (threadInstance ?? channel).messagePaginator.jumpToMessage(messageId, {
-            focusReason: 'jump-to-message',
-            focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
-          });
-        } catch (error) {
-          console.warn('Loading channel around message failed with error:', error);
-        }
-      } else if (shouldLoadAtFirstUnread) {
+      if (shouldLoadAtFirstUnread) {
         try {
           // jumpToTheFirstUnreadMessage resolves the first-unread id from the paginator's snapshot,
           // and emits messageFocusSignal for the highlight + scroll.
@@ -592,7 +598,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     initChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.cid, messageId, shouldSyncChannel]);
+  }, [channel.cid, shouldSyncChannel]);
 
   // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
   // Channel instance shared with the channel-list preview or a thread stays active until the last
@@ -918,7 +924,9 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBlockUser,
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
-    initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
+    // A message is already targeted (by the prop or by the integrator's own jump), so first-unread
+    // must not take the scroll off it.
+    initialScrollToFirstUnreadMessage: !hasFocusTarget() && initialScrollToFirstUnreadMessage,
     isAttachmentEqual,
     isMessageAIGenerated,
     markdownRules,
