@@ -4,6 +4,7 @@ import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
 
+import { useAttachmentPickerTileSize } from './AttachmentPickerTileSizeContext';
 import { isIosLimited, type PhotoContentItemType } from './shared';
 
 import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
@@ -30,6 +31,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { ImageOverlaySelectedComponent } = useComponentsContext();
   const { vw } = useViewport();
+  const tileSize = useAttachmentPickerTileSize();
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { uploadNewFile } = useMessageInputContext();
@@ -51,7 +53,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
   const { duration: videoDuration, thumb_url } = asset;
 
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const size = tileSize ?? vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
   const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect video' : 'a11y/Select video');
 
@@ -106,6 +108,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   } = useTheme();
   const styles = useStyles();
   const { vw } = useViewport();
+  const tileSize = useAttachmentPickerTileSize();
   const { t } = useTranslationContext();
   const { uploadNewFile } = useMessageInputContext();
   const messageComposer = useMessageComposer();
@@ -115,7 +118,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
     isLocalImageAttachment(attachment) ? attachment.localMetadata.previewUri === asset.uri : false,
   );
 
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const size = tileSize ?? vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
   const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect image' : 'a11y/Select image');
 
@@ -164,8 +167,9 @@ const AttachmentIosLimited = () => {
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { icons } = useComponentsContext();
   const { vw } = useViewport();
+  const tileSize = useAttachmentPickerTileSize();
   const { t } = useTranslationContext();
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const size = tileSize ?? vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const styles = useStyles();
   return (
     <BottomSheetTouchableOpacity

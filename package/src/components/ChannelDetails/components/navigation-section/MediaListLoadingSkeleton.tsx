@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import { getNumberOfColumns, MEDIA_GRID_GAP } from './mediaListColumns';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useContainerWidth } from '../../../../hooks/useContainerWidth';
 import { primitives } from '../../../../theme';
 import { NativeShimmerView } from '../../../UIComponents/NativeShimmerView';
 
-const NUMBER_OF_COLUMNS = 3;
 const NUMBER_OF_ROWS = 6;
-const GRID_GAP = primitives.spacingXxxs;
 const ANIMATION_TIME = 1000;
 
 /**
@@ -17,16 +18,18 @@ export const MediaListLoadingSkeleton = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { width } = useWindowDimensions();
+  // Same derivation as `MediaList`, so the skeleton's tiles match the grid that replaces it.
+  const { onLayout, width } = useContainerWidth();
   const styles = useStyles();
 
-  const tileSize = (width - GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS;
+  const numberOfColumns = getNumberOfColumns(width);
+  const tileSize = (width - MEDIA_GRID_GAP * (numberOfColumns - 1)) / numberOfColumns;
 
   return (
-    <View style={styles.container} testID='media-list-loading-skeleton'>
+    <View onLayout={onLayout} style={styles.container} testID='media-list-loading-skeleton'>
       {Array.from({ length: NUMBER_OF_ROWS }).map((_, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
-          {Array.from({ length: NUMBER_OF_COLUMNS }).map((__, columnIndex) => (
+          {Array.from({ length: numberOfColumns }).map((__, columnIndex) => (
             <View key={columnIndex} style={[styles.tile, { height: tileSize, width: tileSize }]}>
               <NativeShimmerView
                 baseColor={semantics.backgroundCoreSurfaceDefault}
@@ -49,11 +52,11 @@ const useStyles = () =>
     () =>
       StyleSheet.create({
         container: {
-          gap: GRID_GAP,
+          gap: MEDIA_GRID_GAP,
         },
         row: {
           flexDirection: 'row',
-          gap: GRID_GAP,
+          gap: MEDIA_GRID_GAP,
         },
         tile: {
           borderRadius: primitives.radiusXxs,

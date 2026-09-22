@@ -5,8 +5,8 @@ import type { ImageGalleryGridProps } from './types';
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useContainerWidth } from '../../../hooks/useContainerWidth';
 import { useStateStore } from '../../../hooks/useStateStore';
-import { useViewport } from '../../../hooks/useViewport';
 import type {
   ImageGalleryAsset,
   ImageGalleryState,
@@ -23,22 +23,22 @@ export type ImageGalleryGridImageComponent = ({
   item: ImageGalleryAsset & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
+    size: number;
   };
 }) => React.ReactElement | null;
 
 export type GridImageItem = ImageGalleryAsset & {
   selectAndClose: () => void;
   numberOfImageGalleryGridColumns?: number;
+  /** Resolved by the grid from its own measured width, not the window. */
+  size: number;
 };
 
 const GridImage = ({ item }: { item: GridImageItem }) => {
   const styles = useStyles();
-  const { vw } = useViewport();
   const { ...restItem } = item;
 
-  const { numberOfImageGalleryGridColumns, selectAndClose, thumb_url, type, uri } = restItem;
-
-  const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
+  const { selectAndClose, size, thumb_url, type, uri } = restItem;
 
   return (
     <Pressable accessibilityLabel='Grid Image' onPress={selectAndClose}>
@@ -75,10 +75,15 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
     },
   } = useTheme();
   const styles = useStyles();
+  const { onLayout, width } = useContainerWidth();
+
+  const columns = numberOfImageGalleryGridColumns || 3;
+  const size = width / columns - 2;
 
   const imageGridItems = assets.map((photo, index) => ({
     ...photo,
     numberOfImageGalleryGridColumns,
+    size,
     selectAndClose: () => {
       imageGalleryStateStore.currentIndex = index;
       closeGridView();
@@ -91,7 +96,9 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
       contentContainerStyle={styles.contentContainer}
       data={imageGridItems as GridImageItem[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
-      numColumns={numberOfImageGalleryGridColumns || 3}
+      key={columns}
+      numColumns={columns}
+      onLayout={onLayout}
       renderItem={renderItem}
       style={container}
     />

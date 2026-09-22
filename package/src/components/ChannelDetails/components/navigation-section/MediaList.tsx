@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  type FlatListProps,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
 import {
   formatMessage,
@@ -16,6 +9,7 @@ import {
 } from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
+import { getNumberOfColumns, MEDIA_GRID_GAP } from './mediaListColumns';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -29,9 +23,9 @@ import { useOverlayContext } from '../../../../contexts/overlayContext/OverlayCo
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
+import { useContainerWidth } from '../../../../hooks/useContainerWidth';
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { isVideoPlayerAvailable } from '../../../../native';
-import { primitives } from '../../../../theme';
 import { FileTypes } from '../../../../types/types';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 import { openUrlSafely } from '../../../Attachment/utils/openUrlSafely';
@@ -40,9 +34,6 @@ import { NotificationList } from '../../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { EmptyList } from '../../../UIComponents/EmptyList';
 import { type MediaTile, useMediaList } from '../../hooks/useMediaList';
-
-const NUMBER_OF_COLUMNS = 3;
-const GRID_GAP = primitives.spacingXxxs;
 
 export type MediaListProps = {
   /**
@@ -58,6 +49,12 @@ export type MediaListProps = {
    * fetch image/video attachments, newest first).
    */
   searchSource?: MessageSearchSource;
+  /**
+   * Number of columns in the media grid. Defaults to a count derived from the width of the grid's
+   * own container: 3 on phone widths, more as the container grows. Set this to pin the grid to a
+   * fixed column count regardless of width.
+   */
+  numberOfColumns?: number;
 };
 
 const keyExtractor = (item: MediaTile, index: number) => `${item.message.id}-${index}`;
@@ -69,7 +66,7 @@ const listStateSelector = (state: SearchSourceState<MessageResponse>) => ({
   messages: state.items,
 });
 
-const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
+const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaListProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -77,7 +74,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const { width } = useWindowDimensions();
+  const { onLayout, width } = useContainerWidth();
   const { icons, MediaItem } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
@@ -128,10 +125,11 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
 
   const tiles = useMediaList(messages);
 
-  // Tile side length: full width minus the inter-column gaps, split across the columns.
+  const columns = numberOfColumns ?? getNumberOfColumns(width);
+
   const tileSize = useMemo(
-    () => (width - GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS,
-    [width],
+    () => (width - MEDIA_GRID_GAP * (columns - 1)) / columns,
+    [width, columns],
   );
 
   // Opens the fullscreen gallery over the whole loaded collection, selecting the tapped attachment.
@@ -191,7 +189,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   const loadingMoreIndicator = <>{loading && tiles.length > 0 && <ActivityIndicator />}</>;
 
   return (
-    <View style={[styles.container, mediaList.container]}>
+    <View onLayout={onLayout} style={[styles.container, mediaList.container]}>
       <FlatList
         columnWrapperStyle={tiles.length > 0 ? styles.columnWrapper : undefined}
         contentContainerStyle={[styles.listContent, mediaList.listContent]}
@@ -199,7 +197,10 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
         keyExtractor={keyExtractor}
         ListEmptyComponent={emptyState}
         ListFooterComponent={loadingMoreIndicator}
-        numColumns={NUMBER_OF_COLUMNS}
+        // FlatList rejects a `numColumns` change on a mounted list, so the count must key a
+        // remount. Only fires when the count changes, but costs scroll position when it does.
+        key={columns}
+        numColumns={columns}
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}
@@ -234,7 +235,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         columnWrapper: {
-          gap: GRID_GAP,
+          gap: MEDIA_GRID_GAP,
         },
         container: {
           flex: 1,
@@ -244,7 +245,7 @@ const useStyles = () => {
         },
         listContent: {
           flexGrow: 1,
-          gap: GRID_GAP,
+          gap: MEDIA_GRID_GAP,
         },
       }),
     [],
