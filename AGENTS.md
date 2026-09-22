@@ -389,7 +389,7 @@ Never commit API keys or real user data. Example code must use obvious placehold
 
 ## References
 
-- **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9 migration reference — load this instead of the prose upgrade guide for agent-driven migrations), `ai-docs/accessibility.md` (opt-in a11y layer)
+- **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9 migration reference — load this instead of the prose upgrade guide for agent-driven migrations), `ai-docs/accessibility.md` (opt-in a11y layer), `ai-docs/iphone-duo-readiness.md` (iOS 27 resizable-window / iPhone Duo audit — measured geometry, safe-area and `AppState` pitfalls)
 - **Repo skills:** `.claude/skills/{accessibility,rtl,perf-benchmarking}`, `perf/README.md`
 - **Contributing / process:** `CONTRIBUTING.md`, `RELEASE_PROCESS.md`, `PULL_REQUEST_TEMPLATE.md`, `SECURITY.md`
 - **Component docs:** https://getstream.io/chat/docs/sdk/reactnative/
