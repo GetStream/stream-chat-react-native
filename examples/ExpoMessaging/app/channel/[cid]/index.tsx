@@ -8,6 +8,7 @@ import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
   ChannelAvatar,
+  DEFAULT_HIGHLIGHT_DURATION,
   MessageComposer,
   MessageList,
   useChannelPreviewDisplayName,
