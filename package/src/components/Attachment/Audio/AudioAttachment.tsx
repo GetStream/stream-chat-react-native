@@ -28,6 +28,7 @@ import {
 import { AudioPlayerState } from '../../../state-store/audio-player';
 import { primitives } from '../../../theme';
 import { AudioConfig } from '../../../types/types';
+import { getAttachmentUrl } from '../../../utils/attachmentUrls';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
 import { StableDurationLabel } from '../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
@@ -117,7 +118,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
     type: isVoiceRecording ? 'voiceRecording' : 'audio',
-    uri: item.asset_url ?? '',
+    uri: getAttachmentUrl(item) ?? '',
   });
   const { duration, isPlaying, position, progress, currentPlaybackRate } = useStateStore(
     audioPlayer.state,
@@ -295,7 +296,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             rate={currentPlaybackRate}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
-            uri={item.asset_url}
+            uri={getAttachmentUrl(item)}
           />
         )}
       </View>

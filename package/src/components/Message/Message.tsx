@@ -11,7 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
+import {
+  type Attachment,
+  getAttachmentPreviewUrl,
+  type LocalMessage,
+  type MentionEntity,
+  type UserResponse,
+} from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -70,6 +76,7 @@ import {
 import { primitives } from '../../theme';
 import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
+import { getAttachmentUrl } from '../../utils/attachmentUrls';
 import {
   checkMessageEquality,
   generateRandomId,
@@ -481,7 +488,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             ) {
               acc.videos.push({
                 ...cur,
-                image_url: cur.asset_url,
+                // The playable source, which is the local file until the upload resolves — the
+                // gallery opens this, while `thumb_url` is what it renders.
+                image_url: getAttachmentUrl(cur),
                 thumb_url: cur.thumb_url,
                 type: FileTypes.Video,
               });
@@ -496,7 +505,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                * this next if is not combined with the above one for cases where we have
                * an image with no url links at all falling back to being an attachment
                */
-              if (cur.image_url || cur.thumb_url) {
+              // The preview fallback matters while an upload is in flight: such an attachment has
+              // no URL of its own yet, and without it the image would fall out of the gallery
+              // mid-upload and be rendered by a different component once the URL landed.
+              if (getAttachmentPreviewUrl(cur, cur.image_url, cur.thumb_url)) {
                 acc.images.push(cur);
                 acc.other = []; // remove other attachments if an image exists
               }

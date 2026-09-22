@@ -14,7 +14,7 @@ import {
 import { AudioAttachment } from '../../../../components/Attachment/Audio';
 import { useTheme } from '../../../../contexts';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
+import { usePendingUploadsEnabled } from '../../../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
@@ -30,10 +30,10 @@ export const AudioAttachmentUploadPreview = ({
   removeAttachments,
 }: AudioAttachmentUploadPreviewProps) => {
   const styles = useStyles();
-  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const pendingUploadsEnabled = usePendingUploadsEnabled();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    !!allowSendBeforeAttachmentsUpload,
+    pendingUploadsEnabled,
   );
   const messageComposer = useMessageComposer();
   const isDraft = messageComposer.draftId;

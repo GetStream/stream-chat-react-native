@@ -6,14 +6,12 @@ import {
   EventHandler,
   LocalMessage,
   MessageComposerConfig,
-  SendMessageAPIResponse,
   SendMessageOptions,
   Event as StreamEvent,
   MessageRequest as StreamMessage,
   Thread,
 } from 'stream-chat';
 
-import { useChannelRequestHandlers } from './hooks/useChannelRequestHandlers';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
@@ -79,10 +77,8 @@ import {
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 
-import { FileTypes } from '../../types/types';
-import { compressedImageURI } from '../../utils/compressImage';
 import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
-import { getFileNameFromPath, isLocalUrl, ReactionData } from '../../utils/utils';
+import { ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
@@ -171,11 +167,10 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'maxTimeBetweenGroupedMessages'
     >
   > &
-  Pick<ChatContextValue, 'client' | 'enableOfflineSupport'> & { isOnline: boolean } & Partial<
+  Pick<ChatContextValue, 'client'> & { isOnline: boolean } & Partial<
     Pick<
       InputMessageInputContextValue,
       | 'additionalTextInputProps'
-      | 'allowSendBeforeAttachmentsUpload'
       | 'asyncMessagesLockDistance'
       | 'asyncMessagesMinimumPressDuration'
       | 'audioRecordingSendOnComplete'
@@ -262,17 +257,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
      */
     disableKeyboardCompatibleView?: boolean;
-    /**
-     * Overrides the Stream default send message request (Advanced usage only)
-     * @param channelId
-     * @param messageData Message object
-     */
-    doSendMessageRequest?: (
-      channelId: string,
-      messageData: StreamMessage,
-      options?: SendMessageOptions,
-    ) => Promise<SendMessageAPIResponse>;
-
     /**
      * A method invoked just after the first optimistic update of a new message,
      * but before any other HTTP requests happen. Can be used to do extra work
@@ -378,11 +362,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
-    doSendMessageRequest,
     preSendMessageRequest,
     enableMessageGroupingByUser = true,
-    enableOfflineSupport,
-    allowSendBeforeAttachmentsUpload = enableOfflineSupport,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
     FlatList = NativeHandlers.FlatList,
@@ -746,77 +727,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   /**
    * MESSAGE METHODS
    */
-  // Async attachment-upload orchestration. Wired into the registered `sendMessageRequest` handler
-  // (see the useChannelRequestHandlers call below) so it runs INSIDE the stream-chat send pipeline —
-  // after the LLC's optimistic ingest (message already shows pending), before the POST — awaiting
-  // `client.uploadManager` to finish the in-flight uploads and swapping local preview URLs for the
-  // returned CDN URLs. It lives here for now because native image compression (`compressedImageURI`)
-  // and a custom uploader registered through `client.config` must remain reachable, and the
-  // sendMessageRequest seam lets it run in the right place without a pre-ingest or any LLC change.
-  // It IS slated to move into the LLC, just not yet — and that move is what lets the
-  // `doSendMessageRequest` prop and its wrapper in `useChannelRequestHandlers` go.
-  const uploadPendingAttachments = useStableCallback(async (message: LocalMessage) => {
-    if (!message.attachments?.length || !channel?.cid) {
-      return;
-    }
-    const channelCid = channel.cid;
-
-    const uploadOne = async (attachment: NonNullable<LocalMessage['attachments']>[number]) => {
-      // Already uploaded to a remote (CDN) URL — nothing to wait for.
-      if (
-        (attachment.image_url && !isLocalUrl(attachment.image_url)) ||
-        (attachment.asset_url && !isLocalUrl(attachment.asset_url))
-      ) {
-        return;
-      }
-
-      const originalFile = attachment.custom?.originalFile;
-      const localId = attachment.custom?.localId;
-      if (!originalFile?.uri || !localId) {
-        return;
-      }
-
-      let fileForUpload = originalFile;
-      const hasCustomUploader = !!channel.messageComposer.config.attachments.doUploadRequest;
-      if (attachment.type === FileTypes.Image && !hasCustomUploader) {
-        const filename = originalFile.name ?? getFileNameFromPath(originalFile.uri);
-        const compressedUri = await compressedImageURI(originalFile, compressImageQuality);
-        fileForUpload = { ...originalFile, name: filename, uri: compressedUri };
-      }
-
-      // Idempotent by `id`: awaits the picker's in-flight upload for this attachment (or starts one).
-      const response = await client.uploadManager.upload({
-        channelCid,
-        file: fileForUpload,
-        id: localId,
-      });
-
-      if (attachment.type === FileTypes.Image) {
-        attachment.image_url = response.file;
-      } else {
-        attachment.asset_url = response.file;
-        if (response.thumb_url) {
-          attachment.thumb_url = response.thumb_url;
-        }
-      }
-
-      if (attachment.custom) {
-        delete attachment.custom.originalFile;
-        delete attachment.custom.localId;
-      }
-    };
-
-    await Promise.all(message.attachments.map(uploadOne));
-  });
-
-  // Register the integrator's custom message-request overrides into channel.configState so the
-  // stream-chat message-operations engine (send/retry/update via *WithLocalUpdate) honors them.
-  useChannelRequestHandlers({
-    channel,
-    uploadPendingAttachments,
-    doSendMessageRequest,
-  });
-
   const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
     async ({ localMessage, message, options }) => {
       if (preSendMessageRequest) {
@@ -835,8 +745,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // received/failed), offline-DB persistence and paginator ingest — for both channel messages
       // (channel.messagePaginator) and thread replies (thread.messagePaginator, which the thread
       // instance ingests into directly). Its single optimistic ingest shows the message (pending)
-      // instantly; the registered sendMessageRequest handler then awaits any attachment uploads and
-      // POSTs (see useChannelRequestHandlers). It throws on failure, which the MessageInput send flow
+      // instantly, then it awaits any attachment uploads still in flight and POSTs — through a
+      // `sendMessageRequest` registered via `client.config.set(...)`, if any. It throws on failure, which the MessageInput send flow
       // catches to surface a notification.
       await (threadInstance ?? channel).sendMessageWithLocalUpdate({
         localMessage,
@@ -935,7 +845,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
-    allowSendBeforeAttachmentsUpload,
     asyncMessagesLockDistance,
     asyncMessagesMinimumPressDuration,
     audioRecordingSendOnComplete,
@@ -1086,7 +995,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
-  const { client, enableOfflineSupport, isMessageAIGenerated } = useChatContext();
+  const { client, isMessageAIGenerated } = useChatContext();
   const isOnline = useSettledWSConnectionHealth();
   const { t } = useTranslationContext();
   const notificationHostId =
@@ -1110,7 +1019,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
     <ChannelWithContext
       {...{
         client,
-        enableOfflineSupport,
         t,
       }}
       {...props}

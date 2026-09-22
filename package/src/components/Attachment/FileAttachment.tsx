@@ -1,7 +1,11 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import {
+  type Attachment,
+  isLocalUploadAttachment,
+  resolveAttachmentFullByteSize,
+} from 'stream-chat';
 
 import { AttachmentFileUploadProgressIndicator } from './AttachmentFileUploadProgressIndicator';
 import { openUrlSafely } from './utils/openUrlSafely';
@@ -18,6 +22,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { getAttachmentUrl } from '../../utils/attachmentUrls';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
@@ -51,8 +56,10 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   } = props;
   const { FilePreview } = useComponentsContext();
 
-  const localId = attachment.custom?.localId;
+  const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
 
+  // `asset_url` deliberately, not the local file: opening a file whose upload has not resolved
+  // would hand the OS a URI other apps cannot read, so the row stays inert until it has.
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
   return (
@@ -97,8 +104,9 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           indicator={
             <AttachmentFileUploadProgressIndicator
               localId={localId}
-              sourceUrl={attachment.asset_url ?? attachment.custom?.originalFile?.uri}
-              totalBytes={attachment.custom?.file_size}
+              sourceUrl={getAttachmentUrl(attachment)}
+              // Prefers the held file's own size: `file_size` may be missing until the upload resolves.
+              totalBytes={resolveAttachmentFullByteSize(attachment)}
             />
           }
           styles={stylesProp}

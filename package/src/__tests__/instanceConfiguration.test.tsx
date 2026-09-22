@@ -2,13 +2,14 @@ import React from 'react';
 
 import { renderHook } from '@testing-library/react-native';
 
-import { ChannelPaginator } from 'stream-chat';
+import { ChannelPaginator, Thread } from 'stream-chat';
 import type { Channel, StreamChat } from 'stream-chat';
 
-import { useChannelRequestHandlers } from '../components/Channel/hooks/useChannelRequestHandlers';
+import { usePendingUploadsDefault } from '../components/Chat/hooks/usePendingUploadsDefault';
 import { useMarkRead } from '../components/MessageList/hooks/useMarkRead';
 import { ChatProvider } from '../contexts/chatContext/ChatContext';
 import { initiateClientWithChannels } from '../mock-builders/api/initiateClientWithChannels';
+import { generateMessage } from '../mock-builders/generator/message';
 
 /**
  * Contract tests for the SDK's use of the LLC instance-configuration API (`client.config`).
@@ -110,6 +111,96 @@ describe('instance configuration contract', () => {
     });
   });
 
+  describe('pendingUploadsEnabled defaults from <Chat>, and only when unset', () => {
+    const pendingUploadsEnabled = (channel: Channel) =>
+      channel.messageComposer.config.attachments.pendingUploadsEnabled;
+
+    it('follows enableOfflineSupport when nothing is registered', async () => {
+      const {
+        channels: [channel],
+        client,
+      } = await initiateClientWithChannels();
+      channel.messageComposer.registerSubscriptions();
+
+      const { rerender } = renderHook(
+        ({ offline }: { offline: boolean }) => usePendingUploadsDefault(client, offline),
+        { initialProps: { offline: true } },
+      );
+      expect(pendingUploadsEnabled(channel)).toBe(true);
+
+      // The SDK wrote that value, so it may move it again.
+      rerender({ offline: false });
+      expect(pendingUploadsEnabled(channel)).toBe(false);
+    });
+
+    it('never overwrites a value registered before <Chat>', async () => {
+      const {
+        channels: [channel],
+        client,
+      } = await initiateClientWithChannels();
+      client.config.set({ messageComposer: { attachments: { pendingUploadsEnabled: false } } });
+      channel.messageComposer.registerSubscriptions();
+
+      const { rerender } = renderHook(
+        ({ offline }: { offline: boolean }) => usePendingUploadsDefault(client, offline),
+        { initialProps: { offline: true } },
+      );
+      expect(pendingUploadsEnabled(channel)).toBe(false);
+
+      rerender({ offline: false });
+      rerender({ offline: true });
+      expect(pendingUploadsEnabled(channel)).toBe(false);
+    });
+
+    it('never overwrites a value the integrator registers after mount', async () => {
+      const {
+        channels: [channel],
+        client,
+      } = await initiateClientWithChannels();
+      channel.messageComposer.registerSubscriptions();
+
+      const { rerender } = renderHook(
+        ({ offline }: { offline: boolean }) => usePendingUploadsDefault(client, offline),
+        { initialProps: { offline: false } },
+      );
+      client.config.set({ messageComposer: { attachments: { pendingUploadsEnabled: true } } });
+      rerender({ offline: false });
+      rerender({ offline: true });
+      rerender({ offline: false });
+
+      expect(pendingUploadsEnabled(channel)).toBe(true);
+    });
+
+    it('lets a messageComposer setup function override it per channel type, threads included', async () => {
+      const {
+        channels: [messagingChannel],
+        client,
+      } = await initiateClientWithChannels();
+      const livestream = client.channel('livestream', 'pending-uploads-test');
+      const thread = new Thread({
+        channel: livestream,
+        client,
+        parentMessage: livestream.state.formatMessage(generateMessage({})),
+      });
+
+      client.config.setSetupFunction('messageComposer', ({ composer }) => {
+        if (composer.channel.type !== 'livestream') return;
+        composer.updateConfig({ attachments: { pendingUploadsEnabled: false } });
+      });
+      [
+        messagingChannel.messageComposer,
+        livestream.messageComposer,
+        thread.messageComposer,
+      ].forEach((composer) => composer.registerSubscriptions());
+
+      renderHook(() => usePendingUploadsDefault(client, true));
+
+      expect(pendingUploadsEnabled(messagingChannel)).toBe(true);
+      expect(livestream.messageComposer.config.attachments.pendingUploadsEnabled).toBe(false);
+      expect(thread.messageComposer.config.attachments.pendingUploadsEnabled).toBe(false);
+    });
+  });
+
   describe('paginator configuration is written through updateConfig', () => {
     it('persists lockItemOrder and doRequest on the channel-list paginator', async () => {
       const { client } = await initiateClientWithChannels();
@@ -136,27 +227,6 @@ describe('instance configuration contract', () => {
       client.config.set({ messageOperations: { failedSendCacheMaxSize: 42 } });
 
       expect(paginator.config.lockItemOrder).toBe(true);
-    });
-  });
-
-  describe('channel.configState is a prototype getter', () => {
-    it('does not throw for a spread copy of a channel, which no longer carries it', async () => {
-      const {
-        channels: [channel],
-        client,
-      } = await initiateClientWithChannels();
-
-      // `configState` moved from an own field to a getter on `Channel.prototype`, so `{...channel}`
-      // silently drops it. Tests and integrator code both make such copies; this is the crash that
-      // took out `Channel.test.tsx` during the migration.
-      const spreadCopy = { ...channel } as Channel;
-      expect(spreadCopy.configState).toBeUndefined();
-
-      expect(() =>
-        renderHook(() => useChannelRequestHandlers({ channel: spreadCopy }), {
-          wrapper: chatWrapper(client),
-        }),
-      ).not.toThrow();
     });
   });
 

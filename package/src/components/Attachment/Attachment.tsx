@@ -6,6 +6,7 @@ import {
   isAudioAttachment,
   isFileAttachment,
   isImageAttachment,
+  isLocalUploadAttachment,
   isVideoAttachment,
   isVoiceRecordingAttachment,
   type Attachment as AttachmentType,
@@ -31,6 +32,7 @@ import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
+import { getAttachmentUrl } from '../../utils/attachmentUrls';
 import { isLocalUrl } from '../../utils/utils';
 
 export type ActionHandler = (name: string, value: string) => void;
@@ -121,7 +123,10 @@ const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPr
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url &&
-    prevAttachment.type === nextAttachment.type;
+    prevAttachment.type === nextAttachment.type &&
+    // Falls back to the local file while an upload is in flight, so this still tells two pending
+    // attachments apart and changes when one settles.
+    getAttachmentUrl(prevAttachment) === getAttachmentUrl(nextAttachment);
   if (!attachmentEqual) {
     return false;
   }
@@ -188,9 +193,9 @@ const MessageAudioAttachment = ({
   index,
   message,
 }: MessageAudioAttachmentProps) => {
-  const localId = attachment.custom?.localId;
-  const sourceUrl = attachment.asset_url ?? attachment.custom?.originalFile?.uri;
-  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
+  const sourceUrl = getAttachmentUrl(attachment);
+  const shouldTrackPendingUpload = !!localId && isLocalUrl(sourceUrl);
   const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
   const indicator = pendingUpload.isUploading ? (
     <AttachmentFileUploadProgressIndicator

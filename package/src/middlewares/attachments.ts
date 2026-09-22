@@ -1,125 +1,16 @@
 import {
-  Attachment,
   AttachmentPreUploadMiddleware,
-  FileReference,
-  isLocalImageAttachment,
   isLocalVideoAttachment,
-  LocalAttachment,
   MessageComposer,
-  MessageComposerMiddlewareState,
-  MessageCompositionMiddleware,
-  MessageDraftComposerMiddlewareValueState,
-  MessageDraftCompositionMiddleware,
-  MiddlewareHandlerParams,
 } from 'stream-chat';
 
-import { isLocalUrl } from '../utils/utils';
-
-export const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
-  const { localMetadata, ...attachment } = localAttachment;
-
-  if (isLocalImageAttachment(localAttachment)) {
-    const isRemoteUri = !!attachment.image_url && !isLocalUrl(attachment.image_url);
-
-    if (isRemoteUri) return attachment as Attachment;
-
-    return {
-      ...attachment,
-      custom: {
-        ...attachment.custom,
-        localId: localMetadata?.id,
-        originalFile: localMetadata.file,
-      },
-      image_url: localMetadata?.previewUri,
-    } as Attachment;
-  } else {
-    const isRemoteUri = !!attachment.asset_url && !isLocalUrl(attachment.asset_url);
-    if (isRemoteUri) return attachment as Attachment;
-
-    return {
-      ...attachment,
-      asset_url: (localMetadata.file as FileReference).uri,
-      custom: {
-        ...attachment.custom,
-        localId: localMetadata?.id,
-        originalFile: localMetadata.file,
-      },
-    } as Attachment;
-  }
-};
-
-export const createAttachmentsCompositionMiddleware = (
-  composer: MessageComposer,
-): MessageCompositionMiddleware => ({
-  handlers: {
-    compose: ({
-      state,
-      next,
-      forward,
-    }: MiddlewareHandlerParams<MessageComposerMiddlewareState>) => {
-      const { attachmentManager } = composer;
-      if (!attachmentManager) return forward();
-
-      const attachments = (state.message.attachments ?? []).concat(
-        attachmentManager.attachments
-          // Blocked attachments (e.g. over the size limit) are permanent
-          // validation failures the server will reject, so never serialize
-          // them into the outgoing message.
-          .filter((attachment) => attachment.localMetadata.uploadState !== 'blocked')
-          .map(localAttachmentToAttachment),
-      );
-
-      // prevent introducing attachments array into the payload sent to the server
-      if (!attachments.length) return forward();
-
-      return next({
-        ...state,
-        localMessage: {
-          ...state.localMessage,
-          attachments: [...attachments],
-        },
-        message: {
-          ...state.message,
-          attachments: [...attachments],
-        },
-      });
-    },
-  },
-  id: 'stream-io/message-composer-middleware/attachments',
-});
-
-export const createDraftAttachmentsCompositionMiddleware = (
-  composer: MessageComposer,
-): MessageDraftCompositionMiddleware => ({
-  handlers: {
-    compose: ({
-      state,
-      next,
-      forward,
-    }: MiddlewareHandlerParams<MessageDraftComposerMiddlewareValueState>) => {
-      const { attachmentManager } = composer;
-      if (!attachmentManager) return forward();
-
-      const attachments = (state.draft.attachments ?? []).concat(
-        attachmentManager.attachments
-          // Don't persist blocked attachments (e.g. over the size limit) into
-          // the draft — they are permanent validation failures.
-          .filter((attachment) => attachment.localMetadata.uploadState !== 'blocked')
-          .map(localAttachmentToAttachment),
-      );
-
-      return next({
-        ...state,
-        draft: {
-          ...state.draft,
-          attachments,
-        },
-      });
-    },
-  },
-  id: 'stream-io/message-composer-middleware/draft-attachments',
-});
-
+/**
+ * Supplies a local video's preview URI.
+ *
+ * Every other attachment type gets `localMetadata.previewUri` from `toLocalUploadAttachment`,
+ * which points it at the picked file itself. A video file is not renderable, so the preview has
+ * to be the thumbnail the native picker extracted (`thumb_url`) instead.
+ */
 const createVideoAttachmentPreviewMiddleware = (): AttachmentPreUploadMiddleware => ({
   id: 'stream-io/message-composer-ui-middleware/video-attachment-preview',
   handlers: {

@@ -42,11 +42,17 @@ export type UploadAttachmentPreviewProps<A extends LocalUploadAttachment> = {
   removeAttachments: (ids: string[]) => void;
 };
 
-export interface DefaultAttachmentData {
-  originalFile?: File;
-  /** Matches `LocalAttachment.localMetadata.id` / `uploadManager` record id for pending uploads */
-  localId?: string;
-}
+/**
+ * This SDK adds nothing of its own to an attachment's custom data.
+ *
+ * An attachment whose upload has not resolved keeps `localMetadata` (`id`, `file`, `previewUri`)
+ * from `stream-chat`'s own composition, which is what the message list joins to the live
+ * `uploadManager` record and what the send path needs to upload or retry. The SDK used to smuggle
+ * that through `custom.localId` / `custom.originalFile` instead, squatting in data that belongs to
+ * the integrator. `mime_type` and `file_size` come from `stream-chat` itself.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface DefaultAttachmentData {}
 
 export interface DefaultUserData {
   image?: string;

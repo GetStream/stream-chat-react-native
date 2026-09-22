@@ -14,7 +14,6 @@ import type {
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { sendMessageApi } from '../../../mock-builders/api/sendMessage';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -407,15 +406,10 @@ describe('Own capabilities', () => {
       allOwnCapabilities.sendMessage,
       allOwnCapabilities.sendLinks,
     ]);
-    const mockFn = jest.fn();
-    const { queryByTestId } = render(
-      getComponent({
-        doSendMessageRequest: (() => {
-          mockFn();
-          return sendMessageApi();
-        }) as unknown as React.ComponentProps<typeof Channel>['doSendMessageRequest'],
-      }),
-    );
+    // The LLC's default send goes through `channel.sendMessage`.
+    const sendMessage = jest.fn().mockResolvedValue({});
+    channel.sendMessage = sendMessage;
+    const { queryByTestId } = render(getComponent());
 
     await act(async () => {
       const text = 'Awesome repository https://github.com/GetStream/stream-chat-react-native';
@@ -432,6 +426,6 @@ describe('Own capabilities', () => {
       fireEvent(queryByTestId('send-button')!, 'onPress');
     });
 
-    await waitFor(() => expect(mockFn).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(1));
   });
 });

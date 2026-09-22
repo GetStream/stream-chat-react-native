@@ -4,9 +4,11 @@ import { View } from 'react-native';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
 import type {
+  Attachment,
   Channel as ChannelLLC,
   ChannelMemberResponse,
   LocalMessage,
+  LocalUploadAttachment,
   ReactionResponse,
   StreamChat,
   UserResponse,
@@ -102,9 +104,7 @@ const markConnectionHealthy = (client: StreamChat) => {
 };
 
 // React flushes passive effects child-first, so the test-callback effect below runs BEFORE `Channel`'s
-// own mount effects — verifiably: without this wait, `channel.configState.requestHandlers` at edit time
-// holds only the declaratively-registered `updateMessageRequest`, with no `sendMessageRequest`, because
-// `useChannelRequestHandlers` has not run yet.
+// own mount effects.
 //
 // An operation fired from that window races `Channel`'s own offline-DB persistence of the initial query
 // result. The in-memory paginator is fine either way; the DB row is not. Observed across repeat runs of
@@ -625,7 +625,7 @@ export const OptimisticUpdates = () => {
             <Channel
               channel={channel}
               // v10 invokes doUpdateMessageRequest with the `updateMessage` request shape
-              // `{ id, message }` (see useChannelRequestHandlers), not a flat LocalMessage. Echo a
+              // `{ id, message }`, not a flat LocalMessage. Echo a
               // server-shaped response reflecting the edit; the LLC's success path re-ingests it.
             >
               <CallbackEffectWithContext
@@ -798,19 +798,24 @@ export const OptimisticUpdates = () => {
         const message = channel.messagePaginator.headItems[0];
         const editedText = 'edited attachment message';
         const localUri = 'file://edited-attachment.png';
+        // An attachment whose upload has not resolved: no `asset_url` of its own, and the file
+        // handle plus preview live in `localMetadata` (cast because `LocalMessage.attachments` is
+        // typed as plain `Attachment[]`, as it is everywhere this shape travels).
         const editedAttachments = [
           {
-            asset_url: localUri,
-            custom: {
-              originalFile: generateFileReference({
+            localMetadata: {
+              file: generateFileReference({
                 name: 'edited-attachment.png',
                 type: 'image/png',
                 uri: localUri,
               }),
+              id: 'edited-attachment-upload',
+              previewUri: localUri,
+              uploadState: 'uploading',
             },
             type: 'file',
           },
-        ];
+        ] as unknown as Attachment[];
 
         // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
         // resolves this into `channel.configState.requestHandlers` as part of the channel's own
@@ -841,8 +846,9 @@ export const OptimisticUpdates = () => {
             <Channel
               channel={channel}
               // Persist the optimistic attachment edit locally, then reject the request (offline). The
-              // local copy (state + DB, incl. the local attachment URL) must survive so the offline-DB
-              // hydration Channel runs on mount re-seeds the edited copy, not the pre-edit one.
+              // local copy must survive in state AND in the DB — including `localMetadata`, which is
+              // what a retry needs to find the file again — so the offline-DB hydration Channel runs
+              // on mount re-seeds the edited copy, not the pre-edit one.
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
@@ -878,11 +884,17 @@ export const OptimisticUpdates = () => {
           const dbMessage = dbMessages.find((row) => row.id === message.id);
           const storedAttachments = JSON.parse(dbMessage!.attachments as string);
 
+          const { localMetadata } = updatedMessage!.attachments![0] as LocalUploadAttachment;
+
           expect(updatedMessage!.text).toBe(editedText);
-          expect(updatedMessage!.attachments![0].asset_url).toBe(localUri);
+          expect(localMetadata.previewUri).toBe(localUri);
+          expect(localMetadata.file).toEqual(expect.objectContaining({ uri: localUri }));
           expect(pendingTasksRows).toHaveLength(0);
           expect(dbMessage!.text).toBe(editedText);
-          expect(storedAttachments[0].asset_url).toBe(localUri);
+          // The file handle has to round-trip through SQLite, or a retry after a restart has
+          // nothing to re-upload.
+          expect(storedAttachments[0].localMetadata.file.uri).toBe(localUri);
+          expect(storedAttachments[0].localMetadata.previewUri).toBe(localUri);
         });
       });
     });
