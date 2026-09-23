@@ -15,8 +15,8 @@ import { useStateStore } from '../../../hooks/useStateStore';
  * The per-message maps cannot express that: they mark only the message each cursor happens to land
  * on, so every message before it looks unread.
  *
- * Prefer this over `useMessageReadCount` for a read indicator. `useMessageReadCount` answers
- * "whose cursor stopped here", which is what positions a read avatar, not who has read the message.
+ * Use this for a read indicator. `useMessageReadData` answers a different question — the users who
+ * have read the message — and is what a message-info screen wants.
  */
 export const useIsMessageReadByOthers = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();

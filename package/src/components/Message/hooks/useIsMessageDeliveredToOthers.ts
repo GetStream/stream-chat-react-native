@@ -13,7 +13,7 @@ import { useStateStore } from '../../../hooks/useStateStore';
  * anyone else has reached (`lastDeliveredRefByOthers`) rather than asking who is parked on this
  * message, so the answer is monotonic across the list.
  *
- * Prefer this over `useMessageDeliveredToCount` for a delivery indicator.
+ * Use this for a delivery indicator; `useMessageDeliveredData` answers who has actually received it.
  */
 export const useIsMessageDeliveredToOthers = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();
