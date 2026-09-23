@@ -224,9 +224,6 @@ const getAttachmentItemType = (message: LocalMessage) => {
       attachment.type === FileTypes.Image &&
       !attachment.og_scrape_url &&
       !attachment.title_link &&
-      // Matches `Message`'s own categorization, preview fallback included: classifying a
-      // still-uploading image differently would flip the row's recycle type the moment its URL
-      // arrives, forcing exactly the unmount/remount this function exists to avoid.
       !!getAttachmentPreviewUrl(attachment, attachment.image_url, attachment.thumb_url);
     const isGalleryVideo =
       attachment.type === FileTypes.Video && !attachment.og_scrape_url && isVideoPlayerAvailable();

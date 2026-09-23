@@ -488,8 +488,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             ) {
               acc.videos.push({
                 ...cur,
-                // The playable source, which is the local file until the upload resolves — the
-                // gallery opens this, while `thumb_url` is what it renders.
                 image_url: getAttachmentUrl(cur),
                 thumb_url: cur.thumb_url,
                 type: FileTypes.Video,
@@ -505,9 +503,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                * this next if is not combined with the above one for cases where we have
                * an image with no url links at all falling back to being an attachment
                */
-              // The preview fallback matters while an upload is in flight: such an attachment has
-              // no URL of its own yet, and without it the image would fall out of the gallery
-              // mid-upload and be rendered by a different component once the URL landed.
               if (getAttachmentPreviewUrl(cur, cur.image_url, cur.thumb_url)) {
                 acc.images.push(cur);
                 acc.other = []; // remove other attachments if an image exists

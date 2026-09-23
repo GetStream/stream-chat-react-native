@@ -17,15 +17,10 @@ export function getUrlOfImageAttachment(
     return image.giphy?.[giphyVersion]?.url || image.thumb_url;
   }
 
-  // A video's URL is what the full-screen gallery plays and what a tap selects, so it must be the
-  // video itself. Its `previewUri` is the thumbnail (`setupVideoAttachmentPreviewMiddleware`), which
-  // the preview fallback below would return for a video still uploading.
+  // For videos this is the playble URL
   if (image.type === FileTypes.Video) {
     return getAttachmentUrl(image);
   }
 
-  // The preview fallback is what keeps a still-uploading image visible: it has no `image_url` until
-  // the upload resolves. This is the choke point for the gallery, the image-gallery store and the
-  // channel-details media list alike.
   return getAttachmentPreviewUrl(image, image.image_url, image.asset_url);
 }

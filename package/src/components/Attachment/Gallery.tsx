@@ -104,8 +104,6 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     minWidth,
   };
   const imagesAndVideos = [...(images || []), ...(videos || [])];
-  // `getUrlOfImageAttachment` falls back to the local preview while an upload is in flight, so a
-  // pending image still contributes a URL of its own and the gallery is rebuilt when it settles.
   const galleryItemKey = (i: Attachment) => `${getUrlOfImageAttachment(i)}${i.thumb_url}`;
   const imagesAndVideosValue = `${images?.length}${videos?.length}${images
     ?.map(galleryItemKey)

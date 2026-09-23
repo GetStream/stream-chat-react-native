@@ -124,8 +124,6 @@ const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPr
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url &&
     prevAttachment.type === nextAttachment.type &&
-    // Falls back to the local file while an upload is in flight, so this still tells two pending
-    // attachments apart and changes when one settles.
     getAttachmentUrl(prevAttachment) === getAttachmentUrl(nextAttachment);
   if (!attachmentEqual) {
     return false;

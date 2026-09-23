@@ -798,9 +798,6 @@ export const OptimisticUpdates = () => {
         const message = channel.messagePaginator.headItems[0];
         const editedText = 'edited attachment message';
         const localUri = 'file://edited-attachment.png';
-        // An attachment whose upload has not resolved: no `asset_url` of its own, and the file
-        // handle plus preview live in `localMetadata` (cast because `LocalMessage.attachments` is
-        // typed as plain `Attachment[]`, as it is everywhere this shape travels).
         const editedAttachments = [
           {
             localMetadata: {
@@ -845,10 +842,7 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel
               channel={channel}
-              // Persist the optimistic attachment edit locally, then reject the request (offline). The
-              // local copy must survive in state AND in the DB — including `localMetadata`, which is
-              // what a retry needs to find the file again — so the offline-DB hydration Channel runs
-              // on mount re-seeds the edited copy, not the pre-edit one.
+              // Persist the optimistic attachment edit locally, then reject the request (offline).
             >
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
@@ -891,8 +885,6 @@ export const OptimisticUpdates = () => {
           expect(localMetadata.file).toEqual(expect.objectContaining({ uri: localUri }));
           expect(pendingTasksRows).toHaveLength(0);
           expect(dbMessage!.text).toBe(editedText);
-          // The file handle has to round-trip through SQLite, or a retry after a restart has
-          // nothing to re-upload.
           expect(storedAttachments[0].localMetadata.file.uri).toBe(localUri);
           expect(storedAttachments[0].localMetadata.previewUri).toBe(localUri);
         });

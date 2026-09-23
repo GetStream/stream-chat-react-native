@@ -58,8 +58,6 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
 
   const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
 
-  // `asset_url` deliberately, not the local file: opening a file whose upload has not resolved
-  // would hand the OS a URI other apps cannot read, so the row stays inert until it has.
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
   return (
@@ -105,7 +103,6 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
             <AttachmentFileUploadProgressIndicator
               localId={localId}
               sourceUrl={getAttachmentUrl(attachment)}
-              // Prefers the held file's own size: `file_size` may be missing until the upload resolves.
               totalBytes={resolveAttachmentFullByteSize(attachment)}
             />
           }
