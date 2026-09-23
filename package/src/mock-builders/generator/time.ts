@@ -1,4 +1,5 @@
-import { dateToNs, msToNs, nowNs } from 'stream-chat';
+import { asTimestampNS, dateToNs, msToNs, nowNs } from 'stream-chat';
+import type { TimestampNS } from 'stream-chat';
 
 /**
  * Normalizes whatever a test hands a generator into the unix-**nanosecond** number the API puts on
@@ -10,9 +11,9 @@ import { dateToNs, msToNs, nowNs } from 'stream-chat';
  *
  * A bare `number` is taken to be nanoseconds already, matching the SDK's unit everywhere else.
  */
-export const convertDateToTimestamp = (value?: Date | number | string): number => {
+export const convertDateToTimestamp = (value?: Date | number | string): TimestampNS => {
   if (value === undefined) return nowNs();
   if (value instanceof Date) return dateToNs(value);
-  if (typeof value === 'number') return value;
+  if (typeof value === 'number') return asTimestampNS(value);
   return msToNs(Date.parse(value));
 };

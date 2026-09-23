@@ -15,9 +15,10 @@ import type {
   MessageResponse,
   ReactionResponse,
   StreamChat,
+  TimestampNS,
   UserResponse,
 } from 'stream-chat';
-import { dateToNs, nowNs, nsToMs } from 'stream-chat';
+import { asTimestampNS, dateToNs, nowNs, nsToMs } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 // Tests exercise internal APIs on StreamChat (private sync manager, legacy `wsConnection`).
@@ -138,7 +139,7 @@ export const Generic = () => {
     type ReadWithCid = {
       cid: string;
       /** Unix nanoseconds, as the API sends it. */
-      last_read: number;
+      last_read: TimestampNS;
       unread_messages: number;
       user: ChannelMemberResponse['user'];
     };
@@ -939,7 +940,9 @@ export const Generic = () => {
           (a.created_at as number) - (b.created_at as number),
       );
       // truncate at the middle
-      const truncatedAt = messages[Number(messages.length / 2)].created_at as number | undefined;
+      const truncatedAt = messages[Number(messages.length / 2)].created_at as
+        | TimestampNS
+        | undefined;
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -984,7 +987,7 @@ export const Generic = () => {
 
       const channelResponse = channels[getRandomInt(0, channels.length - 1)];
       const channelToTruncate = channelResponse.channel;
-      const truncatedAt = 0;
+      const truncatedAt = asTimestampNS(0);
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -1025,7 +1028,7 @@ export const Generic = () => {
         ...messages.map((m: Partial<MessageResponse> | LocalMessage) => m.created_at as number),
       );
       // truncate at the middle
-      const truncatedAt = latestTimestamp + 1;
+      const truncatedAt = asTimestampNS(latestTimestamp + 1);
       act(() =>
         dispatchChannelTruncatedEvent(chatClient, {
           ...channelToTruncate,
@@ -1461,7 +1464,7 @@ export const Generic = () => {
         type: 'wow',
         user: reactionMember.user,
       });
-      const newDate = new Date().toISOString();
+      const newDate = nowNs();
       // the actual content of the reaction_groups does not matter, as we just want to know if it updates to it
       // anything impossible given the scenarios is fine
       const messageWithNewReaction = {
@@ -1520,7 +1523,7 @@ export const Generic = () => {
         type: 'wow',
         user: reactionMember.user,
       });
-      const newDate = new Date().toISOString();
+      const newDate = nowNs();
       const messageWithNewReaction = {
         ...targetMessage,
         latest_reactions: [...(targetMessage.latest_reactions ?? []), newReaction],
@@ -1577,7 +1580,7 @@ export const Generic = () => {
         type: 'wow',
         user: reactionMember.user,
       });
-      const newDate = new Date().toISOString();
+      const newDate = nowNs();
       const messageWithNewReaction = {
         ...targetMessage,
         latest_reactions: [...(targetMessage.latest_reactions ?? []), newReaction],

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -454,7 +454,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const styles = useStyles();
   const [deleted, setDeleted] = useState<boolean>(false);
-  const lastReadRef = useRef<Date | undefined>(undefined);
   // The active thread is fully prop-driven: derive it synchronously during render so the reply
   // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
   // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
@@ -539,7 +538,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   useEffect(() => {
     const initChannel = async () => {
-      lastReadRef.current = new Date();
       const unreadCount = channel.countUnread();
       const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
       if (!channel || !shouldSyncChannel) {

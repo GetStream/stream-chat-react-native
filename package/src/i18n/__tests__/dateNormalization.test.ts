@@ -1,4 +1,4 @@
-import { convertTimestampToDate } from 'stream-chat';
+import { asTimestampNS, convertTimestampToDate } from 'stream-chat';
 
 import { Streami18n } from '../../utils/i18n/Streami18n';
 import { getCalendarDateStringForA11y, getDateString } from '../utils';
@@ -35,7 +35,7 @@ describe('wire timestamps at the i18n boundary', () => {
 
   it('renders the instant a converted wire timestamp represents', () => {
     const instant = Date.UTC(2026, 7, 20, 12, 0, 0);
-    const nanoseconds = instant * 1e6;
+    const nanoseconds = asTimestampNS(instant * 1e6);
 
     // `timestamp.MessageTimestamp` formats as `LT`, so this pins the actual instant rather than a
     // relative word that depends on the clock.
@@ -45,7 +45,7 @@ describe('wire timestamps at the i18n boundary', () => {
   });
 
   it('converts the value measured on device', () => {
-    const nanoseconds = 1787870023772367000;
+    const nanoseconds = asTimestampNS(1787870023772367000);
 
     expect(render(convertTimestampToDate(nanoseconds), 'timestamp.PollVote')).not.toMatch(
       /Invalid Date/,
@@ -63,7 +63,7 @@ describe('wire timestamps at the i18n boundary', () => {
   });
 
   it('declines a value that cannot be converted at all', () => {
-    expect(convertTimestampToDate(Number.NaN)).toBeUndefined();
+    expect(convertTimestampToDate(asTimestampNS(Number.NaN))).toBeUndefined();
     expect(convertTimestampToDate(undefined)).toBeUndefined();
     expect(convertTimestampToDate(null)).toBeUndefined();
     // And the output guard still catches an already-invalid Date, whatever produced it.
@@ -73,7 +73,7 @@ describe('wire timestamps at the i18n boundary', () => {
   it('converts the accessibility date the same way', () => {
     const instant = Date.UTC(2026, 7, 20, 12, 0, 0);
     const spoken = getCalendarDateStringForA11y({
-      messageCreatedAt: convertTimestampToDate(instant * 1e6),
+      messageCreatedAt: convertTimestampToDate(asTimestampNS(instant * 1e6)),
       tDateTimeParser,
     });
 

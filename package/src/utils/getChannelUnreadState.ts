@@ -1,3 +1,4 @@
+import { asTimestampNS } from 'stream-chat';
 import type { Channel } from 'stream-chat';
 
 import type { ChannelUnreadState } from '../types/types';
@@ -20,7 +21,7 @@ export const getChannelUnreadState = (channel: Channel): ChannelUnreadState | un
 
   return {
     first_unread_message_id: snapshot.firstUnreadMessageId ?? undefined,
-    last_read: snapshot.lastReadAt ?? 0,
+    last_read: snapshot.lastReadAt ?? asTimestampNS(0),
     last_read_message_id: snapshot.lastReadMessageId ?? undefined,
     unread_messages: snapshot.unreadCount,
   };

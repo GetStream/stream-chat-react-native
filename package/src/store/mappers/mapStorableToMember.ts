@@ -1,6 +1,6 @@
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { mapStorableToTimestamp } from './mapStorableToTimestamp';
+import { mapStorableToRequiredTimestamp, mapStorableToTimestamp } from './mapStorableToTimestamp';
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { TableRowJoinedUser } from '../types';
@@ -29,7 +29,7 @@ export const mapStorableToMember = (
     archived_at: mapStorableToTimestamp(archivedAt),
     banned: Boolean(banned),
     channel_role: channelRole ?? '',
-    created_at: mapStorableToTimestamp(createdAt) ?? 0,
+    created_at: mapStorableToRequiredTimestamp(createdAt),
     custom: {},
     invite_accepted_at: mapStorableToTimestamp(inviteAcceptedAt),
     invite_rejected_at: mapStorableToTimestamp(inviteRejectedAt),
@@ -39,7 +39,7 @@ export const mapStorableToMember = (
     pinned_at: mapStorableToTimestamp(pinnedAt),
     role,
     shadow_banned: Boolean(shadowBanned),
-    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
+    updated_at: mapStorableToRequiredTimestamp(updatedAt),
     user: mapStorableToUser(user),
     user_id: userId,
   };
