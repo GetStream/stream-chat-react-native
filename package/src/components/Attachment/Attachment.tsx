@@ -10,6 +10,7 @@ import {
   isLocalUploadAttachment,
   isVideoAttachment,
   isVoiceRecordingAttachment,
+  resolveAttachmentFullByteSize,
   type Attachment as AttachmentType,
   type LocalMessage,
 } from 'stream-chat';
@@ -200,7 +201,7 @@ const MessageAudioAttachment = ({
     <AttachmentFileUploadProgressIndicator
       localId={localId}
       sourceUrl={sourceUrl}
-      totalBytes={attachment.custom?.file_size}
+      totalBytes={resolveAttachmentFullByteSize(attachment)}
     />
   ) : undefined;
 

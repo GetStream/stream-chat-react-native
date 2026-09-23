@@ -2,7 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
+import {
+  FileReference,
+  LocalAudioAttachment,
+  LocalVoiceRecordingAttachment,
+  resolveAttachmentFullByteSize,
+} from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 import {
@@ -67,7 +72,7 @@ export const AudioAttachmentUploadPreview = ({
         <FileUploadInProgressIndicator
           localId={attachment.localMetadata.id}
           sourceUrl={assetUrl}
-          totalBytes={attachment.custom?.file_size}
+          totalBytes={resolveAttachmentFullByteSize(attachment)}
         />
       );
     }
@@ -78,13 +83,7 @@ export const AudioAttachmentUploadPreview = ({
       return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
-  }, [
-    assetUrl,
-    attachment.custom?.file_size,
-    attachment.localMetadata,
-    indicatorType,
-    onRetryHandler,
-  ]);
+  }, [assetUrl, attachment, indicatorType, onRetryHandler]);
 
   return (
     <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>

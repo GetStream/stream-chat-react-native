@@ -7,6 +7,7 @@ import {
   LocalAudioAttachment,
   LocalFileAttachment,
   LocalVideoAttachment,
+  resolveAttachmentFullByteSize,
 } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
@@ -67,7 +68,7 @@ export const FileAttachmentUploadPreview = ({
         <FileUploadInProgressIndicator
           localId={attachment.localMetadata.id}
           sourceUrl={sourceUrl}
-          totalBytes={attachment.custom?.file_size}
+          totalBytes={resolveAttachmentFullByteSize(attachment)}
         />
       );
     }
@@ -82,8 +83,7 @@ export const FileAttachmentUploadPreview = ({
     FileUploadInProgressIndicator,
     FileUploadNotSupportedIndicator,
     FileUploadRetryIndicator,
-    attachment.localMetadata,
-    attachment.custom?.file_size,
+    attachment,
     indicatorType,
     onRetryHandler,
     sourceUrl,
