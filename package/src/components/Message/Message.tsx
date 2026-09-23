@@ -16,9 +16,7 @@ import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stre
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
-import { useMessageDeliveredToCount } from './hooks/useMessageDeliveredToCount';
 import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
-import { useMessageReadCount } from './hooks/useMessageReadCount';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
 import { MessageOverlayWrapper } from './MessageOverlayWrapper';
@@ -207,20 +205,9 @@ export type MessagePropsWithContext = Pick<
 > &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
-    Omit<
-      MessageContextValue,
-      | 'groupStyles'
-      | 'handleReaction'
-      | 'message'
-      | 'isMessageAIGenerated'
-      | 'deliveredToCount'
-      | 'readBy'
-    >
+    Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
   > &
-  Pick<
-    MessageContextValue,
-    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredToCount'
-  > &
+  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
   Pick<
     MessageOperations,
     | 'sendReaction'
@@ -292,7 +279,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     chatContext,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
-    deliveredToCount,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
     enforceUniqueReaction,
@@ -336,7 +322,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     t,
     threadList = false,
     updateMessage,
-    readBy,
     setQuotedMessage,
   } = props;
   const {
@@ -731,7 +716,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     alignment,
     channel,
     contextMenuAnchorRef,
-    deliveredToCount,
     dismissOverlay,
     files: attachments.files,
     goToMessage,
@@ -824,7 +808,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     registerMessageOverlayTarget,
     unregisterMessageOverlayTarget,
     reactions,
-    readBy,
     setQuotedMessage,
     showAvatar,
     showMessageOverlay,
@@ -967,7 +950,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWithContext) => {
   const {
     chatContext: { mutedUsers: prevMutedUsers },
-    deliveredToCount: prevDeliveredBy,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -976,12 +958,10 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     message: prevMessage,
     messagesContext: prevMessagesContext,
     showUnreadUnderlay: prevShowUnreadUnderlay,
-    readBy: prevReadBy,
     t: prevT,
   } = prevProps;
   const {
     chatContext: { mutedUsers: nextMutedUsers },
-    deliveredToCount: nextDeliveredBy,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -989,19 +969,8 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     message: nextMessage,
     messagesContext: nextMessagesContext,
     showUnreadUnderlay: nextShowUnreadUnderlay,
-    readBy: nextReadBy,
     t: nextT,
   } = nextProps;
-
-  const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
-  if (!deliveredByEqual) {
-    return false;
-  }
-
-  const readByEqual = prevReadBy === nextReadBy;
-  if (!readByEqual) {
-    return false;
-  }
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) {
@@ -1149,15 +1118,12 @@ export type MessageProps = Partial<
  * @example ./Message.md
  */
 export const Message = (props: MessageProps) => {
-  const { message } = props;
   const { channel, enforceUniqueReaction } = useChannelContext();
   const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
   const messageOperations = useMessageOperations();
   const { t } = useTranslationContext();
-  const readByCount = useMessageReadCount({ message });
-  const deliveredToCount = useMessageDeliveredToCount({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
@@ -1167,11 +1133,9 @@ export const Message = (props: MessageProps) => {
       {...{
         channel,
         chatContext,
-        deliveredToCount,
         dismissKeyboard,
         enforceUniqueReaction,
         messagesContext,
-        readBy: readByCount,
         setEditingState,
         setQuotedMessage,
         t,

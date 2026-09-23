@@ -92,6 +92,8 @@ export * from './Message/hooks/useMessageActions';
 export * from './Message/hooks/useMessageActionHandlers';
 export * from './Message/hooks/useMessageOperations';
 export * from './Message/hooks/useStreamingMessage';
+export * from './Message/hooks/useIsMessageDeliveredToOthers';
+export * from './Message/hooks/useIsMessageReadByOthers';
 export * from './Message/hooks/useMessageDeliveredToCount';
 export * from './Message/hooks/useMessageDeliveryData';
 export * from './Message/hooks/useMessageReadCount';
