@@ -76,7 +76,7 @@ import {
 import { primitives } from '../../theme';
 import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
-import { getAttachmentUrl } from '../../utils/attachmentUrls';
+import { getPlayableVideoUrl } from '../../utils/attachmentUrls';
 import {
   checkMessageEquality,
   generateRandomId,
@@ -488,7 +488,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             ) {
               acc.videos.push({
                 ...cur,
-                image_url: getAttachmentUrl(cur),
+                image_url: getPlayableVideoUrl(cur),
                 thumb_url: cur.thumb_url,
                 type: FileTypes.Video,
               });

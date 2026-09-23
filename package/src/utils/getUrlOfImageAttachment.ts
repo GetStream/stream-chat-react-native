@@ -1,6 +1,6 @@
 import { type Attachment, getAttachmentPreviewUrl } from 'stream-chat';
 
-import { getAttachmentUrl } from './attachmentUrls';
+import { getPlayableVideoUrl } from './attachmentUrls';
 
 import { FileTypes } from '../types/types';
 
@@ -17,9 +17,9 @@ export function getUrlOfImageAttachment(
     return image.giphy?.[giphyVersion]?.url || image.thumb_url;
   }
 
-  // For videos this is the playble URL
+  // Videos open in the player, so resolve the playable file rather than the thumbnail
   if (image.type === FileTypes.Video) {
-    return getAttachmentUrl(image);
+    return getPlayableVideoUrl(image);
   }
 
   return getAttachmentPreviewUrl(image, image.image_url, image.asset_url);

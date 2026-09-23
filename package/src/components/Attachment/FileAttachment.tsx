@@ -3,6 +3,7 @@ import { Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 're
 
 import {
   type Attachment,
+  getAttachmentPreviewUrl,
   isLocalUploadAttachment,
   resolveAttachmentFullByteSize,
 } from 'stream-chat';
@@ -22,7 +23,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getAttachmentUrl } from '../../utils/attachmentUrls';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
@@ -102,7 +102,11 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           indicator={
             <AttachmentFileUploadProgressIndicator
               localId={localId}
-              sourceUrl={getAttachmentUrl(attachment)}
+              sourceUrl={getAttachmentPreviewUrl(
+                attachment,
+                attachment.asset_url,
+                attachment.image_url,
+              )}
               totalBytes={resolveAttachmentFullByteSize(attachment)}
             />
           }

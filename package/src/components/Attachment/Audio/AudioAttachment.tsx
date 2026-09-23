@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import {
+  getAttachmentPreviewUrl,
   isLocalVoiceRecordingAttachment,
   isVoiceRecordingAttachment,
   LocalMessage,
@@ -28,7 +29,6 @@ import {
 import { AudioPlayerState } from '../../../state-store/audio-player';
 import { primitives } from '../../../theme';
 import { AudioConfig } from '../../../types/types';
-import { getAttachmentUrl } from '../../../utils/attachmentUrls';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
 import { StableDurationLabel } from '../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
@@ -118,7 +118,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
     type: isVoiceRecording ? 'voiceRecording' : 'audio',
-    uri: getAttachmentUrl(item) ?? '',
+    uri: getAttachmentPreviewUrl(item, item.asset_url) ?? '',
   });
   const { duration, isPlaying, position, progress, currentPlaybackRate } = useStateStore(
     audioPlayer.state,
@@ -296,7 +296,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             rate={currentPlaybackRate}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
-            uri={getAttachmentUrl(item)}
+            uri={getAttachmentPreviewUrl(item, item.asset_url)}
           />
         )}
       </View>

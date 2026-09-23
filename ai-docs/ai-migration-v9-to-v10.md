@@ -145,7 +145,7 @@ means changed. Details in the linked section.
 | `<Channel doSendMessageRequest>` | `…{ requestHandlers: { sendMessageRequest } }` (retry: `retrySendMessageRequest`) | §13.1 |
 | `<Channel doFileUploadRequest>` | `client.config.set({ messageComposer: { attachments: { doUploadRequest } } })` | §13.1 |
 | `attachment.custom?.localId` | `isLocalUploadAttachment(a) ? a.localMetadata.id : undefined` | §17.6 |
-| `attachment.custom?.originalFile?.uri` | `getAttachmentUrl(a)` (SDK) to play/open, `getAttachmentPreviewUrl(a, a.image_url)` (`stream-chat`) to render | §17.6 |
+| `attachment.custom?.originalFile?.uri` | `getAttachmentPreviewUrl(a, a.asset_url, a.image_url)` (`stream-chat`); for video playback `getPlayableVideoUrl(a)` (SDK) | §17.6 |
 | `createAttachmentsCompositionMiddleware` (RN) | the same-named export from `stream-chat` | §17.6 |
 | `<Channel stateUpdateThrottleInterval>` | `…{ channel: { messagePaginator: { stateThrottleMs } } }` | §13.1 |
 | `channel.getConfig()` | `channel.serverConfig` (getter) — or `channel.config` for resolved gates | §13.1 |
@@ -1097,11 +1097,11 @@ const uri = attachment.image_url ?? attachment.custom?.originalFile?.uri;
 
 // v10
 import { getAttachmentPreviewUrl, isLocalUploadAttachment } from 'stream-chat';
-import { getAttachmentUrl } from 'stream-chat-react-native'; // or 'stream-chat-expo'
+import { getPlayableVideoUrl } from 'stream-chat-react-native'; // or 'stream-chat-expo'
 
 const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
-const uri = getAttachmentPreviewUrl(attachment, attachment.image_url); // to render
-const source = getAttachmentUrl(attachment); // to play or open
+const uri = getAttachmentPreviewUrl(attachment, attachment.asset_url, attachment.image_url); // image, file, audio
+const videoSource = getPlayableVideoUrl(attachment); // video playback only
 ```
 
 There is **no URL at all** on a pending attachment until its upload resolves — `localMetadata`
@@ -1109,10 +1109,13 @@ holds `id` (the `client.uploadManager` key), `file` (the handle a retry needs), 
 to render meanwhile) and `uploadState`. Two helpers encode the distinction, and overrides should
 use them rather than reading the fields directly:
 
-- `getAttachmentPreviewUrl(attachment, ...urls)` from `stream-chat` — what to **render**. Returns
-  the first of `urls` that is set (e.g. `a.image_url, a.thumb_url`), else `localMetadata.previewUri`.
-- `getAttachmentUrl(attachment)` from `stream-chat-react-native` / `stream-chat-expo` — what to
-  **play or open**. Skips `previewUri`, which for a video is the thumbnail image
+- `getAttachmentPreviewUrl(attachment, ...urls)` from `stream-chat` — the default for every type.
+  Returns the first of `urls` that is set (e.g. `a.asset_url, a.image_url`), else
+  `localMetadata.previewUri`. For images, files and audio `previewUri` is the picked file's own
+  URI, so the same call renders an image, opens a file and plays audio.
+- `getPlayableVideoUrl(attachment)` from `stream-chat-react-native` / `stream-chat-expo` — **video
+  playback only**. It returns `asset_url` / `image_url`, else the local file URI, skipping
+  `previewUri`, which for a video is the thumbnail image
   (`setupVideoAttachmentPreviewMiddleware` puts it there).
 
 `getUrlOfImageAttachment` already applies both — the preview fallback for images, the playable

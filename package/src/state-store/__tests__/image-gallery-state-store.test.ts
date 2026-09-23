@@ -5,7 +5,7 @@ import {
   generateVideoAttachment,
 } from '../../mock-builders/generator/attachment';
 import { generateMessage } from '../../mock-builders/generator/message';
-import { getAttachmentUrl } from '../../utils/attachmentUrls';
+import { getPlayableVideoUrl } from '../../utils/attachmentUrls';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { ImageGalleryStateStore } from '../image-gallery-state-store';
 import { VideoPlayerPool } from '../video-player-pool';
@@ -537,7 +537,7 @@ describe('ImageGalleryStateStore', () => {
       // The tile is built from the attachment as `Message` hands it to the gallery — `image_url`
       // rewritten to the playable source — while the store reads the raw one. Both must resolve to
       // the same URL, or the tapped video is not the slide the gallery opens on.
-      const tileUrl = getUrlOfImageAttachment({ ...video, image_url: getAttachmentUrl(video) });
+      const tileUrl = getUrlOfImageAttachment({ ...video, image_url: getPlayableVideoUrl(video) });
       expect(store.assets.findIndex((asset) => asset.uri === tileUrl)).toBe(1);
     });
 

@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import {
+  getAttachmentPreviewUrl,
   isAudioAttachment,
   isFileAttachment,
   isImageAttachment,
@@ -32,7 +33,6 @@ import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
 import { FileTypes } from '../../types/types';
-import { getAttachmentUrl } from '../../utils/attachmentUrls';
 import { isLocalUrl } from '../../utils/utils';
 
 export type ActionHandler = (name: string, value: string) => void;
@@ -124,7 +124,8 @@ const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPr
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url &&
     prevAttachment.type === nextAttachment.type &&
-    getAttachmentUrl(prevAttachment) === getAttachmentUrl(nextAttachment);
+    getAttachmentPreviewUrl(prevAttachment, prevAttachment.asset_url, prevAttachment.image_url) ===
+      getAttachmentPreviewUrl(nextAttachment, nextAttachment.asset_url, nextAttachment.image_url);
   if (!attachmentEqual) {
     return false;
   }
@@ -192,7 +193,7 @@ const MessageAudioAttachment = ({
   message,
 }: MessageAudioAttachmentProps) => {
   const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
-  const sourceUrl = getAttachmentUrl(attachment);
+  const sourceUrl = getAttachmentPreviewUrl(attachment, attachment.asset_url, attachment.image_url);
   const shouldTrackPendingUpload = !!localId && isLocalUrl(sourceUrl);
   const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
   const indicator = pendingUpload.isUploading ? (
