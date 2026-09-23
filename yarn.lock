@@ -6610,7 +6610,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-web: "npm:^0.21.2"
     react-native-worklets: "npm:0.11.1"
-    stream-chat: "npm:^10.0.0-rc.12"
+    stream-chat: "npm:^10.0.0-rc.13"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -17608,7 +17608,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-video: "npm:^6.19.2"
     react-native-worklets: "npm:^0.12.1"
-    stream-chat: "npm:^10.0.0-rc.12"
+    stream-chat: "npm:^10.0.0-rc.13"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18352,7 +18352,7 @@ __metadata:
     react-native-worklets: "npm:^0.12.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0-rc.12"
+    stream-chat: "npm:^10.0.0-rc.13"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
@@ -18426,9 +18426,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.0-rc.12":
-  version: 10.0.0-rc.12
-  resolution: "stream-chat@npm:10.0.0-rc.12"
+"stream-chat@npm:^10.0.0-rc.13":
+  version: 10.0.0-rc.13
+  resolution: "stream-chat@npm:10.0.0-rc.13"
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
     "@stream-io/state-store": "npm:^1.1.6"
@@ -18439,7 +18439,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/908d8cdd440481cb84cf903eb0b7e840ca59615e95216a850765896433a7bcb6d438edfeccbe4ee601e4836dfe964e1c43ec7cbca9444cd980ebf9f4517b5d91
+  checksum: 10c0/fbb9736adbe0e621063185d0fc32fe92f88111c90d171ecdd6e70370899cf6a3d240a2e944d05380266dc50284e9d533e38841706b2d0adfd19c5f7c784153f7
   languageName: node
   linkType: hard
 
