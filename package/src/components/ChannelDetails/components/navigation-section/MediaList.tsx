@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  type FlatListProps,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
 import {
   formatMessage,
@@ -141,29 +133,13 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
     [width, columns],
   );
 
-  const { listRef, onContentSizeChange, onScroll } = useGridScrollAnchor<MediaTile>({
+  // Spread after the consumer's props so the anchor keeps working; it still calls their handlers.
+  const { listRef, scrollProps } = useGridScrollAnchor<MediaTile>({
     columns,
     itemCount: tiles.length,
+    listProps: additionalFlatListProps,
     rowStride: tileSize + MEDIA_GRID_GAP,
   });
-
-  // Applied after the consumer's props so the anchor keeps working, while still calling theirs.
-  const consumerOnScroll = additionalFlatListProps?.onScroll;
-  const consumerOnContentSizeChange = additionalFlatListProps?.onContentSizeChange;
-  const handleScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      onScroll(event);
-      consumerOnScroll?.(event);
-    },
-    [consumerOnScroll, onScroll],
-  );
-  const handleContentSizeChange = useCallback(
-    (contentWidth: number, contentHeight: number) => {
-      onContentSizeChange(contentWidth, contentHeight);
-      consumerOnContentSizeChange?.(contentWidth, contentHeight);
-    },
-    [consumerOnContentSizeChange, onContentSizeChange],
-  );
 
   // Opens the fullscreen gallery over the whole loaded collection, selecting the tapped attachment.
   // Mirrors the in-message gallery (`components/Attachment/Gallery.tsx`), but passes every loaded
@@ -240,8 +216,7 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
         style={[styles.list, mediaList.list]}
         testID='media-list'
         {...additionalFlatListProps}
-        onContentSizeChange={handleContentSizeChange}
-        onScroll={handleScroll}
+        {...scrollProps}
         ref={listRef}
       />
       <NotificationList />
