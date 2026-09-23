@@ -87,10 +87,19 @@ export const useChannelRequestHandlers = ({
     // `MessageOperations.send` already builds the fallback (`requestFn ?? handlers.send ??
     // defaults.send`) — it just does not pass it to the handler. With `next` available this collapses to
     // "await uploads, call next".
-    const sendMessageRequest: RequestHandlers['sendMessageRequest'] = async ({
+    // Typed by its own parameter shape rather than by either slot. `send` and `retry` take
+    // identical parameters, but stream-chat keys them as `OperationRequestFn<'send'>` and
+    // `OperationRequestFn<'retry'>`, and TypeScript measures that alias as invariant in the operation
+    // kind — so neither is assignable to the other however identical the shapes. One function
+    // annotated this way satisfies both slots, which the identity check below relies on.
+    const sendMessageRequest = async ({
       localMessage,
       message,
       options,
+    }: {
+      localMessage: LocalMessage;
+      message?: Message;
+      options?: SendMessageOptions;
     }) => {
       await uploadPendingAttachments?.(localMessage);
 

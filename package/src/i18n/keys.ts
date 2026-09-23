@@ -346,6 +346,8 @@ export type TranslationCatalog = {
   'notifications.locationShareFailed.error': 'Failed to share location';
   'notifications.messageJumpFailed.error': 'Failed to jump to the message';
   'notifications.messageJumpToLatestFailed.error': 'Failed to jump to the latest message';
+  'notifications.messageSendFailed.error': 'Failed to send the message';
+  'notifications.messageUpdateFailed.error': 'Failed to update the message';
   'notifications.pollCreateFailed.error': 'Failed to create the poll';
   'notifications.pollCreateFailed.withReason.error': 'Failed to create the poll due to {{reason}}';
   'notifications.pollEndFailed.withReason.error': 'Failed to end the poll due to {{reason}}';
