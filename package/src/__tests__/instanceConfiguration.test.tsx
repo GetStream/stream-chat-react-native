@@ -115,7 +115,32 @@ describe('instance configuration contract', () => {
     const pendingUploadsEnabled = (channel: Channel) =>
       channel.messageComposer.config.attachments.pendingUploadsEnabled;
 
-    it('follows enableOfflineSupport when nothing is registered', async () => {
+    it('turns it on with enableOfflineSupport when nothing is registered', async () => {
+      const {
+        channels: [channel],
+        client,
+      } = await initiateClientWithChannels();
+      channel.messageComposer.registerSubscriptions();
+
+      renderHook(() => usePendingUploadsDefault(client, true));
+
+      expect(pendingUploadsEnabled(channel)).toBe(true);
+    });
+
+    it('writes nothing without enableOfflineSupport', async () => {
+      const {
+        channels: [channel],
+        client,
+      } = await initiateClientWithChannels();
+      channel.messageComposer.registerSubscriptions();
+
+      renderHook(() => usePendingUploadsDefault(client, false));
+
+      expect(client.config.getConfig('messageComposer')).toBeNull();
+      expect(pendingUploadsEnabled(channel)).toBe(false);
+    });
+
+    it('keeps it on after enableOfflineSupport is switched off', async () => {
       const {
         channels: [channel],
         client,
@@ -126,11 +151,27 @@ describe('instance configuration contract', () => {
         ({ offline }: { offline: boolean }) => usePendingUploadsDefault(client, offline),
         { initialProps: { offline: true } },
       );
-      expect(pendingUploadsEnabled(channel)).toBe(true);
-
-      // The SDK wrote that value, so it may move it again.
       rerender({ offline: false });
-      expect(pendingUploadsEnabled(channel)).toBe(false);
+
+      expect(pendingUploadsEnabled(channel)).toBe(true);
+    });
+
+    it('never overwrites the same value registered by the integrator after the SDK wrote it', async () => {
+      const {
+        channels: [channel],
+        client,
+      } = await initiateClientWithChannels();
+      channel.messageComposer.registerSubscriptions();
+
+      const { rerender } = renderHook(
+        ({ offline }: { offline: boolean }) => usePendingUploadsDefault(client, offline),
+        { initialProps: { offline: true } },
+      );
+      // Indistinguishable from the SDK's own write, which is why the SDK never takes it back.
+      client.config.set({ messageComposer: { attachments: { pendingUploadsEnabled: true } } });
+      rerender({ offline: false });
+
+      expect(pendingUploadsEnabled(channel)).toBe(true);
     });
 
     it('never overwrites a value registered before <Chat>', async () => {
