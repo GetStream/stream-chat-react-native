@@ -68,7 +68,7 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback } from '../../hooks';
+import { useStableCallback, useActiveMessagePaginator } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -78,7 +78,10 @@ import { transitions } from '../../utils/animations/transitions';
 import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
 import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncomingMessageAnnouncements';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
-import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
+import {
+  DEFAULT_HIGHLIGHT_DURATION,
+  useMessageListPagination,
+} from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents';
@@ -196,14 +199,7 @@ type MessageListPropsWithContext = Pick<
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
-    | 'channel'
-    | 'disabled'
-    | 'hideStickyDateHeader'
-    | 'loadChannelAroundMessage'
-    | 'loading'
-    | 'reloadChannel'
-    | 'scrollToFirstUnreadThreshold'
-    | 'threadList'
+    'channel' | 'disabled' | 'hideStickyDateHeader' | 'scrollToFirstUnreadThreshold' | 'threadList'
   > &
   Pick<ChatContextValue, 'client'> & {
     loadMore: () => Promise<void>;
@@ -304,6 +300,11 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
  * [ThreadContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/thread-context/)
  * [TranslationContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
+const messageListLoadingSelector = (state: { isLoading: boolean; items?: unknown[] }) => ({
+  hasMessages: !!state.items?.length,
+  isLoading: state.isLoading,
+});
+
 const messageFocusSelector = (state: {
   signal: { messageId?: string; token?: number } | null;
 }) => ({
@@ -330,8 +331,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     hideStickyDateHeader,
     inverted = true,
     isLiveStreaming = false,
-    loadChannelAroundMessage,
-    loading,
     loadingMore,
     loadingMoreRecent,
     loadMore,
@@ -345,7 +344,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onListScroll,
     onThreadSelect,
     readEvents,
-    reloadChannel,
     setFlatListRef,
     threadInstance,
     threadList = false,
@@ -823,7 +821,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump
   // (jumpToMessage / jumpToTheFirstUnreadMessage / emitMessageFocusSignal) emits it, and the effect
   // below scrolls to it. `token` re-fires the effect on every jump, even to the same message id.
-  const focusPaginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const focusPaginator = useActiveMessagePaginator();
+  // `loading` means "querying with nothing to show yet" — selected here rather than handed down, so
+  // a message publish does not re-render anything above this component.
+  const { hasMessages, isLoading } =
+    useStateStore(focusPaginator?.state, messageListLoadingSelector) ?? {};
+  const loading = !!isLoading && !hasMessages;
   const { focusedMessageId, focusToken } =
     useStateStore(focusPaginator?.messageFocusSignal, messageFocusSelector) ?? {};
   const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
@@ -840,7 +843,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const goToMessage = useStableCallback(async (messageId: string) => {
     // jumpToMessage loads-around the target + emits messageFocusSignal → the effect scrolls and the
     // message highlights (mirrors stream-chat-react — no bespoke scroll/highlight bookkeeping).
-    await loadChannelAroundMessage({ messageId });
+    await focusPaginator?.jumpToMessage(messageId, {
+      focusReason: 'jump-to-message',
+      focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+    });
   });
 
   /**
@@ -1049,7 +1055,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
     if (isNotLatestSet) {
       resetPaginationTrackersRef.current();
-      await reloadChannel();
+      await channel.messagePaginator.jumpToTheLatestMessage();
     } else if (flatListRef.current) {
       flatListRef.current.scrollToOffset({
         animated: true,
@@ -1423,10 +1429,6 @@ export const MessageList = (props: MessageListProps) => {
     disabled,
     enableMessageGroupingByUser,
     hideStickyDateHeader,
-    highlightedMessageId,
-    loadChannelAroundMessage,
-    loading,
-    reloadChannel,
     scrollToFirstUnreadThreshold,
     threadList,
   } = useChannelContext();
@@ -1456,9 +1458,6 @@ export const MessageList = (props: MessageListProps) => {
         enableMessageGroupingByUser,
         FlatList,
         hideStickyDateHeader,
-        highlightedMessageId,
-        loadChannelAroundMessage,
-        loading,
         loadMore,
         loadMoreRecent,
         markRead,
@@ -1467,7 +1466,6 @@ export const MessageList = (props: MessageListProps) => {
         myMessageTheme,
         pendingUploadsEnabled,
         readEvents,
-        reloadChannel,
         scrollToFirstUnreadThreshold,
         shouldShowUnreadUnderlay,
         threadInstance,

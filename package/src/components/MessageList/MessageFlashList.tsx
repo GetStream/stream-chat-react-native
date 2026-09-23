@@ -56,7 +56,7 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback, useStateStore } from '../../hooks';
+import { useStableCallback, useStateStore, useActiveMessagePaginator } from '../../hooks';
 import { isVideoPlayerAvailable } from '../../native';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -66,7 +66,10 @@ import { FileTypes } from '../../types/types';
 import { transitions } from '../../utils/animations/transitions';
 import { getChannelUnreadState } from '../../utils/getChannelUnreadState';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
-import { useMessageListPagination } from '../Channel/hooks/useMessageListPagination';
+import {
+  DEFAULT_HIGHLIGHT_DURATION,
+  useMessageListPagination,
+} from '../Channel/hooks/useMessageListPagination';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
@@ -113,10 +116,6 @@ type MessageFlashListPropsWithContext = Pick<
     | 'channel'
     | 'disabled'
     | 'hideStickyDateHeader'
-    | 'highlightedMessageId'
-    | 'loadChannelAroundMessage'
-    | 'loading'
-    | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'hasPendingInitialTargetLoad'
     | 'threadList'
@@ -294,6 +293,11 @@ const getItemTypeInternal = (message: LocalMessage) => {
   return 'generic-message';
 };
 
+const messageListLoadingSelector = (state: { isLoading: boolean; items?: unknown[] }) => ({
+  hasMessages: !!state.items?.length,
+  isLoading: state.isLoading,
+});
+
 const messageFocusSelector = (state: {
   signal: { messageId?: string; token?: number } | null;
 }) => ({
@@ -318,8 +322,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     HeaderComponent = InlineLoadingMoreIndicator,
     hideStickyDateHeader,
     isLiveStreaming = false,
-    loadChannelAroundMessage,
-    loading,
     loadingMore,
     loadingMoreRecent,
     loadMore,
@@ -333,7 +335,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     noGroupByUser,
     onListScroll,
     onThreadSelect,
-    reloadChannel,
     setFlatListRef,
     hasPendingInitialTargetLoad,
     threadInstance,
@@ -470,7 +471,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump emits
   // it, and the effect below scrolls to it. `token` re-fires the effect on every jump (even to the
   // same id); see MessageList for the full rationale.
-  const focusPaginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const focusPaginator = useActiveMessagePaginator();
+  // `loading` means "querying with nothing to show yet" — selected here rather than handed down, so
+  // a message publish does not re-render anything above this component.
+  const { hasMessages, isLoading } =
+    useStateStore(focusPaginator?.state, messageListLoadingSelector) ?? {};
+  const loading = !!isLoading && !hasMessages;
   const { focusedMessageId, focusToken } =
     useStateStore(focusPaginator?.messageFocusSignal, messageFocusSelector) ?? {};
   const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
@@ -537,7 +543,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const goToMessage = useStableCallback(async (messageId: string) => {
     // jumpToMessage loads-around + emits messageFocusSignal → the effect scrolls and highlights.
-    await loadChannelAroundMessage({ messageId });
+    await focusPaginator?.jumpToMessage(messageId, {
+      focusReason: 'jump-to-message',
+      focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+    });
   });
 
   useEffect(() => {
@@ -1007,7 +1016,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     if (isNotLatestSet) {
       resetPaginationTrackersRef.current();
-      await reloadChannel();
+      await channel.messagePaginator.jumpToTheLatestMessage();
     } else if (flashListRef.current) {
       flashListRef.current.scrollToEnd({
         animated: true,
@@ -1326,11 +1335,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     disabled,
     enableMessageGroupingByUser,
     hideStickyDateHeader,
-    highlightedMessageId,
     isChannelActive,
-    loadChannelAroundMessage,
-    loading,
-    reloadChannel,
     scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
@@ -1361,10 +1366,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         enableMessageGroupingByUser,
         FlatList,
         hideStickyDateHeader,
-        highlightedMessageId,
         isListActive: isChannelActive,
-        loadChannelAroundMessage,
-        loading,
         loadMore,
         loadMoreRecent,
         loadingMore,
@@ -1375,7 +1377,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         myMessageTheme,
         pendingUploadsEnabled,
         readEvents,
-        reloadChannel,
         scrollToFirstUnreadThreshold,
         hasPendingInitialTargetLoad,
         shouldShowUnreadUnderlay,

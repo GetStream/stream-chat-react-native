@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { MessageFilters, MessageResponse } from 'stream-chat';
+import type { MessageFilters, SearchResultMessage } from 'stream-chat';
 
 import { useAppContext } from '../context/AppContext';
 
@@ -10,7 +10,7 @@ export const usePaginatedSearchedMessages = (messageFilters: string | MessageFil
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse[]>();
+  const [messages, setMessages] = useState<SearchResultMessage[]>();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
@@ -51,21 +51,27 @@ export const usePaginatedSearchedMessages = (messageFilters: string | MessageFil
         return;
       }
 
-      const res = await chatClient?.search(
-        {
-          members: {
-            $in: [chatClient?.user?.id || null],
+      // v10 collapses `search(filters, query, options)` into one payload object, and sort is an
+      // array of `{ field, direction }` rather than a `{ field: direction }` map.
+      const res = await chatClient?.search({
+        payload: {
+          filter_conditions: {
+            members: {
+              $in: [chatClient?.user?.id ?? ''],
+            },
           },
-        },
-        messageFilters,
-        {
+          ...(typeof messageFilters === 'string'
+            ? { query: messageFilters }
+            : { message_filter_conditions: messageFilters }),
           limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
-          sort: { updated_at: -1 },
+          sort: [{ field: 'updated_at', direction: -1 }],
         },
-      );
+      });
 
-      const newMessages = res?.results.map((r) => r.message);
+      const newMessages = res?.results
+        .map((r) => r.message)
+        .filter((m): m is SearchResultMessage => m !== undefined);
       if (!newMessages) {
         queryInProgress.current = false;
         done();

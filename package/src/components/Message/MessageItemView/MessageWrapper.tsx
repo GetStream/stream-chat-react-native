@@ -13,6 +13,7 @@ import { useMessageListItemContext } from '../../../contexts/messageListItemCont
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeContext';
 
+import { useIsTargetedMessage } from '../../../hooks/useIsTargetedMessage';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 
@@ -25,13 +26,10 @@ export type MessageWrapperProps = {
 export const MessageWrapper = React.memo(function MessageWrapper(props: MessageWrapperProps) {
   const { message, previousMessage, nextMessage } = props;
   const { client } = useChatContext();
-  const {
-    channel,
-    hideDateSeparators,
-    highlightedMessageId,
-    maxTimeBetweenGroupedMessages,
-    threadList,
-  } = useChannelContext();
+  const { channel, hideDateSeparators, maxTimeBetweenGroupedMessages, threadList } =
+    useChannelContext();
+
+  const isTargetedMessage = useIsTargetedMessage(message.id);
   const { InlineDateSeparator, InlineUnreadIndicator, Message, MessageSystem } =
     useComponentsContext();
   const { getMessageGroupStyle, myMessageTheme, shouldShowUnreadUnderlay } = useMessagesContext();
@@ -136,7 +134,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     <Message
       goToMessage={goToMessage}
       groupStyles={groupStyles}
-      isTargetedMessage={highlightedMessageId === message.id}
+      isTargetedMessage={isTargetedMessage}
       message={message}
       onThreadSelect={onThreadSelect}
       showUnreadUnderlay={showUnreadUnderlay}

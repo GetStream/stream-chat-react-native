@@ -117,10 +117,6 @@ export type MessageContextValue = {
   registerMessageOverlayTarget: (params: { id: string; view: ViewRef | null }) => void;
   unregisterMessageOverlayTarget: (id: string) => void;
   reactions: ReactionSummary[];
-  /** Read count of the message */
-  readBy: number | boolean;
-  /** Delivery count of the message */
-  deliveredToCount: number;
   /**
    * Function to show the menu with all the message actions.
    * @param showMessageReactions

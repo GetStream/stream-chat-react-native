@@ -442,7 +442,7 @@ export const WebSocketEventPromptDialog = ({
           messageCount:
             messageCount ??
             (simulationState ? getSimulationMessageCount(channel, simulationState) : undefined),
-          payloadMessageId: emittedPayload.message?.id,
+          payloadMessageId: 'message' in emittedPayload ? emittedPayload.message?.id : undefined,
           scheduleDelayMs:
             typeof scheduledAt === 'number' ? Math.max(0, startedAt - scheduledAt) : undefined,
           scheduledAt,
@@ -554,12 +554,11 @@ export const WebSocketEventPromptDialog = ({
       });
 
       if (trackState) {
+        // `payload` was built for `scenarioStep.eventType` and already carries it as a literal;
+        // re-stamping it from the union is what used to widen it back out of `Event`.
         trackSimulationStateFromPayload({
           channel,
-          payload: {
-            ...payload,
-            type: scenarioStep.eventType,
-          },
+          payload,
           state: stateToBuild,
         });
       }

@@ -48,21 +48,12 @@ export type ChannelContextValue = {
    * @param limit - The number of messages to load around the message
    * @param messageId - The message around which to load messages
    */
-  loadChannelAroundMessage: ({
-    limit,
-    messageId,
-  }: {
-    limit?: number;
-    messageId?: string;
-  }) => Promise<void>;
 
   /**
    * Loads channel at first unread message. Emits `messageFocusSignal` on the paginator.
    * @param limit - The number of messages to load around the first unread message
    */
-  loadChannelAtFirstUnreadMessage: (options?: { limit?: number }) => Promise<void>;
 
-  reloadChannel: () => Promise<void>;
   scrollToFirstUnreadThreshold: number;
   /**
    * Returns true when Channel is about to load an initial targeted message.
@@ -75,9 +66,7 @@ export type ChannelContextValue = {
   /**
    * Id of message, which is highlighted in the channel.
    */
-  highlightedMessageId?: string;
   isChannelActive?: boolean;
-  loading?: boolean;
   /**
    * Maximum time in milliseconds that should occur between messages
    * to still consider them grouped together

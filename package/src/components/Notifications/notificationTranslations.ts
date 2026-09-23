@@ -160,7 +160,7 @@ const coreNotificationTranslators: Record<CoreNotificationType, NotificationTran
   [CORE_NOTIFICATION_TYPE.messageSendFailed]: ({ t }) =>
     t('notifications.messageSendFailed.error', 'Failed to send the message'),
   [CORE_NOTIFICATION_TYPE.messageUpdateFailed]: ({ t }) =>
-    t('notifications.messageUpdateFailed.error', 'Failed to save the edit'),
+    t('notifications.messageUpdateFailed.error', 'Failed to update the message'),
   [CORE_NOTIFICATION_TYPE.pollCastVoteLimit]: ({ t }) =>
     t(
       'notifications.voteLimitReached.error',

@@ -7,6 +7,7 @@ import 'dayjs/locale/it';
 
 import { Streami18n } from 'stream-chat-react-native';
 
+import { appFormatterExpressions } from './appKeys';
 import { de } from './de';
 import { it } from './it';
 
@@ -66,8 +67,25 @@ const itCalendar = {
   sameElse: 'L',
 };
 
-streami18n.registerTranslation('de', de, { calendar: deCalendar });
-streami18n.registerTranslation('it', it, { calendar: itCalendar });
+/**
+ * The app's own formatter expressions, merged into every language.
+ *
+ * `en` gets a `registerTranslation` call of its own because it has no dictionary otherwise — the
+ * SDK's English copy travels inline with each key, but an app-owned key has nothing to fall back
+ * to. `registerTranslation` merges over the bundled defaults, so this adds the three expressions
+ * without disturbing the SDK's own.
+ */
+streami18n.registerTranslation('en', appFormatterExpressions);
+streami18n.registerTranslation(
+  'de',
+  { ...de, ...appFormatterExpressions },
+  { calendar: deCalendar },
+);
+streami18n.registerTranslation(
+  'it',
+  { ...it, ...appFormatterExpressions },
+  { calendar: itCalendar },
+);
 
 /**
  * Applies the language the user last picked.

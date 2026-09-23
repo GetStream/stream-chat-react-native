@@ -1,4 +1,4 @@
-import React, { Profiler, useCallback, useEffect, useState } from 'react';
+import React, { Profiler, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -10,6 +10,7 @@ import {
   AlsoSentToChannelHeaderPressPayload,
   Channel,
   ChannelAvatar,
+  DEFAULT_HIGHLIGHT_DURATION,
   MessageActionsParams,
   MessageComposer,
   MessageFlashList,
@@ -190,6 +191,18 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
 
+  useLayoutEffect(() => {
+    if (!channel || !messageId) {
+      return;
+    }
+    channel.messagePaginator
+      .jumpToMessage(messageId, {
+        focusReason: 'jump-to-message',
+        focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+      })
+      .catch((error: unknown) => console.warn('Jump to message failed:', error));
+  }, [channel, messageId]);
+
   const [selectedThread, setSelectedThread] = useState<LocalMessage | null>();
 
   /**
@@ -369,10 +382,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         setInputRef={setInputRef}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
-        initialScrollToFirstUnreadMessage
+        // Not while deep-linking: opening at the first unread and jumping to a specific message are
+        // two different answers to "where should this list start", and `<Channel>` cannot see a jump
+        // that is still in flight — `jumpToMessage` only emits its focus signal once the query lands.
+        // `<Channel messageId>` used to encode this precedence internally; the caller states it now.
+        initialScrollToFirstUnreadMessage={!messageId}
         keyboardVerticalOffset={0}
         messageActions={messageActions}
-        messageId={messageId}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
         thread={selectedThread}
       >

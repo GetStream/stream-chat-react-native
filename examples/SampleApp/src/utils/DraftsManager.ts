@@ -1,5 +1,5 @@
 import { StateStore } from '@stream-io/state-store';
-import { DraftFilters, DraftResponse, SortParamRequest, StreamChat } from 'stream-chat';
+import { DraftResponse, QueryDraftsRequest, SortParamRequest, StreamChat } from 'stream-chat';
 
 import { WithSubscriptions } from './WithSubscription';
 
@@ -7,7 +7,7 @@ export type QueryDraftOptions = {
   limit?: number;
   next?: string;
   prev?: string;
-  filter?: DraftFilters;
+  filter?: QueryDraftsRequest['filter'];
   sort?: SortParamRequest[];
   user_id?: string;
 };
@@ -226,7 +226,7 @@ export class DraftsManager extends WithSubscriptions {
         ready: true,
       }));
     } catch (error) {
-      this.client.logger('error', (error as Error).message);
+      console.error('DraftsManager:', (error as Error).message);
       this.state.next((current) => ({
         ...current,
         pagination: {
@@ -270,7 +270,7 @@ export class DraftsManager extends WithSubscriptions {
         },
       }));
     } catch (error) {
-      this.client.logger('error', (error as Error).message);
+      console.error('DraftsManager:', (error as Error).message);
       this.state.next((current) => ({
         ...current,
         pagination: {

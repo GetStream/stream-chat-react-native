@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { nsToDate, nsToMs, ReminderResponseData, ReminderState } from 'stream-chat';
 import {
+  asDynamicKey,
   useMessageReminder,
   useTheme,
   useTranslationContext,
@@ -44,13 +45,13 @@ export const ReminderBanner = (item: ReminderResponseData) => {
       >
         <Text style={styles.date}>
           {isBehindRefreshBoundary
-            ? t('Due since {{ dueSince }}', {
-                dueSince: t('timestamp/ReminderNotification', {
+            ? t(asDynamicKey('sampleApp.reminders.dueSince.text'), 'Due since {{ dueSince }}', {
+                dueSince: t('timestamp.reminderNotification', {
                   timestamp: nsToDate(reminder.remindAt),
                 }),
               })
-            : t('Due {{ timeLeft }}', {
-                timeLeft: t('duration/Message reminder', {
+            : t(asDynamicKey('sampleApp.reminders.due.text'), 'Due {{ timeLeft }}', {
+                timeLeft: t('duration.messageReminder', {
                   milliseconds: timeLeftMs,
                 }),
               })}

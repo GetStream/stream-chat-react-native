@@ -5,7 +5,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import { convertTimestampToDate } from 'stream-chat';
-import type { MessageResponse } from 'stream-chat';
+import type { SearchResultMessage } from 'stream-chat';
 import { Spinner, useTheme, useViewport, UserAvatar } from 'stream-chat-react-native';
 
 import { useLegacyColors } from '../../theme/useLegacyColors';
@@ -57,13 +57,13 @@ export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
   loading: boolean;
   loadMore: () => void;
-  messages: MessageResponse[] | undefined;
+  messages: SearchResultMessage[] | undefined;
   refreshing?: boolean;
   refreshList?: () => void;
   showResultCount?: boolean;
 };
 export const MessageSearchList = React.forwardRef<
-  FlatList<MessageResponse> | null,
+  FlatList<SearchResultMessage> | null,
   MessageSearchListProps
 >((props, scrollRef) => {
   const {
@@ -145,10 +145,10 @@ export const MessageSearchList = React.forwardRef<
                   style={[styles.titleContainer, { color: black, maxWidth: vw(80) - 16 - 40 }]}
                 >
                   <Text style={styles.title}>{`${item.user?.name} `}</Text>
-                  {!!item.channel?.name && (
+                  {!!item.channel?.custom?.name && (
                     <Text style={styles.detailsText}>
                       in
-                      <Text style={styles.title}>{` ${item.channel?.name}`}</Text>
+                      <Text style={styles.title}>{` ${item.channel?.custom?.name}`}</Text>
                     </Text>
                   )}
                 </Text>

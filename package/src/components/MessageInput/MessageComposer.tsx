@@ -175,8 +175,10 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
 
-const membersSelector = (state: MembersState) => ({ members: state.members });
-const watchersSelector = (state: ChannelWatchState) => ({ watchers: state.watchers });
+const membersAndWatchersSelector = (state: ChannelWatchState & MembersState) => ({
+  members: state.members,
+  watchers: state.watchers,
+});
 
 const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const {
@@ -616,8 +618,8 @@ export const MessageComposer = (props: MessageComposerProps) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel } = useChannelContext();
-  const { members } = useStateStore(channel.state, membersSelector) ?? { members: {} };
-  const { watchers } = useStateStore(channel.state, watchersSelector) ?? {
+  const { members, watchers } = useStateStore(channel.state, membersAndWatchersSelector) ?? {
+    members: {},
     watchers: {},
   };
 

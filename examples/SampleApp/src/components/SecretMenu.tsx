@@ -422,9 +422,11 @@ export const SecretMenu = ({
   }, []);
 
   const removeAllDevices = useCallback(async () => {
-    const { devices } = await chatClient.getDevices(chatClient.userID);
+    // v10: `listDevices` / `deleteDevice` replace `getDevices` / `removeDevice`, and both scope
+    // themselves to the connected user rather than taking a `userID`.
+    const { devices } = await chatClient.listDevices();
     for (const device of devices ?? []) {
-      await chatClient.removeDevice(device.id, chatClient.userID);
+      await chatClient.deleteDevice({ id: device.id });
     }
   }, [chatClient]);
 
