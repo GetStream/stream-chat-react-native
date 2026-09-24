@@ -52,14 +52,14 @@ type IndicatorStatesMap = Record<AttachmentLoadingState, Progress | undefined>;
 
 export const getIndicatorTypeForFileState = (
   fileState: AttachmentLoadingState,
-  allowSendBeforeAttachmentsUpload: boolean,
+  pendingUploadsEnabled: boolean,
 ): Progress | undefined => {
   const indicatorMap: IndicatorStatesMap = {
-    [FileState.UPLOADING]: allowSendBeforeAttachmentsUpload
+    [FileState.UPLOADING]: pendingUploadsEnabled
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.IN_PROGRESS,
     [FileState.BLOCKED]: ProgressIndicatorTypes.NOT_SUPPORTED,
-    [FileState.FAILED]: allowSendBeforeAttachmentsUpload
+    [FileState.FAILED]: pendingUploadsEnabled
       ? ProgressIndicatorTypes.INACTIVE
       : ProgressIndicatorTypes.RETRY,
     [FileState.PENDING]: ProgressIndicatorTypes.PENDING,
@@ -93,8 +93,8 @@ export const isBouncedMessage = (message: LocalMessage) =>
  */
 export const isEditedMessage = (message: LocalMessage) => message.message_text_updated_at != null;
 
-export const makeImageCompatibleUrl = (url: string) =>
-  (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
+export const makeImageCompatibleUrl = (url?: string) =>
+  url ? (url.indexOf('//') === 0 ? `https:${url}` : url).trim() : url;
 
 export const getUrlWithoutParams = (url?: string) => {
   if (!url) {
@@ -109,7 +109,14 @@ export const getUrlWithoutParams = (url?: string) => {
   return url.substring(0, url.indexOf('?'));
 };
 
-export const isLocalUrl = (url: string) => !url.includes('http');
+/**
+ * Whether this URL points at a file on the device rather than something fetchable.
+ *
+ * Anchored on the scheme rather than searching for `http` anywhere in the string: a
+ * `content://`/`ph://` URI is free to contain that substring, and an attachment mid-upload is
+ * rendered from exactly such a URI. Undefined is "not local" — there is no local file to read.
+ */
+export const isLocalUrl = (url?: string) => !!url && !/^https?:\/\//i.test(url.trim());
 
 export const generateRandomId = (a = ''): string =>
   a

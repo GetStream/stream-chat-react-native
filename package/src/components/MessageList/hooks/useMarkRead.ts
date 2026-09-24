@@ -52,8 +52,8 @@ export const useMarkRead = (channel: Channel) => {
     }
 
     // Canonical v10 read reporting: the reporter throttles + coordinates the `/read` calls and honors
-    // any custom markReadRequest handler registered in channel.configState (see
-    // useChannelRequestHandlers).
+    // any custom markReadRequest handler registered through
+    // `client.config.set({ channel: { requestHandlers } })`.
     client.messageDeliveryReporter.throttledMarkRead(channel);
 
     // Reset the paginator's unread snapshot so the "N new messages" banner and the unread separator

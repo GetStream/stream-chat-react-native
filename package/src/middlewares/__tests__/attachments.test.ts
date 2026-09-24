@@ -1,75 +1,95 @@
-import { LocalAttachment, MessageComposer } from 'stream-chat';
+import { AttachmentPreUploadMiddleware, LocalAttachment, MessageComposer } from 'stream-chat';
 
-import { createAttachmentsCompositionMiddleware } from '../attachments';
+import { setupVideoAttachmentPreviewMiddleware } from '../attachments';
 
-type AttachmentUploadState = 'finished' | 'blocked' | 'pending' | 'uploading' | 'failed';
+type InsertedMiddleware = {
+  middleware: AttachmentPreUploadMiddleware[];
+  position: { after?: string; before?: string };
+  unique?: boolean;
+};
 
-const createLocalImageAttachment = (
-  id: string,
-  uploadState: AttachmentUploadState,
-): LocalAttachment =>
-  ({
-    image_url: `file://local/${id}`,
-    localMetadata: {
-      file: { name: id, uri: `file://local/${id}` },
-      id,
-      uploadState,
-    },
-    // custom marker that survives localAttachmentToAttachment mapping, used to
-    // identify which attachments ended up in the composed message
-    title: id,
-    type: 'image',
-  }) as unknown as LocalAttachment;
-
-const runComposeHandler = (attachments: LocalAttachment[]) => {
+const install = () => {
+  const insert = jest.fn();
   const composer = {
-    attachmentManager: { attachments },
+    attachmentManager: { preUploadMiddlewareExecutor: { insert } },
   } as unknown as MessageComposer;
 
-  const middleware = createAttachmentsCompositionMiddleware(composer);
+  setupVideoAttachmentPreviewMiddleware(composer);
 
+  return { inserted: insert.mock.calls[0][0] as InsertedMiddleware };
+};
+
+const runPrepare = (attachment?: LocalAttachment) => {
+  const { inserted } = install();
   const next = jest.fn((value: unknown) => value);
   const forward = jest.fn();
-  const state = {
-    localMessage: { attachments: [] },
-    message: { attachments: [] },
-  };
 
-  middleware.handlers.compose({
+  inserted.middleware[0].handlers.prepare({
     forward,
     next,
-    state,
-  } as unknown as Parameters<typeof middleware.handlers.compose>[0]);
+    state: { attachment },
+  } as unknown as Parameters<AttachmentPreUploadMiddleware['handlers']['prepare']>[0]);
 
   return { forward, next };
 };
 
-describe('createAttachmentsCompositionMiddleware', () => {
-  it('excludes blocked attachments from the composed message', () => {
-    const { forward, next } = runComposeHandler([
-      createLocalImageAttachment('finished-attachment', 'finished'),
-      createLocalImageAttachment('blocked-attachment', 'blocked'),
-      createLocalImageAttachment('pending-attachment', 'pending'),
-    ]);
+const localVideoAttachment = (overrides: Record<string, unknown> = {}) =>
+  ({
+    localMetadata: {
+      file: { name: 'clip.mp4', uri: 'file://local/clip.mp4' },
+      id: 'clip',
+      uploadState: 'uploading',
+    },
+    thumb_url: 'file://local/clip-thumb.jpg',
+    type: 'video',
+    ...overrides,
+  }) as unknown as LocalAttachment;
+
+describe('setupVideoAttachmentPreviewMiddleware', () => {
+  it('inserts the preview middleware after the upload-config check, without duplicating it', () => {
+    const { inserted } = install();
+
+    expect(inserted.middleware).toHaveLength(1);
+    expect(inserted.middleware[0].id).toBe(
+      'stream-io/message-composer-ui-middleware/video-attachment-preview',
+    );
+    // After the config check, so a blocked file is rejected on its real size rather than the
+    // thumbnail's, and `unique` so a re-render cannot stack copies of it.
+    expect(inserted.position).toEqual({
+      after: 'stream-io/attachment-manager-middleware/file-upload-config-check',
+    });
+    expect(inserted.unique).toBe(true);
+  });
+
+  it('uses the thumbnail as the preview uri of a local video', () => {
+    const { forward, next } = runPrepare(localVideoAttachment());
 
     expect(forward).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalledTimes(1);
 
-    const composedState = next.mock.calls[0][0] as {
-      message: { attachments: { title?: string }[] };
-    };
-    const titles = composedState.message.attachments.map((attachment) => attachment.title);
-
-    expect(titles).toEqual(['finished-attachment', 'pending-attachment']);
+    const state = next.mock.calls[0][0] as { attachment: LocalAttachment };
+    expect(state.attachment.localMetadata.previewUri).toBe('file://local/clip-thumb.jpg');
+    // Everything else is carried through untouched.
+    expect(state.attachment.localMetadata.id).toBe('clip');
+    expect(state.attachment.thumb_url).toBe('file://local/clip-thumb.jpg');
   });
 
-  it('forwards without attachments when every attachment is blocked', () => {
-    const { forward, next } = runComposeHandler([
-      createLocalImageAttachment('blocked-1', 'blocked'),
-      createLocalImageAttachment('blocked-2', 'blocked'),
-    ]);
+  it('leaves a video without a thumbnail without a preview uri', () => {
+    const { next } = runPrepare(localVideoAttachment({ thumb_url: undefined }));
 
-    expect(next).not.toHaveBeenCalled();
-    expect(forward).toHaveBeenCalledTimes(1);
+    const state = next.mock.calls[0][0] as { attachment: LocalAttachment };
+    expect(state.attachment.localMetadata.previewUri).toBeUndefined();
+  });
+
+  it('forwards anything that is not a local video', () => {
+    const image = runPrepare(
+      localVideoAttachment({ image_url: 'file://local/photo.jpg', type: 'image' }),
+    );
+    expect(image.next).not.toHaveBeenCalled();
+    expect(image.forward).toHaveBeenCalledTimes(1);
+
+    const none = runPrepare(undefined);
+    expect(none.next).not.toHaveBeenCalled();
+    expect(none.forward).toHaveBeenCalledTimes(1);
   });
 });

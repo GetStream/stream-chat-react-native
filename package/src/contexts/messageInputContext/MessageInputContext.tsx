@@ -26,11 +26,7 @@ import { parseLinksFromText } from '../../components/Message/MessageItemView/uti
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
 import { useNotificationApi } from '../../components/Notifications';
 import { useStableCallback } from '../../hooks/useStableCallback';
-import {
-  createAttachmentsCompositionMiddleware,
-  createDraftAttachmentsCompositionMiddleware,
-  setupVideoAttachmentPreviewMiddleware,
-} from '../../middlewares/attachments';
+import { setupVideoAttachmentPreviewMiddleware } from '../../middlewares/attachments';
 
 import { isDocumentPickerAvailable, MediaTypes, NativeHandlers } from '../../native';
 import { AudioRecorderManager } from '../../state-store/audio-recorder-manager';
@@ -155,7 +151,6 @@ export type InputMessageInputContextValue = {
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
-  allowSendBeforeAttachmentsUpload?: boolean;
   closePollCreationDialog?: () => void;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
@@ -224,32 +219,25 @@ export const MessageInputProvider = ({
   const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
   const closePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
 
-  const {
-    openPollCreationDialog: openPollCreationDialogFromContext,
-    allowSendBeforeAttachmentsUpload,
-  } = value;
+  const { openPollCreationDialog: openPollCreationDialogFromContext } = value;
 
   const messageComposer = useMessageComposer();
   const { attachmentManager, editedMessage } = messageComposer;
 
   /**
-   * These are the RN SDK specific middlewares that are added to the message composer to provide the default behaviour.
-   * TODO: Discuss and decide if we provide them by default in the SDK or leave it to the user to add them if they want
-   * the feature.
+   * Composer middleware this SDK owns.
+   *
+   * Sending before uploads finish is deliberately not configured here: it is the composer's own
+   * `attachments.pendingUploadsEnabled`, defaulted by `<Chat>` through `client.config` (see
+   * `usePendingUploadsDefault`). An imperative `updateConfig` here would outrank the integrator's
+   * `client.config` and setup function, leaving them no way to change it.
+   *
+   * The draft composition is deliberately left alone: it keeps successful uploads only, and a
+   * draft is sent to the server, where a local file URI no other device can read has no business.
    */
   useEffect(() => {
     setupVideoAttachmentPreviewMiddleware(messageComposer);
-
-    if (allowSendBeforeAttachmentsUpload) {
-      messageComposer.compositionMiddlewareExecutor.replace([
-        createAttachmentsCompositionMiddleware(messageComposer),
-      ]);
-
-      messageComposer.draftCompositionMiddlewareExecutor.replace([
-        createDraftAttachmentsCompositionMiddleware(messageComposer),
-      ]);
-    }
-  }, [allowSendBeforeAttachmentsUpload, messageComposer, attachmentManager]);
+  }, [messageComposer]);
 
   /**
    * Function for capturing a photo and uploading it

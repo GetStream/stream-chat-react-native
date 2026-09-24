@@ -5,7 +5,6 @@ import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = ({
   additionalTextInputProps,
-  allowSendBeforeAttachmentsUpload,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
   asyncMessagesSlideToCancelDistance,
@@ -49,7 +48,6 @@ export const useCreateMessageInputContext = ({
   const messageInputContext: MessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
-      allowSendBeforeAttachmentsUpload,
       asyncMessagesLockDistance,
       asyncMessagesMinimumPressDuration,
       asyncMessagesSlideToCancelDistance,
@@ -88,7 +86,7 @@ export const useCreateMessageInputContext = ({
       stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [threadId, showPollCreationDialog, allowSendBeforeAttachmentsUpload],
+    [threadId, showPollCreationDialog],
   );
 
   return messageInputContext;

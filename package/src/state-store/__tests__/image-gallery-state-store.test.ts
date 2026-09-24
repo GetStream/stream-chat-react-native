@@ -5,6 +5,7 @@ import {
   generateVideoAttachment,
 } from '../../mock-builders/generator/attachment';
 import { generateMessage } from '../../mock-builders/generator/message';
+import { getPlayableVideoUrl } from '../../utils/attachmentUrls';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { ImageGalleryStateStore } from '../image-gallery-state-store';
 import { VideoPlayerPool } from '../video-player-pool';
@@ -492,6 +493,52 @@ describe('ImageGalleryStateStore', () => {
       expect(getUrlOfImageAttachment(giphyAttachment, 'original')).toBe(
         'https://giphy.com/original.gif',
       );
+    });
+
+    // An attachment whose upload has not resolved: no URL of its own, only `localMetadata`.
+    const pendingAttachment = (type: 'image' | 'video') =>
+      ({
+        localMetadata: {
+          file: { name: `clip.${type}`, uri: `file://local/${type}` },
+          id: `upload-${type}`,
+          // What `setupVideoAttachmentPreviewMiddleware` leaves for a video: the thumbnail.
+          previewUri: type === 'video' ? 'file://local/video-thumb.jpg' : `file://local/${type}`,
+          uploadState: 'uploading',
+        },
+        thumb_url: type === 'video' ? 'file://local/video-thumb.jpg' : undefined,
+        type,
+      }) as unknown as Attachment;
+
+    it('plays the local video file, not its thumbnail, while the upload is in flight', () => {
+      const store = new ImageGalleryStateStore();
+      store.messages = [generateMessage({ attachments: [pendingAttachment('video')], id: '1' })];
+
+      expect(store.assets[0].uri).toBe('file://local/video');
+      expect(store.assets[0].thumb_url).toBe('file://local/video-thumb.jpg');
+    });
+
+    it('shows the local preview of an image while the upload is in flight', () => {
+      const store = new ImageGalleryStateStore();
+      store.messages = [generateMessage({ attachments: [pendingAttachment('image')], id: '1' })];
+
+      expect(store.assets[0].uri).toBe('file://local/image');
+    });
+
+    it('selects a pending video by the url its gallery tile opens with', () => {
+      const store = new ImageGalleryStateStore();
+      const video = pendingAttachment('video');
+      store.messages = [
+        generateMessage({
+          attachments: [generateImageAttachment({ image_url: 'https://example.com/a.jpg' }), video],
+          id: '1',
+        }),
+      ];
+
+      // The tile is built from the attachment as `Message` hands it to the gallery — `image_url`
+      // rewritten to the playable source — while the store reads the raw one. Both must resolve to
+      // the same URL, or the tapped video is not the slide the gallery opens on.
+      const tileUrl = getUrlOfImageAttachment({ ...video, image_url: getPlayableVideoUrl(video) });
+      expect(store.assets.findIndex((asset) => asset.uri === tileUrl)).toBe(1);
     });
 
     it('should handle messages with multiple attachments', () => {

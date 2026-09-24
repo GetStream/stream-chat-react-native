@@ -7,13 +7,14 @@ import {
   LocalAudioAttachment,
   LocalFileAttachment,
   LocalVideoAttachment,
+  resolveAttachmentFullByteSize,
 } from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 
 import { FilePreview } from '../../../../components/Attachment/FilePreview';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
-import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
+import { usePendingUploadsEnabled } from '../../../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -39,10 +40,10 @@ export const FileAttachmentUploadPreview = ({
     FileUploadRetryIndicator,
     FileUploadNotSupportedIndicator,
   } = useComponentsContext();
-  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const pendingUploadsEnabled = usePendingUploadsEnabled();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    !!allowSendBeforeAttachmentsUpload,
+    pendingUploadsEnabled,
   );
 
   const {
@@ -67,7 +68,7 @@ export const FileAttachmentUploadPreview = ({
         <FileUploadInProgressIndicator
           localId={attachment.localMetadata.id}
           sourceUrl={sourceUrl}
-          totalBytes={attachment.custom?.file_size}
+          totalBytes={resolveAttachmentFullByteSize(attachment)}
         />
       );
     }
@@ -82,8 +83,7 @@ export const FileAttachmentUploadPreview = ({
     FileUploadInProgressIndicator,
     FileUploadNotSupportedIndicator,
     FileUploadRetryIndicator,
-    attachment.localMetadata,
-    attachment.custom?.file_size,
+    attachment,
     indicatorType,
     onRetryHandler,
     sourceUrl,

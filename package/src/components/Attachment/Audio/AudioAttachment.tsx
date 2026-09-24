@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import {
+  getAttachmentPreviewUrl,
   isLocalVoiceRecordingAttachment,
   isVoiceRecordingAttachment,
   LocalMessage,
@@ -117,7 +118,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
     type: isVoiceRecording ? 'voiceRecording' : 'audio',
-    uri: item.asset_url ?? '',
+    uri: getAttachmentPreviewUrl(item, item.asset_url) ?? '',
   });
   const { duration, isPlaying, position, progress, currentPlaybackRate } = useStateStore(
     audioPlayer.state,
@@ -295,7 +296,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             rate={currentPlaybackRate}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
-            uri={item.asset_url}
+            uri={getAttachmentPreviewUrl(item, item.asset_url)}
           />
         )}
       </View>

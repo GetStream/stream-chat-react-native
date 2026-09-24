@@ -7,8 +7,8 @@ import { LocalImageAttachment, LocalVideoAttachment } from 'stream-chat';
 import { FileAttachmentUploadPreview } from './FileAttachmentUploadPreview';
 import { ImageAttachmentUploadPreview } from './ImageAttachmentUploadPreview';
 
-import { useMessageInputContext } from '../../../../contexts';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
+import { usePendingUploadsEnabled } from '../../../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
@@ -23,9 +23,9 @@ export const VideoAttachmentUploadPreview = ({
   removeAttachments,
 }: VideoAttachmentUploadPreviewProps) => {
   const previewUri = attachment.thumb_url ?? attachment.localMetadata.previewUri;
-  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const pendingUploadsEnabled = usePendingUploadsEnabled();
   const shouldShowMetadataPill =
-    allowSendBeforeAttachmentsUpload || attachment.localMetadata.uploadState !== 'uploading';
+    pendingUploadsEnabled || attachment.localMetadata.uploadState !== 'uploading';
   // `localMetadata.file` is `File | FileReference`; only the RN `FileReference` carries a
   // `duration` (and a required `uri` to discriminate on), so read it through a guard.
   const localFile = attachment.localMetadata.file;

@@ -40,6 +40,7 @@ import { isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
 import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
+import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getUrlWithoutParams } from '../../utils/utils';
 
 export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
@@ -103,9 +104,10 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     minWidth,
   };
   const imagesAndVideos = [...(images || []), ...(videos || [])];
+  const galleryItemKey = (i: Attachment) => `${getUrlOfImageAttachment(i)}${i.thumb_url}`;
   const imagesAndVideosValue = `${images?.length}${videos?.length}${images
-    ?.map((i) => `${i.image_url}${i.thumb_url}`)
-    .join('')}${videos?.map((i) => `${i.image_url}${i.thumb_url}`).join('')}`;
+    ?.map(galleryItemKey)
+    .join('')}${videos?.map(galleryItemKey).join('')}`;
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({

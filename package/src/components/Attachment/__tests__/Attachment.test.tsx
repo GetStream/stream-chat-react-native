@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import type { ReactTestInstance } from 'react-test-renderer';
 
-import { render, waitFor } from '@testing-library/react-native';
+import { render, screen, waitFor } from '@testing-library/react-native';
 import type { Attachment as AttachmentType } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,6 +13,8 @@ import { MessageProvider } from '../../../contexts/messageContext/MessageContext
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { mergeThemes, ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { usePendingAttachmentUpload } from '../../../hooks/usePendingAttachmentUpload';
+import { generateFileReference } from '../../../mock-builders/attachments';
 import {
   generateAudioAttachment,
   generateFileAttachment,
@@ -49,6 +51,10 @@ jest.mock('../../../hooks/usePendingAttachmentUpload', () => ({
     uploadProgress: undefined,
   })),
 }));
+
+const mockedUsePendingAttachmentUpload = jest.mocked(usePendingAttachmentUpload);
+
+const idle = { isUploading: false, uploadProgress: undefined };
 
 const getAttachmentComponent = (
   props: ComponentProps<typeof Attachment>,
@@ -281,6 +287,74 @@ describe('Attachment', () => {
 
     await waitFor(() => {
       expect(getByTestId('gallery-container')).toBeTruthy();
+    });
+  });
+
+  // A message can be sent while its attachments are still uploading
+  // (`messageComposer.attachments.pendingUploadsEnabled`). Such an attachment has no URL of its own — everything
+  // needed to render it and to follow its upload lives in `localMetadata`.
+  describe('attachment whose upload has not resolved', () => {
+    // No `asset_url`: the upload has not resolved, so the file handle in `localMetadata` is the
+    // only source there is. `uploadState` is what makes it a local upload attachment at all.
+    const pendingFileAttachment = () =>
+      ({
+        custom: { file_size: 2000000, mime_type: 'application/pdf' },
+        localMetadata: {
+          file: generateFileReference({ name: 'report.pdf', uri: 'file://local/report.pdf' }),
+          id: 'upload-1',
+          previewUri: 'file://local/report.pdf',
+          uploadState: 'uploading',
+        },
+        title: 'report.pdf',
+        type: 'file',
+      }) as unknown as AttachmentType;
+
+    afterEach(() => {
+      mockedUsePendingAttachmentUpload.mockReturnValue(idle);
+    });
+
+    it('follows the upload by its localMetadata id', () => {
+      mockedUsePendingAttachmentUpload.mockReturnValue(idle);
+
+      render(getAttachmentComponent({ attachment: pendingFileAttachment() }));
+
+      // Reading this from anywhere else (v9 used `custom.localId`) means no indicator can ever
+      // render, because the upload manager is keyed by exactly this id.
+      expect(mockedUsePendingAttachmentUpload).toHaveBeenCalledWith('upload-1');
+    });
+
+    it('shows upload progress in place of the file size while the upload is in flight', () => {
+      mockedUsePendingAttachmentUpload.mockReturnValue({ isUploading: true, uploadProgress: 50 });
+
+      render(getAttachmentComponent({ attachment: pendingFileAttachment() }));
+
+      // The uploaded/total readout replaces the plain size label — only it contains a slash.
+      expect(screen.getByText(/ \/ /)).toBeTruthy();
+    });
+
+    it('takes the progress total from the held file when file_size is not set yet', () => {
+      mockedUsePendingAttachmentUpload.mockReturnValue({ isUploading: true, uploadProgress: 50 });
+      const attachment = pendingFileAttachment() as unknown as {
+        custom: Record<string, unknown>;
+        localMetadata: { file: Record<string, unknown> };
+      };
+      delete attachment.custom.file_size;
+      attachment.localMetadata.file.size = 2000000;
+
+      render(getAttachmentComponent({ attachment: attachment as unknown as AttachmentType }));
+
+      // Without a total the indicator shows no `uploaded / total` readout at all.
+      expect(screen.getByText(/ \/ /)).toBeTruthy();
+    });
+
+    it('shows no progress readout once no upload is in flight', () => {
+      // A message rehydrated from the offline DB keeps a frozen `uploadState`, so the payload alone
+      // must not be enough to render progress — only a live upload record is.
+      mockedUsePendingAttachmentUpload.mockReturnValue(idle);
+
+      render(getAttachmentComponent({ attachment: pendingFileAttachment() }));
+
+      expect(screen.queryByText(/ \/ /)).toBeNull();
     });
   });
 });
