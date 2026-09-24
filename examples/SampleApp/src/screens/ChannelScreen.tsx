@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -263,8 +265,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   }
 
   return (
-    <View
+    <SafeAreaView
       collapsable={false}
+      edges={['left', 'right']}
       onAccessibilityEscape={() => navigation.goBack()}
       style={[styles.flex, { backgroundColor: 'transparent' }]}
     >
@@ -306,7 +309,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
           />
         )}
       </Channel>
-    </View>
+    </SafeAreaView>
   );
 };
 

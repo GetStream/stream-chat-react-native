@@ -12,13 +12,29 @@ import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/Im
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { addInset } from '../../../hooks/useHorizontalInsets';
 import { useStateStore } from '../../../hooks/useStateStore';
 
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';
 import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui/Button/Button';
+import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
+
+// Never called - it exists only so `ReturnType` below can name the animated component's type.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in type position only
+const createAnimatedSafeAreaViewType = () => Animated.createAnimatedComponent(SafeAreaView);
+
+/**
+ * A frame-aware wrapper, matching `ImageGalleryFooter`. `SafeAreaView` compares the window inset
+ * against its own measured frame, so a nested instance contributes nothing once an ancestor has
+ * already narrowed the subtree - unlike `useSafeAreaInsets`, which is window-global and would
+ * double-pad this header inside `ChannelDetailsModal`, which insets its own root.
+ *
+ * `createAnimatedComponent` is guarded because a stripped-down Reanimated mock may not provide it.
+ */
+const ReanimatedSafeAreaView = (
+  Animated.createAnimatedComponent ? Animated.createAnimatedComponent(SafeAreaView) : SafeAreaView
+) as ReturnType<typeof createAnimatedSafeAreaViewType>;
 
 const imageGallerySelector = (state: ImageGalleryState) => ({
   asset: state.assets[state.currentIndex],
@@ -70,7 +86,10 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <Animated.View style={[styles.container, { paddingTop: topInset }, headerStyle]}>
+      <ReanimatedSafeAreaView
+        edges={['left', 'right']}
+        style={[styles.container, { paddingTop: topInset }, headerStyle]}
+      >
         <View style={styles.innerContainer}>
           <View style={styles.leftContainer}>
             <Button
@@ -91,7 +110,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
           </View>
           <View style={styles.rightContainer} accessibilityLabel='Right element' />
         </View>
-      </Animated.View>
+      </ReanimatedSafeAreaView>
     </View>
   );
 };
@@ -105,7 +124,6 @@ const useStyles = () => {
       imageGallery: { header },
     },
   } = useTheme();
-  const { left = 0, right = 0 } = useContext(SafeAreaInsetsContext) ?? {};
   return useMemo(
     () =>
       StyleSheet.create({
@@ -135,18 +153,6 @@ const useStyles = () => {
           borderBottomWidth: 1,
           borderBottomColor: semantics.borderCoreSubtle,
           ...header.innerContainer,
-          // Added to the base padding, not substituted: a longhand overrides the `padding`
-          // shorthand for that side.
-          paddingLeft: addInset(
-            header.innerContainer?.paddingLeft ?? header.innerContainer?.padding,
-            primitives.spacingSm,
-            left,
-          ),
-          paddingRight: addInset(
-            header.innerContainer?.paddingRight ?? header.innerContainer?.padding,
-            primitives.spacingSm,
-            right,
-          ),
         },
         leftContainer: {
           flex: 1,
@@ -164,6 +170,6 @@ const useStyles = () => {
           ...header.usernameText,
         },
       }),
-    [semantics, header, left, right],
+    [semantics, header],
   );
 };

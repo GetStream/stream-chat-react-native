@@ -14,8 +14,6 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
-const HEADER_CONTENT_PADDING = 8;
-
 const styles = StyleSheet.create({
   backButton: {
     alignItems: 'center',
@@ -35,7 +33,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    padding: HEADER_CONTENT_PADDING,
+    padding: 8,
   },
   leftContainer: {
     width: 70,
@@ -153,10 +151,6 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
           {
             height: HEADER_CONTENT_HEIGHT,
             marginTop: inSafeArea ? 0 : insets.top,
-            // Added to the base padding, not substituted: a longhand overrides the `padding`
-            // shorthand for that side, so a raw 0 inset would drop it.
-            paddingLeft: insets.left + HEADER_CONTENT_PADDING,
-            paddingRight: insets.right + HEADER_CONTENT_PADDING,
           },
         ]}
       >

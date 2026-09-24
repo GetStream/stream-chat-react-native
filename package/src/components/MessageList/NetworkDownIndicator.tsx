@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { addInset } from '../../hooks/useHorizontalInsets';
 import { primitives } from '../../theme';
 
 export const NetworkDownIndicator = () => {
@@ -44,21 +41,19 @@ const useStyles = () => {
       semantics,
     },
   } = useTheme();
-  const insets = useSafeAreaInsets();
   return useMemo(() => {
     return StyleSheet.create({
       container: {
         alignItems: 'center',
+        left: 0,
         paddingVertical: primitives.spacingXs,
         paddingHorizontal: primitives.spacingSm,
         position: 'absolute',
+        right: 0,
         top: 0,
         justifyContent: 'center',
         backgroundColor: semantics.backgroundCoreSurfaceDefault,
         ...errorNotification,
-        // Absolute child of the message list container, so its padding does not reach this.
-        left: addInset(errorNotification?.left, 0, insets.left),
-        right: addInset(errorNotification?.right, 0, insets.right),
       },
       errorText: {
         fontSize: primitives.typographyFontSizeXs,
@@ -68,5 +63,5 @@ const useStyles = () => {
         ...errorNotificationText,
       },
     });
-  }, [errorNotification, errorNotificationText, semantics, insets.left, insets.right]);
+  }, [errorNotification, errorNotificationText, semantics]);
 };

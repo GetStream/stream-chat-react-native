@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Notification as NotificationType } from 'stream-chat';
 
@@ -12,7 +11,6 @@ import type { NotificationTargetPanel } from './notificationTarget';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { addInset } from '../../hooks/useHorizontalInsets';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 
@@ -129,8 +127,6 @@ const useStyles = ({
     },
   } = useTheme();
 
-  const insets = useSafeAreaInsets();
-
   return useMemo(() => {
     const containerAlignmentStyle =
       verticalAlignment === 'bottom'
@@ -146,27 +142,19 @@ const useStyles = ({
     return StyleSheet.create({
       container: {
         alignItems: 'center',
+        left: primitives.spacingMd,
         maxHeight: '100%',
         position: 'absolute',
+        right: primitives.spacingMd,
         zIndex: 20,
         ...containerAlignmentStyle,
         ...notificationListContainer,
         ...containerOffsetStyle,
-        // Absolute, so the padding on the list containers that host this never reaches it.
-        left: addInset(notificationListContainer?.left, primitives.spacingMd, insets.left),
-        right: addInset(notificationListContainer?.right, primitives.spacingMd, insets.right),
       },
       notificationWrapper: {
         alignSelf: 'center',
         maxWidth: '100%',
       },
     });
-  }, [
-    bottomOffset,
-    notificationListContainer,
-    topOffset,
-    verticalAlignment,
-    insets.left,
-    insets.right,
-  ]);
+  }, [bottomOffset, notificationListContainer, topOffset, verticalAlignment]);
 };

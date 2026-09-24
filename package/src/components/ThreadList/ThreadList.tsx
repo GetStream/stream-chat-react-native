@@ -14,7 +14,6 @@ import {
   useThreadsContext,
 } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
-import { useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { useLazyRef } from '../../hooks/useLazyRef';
 import { generateRandomId } from '../../utils/utils';
 
@@ -116,8 +115,6 @@ export const ThreadList = (props: ThreadListProps) => {
 
   const { isLoading, isLoadingNext, threads } = useStateStore(client.threads.state, selector);
 
-  const horizontalInsets = useHorizontalInsets();
-
   return (
     <NotificationTargetProvider hostId={notificationHostId} panel='thread-list'>
       <ThreadsProvider
@@ -129,7 +126,7 @@ export const ThreadList = (props: ThreadListProps) => {
           ...props,
         }}
       >
-        <View style={[styles.container, horizontalInsets]}>
+        <View style={styles.container}>
           <ThreadListContent />
           <NotificationList />
         </View>

@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NavigationProp, useNavigation, useScrollToTop } from '@react-navigation/native';
 import { Channel, MessageResponse } from 'stream-chat';
@@ -84,7 +84,6 @@ export const ChannelListScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   useTheme();
   const { black, grey, grey_gainsboro, grey_whisper, white, white_snow } = useLegacyColors();
-  const insets = useSafeAreaInsets();
   const { setChannel } = useStreamChatContext();
 
   const searchInputRef = useRef<TextInputRef | null>(null);
@@ -178,7 +177,8 @@ export const ChannelListScreen: React.FC = () => {
   }
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.flex,
         {
@@ -195,8 +195,7 @@ export const ChannelListScreen: React.FC = () => {
             {
               backgroundColor: white,
               borderColor: grey_whisper,
-              marginLeft: insets.left + 8,
-              marginRight: insets.right + 8,
+              marginHorizontal: 8,
             },
           ]}
         >
@@ -263,6 +262,6 @@ export const ChannelListScreen: React.FC = () => {
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };

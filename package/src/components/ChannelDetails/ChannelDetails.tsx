@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useChannelDetailsContext } from '../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -81,7 +80,6 @@ export const ChannelDetails = ({ onBack }: ChannelDetailsProps) => {
 };
 
 const useStyles = () => {
-  const insets = useSafeAreaInsets();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -91,12 +89,10 @@ const useStyles = () => {
         scrollContent: {
           gap: primitives.spacingMd,
           paddingBottom: primitives.spacing3xl,
-          // Not on the outer container: the nav header already insets itself.
-          paddingLeft: insets.left + primitives.spacingMd,
-          paddingRight: insets.right + primitives.spacingMd,
+          paddingHorizontal: primitives.spacingMd,
           paddingTop: primitives.spacing2xl,
         },
       }),
-    [insets.left, insets.right],
+    [],
   );
 };

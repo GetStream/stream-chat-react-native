@@ -95,8 +95,7 @@ const useStyles = () => {
           justifyContent: 'space-between',
           paddingTop: insets.top + primitives.spacingSm,
           paddingBottom: primitives.spacingSm,
-          paddingLeft: insets.left + primitives.spacingSm,
-          paddingRight: insets.right + primitives.spacingSm,
+          paddingHorizontal: primitives.spacingSm,
           gap: primitives.spacingXs,
           borderBottomWidth: 1,
         },
@@ -114,6 +113,6 @@ const useStyles = () => {
           writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
         },
       }),
-    [insets.top, insets.left, insets.right],
+    [insets.top],
   );
 };

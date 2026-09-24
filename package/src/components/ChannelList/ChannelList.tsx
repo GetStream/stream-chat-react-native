@@ -24,7 +24,6 @@ import {
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
-import { useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { useLazyRef } from '../../hooks/useLazyRef';
 import type { ChannelListEventListenerOptions } from '../../types/types';
 import { generateRandomId } from '../../utils/utils';
@@ -381,13 +380,11 @@ export const ChannelList = (props: ChannelListProps) => {
     pinnedStatusPosition,
   });
 
-  const horizontalInsets = useHorizontalInsets();
-
   return (
     <NotificationTargetProvider hostId={notificationHostId} panel='channel-list'>
       <ChannelsProvider value={channelsContext}>
         <SwipeRegistryProvider>
-          <View style={[styles.container, horizontalInsets]}>
+          <View style={styles.container}>
             <ChannelListView />
             <NotificationList />
           </View>

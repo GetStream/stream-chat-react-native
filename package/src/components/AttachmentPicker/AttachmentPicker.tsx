@@ -19,7 +19,6 @@ import { useAttachmentPickerContext } from '../../contexts/attachmentPickerConte
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStableCallback } from '../../hooks';
-import { useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { BottomSheet } from '../BottomSheetCompatibility/BottomSheet';
 
 dayjs.extend(duration);
@@ -48,7 +47,6 @@ export const AttachmentPicker = () => {
     theme: { semantics },
   } = useTheme();
   const { height: windowHeight } = useWindowDimensions();
-  const horizontalInsets = useHorizontalInsets();
   const [currentIndex, setCurrentIndexInternal] = useState(-1);
   const currentIndexRef = useRef<number>(currentIndex);
   const setCurrentIndex = useStableCallback((_: number, toIndex: number) => {
@@ -173,16 +171,14 @@ export const AttachmentPicker = () => {
       topInset={pickerTopInset}
       animationConfigs={animationConfigs}
     >
-      <View style={horizontalInsets}>
-        <View onLayout={onAttachmentPickerSelectionBarLayout}>
-          <AttachmentPickerSelectionBar />
-        </View>
-        {!disableAttachmentPicker ? (
-          <AttachmentPickerContent
-            height={attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)}
-          />
-        ) : null}
+      <View onLayout={onAttachmentPickerSelectionBarLayout}>
+        <AttachmentPickerSelectionBar />
       </View>
+      {!disableAttachmentPicker ? (
+        <AttachmentPickerContent
+          height={attachmentPickerBottomSheetHeight - (selectionBarRef?.current ?? 0)}
+        />
+      ) : null}
     </BottomSheet>
   );
 };

@@ -3,8 +3,6 @@ import { LayoutChangeEvent, ScrollViewProps, StyleSheet, View, useColorScheme } 
 
 import Animated from 'react-native-reanimated';
 
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
@@ -50,7 +48,6 @@ import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext'
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback, useStateStore } from '../../hooks';
-import { addInset, useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { isVideoPlayerAvailable } from '../../native';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -396,7 +393,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const channelResyncScrollSet = useRef<boolean>(true);
   const { theme } = useTheme();
   const styles = useStyles();
-  const horizontalInsets = useHorizontalInsets();
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
   const scheme = useColorScheme();
@@ -1129,7 +1125,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   if (loading) {
     return (
-      <View style={[styles.container, horizontalInsets]}>
+      <View style={styles.container}>
         <LoadingIndicator listType='message' />
       </View>
     );
@@ -1142,11 +1138,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   }
 
   return (
-    <View
-      onLayout={onLayout}
-      style={[styles.container, horizontalInsets]}
-      testID='message-flat-list-wrapper'
-    >
+    <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
       {processedMessageList.length === 0 && !thread ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
@@ -1392,19 +1384,14 @@ const useStyles = () => {
 
   const { backgroundCoreApp } = semantics;
 
-  const insets = useSafeAreaInsets();
-
   return useMemo(
     () =>
       StyleSheet.create({
         suggestionsListContainer: {
           backgroundColor: 'transparent',
           position: 'absolute',
+          width: '100%',
           ...suggestionListContainer,
-          // left/right rather than `width: '100%'`, which resolves against the border box and so
-          // ignored the container's horizontal padding.
-          left: addInset(suggestionListContainer?.left, 0, insets.left),
-          right: addInset(suggestionListContainer?.right, 0, insets.right),
         },
         container: {
           flex: 1,
@@ -1428,27 +1415,25 @@ const useStyles = () => {
           width: '100%',
           ...listContainer,
         },
-        // Absolute children are offset from the border box, so the container's horizontal
-        // padding does not reach them: each carries the inset itself.
         scrollToBottomButtonContainer: {
           position: 'absolute',
+          right: 16,
           ...scrollToBottomButtonContainer,
-          right: addInset(scrollToBottomButtonContainer?.right, 16, insets.right),
         },
         stickyHeaderContainer: {
+          left: 0,
           position: 'absolute',
+          right: 0,
           top: primitives.spacingMd,
           ...stickyHeaderContainer,
-          left: addInset(stickyHeaderContainer?.left, 0, insets.left),
-          right: addInset(stickyHeaderContainer?.right, 0, insets.right),
         },
         unreadMessagesNotificationContainer: {
           position: 'absolute',
           top: primitives.spacingMd,
+          left: 0,
+          right: 0,
           alignItems: 'center',
           ...unreadMessagesNotificationContainer,
-          left: addInset(unreadMessagesNotificationContainer?.left, 0, insets.left),
-          right: addInset(unreadMessagesNotificationContainer?.right, 0, insets.right),
         },
       }),
     [
@@ -1460,8 +1445,6 @@ const useStyles = () => {
       stickyHeaderContainer,
       unreadMessagesNotificationContainer,
       suggestionListContainer,
-      insets.left,
-      insets.right,
     ],
   );
 };

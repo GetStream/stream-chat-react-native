@@ -51,7 +51,7 @@ All statuses below are **fixed** unless marked otherwise.
 | #   | Sev    | Package          | File                                                                                                                                                                                                         | What broke                                                                                                                                                                                                | User-visible symptom                                                                                                                                                                                                                                                                                                                                                                   | Fix                                                                                                                                     |
 | --- | ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | 0   | **P0** | ExpoMessaging    | prebuild output (not checked in)                                                                                                                                                                             | Expo SDK 57's prebuild template is pre-scene-lifecycle: the window is created in `didFinishLaunchingWithOptions` from `UIScreen.main.bounds`, with no `SceneDelegate` and no `UIApplicationSceneManifest` | **App fails to launch on iOS 27** — "UIScene life cycle is required", the same failure as `react/react-native#58606`                                                                                                                                                                                                                                                                   | **NOT FIXED — out of scope for this branch.** Verified fix described in §4                                                              |
-| 1   | **P1** | core + SampleApp | 8 surfaces, see §3                                                                                                                                                                                           | Nothing anywhere read `insets.left` / `insets.right`                                                                                                                                                      | Channel row timestamps, the header compose button and the unread badge rendered **underneath** the system clock/wifi capsule                                                                                                                                                                                                                                                           | Horizontal insets on every window-owning surface; SampleApp insets its own screens. **Verified on device, §5**                          |
+| 1   | **P1** | core + SampleApp | 8 surfaces, see §3                                                                                                                                                                                           | Nothing anywhere read `insets.left` / `insets.right`                                                                                                                                                      | Channel row timestamps, the header compose button and the unread badge rendered **underneath** the system clock/wifi capsule                                                                                                                                                                                                                                                           | SDK insets only what a consumer's `SafeAreaView` cannot reach (RN `Modal`s, `OverlayProvider` content); every screen wraps itself. **Measured, §5**                          |
 | 10  | **P1** | core             | [useAppStateListener.ts](../package/src/hooks/useAppStateListener.ts)                                                                                                                                           | `inactive` treated as equivalent to `background`                                                                                                                                                          | In Split View a visible app is `inactive`, so [useIsOnline.ts:22-29](../package/src/components/Chat/hooks/useIsOnline.ts:22) called `client.closeConnection()` and `setIsOnline(false)` — WebSocket dropped and offline banner shown **while the user was reading the chat**. Default-on (`closeConnectionOnBackground = true`, [Chat.tsx:216](../package/src/components/Chat/Chat.tsx:216)) | Only `background` counts as backgrounded; `inactive` ignored. Guarded so each callback fires once per real transition                   |
 | 2   | **P1** | core             | [useScreenDimensions.ts](../package/src/hooks/useScreenDimensions.ts)                                                                                                                                           | Public hook returns `vw`/`vh` as a percentage of **screen**                                                                                                                                               | A consumer sizing with `vw(100)` gets an element **2x its container width** (834 vs 417, measured)                                                                                                                                                                                                                                                                                     | `@deprecated` pointing at `useViewport`; behaviour unchanged, per the repo's deprecation lifecycle                                      |
 | 3   | **P2** | core             | [StreamShimmerView.swift](../package/shared-native/ios/StreamShimmerView.swift)                                                                                                                                 | `UIScreen.main.scale` for `contentsScale`, cached once at `setupLayers()`                                                                                                                                 | Shimmer placeholders rastered at the wrong scale if the view moves to a display with a different scale                                                                                                                                                                                                                                                                                 | Reads the view's own `traitCollection.displayScale`; resyncs on `didMoveToWindow` and `traitCollectionDidChange`                        |
@@ -82,66 +82,122 @@ Worth stating, because the audit template expects these to be problems:
 
 ## 3. Changes made
 
-Core SDK plus SampleApp, on `chore/duo-readiness-audit`. Nothing under `examples/ExpoMessaging` is touched.
+Core SDK plus SampleApp. Nothing under `examples/ExpoMessaging` is touched.
 
-**Finding #1 — horizontal insets.** SDK surfaces that own the window (they render above the consumer's own `SafeAreaView`, so the consumer _cannot_ inset them):
+### Finding #1 — horizontal insets: the SDK does almost nothing
 
-- `UIComponents/SafeAreaViewWrapper.tsx` — `edges` now all four
-- `ImageGallery/components/ImageGalleryFooter.tsx` — `edges` gains `left`/`right` (share button at one edge, grid button at the other)
-- `UIComponents/BottomSheetModal.tsx` — content container padded
-- `MessageInput/MessageComposer.tsx` — wrapper padded per side
-- `ChannelDetails/components/ChannelDetailsNavHeader.tsx` — padded per side
+**The contract.** An integrator wraps their own screens in `<SafeAreaView edges={['left','right']}>`.
+The SDK insets only the surfaces that wrapper cannot reach. Everything it renders in-tree is left
+alone.
 
-SampleApp insets its own in-flow content, which is the consumer's job:
+**Why not the other way round.** `develop` has *zero* horizontal inset handling, so any integrator
+who supports landscape on a notched device is already wrapping their screens - or is already broken.
+There is no third group getting this for free. Adding SDK padding on top of an existing wrapper
+double-insets exactly the integrators who did the right thing, silently, on a minor upgrade. The
+reverse is a no-op for everyone: those who wrap keep working, those who do not were already broken
+in landscape and stay equally broken until they wrap.
 
-- `components/ScreenHeader.tsx`, `components/BottomTabs.tsx`, `screens/ChannelListScreen.tsx`
+**Why a wrapper is sufficient, including for absolute children.** `SafeAreaView` makes the subtree
+*narrower*; an absolutely positioned child is offset from its containing block's **border box**, so
+it narrows with it. Padding does not do this - Yoga's `AbsolutePositionWithoutInsetsExcludesPadding`
+errata (which React Native enables) makes an absolute child with no `left`/`right` ignore its
+container's padding entirely. Narrowing therefore fixes both the roots and their absolute children;
+padding fixes only the roots and needs a per-offset correction for the rest.
 
-**Finding #10/#11 —** `hooks/useAppStateListener.ts` rewritten; `hooks/__tests__/useAppStateListener.test.tsx` rewritten (the old test _codified_ the bug at line 16).
+Measured on an Android emulator, `cmd overlay enable com.android.internal.display.cutout.emulation.waterfall`
+(left = right = 53 on a 1080px screen):
 
-**Finding #7 —** new `hooks/useWindowContentWidth.ts`; `MediaList.tsx`, `MediaListLoadingSkeleton.tsx`, `ImageGrid.tsx`, `AttachmentMediaPicker.tsx`, `AttachmentPickerItem.tsx`. Finding #6 is not actioned.
+| element | measured | expected |
+| --- | --- | --- |
+| `MessageList`'s `suggestionsListContainer` - `position:'absolute', width:'100%'`, **no SDK inset code** | x = 53 -> 1026 | 1080 - 53 - 53 |
+| `ChannelList` header divider | x = 53 -> 1026 | same |
 
-**Findings #2/#3/#4/#5/#9 —** `hooks/useScreenDimensions.ts`, `shared-native/ios/StreamShimmerView.swift`, `MessageItemView.tsx`, SampleApp `Toast.tsx`.
+And with an asymmetric inset (landscape, rotated hole-punch, left = 136 / right = 0), the attachment
+picker's third-column left edge:
 
-One snapshot updated (`Thread.test.tsx`): `paddingHorizontal: 16` became `paddingLeft: 16, paddingRight: 16`. Same value at zero insets — a representation change only, inspected before accepting.
+| build | measured | model |
+| --- | --- | --- |
+| picker insetting itself *and* wrapped | 1784 | 272 + 2x(2400-136)/3 = 1781 (double) |
+| picker wrapped only | 1648 | 136 + 2x(2400-136)/3 = 1645 (correct) |
 
-Synced copies under `package/{native,expo}-package/ios/shared/` were regenerated with `shared-native:sync`; they are gitignored, so only `shared-native/` appears in the diff.
+### What the SDK still insets
 
-`examples/SampleApp/ios/Podfile.lock` and `.../project.pbxproj` carried local pod-install churn (CocoaPods 1.17.0 reformatting, plus the 9.8.0 -> 9.9.1 version bump). Unrelated to this work, so both were reset to `develop` and are not in the diff.
+Only surfaces that genuinely escape a consumer's wrapper:
 
-### A second style pitfall: padding does not reach absolute children
+- `ChannelDetails/components/modal/Modal.tsx` - React Native `Modal`, its own native window (`useHorizontalInsets`)
+- `UIComponents/BottomSheetModal.tsx` - also an RN `Modal` (`useHorizontalInsets`)
+- `ImageGallery/components/ImageGalleryHeader.tsx` / `ImageGalleryFooter.tsx` - hosted by `OverlayProvider` at app root; both use `SafeAreaView` `edges`, not raw insets, so a nested instance contributes nothing when an ancestor has already narrowed the subtree (the header also renders *inside* `ChannelDetailsModal`, which insets its own root)
+- `UIComponents/SafeAreaViewWrapper.tsx` - `edges` now all four
 
-`position: 'absolute'` children are offset from their container's **border box**, so a container's
-horizontal padding never reaches them. Every inset applied as padding therefore missed them silently.
+**A name is not evidence of reach.** `AttachmentPicker` uses `BottomSheet`, an inline component that
+renders at `Channel.tsx:1808` inside the screen; `BottomSheetModal` is an RN `Modal`. One is
+reachable by a consumer wrapper and one is not, despite both reading as "a sheet". Check where a
+component actually mounts before deciding it needs its own insets - this cost a round trip.
 
-Found when the scroll-to-bottom button was spotted sitting inside the reserved column: `MessageList`
-had `paddingRight: 84`, but the button's own `right: 16` still measured it from the screen edge, so it
-landed at 406-445pt, squarely under the system indicators. It is an interactive control, so this was
-the most reachable-but-unreachable element in the app.
+**Prefer `SafeAreaView` to `useSafeAreaInsets`** wherever one fits. `SafeAreaView` compares the
+window inset against its own measured frame, so nesting is safe. `useSafeAreaInsets` is
+window-global and has no such protection.
 
-The same applies to every absolute child of a padded container. Fixed by adding the inset to the
-offsets themselves, in `MessageList` and `MessageFlashList` (`scrollToBottomButtonContainer`,
-`stickyHeaderContainer`, `unreadMessagesNotificationContainer`) and `MessageComposer`
-(`audioLockIndicatorWrapper`). `floatingWrapper` was deliberately left alone: the inner `wrapper` it
-contains already insets, and doing both would double-pad.
+### Finding #7 — grid and tile sizing
 
-### A style pitfall this work walked into twice
+The one thing a consumer wrapper cannot supply, because it is a number rather than a layout: new
+`hooks/useWindowContentWidth.ts`, used by `MediaList.tsx`, `MediaListLoadingSkeleton.tsx`,
+`ImageGrid.tsx`, `AttachmentMediaPicker.tsx` and `AttachmentPickerItem.tsx`. It degrades safely in
+both directions - an unwrapped app gets slightly small tiles and a harmless gap, where plain window
+width would overflow to fewer columns for anyone who wraps. Finding #6 is not actioned.
+
+### Other findings
+
+`hooks/useAppStateListener.ts` and its test rewritten (findings #10/#11; the old test *codified* the
+bug at line 16). `hooks/useScreenDimensions.ts`, `shared-native/ios/StreamShimmerView.swift`,
+`MessageItemView.tsx` (findings #2/#3/#4/#5/#9).
+
+Synced copies under `package/{native,expo}-package/ios/shared/` were regenerated with
+`shared-native:sync`; they are gitignored, so only `shared-native/` appears in the diff.
+
+`examples/SampleApp/ios/Podfile.lock` and `.../project.pbxproj` carried local pod-install churn,
+unrelated to this work; both were reset to `develop`.
+
+### SampleApp
+
+Every screen now wraps itself in a `SafeAreaView` carrying `left`/`right` edges. Two do not and
+should not: `ChatScreen`, which is only a `Tab.Navigator` whose five screens each wrap themselves,
+and `LoadingScreen`, which is a spinner.
+
+`ChannelListScreen`'s hand-rolled `insets.left + 8` / `insets.right + 8` on the search container was
+removed - the wrapper covers it, and its presence was itself evidence that consumers already deal
+with this by hand. `ScreenHeader` likewise no longer adds `insets.left`/`insets.right`: every screen
+that renders it, directly or through `ChatScreenHeader`, is now wrapped, so doing both double-pads.
+`BottomTabs` **does** keep its own horizontal padding - it is the navigator's tab bar and renders
+outside every screen's wrapper.
+
+Two traps found while doing this, both worth knowing for any consumer doing the same migration:
+
+- A screen can have more than one return path. `NewDirectMessagingScreen` wrapped only its
+  channel path; the user-search path it returns before a channel exists - which is the whole "New
+  Chat" screen - was unwrapped. Grepping for the presence of `SafeAreaView` in a file does not catch
+  this.
+- A component rendered inside a wrapped screen must not read `useSafeAreaInsets().left/right` at
+  all. That value is window-global and knows nothing about an ancestor having already narrowed the
+  subtree.
+
+### The zero-inset pitfall
 
 Merging an inset as a `paddingLeft` longhand over a base style that uses the `padding` shorthand
-**replaces** that side's padding rather than adding to it. Assigning a raw `insets.left` of 0 therefore
-silently drops existing padding - which is exactly what happened to SampleApp's header, where the
-avatar went flush to the screen edge.
+**replaces** that side's padding rather than adding to it - RN resolves shorthand against longhand by
+specificity, not source order. Assigning a raw `insets.left` of 0 therefore silently drops existing
+padding on every device and orientation without horizontal insets, which is almost all of them.
 
-Two defences are now in place. `useHorizontalInsets` omits a side entirely when its inset is 0, so it
-is a no-op on every device and orientation with zero horizontal insets and can never zero out a
-component's own padding or a consumer's theme override. And where a base padding does exist
-(`ScreenHeader`, `MessageComposer`, `ChannelDetailsNavHeader`), the inset is **added** to a named
-constant rather than substituted for it.
+`useHorizontalInsets` omits a side entirely when its inset is 0, so it can never zero out a
+component's own padding or a consumer's theme override. `BottomSheetModal` originally assigned
+`paddingLeft`/`paddingRight` directly and would have dropped a themed `paddingHorizontal`; it now
+spreads the hook.
 
-### Architectural decision worth reviewing
+### Snapshots
 
-**Revised during the audit.** The SDK originally applied horizontal insets only on surfaces that own the window, leaving in-flow content to the consumer. That was wrong, and inconsistent with `MessageComposer`, which already insets itself: the message list, thread list and channel list all still ran underneath the system indicators. The SDK now insets its own full-width list roots (`MessageList`, `ChannelList`, `ThreadList`) via `useHorizontalInsets`, and SampleApp's screen-level wrapper was removed so the two do not double-pad.
-
-The residual risk is the inverse: a consumer who already wraps an SDK list in a `SafeAreaView` with horizontal edges now gets double padding. That is mitigated but not eliminated by the zero-inset omission above, and is the decision to revisit if it bites.
+Zero. The final tree is byte-identical to `develop` for every snapshot. An earlier revision churned
+6,126 lines, all of it caused by one wrapper `<View>` in `AttachmentPicker` that turned out to be the
+double-inset bug above.
 
 ---
 
@@ -161,51 +217,106 @@ So the reaction does fire on dep change and `translationX` is correctly recomput
 
 ## 5. Verification
 
-| Check                                                              | Result                                                                                 |
-| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `yarn lint`                                                        | **exit 0**, zero warnings                                                              |
-| `cd package && yarn test:typecheck`                                | **clean**                                                                              |
-| `yarn test:unit`                                                   | **186 suites passed, 1517 tests passed, 12 snapshots passed**                          |
-| iOS build, Xcode 27.1 Beta, `iphonesimulator27.1`, Duo destination | **BUILD SUCCEEDED** (twice: before and after the native changes)                       |
-| `StreamShimmerView.swift` after rewrite                            | recompiled, **0** errors/warnings attributed to it                                     |
-| App launched on iPhone Duo (iOS 27.1)                              | **launched, rendered** on both the folded outer display and the unfolded inner display |
+### Gates
 
-SampleApp's own `tsc` reports 4 pre-existing errors about `thread` on `ThreadContextValue` in files this audit did not touch. Confirmed pre-existing by stashing the changes and re-running: same 4.
+| Check | Result |
+| --- | --- |
+| `yarn lint` | **exit 0**, zero warnings |
+| `cd package && yarn test:typecheck` | **clean** |
+| `yarn test:unit` | **185 suites passed** (2 skipped), **1506 tests passed**, **12 snapshots passed** |
+| Snapshot diff vs `develop` | **none** - byte-identical |
 
-### Finding #1, before and after on the Duo
+SampleApp's own `tsc` reports pre-existing errors in files this work did not touch; it resolves SDK
+types against a built `lib/`, which is absent in a fresh worktree. Not a gate.
 
-Same device, same build pipeline, outer display (`right: 84` inset):
+### Original hardware pass (iPhone Duo, iOS 27.1)
 
-|                       | Before                                               | After                             |
-| --------------------- | ---------------------------------------------------- | --------------------------------- |
-| Row 1 timestamp       | hidden behind the system capsule, clipped to "...ay" | **"Friday"**, fully legible       |
-| Header compose button | clipped under the reserved region                    | fully visible                     |
-| Row 2                 | unread badge unreachable                             | **"3:50 PM" + badge "4"** visible |
-| Row separators        | ran under the system indicators                      | stop at the inset boundary        |
+Run by the PR author on a real Duo with Xcode 27.1 Beta via `DEVELOPER_DIR`, `xcode-select` left
+untouched. The app built and launched on both the folded outer display and the unfolded inner
+display, and `StreamShimmerView.swift` recompiled with no errors or warnings attributed to it.
 
-Channel titles now truncate slightly ("Screenshot Orde..."). That is correct: the usable width genuinely shrank by 84pt.
+Outer display, `right: 84`:
 
-Toolchain note: default `xcode-select` here is **Xcode 27.0** (which would give "extended coverage" behaviour). Every build in this audit used **Xcode 27.1 Beta** via `DEVELOPER_DIR`, leaving `xcode-select` untouched.
+| | Before | After |
+| --- | --- | --- |
+| Row 1 timestamp | hidden behind the system capsule, clipped to "...ay" | **"Friday"**, fully legible |
+| Header compose button | clipped under the reserved region | fully visible |
+| Row 2 | unread badge unreachable | **"3:50 PM" + badge "4"** visible |
+| Row separators | ran under the system indicators | stop at the inset boundary |
 
-Temporary artifacts created and removed: a probe component in SampleApp (reverted) and a `DuoAuditPad-TEMP` iPad simulator (deleted).
+Channel titles truncate slightly afterwards ("Screenshot Orde..."), which is correct - the usable
+width genuinely shrank by 84pt.
+
+**What this pass does and does not establish.** It establishes the geometry, that the clipping is
+real, and that insets of this size materially change the layout. It validated the *original* design,
+in which the SDK padded its own surfaces. That design was replaced (see §3): the same pixels are now
+produced by the consumer's `SafeAreaView` narrowing the subtree. The before/after above therefore
+still describes the problem accurately, but not the mechanism that fixes it.
+
+### Re-verification of the current design
+
+The Duo is not available on the reviewing machine - Xcode 26.4.1 only, runtimes iOS 26.4 and 27.0,
+and `xcrun simctl list devicetypes | grep -i duo` is empty. Substitutes with real, non-zero
+horizontal insets were used instead.
+
+**Android emulator**, `cmd overlay enable com.android.internal.display.cutout.emulation.waterfall`,
+left = right = 53 on a 1080px screen:
+
+| element | measured | expected |
+| --- | --- | --- |
+| `MessageList`'s `suggestionsListContainer` - absolute, `width: '100%'`, **no SDK inset code** | x = 53 -> 1026 | 1080 - 53 - 53 |
+| `ChannelList` header divider | x = 53 -> 1026 | same |
+
+**Android, asymmetric** (landscape, rotated hole-punch, left = 136 / right = 0 on 2400px), attachment
+picker third-column left edge:
+
+| build | measured | model |
+| --- | --- | --- |
+| picker insetting itself *and* wrapped | 1784 | 272 + 2x(2400-136)/3 = 1781 (double) |
+| picker wrapped only | 1648 | 136 + 2x(2400-136)/3 = 1645 (correct) |
+
+**iOS 27.0, iPhone 17 Pro, landscape.** Insets read from the running app: `L62 R62 T0 B20`,
+frame `874x402`.
+
+| element | `develop` | this branch | expected |
+| --- | --- | --- | --- |
+| Attachment picker tiles | 0 -> 2621 (full bleed, under the cutout) | **189 -> 2432** | 186 -> 2435 |
+| `ChannelList` header divider | 0 -> 2621 | **186 -> 2435** | 186 -> 2435 |
+
+Measurements are pixel extents from `simctl io` / `adb screencap` frames decoded with
+`ffmpeg -pix_fmt rgb24`, not visual judgement. Symmetric insets cannot distinguish a *centred*
+element, so only edges were used.
+
+**A trap worth recording.** `RCT_METRO_PORT` at build time does not bind a simulator build to a
+bundler. A first iOS pass ran entirely against the wrong Metro - and therefore against `develop`'s
+JavaScript - while appearing to work. Point the app at a specific bundler at runtime with
+`xcrun simctl spawn <udid> defaults write <bundle-id> RCT_jsLocation "localhost:<port>"`, and
+confirm the intended Metro logs a fresh `BUNDLE` before trusting anything you see.
 
 ---
 
 ## 6. Still unverified
 
-The device was unfolded mid-audit, which cleared most of what was previously blocked. What remains:
-
-| Item                                         | Why                                                                                                                                                                                                                                                            | What would unblock it                              |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **Interactive testing on the inner display** | The simulator MCP tool binds to the **outer** display's coordinate space (466x678) and its taps do not reach the inner display - confirmed by tapping a channel row and observing no navigation. Inner-display screenshots work fine via `simctl io --display` | Tooling limitation; drive it by hand in Device Hub |
-| **Fold/unfold as a live resize**             | Same limitation: I can screenshot either display but cannot fold or unfold programmatically. `simctl ui` has no posture option                                                                                                                                 | Fold by hand in Device Hub while watching a screen |
+| Item | Why | What would unblock it |
+| --- | --- | --- |
+| **The Duo itself, under the current design** | No Duo device type on the reviewing machine (Xcode 26.4.1); the author's pass predates the design change | A pass by the author on his Duo |
+| **Fold/unfold as a live resize** | Neither `simctl ui` nor `simctl` generally exposes a posture option, and rotation is not scriptable either - `osascript` is denied both keystrokes (error 1002) and assistive access (error -1719) | Fold by hand while watching a screen; this is the path `useAppStateListener` exists for |
+| **Asymmetric insets on iOS** | The asymmetric case was exercised on Android (136/0); iOS was symmetric (62/62) | Landscape on a Duo, or any iOS device reporting unequal left/right |
+| **`ChannelDetails` modal and `BottomSheetModal` with non-zero insets** | Both are React Native `Modal`s and keep their own insets; neither was opened in landscape on either platform | Open Group Info, and a message-actions sheet, in landscape |
+| **`ImageGalleryHeader` inset behaviour** | Confirmed to render without crashing, and eyeballed in landscape, but never measured. It is the one component whose correctness depends on `SafeAreaView` cancelling against an already-narrowed ancestor | Measure its padding inside `ChannelDetailsModal` versus under `OverlayProvider` |
+| **Android image gallery** | Never opened during the Android passes | Open an image attachment with a cutout enabled |
 
 Two consequences of the fixes that are correct but worth knowing:
 
-- Column counts are unchanged, so no grid remounts on a fold or rotation. Only tile size follows the window, and the tiles keep their explicit width - see the remount section below for why an adaptive count was dropped.
-- The picker items keep a window-based size as a fallback for being rendered outside the picker's own list. Inside it, the measured value always wins.
+- Column counts are unchanged, so no grid remounts on a fold or rotation. Only tile size follows the
+  window - see the remount section below for why an adaptive count was dropped.
+- `useWindowContentWidth` degrades safely in both directions: an unwrapped app gets slightly small
+  tiles and a harmless gap, where a plain window width would overflow to fewer columns for anyone who
+  does wrap.
 
-Nothing is blocked on upstream React Native, Expo, `react-native-screens` or `react-native-safe-area-context`. `react/react-native#58606` describes exactly the ExpoMessaging P0, which is documented in §4 but not fixed here.
+Nothing is blocked on upstream React Native, Expo, `react-native-screens` or
+`react-native-safe-area-context`. `react/react-native#58606` describes exactly the ExpoMessaging P0,
+which is documented in §4 but not fixed here.
 
 ## 7. Cross-check against external guidance
 
@@ -235,16 +346,15 @@ The same measurement produced a second correction, this time to my own report. I
 >
 > **Fixed**
 >
-> - Components that own the window — the image gallery, bottom sheets, modals, the message composer and the channel details header — now apply the **horizontal** safe-area insets. On a foldable the system indicators stack down one side (measured `left: 0, right: 84` on iPhone Duo), and content previously rendered underneath them.
+> - On a foldable the system indicators stack down one side (measured `left: 0, right: 84` on iPhone Duo), and content previously rendered underneath them. Surfaces you cannot wrap — modals, bottom sheets and the image gallery — now apply the **horizontal** safe-area insets themselves. Everything the SDK renders inside your screens takes them from your own `SafeAreaView`; see point 1 below.
 > - The SDK no longer treats iOS's `inactive` state as "backgrounded". An app sharing the screen in Split View stays `inactive` while fully visible; the SDK previously closed the WebSocket and showed an offline banner in that state. It now only reacts to a real `background` transition. This also stops the connection dropping during transient `inactive` moments such as Control Center or the app switcher.
 > - Grid tiles - channel details, the attachment picker and the image gallery - are sized from the window minus the horizontal safe area rather than the raw window, so they no longer overflow once the surface is inset. Column counts are unchanged.
-> - Attachment picker and image-gallery grids size their tiles from their own container rather than the window.
 >
 > **Check in your own app**
 >
-> 1. **Insets are no longer symmetric, and `top` can be 0.** Read each edge separately from `useSafeAreaInsets()`. Applying one value to both horizontal edges, or assuming the status bar is at the top, will misplace content.
-> 2. **`Dimensions.get('screen')` is not your window.** We measured an 834pt screen behind a 417pt app window. Use `useWindowDimensions()` for layout.
-> 3. **In-flow SDK components inherit their horizontal insets from you**, exactly as they already do for the top inset. Wrap your screens in a `SafeAreaView` with `left`/`right` edges.
+> 1. **Wrap your screens in a `SafeAreaView` with `left`/`right` edges.** SDK components rendered inside your screens take their horizontal insets from you, exactly as they already do for the top inset. This is the one thing you must do; without it, lists and the composer run under the system indicators on a foldable. Do **not** also wrap a modal, bottom sheet or the image gallery — those inset themselves, and doing both double-pads them.
+> 2. **Insets are no longer symmetric, and `top` can be 0.** Read each edge separately from `useSafeAreaInsets()`. Applying one value to both horizontal edges, or assuming the status bar is at the top, will misplace content.
+> 3. **`Dimensions.get('screen')` is not your window.** We measured an 834pt screen behind a 417pt app window. Use `useWindowDimensions()` for layout.
 > 4. **Expo SDK 57 projects do not launch on iOS 27.** Its prebuild template still creates the window in `application(_:didFinishLaunchingWithOptions:)` with no `UIApplicationSceneManifest`, which iOS 27 rejects with "UIScene life cycle is required". Upgrade to SDK 58, or adopt the scene lifecycle with a config plugin.
 >
 > **Deprecated:** `useScreenDimensions` — its `vw`/`vh` are percentages of the screen, not the window. Use `useViewport` (same API, measured against the window), or `onLayout` on your own view inside a component that does not fill the window. It still works unchanged and will be removed in the next major.
