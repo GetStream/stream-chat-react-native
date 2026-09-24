@@ -9,7 +9,6 @@ import {
 } from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
-import { MEDIA_GRID_GAP } from './mediaListColumns';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -26,6 +25,7 @@ import { getNotificationErrorOptions } from '../../../../hooks/actions/useChanne
 import { useStateStore } from '../../../../hooks/useStateStore';
 import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { isVideoPlayerAvailable } from '../../../../native';
+import { primitives } from '../../../../theme';
 import { FileTypes } from '../../../../types/types';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 import { openUrlSafely } from '../../../Attachment/utils/openUrlSafely';
@@ -49,13 +49,10 @@ export type MediaListProps = {
    * fetch image/video attachments, newest first).
    */
   searchSource?: MessageSearchSource;
-  /**
-   * Number of columns in the media grid. Defaults to a count derived from the width of the grid's
-   * own container: 3 on phone widths, more as the container grows. Set this to pin the grid to a
-   * fixed column count regardless of width.
-   */
-  numberOfColumns?: number;
 };
+
+const NUMBER_OF_COLUMNS = 3;
+const MEDIA_GRID_GAP = primitives.spacingXxxs;
 
 const keyExtractor = (item: MediaTile, index: number) => `${item.message.id}-${index}`;
 
@@ -66,7 +63,7 @@ const listStateSelector = (state: SearchSourceState<MessageResponse>) => ({
   messages: state.items,
 });
 
-const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaListProps) => {
+const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -125,11 +122,9 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
 
   const tiles = useMediaList(messages);
 
-  const columns = numberOfColumns ?? 3;
-
   const tileSize = useMemo(
-    () => (width - MEDIA_GRID_GAP * (columns - 1)) / columns,
-    [width, columns],
+    () => (width - MEDIA_GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS,
+    [width],
   );
 
   // Opens the fullscreen gallery over the whole loaded collection, selecting the tapped attachment.
@@ -197,10 +192,7 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
         keyExtractor={keyExtractor}
         ListEmptyComponent={emptyState}
         ListFooterComponent={loadingMoreIndicator}
-        // FlatList rejects a `numColumns` change on a mounted list, so the count must key a
-        // remount - which resets scroll. Constant by default, so this never fires.
-        key={columns}
-        numColumns={columns}
+        numColumns={NUMBER_OF_COLUMNS}
         onEndReached={loadMore}
         onEndReachedThreshold={0.2}
         renderItem={renderItem}
