@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 import {
+  asTimestampNS,
   Channel,
   convertTimestampToDate,
   nowNs,
@@ -68,7 +69,7 @@ const MapScreenFooter = ({
   // `end_at` arrives as a route-param string holding a unix-**nanosecond** timestamp, so it is
   // parsed back to a number before any comparison: `new Date(ns)` is out of range, and
   // `convertTimestampToDate` rejects a string outright (`Number.isFinite('1788…')` is false).
-  const endAt = end_at != null ? Number(end_at) : undefined;
+  const endAt = end_at != null ? asTimestampNS(Number(end_at)) : undefined;
   const liveLocationActive =
     !isLiveLocationStopped && endAt !== undefined && Number.isFinite(endAt) && endAt > nowNs();
   const formattedEndedAt = convertTimestampToDate(endAt)?.toLocaleString() ?? '';

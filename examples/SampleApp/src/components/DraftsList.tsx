@@ -13,6 +13,7 @@ import {
   DraftResponse,
   LocalMessage,
   MessageResponse,
+  TimestampNS,
 } from 'stream-chat';
 import {
   useChatContext,
@@ -33,7 +34,7 @@ export type DraftItemProps = {
   type?: 'channel' | 'thread';
   channel?: ChannelResponse;
   /** Unix nanoseconds, as the API sends it. */
-  date?: number;
+  date?: TimestampNS;
   message: DraftMessage;
   // TODO: Fix the type for thread
   thread?: MessageResponse;

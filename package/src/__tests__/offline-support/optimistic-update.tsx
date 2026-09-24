@@ -11,6 +11,7 @@ import type {
   LocalUploadAttachment,
   ReactionResponse,
   StreamChat,
+  TimestampNS,
   UserResponse,
 } from 'stream-chat';
 import { dateToNs, localMessageToNewMessagePayload, nowNs } from 'stream-chat';
@@ -138,7 +139,7 @@ export const OptimisticUpdates = () => {
       const allReactions: ReactionResponse[] = [];
       const allReads: Array<{
         /** Unix nanoseconds, as the API sends it. */
-        last_read: number;
+        last_read: TimestampNS;
         unread_messages: number;
         user: ReturnType<typeof generateUser> | undefined;
       }> = [];

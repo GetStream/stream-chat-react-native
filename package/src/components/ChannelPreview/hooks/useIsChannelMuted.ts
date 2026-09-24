@@ -1,4 +1,4 @@
-import type { Channel } from 'stream-chat';
+import type { Channel, ChannelMuteStatus } from 'stream-chat';
 
 import { useStateStore } from '../../../hooks/useStateStore';
 
@@ -8,10 +8,9 @@ const defaultMuteStatus = {
   muted: false,
 };
 
-const selector = (state: {
-  // Mirrors core's `ChannelMuteStatus`: both timestamps are unix nanoseconds.
-  muteStatus: { createdAt: number | null; expiresAt: number | null; muted: boolean };
-}) => ({ muteStatus: state.muteStatus });
+const selector = (state: { muteStatus: ChannelMuteStatus }) => ({
+  muteStatus: state.muteStatus,
+});
 
 /**
  * Returns this channel's mute status, sourced reactively from `channel.state.muteStatus` (kept in

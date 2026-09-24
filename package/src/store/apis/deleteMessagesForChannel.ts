@@ -1,4 +1,5 @@
 import { nowNs } from 'stream-chat';
+import type { TimestampNS } from 'stream-chat';
 
 import { SqliteClient } from '../SqliteClient';
 
@@ -9,7 +10,7 @@ export const deleteMessagesForChannel = async ({
 }: {
   cid: string;
   /** Unix nanoseconds, as the API sends it. */
-  truncated_at?: number;
+  truncated_at?: TimestampNS;
   execute?: boolean;
 }) => {
   // `createdAt` holds unix nanoseconds, so the cutoff is one too and the comparison is numeric.

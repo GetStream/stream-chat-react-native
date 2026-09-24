@@ -7,6 +7,7 @@ import type {
   MessageResponse,
   ReactionGroupResponse,
   ReactionResponse,
+  TimestampNS,
   UserResponse,
 } from 'stream-chat';
 
@@ -210,7 +211,7 @@ export type WebSocketEventBase = {
   channel_id: string;
   channel_type: string;
   cid: string;
-  created_at: number;
+  created_at: TimestampNS;
   custom: CustomEventData;
   user: UserResponse;
   user_id: string;

@@ -1,6 +1,6 @@
 import type { UserResponse } from 'stream-chat';
 
-import { mapStorableToTimestamp } from './mapStorableToTimestamp';
+import { mapStorableToRequiredTimestamp, mapStorableToTimestamp } from './mapStorableToTimestamp';
 
 import type { TableRow } from '../types';
 
@@ -9,12 +9,12 @@ export const mapStorableToUser = (userRow: TableRow<'users'>): UserResponse => {
 
   return {
     banned: Boolean(banned),
-    created_at: mapStorableToTimestamp(createdAt) ?? 0,
+    created_at: mapStorableToRequiredTimestamp(createdAt),
     id,
     last_active: mapStorableToTimestamp(lastActive),
     online: Boolean(online),
     role: role ?? 'user',
-    updated_at: mapStorableToTimestamp(updatedAt) ?? 0,
+    updated_at: mapStorableToRequiredTimestamp(updatedAt),
     ...(extraData ? JSON.parse(extraData) : {}),
   };
 };

@@ -2,7 +2,12 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type { AttachmentLoadingState, LocalMessage, MessageResponse } from 'stream-chat';
+import type {
+  AttachmentLoadingState,
+  LocalMessage,
+  MessageResponse,
+  TimestampNS,
+} from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import { ValueOf } from '../types/types';
@@ -273,15 +278,14 @@ export const findInMessagesById = (messages: LocalMessage[], targetId: string) =
 };
 
 /**
- * Utility to find the index of a message in the messages array by date.
+ * Utility to find the index of a message in the messages array by timestamp.
  * @param messages
- * @param targetDate
+ * @param targetTimestamp Unix nanoseconds, the same unit the messages' `created_at` carries.
  * @returns an object with the index and the message object
  */
 export const findInMessagesByDate = (
   messages: MessageResponse[] | LocalMessage[],
-  /** Unix nanoseconds, the same unit the messages' `created_at` carries. */
-  targetTimestamp: number,
+  targetTimestamp: TimestampNS,
 ) => {
   // Binary search
   let left = 0;
