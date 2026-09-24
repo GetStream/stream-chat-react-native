@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 
 import { renderAttachmentPickerItem } from './AttachmentPickerItem';
-import { AttachmentPickerTileSizeContext } from './AttachmentPickerTileSizeContext';
 
 import { IOS_LIMITED_DEEPLINK, type PhotoContentItemType } from './shared';
 
@@ -10,7 +9,6 @@ import { useAttachmentPickerContext, useTheme, useTranslationContext } from '../
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { useStableCallback } from '../../../../hooks';
-import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 
 import { NativeHandlers } from '../../../../native';
 import { BottomSheetFlatList } from '../../../BottomSheetCompatibility/BottomSheetFlatList';
@@ -60,8 +58,6 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
   const styles = useMediaPickerStyles();
 
   const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
-  const gridWidth = useWindowContentWidth();
-  const tileSize = gridWidth / numberOfColumns - 2;
 
   const endCursorRef = useRef<string>(undefined);
   const [photoError, setPhotoError] = useState(false);
@@ -171,19 +167,17 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       description={t('You have not granted access to the photo library.')}
     />
   ) : (
-    <AttachmentPickerTileSizeContext.Provider value={tileSize}>
-      <BottomSheetFlatList
-        contentContainerStyle={[styles.container, bottomSheetContentContainer]}
-        data={photos}
-        keyExtractor={keyExtractor}
-        key={numberOfColumns}
-        numColumns={numberOfColumns}
-        onEndReached={photoError ? undefined : getMorePhotos}
-        renderItem={renderAttachmentPickerItem}
-        showsVerticalScrollIndicator={false}
-        testID={'attachment-picker-list'}
-        updateCellsBatchingPeriod={16}
-      />
-    </AttachmentPickerTileSizeContext.Provider>
+    <BottomSheetFlatList
+      contentContainerStyle={[styles.container, bottomSheetContentContainer]}
+      data={photos}
+      keyExtractor={keyExtractor}
+      key={numberOfColumns}
+      numColumns={numberOfColumns}
+      onEndReached={photoError ? undefined : getMorePhotos}
+      renderItem={renderAttachmentPickerItem}
+      showsVerticalScrollIndicator={false}
+      testID={'attachment-picker-list'}
+      updateCellsBatchingPeriod={16}
+    />
   );
 };
