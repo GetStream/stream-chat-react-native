@@ -20,6 +20,7 @@ export * from './middlewares';
 export * from './types/react-native-compat';
 export * from './types/types';
 
+export * from './utils/attachmentUrls';
 export * from './utils/patchMessageTextCommand';
 export * from './utils/i18n/Streami18n';
 export * from './i18n';

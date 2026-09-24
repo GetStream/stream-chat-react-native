@@ -8,6 +8,7 @@ import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useInitializeOfflineDb } from './hooks/useInitializeOfflineDb';
 import { useIsOnline } from './hooks/useIsOnline';
+import { usePendingUploadsDefault } from './hooks/usePendingUploadsDefault';
 
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -259,6 +260,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
    * Setup connection event listeners
    */
   useIsOnline(client, closeConnectionOnBackground);
+  usePendingUploadsDefault(client, enableOfflineSupport);
 
   // The device's network, for the one consumer that needs it before the context exists.
   const isNetworkOnline = useStateStore(client.networkConnection?.state, networkSelector)?.isOnline;

@@ -143,7 +143,11 @@ means changed. Details in the linked section.
 | `useChannelContext().markRead()` | `useMarkRead(channel)()` — or `channel.markRead()` | §5 |
 | `<Channel doMarkReadRequest>` | `client.config.set({ channel: { requestHandlers: { markReadRequest } } })` | §13.1 |
 | `<Channel doUpdateMessageRequest>` | `…{ requestHandlers: { updateMessageRequest } }` | §13.1 |
+| `<Channel doSendMessageRequest>` | `…{ requestHandlers: { sendMessageRequest } }` (retry: `retrySendMessageRequest`) | §13.1 |
 | `<Channel doFileUploadRequest>` | `client.config.set({ messageComposer: { attachments: { doUploadRequest } } })` | §13.1 |
+| `attachment.custom?.localId` | `isLocalUploadAttachment(a) ? a.localMetadata.id : undefined` | §17.6 |
+| `attachment.custom?.originalFile?.uri` | `getAttachmentPreviewUrl(a, a.asset_url, a.image_url)` (`stream-chat`); for video playback `getPlayableVideoUrl(a)` (SDK) | §17.6 |
+| `createAttachmentsCompositionMiddleware` (RN) | the same-named export from `stream-chat` | §17.6 |
 | `<Channel stateUpdateThrottleInterval>` | `…{ channel: { messagePaginator: { stateThrottleMs } } }` | §13.1 |
 | `channel.getConfig()` | `channel.serverConfig` (getter) — or `channel.config` for resolved gates | §13.1 |
 | `client.configs[cid]` | `client.channelServerConfigs[cid]` | §13.1 |
@@ -756,10 +760,10 @@ Also removed, and covered in §13.1:
 The two throttle props were declared but never read in v10 — they are now deleted
 outright rather than left inert. `stateThrottleMs` is the real, reactive control.
 
-`doSendMessageRequest` is the one `do*Request` prop that **remains**. The SDK itself
-occupies that handler slot to run the attachment-upload step inside the send pipeline,
-so it wraps your handler rather than being replaced by it. Its `message` argument is
-now typed `MessageRequest` (rename only; no shape change).
+`doSendMessageRequest` is removed like every other `do*Request` prop — register a
+`sendMessageRequest` through `client.config` instead (§13.1). It used to stay because the SDK
+itself occupied that handler slot to run the attachment-upload step; `stream-chat` now awaits
+uploads before any handler runs, so the slot is yours alone.
 
 ## 13.1 Instance configuration → `client.config`
 
@@ -826,7 +830,28 @@ Three things change with it:
   `localMessage.cid` you receive.
 - **Thread-scoped handlers** go under the `thread` key with the same shape.
 
-`doSendMessageRequest` stays a prop — see §13.
+The send prop moves the same way. `sendMessageRequest` also receives the wire-ready `message`
+(`MessageRequest`, attachment uploads already resolved), and `retrySendMessageRequest` is a
+separate slot — register the same function in both to keep v9's behaviour, where one prop
+covered send and retry:
+
+```tsx
+// v9
+<Channel channel={channel} doSendMessageRequest={(channelId, message, options) => mySend(channelId, message, options)}>
+
+// v10
+const sendMessageRequest = async ({ localMessage, message, options }) => {
+  const response = await mySend(localMessage.cid, message, options);
+  return { message: response.message };
+};
+client.config.set({
+  channel: { requestHandlers: { retrySendMessageRequest: sendMessageRequest, sendMessageRequest } },
+});
+```
+
+If your handler resolves without a `message`, nothing is sent a second time — v9 fell back to
+`channel.sendMessage`, which sent the message twice. Return the server's response to update the
+message straight away; otherwise the `message.new` event reconciles it.
 
 ### Behaviour, not values → setup functions
 
@@ -1016,11 +1041,13 @@ root. Relevant only if you authored a custom component/override that reads them 
 SDK's own reads are already migrated.
 
 - `channel.data.name` / `channel.data.image` → `channel.data.custom?.name` / `.custom?.image`
-- Attachment metadata: `attachment.mime_type` / `file_size` / `duration` / `originalFile` →
+- Attachment metadata: `attachment.mime_type` / `file_size` / `duration` →
   `attachment.custom?.<same>` (`duration` is now `voiceRecording`-only)
+- `attachment.originalFile` → **gone entirely** — an attachment whose upload has not resolved
+  carries `localMetadata` instead, see §17.6
 
-The RN SDK augments `CustomChannelData` (`name`, `image`) and `CustomAttachmentData`
-(`originalFile`, `localId`). Add your own custom keys the same way (`declare module 'stream-chat'`).
+The RN SDK augments `CustomChannelData` (`name`, `image`); `mime_type` and `file_size` come from
+`stream-chat` itself. Add your own custom keys the same way (`declare module 'stream-chat'`).
 
 ## 17.2 `deleteMessage` options are snake_case
 
@@ -1044,8 +1071,7 @@ params object rather than the prop's positional arguments:
 If you need the old `{ id, message }` request shape inside your handler, derive it with
 `localMessageToNewMessagePayload(localMessage)` — that is what the SDK's adapter used to do.
 
-`doSendMessageRequest` remains a prop; its `message` argument is now typed `MessageRequest`
-(rename only; no shape change).
+`doSendMessageRequest` is removed too — see §13.1 for its `sendMessageRequest` replacement.
 
 ## 17.4 `message.moderation_details` → `message.moderation`
 
@@ -1125,6 +1151,74 @@ Highlights that hit integrator code:
   `sendImage`); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
   `createAbortControllerForNextRequest` moved to `client.api`.
 - **Sort is `SortParamRequest[]`** — `{ last_message_at: -1 }` → `[{ field: 'last_message_at', direction: -1 }]`.
+
+## 17.6 Attachments mid-upload carry `localMetadata`, not `custom.*`
+
+Only relevant if you override a component that renders message attachments, or read an attachment
+off a message that is still sending (`messageComposer.attachments.pendingUploadsEnabled`, on by
+default whenever `enableOfflineSupport` is set — see §O.3).
+
+v9 flattened an unresolved attachment into a plain `Attachment`: the local file URI was written into
+`image_url` / `asset_url`, and the upload id and file handle were smuggled through
+`custom.localId` / `custom.originalFile`. v10 leaves this to `stream-chat`:
+the switch is the composer's own `attachments.pendingUploadsEnabled` (§O.3), and with it on, `stream-chat`'s `createAttachmentsCompositionMiddleware` keeps the real
+`LocalUploadAttachment` on the local message while the API payload carries only what already
+resolved to a URL. `MessageOperations` then awaits the remaining uploads and fills in their URLs
+before the request goes out:
+
+```ts
+// v9
+const localId = attachment.custom?.localId;
+const uri = attachment.image_url ?? attachment.custom?.originalFile?.uri;
+
+// v10
+import { getAttachmentPreviewUrl, isLocalUploadAttachment } from 'stream-chat';
+import { getPlayableVideoUrl } from 'stream-chat-react-native'; // or 'stream-chat-expo'
+
+const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
+const uri = getAttachmentPreviewUrl(attachment, attachment.asset_url, attachment.image_url); // image, file, audio
+const videoSource = getPlayableVideoUrl(attachment); // video playback only
+```
+
+There is **no URL at all** on a pending attachment until its upload resolves — `localMetadata`
+holds `id` (the `client.uploadManager` key), `file` (the handle a retry needs), `previewUri` (what
+to render meanwhile) and `uploadState`. Two helpers encode the distinction, and overrides should
+use them rather than reading the fields directly:
+
+- `getAttachmentPreviewUrl(attachment, ...urls)` from `stream-chat` — the default for every type.
+  Returns the first of `urls` that is set (e.g. `a.asset_url, a.image_url`), else
+  `localMetadata.previewUri`. For images, files and audio `previewUri` is the picked file's own
+  URI, so the same call renders an image, opens a file and plays audio.
+- `getPlayableVideoUrl(attachment)` from `stream-chat-react-native` / `stream-chat-expo` — **video
+  playback only**. It returns `asset_url` / `image_url`, else the local file URI, skipping
+  `previewUri`, which for a video is the thumbnail image
+  (`setupVideoAttachmentPreviewMiddleware` puts it there).
+
+`getUrlOfImageAttachment` already applies both — the preview fallback for images, the playable
+source for videos — so the gallery, the image gallery and the channel-details media list need no
+change.
+
+Removed exports (they existed only to produce the v9 shape):
+
+- `createAttachmentsCompositionMiddleware` — use `stream-chat`'s export of the same name, which the
+  composer installs by default. The SDK no longer replaces it; `<Chat>` only supplies a
+  default for `attachments.pendingUploadsEnabled` (§O.3)
+- `createDraftAttachmentsCompositionMiddleware` — the client's default applies now, which keeps
+  **successful uploads only**. A draft is sent to the server, so an unresolved attachment no longer
+  persists a local file URI no other device can read
+- `localAttachmentToAttachment`
+- `DefaultAttachmentData.originalFile` / `.localId`
+
+`setupVideoAttachmentPreviewMiddleware` stays — a video file is not renderable, so its preview is
+still the thumbnail the picker extracted.
+
+Two exported URL utilities changed behaviour, because a pending attachment is rendered from a
+local URI:
+
+- `isLocalUrl(url?)` checks the scheme instead of searching for `http` anywhere in the string. A
+  `content://` or `ph://` URI containing that substring now counts as local, where v9 called it
+  remote. It also accepts `undefined` and returns `false` for it; v9 threw.
+- `makeImageCompatibleUrl(url?)` accepts `undefined` and returns it unchanged; v9 threw.
 
 ---
 
@@ -2012,6 +2106,86 @@ What a prune does now, which is worth knowing if you build on the paginator:
 
 A value below the list's `pageSize` is raised to it: a cap smaller than a page would prune away the page a
 "load older" query had just fetched, and the list would immediately ask for it again.
+
+## O.3 `<Channel allowSendBeforeAttachmentsUpload>` removed; the switch is composer configuration
+
+```diff
+- <Channel channel={channel} allowSendBeforeAttachmentsUpload={false}>
++ <Channel channel={channel}>
+```
+
+```diff
++ // before handing the client to <Chat>
++ client.config.set({ messageComposer: { attachments: { pendingUploadsEnabled: false } } });
+```
+
+Whether a message can be sent while its attachments are still uploading is now
+`stream-chat`'s own composer setting, `messageComposer.attachments.pendingUploadsEnabled`. The prop
+only ever forwarded to it, and it did so with an imperative `updateConfig` on every composer, which
+outranks `client.config`. So a value you registered on the client could never win.
+
+Removed with it:
+
+- `ChannelProps.allowSendBeforeAttachmentsUpload`
+- `MessageInputContextValue.allowSendBeforeAttachmentsUpload`
+- `ChannelProps.enableOfflineSupport`. It existed only to seed the prop's default, and it is read
+  from `<Chat>`.
+
+Read the value with `usePendingUploadsEnabled()` in a component inside `<Channel>` (it answers for
+the current composer, so a thread composer answers for itself), or read
+`messageComposer.config.attachments.pendingUploadsEnabled` directly. `MessageList` /
+`MessageFlashList` take it as a `pendingUploadsEnabled` prop, which defaults to the composer's
+value.
+
+### The default
+
+`<Chat>` writes `pendingUploadsEnabled: enableOfflineSupport` into `client.config`, **only if
+nothing is registered there yet**. That's the same default the prop had. If `enableOfflineSupport`
+changes later, the SDK-written value follows it. A value anyone else registered is never
+overwritten.
+
+### Turning it on or off for every channel
+
+Register it on the client, ideally before the client reaches `<Chat>`, so the SDK never writes at
+all:
+
+```ts
+client.config.set({ messageComposer: { attachments: { pendingUploadsEnabled: false } } });
+// or at construction
+new StreamChat(apiKey, {
+  config: { messageComposer: { attachments: { pendingUploadsEnabled: false } } },
+});
+```
+
+A `client.config.set` made after `<Chat>` has mounted also takes effect. It deep-merges over the
+SDK's default, and live composers re-derive.
+
+### Per channel (or per channel type): a `messageComposer` setup function
+
+```ts
+client.config.setSetupFunction('messageComposer', ({ composer }) => {
+  if (composer.channel.type !== 'livestream') return; // everything else keeps the default
+  composer.updateConfig({ attachments: { pendingUploadsEnabled: false } });
+});
+```
+
+It runs against every composer the client has, existing and future: a channel's own composer, each
+of its threads' composers, and message-scoped edit composers. `composer.channel` is the parent
+channel for all of them, so one check covers a channel and its threads. Branch on
+`composer.channel.cid` for a single channel, or on `composer.threadId` for threads only.
+`updateConfig` is a retained imperative patch, so it wins over both `<Chat>`'s default and
+`client.config`, whichever runs first.
+
+- **One setup function per key.** Setting another replaces it. If you already use one (for
+  example, to insert composition middleware), put this branch into that same function.
+- `client.config.reset()` clears the setup function and every patch it made.
+- `channel.messageComposer.updateConfig({ attachments: { pendingUploadsEnabled: false } })` from a
+  channel screen also works, but only for that channel's own composer. It misses the channel's
+  thread composers, and the patch stays on the cached channel after the screen unmounts.
+
+**Affects:** anyone passing `allowSendBeforeAttachmentsUpload` or `enableOfflineSupport` to
+`<Channel>`, or reading `allowSendBeforeAttachmentsUpload` from `useMessageInputContext()`. The
+props are **removed, not deprecated**, so TypeScript flags them.
 
 ---
 

@@ -1,6 +1,6 @@
 import type { ImageResizeMode } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import { type Attachment, isLocalUploadAttachment } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
@@ -32,8 +32,9 @@ export function buildThumbnail({
     originalImageHeight && originalImageWidth
       ? originalImageHeight + originalImageWidth > height + width
       : true;
+  // Falls back to the local preview while the upload is in flight — see `getUrlOfImageAttachment`.
   const imageUrl = getUrlOfImageAttachment(image) as string;
-  const localId = image.custom?.localId;
+  const localId = isLocalUploadAttachment(image) ? image.localMetadata.id : undefined;
 
   return {
     flex,

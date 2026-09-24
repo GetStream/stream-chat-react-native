@@ -1,7 +1,12 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import {
+  type Attachment,
+  getAttachmentPreviewUrl,
+  isLocalUploadAttachment,
+  resolveAttachmentFullByteSize,
+} from 'stream-chat';
 
 import { AttachmentFileUploadProgressIndicator } from './AttachmentFileUploadProgressIndicator';
 import { openUrlSafely } from './utils/openUrlSafely';
@@ -51,7 +56,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   } = props;
   const { FilePreview } = useComponentsContext();
 
-  const localId = attachment.custom?.localId;
+  const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -97,8 +102,12 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           indicator={
             <AttachmentFileUploadProgressIndicator
               localId={localId}
-              sourceUrl={attachment.asset_url ?? attachment.custom?.originalFile?.uri}
-              totalBytes={attachment.custom?.file_size}
+              sourceUrl={getAttachmentPreviewUrl(
+                attachment,
+                attachment.asset_url,
+                attachment.image_url,
+              )}
+              totalBytes={resolveAttachmentFullByteSize(attachment)}
             />
           }
           styles={stylesProp}

@@ -4,7 +4,6 @@ import type { InputMessageInputContextValue } from '../../../contexts/messageInp
 
 export const useCreateInputMessageInputContext = ({
   additionalTextInputProps,
-  allowSendBeforeAttachmentsUpload,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
   asyncMessagesSlideToCancelDistance,
@@ -37,7 +36,6 @@ export const useCreateInputMessageInputContext = ({
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
-      allowSendBeforeAttachmentsUpload,
       asyncMessagesLockDistance,
       asyncMessagesMinimumPressDuration,
       asyncMessagesSlideToCancelDistance,
@@ -62,7 +60,7 @@ export const useCreateInputMessageInputContext = ({
       showPollCreationDialog,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [compressImageQuality, channelId, showPollCreationDialog, allowSendBeforeAttachmentsUpload],
+    [compressImageQuality, channelId, showPollCreationDialog],
   );
 
   return inputMessageInputContext;

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import {
+  getAttachmentPreviewUrl,
   isFileAttachment,
   isImageAttachment,
   isVideoAttachment,
@@ -56,7 +57,7 @@ const RightContent = React.memo(
     }
 
     const attachment = attachments?.[0];
-    const uri = attachment?.image_url || attachment?.thumb_url;
+    const uri = getAttachmentPreviewUrl(attachment, attachment?.image_url, attachment?.thumb_url);
 
     if (
       attachment &&

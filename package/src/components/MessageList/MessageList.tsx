@@ -48,6 +48,7 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 
+import { usePendingUploadsEnabled } from '../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -211,11 +212,13 @@ type MessageListPropsWithContext = Pick<
     MessagesContextValue,
     'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
   > &
-  Pick<
-    MessageInputContextValue,
-    'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
-  > &
+  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<ThreadContextValue, 'threadInstance'> & {
+    /**
+     * Whether the composer lets a message be sent while its attachments are still uploading
+     * (`messageComposer.attachments.pendingUploadsEnabled`). Read from the composer by default.
+     */
+    pendingUploadsEnabled: boolean;
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -314,7 +317,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
-    allowSendBeforeAttachmentsUpload,
     animateLayout = true,
     attachmentPickerStore,
     additionalFlatListProps,
@@ -337,6 +339,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputFloating,
     messageInputHeightStore,
     myMessageTheme,
+    pendingUploadsEnabled,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
@@ -1411,7 +1414,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       </Animated.View>
       <NotificationList
         bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
-        filter={allowSendBeforeAttachmentsUpload ? excludeCanceledUploadNotifications : undefined}
+        filter={pendingUploadsEnabled ? excludeCanceledUploadNotifications : undefined}
       />
     </View>
   );
@@ -1434,8 +1437,8 @@ export const MessageList = (props: MessageListProps) => {
   const { readEvents } = useOwnCapabilitiesContext();
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
     useMessagesContext();
-  const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
-    useMessageInputContext();
+  const pendingUploadsEnabled = usePendingUploadsEnabled();
+  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
   const {
     loadMore,
     loadMoreRecent,
@@ -1446,7 +1449,6 @@ export const MessageList = (props: MessageListProps) => {
   return (
     <MessageListWithContext
       {...{
-        allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
         client,
@@ -1462,6 +1464,7 @@ export const MessageList = (props: MessageListProps) => {
         messageInputFloating,
         messageInputHeightStore,
         myMessageTheme,
+        pendingUploadsEnabled,
         readEvents,
         scrollToFirstUnreadThreshold,
         shouldShowUnreadUnderlay,

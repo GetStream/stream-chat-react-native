@@ -13,7 +13,7 @@ import Animated from 'react-native-reanimated';
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
 import type { Channel, EventPayload, LocalMessage } from 'stream-chat';
 
-import { convertTimestampToDate } from 'stream-chat';
+import { convertTimestampToDate, getAttachmentPreviewUrl } from 'stream-chat';
 
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
@@ -36,6 +36,7 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { usePendingUploadsEnabled } from '../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -120,10 +121,12 @@ type MessageFlashListPropsWithContext = Pick<
     | 'threadList'
   > &
   Pick<ChatContextValue, 'client'> &
-  Pick<
-    MessageInputContextValue,
-    'allowSendBeforeAttachmentsUpload' | 'messageInputFloating' | 'messageInputHeightStore'
-  > & {
+  Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> & {
+    /**
+     * Whether the composer lets a message be sent while its attachments are still uploading
+     * (`messageComposer.attachments.pendingUploadsEnabled`). Read from the composer by default.
+     */
+    pendingUploadsEnabled: boolean;
     loadMore: () => Promise<void>;
     loadMoreRecent: () => Promise<void>;
     markRead: (options?: MarkReadFunctionOptions) => void;
@@ -220,7 +223,7 @@ const getAttachmentItemType = (message: LocalMessage) => {
       attachment.type === FileTypes.Image &&
       !attachment.og_scrape_url &&
       !attachment.title_link &&
-      (!!attachment.image_url || !!attachment.thumb_url);
+      !!getAttachmentPreviewUrl(attachment, attachment.image_url, attachment.thumb_url);
     const isGalleryVideo =
       attachment.type === FileTypes.Video && !attachment.og_scrape_url && isVideoPlayerAvailable();
     if (isGalleryImage || isGalleryVideo) {
@@ -307,7 +310,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     ? InlineLoadingMoreRecentThreadIndicator
     : InlineLoadingMoreRecentIndicator;
   const {
-    allowSendBeforeAttachmentsUpload,
     attachmentPickerStore,
     additionalFlashListProps,
     channel,
@@ -328,6 +330,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputFloating,
     messageInputHeightStore,
     myMessageTheme,
+    pendingUploadsEnabled,
     readEvents,
     noGroupByUser,
     onListScroll,
@@ -1268,7 +1271,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       </Animated.View>
       <NotificationList
         bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
-        filter={allowSendBeforeAttachmentsUpload ? excludeCanceledUploadNotifications : undefined}
+        filter={pendingUploadsEnabled ? excludeCanceledUploadNotifications : undefined}
       />
     </View>
   );
@@ -1348,13 +1351,12 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   } = useMessageListPagination({ channel });
   const { threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
-    useMessageInputContext();
+  const pendingUploadsEnabled = usePendingUploadsEnabled();
+  const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
 
   return (
     <MessageFlashListWithContext
       {...{
-        allowSendBeforeAttachmentsUpload,
         attachmentPickerStore,
         channel,
         client,
@@ -1373,6 +1375,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         messageInputFloating,
         messageInputHeightStore,
         myMessageTheme,
+        pendingUploadsEnabled,
         readEvents,
         scrollToFirstUnreadThreshold,
         hasPendingInitialTargetLoad,

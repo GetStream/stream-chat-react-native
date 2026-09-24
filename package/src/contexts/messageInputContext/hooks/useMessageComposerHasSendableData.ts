@@ -1,17 +1,17 @@
 import type { EditingAuditState } from 'stream-chat';
 
 import { useMessageComposer } from './useMessageComposer';
+import { pendingUploadsEnabledSelector } from './usePendingUploadsEnabled';
 
 import { useStateStore } from '../../../hooks/useStateStore';
-import { useMessageInputContext } from '../MessageInputContext';
 
 const editingAuditStateStateSelector = (state: EditingAuditState) => state;
 
 export const useMessageComposerHasSendableData = () => {
-  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
   const messageComposer = useMessageComposer();
   useStateStore(messageComposer.editingAuditState, editingAuditStateStateSelector);
-  return allowSendBeforeAttachmentsUpload
-    ? !messageComposer.contentIsEmpty
-    : messageComposer.hasSendableData;
+  // `hasSendableData` also depends on whether pending uploads may be sent, which is composer config
+  // rather than composer state — so toggling `attachments.pendingUploadsEnabled` re-renders too.
+  useStateStore(messageComposer.configState, pendingUploadsEnabledSelector);
+  return messageComposer.hasSendableData;
 };

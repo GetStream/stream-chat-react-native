@@ -3,11 +3,14 @@ import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import {
+  getAttachmentPreviewUrl,
   isAudioAttachment,
   isFileAttachment,
   isImageAttachment,
+  isLocalUploadAttachment,
   isVideoAttachment,
   isVoiceRecordingAttachment,
+  resolveAttachmentFullByteSize,
   type Attachment as AttachmentType,
   type LocalMessage,
 } from 'stream-chat';
@@ -121,7 +124,9 @@ const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPr
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url &&
-    prevAttachment.type === nextAttachment.type;
+    prevAttachment.type === nextAttachment.type &&
+    getAttachmentPreviewUrl(prevAttachment, prevAttachment.asset_url, prevAttachment.image_url) ===
+      getAttachmentPreviewUrl(nextAttachment, nextAttachment.asset_url, nextAttachment.image_url);
   if (!attachmentEqual) {
     return false;
   }
@@ -188,15 +193,15 @@ const MessageAudioAttachment = ({
   index,
   message,
 }: MessageAudioAttachmentProps) => {
-  const localId = attachment.custom?.localId;
-  const sourceUrl = attachment.asset_url ?? attachment.custom?.originalFile?.uri;
-  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
+  const sourceUrl = getAttachmentPreviewUrl(attachment, attachment.asset_url, attachment.image_url);
+  const shouldTrackPendingUpload = !!localId && isLocalUrl(sourceUrl);
   const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
   const indicator = pendingUpload.isUploading ? (
     <AttachmentFileUploadProgressIndicator
       localId={localId}
       sourceUrl={sourceUrl}
-      totalBytes={attachment.custom?.file_size}
+      totalBytes={resolveAttachmentFullByteSize(attachment)}
     />
   ) : undefined;
 
