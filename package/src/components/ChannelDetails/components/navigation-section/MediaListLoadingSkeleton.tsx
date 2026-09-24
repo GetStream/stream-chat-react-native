@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { getNumberOfColumns, MEDIA_GRID_GAP } from './mediaListColumns';
+import { MEDIA_GRID_GAP } from './mediaListColumns';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { useContainerWidth } from '../../../../hooks/useContainerWidth';
+import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { primitives } from '../../../../theme';
 import { NativeShimmerView } from '../../../UIComponents/NativeShimmerView';
 
@@ -19,14 +19,14 @@ export const MediaListLoadingSkeleton = () => {
     theme: { semantics },
   } = useTheme();
   // Same derivation as `MediaList`, so the skeleton's tiles match the grid that replaces it.
-  const { onLayout, width } = useContainerWidth();
+  const width = useWindowContentWidth();
   const styles = useStyles();
 
-  const numberOfColumns = getNumberOfColumns(width);
+  const numberOfColumns = 3;
   const tileSize = (width - MEDIA_GRID_GAP * (numberOfColumns - 1)) / numberOfColumns;
 
   return (
-    <View onLayout={onLayout} style={styles.container} testID='media-list-loading-skeleton'>
+    <View style={styles.container} testID='media-list-loading-skeleton'>
       {Array.from({ length: NUMBER_OF_ROWS }).map((_, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
           {Array.from({ length: numberOfColumns }).map((__, columnIndex) => (

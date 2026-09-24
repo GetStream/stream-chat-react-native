@@ -5,8 +5,8 @@ import type { ImageGalleryGridProps } from './types';
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContextBase';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useContainerWidth } from '../../../hooks/useContainerWidth';
 import { useStateStore } from '../../../hooks/useStateStore';
+import { useWindowContentWidth } from '../../../hooks/useWindowContentWidth';
 import type {
   ImageGalleryAsset,
   ImageGalleryState,
@@ -30,7 +30,7 @@ export type ImageGalleryGridImageComponent = ({
 export type GridImageItem = ImageGalleryAsset & {
   selectAndClose: () => void;
   numberOfImageGalleryGridColumns?: number;
-  /** Resolved by the grid from its own measured width, not the window. */
+  /** Resolved by the grid from the window width minus the horizontal safe area. */
   size: number;
 };
 
@@ -75,10 +75,10 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const { onLayout, width } = useContainerWidth();
+  const contentWidth = useWindowContentWidth();
 
   const columns = numberOfImageGalleryGridColumns || 3;
-  const size = width / columns - 2;
+  const size = contentWidth / columns - 2;
 
   const imageGridItems = assets.map((photo, index) => ({
     ...photo,
@@ -98,7 +98,6 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       key={columns}
       numColumns={columns}
-      onLayout={onLayout}
       renderItem={renderItem}
       style={container}
     />

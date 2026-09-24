@@ -2640,7 +2640,7 @@ PODS:
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1):
     - ReactNativeDependencies
-  - stream-chat-react-native (9.8.0):
+  - stream-chat-react-native (9.9.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3223,10 +3223,10 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
-  stream-chat-react-native: de5922b681460d780a4d47c58b2b024622954aa7
+  stream-chat-react-native: c1c84a6ea4ab1d02a8a86780a116dc4dfc334249
   Teleport: c42718cf1f14dd53b250c0fa29b9235a42f861ec
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
 PODFILE CHECKSUM: ac9682db83e42d63d399a8de4586161e86b3e751
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

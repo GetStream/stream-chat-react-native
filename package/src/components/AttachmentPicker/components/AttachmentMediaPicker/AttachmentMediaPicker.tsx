@@ -10,7 +10,7 @@ import { useAttachmentPickerContext, useTheme, useTranslationContext } from '../
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { useStableCallback } from '../../../../hooks';
-import { useContainerWidth } from '../../../../hooks/useContainerWidth';
+import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 
 import { NativeHandlers } from '../../../../native';
 import { BottomSheetFlatList } from '../../../BottomSheetCompatibility/BottomSheetFlatList';
@@ -60,7 +60,7 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
   const styles = useMediaPickerStyles();
 
   const numberOfColumns = numberOfAttachmentPickerImageColumns ?? 3;
-  const { onLayout, width: gridWidth } = useContainerWidth();
+  const gridWidth = useWindowContentWidth();
   const tileSize = gridWidth / numberOfColumns - 2;
 
   const endCursorRef = useRef<string>(undefined);
@@ -179,7 +179,6 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
         key={numberOfColumns}
         numColumns={numberOfColumns}
         onEndReached={photoError ? undefined : getMorePhotos}
-        onLayout={onLayout}
         renderItem={renderAttachmentPickerItem}
         showsVerticalScrollIndicator={false}
         testID={'attachment-picker-list'}

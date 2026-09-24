@@ -9,9 +9,8 @@ import {
 } from 'stream-chat';
 
 import { type MediaItemPressParams } from './MediaItem';
-import { getNumberOfColumns, MEDIA_GRID_GAP } from './mediaListColumns';
+import { MEDIA_GRID_GAP } from './mediaListColumns';
 import { MediaListLoadingSkeleton } from './MediaListLoadingSkeleton';
-import { useGridScrollAnchor } from './useGridScrollAnchor';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import {
@@ -24,8 +23,8 @@ import { useOverlayContext } from '../../../../contexts/overlayContext/OverlayCo
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
-import { useContainerWidth } from '../../../../hooks/useContainerWidth';
 import { useStateStore } from '../../../../hooks/useStateStore';
+import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { isVideoPlayerAvailable } from '../../../../native';
 import { FileTypes } from '../../../../types/types';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
@@ -75,7 +74,7 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
     },
   } = useTheme();
   const styles = useStyles();
-  const { onLayout, width } = useContainerWidth();
+  const width = useWindowContentWidth();
   const { icons, MediaItem } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
@@ -126,20 +125,12 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
 
   const tiles = useMediaList(messages);
 
-  const columns = numberOfColumns ?? getNumberOfColumns(width);
+  const columns = numberOfColumns ?? 3;
 
   const tileSize = useMemo(
     () => (width - MEDIA_GRID_GAP * (columns - 1)) / columns,
     [width, columns],
   );
-
-  // Spread after the consumer's props so the anchor keeps working; it still calls their handlers.
-  const { listRef, scrollProps } = useGridScrollAnchor<MediaTile>({
-    columns,
-    itemCount: tiles.length,
-    listProps: additionalFlatListProps,
-    rowStride: tileSize + MEDIA_GRID_GAP,
-  });
 
   // Opens the fullscreen gallery over the whole loaded collection, selecting the tapped attachment.
   // Mirrors the in-message gallery (`components/Attachment/Gallery.tsx`), but passes every loaded
@@ -198,7 +189,7 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
   const loadingMoreIndicator = <>{loading && tiles.length > 0 && <ActivityIndicator />}</>;
 
   return (
-    <View onLayout={onLayout} style={[styles.container, mediaList.container]}>
+    <View style={[styles.container, mediaList.container]}>
       <FlatList
         columnWrapperStyle={tiles.length > 0 ? styles.columnWrapper : undefined}
         contentContainerStyle={[styles.listContent, mediaList.listContent]}
@@ -206,8 +197,8 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
         keyExtractor={keyExtractor}
         ListEmptyComponent={emptyState}
         ListFooterComponent={loadingMoreIndicator}
-        // FlatList rejects a `numColumns` change on a mounted list, so the count keys a remount;
-        // `useGridScrollAnchor` restores the scroll position it would otherwise lose.
+        // FlatList rejects a `numColumns` change on a mounted list, so the count must key a
+        // remount - which resets scroll. Constant by default, so this never fires.
         key={columns}
         numColumns={columns}
         onEndReached={loadMore}
@@ -216,8 +207,6 @@ const MediaListContent = ({ additionalFlatListProps, numberOfColumns }: MediaLis
         style={[styles.list, mediaList.list]}
         testID='media-list'
         {...additionalFlatListProps}
-        {...scrollProps}
-        ref={listRef}
       />
       <NotificationList />
     </View>
