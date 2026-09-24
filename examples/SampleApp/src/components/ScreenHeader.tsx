@@ -14,8 +14,7 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
-/** Matches an SDK channel row's 16pt content inset, so header and row avatars align. */
-const HEADER_CONTENT_PADDING = 16;
+const HEADER_CONTENT_PADDING = 8;
 
 const styles = StyleSheet.create({
   backButton: {

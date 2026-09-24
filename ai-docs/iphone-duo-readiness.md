@@ -57,8 +57,8 @@ All statuses below are **fixed** unless marked otherwise.
 | 3   | **P2** | core             | [StreamShimmerView.swift](../package/shared-native/ios/StreamShimmerView.swift)                                                                                                                                 | `UIScreen.main.scale` for `contentsScale`, cached once at `setupLayers()`                                                                                                                                 | Shimmer placeholders rastered at the wrong scale if the view moves to a display with a different scale                                                                                                                                                                                                                                                                                 | Reads the view's own `traitCollection.displayScale`; resyncs on `didMoveToWindow` and `traitCollectionDidChange`                        |
 | 4   | **P2** | core             | [MessageItemView.tsx](../package/src/components/Message/MessageItemView/MessageItemView.tsx)                                                                                                                    | `Dimensions.get('screen')` for the default swipe hit slop                                                                                                                                                 | Hit slop computed from screen, not window; also non-reactive                                                                                                                                                                                                                                                                                                                           | `useWindowDimensions()`                                                                                                                 |
 | 5   | **P2** | SampleApp        | [Toast.tsx](../examples/SampleApp/src/components/ToastComponent/Toast.tsx)                                                                                                                                      | `Dimensions.get('window')` at **module scope**, baked into `StyleSheet.create`                                                                                                                            | Toast kept the width the app launched with; wrong after any resize                                                                                                                                                                                                                                                                                                                     | Read per render                                                                                                                         |
-| 6   | **P2** | core             | [MediaList.tsx](../package/src/components/ChannelDetails/components/navigation-section/MediaList.tsx)                                                                                                           | `NUMBER_OF_COLUMNS = 3` hardcoded, tile size from window width                                                                                                                                            | Three ~205pt tiles at 626pt+ instead of more columns. No consumer escape hatch                                                                                                                                                                                                                                                                                                         | Column count derived from the grid's **own measured width** past a 600pt breakpoint; new `numberOfColumns` prop. Unchanged in phone portrait; a phone in landscape (832pt after insets on a Pro Max) now gets 6 |
-| 7   | **P3** | core             | [AttachmentPickerItem.tsx](../package/src/components/AttachmentPicker/components/AttachmentMediaPicker/AttachmentPickerItem.tsx), [ImageGrid.tsx](../package/src/components/ImageGallery/components/ImageGrid.tsx) | `vw(100) / columns` measures the **window**, but both render inside a bottom sheet                                                                                                                        | Thumbnails overflow the sheet once it is inset                                                                                                                                                                                                                                                                                                                                         | New internal `useContainerWidth` hook; the grid measures itself and passes tile size down                                               |
+| 6   | **P2** | core             | [MediaList.tsx](../package/src/components/ChannelDetails/components/navigation-section/MediaList.tsx)                                                                                                           | `NUMBER_OF_COLUMNS = 3` hardcoded, tile size from window width                                                                                                                                            | Three ~205pt tiles at 626pt+ instead of more columns. No consumer escape hatch                                                                                                                                                                                                                                                                                                         | **Not fixed.** An adaptive count forces a `FlatList` remount, which loses scroll position on every rotation; no restore approach held up on device. The count stays at 3; only the tile size follows the window |
+| 7   | **P3** | core             | [AttachmentPickerItem.tsx](../package/src/components/AttachmentPicker/components/AttachmentMediaPicker/AttachmentPickerItem.tsx), [ImageGrid.tsx](../package/src/components/ImageGallery/components/ImageGrid.tsx) | `vw(100) / columns` measures the **window**, but both render inside a bottom sheet                                                                                                                        | Thumbnails overflow the sheet once it is inset                                                                                                                                                                                                                                                                                                                                         | New internal `useWindowContentWidth` hook - window width minus the horizontal safe area. Not measured: a measurement arrives a frame late and the tiles visibly resize                                               |
 | 9   | **P3** | core             | [StreamShimmerView.swift](../package/shared-native/ios/StreamShimmerView.swift)                                                                                                                                 | `UIApplication.shared.applicationState` is app-wide, not per scene                                                                                                                                        | With Split View the app-level state says nothing about whether _this_ view's scene is on screen                                                                                                                                                                                                                                                                                        | Per-view `isSceneOnScreen` from `window.windowScene.activationState`, plus `UIScene` notification observers                             |
 | 11  | **P3** | core             | [Channel.tsx:807-818](../package/src/components/Channel/Channel.tsx:807)                                                                                                                                        | Same `inactive` conflation sent `typing.stop`                                                                                                                                                             | Typing indicator dropped whenever the app went `inactive` while still visible                                                                                                                                                                                                                                                                                                          | Fixed by #10                                                                                                                            |
 | 8   | ~~P3~~ | core             | [ImageGallery.tsx:258-270](../package/src/components/ImageGallery/ImageGallery.tsx:258)                                                                                                                         | —                                                                                                                                                                                                         | —                                                                                                                                                                                                                                                                                                                                                                                      | **WITHDRAWN — not a bug.** See §4                                                                                                       |
@@ -98,7 +98,7 @@ SampleApp insets its own in-flow content, which is the consumer's job:
 
 **Finding #10/#11 —** `hooks/useAppStateListener.ts` rewritten; `hooks/__tests__/useAppStateListener.test.tsx` rewritten (the old test _codified_ the bug at line 16).
 
-**Finding #6/#7 —** new `hooks/useContainerWidth.ts`; new `AttachmentPickerTileSizeContext.tsx`; `MediaList.tsx`, `ImageGrid.tsx`, `AttachmentMediaPicker.tsx`, `AttachmentPickerItem.tsx`.
+**Finding #7 —** new `hooks/useWindowContentWidth.ts`; `MediaList.tsx`, `MediaListLoadingSkeleton.tsx`, `ImageGrid.tsx`, `AttachmentMediaPicker.tsx`, `AttachmentPickerItem.tsx`. Finding #6 is not actioned.
 
 **Findings #2/#3/#4/#5/#9 —** `hooks/useScreenDimensions.ts`, `shared-native/ios/StreamShimmerView.swift`, `MessageItemView.tsx`, SampleApp `Toast.tsx`.
 
@@ -169,7 +169,6 @@ So the reaction does fire on dep change and `translationX` is correctly recomput
 | iOS build, Xcode 27.1 Beta, `iphonesimulator27.1`, Duo destination | **BUILD SUCCEEDED** (twice: before and after the native changes)                       |
 | `StreamShimmerView.swift` after rewrite                            | recompiled, **0** errors/warnings attributed to it                                     |
 | App launched on iPhone Duo (iOS 27.1)                              | **launched, rendered** on both the folded outer display and the unfolded inner display |
-| `getNumberOfColumns` unit tests                                    | **11 new tests**, pinning 3 columns below 600pt and 4/6 at the measured 669/951pt      |
 
 SampleApp's own `tsc` reports 4 pre-existing errors about `thread` on `ThreadContextValue` in files this audit did not touch. Confirmed pre-existing by stashing the changes and re-running: same 4.
 
@@ -203,7 +202,7 @@ The device was unfolded mid-audit, which cleared most of what was previously blo
 
 Two consequences of the fixes that are correct but worth knowing:
 
-- `MediaList` and `ImageGrid` key a `FlatList` remount on column count. RN does not support changing `numColumns` on a mounted list, so this is required. Crossing the 600pt breakpoint - a fold, or rotating a phone - would reset the grid to the top; `MediaList` restores its place with `useGridScrollAnchor`. `ImageGrid`'s count comes from a prop, not the width, so rotation never remounts it.
+- Column counts are unchanged, so no grid remounts on a fold or rotation. Only tile size follows the window, and the tiles keep their explicit width - see the remount section below for why an adaptive count was dropped.
 - The picker items keep a window-based size as a fallback for being rendered outside the picker's own list. Inside it, the measured value always wins.
 
 Nothing is blocked on upstream React Native, Expo, `react-native-screens` or `react-native-safe-area-context`. `react/react-native#58606` describes exactly the ExpoMessaging P0, which is documented in §4 but not fixed here.
@@ -238,7 +237,7 @@ The same measurement produced a second correction, this time to my own report. I
 >
 > - Components that own the window — the image gallery, bottom sheets, modals, the message composer and the channel details header — now apply the **horizontal** safe-area insets. On a foldable the system indicators stack down one side (measured `left: 0, right: 84` on iPhone Duo), and content previously rendered underneath them.
 > - The SDK no longer treats iOS's `inactive` state as "backgrounded". An app sharing the screen in Split View stays `inactive` while fully visible; the SDK previously closed the WebSocket and showed an offline banner in that state. It now only reacts to a real `background` transition. This also stops the connection dropping during transient `inactive` moments such as Control Center or the app switcher.
-> - The media grid in channel details now picks its column count from its own width instead of a hardcoded 3, and accepts a `numberOfColumns` prop. Portrait phone layouts are unchanged; wider containers, including a phone in landscape, get more columns and keep their scroll position across the change.
+> - Grid tiles - channel details, the attachment picker and the image gallery - are sized from the window minus the horizontal safe area rather than the raw window, so they no longer overflow once the surface is inset. Column counts are unchanged.
 > - Attachment picker and image-gallery grids size their tiles from their own container rather than the window.
 >
 > **Check in your own app**
@@ -275,13 +274,6 @@ Two further things the second pass settled rather than changed:
 - Four `SafeAreaView`s in SampleApp still have no explicit `edges` prop. Implicit means **all** edges,
   which is the safe direction (over-inset, never under-inset), so they are recorded rather than churned.
 
-### A style pitfall worth naming
-
-Extracting `getNumberOfColumns` into `mediaListColumns.ts` was not cosmetic: having the skeleton import
-it from `MediaList` would have created an import cycle, since `MediaList` renders the skeleton. This
-repo already documents one circular-import hazard (`defaultComponents` uses a lazy `require` to break
-it), so a second one was not worth adding.
-
 ---
 
 ## 10. Cross-check against Apple's Human Interface Guidelines
@@ -308,7 +300,7 @@ content is asymmetrical. Use safe areas to make sure controls don't cover your c
 | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | "Build your app to resize... Use size classes, layout margins, and safe area insets. Avoid fixed widths and display-specific dependencies." | Aligned. Fixed widths and module-scope `Dimensions` removed; layout derives from measured container width                                  |
 | "Account for asymmetry... use safe areas"                                                                                                   | Aligned, and this was the single largest workstream. `left`/`right` are read separately and never collapsed                                |
-| "steer clear of... anything tied to a specific display"                                                                                     | Aligned. `useScreenDimensions` deprecated precisely because `screen` is display-tied; `useContainerWidth` measures the component's own box |
+| "steer clear of... anything tied to a specific display"                                                                                     | Aligned. `useScreenDimensions` deprecated precisely because `screen` is display-tied; grids size from the window, not the display |
 | "prefer an even number of columns so content divides cleanly"                                                                               | **Now aligned** - the media grid was returning odd counts at some widths (5 at 800pt). Fixed and pinned by a test                          |
 | "Maintain the same functionality across device poses"                                                                                       | Aligned. Nothing is hidden or disabled by width                                                                                            |
 
@@ -368,17 +360,21 @@ because text labels keep a bar horizontal.
 **The grid remount on fold.** Apple: _"Avoid extreme layout changes as people fold the device. Move only
 what's necessary to keep elements visible and easy to tap... favor small adjustments over rearrangement."_
 
-`MediaList` and `ImageGrid` key a `FlatList` remount on column count, because React Native rejects a
-change to `numColumns` on a mounted list. On its own that resets the grid to the top on every fold -
-and, as testing on an iPhone 18 Pro Max showed, on every rotation of an ordinary phone, since landscape
-crosses the breakpoint too. That is precisely the kind of jump this guidance warns against.
+React Native rejects a `numColumns` change on a mounted list, so an adaptive column count has to force
+a remount with `key={columns}` - which resets the grid to the top on every fold, and on every rotation
+of an ordinary phone, since landscape crosses the breakpoint too. That is precisely the kind of jump
+this guidance warns against.
 
-Now actioned: `useGridScrollAnchor` tracks the first visible item and scrolls the remounted list back
-to the row holding it, verified on device across a portrait -> landscape -> portrait round trip. It
-ignores scroll events that arrive with a changed viewport, because rotating to a taller viewport over
-shorter content makes iOS clamp the offset before the grid re-lays out. The layout still reflows
-rather than adjusting in place; a `flexWrap` layout would avoid the remount entirely, at the cost of
-list virtualization.
+**No restore approach worked.** Four were tried on an Android device, and all failed for the same
+reason: a freshly mounted list has only `initialNumToRender` items, so its content is a few hundred dp
+tall and the platform clamps any offset past it. Restoring on `onContentSizeChange` scrolled and then
+drifted; restoring in the `ref` callback fired earlier and looked worse; `scrollTo` from a Reanimated
+worklet was fastest and therefore worst. `initialScrollIndex` sidesteps the clamp but is not supported
+on a re-keyed `numColumns` list - items visibly disappear.
+
+So the column count stays at 3 and the remount never happens. FlashList accepts a `numColumns` change
+in place and keeps position via `maintainVisibleContentPosition`, which is the real fix whenever the
+list layer migrates; a one-off swap here would fork the list stack.
 
 **Two-pane layouts are Apple's explicit recommendation, not a nice-to-have.** Apple: _"show an additional
 level of hierarchy on the larger inner display if it makes sense for your content. Mail, for example,
