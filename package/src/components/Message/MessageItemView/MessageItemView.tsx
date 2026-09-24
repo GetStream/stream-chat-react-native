@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
 import { SwipableMessageWrapper } from './MessageBubble';
 
@@ -128,7 +128,7 @@ export type MessageItemViewPropsWithContext = Pick<
   >;
 
 const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
-  const { width } = useWindowDimensions();
+  const { width } = Dimensions.get('window');
   const {
     alignment,
     channel,
