@@ -23,22 +23,22 @@ export type ImageGalleryGridImageComponent = ({
   item: ImageGalleryAsset & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
-    size: number;
   };
 }) => React.ReactElement | null;
 
 export type GridImageItem = ImageGalleryAsset & {
   selectAndClose: () => void;
   numberOfImageGalleryGridColumns?: number;
-  /** Resolved by the grid from the window width minus the horizontal safe area. */
-  size: number;
 };
 
 const GridImage = ({ item }: { item: GridImageItem }) => {
   const styles = useStyles();
+  const contentWidth = useWindowContentWidth();
   const { ...restItem } = item;
 
-  const { selectAndClose, size, thumb_url, type, uri } = restItem;
+  const { numberOfImageGalleryGridColumns, selectAndClose, thumb_url, type, uri } = restItem;
+
+  const size = contentWidth / (numberOfImageGalleryGridColumns || 3) - 2;
 
   return (
     <Pressable accessibilityLabel='Grid Image' onPress={selectAndClose}>
@@ -75,15 +75,12 @@ export const ImageGalleryGrid = (props: ImageGalleryGridProps) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const contentWidth = useWindowContentWidth();
 
   const columns = numberOfImageGalleryGridColumns || 3;
-  const size = contentWidth / columns - 2;
 
   const imageGridItems = assets.map((photo, index) => ({
     ...photo,
     numberOfImageGalleryGridColumns,
-    size,
     selectAndClose: () => {
       imageGalleryStateStore.currentIndex = index;
       closeGridView();

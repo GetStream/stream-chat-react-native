@@ -8,7 +8,7 @@ import { NativeShimmerView } from '../../../UIComponents/NativeShimmerView';
 
 const NUMBER_OF_COLUMNS = 3;
 const NUMBER_OF_ROWS = 6;
-const MEDIA_GRID_GAP = primitives.spacingXxxs;
+const GRID_GAP = primitives.spacingXxxs;
 const ANIMATION_TIME = 1000;
 
 /**
@@ -22,7 +22,7 @@ export const MediaListLoadingSkeleton = () => {
   const width = useWindowContentWidth();
   const styles = useStyles();
 
-  const tileSize = (width - MEDIA_GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS;
+  const tileSize = (width - GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS;
 
   return (
     <View style={styles.container} testID='media-list-loading-skeleton'>
@@ -51,11 +51,11 @@ const useStyles = () =>
     () =>
       StyleSheet.create({
         container: {
-          gap: MEDIA_GRID_GAP,
+          gap: GRID_GAP,
         },
         row: {
           flexDirection: 'row',
-          gap: MEDIA_GRID_GAP,
+          gap: GRID_GAP,
         },
         tile: {
           borderRadius: primitives.radiusXxs,

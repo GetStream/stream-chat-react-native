@@ -52,7 +52,7 @@ export type MediaListProps = {
 };
 
 const NUMBER_OF_COLUMNS = 3;
-const MEDIA_GRID_GAP = primitives.spacingXxxs;
+const GRID_GAP = primitives.spacingXxxs;
 
 const keyExtractor = (item: MediaTile, index: number) => `${item.message.id}-${index}`;
 
@@ -123,7 +123,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   const tiles = useMediaList(messages);
 
   const tileSize = useMemo(
-    () => (width - MEDIA_GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS,
+    () => (width - GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS,
     [width],
   );
 
@@ -227,7 +227,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         columnWrapper: {
-          gap: MEDIA_GRID_GAP,
+          gap: GRID_GAP,
         },
         container: {
           flex: 1,
@@ -237,7 +237,7 @@ const useStyles = () => {
         },
         listContent: {
           flexGrow: 1,
-          gap: MEDIA_GRID_GAP,
+          gap: GRID_GAP,
         },
       }),
     [],
