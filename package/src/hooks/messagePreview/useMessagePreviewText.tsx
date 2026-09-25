@@ -64,6 +64,10 @@ export const useMessagePreviewText = ({
     return message.text;
   }
 
+  if (!attachmentsLength) {
+    return '';
+  }
+
   if (onlyImages) {
     if (images?.length === 1) {
       return t('Photo');
