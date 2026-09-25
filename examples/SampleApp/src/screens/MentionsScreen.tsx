@@ -72,7 +72,8 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     usePaginatedSearchedMessages(messageFilters);
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -81,7 +82,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+      <View style={styles.flex}>
         <MessageSearchList
           EmptySearchIndicator={EmptyMentionsSearchIndicator}
           loading={loading}
@@ -91,7 +92,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
           refreshing={refreshing}
           refreshList={refreshList}
         />
-      </SafeAreaView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };

@@ -21,7 +21,8 @@ export const DraftsScreen: React.FC<DraftsScreenProps> = () => {
   const { white_snow } = useLegacyColors();
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -30,10 +31,10 @@ export const DraftsScreen: React.FC<DraftsScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+      <View style={styles.flex}>
         <DraftsList />
-      </SafeAreaView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

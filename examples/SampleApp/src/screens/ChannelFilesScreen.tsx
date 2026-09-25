@@ -34,13 +34,13 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   useTheme();
 
   return (
-    <View style={[styles.flex]}>
+    <SafeAreaView edges={['left', 'right']} style={[styles.flex]}>
       <ScreenHeader titleText='Files' />
       <ChannelDetailsContextProvider channel={channel}>
-        <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+        <View style={styles.flex}>
           <FileAttachmentList />
-        </SafeAreaView>
+        </View>
       </ChannelDetailsContextProvider>
-    </View>
+    </SafeAreaView>
   );
 };

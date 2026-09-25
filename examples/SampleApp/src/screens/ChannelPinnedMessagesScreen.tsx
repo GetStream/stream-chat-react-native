@@ -106,15 +106,15 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
 }) => {
   useTheme();
   return (
-    <View style={[styles.flex]}>
+    <SafeAreaView edges={['left', 'right']} style={[styles.flex]}>
       <ScreenHeader titleText='Pinned Messages' />
       <ChannelDetailsContextProvider channel={channel}>
-        <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+        <View style={styles.flex}>
           <WithComponents overrides={{ PinnedMessageItem: PinnedMessage }}>
             <PinnedMessageList />
           </WithComponents>
-        </SafeAreaView>
+        </View>
       </ChannelDetailsContextProvider>
-    </View>
+    </SafeAreaView>
   );
 };

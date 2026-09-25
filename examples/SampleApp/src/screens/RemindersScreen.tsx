@@ -23,7 +23,8 @@ export const RemindersScreen: React.FC<RemindersScreenProps> = () => {
   const { white_snow } = useLegacyColors();
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -32,10 +33,10 @@ export const RemindersScreen: React.FC<RemindersScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+      <View style={styles.flex}>
         <RemindersList />
-      </SafeAreaView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

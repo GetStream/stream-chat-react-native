@@ -26,13 +26,13 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   },
 }) => {
   return (
-    <View style={[styles.flex]}>
+    <SafeAreaView edges={['left', 'right']} style={[styles.flex]}>
       <ScreenHeader titleText='Photos and Videos' />
       <ChannelDetailsContextProvider channel={channel}>
-        <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+        <View style={styles.flex}>
           <MediaList />
-        </SafeAreaView>
+        </View>
       </ChannelDetailsContextProvider>
-    </View>
+    </SafeAreaView>
   );
 };
