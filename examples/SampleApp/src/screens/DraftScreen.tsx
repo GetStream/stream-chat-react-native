@@ -2,6 +2,8 @@ import React from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from 'stream-chat-react-native';
 
@@ -19,7 +21,8 @@ export const DraftsScreen: React.FC<DraftsScreenProps> = () => {
   const { white_snow } = useLegacyColors();
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -28,12 +31,17 @@ export const DraftsScreen: React.FC<DraftsScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <DraftsList />
-    </View>
+      <View style={styles.flex}>
+        <DraftsList />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },

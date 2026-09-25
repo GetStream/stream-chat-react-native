@@ -14,7 +14,7 @@ import { useMessageComposer } from '../../../../contexts/messageInputContext/hoo
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
-import { useViewport } from '../../../../hooks/useViewport';
+import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { NativeHandlers } from '../../../../native';
 import { primitives } from '../../../../theme';
 import type { File } from '../../../../types/types';
@@ -29,7 +29,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { asset } = props;
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { ImageOverlaySelectedComponent } = useComponentsContext();
-  const { vw } = useViewport();
+  const contentWidth = useWindowContentWidth();
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { uploadNewFile } = useMessageInputContext();
@@ -51,7 +51,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
   const { duration: videoDuration, thumb_url } = asset;
 
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const size = contentWidth / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
   const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect video' : 'a11y/Select video');
 
@@ -105,7 +105,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const { vw } = useViewport();
+  const contentWidth = useWindowContentWidth();
   const { t } = useTranslationContext();
   const { uploadNewFile } = useMessageInputContext();
   const messageComposer = useMessageComposer();
@@ -115,7 +115,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
     isLocalImageAttachment(attachment) ? attachment.localMetadata.previewUri === asset.uri : false,
   );
 
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const size = contentWidth / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
   const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect image' : 'a11y/Select image');
 
@@ -163,9 +163,9 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
 const AttachmentIosLimited = () => {
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { icons } = useComponentsContext();
-  const { vw } = useViewport();
+  const contentWidth = useWindowContentWidth();
   const { t } = useTranslationContext();
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+  const size = contentWidth / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const styles = useStyles();
   return (
     <BottomSheetTouchableOpacity

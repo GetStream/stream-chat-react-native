@@ -131,7 +131,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { bottom } = useSafeAreaInsets();
+  const { bottom, left, right } = useSafeAreaInsets();
 
   return (
     <View
@@ -141,6 +141,8 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
           backgroundColor: semantics.backgroundCoreElevation1,
           borderTopColor: semantics.borderCoreSubtle,
           paddingBottom: bottom,
+          paddingLeft: left,
+          paddingRight: right,
         },
       ]}
     >

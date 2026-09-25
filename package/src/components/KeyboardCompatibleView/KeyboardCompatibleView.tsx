@@ -215,11 +215,13 @@ export class KeyboardCompatibleView extends React.Component<
   };
 
   _handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+    // `inactive` is visible-but-unfocused (Split View), so it must not tear down the listeners.
+    // Mirrors `useAppStateListener`.
+    if (this.state.appState === 'background' && nextAppState === 'active') {
       this.setKeyboardListeners();
     }
 
-    if (nextAppState.match(/inactive|background/)) {
+    if (nextAppState === 'background') {
       this.unsetKeyboardListeners();
     }
 

@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NavigationProp, useNavigation, useIsFocused } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -36,7 +38,8 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
   const isFocused = useIsFocused();
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -54,6 +57,6 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
           });
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 };

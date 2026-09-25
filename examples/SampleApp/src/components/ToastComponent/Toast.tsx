@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -6,8 +6,6 @@ import type { Notification } from 'stream-chat';
 import { useInAppNotificationsState, useTheme } from 'stream-chat-react-native';
 
 import { useLegacyColors } from '../../theme/useLegacyColors';
-
-const { width } = Dimensions.get('window');
 
 type KnownSeverity = 'error' | 'success' | 'warning' | 'info';
 
@@ -67,7 +65,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   toast: {
-    width: width * 0.9,
+    // Percentage of the parent's content box, so the container's safe area padding is already
+    // accounted for. A window-derived width is not.
+    width: '90%',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,

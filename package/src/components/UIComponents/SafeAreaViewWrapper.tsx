@@ -27,7 +27,7 @@ export const SafeAreaViewWrapper = ({
 }: PropsWithChildren<{ style: ViewStyle }> & SafeAreaViewProps) => {
   return (
     <SafeAreaProvider>
-      <SafeAreaView edges={['bottom', 'top']} style={style} {...restProps}>
+      <SafeAreaView edges={['bottom', 'left', 'right', 'top']} style={style} {...restProps}>
         {children}
       </SafeAreaView>
     </SafeAreaProvider>
