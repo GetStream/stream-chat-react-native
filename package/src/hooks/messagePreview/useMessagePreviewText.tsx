@@ -67,6 +67,12 @@ export const useMessagePreviewText = ({
     return message.text;
   }
 
+  // No text and nothing attached, as with some drafts. Without this, an absent `attachments` fell
+  // through to "0 Files" and an empty one matched `onlyAudio` ("0 Audios").
+  if (!attachmentsLength) {
+    return '';
+  }
+
   if (onlyImages) {
     if (images?.length === 1) {
       return t('messagePreview.photo.label', 'Photo');
@@ -124,9 +130,7 @@ export const useMessagePreviewText = ({
   }
 
   return t('messagePreview.files.label', {
-    // `attachments` may be absent on this fall-through path. It used to render a literal
-    // `{{count}}` placeholder there; 0 at least pluralises.
-    count: attachmentsLength ?? 0,
+    count: attachmentsLength,
     defaultValue_one: '{{count}} File',
     defaultValue_other: '{{count}} Files',
   });
