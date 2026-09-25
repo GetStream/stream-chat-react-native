@@ -187,6 +187,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'bottomInset'
       | 'topInset'
       | 'disableAttachmentPicker'
+      | 'shouldRenderAttachmentPicker'
       | 'numberOfAttachmentPickerImageColumns'
       | 'numberOfAttachmentImagesToLoadPerCall'
     >
@@ -389,6 +390,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
+    shouldRenderAttachmentPicker = true,
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,
@@ -1571,6 +1573,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       closePicker: handleClosePicker,
       disableAttachmentPicker,
       openPicker: handleOpenPicker,
+      shouldRenderAttachmentPicker,
       topInset,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
@@ -1583,6 +1586,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       handleClosePicker,
       disableAttachmentPicker,
       handleOpenPicker,
+      shouldRenderAttachmentPicker,
       topInset,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
@@ -1805,7 +1809,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                         <AudioPlayerProvider value={audioPlayerContext}>
                           <NotificationAnnouncer />
                           <View style={{ height: '100%' }}>{children}</View>
-                          <AttachmentPicker />
+                          {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
                         </AudioPlayerProvider>
                       </MessageInputProvider>
                     </MessageComposerProvider>
