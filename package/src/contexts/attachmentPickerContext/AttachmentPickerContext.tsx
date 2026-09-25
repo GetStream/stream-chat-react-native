@@ -33,7 +33,20 @@ export type AttachmentPickerContextValue = Pick<
   openPicker: () => void;
   topInset: number;
 
+  /**
+   * When `true`, the native image picker is used instead of the in-app image gallery.
+   * The attachment picker itself (with its attachment type selection bar) is still rendered.
+   * To not render the attachment picker at all, set `shouldRenderAttachmentPicker` to `false`.
+   */
   disableAttachmentPicker?: boolean;
+  /**
+   * Whether the attachment picker should be rendered at all. Defaults to `true`.
+   *
+   * Can be set to `false` if attachment picker is not used. `openAttachmentPicker` then
+   * does nothing. The attach button is still shown, so it needs to either be hidden it or set
+   * `handleAttachButtonPress` to override what it does.
+   */
+  shouldRenderAttachmentPicker?: boolean;
   attachmentPickerStore: AttachmentPickerStore;
   numberOfAttachmentPickerImageColumns?: number;
   numberOfAttachmentImagesToLoadPerCall?: number;
