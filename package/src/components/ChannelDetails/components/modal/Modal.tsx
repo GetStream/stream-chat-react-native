@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useChannelDetailsContext } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useHorizontalInsets } from '../../../../hooks/useHorizontalInsets';
 
 type ChannelDetailsModalProps = {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export const ChannelDetailsModal = ({
   } = useTheme();
   const styles = useStyles();
   const { top } = useSafeAreaInsets();
+  const horizontalInsets = useHorizontalInsets();
   const { signalStore } = useChannelDetailsContext();
 
   useEffect(() => {
@@ -56,6 +58,7 @@ export const ChannelDetailsModal = ({
           presentationStyle === 'fullScreen' || Platform.OS === 'android'
             ? { paddingTop: top }
             : {},
+          horizontalInsets,
           bodyOverride,
         ]}
       >

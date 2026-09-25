@@ -1,6 +1,8 @@
 import React, { RefObject, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MessageResponse } from 'stream-chat';
@@ -16,6 +18,9 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 import type { BottomTabNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -67,7 +72,8 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     usePaginatedSearchedMessages(messageFilters);
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -76,15 +82,17 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <MessageSearchList
-        EmptySearchIndicator={EmptyMentionsSearchIndicator}
-        loading={loading}
-        loadMore={loadMore}
-        messages={messages}
-        ref={scrollRef}
-        refreshing={refreshing}
-        refreshList={refreshList}
-      />
-    </View>
+      <View style={styles.flex}>
+        <MessageSearchList
+          EmptySearchIndicator={EmptyMentionsSearchIndicator}
+          loading={loading}
+          loadMore={loadMore}
+          messages={messages}
+          ref={scrollRef}
+          refreshing={refreshing}
+          refreshList={refreshList}
+        />
+      </View>
+    </SafeAreaView>
   );
 };

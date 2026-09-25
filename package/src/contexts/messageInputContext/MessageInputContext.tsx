@@ -221,8 +221,13 @@ export const MessageInputProvider = ({
 }: PropsWithChildren<{
   value: InputMessageInputContextValue;
 }>) => {
-  const { closePicker, openPicker, attachmentPickerStore, disableAttachmentPicker } =
-    useAttachmentPickerContext();
+  const {
+    closePicker,
+    openPicker,
+    attachmentPickerStore,
+    disableAttachmentPicker,
+    shouldRenderAttachmentPicker = true,
+  } = useAttachmentPickerContext();
   const { client } = useChatContext();
   const channelCapabilities = useOwnCapabilitiesContext();
   const [audioRecorderManager] = useState(new AudioRecorderManager());
@@ -371,10 +376,14 @@ export const MessageInputProvider = ({
    * Function to open the attachment picker if the MediaLibary is installed.
    */
   const openAttachmentPicker = useCallback(() => {
+    if (!shouldRenderAttachmentPicker) {
+      // There is no picker to open, and a selected picker would leave space reserved for it.
+      return;
+    }
     dismissKeyboard();
     attachmentPickerStore.setSelectedPicker('images');
     openPicker();
-  }, [attachmentPickerStore, openPicker]);
+  }, [attachmentPickerStore, openPicker, shouldRenderAttachmentPicker]);
 
   /**
    * Function to close the attachment picker if the MediaLibrary is installed.

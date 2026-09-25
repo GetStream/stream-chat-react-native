@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -113,7 +115,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={styles.container}>
       <ScreenHeader
         // eslint-disable-next-line react/no-unstable-nested-components
         RightContent={() => <ConfirmButton disabled={!groupName} onPress={onConfirm} />}
@@ -182,6 +184,6 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
           />
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };

@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  type FlatListProps,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, type FlatListProps, StyleSheet, View } from 'react-native';
 
 import {
   formatMessage,
@@ -30,6 +23,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { getNotificationErrorOptions } from '../../../../hooks/actions/useChannelActions';
 import { useStateStore } from '../../../../hooks/useStateStore';
+import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { isVideoPlayerAvailable } from '../../../../native';
 import { primitives } from '../../../../theme';
 import { FileTypes } from '../../../../types/types';
@@ -40,9 +34,6 @@ import { NotificationList } from '../../../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../../../Notifications/NotificationTargetContext';
 import { EmptyList } from '../../../UIComponents/EmptyList';
 import { type MediaTile, useMediaList } from '../../hooks/useMediaList';
-
-const NUMBER_OF_COLUMNS = 3;
-const GRID_GAP = primitives.spacingXxxs;
 
 export type MediaListProps = {
   /**
@@ -59,6 +50,9 @@ export type MediaListProps = {
    */
   searchSource?: MessageSearchSource;
 };
+
+const NUMBER_OF_COLUMNS = 3;
+const GRID_GAP = primitives.spacingXxxs;
 
 const keyExtractor = (item: MediaTile, index: number) => `${item.message.id}-${index}`;
 
@@ -77,7 +71,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const { width } = useWindowDimensions();
+  const width = useWindowContentWidth();
   const { icons, MediaItem } = useComponentsContext();
 
   const { addNotification } = useNotificationApi();
@@ -128,7 +122,6 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
 
   const tiles = useMediaList(messages);
 
-  // Tile side length: full width minus the inter-column gaps, split across the columns.
   const tileSize = useMemo(
     () => (width - GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS,
     [width],

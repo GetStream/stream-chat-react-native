@@ -128,7 +128,7 @@ export type MessageItemViewPropsWithContext = Pick<
   >;
 
 const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
-  const { width } = Dimensions.get('screen');
+  const { width } = Dimensions.get('window');
   const {
     alignment,
     channel,

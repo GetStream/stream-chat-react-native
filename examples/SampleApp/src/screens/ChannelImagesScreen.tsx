@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import type { RouteProp } from '@react-navigation/native';
 import { ChannelDetailsContextProvider, MediaList } from 'stream-chat-react-native';
 
@@ -24,11 +26,13 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   },
 }) => {
   return (
-    <View style={[styles.flex]}>
+    <SafeAreaView edges={['left', 'right']} style={[styles.flex]}>
       <ScreenHeader titleText='Photos and Videos' />
       <ChannelDetailsContextProvider channel={channel}>
-        <MediaList />
+        <View style={styles.flex}>
+          <MediaList />
+        </View>
       </ChannelDetailsContextProvider>
-    </View>
+    </SafeAreaView>
   );
 };

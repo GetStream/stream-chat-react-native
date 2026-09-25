@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
 
@@ -8,6 +8,7 @@ import { useAppContext } from '../context/AppContext';
 import { useLegacyColors } from '../theme/useLegacyColors';
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
   bottomContainer: {
     paddingHorizontal: 16,
   },
@@ -168,102 +169,104 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
     return isValid;
   };
   return (
-    <KeyboardCompatibleView keyboardVerticalOffset={0}>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: white_snow,
-            paddingBottom: bottom,
-          },
-        ]}
-      >
-        <View style={styles.innerContainer}>
-          <View style={styles.labelsContainer}>
-            <LabeledTextInput
-              error={apiKeyError}
-              label='Chat API Key'
-              onChangeText={(text) => {
-                setApiKeyError(false);
-                setApiKey(text);
-              }}
-              value={apiKey}
-            />
-            <LabeledTextInput
-              error={userIdError}
-              label='User ID'
-              onChangeText={(text) => {
-                setUserIdError(false);
-                setUserId(text);
-              }}
-              value={userId}
-            />
-            <LabeledTextInput
-              error={userTokenError}
-              label='User Token'
-              onChangeText={(text) => {
-                setUserTokenError(false);
-                setUserToken(text);
-              }}
-              value={userToken}
-            />
-            <LabeledTextInput
-              label='Username (optional)'
-              onChangeText={(text) => {
-                setUserName(text);
-              }}
-              value={userName}
-            />
-          </View>
-          <View style={styles.bottomContainer}>
-            <TouchableOpacity
-              onPress={async () => {
-                if (!isValidInput()) {
-                  return;
-                }
-
-                try {
-                  await loginUser({
-                    apiKey,
-                    userId,
-                    userName,
-                    userToken,
-                  });
-                } catch (e) {
-                  Alert.alert(
-                    `Login resulted in error. Please make sure you have entered valid credentials. Error: ${(e as Error).message}`,
-                  );
-                  console.warn(e);
-                }
-              }}
-              style={[
-                styles.bottomInnerContainer,
-                {
-                  backgroundColor: button_background,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  color: button_text,
+    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+      <KeyboardCompatibleView keyboardVerticalOffset={0}>
+        <View
+          style={[
+            styles.container,
+            {
+              backgroundColor: white_snow,
+              paddingBottom: bottom,
+            },
+          ]}
+        >
+          <View style={styles.innerContainer}>
+            <View style={styles.labelsContainer}>
+              <LabeledTextInput
+                error={apiKeyError}
+                label='Chat API Key'
+                onChangeText={(text) => {
+                  setApiKeyError(false);
+                  setApiKey(text);
                 }}
+                value={apiKey}
+              />
+              <LabeledTextInput
+                error={userIdError}
+                label='User ID'
+                onChangeText={(text) => {
+                  setUserIdError(false);
+                  setUserId(text);
+                }}
+                value={userId}
+              />
+              <LabeledTextInput
+                error={userTokenError}
+                label='User Token'
+                onChangeText={(text) => {
+                  setUserTokenError(false);
+                  setUserToken(text);
+                }}
+                value={userToken}
+              />
+              <LabeledTextInput
+                label='Username (optional)'
+                onChangeText={(text) => {
+                  setUserName(text);
+                }}
+                value={userName}
+              />
+            </View>
+            <View style={styles.bottomContainer}>
+              <TouchableOpacity
+                onPress={async () => {
+                  if (!isValidInput()) {
+                    return;
+                  }
+
+                  try {
+                    await loginUser({
+                      apiKey,
+                      userId,
+                      userName,
+                      userToken,
+                    });
+                  } catch (e) {
+                    Alert.alert(
+                      `Login resulted in error. Please make sure you have entered valid credentials. Error: ${(e as Error).message}`,
+                    );
+                    console.warn(e);
+                  }
+                }}
+                style={[
+                  styles.bottomInnerContainer,
+                  {
+                    backgroundColor: button_background,
+                  },
+                ]}
               >
-                Login
+                <Text
+                  style={{
+                    color: button_text,
+                  }}
+                >
+                  Login
+                </Text>
+              </TouchableOpacity>
+              <Text
+                style={[
+                  styles.versionText,
+                  {
+                    color: grey_gainsboro,
+                  },
+                ]}
+              >
+                Stream SDK v{version}
               </Text>
-            </TouchableOpacity>
-            <Text
-              style={[
-                styles.versionText,
-                {
-                  color: grey_gainsboro,
-                },
-              ]}
-            >
-              Stream SDK v{version}
-            </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </KeyboardCompatibleView>
+      </KeyboardCompatibleView>
+    </SafeAreaView>
   );
 };

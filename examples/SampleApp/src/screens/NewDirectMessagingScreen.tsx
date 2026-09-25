@@ -347,7 +347,13 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   }
 
   if (!currentChannel.current) {
-    return renderUserSearch({ inSafeArea: false });
+    // Only the channel path below sits inside a `SafeAreaView`; this one needs its own horizontal
+    // insets. `inSafeArea` stays false - it governs the header's *top* inset, which is unchanged.
+    return (
+      <SafeAreaView edges={['left', 'right']} style={styles.container}>
+        {renderUserSearch({ inSafeArea: false })}
+      </SafeAreaView>
+    );
   }
 
   return (

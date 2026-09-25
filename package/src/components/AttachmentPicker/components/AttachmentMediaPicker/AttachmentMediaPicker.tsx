@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 
 import { renderAttachmentPickerItem } from './AttachmentPickerItem';
+
 import { IOS_LIMITED_DEEPLINK, type PhotoContentItemType } from './shared';
 
 import { useAttachmentPickerContext, useTheme, useTranslationContext } from '../../../../contexts';
@@ -170,6 +171,7 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       contentContainerStyle={[styles.container, bottomSheetContentContainer]}
       data={photos}
       keyExtractor={keyExtractor}
+      key={numberOfColumns}
       numColumns={numberOfColumns}
       onEndReached={photoError ? undefined : getMorePhotos}
       renderItem={renderAttachmentPickerItem}

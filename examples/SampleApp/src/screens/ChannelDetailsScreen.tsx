@@ -1,5 +1,9 @@
 import React, { useCallback } from 'react';
 
+import { StyleSheet } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -125,7 +129,9 @@ const ChannelDetailsScreenInner = () => {
         ChannelMemberActionsSheet: MemberActionsSheet,
       }}
     >
-      <ChannelDetails onBack={onBack} />
+      <SafeAreaView edges={['left', 'right']} style={styles.flex}>
+        <ChannelDetails onBack={onBack} />
+      </SafeAreaView>
     </WithComponents>
   );
 };
@@ -141,3 +147,7 @@ export const ChannelDetailsScreen: React.FC<Props> = ({
     </ChannelDetailsContextProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+});
