@@ -67,8 +67,6 @@ export const useMessagePreviewText = ({
     return message.text;
   }
 
-  // No text and nothing attached, as with some drafts. Without this, an absent `attachments` fell
-  // through to "0 Files" and an empty one matched `onlyAudio` ("0 Audios").
   if (!attachmentsLength) {
     return '';
   }
