@@ -67,6 +67,10 @@ export const useMessagePreviewText = ({
     return message.text;
   }
 
+  if (!attachmentsLength) {
+    return '';
+  }
+
   if (onlyImages) {
     if (images?.length === 1) {
       return t('messagePreview.photo.label', 'Photo');
@@ -124,9 +128,7 @@ export const useMessagePreviewText = ({
   }
 
   return t('messagePreview.files.label', {
-    // `attachments` may be absent on this fall-through path. It used to render a literal
-    // `{{count}}` placeholder there; 0 at least pluralises.
-    count: attachmentsLength ?? 0,
+    count: attachmentsLength,
     defaultValue_one: '{{count}} File',
     defaultValue_other: '{{count}} Files',
   });
