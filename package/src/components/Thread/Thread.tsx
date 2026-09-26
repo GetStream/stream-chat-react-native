@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
-import type { LocalMessage, Thread as StreamThread } from 'stream-chat';
+import type { LocalMessage } from 'stream-chat';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
@@ -76,10 +76,6 @@ const threadStaleSelector = (state: { isStateStale: boolean }) => ({
   isStateStale: state.isStateStale,
 });
 
-const threadManagerSelector = (state: { threads: StreamThread[] }) => ({
-  threads: state.threads,
-});
-
 const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const {
     client,
@@ -103,20 +99,22 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const { hasItems, isLoading, lastQueryError } =
     useStateStore(threadInstance?.messagePaginator?.state, paginatorSelector) ?? {};
   const { isStateStale } = useStateStore(threadInstance?.state, threadStaleSelector) ?? {};
-  const { threads } = useStateStore(client.threads.state, threadManagerSelector) ?? {
-    threads: client.threads.state.getLatestValue().threads,
+  const threadId = threadInstance?.id;
+  const isListedSelector = useCallback(
+    () => ({ isListed: threadId ? client.threads.isListed(threadId) : false }),
+    [client, threadId],
+  );
+  const { isListed } = useStateStore(client.threads.paginator.state, isListedSelector) ?? {
+    isListed: false,
   };
-  const isThreadManaged = threadInstance?.id
-    ? threads.some((managedThread) => managedThread.id === threadInstance.id)
-    : false;
 
-  // Mirror stream-chat-react: an unmanaged thread whose reply paginator hasn't loaded yet gets a
-  // metadata reload (parent message, read state, participants) — not a paginator reload.
+  // Mirror stream-chat-react: a thread the list did not query, whose reply paginator hasn't loaded
+  // yet, gets a metadata reload (parent message, read state, participants) — not a paginator reload.
   useEffect(() => {
-    if (!threadInstance || isThreadManaged) return;
+    if (!threadInstance || isListed) return;
     if (hasItems || isLoading) return;
     void threadInstance.reload().catch((err) => console.warn('Thread reload failed', err));
-  }, [isThreadManaged, threadInstance, isLoading, hasItems]);
+  }, [isListed, threadInstance, isLoading, hasItems]);
 
   // Reload when the thread's state goes stale (e.g. user stopped then resumed watching the channel).
   useEffect(() => {
@@ -125,24 +123,13 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     }
   }, [isStateStale, threadInstance]);
 
-  // Once the reply paginator has loaded, adopt the instance into the ThreadManager. The manager
-  // registers the thread's subscriptions on adoption, which keeps the reply list live (incoming
-  // replies, read state, thread.updated) — mirrors stream-chat-react.
+  // Activating registers the thread with `client.threads` for the session, which keeps it subscribed
+  // (incoming replies, read state, thread.updated) whether or not the thread list holds it. Keyed on
+  // the instance, which can arrive after mount; the cleanup deactivates the previous one.
   useEffect(() => {
-    if (!threadInstance || isThreadManaged) return;
-    if (isLoading || lastQueryError || !hasItems) return;
-    client.threads.state.next((current) =>
-      current.threads.some((managedThread) => managedThread.id === threadInstance.id)
-        ? current
-        : { ...current, threads: [threadInstance, ...current.threads] },
-    );
-  }, [client.threads.state, isThreadManaged, threadInstance, isLoading, hasItems, lastQueryError]);
-
-  // Activate the thread instance once it is available. `threadInstance` can resolve asynchronously
-  // (Channel adopts it from the ThreadManager after this component mounts), so keying on it — rather
-  // than running on mount alone — ensures activation isn't missed when the instance arrives late.
-  useEffect(() => {
-    threadInstance?.activate?.();
+    if (!threadInstance) return;
+    threadInstance.activate?.();
+    return () => threadInstance.deactivate?.();
   }, [threadInstance]);
 
   // Mark the thread read on open. Mirrors the pre-refactor openThread behavior: channel.markRead with
@@ -168,8 +155,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   // seeded paginator already holds its first page, so we skip the fetch and let scroll-up load older
   // replies — mirroring stream-chat-react, whose thread list has no mount-time fetch. Reactive on
   // `threadInstance`/`hasItems` because the instance can arrive after mount; the `hasItems`
-  // guard makes this fire at most once (an unseeded thread fetches; the fetch defines `items`, which
-  // also lets the adopt effect register it with the manager).
+  // guard makes this fire at most once (an unseeded thread fetches, and the fetch defines `items`).
   useEffect(() => {
     if (!threadInstance || isLoading || hasItems || lastQueryError) {
       return;
@@ -180,13 +166,9 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     // retry is the user's to make, through the error indicator below.
   }, [threadInstance, hasItems, isLoading, lastQueryError]);
 
-  // Tear down on unmount. Use a ref so we deactivate whichever instance is current at unmount, not
-  // the (possibly null) one captured when this effect first ran.
-  const threadInstanceRef = useRef(threadInstance);
-  threadInstanceRef.current = threadInstance;
+  // Deactivation is the activation effect's cleanup; this only notifies the integrator.
   useEffect(
     () => () => {
-      threadInstanceRef.current?.deactivate?.();
       if (onThreadDismount) {
         onThreadDismount();
       }
@@ -208,7 +190,6 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     [disabled, autoFocus],
   );
 
-  const threadId = threadInstance?.id;
   if (!threadId) {
     return null;
   }

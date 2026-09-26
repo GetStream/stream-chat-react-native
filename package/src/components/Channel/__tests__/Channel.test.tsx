@@ -766,10 +766,10 @@ describe('Channel initial load useEffect', () => {
   // Regression guard for the reconnect refresh of an OPEN THREAD's replies, which now runs entirely in
   // `client.connectionRecovery` — this component's only part is marking the thread active.
   //
-  // Asserted end to end on purpose: the LLC can only reach the thread through `client.activeThreads`,
-  // and a thread resolved as `threadsById[id] ?? new Thread(...)` (the common path — see the
-  // `threadInstance` memo) is in no other registry. Drop the `threadInstance.activate()` effect and
-  // recovery silently skips the thread with nothing else failing, so it is pinned here.
+  // Asserted end to end on purpose: a thread resolved as `client.threads.get(id) ?? new Thread(...)`
+  // (the common path — see the `threadInstance` memo) reaches the LLC's thread registry only through
+  // `threadInstance.activate()`. Drop that effect and recovery silently skips the thread with nothing
+  // else failing, so it is pinned here.
   it('reloads an open thread on reconnect', async () => {
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
@@ -783,11 +783,8 @@ describe('Channel initial load useEffect', () => {
       parentMessage: testChannel.state.formatMessage(parentMessage),
     });
     const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
-    // Recovery finds threads through `client.threads.threadsById`, and <Thread> only adopts an
-    // unmanaged instance into the manager once its reply paginator has loaded (Thread.tsx:126, gated
-    // on `items !== undefined`). Seed loaded-but-empty replies so that adoption actually happens —
-    // without it this test exercises the documented gap (active but unadopted → skipped) rather than
-    // the path it means to cover.
+    // Seed loaded-but-empty replies so <Thread>'s mount-time metadata reload and first-page fetch
+    // are skipped, keeping the spy clean for the reconnect-driven call.
     act(() => threadInstance.messagePaginator.state.partialNext({ items: [], isLoading: false }));
 
     render(
@@ -800,20 +797,20 @@ describe('Channel initial load useEffect', () => {
           thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance }}
         >
           {/* The real <Thread> is what calls `threadInstance.activate()`, which is the ONLY thing
-              that puts the instance in `client.activeThreads` for recovery to find. Rendering it is
-              the point of the test — a bare <Channel> would not activate anything. */}
+              that registers the instance with `client.threads` for recovery to find. Rendering it
+              is the point of the test — a bare <Channel> would not activate anything. */}
           <ThreadComponent />
         </Channel>
       </Chat>,
     );
 
-    // Wait for <Thread> to activate AND adopt the instance — both are preconditions for recovery to
-    // see it at all. (With replies seeded above, Thread.tsx's mount metadata-reload is skipped, so
-    // the spy is clean; cleared anyway so this can only pass on a reconnect-driven call.)
+    // Activation registers the instance without putting it in the thread list. (Cleared anyway so
+    // this can only pass on a reconnect-driven call.)
     await waitFor(() => {
-      expect(chatClient.threads.threadsById[threadInstance.id]).toBeDefined();
+      expect(chatClient.threads.get(threadInstance.id)).toBe(threadInstance);
       expect(threadInstance.state.getLatestValue().active).toBe(true);
     });
+    expect(chatClient.threads.isListed(threadInstance.id)).toBe(false);
     reload.mockClear();
 
     act(() => dispatchConnectionChanged(chatClient, false));

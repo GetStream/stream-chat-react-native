@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { Thread, ThreadManagerState } from 'stream-chat';
+import type { PaginatorState, Thread, ThreadManagerState } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 import { ThreadListItemSkeleton } from './ThreadListItemSkeleton';
@@ -21,12 +21,14 @@ import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
-const selector = (nextValue: ThreadManagerState) =>
-  ({
-    isLoading: nextValue.pagination.isLoading,
-    isLoadingNext: nextValue.pagination.isLoadingNext,
-    threads: nextValue.threads,
-  }) as const;
+const NO_THREADS: Thread[] = [];
+
+// The paginator's `isLoading` is only ever the next page; the first load and reloads are the
+// manager's `isReloading`, which keeps the list in `items` until it is replaced.
+const paginatorSelector = ({ isLoading, items }: PaginatorState<Thread>) =>
+  ({ isLoadingNext: isLoading, threads: items ?? NO_THREADS }) as const;
+
+const reloadingSelector = ({ isReloading }: ThreadManagerState) => ({ isReloading });
 
 export type ThreadListProps = Pick<
   ThreadsContextValue,
@@ -115,13 +117,17 @@ export const ThreadList = (props: ThreadListProps) => {
     };
   }, [client]);
 
-  const { isLoading, isLoadingNext, threads } = useStateStore(client.threads.state, selector);
+  const { isLoadingNext, threads } = useStateStore(
+    client.threads.paginator.state,
+    paginatorSelector,
+  );
+  const { isReloading } = useStateStore(client.threads.state, reloadingSelector);
 
   return (
     <NotificationTargetProvider hostId={notificationHostId} panel='thread-list'>
       <ThreadsProvider
         value={{
-          isLoading,
+          isLoading: isReloading,
           isLoadingNext,
           loadMore: client.threads.loadNextPage,
           threads,

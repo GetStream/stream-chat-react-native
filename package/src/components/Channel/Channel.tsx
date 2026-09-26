@@ -447,7 +447,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       return null;
     }
     return (
-      client.threads.threadsById[threadProps.id] ??
+      client.threads.get(threadProps.id) ??
       new Thread({ channel, client, parentMessage: threadProps })
     );
     // Keyed on threadProps.id (stable) rather than the threadProps object so an unmanaged thread's
