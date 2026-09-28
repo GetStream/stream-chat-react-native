@@ -100,17 +100,7 @@ export const ThreadList = (props: ThreadListProps) => {
     if (!client) {
       return;
     }
-
-    // Only the socket recovers — a device regaining its network has no reconnected socket yet, and
-    // the event is dispatched once the client's own post-reconnect reloads have landed.
-    const listener = client.on('connection.recovered', () => {
-      client.threads.reload({ force: true });
-    });
-
-    return () => {
-      client.threads.deactivate();
-      listener.unsubscribe();
-    };
+    return () => client.threads.deactivate();
   }, [client]);
 
   const { isLoading, threads } = useStateStore(client.threads.paginator.state, paginatorSelector);
