@@ -60,19 +60,19 @@ export const useMarkRead = (channel: Channel) => {
     // clear once the channel is caught up. The LLC bumps `unreadCount` on every incoming
     // `message.new` but never clears it on `message.read`, so without this the banner latches on and
     // can't be dismissed. `throttledMarkRead` is fire-and-forget (no response to read), so advance
-    // the boundary to the latest loaded message.
+    // the boundary to the latest message.
     //
     // Gated on `updateChannelUnreadState` (default true): the mark-read-on-mount call passes `false`
     // so opening a channel with unreads keeps its original unread UI (separator frozen at the
     // boundary) until the user actually catches up.
     const { updateChannelUnreadState = true } = options ?? {};
     if (updateChannelUnreadState) {
-      const loadedItems = channel.messagePaginator.state.getLatestValue().items ?? [];
-      const previous = channel.messagePaginator.unreadStateSnapshot.getLatestValue();
-      channel.messagePaginator.unreadStateSnapshot.next({
+      const { lastMessage, lastMessageAt, unreadStateSnapshot } = channel.messagePaginator;
+      const previous = unreadStateSnapshot.getLatestValue();
+      unreadStateSnapshot.next({
         firstUnreadMessageId: null,
-        lastReadAt: nowNs(),
-        lastReadMessageId: loadedItems[loadedItems.length - 1]?.id ?? previous.lastReadMessageId,
+        lastReadAt: lastMessageAt ?? nowNs(),
+        lastReadMessageId: lastMessage?.id ?? previous.lastReadMessageId,
         unreadCount: 0,
       });
     }
