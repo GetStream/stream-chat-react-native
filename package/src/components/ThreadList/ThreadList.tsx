@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import type { PaginatorState, Thread, ThreadManagerState } from 'stream-chat';
+import type { PaginatorState, Thread } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 import { ThreadListItemSkeleton } from './ThreadListItemSkeleton';
@@ -23,12 +23,8 @@ import { NotificationTargetProvider } from '../Notifications/NotificationTargetC
 
 const NO_THREADS: Thread[] = [];
 
-// The paginator's `isLoading` is only ever the next page; the first load and reloads are the
-// manager's `isReloading`, which keeps the list in `items` until it is replaced.
 const paginatorSelector = ({ isLoading, items }: PaginatorState<Thread>) =>
-  ({ isLoadingNext: isLoading, threads: items ?? NO_THREADS }) as const;
-
-const reloadingSelector = ({ isReloading }: ThreadManagerState) => ({ isReloading });
+  ({ isLoading, threads: items ?? NO_THREADS }) as const;
 
 export type ThreadListProps = Pick<
   ThreadsContextValue,
@@ -117,19 +113,19 @@ export const ThreadList = (props: ThreadListProps) => {
     };
   }, [client]);
 
-  const { isLoadingNext, threads } = useStateStore(
-    client.threads.paginator.state,
-    paginatorSelector,
-  );
-  const { isReloading } = useStateStore(client.threads.state, reloadingSelector);
+  const { isLoading, threads } = useStateStore(client.threads.paginator.state, paginatorSelector);
+  // A no-op until the first page has landed, at the end of the list, and while a page is loading.
+  const loadMore = useCallback(async () => {
+    await client.threads.paginator.toTail();
+  }, [client]);
 
   return (
     <NotificationTargetProvider hostId={notificationHostId} panel='thread-list'>
       <ThreadsProvider
         value={{
-          isLoading: isReloading,
-          isLoadingNext,
-          loadMore: client.threads.loadNextPage,
+          isLoading: isLoading && !threads.length,
+          isLoadingNext: isLoading && threads.length > 0,
+          loadMore,
           threads,
           ...props,
         }}

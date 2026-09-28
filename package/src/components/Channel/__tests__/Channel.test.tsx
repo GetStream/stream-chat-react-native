@@ -810,7 +810,7 @@ describe('Channel initial load useEffect', () => {
       expect(chatClient.threads.get(threadInstance.id)).toBe(threadInstance);
       expect(threadInstance.state.getLatestValue().active).toBe(true);
     });
-    expect(chatClient.threads.isListed(threadInstance.id)).toBe(false);
+    expect(chatClient.threads.paginator.getItem(threadInstance.id)).toBeUndefined();
     reload.mockClear();
 
     act(() => dispatchConnectionChanged(chatClient, false));

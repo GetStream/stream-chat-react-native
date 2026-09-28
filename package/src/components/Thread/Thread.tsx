@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
-import type { LocalMessage } from 'stream-chat';
+import type { LocalMessage, PaginatorState, Thread as StreamThread } from 'stream-chat';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
@@ -101,8 +101,10 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   const { isStateStale } = useStateStore(threadInstance?.state, threadStaleSelector) ?? {};
   const threadId = threadInstance?.id;
   const isListedSelector = useCallback(
-    () => ({ isListed: threadId ? client.threads.isListed(threadId) : false }),
-    [client, threadId],
+    ({ items }: PaginatorState<StreamThread>) => ({
+      isListed: !!threadId && !!items?.some((listed) => listed.id === threadId),
+    }),
+    [threadId],
   );
   const { isListed } = useStateStore(client.threads.paginator.state, isListedSelector) ?? {
     isListed: false,
