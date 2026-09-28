@@ -228,6 +228,31 @@ describe('Thread', () => {
       await waitFor(() => expect(reload).toHaveBeenCalled());
     });
 
+    it('does not fetch the first reply page while that reload is in flight, only if it fails', async () => {
+      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+      let failReload: () => void = () => undefined;
+      jest.spyOn(threadInstance, 'reload').mockImplementation(async () => {
+        threadInstance.state.partialNext({ isLoading: true });
+        await new Promise<void>((resolve) => (failReload = resolve));
+        threadInstance.state.partialNext({ isLoading: false });
+      });
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockResolvedValue(undefined);
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+
+      await waitFor(() => expect(threadInstance.reload).toHaveBeenCalled());
+      expect(toTail).not.toHaveBeenCalled();
+
+      // The reload ended without seeding replies (a failure): the first page is fetched instead.
+      await act(async () => {
+        failReload();
+        await Promise.resolve();
+      });
+      await waitFor(() => expect(toTail).toHaveBeenCalled());
+    });
+
     it('does not reload a thread that already has its data', async () => {
       const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
       const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });

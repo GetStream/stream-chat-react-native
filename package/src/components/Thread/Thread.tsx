@@ -72,8 +72,9 @@ const paginatorSelector = (state: ThreadReplyPaginatorState) => ({
   lastQueryError: state.lastQueryError,
 });
 
-const threadStaleSelector = (state: { isStateStale: boolean }) => ({
+const threadStaleSelector = (state: { isLoading: boolean; isStateStale: boolean }) => ({
   isStateStale: state.isStateStale,
+  isThreadReloading: state.isLoading,
 });
 
 const ThreadWithContext = (props: ThreadPropsWithContext) => {
@@ -97,7 +98,8 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   const { hasItems, isLoading, lastQueryError } =
     useStateStore(threadInstance?.messagePaginator?.state, paginatorSelector) ?? {};
-  const { isStateStale } = useStateStore(threadInstance?.state, threadStaleSelector) ?? {};
+  const { isStateStale, isThreadReloading } =
+    useStateStore(threadInstance?.state, threadStaleSelector) ?? {};
   const threadId = threadInstance?.id;
 
   useEffect(() => {
@@ -115,24 +117,6 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     return () => threadInstance.deactivate?.();
   }, [threadInstance]);
 
-  // Mark the thread read on open. Mirrors the pre-refactor openThread behavior: channel.markRead with
-  // a thread_id marks reliably even when the thread instance's own unread count is 0 (so it can't
-  // rely on the LLC's active-thread auto-read); a reply-less parent has no server-side thread yet, so
-  // the call is skipped rather than left to 404 on every open.
-  useEffect(() => {
-    const channel = threadInstance?.channel;
-    if (!threadInstance?.id || !channel?.initialized) {
-      return;
-    }
-    // No replies means nothing that could be unread — true whether or not the thread exists yet.
-    if (threadInstance.state.getLatestValue().replyCount === 0) {
-      return;
-    }
-    channel
-      .markRead({ thread_id: threadInstance.id })
-      .catch((err) => console.warn('Marking thread as read on open failed with error:', err));
-  }, [threadInstance]);
-
   // Load the first reply page, but only when the paginator hasn't already been seeded from the
   // thread's `latest_replies` (managed/queried threads seed on construction) or loaded/loading. A
   // seeded paginator already holds its first page, so we skip the fetch and let scroll-up load older
@@ -143,11 +127,16 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     if (!threadInstance || isLoading || hasItems || lastQueryError) {
       return;
     }
+    // A reload in flight (a stale thread's, started by the effect above in this same commit) seeds the
+    // replies itself; read live, as this commit's render predates it. If it fails, this runs again.
+    if (isThreadReloading || threadInstance.state.getLatestValue().isLoading) {
+      return;
+    }
     void threadInstance.messagePaginator.toTail();
     // `lastQueryError` is load-bearing here, not decorative: a failed query flips `isLoading` back to
     // false with `hasItems` still false, which would re-run this effect and refetch forever. The
     // retry is the user's to make, through the error indicator below.
-  }, [threadInstance, hasItems, isLoading, lastQueryError]);
+  }, [threadInstance, hasItems, isLoading, lastQueryError, isThreadReloading]);
 
   // Deactivation is the activation effect's cleanup; this only notifies the integrator.
   useEffect(

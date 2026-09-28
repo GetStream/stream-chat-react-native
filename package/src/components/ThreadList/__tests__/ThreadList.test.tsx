@@ -111,4 +111,20 @@ describe('ThreadList loading states', () => {
     await waitFor(() => expect(rows()).toHaveLength(2));
     expect(footer()).toBeUndefined();
   });
+  it('pluralizes the unseen-threads banner', async () => {
+    jest
+      .spyOn(chatClient, 'queryThreadsAndHydrate')
+      .mockResolvedValueOnce({ next: undefined, threads: [makeThread()] });
+    render(
+      <Chat client={chatClient}>
+        <ThreadList isFocused />
+      </Chat>,
+    );
+    await waitFor(() => expect(rows()).toHaveLength(1));
+
+    act(() => chatClient.threads.state.partialNext({ unseenThreadIds: ['a'] }));
+    await waitFor(() => expect(screen.getByText('1 new thread')).toBeTruthy());
+    act(() => chatClient.threads.state.partialNext({ unseenThreadIds: ['a', 'b'] }));
+    await waitFor(() => expect(screen.getByText('2 new threads')).toBeTruthy());
+  });
 });
