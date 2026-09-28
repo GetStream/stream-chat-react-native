@@ -205,37 +205,40 @@ describe('Thread', () => {
     });
   });
 
-  // Metadata (parent, read state, participants) comes with a queried page, so only a thread the list
-  // does not hold is reloaded on open while its replies are still unloaded.
+  // Metadata (parent, read state, participants) comes with a queried page. A thread `ensure` builds has only
+  // its parent message, so it starts stale and reloads once on open; one that already has its data doesn't.
   describe('metadata reload on open', () => {
-    const openUnloadedThread = ({ listed }: { listed: boolean }) => {
-      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
-      const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+    const openThread = (
+      threadInstance: ThreadClass,
+      parentMessage: ReturnType<typeof generateMessage>,
+    ) => {
       const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
       const toTail = jest
         .spyOn(threadInstance.messagePaginator, 'toTail')
         .mockResolvedValue(undefined);
-      if (listed) {
-        act(() => {
-          chatClient.threads.paginator.setItems({
-            isFirstPage: true,
-            isLastPage: true,
-            valueOrFactory: [threadInstance],
-          });
-        });
-      }
       renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
       return { reload, toTail };
     };
 
-    it('reloads a thread the list does not hold', async () => {
-      const { reload } = openUnloadedThread({ listed: false });
+    it('reloads a thread ensure built from its parent message', async () => {
+      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+      const { reload } = openThread(threadInstance, parentMessage);
 
       await waitFor(() => expect(reload).toHaveBeenCalled());
     });
 
-    it('does not reload a thread the list holds', async () => {
-      const { reload, toTail } = openUnloadedThread({ listed: true });
+    it('does not reload a thread that already has its data', async () => {
+      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+      act(() => {
+        chatClient.threads.paginator.setItems({
+          isFirstPage: true,
+          isLastPage: true,
+          valueOrFactory: [threadInstance],
+        });
+      });
+      const { reload, toTail } = openThread(threadInstance, parentMessage);
 
       // The first-page fetch runs from the same mount, so its call marks the effects as settled.
       await waitFor(() => expect(toTail).toHaveBeenCalled());
