@@ -763,11 +763,29 @@ describe('Channel initial load useEffect', () => {
     });
   });
 
+  it('registers the thread it builds for a thread prop before anything activates it', async () => {
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+    const parentMessage = testChannel.state.formatMessage(generateMessage({ user }));
+
+    // No <Thread>, so nothing calls activate(): a list query landing now must find this instance.
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={testChannel} threadList thread={parentMessage} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(chatClient.threads.get(parentMessage.id)).toBeDefined());
+    expect(chatClient.threads.get(parentMessage.id)?.state.getLatestValue().active).toBe(false);
+  });
+
   // Regression guard for the reconnect refresh of an OPEN THREAD's replies, which now runs entirely in
   // `client.connectionRecovery` — this component's only part is marking the thread active.
   //
-  // Asserted end to end on purpose: a thread resolved as `client.threads.get(id) ?? new Thread(...)`
-  // (the common path — see the `threadInstance` memo) reaches the LLC's thread registry only through
+  // Asserted end to end on purpose: a `threadInstance` passed in as a prop (not built by the
+  // `threadInstance` memo's `client.threads.ensure`) reaches the LLC's thread store only through
   // `threadInstance.activate()`. Drop that effect and recovery silently skips the thread with nothing
   // else failing, so it is pinned here.
   it('reloads an open thread on reconnect', async () => {

@@ -446,12 +446,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     if (!threadProps?.id || !channel) {
       return null;
     }
-    return (
-      client.threads.get(threadProps.id) ??
-      new Thread({ channel, client, parentMessage: threadProps })
-    );
-    // Keyed on threadProps.id (stable) rather than the threadProps object so an unmanaged thread's
-    // constructed instance isn't recreated (losing paginator state) on unrelated re-renders.
+    return client.threads.ensure({ channel, parentMessage: threadProps });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [threadInstanceFromProps, threadProps?.id, channel, client]);
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
