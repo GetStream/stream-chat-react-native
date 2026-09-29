@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FlatList } from 'react-native';
 
-import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import type { LocalMessage, StreamChat as StreamChatClient, UserResponse } from 'stream-chat';
 
 import { msToNs } from 'stream-chat';
@@ -483,6 +483,78 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryByLabelText('Inline unread indicator')).toBeTruthy();
+    });
+  });
+
+  // Messages 0-5 are read (boundary at '5'); `authors` sets who wrote 6, 7 and 8.
+  const renderWithUnreadAfterOwn = async (authors: Array<'own' | 'other'>) => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const messages = Array.from({ length: 6 + authors.length }, (_, i) =>
+      generateMessage({
+        id: `${i}`,
+        text: `message-${i}`,
+        timestamp: new Date(base + i * 1000),
+        user: i > 5 && authors[i - 6] === 'own' ? user1 : user2,
+      }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+      messages,
+      read: [
+        {
+          user: user1,
+          last_read: msToNs(base + 5000),
+          last_read_message_id: '5',
+          unread_messages: authors.filter((a) => a === 'other').length,
+        },
+      ] as unknown as NonNullable<Parameters<typeof generateChannelResponse>[0]>['read'],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: user1.id } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    return render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+  };
+
+  it('should render the InlineUnreadIndicator after the last read message when own messages sent elsewhere follow it', async () => {
+    const { getAllByLabelText, getByTestId } = await renderWithUnreadAfterOwn([
+      'own',
+      'other',
+      'other',
+    ]);
+
+    await waitFor(() => {
+      expect(getAllByLabelText('Inline unread indicator')).toHaveLength(1);
+      expect(
+        within(getByTestId('message-list-item-5')).queryByLabelText('Inline unread indicator'),
+      ).toBeTruthy();
+    });
+  });
+
+  it('should render a single InlineUnreadIndicator when own messages sit between unread ones', async () => {
+    const { getAllByLabelText, getByTestId } = await renderWithUnreadAfterOwn([
+      'other',
+      'own',
+      'other',
+    ]);
+
+    await waitFor(() => {
+      expect(getAllByLabelText('Inline unread indicator')).toHaveLength(1);
+      expect(
+        within(getByTestId('message-list-item-5')).queryByLabelText('Inline unread indicator'),
+      ).toBeTruthy();
     });
   });
 

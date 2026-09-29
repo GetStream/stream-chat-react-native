@@ -54,6 +54,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   // Wire timestamps throughout, directly comparable. `new Date(ns)` yielded NaN, so the unread
   // separator never rendered.
   const createdAtTimestamp = message.created_at;
+  const messageId = message.id;
   const nextMessageId = nextMessage?.id;
   const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
   const nextMessageCreatedAt = nextMessage?.created_at ?? undefined;
@@ -63,12 +64,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   // `useStateStore`'s per-key comparison keeps the flag referentially stable (`false === false`) for
   // every non-boundary row: a mark-read changes the channel-wide unread fields but only re-renders
   // the one or two boundary rows whose flag actually flips, not the whole list.
-  //
-  // We deliberately do NOT anchor on `lastReadMessageId`. It tracks the last read message from
-  // ANOTHER user and is not advanced by our own sends, so anchoring on it drops the separator in
-  // front of our own just-sent messages (read → us → new-unread would wrongly separate before "us").
-  // Skipping our own messages (they are always read) places it correctly above the first incoming
-  // unread instead.
   const showUnreadSeparatorSelector = useCallback(
     (snapshot: UnreadSnapshotState) => {
       let showUnreadSeparator: boolean;
@@ -91,7 +86,15 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
           nextMessageCreatedAt > lastReadAt;
         const thisIsRead =
           typeof createdAtTimestamp === 'number' && createdAtTimestamp <= lastReadAt;
-        showUnreadSeparator = nextIsUnreadFromOther && thisIsRead;
+        // Own messages sent elsewhere after the boundary leave no read row above the first unread,
+        // so the rule above never fires. Anchor on the last read message in those cases.
+        const isLastReadBeforeOwnUnread =
+          thisIsRead &&
+          messageId === snapshot.lastReadMessageId &&
+          nextMessageIsOwn &&
+          nextMessageCreatedAt !== undefined &&
+          nextMessageCreatedAt > lastReadAt;
+        showUnreadSeparator = (nextIsUnreadFromOther && thisIsRead) || isLastReadBeforeOwnUnread;
       } else {
         showUnreadSeparator = false;
       }
@@ -104,7 +107,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
         unreadCount: showUnreadSeparator ? snapshot.unreadCount : undefined,
       };
     },
-    [createdAtTimestamp, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
+    [createdAtTimestamp, messageId, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
   );
   const { showUnreadSeparator, unreadCount } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,
