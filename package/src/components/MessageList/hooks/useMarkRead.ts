@@ -41,11 +41,11 @@ export const useMarkRead = (channel: Channel) => {
       return;
     }
 
-    // Read events disabled (e.g. livestreams): if the client opted into a local unread count, reset
+    // Read events disabled (e.g. livestreams): if the channel opted into a local unread count, reset
     // it locally (dispatches message.read_locally) — no backend round trip. The paginator's unread
     // snapshot updates from that.
     if (!getReadEventsEnabledSafely()) {
-      if (client.options.isLocalUnreadCountEnabled) {
+      if (channel.config.readEvents.localUnreadCountEnabled) {
         channel.markReadLocally();
       }
       return;

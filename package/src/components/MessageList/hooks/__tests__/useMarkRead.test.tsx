@@ -71,6 +71,31 @@ describe('useMarkRead', () => {
     expect(next.created_at).toBeGreaterThan(snapshot.lastReadAt as number);
   });
 
+  describe('with read events off', () => {
+    const markRead = () => {
+      const local = jest.spyOn(channel, 'markReadLocally').mockImplementation(() => undefined);
+      const { result } = render();
+      act(() => result.current());
+      return local;
+    };
+
+    it('resets the unread count locally when the channel opted into counting it', () => {
+      client.config.set({
+        channel: { readEvents: { enabled: false, localUnreadCountEnabled: true } },
+      });
+
+      expect(markRead()).toHaveBeenCalledTimes(1);
+      expect(client.messageDeliveryReporter.throttledMarkRead).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when the channel did not opt in', () => {
+      client.config.set({ channel: { readEvents: { enabled: false } } });
+
+      expect(markRead()).not.toHaveBeenCalled();
+      expect(client.messageDeliveryReporter.throttledMarkRead).not.toHaveBeenCalled();
+    });
+  });
+
   it('keeps the snapshot as it is when asked not to update the unread state', () => {
     ingest(['one'], 2000);
     const before = channel.messagePaginator.unreadStateSnapshot.getLatestValue();
