@@ -8,6 +8,7 @@ import type { ChannelContextValue } from '../../../../contexts/channelContext/Ch
 import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import type { ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
 import { generateMessage } from '../../../../mock-builders/generator/message';
+import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { MessageStatusTypes } from '../../../../utils/utils';
 import { useMessageOperations } from '../useMessageOperations';
@@ -34,7 +35,7 @@ describe('useMessageOperations.deleteMessage', () => {
 
   const failed = (overrides: Partial<LocalMessage> = {}) =>
     ({
-      ...generateMessage({ cid: channel.cid, user: { id: 'me' } }),
+      ...generateMessage({ cid: channel.cid, user: generateUser({ id: 'me' }) }),
       // As the composer builds it: an unsent message has never had a server-confirmed text update.
       message_text_updated_at: undefined,
       status: MessageStatusTypes.FAILED,

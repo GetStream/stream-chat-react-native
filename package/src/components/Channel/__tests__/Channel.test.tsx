@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
-import { StreamChat, Thread } from 'stream-chat';
+import { asTimestampNS, StreamChat, Thread } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -917,7 +917,7 @@ describe('Channel initial load useEffect', () => {
       const mockedChannel = generateChannelResponse({
         members: [generateMember({ user }), generateMember({ user: otherUser })],
         messages: [generateMessage({ user: otherUser }), generateMessage({ user: otherUser })],
-        read: [{ last_read: 1, unread_messages: 2, user }],
+        read: [{ last_read: asTimestampNS(1), unread_messages: 2, user }],
       });
       useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
       const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);

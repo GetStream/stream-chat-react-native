@@ -2,6 +2,7 @@ import React from 'react';
 
 import { act, renderHook } from '@testing-library/react-native';
 import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
+import { msToNs } from 'stream-chat';
 
 import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import type { ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
@@ -12,8 +13,6 @@ import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { useMarkRead } from '../useMarkRead';
-
-const NS_PER_MS = 1_000_000;
 
 describe('useMarkRead', () => {
   let client: StreamChat;
@@ -40,7 +39,7 @@ describe('useMarkRead', () => {
   // Messages stamped by a server clock running `aheadMs` ahead of the device.
   const ingest = (texts: string[], aheadMs: number) =>
     texts.map((text, i) => {
-      const createdAt = (Date.now() + aheadMs + i) * NS_PER_MS;
+      const createdAt = msToNs(Date.now() + aheadMs + i);
       const message = channel.state.formatMessage(
         generateMessage({
           cid: channel.cid,

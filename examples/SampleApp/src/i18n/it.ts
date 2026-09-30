@@ -486,7 +486,8 @@ export const it: TranslationDictionary = {
   // Thread list
   'threadList.unreadBanner.loadFailed.error':
     'Impossibile caricare nuovi thread. Tocca per riprovare',
-  'threadList.unreadBanner.newThreads.label': '{{count}} nuovi thread',
+  'threadList.unreadBanner.newThreads.label_one': '{{count}} nuovo thread',
+  'threadList.unreadBanner.newThreads.label_other': '{{count}} nuovi thread',
 
   // Shared UI primitives
   'uiComponents.bottomSheetModal.opened.accessibilityLabel':
