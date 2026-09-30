@@ -34,17 +34,23 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
   }
 
   @ReactMethod
-  public void createResizedImage(String uri, double width, double height, String format, double quality, String mode, boolean onlyScaleDown, Double rotation, @Nullable String outputPath, Promise promise) {
+  public void createResizedImage(String uri, double width, double height, String format, double quality, String mode, boolean onlyScaleDown, Double rotation, @Nullable String outputPath, @Nullable Double backgroundColor, Promise promise) {
     WritableMap options = Arguments.createMap();
     options.putString("mode", mode);
     options.putBoolean("onlyScaleDown", onlyScaleDown);
+
+    // processColor() hands us an ARGB int, but codegen boxes every JS number as a Double.
+    // Double.intValue() *saturates*, so the unsigned form (white is 4294967295.0) would clamp
+    // to Integer.MAX_VALUE and paint teal. Going via long truncates instead, which wraps
+    // correctly for both the signed and unsigned forms processColor produces.
+    final Integer argb = backgroundColor == null ? null : (int) (long) backgroundColor.doubleValue();
 
     // Run in guarded async task to prevent blocking the React bridge
     new GuardedAsyncTask<Void, Void>(this.getReactApplicationContext()) {
       @Override
       protected void doInBackgroundGuarded(Void... params) {
         try {
-          Object response = createResizedImageWithExceptions(uri, (int) width, (int) height, format, (int) quality, rotation.intValue(), outputPath, options);
+          Object response = createResizedImageWithExceptions(uri, (int) width, (int) height, format, (int) quality, rotation.intValue(), outputPath, argb, options);
           promise.resolve(response);
         }
         catch (IOException e) {
@@ -57,13 +63,16 @@ public class StreamChatReactNativeModule extends StreamChatReactNativeSpec {
   @SuppressLint("LongLogTag")
   private Object createResizedImageWithExceptions(String imagePath, int newWidth, int newHeight,
                                                   String compressFormatString, int quality, int rotation, String outputPath,
+                                                  @Nullable Integer backgroundColor,
                                                   final ReadableMap options) throws IOException {
 
     Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.valueOf(compressFormatString);
     Uri imageUri = Uri.parse(imagePath);
 
+    // The background colour is applied inside the resize, as part of the same canvas pass that
+    // scales the image, so no second full-size bitmap is allocated for it.
     Bitmap scaledImage = StreamChatReactNative.createResizedImage(this.getReactApplicationContext(), imageUri, newWidth, newHeight, quality, rotation,
-      options.getString("mode"), options.getBoolean("onlyScaleDown"));
+      options.getString("mode"), options.getBoolean("onlyScaleDown"), backgroundColor);
 
     if (scaledImage == null) {
       throw new IOException("The image failed to be resized; invalid Bitmap result.");

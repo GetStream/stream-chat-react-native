@@ -19,7 +19,7 @@ static bool saveImage(NSString *fullPath, UIImage *image, NSString *format, floa
 static NSString *generateFilePath(NSString *ext, NSString *outputPath);
 static UIImage *rotateImage(UIImage *inputImage, float rotationDegrees);
 static float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool onlyScaleDown, bool maximize);
-static UIImage *scaleImage(UIImage *image, CGSize toSize, NSString *mode, bool onlyScaleDown);
+static UIImage *scaleImage(UIImage *image, CGSize toSize, NSString *mode, bool onlyScaleDown, UIColor *backgroundColor);
 static NSDictionary *transformImage(UIImage *image, int rotation, CGSize newSize, NSString *fullPath, NSString *format, int quality, NSDictionary *options);
 
 @implementation StreamChatReactNative
@@ -28,12 +28,12 @@ static NSDictionary *transformImage(UIImage *image, int rotation, CGSize newSize
 
 RCT_EXPORT_MODULE()
 
-RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath backgroundColor:(NSNumber *)backgroundColor resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
-    [self createResizedImage:uri width:width height:height format:format quality:quality mode:mode onlyScaleDown:onlyScaleDown rotation:rotation outputPath:outputPath resolve:resolve reject:reject];
+    [self createResizedImage:uri width:width height:height format:format quality:quality mode:mode onlyScaleDown:onlyScaleDown rotation:rotation outputPath:outputPath backgroundColor:backgroundColor resolve:resolve reject:reject];
 }
 
-- (void)createResizedImage:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+- (void)createResizedImage:(NSString *)uri width:(double)width height:(double)height format:(NSString *)format quality:(double)quality mode:(NSString *)mode onlyScaleDown:(BOOL)onlyScaleDown rotation:(nonnull NSNumber *)rotation outputPath:(NSString *)outputPath backgroundColor:(NSNumber *)backgroundColor resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @try {
             CGSize newSize = CGSizeMake(width, height);
@@ -51,6 +51,15 @@ RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width hei
                 [NSException raise:moduleName format:@"Invalid output path."];
             }
 
+            // Nil unless the caller asked for a backdrop. Converted here (on the JS-side
+            // argument) rather than in scaleImage so the ARGB decoding lives in one place.
+            UIColor *fillColor = backgroundColor == nil ? nil : [RCTConvert UIColor:backgroundColor];
+
+            NSMutableDictionary *options = [@{@"mode": mode, @"onlyScaleDown": [NSNumber numberWithBool:onlyScaleDown]} mutableCopy];
+            if (fillColor != nil) {
+                options[@"backgroundColor"] = fillColor;
+            }
+
             RCTImageLoader *loader = [self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES];
             NSURLRequest *request = [RCTConvert NSURLRequest:uri];
             [loader loadImageWithURLRequest:request
@@ -66,7 +75,7 @@ RCT_REMAP_METHOD(createResizedImage, uri:(NSString *)uri width:(double)width hei
                     reject([NSString stringWithFormat: @"%ld", (long)error.code], error.description, nil);
                     return;
                 }
-                NSDictionary * response =  transformImage(image, [rotation integerValue], newSize, fullPath, format, (int)quality, @{@"mode": mode, @"onlyScaleDown": [NSNumber numberWithBool:onlyScaleDown]});
+                NSDictionary * response =  transformImage(image, [rotation integerValue], newSize, fullPath, format, (int)quality, options);
                 resolve(response);
             }];
         } @catch (NSException *exception) {
@@ -195,7 +204,7 @@ static float getScaleForProportionalResize(CGSize theSize, CGSize intoSize, bool
 // any :image scale factor.
 // The returned image is an unscaled image (scale = 1.0)
 // so no additional scaling math needs to be done to get its pixel dimensions
-static UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlyScaleDown)
+static UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool onlyScaleDown, UIColor* backgroundColor)
 {
 
     // Need to do scaling corrections
@@ -226,7 +235,18 @@ static UIImage* scaleImage (UIImage* image, CGSize toSize, NSString* mode, bool 
         newSize = CGSizeMake(roundf(imageSize.width * scale), roundf(imageSize.height * scale));
     }
 
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, 1.0);
+    // A non-opaque context initialises to white (tested on iOS 26). Encoders
+    // without an alpha channel (JPEG) then drop the alpha and keep the RGB, which
+    // is why transparent areas come out white. When a backdrop is requested we
+    // make the context opaque and fill it first, so the image composites onto the
+    // colour in the same render pass - no extra bitmap, and an opaque context is
+    // cheaper than an alpha one.
+    BOOL opaque = (backgroundColor != nil);
+    UIGraphicsBeginImageContextWithOptions(newSize, opaque, 1.0);
+    if (opaque) {
+        [backgroundColor setFill];
+        UIRectFill(CGRectMake(0, 0, newSize.width, newSize.height));
+    }
     [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -258,7 +278,8 @@ static NSDictionary * transformImage(UIImage *image,
                                        image,
                                        newSize,
                                        options[@"mode"],
-                                       [[options objectForKey:@"onlyScaleDown"] boolValue]
+                                       [[options objectForKey:@"onlyScaleDown"] boolValue],
+                                       options[@"backgroundColor"]
                                        );
 
     if (scaledImage == nil) {

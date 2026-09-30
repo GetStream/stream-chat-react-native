@@ -6,6 +6,13 @@ import { Dimensions, ScaledSize } from 'react-native';
  * a percentage of the screen height (vh) and viewport width (vw). It
  * dynamically updates dimensions on changes in device orientation.
  *
+ * @deprecated These are percentages of the *screen*, not of the window the app is laid out in. The
+ * two diverge once the window is resizable (Split View, fold/unfold, Android multi-window): we
+ * measured an 834pt screen behind a 417pt window, and an outer 466pt screen behind a 951pt window.
+ *
+ * Use {@link useViewport}, the same API measured against the window, or `onLayout` on your own view
+ * inside a component that does not fill the window.
+ *
  * @returns {Object} An object containing functions vh and vw.
  */
 export const useScreenDimensions = (rounded?: boolean) => {

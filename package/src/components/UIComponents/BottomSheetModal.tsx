@@ -45,6 +45,7 @@ import { useResolvedModalAccessibilityProps } from '../../a11y/hooks/useResolved
 import { BottomSheetProvider } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useScreenOrientation, useStableCallback } from '../../hooks';
+import { useHorizontalInsets } from '../../hooks/useHorizontalInsets';
 import { primitives } from '../../theme';
 
 const supportedOrientations: ModalProps['supportedOrientations'] = [
@@ -659,6 +660,7 @@ const useStyles = () => {
   const {
     theme: { semantics },
   } = useTheme();
+  const horizontalInsets = useHorizontalInsets();
   return useMemo(
     () =>
       StyleSheet.create({
@@ -669,6 +671,10 @@ const useStyles = () => {
         },
         contentContainer: {
           flex: 1,
+          // A RN `Modal` is its own native window, so a consumer's `SafeAreaView` never reaches
+          // this - it insets itself. Spread rather than assigned: a `paddingLeft: 0` longhand
+          // would override a themed `paddingHorizontal` for that side.
+          ...horizontalInsets,
         },
         handle: {
           alignSelf: 'center',
@@ -689,6 +695,6 @@ const useStyles = () => {
           flex: 1,
         },
       }),
-    [semantics.backgroundCoreScrim, semantics.backgroundCoreElevation1],
+    [semantics.backgroundCoreScrim, semantics.backgroundCoreElevation1, horizontalInsets],
   );
 };

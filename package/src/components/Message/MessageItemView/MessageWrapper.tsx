@@ -26,8 +26,13 @@ export type MessageWrapperProps = {
 export const MessageWrapper = React.memo(function MessageWrapper(props: MessageWrapperProps) {
   const { message, previousMessage, nextMessage } = props;
   const { client } = useChatContext();
-  const { channel, hideDateSeparators, maxTimeBetweenGroupedMessages, threadList } =
-    useChannelContext();
+  const {
+    allowDateSeparatorForSystemMessages,
+    channel,
+    hideDateSeparators,
+    maxTimeBetweenGroupedMessages,
+    threadList,
+  } = useChannelContext();
 
   const isTargetedMessage = useIsTargetedMessage(message.id);
   const { InlineDateSeparator, InlineUnreadIndicator, Message, MessageSystem } =
@@ -149,7 +154,10 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   return (
     <View testID={`message-list-item-${message.id}`}>
       {message.type === 'system' ? (
-        <MessageSystem message={message} style={messageContainer} />
+        <>
+          {allowDateSeparatorForSystemMessages ? renderDateSeperator : null}
+          <MessageSystem message={message} style={messageContainer} />
+        </>
       ) : wrapMessageInTheme ? (
         <ThemeProvider mergedStyle={modifiedTheme}>
           {renderDateSeperator}

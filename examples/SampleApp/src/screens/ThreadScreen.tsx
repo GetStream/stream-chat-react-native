@@ -1,5 +1,7 @@
 import React, { useCallback, useLayoutEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -168,8 +170,9 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   );
 
   return (
-    <View
+    <SafeAreaView
       collapsable={false}
+      edges={['left', 'right']}
       onAccessibilityEscape={() => navigation.goBack()}
       style={[styles.container, { backgroundColor: white }]}
     >
@@ -193,6 +196,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
           shouldUseFlashList={messageListImplementation === 'flashlist'}
         />
       </Channel>
-    </View>
+    </SafeAreaView>
   );
 };

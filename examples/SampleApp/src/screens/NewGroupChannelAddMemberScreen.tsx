@@ -1,6 +1,8 @@
 import React, { useCallback, useRef } from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Search, TextInputRef, useTheme } from 'stream-chat-react-native';
 
@@ -113,7 +115,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={styles.container}>
       <ScreenHeader
         onBack={onBackPress}
         // eslint-disable-next-line react/no-unstable-nested-components
@@ -169,6 +171,6 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) 
         />
       </View>
       <UserSearchResults />
-    </View>
+    </SafeAreaView>
   );
 };

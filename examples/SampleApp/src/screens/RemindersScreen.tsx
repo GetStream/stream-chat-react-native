@@ -2,6 +2,8 @@ import React from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useTheme } from 'stream-chat-react-native';
@@ -21,7 +23,8 @@ export const RemindersScreen: React.FC<RemindersScreenProps> = () => {
   const { white_snow } = useLegacyColors();
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.container,
         {
@@ -30,12 +33,17 @@ export const RemindersScreen: React.FC<RemindersScreenProps> = () => {
       ]}
     >
       <ChatScreenHeader />
-      <RemindersList />
-    </View>
+      <View style={styles.flex}>
+        <RemindersList />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },

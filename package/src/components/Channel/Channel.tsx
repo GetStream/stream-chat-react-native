@@ -150,6 +150,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'bottomInset'
       | 'topInset'
       | 'disableAttachmentPicker'
+      | 'shouldRenderAttachmentPicker'
       | 'numberOfAttachmentPickerImageColumns'
       | 'numberOfAttachmentImagesToLoadPerCall'
     >
@@ -160,6 +161,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
       | 'hideStickyDateHeader'
+      | 'allowDateSeparatorForSystemMessages'
       | 'hideDateSeparators'
       | 'maxTimeBetweenGroupedMessages'
     >
@@ -327,6 +329,7 @@ const channelQuerySelector = (state: { items?: unknown[]; lastQueryError?: Error
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
+    shouldRenderAttachmentPicker = true,
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,
@@ -381,6 +384,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // If pickDocument isn't available, default to hiding the file picker
     hasFilePicker = isDocumentPickerAvailable(),
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
+    allowDateSeparatorForSystemMessages = false,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
     initialScrollToFirstUnreadMessage = false,
@@ -720,6 +724,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       closePicker: handleClosePicker,
       disableAttachmentPicker,
       openPicker: handleOpenPicker,
+      shouldRenderAttachmentPicker,
       topInset,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
@@ -732,6 +737,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       handleClosePicker,
       disableAttachmentPicker,
       handleOpenPicker,
+      shouldRenderAttachmentPicker,
       topInset,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
@@ -750,6 +756,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disabled: !!channel?.data?.frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
+    allowDateSeparatorForSystemMessages,
     hideDateSeparators,
     hideStickyDateHeader,
     isChannelActive: shouldSyncChannel,
@@ -908,7 +915,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
                     <AudioPlayerProvider value={audioPlayerContext}>
                       <NotificationAnnouncer />
                       <View style={{ height: '100%' }}>{children}</View>
-                      <AttachmentPicker />
+                      {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
                     </AudioPlayerProvider>
                   </MessageInputProvider>
                 </MessageComposerProvider>

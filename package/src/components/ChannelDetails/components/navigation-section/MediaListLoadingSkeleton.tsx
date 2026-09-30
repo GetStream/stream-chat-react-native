@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
+import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { primitives } from '../../../../theme';
 import { NativeShimmerView } from '../../../UIComponents/NativeShimmerView';
 
@@ -17,7 +18,8 @@ export const MediaListLoadingSkeleton = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  const { width } = useWindowDimensions();
+  // Same derivation as `MediaList`, so the skeleton's tiles match the grid that replaces it.
+  const width = useWindowContentWidth();
   const styles = useStyles();
 
   const tileSize = (width - GRID_GAP * (NUMBER_OF_COLUMNS - 1)) / NUMBER_OF_COLUMNS;

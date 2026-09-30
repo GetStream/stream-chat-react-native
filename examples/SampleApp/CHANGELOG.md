@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.15.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.1...sampleapp@v4.15.2) (2026-09-25)
+
+### Bug Fixes
+
+* iPhone Duo / iOS 27 resizable-window readiness ([#3818](https://github.com/GetStream/stream-chat-react-native/issues/3818)) ([c51967a](https://github.com/GetStream/stream-chat-react-native/commit/c51967a5aa43d8fbd60cf1d4a826262b4df65685))
+
 ## [4.15.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.0...sampleapp@v4.15.1) (2026-08-27)
 
 ### Refactors

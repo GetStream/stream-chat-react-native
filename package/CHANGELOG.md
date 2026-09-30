@@ -1,5 +1,31 @@
 # Change Log
 
+## [9.9.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.1...v9.9.2) (2026-09-25)
+
+### Bug Fixes
+
+* **core:** show an empty message preview when there is nothing to describe ([#3827](https://github.com/GetStream/stream-chat-react-native/issues/3827)) ([1abca98](https://github.com/GetStream/stream-chat-react-native/commit/1abca98586f24645f9de89579ba72a916162a6a1)), closes [#3826](https://github.com/GetStream/stream-chat-react-native/issues/3826)
+* introduce prop to prevent attachment picker rendering ([#3829](https://github.com/GetStream/stream-chat-react-native/issues/3829)) ([31bfe9c](https://github.com/GetStream/stream-chat-react-native/commit/31bfe9c77513dc725ced933e6c1f574df30efe5f))
+* iPhone Duo / iOS 27 resizable-window readiness ([#3818](https://github.com/GetStream/stream-chat-react-native/issues/3818)) ([c51967a](https://github.com/GetStream/stream-chat-react-native/commit/c51967a5aa43d8fbd60cf1d4a826262b4df65685))
+
+## [9.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.0...v9.9.1) (2026-09-16)
+
+### Bug Fixes
+
+* add optional separator above system messages ([#3810](https://github.com/GetStream/stream-chat-react-native/issues/3810)) ([709e78f](https://github.com/GetStream/stream-chat-react-native/commit/709e78f57327d418a42954a541ad2a9d9bba6dd8))
+* add optional separator above system messages ([#3810](https://github.com/GetStream/stream-chat-react-native/issues/3810)) ([f7f830e](https://github.com/GetStream/stream-chat-react-native/commit/f7f830e92f56ec3ec9eb9e4380f4f0b2d1738758))
+
+## [9.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.2...v9.9.0) (2026-09-15)
+
+### Bug Fixes
+
+* **android:** set the Kotlin jvmTarget without requiring the Kotlin G… ([#3799](https://github.com/GetStream/stream-chat-react-native/issues/3799)) ([cb145c7](https://github.com/GetStream/stream-chat-react-native/commit/cb145c70e652e10816bde777c673600a8e96b6cc))
+* **android:** skip explicit Kotlin plugin when AGP registers the kotlin extension ([#3798](https://github.com/GetStream/stream-chat-react-native/issues/3798)) ([ca5692a](https://github.com/GetStream/stream-chat-react-native/commit/ca5692a23217b79c5ae84adb6986f562e09b736b))
+
+### Features
+
+* allow providing background color when transforming images with alpha channel to a format without it ([#3800](https://github.com/GetStream/stream-chat-react-native/issues/3800)) ([1d46a53](https://github.com/GetStream/stream-chat-react-native/commit/1d46a536e2c6391f15e38b0164c8b2154e689726))
+
 ## [9.8.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.8.1...v9.8.2) (2026-08-27)
 
 ### Bug Fixes

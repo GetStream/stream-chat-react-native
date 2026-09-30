@@ -5,8 +5,8 @@ export const useAppStateListener = (onForeground?: () => void, onBackground?: ()
   // React Native 0.87 widened `AppState.currentState` to `string | null | undefined` (it was
   // `AppStateStatus` up to 0.86). Normalise once here so the comparisons below stay total on
   // every supported version.
-  const appStateRef = useRef<AppStateStatus>(
-    (AppState.currentState as AppStateStatus | null | undefined) ?? 'unknown',
+  const isBackgroundedRef = useRef(
+    ((AppState.currentState as AppStateStatus | null | undefined) ?? 'unknown') === 'background',
   );
   const onForegroundRef = useRef(onForeground);
   const onBackgroundRef = useRef(onBackground);
@@ -17,13 +17,21 @@ export const useAppStateListener = (onForeground?: () => void, onBackground?: ()
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      const prevAppState = appStateRef.current;
-      if (prevAppState.match(/inactive|background/) && nextAppState === 'active') {
-        onForegroundRef.current?.();
-      } else if (prevAppState === 'active' && nextAppState.match(/inactive|background/)) {
-        onBackgroundRef.current?.();
+      // Only `background` is backgrounded. `inactive` is visible-but-unfocused, and from iOS 27 an
+      // app in Split View stays `inactive` the whole time it is side by side. Transitions pass
+      // through `inactive` in both directions, so ignoring it still observes both.
+      if (nextAppState === 'background') {
+        if (!isBackgroundedRef.current) {
+          isBackgroundedRef.current = true;
+          onBackgroundRef.current?.();
+        }
+        return;
       }
-      appStateRef.current = nextAppState;
+
+      if (nextAppState === 'active' && isBackgroundedRef.current) {
+        isBackgroundedRef.current = false;
+        onForegroundRef.current?.();
+      }
     };
     const subscription = AppState.addEventListener('change', handleAppStateChange);
 

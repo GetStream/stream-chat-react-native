@@ -3,6 +3,8 @@ import UIKit
 
 private protocol StreamShimmerAppLifecycleObserving: AnyObject {
   func shimmerAppLifecycleDidChange(isActive: Bool)
+  /// A scene changed activation state; observers re-evaluate their own.
+  func shimmerSceneLifecycleDidChange()
 }
 
 private final class StreamShimmerAppLifecycleCoordinator: NSObject {
@@ -28,6 +30,21 @@ private final class StreamShimmerAppLifecycleCoordinator: NSObject {
       name: UIApplication.didEnterBackgroundNotification,
       object: nil
     )
+
+    // A scene can change activation state with no app-level transition (Split View).
+    for name in [
+      UIScene.didActivateNotification,
+      UIScene.willDeactivateNotification,
+      UIScene.didEnterBackgroundNotification,
+      UIScene.willEnterForegroundNotification,
+    ] {
+      notificationCenter.addObserver(
+        self,
+        selector: #selector(handleSceneLifecycleChange),
+        name: name,
+        object: nil
+      )
+    }
   }
 
   func addObserver(_ observer: StreamShimmerAppLifecycleObserving) {
@@ -47,6 +64,13 @@ private final class StreamShimmerAppLifecycleCoordinator: NSObject {
   @objc
   private func handleDidEnterBackground() {
     broadcastAppState(isActive: false)
+  }
+
+  @objc
+  private func handleSceneLifecycleChange() {
+    for case let observer as StreamShimmerAppLifecycleObserving in observers.allObjects {
+      observer.shimmerSceneLifecycleDidChange()
+    }
   }
 
   private func broadcastAppState(isActive: Bool) {
@@ -83,8 +107,35 @@ public final class StreamShimmerView: UIView {
   private static let shimmerAnimationKey = "stream_shimmer_translate_x"
   private static let gradientLocations: [NSNumber] = [0.0, 0.35, 0.5, 0.65, 1.0]
   private static let gradientAlphaFactors: [CGFloat] = [0, softHighlightAlpha, 1, softHighlightAlpha, 0]
-  private static var animationDistanceTolerance: CGFloat {
-    1 / max(UIScreen.main.scale, 1)
+  /// Scale of the display this view is on. Not `UIScreen.main`: an iPhone app is resizable from
+  /// iOS 27 and may be on a secondary display. Reports 0 before the view has a window.
+  private var currentDisplayScale: CGFloat {
+    let traitScale = traitCollection.displayScale
+    if traitScale > 0 {
+      return traitScale
+    }
+    return window?.windowScene?.screen.scale ?? 1
+  }
+
+  private var animationDistanceTolerance: CGFloat {
+    1 / max(currentDisplayScale, 1)
+  }
+
+  /// Whether this view's scene is on screen. Preferred over the app-wide `applicationState`, which
+  /// cannot distinguish scenes in Split View. `foregroundInactive` counts as on screen: that is the
+  /// visible-but-unfocused state a side-by-side scene reports.
+  private var isSceneOnScreen: Bool {
+    guard let activationState = window?.windowScene?.activationState else {
+      return isAppActive
+    }
+    switch activationState {
+    case .foregroundActive, .foregroundInactive:
+      return true
+    case .background, .unattached:
+      return false
+    @unknown default:
+      return true
+    }
   }
 
   private let baseLayer = CALayer()
@@ -140,14 +191,17 @@ public final class StreamShimmerView: UIView {
       // a later reattach starts from a clean state.
       stopAnimation()
     } else {
-      // Reattaching (including reparenting across windows) re-evaluates state and restarts only
-      // when needed by current bounds/visibility/enablement.
+      // The new window may be on a display with a different scale.
+      syncContentsScale()
       updateLayersForCurrentState()
     }
   }
 
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
+    if traitCollection.displayScale != previousTraitCollection?.displayScale {
+      syncContentsScale()
+    }
     if let previousTraitCollection,
       traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)
     {
@@ -194,10 +248,16 @@ public final class StreamShimmerView: UIView {
     lastAnimatedTravelDistance = 0
   }
 
+  private func syncContentsScale() {
+    let scale = currentDisplayScale
+    guard shimmerLayer.contentsScale != scale else { return }
+    shimmerLayer.contentsScale = scale
+  }
+
   private func setupLayers() {
     isUserInteractionEnabled = false
 
-    shimmerLayer.contentsScale = UIScreen.main.scale
+    shimmerLayer.contentsScale = currentDisplayScale
     shimmerLayer.allowsEdgeAntialiasing = true
     shimmerLayer.startPoint = CGPoint(x: 0, y: 0.5)
     shimmerLayer.endPoint = CGPoint(x: 1, y: 0.5)
@@ -249,7 +309,7 @@ public final class StreamShimmerView: UIView {
   private func updateShimmerAnimation(for bounds: CGRect) {
     guard
       enabled,
-      isAppActive,
+      isSceneOnScreen,
       window != nil,
       !isHidden,
       alpha > 0.01,
@@ -267,7 +327,7 @@ public final class StreamShimmerView: UIView {
     // restarting. Fabric can relayout the view for height-only or subpixel changes that do not
     // require a new horizontal sweep.
     if shimmerLayer.animation(forKey: Self.shimmerAnimationKey) != nil,
-      abs(lastAnimatedTravelDistance - animationTravelDistance) <= Self.animationDistanceTolerance,
+      abs(lastAnimatedTravelDistance - animationTravelDistance) <= animationDistanceTolerance,
       lastAnimatedDuration == shimmerDuration
     {
       return
@@ -339,14 +399,22 @@ public final class StreamShimmerView: UIView {
 }
 
 extension StreamShimmerView: StreamShimmerAppLifecycleObserving {
-  func shimmerAppLifecycleDidChange(isActive: Bool) {
-    // iOS can drop active layer animations while the app is backgrounded. We explicitly rerun
-    // a state update on foreground so shimmer reliably restarts when returning to the app.
-    self.isAppActive = isActive
-    if isActive {
+  func shimmerSceneLifecycleDidChange() {
+    reevaluateForSceneState()
+  }
+
+  private func reevaluateForSceneState() {
+    if isSceneOnScreen {
       updateLayersForCurrentState()
     } else {
       stopAnimation()
     }
+  }
+
+  func shimmerAppLifecycleDidChange(isActive: Bool) {
+    // iOS can drop active layer animations while the app is backgrounded. We explicitly rerun
+    // a state update on foreground so shimmer reliably restarts when returning to the app.
+    self.isAppActive = isActive
+    reevaluateForSceneState()
   }
 }

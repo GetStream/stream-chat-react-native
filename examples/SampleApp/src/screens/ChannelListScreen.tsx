@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { NavigationProp, useNavigation, useScrollToTop } from '@react-navigation/native';
 import { Channel, MessageResponse } from 'stream-chat';
 import {
@@ -175,7 +177,8 @@ export const ChannelListScreen: React.FC = () => {
   }
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={[
         styles.flex,
         {
@@ -192,6 +195,7 @@ export const ChannelListScreen: React.FC = () => {
             {
               backgroundColor: white,
               borderColor: grey_whisper,
+              marginHorizontal: 8,
             },
           ]}
         >
@@ -258,6 +262,6 @@ export const ChannelListScreen: React.FC = () => {
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
