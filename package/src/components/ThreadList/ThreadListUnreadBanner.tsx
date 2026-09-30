@@ -71,8 +71,10 @@ export const ThreadListUnreadBanner = () => {
     >
       <icons.Reload stroke={semantics.textSecondary} height={20} width={20} />
       <Text style={styles.text}>
-        {t('threadList.unreadBanner.newThreads.label', '{{count}} new threads', {
+        {t('threadList.unreadBanner.newThreads.label', {
           count: unseenThreadIds.length,
+          defaultValue_one: '{{count}} new thread',
+          defaultValue_other: '{{count}} new threads',
         })}
       </Text>
     </Pressable>

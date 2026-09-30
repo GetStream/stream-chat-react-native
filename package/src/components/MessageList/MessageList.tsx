@@ -541,9 +541,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       );
 
       // Channels with disabled `read-events` (i.e livestreams) still surface the unread
-      // notification when the client opted into a local unread count, so the gate accepts
+      // notification when the channel opted into a local unread count, so the gate accepts
       // either source.
-      const unreadNotificationSupported = readEvents || client.options.isLocalUnreadCountEnabled;
+      const unreadNotificationSupported =
+        readEvents || channel.config.readEvents.localUnreadCountEnabled;
 
       if (
         !viewableItems.length ||

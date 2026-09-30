@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { Thread, ThreadManagerState } from 'stream-chat';
+import type { PaginatorState, Thread } from 'stream-chat';
 
 import { ThreadListItem } from './ThreadListItem';
 import { ThreadListItemSkeleton } from './ThreadListItemSkeleton';
@@ -21,12 +21,10 @@ import { EmptyStateIndicator } from '../Indicators/EmptyStateIndicator';
 import { LoadingIndicator } from '../Indicators/LoadingIndicator';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
-const selector = (nextValue: ThreadManagerState) =>
-  ({
-    isLoading: nextValue.pagination.isLoading,
-    isLoadingNext: nextValue.pagination.isLoadingNext,
-    threads: nextValue.threads,
-  }) as const;
+const NO_THREADS: Thread[] = [];
+
+const paginatorSelector = ({ isLoading, items }: PaginatorState<Thread>) =>
+  ({ isLoading, threads: items ?? NO_THREADS }) as const;
 
 export type ThreadListProps = Pick<
   ThreadsContextValue,
@@ -102,28 +100,22 @@ export const ThreadList = (props: ThreadListProps) => {
     if (!client) {
       return;
     }
-
-    // Only the socket recovers — a device regaining its network has no reconnected socket yet, and
-    // the event is dispatched once the client's own post-reconnect reloads have landed.
-    const listener = client.on('connection.recovered', () => {
-      client.threads.reload({ force: true });
-    });
-
-    return () => {
-      client.threads.deactivate();
-      listener.unsubscribe();
-    };
+    return () => client.threads.deactivate();
   }, [client]);
 
-  const { isLoading, isLoadingNext, threads } = useStateStore(client.threads.state, selector);
+  const { isLoading, threads } = useStateStore(client.threads.paginator.state, paginatorSelector);
+  // A no-op until the first page has landed, at the end of the list, and while a page is loading.
+  const loadMore = useCallback(async () => {
+    await client.threads.paginator.toTail();
+  }, [client]);
 
   return (
     <NotificationTargetProvider hostId={notificationHostId} panel='thread-list'>
       <ThreadsProvider
         value={{
-          isLoading,
-          isLoadingNext,
-          loadMore: client.threads.loadNextPage,
+          isLoading: isLoading && !threads.length,
+          isLoadingNext: isLoading && threads.length > 0,
+          loadMore,
           threads,
           ...props,
         }}

@@ -205,6 +205,72 @@ describe('Thread', () => {
     });
   });
 
+  // Metadata (parent, read state, participants) comes with a queried page. A thread `ensure` builds has only
+  // its parent message, so it starts stale and reloads once on open; one that already has its data doesn't.
+  describe('metadata reload on open', () => {
+    const openThread = (
+      threadInstance: ThreadClass,
+      parentMessage: ReturnType<typeof generateMessage>,
+    ) => {
+      const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockResolvedValue(undefined);
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      return { reload, toTail };
+    };
+
+    it('reloads a thread ensure built from its parent message', async () => {
+      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+      const { reload } = openThread(threadInstance, parentMessage);
+
+      await waitFor(() => expect(reload).toHaveBeenCalled());
+    });
+
+    it('does not fetch the first reply page while that reload is in flight, only if it fails', async () => {
+      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+      let failReload: () => void = () => undefined;
+      jest.spyOn(threadInstance, 'reload').mockImplementation(async () => {
+        threadInstance.state.partialNext({ isLoading: true });
+        await new Promise<void>((resolve) => (failReload = resolve));
+        threadInstance.state.partialNext({ isLoading: false });
+      });
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockResolvedValue(undefined);
+      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+
+      await waitFor(() => expect(threadInstance.reload).toHaveBeenCalled());
+      expect(toTail).not.toHaveBeenCalled();
+
+      // The reload ended without seeding replies (a failure): the first page is fetched instead.
+      await act(async () => {
+        failReload();
+        await Promise.resolve();
+      });
+      await waitFor(() => expect(toTail).toHaveBeenCalled());
+    });
+
+    it('does not reload a thread that already has its data', async () => {
+      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+      act(() => {
+        chatClient.threads.paginator.setItems({
+          isFirstPage: true,
+          isLastPage: true,
+          valueOrFactory: [threadInstance],
+        });
+      });
+      const { reload, toTail } = openThread(threadInstance, parentMessage);
+
+      // The first-page fetch runs from the same mount, so its call marks the effects as settled.
+      await waitFor(() => expect(toTail).toHaveBeenCalled());
+      expect(reload).not.toHaveBeenCalled();
+    });
+  });
+
   describe('reply query errors', () => {
     const makeThread = () => {
       const cid = 'messaging:test-channel';

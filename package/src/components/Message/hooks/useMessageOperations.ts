@@ -111,8 +111,9 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized yet');
       }
 
-      // A failed (never-sent) message exists only locally — remove it without a server delete.
-      if (message.status === MessageStatusTypes.FAILED) {
+      // A failed send exists only locally, so it is removed without a server delete. A failed edit has
+      // the same status but the server has the message; it is the one carrying `message_text_updated_at`.
+      if (message.status === MessageStatusTypes.FAILED && !message.message_text_updated_at) {
         await removeMessage(message);
         return;
       }

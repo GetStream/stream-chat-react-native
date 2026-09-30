@@ -1,5 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
+import { AppState } from 'react-native';
+
 import NetInfo from '@react-native-community/netinfo';
 
 import type { NetworkStatusReporter, StreamChat } from 'stream-chat';
@@ -39,6 +41,15 @@ export const useIsOnline = (client: StreamChat, closeConnectionOnBackground = tr
   }, [client, clientExists]);
 
   useAppStateListener(onForeground, onBackground);
+
+  // A <Chat> mounted while the app is already active (Android recreating the activity in the same JS
+  // runtime) never sees the background→active change that reopens a socket its predecessor closed.
+  useEffect(() => {
+    if (!closeConnectionOnBackground || !clientExists || !client.userID) return;
+    if (AppState.currentState === 'active' && client.wsConnection.connection?.isDisconnected) {
+      client.openConnection();
+    }
+  }, [client, clientExists, closeConnectionOnBackground]);
 
   useEffect(() => {
     if (!clientExists) {

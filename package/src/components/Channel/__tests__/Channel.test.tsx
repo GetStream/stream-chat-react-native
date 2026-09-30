@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
-import { StreamChat, Thread } from 'stream-chat';
+import { asTimestampNS, StreamChat, Thread } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -763,13 +763,31 @@ describe('Channel initial load useEffect', () => {
     });
   });
 
+  it('registers the thread it builds for a thread prop before anything activates it', async () => {
+    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+    const parentMessage = testChannel.state.formatMessage(generateMessage({ user }));
+
+    // No <Thread>, so nothing calls activate(): a list query landing now must find this instance.
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={testChannel} threadList thread={parentMessage} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(chatClient.threads.get(parentMessage.id)).toBeDefined());
+    expect(chatClient.threads.get(parentMessage.id)?.state.getLatestValue().active).toBe(false);
+  });
+
   // Regression guard for the reconnect refresh of an OPEN THREAD's replies, which now runs entirely in
   // `client.connectionRecovery` — this component's only part is marking the thread active.
   //
-  // Asserted end to end on purpose: the LLC can only reach the thread through `client.activeThreads`,
-  // and a thread resolved as `threadsById[id] ?? new Thread(...)` (the common path — see the
-  // `threadInstance` memo) is in no other registry. Drop the `threadInstance.activate()` effect and
-  // recovery silently skips the thread with nothing else failing, so it is pinned here.
+  // Asserted end to end on purpose: a `threadInstance` passed in as a prop (not built by the
+  // `threadInstance` memo's `client.threads.ensure`) reaches the LLC's thread store only through
+  // `threadInstance.activate()`. Drop that effect and recovery silently skips the thread with nothing
+  // else failing, so it is pinned here.
   it('reloads an open thread on reconnect', async () => {
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
@@ -783,11 +801,8 @@ describe('Channel initial load useEffect', () => {
       parentMessage: testChannel.state.formatMessage(parentMessage),
     });
     const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
-    // Recovery finds threads through `client.threads.threadsById`, and <Thread> only adopts an
-    // unmanaged instance into the manager once its reply paginator has loaded (Thread.tsx:126, gated
-    // on `items !== undefined`). Seed loaded-but-empty replies so that adoption actually happens —
-    // without it this test exercises the documented gap (active but unadopted → skipped) rather than
-    // the path it means to cover.
+    // Seed loaded-but-empty replies so <Thread>'s mount-time metadata reload and first-page fetch
+    // are skipped, keeping the spy clean for the reconnect-driven call.
     act(() => threadInstance.messagePaginator.state.partialNext({ items: [], isLoading: false }));
 
     render(
@@ -800,20 +815,20 @@ describe('Channel initial load useEffect', () => {
           thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance }}
         >
           {/* The real <Thread> is what calls `threadInstance.activate()`, which is the ONLY thing
-              that puts the instance in `client.activeThreads` for recovery to find. Rendering it is
-              the point of the test — a bare <Channel> would not activate anything. */}
+              that registers the instance with `client.threads` for recovery to find. Rendering it
+              is the point of the test — a bare <Channel> would not activate anything. */}
           <ThreadComponent />
         </Channel>
       </Chat>,
     );
 
-    // Wait for <Thread> to activate AND adopt the instance — both are preconditions for recovery to
-    // see it at all. (With replies seeded above, Thread.tsx's mount metadata-reload is skipped, so
-    // the spy is clean; cleared anyway so this can only pass on a reconnect-driven call.)
+    // Activation registers the instance without putting it in the thread list. (Cleared anyway so
+    // this can only pass on a reconnect-driven call.)
     await waitFor(() => {
-      expect(chatClient.threads.threadsById[threadInstance.id]).toBeDefined();
+      expect(chatClient.threads.get(threadInstance.id)).toBe(threadInstance);
       expect(threadInstance.state.getLatestValue().active).toBe(true);
     });
+    expect(chatClient.threads.paginator.getItem(threadInstance.id)).toBeUndefined();
     reload.mockClear();
 
     act(() => dispatchConnectionChanged(chatClient, false));
@@ -822,63 +837,103 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(reload).toHaveBeenCalled());
   });
 
-  it('does not mark a reply-less thread read on open, but does once it has replies', async () => {
-    // A parent with no replies has no server-side thread, so the mark-read 404s on every open. There
-    // is also nothing that could be unread, so the call is skipped rather than made and swallowed.
-    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
-    await testChannel.watch();
-    const markRead = jest
-      .spyOn(testChannel, 'markRead')
-      .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+  // Reads are the LLC's job: the thread's active auto-read marks it once its read state says it has
+  // unread replies. `<Thread>` makes no mark-read call of its own.
+  describe('read on open', () => {
+    const openThread = (threadInstance: Thread, testChannel: ChannelType) =>
+      render(
+        <Chat client={chatClient}>
+          <Channel
+            channel={testChannel}
+            threadList
+            thread={{ thread: threadInstance.state.getLatestValue().parentMessage, threadInstance }}
+          >
+            <ThreadComponent />
+          </Channel>
+        </Chat>,
+      );
 
-    const parentMessage = generateMessage({ user });
-    const makeThread = (replyCount: number) => {
-      const instance = new Thread({
-        channel: testChannel,
-        client: chatClient,
-        parentMessage: testChannel.state.formatMessage({
-          ...parentMessage,
-          reply_count: replyCount,
-        }),
+    const setup = async () => {
+      const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await testChannel.watch();
+      const markRead = jest
+        .spyOn(testChannel, 'markRead')
+        .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+      const parentMessage = testChannel.state.formatMessage(
+        generateMessage({ reply_count: 3, user }),
+      );
+      const readState = (unreadMessageCount: number) => ({
+        [chatClient.userID as string]: {
+          lastReadAt: 1,
+          unreadMessageCount,
+          user: { id: chatClient.userID as string },
+        },
       });
-      jest.spyOn(instance, 'reload').mockResolvedValue(undefined);
-      return instance;
+      return { markRead, parentMessage, readState, testChannel };
     };
 
-    const empty = makeThread(0);
-    const { unmount } = render(
-      <Chat client={chatClient}>
-        <Channel
-          channel={testChannel}
-          threadList
-          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance: empty }}
-        >
-          <ThreadComponent />
-        </Channel>
-      </Chat>,
-    );
-    await waitFor(() => expect(empty.state.getLatestValue().active).toBe(true));
-    expect(markRead).not.toHaveBeenCalled();
-    unmount();
+    it('marks a thread with unread replies read exactly once, and a read one not at all', async () => {
+      const { markRead, parentMessage, readState, testChannel } = await setup();
+      const read = new Thread({ channel: testChannel, client: chatClient, parentMessage });
+      read.state.partialNext({ read: readState(0) } as never);
+      jest.spyOn(read, 'reload').mockResolvedValue(undefined);
+      const { unmount } = await openThread(read, testChannel);
+      await waitFor(() => expect(read.state.getLatestValue().active).toBe(true));
+      expect(markRead).not.toHaveBeenCalled();
+      unmount();
 
-    // Same component, a thread that does have replies: the call is made as before.
-    const withReplies = makeThread(3);
-    render(
-      <Chat client={chatClient}>
-        <Channel
-          channel={testChannel}
-          threadList
-          thread={{
-            thread: testChannel.state.formatMessage(parentMessage),
-            threadInstance: withReplies,
-          }}
-        >
-          <ThreadComponent />
-        </Channel>
-      </Chat>,
-    );
-    await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: withReplies.id }));
+      const unread = new Thread({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage: { ...parentMessage, id: `${parentMessage.id}-2` },
+      });
+      unread.state.partialNext({ read: readState(2) } as never);
+      jest.spyOn(unread, 'reload').mockResolvedValue(undefined);
+      await openThread(unread, testChannel);
+
+      await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: unread.id }));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(markRead).toHaveBeenCalledTimes(1);
+    });
+
+    it('marks a thread ensure() built read once its reload brings the read state', async () => {
+      const { markRead, parentMessage, readState, testChannel } = await setup();
+      const threadInstance = chatClient.threads.ensure({ channel: testChannel, parentMessage });
+      jest.spyOn(threadInstance, 'reload').mockImplementation(() => {
+        threadInstance.state.partialNext({ isStateStale: false, read: readState(2) } as never);
+        return Promise.resolve();
+      });
+
+      await openThread(threadInstance, testChannel);
+
+      await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: threadInstance.id }));
+      expect(markRead).toHaveBeenCalledTimes(1);
+    });
+
+    it('still marks a channel with unread messages read when it is opened', async () => {
+      const otherUser = generateUser();
+      const mockedChannel = generateChannelResponse({
+        members: [generateMember({ user }), generateMember({ user: otherUser })],
+        messages: [generateMessage({ user: otherUser }), generateMessage({ user: otherUser })],
+        read: [{ last_read: asTimestampNS(1), unread_messages: 2, user }],
+      });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await testChannel.watch();
+      const markRead = jest
+        .spyOn(testChannel, 'markRead')
+        .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+
+      render(
+        <Chat client={chatClient}>
+          <Channel channel={testChannel} />
+        </Chat>,
+      );
+
+      await waitFor(() => expect(markRead).toHaveBeenCalled());
+      expect(markRead.mock.calls.every(([options]) => !options?.thread_id)).toBe(true);
+    });
   });
 });

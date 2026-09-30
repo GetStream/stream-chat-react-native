@@ -46,7 +46,9 @@ export const LiveLocationManagerProvider = (
       return;
     }
     // Initialize the live location manager
-    liveLocationManager.init();
+    liveLocationManager
+      .init()
+      .catch((error) => console.warn('Initializing the live location manager failed:', error));
 
     return () => {
       liveLocationManager.unregisterSubscriptions();
