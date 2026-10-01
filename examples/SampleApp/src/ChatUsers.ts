@@ -1,6 +1,13 @@
 import { ClientUser } from 'stream-chat';
 
 /**
+ * Optional static tokens, keyed by user id. A user listed here logs in with this token; any other
+ * user gets one from the token generator (see `utils/tokenProvider.ts`). Empty by default, e.g.
+ * `neil: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'`.
+ */
+export const USER_TOKENS: Partial<Record<string, string>> = {};
+
+/**
  * Login fixtures, not server responses: these are the payloads handed to `connectUser`, so they
  * carry only `id` / `name` / `image`. Annotated `ClientUser` (everything optional but `id`) rather
  * than `UserResponse`, which since v10 requires the server-owned fields — `created_at`,

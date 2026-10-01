@@ -11,7 +11,7 @@ import {
 import { StreamChat, PushProvider } from 'stream-chat';
 import { SqliteClient } from 'stream-chat-react-native';
 
-import { USERS } from '../ChatUsers';
+import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
 import AsyncStore from '../utils/AsyncStore';
 import { getTokenOrProvider, SAMPLE_APP_API_KEY } from '../utils/tokenProvider';
@@ -180,6 +180,7 @@ export const useChatClient = () => {
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
           userName: USERS[userId].name,
+          userToken: USER_TOKENS[userId],
         });
       } else {
         const config = await AsyncStore.getItem<LoginConfig | null>(
