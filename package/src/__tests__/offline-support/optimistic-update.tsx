@@ -627,12 +627,7 @@ export const OptimisticUpdates = () => {
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
-            <Channel
-              channel={channel}
-              // v10 invokes doUpdateMessageRequest with the `updateMessage` arguments
-              // `({ id }, { message })`, not a flat LocalMessage. Echo a
-              // server-shaped response reflecting the edit; the LLC's success path re-ingests it.
-            >
+            <Channel channel={channel}>
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
                   await flushMountEffects();

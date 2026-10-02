@@ -1148,7 +1148,13 @@ Highlights that hit integrator code:
   endpoint has URL path parameters takes them as a separate first argument,
   `method(pathParams, request?)`: `channel.sendReaction({ id }, { reaction, ... })`,
   `client.deleteMessage({ id }, { hard })`, `client.queryReactions({ id }, { filter, sort, limit })`;
-  one whose arguments are all path parameters takes just those (`deleteReaction({ id, type })`).
+  one whose arguments are all path parameters takes just those (`deleteReaction({ id, type })`),
+  but keeps an unused request slot so request options stay third — pass `undefined` there:
+  `channel.deleteReaction({ id, type }, undefined, { signal })`,
+  `client.getMessage({ id }, undefined, { signal })`. Methods that take no arguments of their own
+  (`client.getAppSettings`, `channel.pin` / `unpin` / `archive` / `unarchive`,
+  `channel.disableSlowMode`, `channel.stopAIResponse`) likewise take request options second:
+  `channel.pin(undefined, { signal })`. Calls that pass no request options are unchanged.
   Methods without path parameters take a single request object (`sendMessage({ message, ... })`,
   `queryChannels(request)`). A body field left in the path-params argument through a spread is not a
   compile error — the client throws at runtime instead;
