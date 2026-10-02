@@ -686,7 +686,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       // instantly, then it awaits any attachment uploads still in flight and POSTs — through a
       // `sendMessageRequest` registered via `client.config.set(...)`, if any. It throws on failure, which the MessageInput send flow
       // catches to surface a notification.
-      await (threadInstance ?? channel).sendMessageWithLocalUpdate({
+      await (threadInstance ?? channel).messageOperations.send({
         localMessage,
         message: messageToSend,
         options,
@@ -710,7 +710,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       const target = threadInstance?.messagePaginator.getItem(localMessage.id)
         ? threadInstance
         : channel;
-      await target.updateMessageWithLocalUpdate({ localMessage, options });
+      await target.messageOperations.update({ localMessage, options });
     },
   );
 

@@ -43,7 +43,7 @@ describe('useMessageOperations.deleteMessage', () => {
     }) as unknown as LocalMessage;
 
   it('removes a failed send locally, without a server delete', async () => {
-    const serverDelete = jest.spyOn(channel, 'deleteMessageWithLocalUpdate').mockResolvedValue();
+    const serverDelete = jest.spyOn(channel.messageOperations, 'delete').mockResolvedValue();
     const removeItem = jest.spyOn(channel.messagePaginator, 'removeItem');
     const { result } = render();
 
@@ -54,7 +54,7 @@ describe('useMessageOperations.deleteMessage', () => {
   });
 
   it('deletes a message whose edit failed on the server, since the server has it', async () => {
-    const serverDelete = jest.spyOn(channel, 'deleteMessageWithLocalUpdate').mockResolvedValue();
+    const serverDelete = jest.spyOn(channel.messageOperations, 'delete').mockResolvedValue();
     const { result } = render();
 
     await act(() =>
