@@ -68,10 +68,10 @@ export const ReminderItem = (
     const buttons: AlertButton[] = client.reminders.scheduledOffsetsMs.map((offsetMs) => ({
       text: t('duration.remindMe', { milliseconds: offsetMs }),
       onPress: async () => {
-        await client.reminders.upsertReminder({
-          message_id: item.message_id,
-          remind_at: new Date(Date.now() + offsetMs),
-        });
+        await client.reminders.upsertReminder(
+          { message_id: item.message_id },
+          { remind_at: new Date(Date.now() + offsetMs) },
+        );
       },
       style: 'default',
     }));
@@ -79,10 +79,10 @@ export const ReminderItem = (
     buttons.push({
       text: 'Clear Due Date',
       onPress: async () => {
-        await client.reminders.upsertReminder({
-          message_id: item.message_id,
-          remind_at: undefined,
-        });
+        await client.reminders.upsertReminder(
+          { message_id: item.message_id },
+          { remind_at: undefined },
+        );
       },
       style: 'default',
     });

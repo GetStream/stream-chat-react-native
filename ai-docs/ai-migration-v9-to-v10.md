@@ -1068,8 +1068,10 @@ params object rather than the prop's positional arguments:
 - v9 prop: `doUpdateMessageRequest(channelId, localMessage, options)`
 - v10 handler: `updateMessageRequest({ localMessage, options })` → `{ message }`
 
-If you need the old `{ id, message }` request shape inside your handler, derive it with
-`localMessageToNewMessagePayload(localMessage)` — that is what the SDK's adapter used to do.
+If your handler calls the client itself, derive the request with
+`localMessageToNewMessagePayload(localMessage)` — that is what the SDK's adapter used to do — and
+pass the message id as its own argument:
+`client.updateMessage({ id: localMessage.id }, { message: localMessageToNewMessagePayload(localMessage), ...options })`.
 
 `doSendMessageRequest` is removed too — see §13.1 for its `sendMessageRequest` replacement.
 
@@ -1142,8 +1144,14 @@ Highlights that hit integrator code:
   `Role`→`RoleName`, `Logger`→`Sink`, `*SortBase`→`*Sort`, `TranslationLanguages`→`TranslationLanguage`.
 - **`Event` is a discriminated union** — narrow with `EventPayload<'the.type'>`, or drop the `: Event`
   annotation so `client.on('x', cb)` narrows automatically.
-- **Method signatures collapsed to single objects** — `channel.sendReaction({ id, reaction, ... })`,
-  `deleteReaction({ id, type })`, `sendMessage({ message, ... })`, `queryChannels(request)`;
+- **Method signatures collapsed to request objects, with path parameters split out** — a method whose
+  endpoint has URL path parameters takes them as a separate first argument,
+  `method(pathParams, request?)`: `channel.sendReaction({ id }, { reaction, ... })`,
+  `client.deleteMessage({ id }, { hard })`, `client.queryReactions({ id }, { filter, sort, limit })`;
+  one whose arguments are all path parameters takes just those (`deleteReaction({ id, type })`).
+  Methods without path parameters take a single request object (`sendMessage({ message, ... })`,
+  `queryChannels(request)`). A body field left in the path-params argument through a spread is not a
+  compile error — the client throws at runtime instead;
   `client.uploadImage({ file: { uri, name, type } })` for RN image upload — the `file` field takes
   a browser `File`/`Blob` or an RN `{ uri, name, type }` descriptor, so the MIME type still has to
   be explicit, it just lives on the descriptor now; the same shape applies to `client.uploadFile`
