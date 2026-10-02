@@ -111,13 +111,10 @@ export const useFetchReactions = ({
         return;
       }
       try {
-        const response = await client.queryReactions({
-          filter: reactionType ? { type: reactionType } : undefined,
-          id: messageId,
-          limit,
-          next,
-          sort,
-        });
+        const response = await client.queryReactions(
+          { id: messageId },
+          { filter: reactionType ? { type: reactionType } : undefined, limit, next, sort },
+        );
         if (response) {
           setNext(response.next);
 

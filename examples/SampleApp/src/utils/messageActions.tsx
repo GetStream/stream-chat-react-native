@@ -36,7 +36,7 @@ export function channelMessageActions({
   //       if (reminder) {
   //         await chatClient.reminders.deleteReminder(reminder.id);
   //       } else {
-  //         await chatClient.reminders.createReminder({ messageId: params.message.id });
+  //         await chatClient.reminders.createReminder({ message_id: params.message.id });
   //       }
   //       dismissOverlay();
   //     } catch (error) {
@@ -75,10 +75,10 @@ export function channelMessageActions({
   //             text: t('duration.remindMe', { milliseconds: offsetMs }),
   //             onPress: () => {
   //               chatClient.reminders
-  //                 .upsertReminder({
-  //                   messageId: params.message.id,
-  //                   remind_at: new Date(Date.now() + offsetMs),
-  //                 })
+  //                 .upsertReminder(
+  //                   { message_id: params.message.id },
+  //                   { remind_at: new Date(Date.now() + offsetMs) },
+  //                 )
   //                 .catch((_error) => {
   //                   console.error('Error creating reminder:', _error);
   //                 });

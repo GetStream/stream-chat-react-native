@@ -345,7 +345,8 @@ export const OptimisticUpdates = () => {
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('delete-message');
-          expect(pendingTaskPayload[0].id).toBe(message.id);
+          // The payload is `client.deleteMessage`'s argument list: the id alone is the first argument.
+          expect(pendingTaskPayload[0]).toEqual({ id: message.id });
         });
       });
 
@@ -406,7 +407,9 @@ export const OptimisticUpdates = () => {
           const pendingTaskType = pendingTasksRows?.[0]?.type;
           const pendingTaskPayload = JSON.parse((pendingTasksRows?.[0]?.payload as string) || '{}');
           expect(pendingTaskType).toBe('send-reaction');
-          expect(pendingTaskPayload[0].id).toBe(targetMessage.id);
+          // `[{ id }, { reaction, ... }]` - the reaction travels in the request, not with the id.
+          expect(pendingTaskPayload[0]).toEqual({ id: targetMessage.id });
+          expect(pendingTaskPayload[1].reaction.type).toBe(reaction.type);
         });
       });
 
@@ -589,11 +592,12 @@ export const OptimisticUpdates = () => {
                 localMessage: LocalMessage;
                 options?: unknown;
               }) => {
-                // The LLC hands over a `localMessage`; the prop received the `updateMessage` request
-                // shape `{ id, message }`. Rebuilt so the queued pending-task payload is unchanged.
-                const updatedMessage = {
-                  id: localMessage.id,
+                // The LLC hands over a `localMessage`; the queued pending-task payload is the
+                // `client.updateMessage` argument list, `[{ id }, { message, ...options }]`.
+                const pathParams = { id: localMessage.id };
+                const request = {
                   message: localMessageToNewMessagePayload(localMessage),
+                  ...(options as object | undefined),
                 };
                 const editedMessage = {
                   ...message,
@@ -605,7 +609,7 @@ export const OptimisticUpdates = () => {
                   channelId: channel.id,
                   channelType: channel.type,
                   messageId: message.id,
-                  payload: [updatedMessage, options],
+                  payload: [pathParams, request],
                   type: 'update-message',
                 });
                 // A complete offline update handler persists the optimistic edit to the DB (so it
@@ -623,12 +627,7 @@ export const OptimisticUpdates = () => {
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
-            <Channel
-              channel={channel}
-              // v10 invokes doUpdateMessageRequest with the `updateMessage` request shape
-              // `{ id, message }`, not a flat LocalMessage. Echo a
-              // server-shaped response reflecting the edit; the LLC's success path re-ingests it.
-            >
+            <Channel channel={channel}>
               <CallbackEffectWithContext
                 callback={async ({ editMessage }) => {
                   await flushMountEffects();
@@ -1228,6 +1227,14 @@ export const OptimisticUpdates = () => {
           expect(deleteMessageSpy).toHaveBeenCalled();
           expect(sendReactionSpy).toHaveBeenCalled();
         });
+        // Replayed from the SQLite row: the split argument list survives the JSON round trip, with
+        // the (empty, soft-delete) options in the request slot rather than merged into the id.
+        expect(deleteMessageSpy.mock.calls[0][0]).toEqual({ id: message.id });
+        expect(deleteMessageSpy.mock.calls[0][1]).toEqual({});
+        expect(sendReactionSpy.mock.calls[0][0]).toEqual({ id: message.id });
+        expect(sendReactionSpy.mock.calls[0][1]).toEqual(
+          expect.objectContaining({ reaction: expect.objectContaining({ type: reaction.type }) }),
+        );
       });
 
       // This is a separate test so CallbackEffectWithContext does not need to be modified in order
