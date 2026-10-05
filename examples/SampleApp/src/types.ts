@@ -74,7 +74,10 @@ export type AppTheme = Theme & {
 export type LoginConfig = {
   apiKey: string;
   userId: string;
-  userToken: string;
+  /** Static token. When omitted, tokens are fetched from `tokenUrl`. */
+  userToken?: string;
+  /** Token generator URL; `user_id` is appended. Defaults to `DEFAULT_TOKEN_URL`. */
+  tokenUrl?: string;
   userImage?: string;
   userName?: string;
 };

@@ -14,6 +14,7 @@ import { SqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
 import AsyncStore from '../utils/AsyncStore';
+import { getTokenOrProvider, SAMPLE_APP_API_KEY } from '../utils/tokenProvider';
 
 const messaging = getMessaging();
 
@@ -98,7 +99,7 @@ export const useChatClient = () => {
       image: config.userImage,
       name: config.userName,
     };
-    await client.connectUser(user, config.userToken);
+    await client.connectUser(user, getTokenOrProvider(config));
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     const permissionAuthStatus = await messaging.hasPermission();
@@ -175,7 +176,7 @@ export const useChatClient = () => {
     try {
       if (userId) {
         await loginUser({
-          apiKey: 'yjrt5yxw77ev',
+          apiKey: SAMPLE_APP_API_KEY,
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
           userName: USERS[userId].name,
