@@ -8,6 +8,8 @@ import { DeliveredMessagePayload, StreamChat } from 'stream-chat';
 
 import AsyncStore from './AsyncStore';
 
+import { getTokenOrProvider } from './tokenProvider';
+
 import { LoginConfig } from '../types';
 
 const messaging = getMessaging();
@@ -47,7 +49,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
     }
     const chatClient = StreamChat.getInstance(loginConfig.apiKey);
     // eslint-disable-next-line no-underscore-dangle -- stream-chat exposes _setToken as a public-but-underscore-prefixed method for background contexts
-    await chatClient._setToken({ id: loginConfig.userId }, loginConfig.userToken);
+    await chatClient._setToken({ id: loginConfig.userId }, getTokenOrProvider(loginConfig));
 
     const notification = remoteMessage.data;
 
