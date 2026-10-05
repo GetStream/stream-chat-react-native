@@ -18,7 +18,7 @@
     "@react-native-community/netinfo": "12.0.1",
     "@react-native-firebase/app": "^24.0.0",
     "@react-native-firebase/messaging": "^24.0.0",
-    "@shopify/flash-list": "^2.3.2",
+    "@shopify/flash-list": "^2.3.3",
     "expo": "^57.0.7",
     "expo-asset": "~57.0.6",
     "expo-audio": "patch:expo-audio@npm%3A57.0.2#~/.yarn/patches/expo-audio-npm-57.0.2-7a40cb0b0a.patch",
