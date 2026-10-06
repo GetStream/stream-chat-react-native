@@ -5694,14 +5694,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "@shopify/flash-list@npm:2.3.2"
+"@shopify/flash-list@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "@shopify/flash-list@npm:2.3.3"
   peerDependencies:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/3e58913506b1dc7f02dd0696c478fd963ede413d9d7121705a08ff505d5c21e611813ce9370068238b8983ff582ed7b8ee94f68e94f99a1ac8f600c01fff118e
+  checksum: 10c0/c94af22f8b034d9f24e8ea3628ac20597cdb00f8c250d24a8e7adb86bc2a41cf10234c2fd87315bf7a34211db87d7eba40bddda610847cb6afedd2d6a1a3ffe5
   languageName: node
   linkType: hard
 
@@ -6575,7 +6575,7 @@ __metadata:
     "@react-native-firebase/messaging": "npm:^24.0.0"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@rnx-kit/metro-resolver-symlinks": "npm:^0.2.6"
-    "@shopify/flash-list": "npm:^2.3.2"
+    "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.2.10"
     expo: "npm:^57.0.7"
@@ -17582,7 +17582,7 @@ __metadata:
     "@react-navigation/native": "npm:^7.3.11"
     "@react-navigation/native-stack": "npm:^7.18.3"
     "@rnx-kit/metro-config": "npm:^2.1.0"
-    "@shopify/flash-list": "npm:^2.3.2"
+    "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/state-store": "npm:^1.1.6"
     "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
@@ -18308,7 +18308,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:^12.0.1"
     "@react-native/babel-preset": "npm:0.87.0"
     "@react-native/jest-preset": "npm:0.87.0"
-    "@shopify/flash-list": "npm:^2.3.2"
+    "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/i18n": "npm:^1.0.2"
     "@stream-io/state-store": "npm:^1.1.6"
     "@stream-io/typescript-config": "workspace:^"

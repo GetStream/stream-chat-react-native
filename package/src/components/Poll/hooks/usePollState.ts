@@ -37,7 +37,7 @@ export type UsePollStateSelectorReturnType = {
 export type UsePollStateReturnType = UsePollStateSelectorReturnType & {
   addComment: (answerText: string) => Promise<PollVoteResponse>;
   addOption: (optionText: string) => Promise<void>;
-  endVote: () => Promise<PollResponse>;
+  endVote: () => Promise<PollResponse | undefined>;
 };
 
 const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
