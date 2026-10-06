@@ -1,4 +1,4 @@
-import type { Channel, StreamChat } from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
 
 import type { Schema } from './schema';
 
@@ -33,7 +33,7 @@ export type PendingTask = {
   id?: number;
 } & (
   | {
-      payload: Parameters<Channel['sendReaction']>;
+      payload: Parameters<StreamChat['sendReaction']>;
       type: PendingTaskTypes['sendReaction'];
     }
   | {
@@ -41,7 +41,7 @@ export type PendingTask = {
       type: PendingTaskTypes['deleteMessage'];
     }
   | {
-      payload: Parameters<Channel['deleteReaction']>;
+      payload: Parameters<StreamChat['deleteReaction']>;
       type: PendingTaskTypes['deleteReaction'];
     }
 );

@@ -52,7 +52,7 @@ const Channel = ChannelRaw as unknown as React.ComponentType<
 >;
 
 // Tests reach into internal / private StreamChat + LLC Channel APIs (sync manager, legacy
-// `wsConnection`, `_deleteMessage`, `_sendReaction`, `_sendMessage`). Helpers narrow at the
+// `wsConnection`, and the HTTP methods a replay calls). Helpers narrow at the
 // call sites without sprinkling `any` everywhere.
 type TestPendingTask = { id: number; type: string; payload: unknown };
 type TestSyncManager = {
@@ -1218,8 +1218,8 @@ export const OptimisticUpdates = () => {
           expect(pendingTasksRows.length).toBe(2);
         });
 
-        const deleteMessageSpy = jest.spyOn(chatClient, '_deleteMessage').mockImplementation();
-        const sendReactionSpy = jest.spyOn(channel, '_sendReaction').mockImplementation();
+        const deleteMessageSpy = jest.spyOn(chatClient, 'deleteMessage').mockImplementation();
+        const sendReactionSpy = jest.spyOn(chatClient, 'sendReaction').mockImplementation();
 
         act(() => dispatchConnectionChangedEvent(chatClient, true));
 
@@ -1279,7 +1279,7 @@ export const OptimisticUpdates = () => {
           expect(pendingTasksRows.length).toBe(1);
         });
 
-        const sendMessageSpy = jest.spyOn(channel, '_sendMessage').mockImplementation();
+        const sendMessageSpy = jest.spyOn(channel, 'sendMessage').mockImplementation();
 
         act(() => dispatchConnectionChangedEvent(chatClient, true));
 

@@ -22,7 +22,7 @@ export type MessageOperations = {
 /**
  * Message operations (delete/remove/retry/react/update) resolved from the channel and — when a
  * thread is open — the thread instance. These are thin wrappers over the stream-chat message
- * operations engine (`*WithLocalUpdate`, `messagePaginator.ingestItem/removeItem`), which owns the
+ * operations engine (`messageOperations.*`, `messagePaginator.ingestItem/removeItem`), which owns the
  * optimistic lifecycle, offline-DB persistence and paginator ingest. Previously these lived on the
  * MessagesContext; they now resolve per-message (mirroring stream-chat-react, which has no shared
  * action context) so the operations stay co-located with the LLC state they drive.
@@ -68,7 +68,7 @@ export const useMessageOperations = (): MessageOperations => {
 
   const retrySendMessage: MessageOperations['retrySendMessage'] = useStableCallback(
     async (localMessage) => {
-      await (threadInstance ?? channel).retrySendMessageWithLocalUpdate({ localMessage });
+      await (threadInstance ?? channel).messageOperations.retry({ localMessage });
     },
   );
 
@@ -85,7 +85,7 @@ export const useMessageOperations = (): MessageOperations => {
       // channel message's reaction into the thread paginator while a (channel-wide) thread is open.
       const target = threadInstance?.messagePaginator.getItem(messageId) ? threadInstance : channel;
 
-      await target.addReactionWithLocalUpdate({
+      await target.messageOperations.addReaction({
         messageId,
         options: { enforce_unique: enforceUniqueReaction },
         reaction: { type },
@@ -101,7 +101,7 @@ export const useMessageOperations = (): MessageOperations => {
 
       const target = threadInstance?.messagePaginator.getItem(messageId) ? threadInstance : channel;
 
-      await target.deleteReactionWithLocalUpdate({ messageId, type });
+      await target.messageOperations.deleteReaction({ messageId, type });
     },
   );
 
@@ -137,7 +137,7 @@ export const useMessageOperations = (): MessageOperations => {
       const target = threadInstance?.messagePaginator.getItem(message.id)
         ? threadInstance
         : channel;
-      await target.deleteMessageWithLocalUpdate({
+      await target.messageOperations.delete({
         localMessage: message,
         options,
       });
