@@ -13,9 +13,7 @@ export const useCreateChatContext = ({
 }: ChatContextValue) => {
   const channelId = channel?.id;
   const clientValues = client
-    ? `${client.clientID}${Object.keys(client.activeChannels).length}${
-        Object.keys(client.listeners).length
-      }${client.mutedChannels.length}`
+    ? `${client.clientID}${Object.keys(client.listeners).length}${client.mutedChannels.length}`
     : 'Offline';
   const mutedUsersLength = mutedUsers.length;
 

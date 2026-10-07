@@ -541,14 +541,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       }
 
       // Seed the paginator for a cold open (deep link / push). Channels reached via the channel
-      // list are already seeded by client.hydrateActiveChannels, so guard on an empty paginator
+      // list are already seeded by client.hydrateChannels, so guard on an empty paginator
       // to avoid a redundant fetch.
       if (!channel.messagePaginator.state.getLatestValue().items?.length) {
         await channel.messagePaginator.reload();
       }
 
       // Re-seed the unread snapshot from the CURRENT read state on every open. The paginator is
-      // usually reused from cache (the reload above is skipped), and hydrateActiveChannels merges
+      // usually reused from cache (the reload above is skipped), and hydrateChannels merges
       // rather than re-seeds, so without this the snapshot's boundary/count/first-unread stay frozen
       // at the very first open — making the separator, the "N new" banner and the jump-to-first-unread
       // target all go stale on reopen. Mirrors stream-chat-react, which re-seeds by re-querying on open.
@@ -581,15 +581,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
   // Channel instance shared with the channel-list preview or a thread stays active until the last
   // mount unmounts. Being active enables auto-mark-read-on-focus and suppresses destructive
-  // channel-list re-seeding of the open channel's message list on reconnect. Keyed on `channel` and
-  // balanced (the cleanup deactivates the exact instance the effect activated), so swapping the
-  // `channel` prop deactivates the previous instance before activating the new one.
-  useEffect(() => {
-    channel?.activate?.();
-    return () => {
-      channel?.deactivate?.();
-    };
-  }, [channel]);
+  // channel-list re-seeding of the open channel's message list on reconnect. `activate()` returns
+  // the release for this exact activation, so swapping the `channel` prop releases the previous
+  // instance before activating the new one.
+  useEffect(() => channel?.activate(), [channel]);
 
   // subscribe to channel.deleted event
   useEffect(() => {

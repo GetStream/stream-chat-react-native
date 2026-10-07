@@ -30,8 +30,8 @@ const getSyncManager = (client: StreamChat): TestSyncManager =>
   (client.offlineDb as unknown as { syncManager: TestSyncManager }).syncManager;
 const asHydrateChannelsMock = (
   client: StreamChat,
-): StreamChat['hydrateActiveChannels'] & { mock: { calls: unknown[][] } } =>
-  client.hydrateActiveChannels as StreamChat['hydrateActiveChannels'] & {
+): StreamChat['hydrateChannels'] & { mock: { calls: unknown[][] } } =>
+  client.hydrateChannels as StreamChat['hydrateChannels'] & {
     mock: { calls: unknown[][] };
   };
 
@@ -220,7 +220,13 @@ export const Generic = () => {
       // `cid` is not part of `GeneratedChannelResponseCustomValues`, but tests rely on reading it
       // back as a top-level field on the generated channel response — keep the runtime shape and
       // widen the input type.
+      // The list below filters on the custom field `foo`, so every channel the server returns for it
+      // carries `foo: 'bar'`. Client-side filter matching (channel.updated / channel.truncated) relies on it.
+      // INTENTIONALLY RED until the LLC resolves custom fields in that matching (stream-chat-js#1901,
+      // custom fields live under `data.custom`): the three truncation tests and the hidden/visible test
+      // fail because the list drops the truncated channel and doesn't take back the visible one.
       return generateChannelResponse({
+        channel: { custom: { foo: 'bar' } },
         cid,
         id,
         members,
@@ -409,10 +415,33 @@ export const Generic = () => {
       );
     });
 
+    // `disconnectUser()` is not always a logout (e.g. `useCreateChatClient` unmounting), so it must not
+    // touch what the offline DB cached for the user. INTENTIONALLY RED until stream-chat-js#1901 resets
+    // the lists before clearing the channel store: each removal re-persists a shrinking cid list, so the
+    // cached list ends up `[]` and the next offline cold start shows nothing.
+    it('keeps the cached channel list when the user disconnects', async () => {
+      useMockedApis(chatClient, [queryChannelsApi(channels)]);
+      await renderComponent();
+      act(() => dispatchConnectionChangedEvent(chatClient));
+      await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
+
+      const cachedCids = async () => {
+        const rows = await BetterSqlite.selectFromTable('channelQueries');
+        return JSON.parse(rows[0].cids as string) as string[];
+      };
+      await waitFor(async () => expect(await cachedCids()).toHaveLength(channels.length));
+
+      await act(async () => {
+        await chatClient.disconnectUser();
+      });
+
+      expect(await cachedCids()).toHaveLength(channels.length);
+    });
+
     it('should fetch channels from the db correctly even if they are empty', async () => {
       const emptyChannel = createChannel([]);
       useMockedApis(chatClient, [queryChannelsApi([emptyChannel])]);
-      jest.spyOn(chatClient, 'hydrateActiveChannels');
+      jest.spyOn(chatClient, 'hydrateChannels');
 
       await renderComponent();
 
@@ -421,7 +450,7 @@ export const Generic = () => {
         await act(async () => await getSyncManager(chatClient).invokeSyncStatusListeners(true));
         expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         expect(screen.getByTestId(emptyChannel.cid)).toBeTruthy();
-        expect(chatClient.hydrateActiveChannels).toHaveBeenCalled();
+        expect(chatClient.hydrateChannels).toHaveBeenCalled();
         expect(asHydrateChannelsMock(chatClient).mock.calls[0][0]).toStrictEqual([emptyChannel]);
       });
     });
@@ -767,7 +796,7 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.activeChannels[hiddenChannel.cid].messagePaginator.headItems.length,
+          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.headItems.length,
         );
       });
     });
@@ -802,11 +831,12 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.activeChannels[hiddenChannel.cid].messagePaginator.headItems.length,
+          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.headItems.length,
         );
       });
 
-      // then, we make it visible after waiting for everything to finish
+      // then, we make it visible after waiting for everything to finish. It still matches the list's
+      // filter, so the list takes it back (v9 promoted it on `channel.visible` by default too).
       act(() => dispatchChannelVisibleEvent(chatClient, hiddenChannel));
       await waitFor(async () => {
         const channelIdsOnUI = screen
@@ -816,7 +846,7 @@ export const Generic = () => {
               (node as unknown as { _fiber: { pendingProps: { testID: string } } })._fiber
                 .pendingProps.testID,
           );
-        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeFalsy();
+        expect(channelIdsOnUI.includes(hiddenChannel.cid)).toBeTruthy();
         await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
         const channelsRows = await BetterSqlite.selectFromTable('channels');
@@ -828,7 +858,7 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeFalsy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.activeChannels[hiddenChannel.cid].messagePaginator.headItems.length,
+          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.headItems.length,
         );
       });
     });

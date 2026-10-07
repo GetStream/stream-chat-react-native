@@ -205,8 +205,9 @@ describe('Thread', () => {
     });
   });
 
-  // Metadata (parent, read state, participants) comes with a queried page. A thread `ensure` builds has only
-  // its parent message, so it starts stale and reloads once on open; one that already has its data doesn't.
+  // Metadata (parent, read state, participants) comes with a queried page. A thread `ensure` builds for a
+  // parent that has replies has only that parent, so it starts stale and reloads once on open; one that
+  // already has its data doesn't.
   describe('metadata reload on open', () => {
     const openThread = (
       threadInstance: ThreadClass,
@@ -221,7 +222,11 @@ describe('Thread', () => {
     };
 
     it('reloads a thread ensure built from its parent message', async () => {
-      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const parentMessage = generateMessage({
+        cid: 'messaging:test-channel',
+        reply_count: 1,
+        text: 'Parent',
+      });
       const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
       const { reload } = openThread(threadInstance, parentMessage);
 
@@ -229,7 +234,11 @@ describe('Thread', () => {
     });
 
     it('does not fetch the first reply page while that reload is in flight, only if it fails', async () => {
-      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const parentMessage = generateMessage({
+        cid: 'messaging:test-channel',
+        reply_count: 1,
+        text: 'Parent',
+      });
       const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
       let failReload: () => void = () => undefined;
       jest.spyOn(threadInstance, 'reload').mockImplementation(async () => {
@@ -254,7 +263,11 @@ describe('Thread', () => {
     });
 
     it('does not reload a thread that already has its data', async () => {
-      const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+      const parentMessage = generateMessage({
+        cid: 'messaging:test-channel',
+        reply_count: 1,
+        text: 'Parent',
+      });
       const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
       act(() => {
         chatClient.threads.paginator.setItems({

@@ -364,6 +364,27 @@ describe('Channel', () => {
     });
   });
 
+  // `activate()` returns the release for that one activation. A mount that never runs it leaves the
+  // channel active for the rest of the session, which nothing else would surface.
+  it('releases its activation when the channel prop changes and on unmount', async () => {
+    const otherChannel = chatClient.channel('messaging', 'other-channel');
+    const renderChannel = (target: ChannelType) => (
+      <Chat client={chatClient}>
+        <Channel channel={target} initializeOnMount={false} />
+      </Chat>
+    );
+
+    const { rerender, unmount } = render(renderChannel(channel));
+    await waitFor(() => expect(channel.active).toBe(true));
+
+    rerender(renderChannel(otherChannel));
+    await waitFor(() => expect(otherChannel.active).toBe(true));
+    expect(channel.active).toBe(false);
+
+    unmount();
+    expect(otherChannel.active).toBe(false);
+  });
+
   it('does not re-render while the message list queries', async () => {
     // `Channel` subscribes to the paginator for `hasMessages` (what to show when a query errors).
     // That selector must not carry `isLoading` with it: nothing here reads it, but `useStateStore`

@@ -27,7 +27,8 @@ type MessageDeliveryStatusProps = {
   isReadEventsEnabled: boolean;
 };
 
-const EMPTY_USERS: UserResponse[] = [];
+const hasOtherUser = (users: UserResponse[] | undefined, currentUserId: string | undefined) =>
+  !!users && (users.length > 1 || (users.length === 1 && users[0].id !== currentUserId));
 
 /**
  * Delivery/read status of the last own message, sourced reactively from the channel's
@@ -43,16 +44,17 @@ export const useMessageDeliveryStatus = ({
 }: MessageDeliveryStatusProps) => {
   const { client } = useChatContext();
   const messageId = lastMessage?.id ?? '';
+  const currentUserId = client.user?.id;
 
   const selector = useCallback(
     (snapshot: MessageReceiptsSnapshot) => ({
-      deliveredTo: snapshot.deliveredByMessageId[messageId] ?? EMPTY_USERS,
-      readers: snapshot.readersByMessageId[messageId] ?? EMPTY_USERS,
+      isDelivered: hasOtherUser(snapshot.deliveredByMessageId[messageId], currentUserId),
+      isRead: hasOtherUser(snapshot.readersByMessageId[messageId], currentUserId),
     }),
-    [messageId],
+    [currentUserId, messageId],
   );
 
-  const { deliveredTo, readers } = useStateStore(
+  const { isDelivered, isRead } = useStateStore(
     channel.messageReceiptsTracker.snapshotStore,
     selector,
   );
@@ -62,25 +64,21 @@ export const useMessageDeliveryStatus = ({
       return MessageDeliveryStatus.NOT_SENT_BY_CURRENT_USER;
     }
 
-    const currentUserId = client.user?.id;
     const isOwnMessage = !!currentUserId && lastMessage?.user?.id === currentUserId;
     if (lastMessage?.created_at == null || !isOwnMessage) {
       return undefined;
     }
 
-    if (readers.length > 1 || (readers.length === 1 && readers[0].id !== currentUserId)) {
+    if (isRead) {
       return MessageDeliveryStatus.READ;
     }
 
-    if (
-      deliveredTo.length > 1 ||
-      (deliveredTo.length === 1 && deliveredTo[0].id !== currentUserId)
-    ) {
+    if (isDelivered) {
       return MessageDeliveryStatus.DELIVERED;
     }
 
     return MessageDeliveryStatus.SENT;
-  }, [client.user?.id, deliveredTo, isReadEventsEnabled, lastMessage, readers]);
+  }, [currentUserId, isDelivered, isReadEventsEnabled, isRead, lastMessage]);
 
   return { status };
 };
