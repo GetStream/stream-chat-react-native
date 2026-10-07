@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { BackHandler, StyleSheet, Text } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
@@ -177,6 +177,63 @@ describe('MessageOverlayHostLayer', () => {
     flushAnimationFrameQueue();
 
     expect(overlayStore.getLatestValue().closing).toBe(true);
+  });
+
+  it('closes the overlay on Android back press instead of letting navigation handle it', () => {
+    type BackPressListener = Parameters<typeof BackHandler.addEventListener>[1];
+    const listeners: BackPressListener[] = [];
+    const addEventListenerSpy = jest
+      .spyOn(BackHandler, 'addEventListener')
+      .mockImplementation((_eventName, handler) => {
+        listeners.push(handler);
+        return {
+          remove: () => {
+            listeners.splice(listeners.indexOf(handler), 1);
+          },
+        };
+      });
+    const pressBack = () =>
+      listeners[listeners.length - 1]?.({ timeStamp: Date.now(), type: 'hardwareBackPress' });
+
+    render(
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer />
+      </WithComponents>,
+    );
+
+    // Nothing is registered while the overlay is closed, so back goes to navigation.
+    expect(listeners).toHaveLength(0);
+
+    act(() => {
+      openOverlay('message-1');
+    });
+
+    let handled: boolean | null | undefined;
+    act(() => {
+      handled = pressBack();
+    });
+    flushAnimationFrameQueue();
+
+    expect(handled).toBe(true);
+    expect(overlayStore.getLatestValue().closing).toBe(true);
+
+    // Still consumed while the close animation runs, so the screen doesn't pop underneath.
+    act(() => {
+      handled = pressBack();
+    });
+    flushAnimationFrameQueue();
+    expect(handled).toBe(true);
+    expect(overlayStore.getLatestValue().closing).toBe(true);
+
+    act(() => {
+      finalizeCloseOverlay();
+    });
+
+    expect(listeners).toHaveLength(0);
+    // One registration for the whole open -> closing -> closed cycle.
+    expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+
+    addEventListenerSpy.mockRestore();
   });
 
   it('positions and translates the top, message, and bottom hosts using the registered rects', () => {
