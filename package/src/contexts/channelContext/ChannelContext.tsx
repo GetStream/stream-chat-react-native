@@ -49,19 +49,6 @@ export type ChannelContextValue = {
   hideDateSeparators: boolean;
   hideStickyDateHeader: boolean;
   /**
-   * Loads channel around a specific message. Emits `messageFocusSignal` on the paginator, which
-   * drives the highlight + scroll-to-target.
-   * @param limit - The number of messages to load around the message
-   * @param messageId - The message around which to load messages
-   */
-
-  /**
-   * Loads channel at first unread message. Emits `messageFocusSignal` on the paginator.
-   * @param limit - The number of messages to load around the first unread message
-   */
-
-  scrollToFirstUnreadThreshold: number;
-  /**
    * Returns true when Channel is about to load an initial targeted message.
    *
    * @internal
@@ -69,10 +56,6 @@ export type ChannelContextValue = {
   hasPendingInitialTargetLoad?: () => boolean;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
-  /**
-   * Id of message, which is highlighted in the channel.
-   */
-  isChannelActive?: boolean;
   /**
    * Maximum time in milliseconds that should occur between messages
    * to still consider them grouped together

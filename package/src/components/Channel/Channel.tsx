@@ -77,7 +77,6 @@ import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
@@ -89,7 +88,7 @@ import { NotificationTargetProvider } from '../Notifications/NotificationTargetC
 
 export type MarkReadFunctionOptions = {
   /**
-   * Signal, whether the `channelUnreadUiState` should be updated.
+   * Signal, whether the message paginator's unread snapshot should be updated.
    * By default, the local state update is prevented when the Channel component is mounted.
    * This is in order to keep the UI indicating the original unread state, when the user opens a channel.
    */
@@ -129,12 +128,6 @@ export const reactionData: ReactionData[] = [
 ];
 
 /**
- * If count of unread messages is less than 4, then no need to scroll to first unread message,
- * since first unread message will be in visible frame anyways.
- */
-const scrollToFirstUnreadThreshold = 0;
-
-/**
  * Initial message-list page size. stream-chat's `MessagePaginator` defaults to 100
  * (`DEFAULT_CHANNEL_MESSAGE_LIST_PAGE_SIZE`). On native that makes the initial load — and therefore
  * every subsequent message-list commit, whose cost scales with the number of loaded messages — several
@@ -166,7 +159,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'maxTimeBetweenGroupedMessages'
     >
   > &
-  Pick<ChatContextValue, 'client'> & { isOnline: boolean } & Partial<
+  Pick<ChatContextValue, 'client'> &
+  Partial<
     Pick<
       InputMessageInputContextValue,
       | 'additionalTextInputProps'
@@ -280,7 +274,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     markReadOnMount?: boolean;
     /**
-     * Load the channel at a specified message instead of the most recent message.
+     * The notification host this channel's notifications are routed to. Defaults to the channel's
+     * own host, derived from its cid.
      */
     notificationHostId?: string;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
@@ -509,7 +504,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       return false;
     }
 
-    return (unreadCount ?? channel.countUnread()) > scrollToFirstUnreadThreshold;
+    return (unreadCount ?? channel.countUnread()) > 0;
   });
 
   const hasPendingInitialTargetLoad = useStableCallback(() => {
@@ -754,25 +749,10 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     allowDateSeparatorForSystemMessages,
     hideDateSeparators,
     hideStickyDateHeader,
-    isChannelActive: shouldSyncChannel,
     maxTimeBetweenGroupedMessages,
-    scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
   });
-
-  // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
-  // useMemo() dependency. The easy fix is to add it to the dependency array, however that would mean
-  // that this (very used) context is essentially going to cause rerenders on pretty much every Channel
-  // render, since sendMessage is an inline function. Wrapping it in useCallback() is one way to fix it
-  // but it is definitely not trivial, especially considering it depends on other inline functions that
-  // are not wrapped in a useCallback() themselves hence creating a huge cascading change. Can be removed
-  // once our memoization issues are fixed in most places in the app or we move to a reactive state store.
-  // const sendMessageRef = useRef<InputMessageInputContextValue['sendMessage']>(sendMessage);
-  // sendMessageRef.current = sendMessage;
-  // const sendMessageStable = useCallback<InputMessageInputContextValue['sendMessage']>((...args) => {
-  //   return sendMessageRef.current(...args);
-  // }, []);
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
@@ -828,9 +808,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBlockUser,
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
-    // A message is already targeted (by the prop or by the integrator's own jump), so first-unread
-    // must not take the scroll off it.
-    initialScrollToFirstUnreadMessage: !hasFocusTarget() && initialScrollToFirstUnreadMessage,
     isAttachmentEqual,
     isMessageAIGenerated,
     markdownRules,
@@ -938,7 +915,6 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, isMessageAIGenerated } = useChatContext();
-  const isOnline = useSettledWSConnectionHealth();
   const { t } = useTranslationContext();
   const notificationHostId =
     props.notificationHostId ??
@@ -967,7 +943,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       shouldSyncChannel={shouldSyncChannel}
       {...{
         isMessageAIGenerated,
-        isOnline,
         thread,
       }}
     />

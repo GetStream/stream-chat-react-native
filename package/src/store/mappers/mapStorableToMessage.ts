@@ -10,13 +10,13 @@ import { mapStorableToUser } from './mapStorableToUser';
 import type { TableRow, TableRowJoinedUser } from '../types';
 
 export const mapStorableToMessage = ({
-  currentUserId,
+  userId,
   messageRow,
   pollRow,
   reactionRows,
   reminderRow,
 }: {
-  currentUserId: string;
+  userId: string;
   messageRow: TableRowJoinedUser<'messages'>;
   pollRow: TableRow<'poll'>;
   reactionRows?: TableRowJoinedUser<'reactions'>[];
@@ -37,7 +37,7 @@ export const mapStorableToMessage = ({
   } = messageRow;
   const latestReactions = reactionRows?.map((reaction) => mapStorableToReaction(reaction)) || [];
 
-  const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === currentUserId);
+  const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === userId);
 
   return {
     ...rest,

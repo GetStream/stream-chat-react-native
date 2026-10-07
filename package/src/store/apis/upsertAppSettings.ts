@@ -5,25 +5,25 @@ import { SqliteClient } from '../SqliteClient';
 
 export const upsertAppSettings = async ({
   appSettings,
-  currentUserId,
+  userId,
   execute = true,
 }: {
   appSettings: GetApplicationResponse;
-  currentUserId: string;
+  userId: string;
   execute?: boolean;
 }) => {
   const storableAppSettings = JSON.stringify(appSettings);
   const queries = [
     createUpsertQuery('userSyncStatus', {
       appSettings: storableAppSettings,
-      userId: currentUserId,
+      userId,
     }),
   ];
 
   SqliteClient.logger?.('info', 'upsertAppSettings', {
     appSettings: storableAppSettings,
     execute,
-    userId: currentUserId,
+    userId,
   });
 
   if (execute) {

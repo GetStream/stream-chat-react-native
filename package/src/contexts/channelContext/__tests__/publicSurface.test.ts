@@ -3,7 +3,7 @@ import * as sdk from '../../../index';
 import type { ChannelContextValue } from '../../../index';
 // Type-only half: these fail to COMPILE if the hooks stop being exported, which a runtime
 // check cannot catch.
-import type { useActiveMessagePaginator, useIsTargetedMessage } from '../../../index';
+import type { useMessagePaginator, useIsTargetedMessage } from '../../../index';
 
 /**
  * `ChannelContextValue`'s shape, pinned.
@@ -24,13 +24,13 @@ import type { useActiveMessagePaginator, useIsTargetedMessage } from '../../../i
 describe('ChannelContext public surface', () => {
   it('exports the replacements the migration guide points at', () => {
     // Runtime half — the guide's §8 table is unusable without these.
-    expect(typeof sdk.useActiveMessagePaginator).toBe('function');
+    expect(typeof sdk.useMessagePaginator).toBe('function');
     expect(typeof sdk.useIsTargetedMessage).toBe('function');
     expect(typeof sdk.useChannelContext).toBe('function');
     expect(sdk.DEFAULT_HIGHLIGHT_DURATION).toBe(3000);
 
     // Type half — asserted by construction (this file IS typechecked, via tsconfig.test.json).
-    type Paginator = typeof useActiveMessagePaginator;
+    type Paginator = typeof useMessagePaginator;
     type Targeted = typeof useIsTargetedMessage;
     const types: [Paginator, Targeted] | undefined = undefined;
     expect(types).toBeUndefined();
@@ -65,14 +65,12 @@ describe('ChannelContext public surface', () => {
       'hasPendingInitialTargetLoad',
       'hideDateSeparators',
       'hideStickyDateHeader',
-      'isChannelActive',
       'maxTimeBetweenGroupedMessages',
-      'scrollToFirstUnreadThreshold',
       'threadList',
     ];
     // An assertion by construction: a removed member fails to compile in the array above.
-    // 11 since the V10 merge: message pruning removed `maximumMessageLimit` in favour of
-    // `maxLoadedItems`, derived inside `useMessageList`.
-    expect(expected).toHaveLength(11);
+    // 9 since the state cleanup removed the never-read `isChannelActive` and
+    // `scrollToFirstUnreadThreshold`.
+    expect(expected).toHaveLength(9);
   });
 });

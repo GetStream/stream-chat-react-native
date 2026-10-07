@@ -37,7 +37,7 @@ export const usePendingUploadsDefault = (client: StreamChat, enableOfflineSuppor
       attachments: { pendingUploadsEnabled: true },
     });
 
-    // Deliberately no teardown, for the same reason as the network reporter in `useIsOnline`: the
-    // configuration lives as long as the client, which outlives `<Chat>`.
+    // Deliberately no teardown, for the same reason as the network reporter in
+    // `useConnectionLifecycle`: the configuration lives as long as the client, which outlives `<Chat>`.
   }, [client, enableOfflineSupport]);
 };

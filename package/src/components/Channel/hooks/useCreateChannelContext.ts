@@ -10,9 +10,7 @@ export const useCreateChannelContext = ({
   allowDateSeparatorForSystemMessages,
   hideDateSeparators,
   hideStickyDateHeader,
-  isChannelActive,
   maxTimeBetweenGroupedMessages,
-  scrollToFirstUnreadThreshold,
   hasPendingInitialTargetLoad,
   threadList,
 }: ChannelContextValue) => {
@@ -27,14 +25,12 @@ export const useCreateChannelContext = ({
       allowDateSeparatorForSystemMessages,
       hideDateSeparators,
       hideStickyDateHeader,
-      isChannelActive,
       maxTimeBetweenGroupedMessages,
-      scrollToFirstUnreadThreshold,
       hasPendingInitialTargetLoad,
       threadList,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelId, disabled, isChannelActive, threadList],
+    [channelId, disabled, threadList],
   );
 
   return channelContext;

@@ -9,13 +9,13 @@ import { mapStorableToRequiredTimestamp } from './mapStorableToTimestamp';
 import type { TableRow, TableRowJoinedDraftMessage, TableRowJoinedUser } from '../types';
 
 export const mapStorableToDraft = ({
-  currentUserId,
+  userId,
   draftRow,
   channelRow,
   pollRow,
   quotedMessageRow,
 }: {
-  currentUserId: string;
+  userId: string;
   draftRow: TableRowJoinedDraftMessage<'draft'>;
   channelRow: TableRow<'channels'>;
   pollRow: TableRow<'poll'>;
@@ -28,7 +28,7 @@ export const mapStorableToDraft = ({
   const channel = mapStorableToChannel(channelRow);
 
   const quotedMessage = quotedMessageRow
-    ? mapStorableToMessage({ currentUserId, messageRow: quotedMessageRow, pollRow })
+    ? mapStorableToMessage({ userId, messageRow: quotedMessageRow, pollRow })
     : undefined;
 
   return {

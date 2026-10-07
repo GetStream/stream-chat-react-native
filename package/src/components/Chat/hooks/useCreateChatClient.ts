@@ -9,7 +9,7 @@ import type {
   UserResponse,
 } from 'stream-chat';
 
-import { netInfoStatusReporter } from './useIsOnline';
+import { netInfoStatusReporter } from './useConnectionLifecycle';
 
 /**
  * Names the NetInfo reporter in the client's own options, so the device's network status is reported

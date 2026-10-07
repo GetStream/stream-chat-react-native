@@ -56,7 +56,7 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback, useStateStore, useActiveMessagePaginator } from '../../hooks';
+import { useStableCallback, useStateStore, useMessagePaginator } from '../../hooks';
 import { isVideoPlayerAvailable } from '../../native';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -113,12 +113,7 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
-    | 'channel'
-    | 'disabled'
-    | 'hideStickyDateHeader'
-    | 'scrollToFirstUnreadThreshold'
-    | 'hasPendingInitialTargetLoad'
-    | 'threadList'
+    'channel' | 'disabled' | 'hideStickyDateHeader' | 'hasPendingInitialTargetLoad' | 'threadList'
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> & {
@@ -132,10 +127,7 @@ type MessageFlashListPropsWithContext = Pick<
     markRead: (options?: MarkReadFunctionOptions) => void;
     loadingMore?: boolean;
     loadingMoreRecent?: boolean;
-  } & Pick<
-    MessagesContextValue,
-    'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
-  > &
+  } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'myMessageTheme'> &
   Pick<ThreadContextValue, 'threadInstance'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
@@ -317,7 +309,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     closePicker,
     disabled,
     disableTypingIndicator,
-    // FlatList,
     FooterComponent,
     HeaderComponent = InlineLoadingMoreIndicator,
     hideStickyDateHeader,
@@ -471,7 +462,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump emits
   // it, and the effect below scrolls to it. `token` re-fires the effect on every jump (even to the
   // same id); see MessageList for the full rationale.
-  const focusPaginator = useActiveMessagePaginator();
+  const focusPaginator = useMessagePaginator();
   // `loading` means "querying with nothing to show yet" — selected here rather than handed down, so
   // a message publish does not re-render anything above this component.
   const { hasMessages, isLoading } =
@@ -1336,15 +1327,12 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     disabled,
     enableMessageGroupingByUser,
     hideStickyDateHeader,
-    isChannelActive,
-    scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
   } = useChannelContext();
   const markRead = useMarkRead(channel);
   const { client } = useChatContext();
-  const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
-    useMessagesContext();
+  const { disableTypingIndicator, myMessageTheme } = useMessagesContext();
   const {
     loadMore,
     loadMoreRecent,
@@ -1364,10 +1352,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         closePicker,
         disabled,
         disableTypingIndicator,
-        enableMessageGroupingByUser,
-        FlatList,
         hideStickyDateHeader,
-        isListActive: isChannelActive,
         loadMore,
         loadMoreRecent,
         loadingMore,
@@ -1378,9 +1363,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         myMessageTheme,
         pendingUploadsEnabled,
         readEvents,
-        scrollToFirstUnreadThreshold,
         hasPendingInitialTargetLoad,
-        shouldShowUnreadUnderlay,
         threadInstance,
         threadList,
       }}

@@ -24,7 +24,8 @@
 3. **Resolution hooks** (new in v10, additive — use these as the entry points):
    - `useChannelContext().channel` — the active `Channel` instance.
    - `useChannel()` — `threadInstance?.channel ?? channel` (thread-aware).
-   - `useMessagePaginator()` — `threadInstance?.messagePaginator ?? channel.messagePaginator`.
+   - `useMessagePaginator()` — the open thread's `messagePaginator` when the subtree renders a thread
+     list (`threadList`), `channel.messagePaginator` otherwise.
    - `useStateStore(store, selector)` — subscribe to a `StateStore` with a
      memo-stable selector (return a stable object; do not allocate fresh arrays
      inside the selector).
@@ -154,7 +155,7 @@ means changed. Details in the linked section.
 | `channel.serverConfig?.typing_events` (and the other gated flags) | `channel.config.typingEvents.enabled` — resolved, server ANDed with yours | §13.1 |
 | `client.setMessageComposerSetupFunction(fn)` | `client.config.setSetupFunction('messageComposer', fn)` | §13.1 |
 | re-setting `channel.messagePaginator.pageSize` after mount | `client.config.set({ channel: { messagePaginator: { pageSize } } })` | §13.1, §16.1 |
-| `useTargetedMessage()` / `setTargetedMessage(id)` | `useActiveMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
+| `useTargetedMessage()` / `setTargetedMessage(id)` | `useMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
 | `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state` `read` (override the component to control) | §7 |
 | app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.activeChannels` | §7.1 |
@@ -303,9 +304,8 @@ const loadMore = () => channel.messagePaginator.toTail();
 ```
 
 Use `channel.messagePaginator` for the channel message list. For thread replies,
-use `useMessagePaginator()` (thread-aware) — but note the **main** channel list
-must read `channel.messagePaginator` directly so it keeps showing channel
-messages while a thread is open.
+use `useMessagePaginator()`. It follows `threadList`, so the **main** channel
+list keeps reading `channel.messagePaginator` even while a thread is open.
 
 ---
 
@@ -411,12 +411,12 @@ setTargetedMessage(messageId);
 **After (v10):**
 
 ```tsx
-import { useActiveMessagePaginator, useIsTargetedMessage, DEFAULT_HIGHLIGHT_DURATION } from 'stream-chat-react-native';
+import { useMessagePaginator, useIsTargetedMessage, DEFAULT_HIGHLIGHT_DURATION } from 'stream-chat-react-native';
 
 // Jump to + highlight a message (loads it if not in the current window).
-// useActiveMessagePaginator resolves to the open thread's reply list when
+// useMessagePaginator resolves to the open thread's reply list when
 // `threadList` is set, and the channel's main list otherwise.
-const paginator = useActiveMessagePaginator();
+const paginator = useMessagePaginator();
 await paginator?.jumpToMessage(messageId, {
   focusReason: 'jump-to-message',
   focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
@@ -519,7 +519,7 @@ only once the query lands, which for a message that is not loaded yet is a round
 removed prop encoded this precedence internally (`!messageId && initialScrollToFirstUnreadMessage`);
 the caller states it now. With both enabled at once the two jumps race and the last one wins.
 
-where `const paginator = useActiveMessagePaginator()` — thread-aware: the open
+where `const paginator = useMessagePaginator()` — thread-aware: the open
 thread's reply paginator when `threadList` is set, the channel's otherwise. Use
 `channel.messagePaginator` directly if you specifically want the channel list.
 
@@ -2200,6 +2200,80 @@ channel for all of them, so one check covers a channel and its threads. Branch o
 **Affects:** anyone passing `allowSendBeforeAttachmentsUpload` or `enableOfflineSupport` to
 `<Channel>`, or reading `allowSendBeforeAttachmentsUpload` from `useMessageInputContext()`. The
 props are **removed, not deprecated**, so TypeScript flags them.
+
+---
+
+# Part P — UI state cleanup over the v10 state layer
+
+The SDK no longer keeps its own copies of state that `stream-chat` v10 publishes reactively. This part
+lists what that cleanup removed or renamed. Every entry names its replacement.
+
+## P.1 Unused exports removed (breaking)
+
+These had no callers left in the SDK and only existed for the pre-v10 state model:
+
+| Removed                                                                   | Use instead                                                                                     |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `useSelectedChannelState({ channel, selector, stateChangeEventKeys })`     | `useStateStore(channel.state, selector)`. The old hook only updated on the events you listed.    |
+| `reduceMessagesToString`, `findInMessagesById`, `findInMessagesByDate`     | `channel.messagePaginator.getItem(id)`, `jumpToMessage(id)`, `jumpToTheFirstUnreadMessage()`     |
+| `getLastReceivedMessage(messages)`                                         | `messages.find((m) => m.status !== 'failed')`, which is what it did                              |
+| `DebugContextProvider`, `useDebugContext`, `DebugContextValue`, `DebugDataType` | Nothing. It fed the Flipper plugin, which React Native dropped in 0.74.                     |
+
+## P.2 `useIsOnline` → `useConnectionLifecycle` (breaking)
+
+In v9 `useIsOnline(client)` returned `{ isOnline, connectionRecovering }`. In v10 it only installs the
+NetInfo status reporter and closes/reopens the socket on background/foreground, and it returns nothing.
+It is renamed to say so:
+
+```diff
+- useIsOnline(client, closeConnectionOnBackground);
++ useConnectionLifecycle(client, closeConnectionOnBackground);
+```
+
+`<Chat>` already calls it, so most apps never did. To read the status, use `useNetworkConnectionState()`
+for the device's network or `useWSConnectionState()` for the socket.
+
+## P.3 `useMutedChannels()` takes no argument (breaking)
+
+It returns the current user's muted channels, a client-wide list. The `channel` argument was never used,
+but without it the hook returned `undefined`.
+
+```diff
+- const mutedChannels = useMutedChannels(channel);
++ const mutedChannels = useMutedChannels();
+```
+
+For one channel's mute state use `useIsChannelMuted(channel)`.
+
+## P.4 Context fields that nothing read (breaking, type-level)
+
+| Removed                                            | Use instead                                                                                  |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `useChannelContext().isChannelActive`              | `!thread \|\| threadList` for the old meaning; `useStateStore(channel.state, (s) => ({ active: s.active }))` for "is this channel being read" |
+| `useChannelContext().scrollToFirstUnreadThreshold` | Nothing. It was always `0`.                                                                  |
+| `useMessagesContext().initialScrollToFirstUnreadMessage` | The value you pass to `<Channel initialScrollToFirstUnreadMessage>`                    |
+| `useMessagesContext().quotedMessage`               | It was never set. Read the composer: `useStateStore(messageComposer.state, (s) => ({ quotedMessage: s.quotedMessage }))` |
+| `useThreadContext().parentMessagePreventPress`     | It was never set. Pass `parentMessagePreventPress` to `<Thread>` or `<ThreadFooterComponent>`, as before. |
+
+## P.5 Props that did nothing (breaking, type-level)
+
+- `<MessageList>` / `<MessageFlashList>`: `scrollToFirstUnreadThreshold` and `shouldShowUnreadUnderlay`.
+  Rows read `shouldShowUnreadUnderlay` from `<Channel>`, so set it there.
+- `<MessageFlashList FlatList>`: FlashList never used it.
+- `<Channel isOnline>`: accepted by the props type and ignored.
+
+## P.6 `OfflineStoreApis`: `currentUserId` → `userId` (breaking)
+
+Every `OfflineStoreApis` function that took `currentUserId` now takes `userId`, matching
+`AbstractOfflineDB`:
+
+```diff
+- OfflineStoreApis.getChannels({ channelIds, currentUserId });
++ OfflineStoreApis.getChannels({ channelIds, userId });
+```
+
+`OfflineStoreApis.deleteReactionsForMessage` is removed. Nothing called it and `AbstractOfflineDB` has no
+slot for it; `deleteReaction` deletes one reaction.
 
 ---
 

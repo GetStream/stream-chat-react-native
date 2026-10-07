@@ -5,14 +5,13 @@ import { Channel, NetworkConnectionState, OfflineDBState } from 'stream-chat';
 
 import { useClientMutedUsers } from './hooks';
 import { useAppSettings } from './hooks/useAppSettings';
+import { useConnectionLifecycle } from './hooks/useConnectionLifecycle';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useInitializeOfflineDb } from './hooks/useInitializeOfflineDb';
-import { useIsOnline } from './hooks/useIsOnline';
 import { usePendingUploadsDefault } from './hooks/usePendingUploadsDefault';
 
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { ThemeProvider, ThemeStyle, useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
@@ -97,7 +96,7 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      * them to the offline DB. For a very large payload this replay is both costly
      * on-device and unnecessary for what the user is looking at — the active
      * channel list and any open channel are refreshed independently on reconnect
-     * (via `queryChannels` + `channel.watch()`). When the payload exceeds this
+     * (by `client.connectionRecovery`). When the payload exceeds this
      * limit the replay is skipped and that reconnect refresh covers the visible
      * channels; inactive channels are hydrated on their next explicit query. The
      * last-sync timestamp is still advanced so the same payload is not retried.
@@ -123,49 +122,17 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     /**
      * Instance of Streami18n class should be provided to Chat component to enable internationalization.
      *
-     * Stream provides following list of in-built translations:
-     * 1. English (en)
-     * 2. Dutch (nl)
-     * 3. ...
-     * 4. ...
-     *
-     * Simplest way to start using chat components in one of the in-built languages would be following:
+     * The SDK ships English only. Add a language by registering a dictionary keyed by the SDK's
+     * dotted translation keys, then switching to it:
      *
      * ```
-     * const i18n = new Streami18n('nl');
-     * <Chat client={chatClient} i18nInstance={i18n}>
-     *  ...
-     * </Chat>
-     * ```
-     *
-     * If you would like to override certain keys in in-built translation.
-     * UI will be automatically updated in this case.
-     *
-     * ```
-     * const i18n = new Streami18n('nl');
-     *
-     * i18n.registerTranslation('nl', {
-     *  'Nothing yet...': 'Nog Niet ...',
-     *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
-     * });
-     *
-     * <Chat client={chatClient} i18nInstance={i18n}>
-     *  ...
-     * </Chat>
-     * ```
-     *
-     * You can use the same function to add whole new language.
-     *
-     * ```
-     * const i18n = new Streami18n('it');
+     * const i18n = new Streami18n();
      *
      * i18n.registerTranslation('it', {
-     *  'Nothing yet...': 'Non ancora ...',
-     *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} a {{ secondUser }} stanno scrivendo...',
+     *  'channelPreview.noMessages.text': 'Ancora nessun messaggio',
      * });
-     *
-     * // Make sure to call setLanguage to reflect new language in UI.
      * i18n.setLanguage('it');
+     *
      * <Chat client={chatClient} i18nInstance={i18n}>
      *  ...
      * </Chat>
@@ -256,10 +223,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     [translators, userLanguage],
   );
 
-  /**
-   * Setup connection event listeners
-   */
-  useIsOnline(client, closeConnectionOnBackground);
+  useConnectionLifecycle(client, closeConnectionOnBackground);
   usePendingUploadsDefault(client, enableOfflineSupport);
 
   // The device's network, for the one consumer that needs it before the context exists.
@@ -273,9 +237,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
    * TODO: reimplement
    */
   const mutedUsers = useClientMutedUsers(client);
-
-  const debugRef = useDebugContext();
-  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
 
   const userID = client.userID;
 
@@ -291,19 +252,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
       client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
       client.persistUserOnConnectionFailure = enableOfflineSupport;
     }
-
-    if (isDebugModeEnabled) {
-      if (debugRef.current.setEventType) {
-        debugRef.current.setEventType('send');
-      }
-      if (debugRef.current.setSendEventParams) {
-        debugRef.current.setSendEventParams({
-          action: 'Client',
-          data: client.user,
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, enableOfflineSupport]);
 
   const setActiveChannel = (newChannel?: Channel) => setChannel(newChannel);

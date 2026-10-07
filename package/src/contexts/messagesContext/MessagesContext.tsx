@@ -54,10 +54,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * */
   giphyVersion: keyof NonNullable<Attachment['giphy']>;
 
-  /**
-   * When true, messageList will be scrolled at first unread message, when opened.
-   */
-  initialScrollToFirstUnreadMessage: boolean;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
@@ -299,7 +295,6 @@ export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerat
    * ```
    */
   onPressMessage?: (payload: MessagePressableHandlerPayload) => void;
-  quotedMessage?: LocalMessage | null;
   /**
    * The position of the reaction list in the message
    */

@@ -14,7 +14,7 @@ import { SqliteClient } from '../SqliteClient';
  * Gets the channels from database for given filter and sort query.
  *
  * @param {Object} param
- * @param {string} param.currentUserId Id of current logged in user
+ * @param {string} param.userId Id of current logged in user
  * @param {Object} param.filters Filters for channels https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=su#query-parameters
  * @param {Object} param.sort Sort for channels https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=su#query-parameters
  *
@@ -22,12 +22,12 @@ import { SqliteClient } from '../SqliteClient';
  * they were cached with. Returns null if filters + sort query doesn't exist in "channelQueries" table.
  */
 export const getChannelsForFilterSort = async ({
-  currentUserId,
+  userId,
   filters,
   options,
   sort,
 }: {
-  currentUserId: string;
+  userId: string;
   filters?: ChannelFilters;
   options?: ChannelOptions;
   sort?: SortParamRequest[];
@@ -56,7 +56,7 @@ export const getChannelsForFilterSort = async ({
   return {
     channels: await getChannels({
       channelIds: cids,
-      currentUserId,
+      userId,
     }),
     predefinedFilter,
   };

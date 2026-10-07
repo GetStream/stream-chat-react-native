@@ -15,28 +15,28 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @param {Object} param
  * @param {Array} param.channelIds List of channel ids to fetch.
- * @param {Array} param.currentUserId Id of the current logged in user.
+ * @param {Array} param.userId Id of the current logged in user.
  *
  * @returns {Array} Channels with enriched state.
  */
 export const getChannels = async ({
   channelIds,
-  currentUserId,
+  userId,
 }: {
   channelIds: string[];
-  currentUserId: string;
+  userId: string;
 }): Promise<Omit<ChannelStateResponseFields, 'duration'>[]> => {
-  SqliteClient.logger?.('info', 'getChannels', { channelIds, currentUserId });
+  SqliteClient.logger?.('info', 'getChannels', { channelIds, userId });
 
   const [channels, cidVsDraft, cidVsMembers, cidVsReads, cidVsMessages, cidVsActiveLocations] =
     await Promise.all([
       selectChannels({ channelIds }),
-      getDraftForChannels({ channelIds, currentUserId }),
+      getDraftForChannels({ channelIds, userId }),
       getMembers({ channelIds }),
       getReads({ channelIds }),
       getChannelMessages({
         channelIds,
-        currentUserId,
+        userId,
       }),
       getChannelActiveLocations({ channelIds }),
     ]);
@@ -47,7 +47,7 @@ export const getChannels = async ({
     active_live_locations: cidVsActiveLocations[c.cid] || [],
     draft: cidVsDraft[c.cid],
     members: cidVsMembers[c.cid] || [],
-    membership: (cidVsMembers[c.cid] || []).find((member) => member.user_id === currentUserId),
+    membership: (cidVsMembers[c.cid] || []).find((member) => member.user_id === userId),
     messages: cidVsMessages[c.cid] || [],
     pinned_messages: [],
     read: cidVsReads[c.cid] || [],

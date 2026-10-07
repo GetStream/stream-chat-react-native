@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
-import { ThreadFooterComponent } from './components/ThreadFooterComponent';
+import {
+  ThreadFooterComponent,
+  ThreadFooterComponentProps,
+} from './components/ThreadFooterComponent';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -26,7 +29,8 @@ try {
 }
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'threadInstance'> & {
+  Pick<ThreadContextValue, 'threadInstance'> &
+  Pick<ThreadFooterComponentProps, 'parentMessagePreventPress'> & {
     /**
      * Additional props for underlying MessageComposer component.
      * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input/#props

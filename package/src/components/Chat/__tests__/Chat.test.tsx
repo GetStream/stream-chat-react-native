@@ -473,7 +473,7 @@ describe('Chat offline DB encryption', () => {
   };
 
   /**
-   * Chat mounts useIsOnline, which opens the websocket whenever the app comes to the
+   * Chat mounts useConnectionLifecycle, which opens the websocket whenever the app comes to the
    * foreground. Left real, that connection attempt outlives the test and rejects
    * asynchronously. Nothing in this block needs a connection.
    */

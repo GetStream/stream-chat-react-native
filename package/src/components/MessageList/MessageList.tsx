@@ -46,7 +46,6 @@ import {
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 
 import { usePendingUploadsEnabled } from '../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import {
@@ -68,7 +67,7 @@ import {
 import { mergeThemes, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import { useStableCallback, useActiveMessagePaginator } from '../../hooks';
+import { useStableCallback, useMessagePaginator } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { bumpOverlayLayoutRevision, useHasActiveId } from '../../state-store';
 import { MessageInputHeightState } from '../../state-store/message-input-height-store';
@@ -197,10 +196,7 @@ type MessageListPropsWithContext = Pick<
   'closePicker' | 'attachmentPickerStore'
 > &
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
-  Pick<
-    ChannelContextValue,
-    'channel' | 'disabled' | 'hideStickyDateHeader' | 'scrollToFirstUnreadThreshold' | 'threadList'
-  > &
+  Pick<ChannelContextValue, 'channel' | 'disabled' | 'hideStickyDateHeader' | 'threadList'> &
   Pick<ChatContextValue, 'client'> & {
     loadMore: () => Promise<void>;
     loadMoreRecent: () => Promise<void>;
@@ -208,10 +204,7 @@ type MessageListPropsWithContext = Pick<
     hasMore?: boolean;
     loadingMore?: boolean;
     loadingMoreRecent?: boolean;
-  } & Pick<
-    MessagesContextValue,
-    'disableTypingIndicator' | 'FlatList' | 'myMessageTheme' | 'shouldShowUnreadUnderlay'
-  > &
+  } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'FlatList' | 'myMessageTheme'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<ThreadContextValue, 'threadInstance'> & {
     /**
@@ -822,7 +815,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   // Scroll-to-target is driven by the paginator's messageFocusSignal (thread-aware): a jump
   // (jumpToMessage / jumpToTheFirstUnreadMessage / emitMessageFocusSignal) emits it, and the effect
   // below scrolls to it. `token` re-fires the effect on every jump, even to the same message id.
-  const focusPaginator = useActiveMessagePaginator();
+  const focusPaginator = useMessagePaginator();
   // `loading` means "querying with nothing to show yet" — selected here rather than handed down, so
   // a message publish does not re-render anything above this component.
   const { hasMessages, isLoading } =
@@ -1162,22 +1155,6 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     setIsUnreadNotificationOpen(false);
   });
 
-  const debugRef = useDebugContext();
-
-  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
-
-  if (isDebugModeEnabled) {
-    if (debugRef.current.setEventType) {
-      debugRef.current.setEventType('send');
-    }
-    if (debugRef.current.setSendEventParams) {
-      debugRef.current.setSendEventParams({
-        action: threadInstance ? 'ThreadList' : 'Messages',
-        data: processedMessageList,
-      });
-    }
-  }
-
   // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
   let additionalFlatListPropsExcludingStyle:
     | Omit<NonNullable<typeof additionalFlatListProps>, 'style' | 'contentContainerStyle'>
@@ -1425,19 +1402,12 @@ export type MessageListProps = Partial<MessageListPropsWithContext>;
 
 export const MessageList = (props: MessageListProps) => {
   const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
-  const {
-    channel,
-    disabled,
-    enableMessageGroupingByUser,
-    hideStickyDateHeader,
-    scrollToFirstUnreadThreshold,
-    threadList,
-  } = useChannelContext();
+  const { channel, disabled, enableMessageGroupingByUser, hideStickyDateHeader, threadList } =
+    useChannelContext();
   const markRead = useMarkRead(channel);
   const { client } = useChatContext();
   const { readEvents } = useOwnCapabilitiesContext();
-  const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
-    useMessagesContext();
+  const { disableTypingIndicator, FlatList, myMessageTheme } = useMessagesContext();
   const pendingUploadsEnabled = usePendingUploadsEnabled();
   const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
   const {
@@ -1456,7 +1426,6 @@ export const MessageList = (props: MessageListProps) => {
         closePicker,
         disabled,
         disableTypingIndicator,
-        enableMessageGroupingByUser,
         FlatList,
         hideStickyDateHeader,
         loadMore,
@@ -1467,8 +1436,6 @@ export const MessageList = (props: MessageListProps) => {
         myMessageTheme,
         pendingUploadsEnabled,
         readEvents,
-        scrollToFirstUnreadThreshold,
-        shouldShowUnreadUnderlay,
         threadInstance,
         threadList,
         hasMore,

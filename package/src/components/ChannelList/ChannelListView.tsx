@@ -10,7 +10,6 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useStableCallback } from '../../hooks';
@@ -89,7 +88,6 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
    * change to loadingChannels is registered.
    */
   const [loading, setLoading] = useState(true);
-  const debugRef = useDebugContext();
   const styles = useStyles();
 
   useEffect(() => {
@@ -97,23 +95,6 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
       setLoading(!!loadingChannels);
     }
   }, [loading, loadingChannels]);
-
-  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
-
-  if (isDebugModeEnabled) {
-    if (debugRef.current.setEventType) {
-      debugRef.current.setEventType('send');
-    }
-    if (debugRef.current.setSendEventParams) {
-      debugRef.current.setSendEventParams({
-        action: 'Channels',
-        data: channels?.map((channel) => ({
-          data: channel.data,
-          members: channel.state.members,
-        })),
-      });
-    }
-  }
 
   const onEndReached = useStableCallback(() => {
     if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
