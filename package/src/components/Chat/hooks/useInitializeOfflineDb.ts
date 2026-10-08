@@ -31,7 +31,8 @@ export type UseInitializeOfflineDbParams = {
 };
 
 /**
- * Attaches an offline database to the client and initializes it for a user.
+ * Attaches an offline database to the client and initializes it for a user. Returns the attached
+ * database, so the caller can subscribe to its state: it is attached after the first render.
  *
  * **Raises** whatever prevented the database from opening, from render, so an error
  * boundary above the caller can decide what to do. The offline database is never
@@ -53,6 +54,7 @@ export const useInitializeOfflineDb = ({
    * retry would loop forever.
    */
   const [initializationError, setInitializationError] = useState<SqliteClientError>();
+  const [offlineDb, setOfflineDb] = useState(() => client.offlineDb);
 
   const { getEncryptionKey, maxSyncEventsLimit } = options ?? {};
 
@@ -66,6 +68,7 @@ export const useInitializeOfflineDb = ({
 
   const initialize = useCallback(async () => {
     if (!(userID && enabled)) {
+      setOfflineDb(client.offlineDb);
       return;
     }
 
@@ -93,16 +96,17 @@ export const useInitializeOfflineDb = ({
       );
     }
 
-    const { offlineDb } = client;
-    if (offlineDb) {
-      await offlineDb.init(userID);
+    const attachedOfflineDb = client.offlineDb;
+    setOfflineDb(attachedOfflineDb);
+    if (attachedOfflineDb) {
+      await attachedOfflineDb.init(userID);
       // Note: Since `init()` currently swallows errors by design, we have to rely
       // on consuming the error later in order to be able to still rethrow without
       // introducing a breaking change.
       // TODO: The DB API should be changed in the next major to always throw upwards
       //       and let integrators handle it if necessary.
       setInitializationError(
-        offlineDb instanceof OfflineDB ? offlineDb.initializationError : undefined,
+        attachedOfflineDb instanceof OfflineDB ? attachedOfflineDb.initializationError : undefined,
       );
     }
   }, [client, enabled, isEncryptionEnabled, maxSyncEventsLimit, resolveEncryptionKey, userID]);
@@ -114,4 +118,6 @@ export const useInitializeOfflineDb = ({
   if (initializationError) {
     throw initializationError;
   }
+
+  return offlineDb;
 };

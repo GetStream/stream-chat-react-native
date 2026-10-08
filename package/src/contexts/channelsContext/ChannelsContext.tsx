@@ -84,12 +84,6 @@ export type ChannelsContextValue = {
    * Removes all the existing channels from UI and loads fresh channels
    * */
   reloadList: () => Promise<void>;
-  // /**
-  //  * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
-  //  *
-  //  * @param channel A channel object
-  //  */
-  // setActiveChannel?: (channel: Channel) => void;
   /**
    * Function to gain access to the inner FlatList ref
    *

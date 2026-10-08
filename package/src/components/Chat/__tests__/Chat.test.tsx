@@ -215,36 +215,70 @@ describe('ChatContext', () => {
     );
 
     await waitFor(() => {
-      expect(context).toBeInstanceOf(Object);
-      expect(context.channel).toBeUndefined();
       expect(context.client).toBe(chatClient);
-      expect(context.setActiveChannel).toBeInstanceOf(Function);
+      expect(Object.keys(context).sort()).toEqual([
+        'client',
+        'getAppSettings',
+        'isMessageAIGenerated',
+      ]);
     });
   });
 
-  it('calls setActiveChannel to set a new channel in context', async () => {
-    let context: ChatContextValue = {} as ChatContextValue;
+  // The context used to be rebuilt by every mute, every new connection id and a listener count, and
+  // everything reading it re-rendered with it.
+  it('keeps the same value through mutes and reconnects', async () => {
+    const client = await getTestClientWithUser({ id: 'me' });
+    const contexts: ChatContextValue[] = [];
 
     render(
-      <Chat client={chatClient}>
-        <ChatContextConsumer
-          fn={(ctx) => {
-            context = ctx;
-          }}
-        />
+      <Chat client={client}>
+        <ChatContextConsumer fn={(ctx) => contexts.push(ctx)} />
       </Chat>,
     );
+    await waitFor(() => expect(client.getAppSettings).toHaveBeenCalled());
+    const first = contexts[contexts.length - 1];
 
-    const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
+    act(() => {
+      client.mutedUsersStore.next({
+        mutedUsers: [{ target: { id: 'other' }, user: { id: 'me' } }],
+      } as unknown as Parameters<typeof client.mutedUsersStore.next>[0]);
+      client.mutedChannels = [
+        { channel: { cid: 'messaging:muted' } },
+      ] as typeof client.mutedChannels;
+      client.clientID = 'a-new-connection';
+      dispatchConnectionChangedEvent(client, false);
+      dispatchConnectionChangedEvent(client, true);
+    });
 
-    await waitFor(() => expect(context.channel).toBeUndefined());
-    act(() =>
-      context.setActiveChannel(
-        channel as unknown as Parameters<typeof context.setActiveChannel>[0],
-      ),
+    expect(new Set(contexts).size).toBe(1);
+    expect(contexts[contexts.length - 1]).toBe(first);
+  });
+
+  it('rebuilds the value when isMessageAIGenerated changes', async () => {
+    let context: ChatContextValue = {} as ChatContextValue;
+    const consumer = (
+      <ChatContextConsumer
+        fn={(ctx) => {
+          context = ctx;
+        }}
+      />
     );
+    const first = jest.fn(() => false);
+    const second = jest.fn(() => true);
 
-    await waitFor(() => expect(context.channel).toStrictEqual(channel));
+    const { rerender } = render(
+      <Chat client={chatClient} isMessageAIGenerated={first}>
+        {consumer}
+      </Chat>,
+    );
+    await waitFor(() => expect(context.isMessageAIGenerated).toBe(first));
+
+    rerender(
+      <Chat client={chatClient} isMessageAIGenerated={second}>
+        {consumer}
+      </Chat>,
+    );
+    await waitFor(() => expect(context.isMessageAIGenerated).toBe(second));
   });
 });
 
@@ -455,6 +489,38 @@ describe('TranslationContext', () => {
     });
     // `false` opts out: the client stores no limit (undefined), so replay always runs.
     expect(chatClientWithUser.offlineDb!.syncManager.syncMaxEventCount).toBeUndefined();
+  });
+});
+
+describe('Chat with a user connected after it mounted', () => {
+  afterEach(cleanup);
+
+  // Nothing told <Chat> that a user had connected: it read `client.userID` during render, so the
+  // offline database was only set up if something unrelated happened to re-render it afterwards.
+  it('sets up the offline database for that user and then renders its children', async () => {
+    const client = getTestClient();
+
+    render(
+      <Chat client={client} enableOfflineSupport>
+        <View testID='children' />
+      </Chat>,
+    );
+    // Let everything <Chat> starts on mount (translations, NetInfo) settle first, so the user
+    // connecting is the only thing left that could make it render again.
+    await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
+    await act(() => new Promise((resolve) => setTimeout(resolve, 100)));
+    expect(client.offlineDb).toBeUndefined();
+
+    act(() => {
+      const user = { id: 'late-user', mutes: [] };
+      Object.assign(client, { _user: { ...user }, user });
+      // The socket coming up is the next thing connectUser() does after setting the user.
+      // eslint-disable-next-line no-underscore-dangle -- internal status setter, no public way to flip it
+      client.wsConnection._setStatus({ isHealthy: true });
+    });
+
+    await waitFor(() => expect(client.offlineDb?.state.getLatestValue().userId).toBe('late-user'));
+    await waitFor(() => expect(screen.getByTestId('children')).toBeTruthy());
   });
 });
 

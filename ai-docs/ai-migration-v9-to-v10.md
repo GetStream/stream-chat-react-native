@@ -2326,6 +2326,63 @@ These change what the user sees:
   scrolled; it only blocked paging for a moment.)
 - The scroll-to-bottom accessibility action's unread count updates as reads arrive.
 
+
+## P.11 `ChatContext` holds only `client`, `getAppSettings` and `isMessageAIGenerated` (breaking)
+
+The other fields were either never read or duplicated state the client already publishes. Each one
+made `<Chat>` rebuild the context, and every component reading `useChatContext()` re-rendered with it.
+The context value now only changes with the `client` or `isMessageAIGenerated` props.
+
+| Removed | Use instead |
+| --- | --- |
+| `useChatContext().appSettings` | `await useChatContext().getAppSettings()` |
+| `useChatContext().channel`, `.setActiveChannel` | Keep the open channel in your own navigation state and render `<Channel channel={…}>`. Inside a `<Channel>`, `useChannelContext().channel`. |
+| `useChatContext().mutedUsers` | `useMutedUsers()` |
+| `useChatContext().enableOfflineSupport` | `client.offlineDb !== undefined` |
+
+`getAppSettings()` works like the one in `stream-chat-react`: the first call fetches the app settings
+and later calls reuse them. `<Chat>` already calls it once the user is connected, so it usually
+resolves immediately. With offline support, a successful fetch is copied to the offline database and a
+failed one falls back to that copy. A failed fetch is not kept, so the next call tries again.
+
+```diff
+- const { appSettings, mutedUsers } = useChatContext();
++ const { getAppSettings } = useChatContext();
++ const mutedUsers = useMutedUsers();
++ const appSettings = await getAppSettings();
+```
+
+`useCreateChatContext` takes `{ client, getAppSettings, isMessageAIGenerated }` and memoizes on
+exactly those three.
+
+## P.12 Chat hooks removed (breaking)
+
+| Removed | Use instead |
+| --- | --- |
+| `useClientMutedUsers(client)` | `useMutedUsers()`. Same store, same result. |
+| `useAppSettings(client, isOnline, enableOfflineSupport, dbReady)` | `useChatContext().getAppSettings()` |
+
+## P.13 `MessagePropsWithContext.chatContext` removed (breaking, type-level)
+
+`Message` passed the whole chat context to its memoized inner component. The inner component now reads
+`useChatContext()` itself, which is safe because the context no longer changes. Only code typed against
+`MessagePropsWithContext` changes:
+
+```diff
+- const { chatContext } = props as MessagePropsWithContext;
+- const { client } = chatContext;
++ const { client } = useChatContext();
+```
+
+A message row still updates when its author is muted: the row reads the mutes itself.
+
+## P.14 `<Chat>` follows the connected user
+
+`<Chat>` used to read `client.userID` during render, so a `<Chat>` mounted before `connectUser()`
+resolved only noticed the user, and only set up the offline database for them, if something
+unrelated re-rendered it. It now re-reads the user whenever the client's connection state changes,
+and the offline database's state from the instance it attached. No API change.
+
 ---
 
 # Part I — i18n

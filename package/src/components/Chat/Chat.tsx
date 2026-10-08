@@ -1,10 +1,10 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { Channel, NetworkConnectionState, OfflineDBState } from 'stream-chat';
+import type { OfflineDBState } from 'stream-chat';
 
-import { useClientMutedUsers } from './hooks';
-import { useAppSettings } from './hooks/useAppSettings';
+import { useAppSettingsGetter } from './hooks/useAppSettingsGetter';
+import { useClientUserId } from './hooks/useClientUserId';
 import { useConnectionLifecycle } from './hooks/useConnectionLifecycle';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useInitializeOfflineDb } from './hooks/useInitializeOfflineDb';
@@ -170,10 +170,6 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     style?: ThemeStyle;
   };
 
-const networkSelector = (nextValue: NetworkConnectionState) => ({
-  isOnline: nextValue.isOnline,
-});
-
 const selector = (nextValue: OfflineDBState) =>
   ({
     initialized: nextValue.initialized,
@@ -194,8 +190,6 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     useNativeMultipartUpload = false,
   } = props;
   const { ChatLoadingIndicator } = useComponentsContext();
-
-  const [channel, setChannel] = useState<Channel>();
 
   // Setup translators
   const translators = useStreami18n(i18nInstance);
@@ -226,19 +220,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   useConnectionLifecycle(client, closeConnectionOnBackground);
   usePendingUploadsDefault(client, enableOfflineSupport);
 
-  // The device's network, for the one consumer that needs it before the context exists.
-  const isNetworkOnline = useStateStore(client.networkConnection?.state, networkSelector)?.isOnline;
-
-  const { initialized: offlineDbInitialized, userId: offlineDbUserId } =
-    useStateStore(client.offlineDb?.state, selector) ?? {};
-
-  /**
-   * Setup muted user listener
-   * TODO: reimplement
-   */
-  const mutedUsers = useClientMutedUsers(client);
-
-  const userID = client.userID;
+  const userId = useClientUserId(client);
 
   useEffect(() => {
     if (client) {
@@ -254,14 +236,14 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     }
   }, [client, enableOfflineSupport]);
 
-  const setActiveChannel = (newChannel?: Channel) => setChannel(newChannel);
-
-  useInitializeOfflineDb({
+  const offlineDb = useInitializeOfflineDb({
     client,
     enabled: enableOfflineSupport,
     options: { getEncryptionKey: getOfflineDbEncryptionKey, maxSyncEventsLimit },
-    userID,
+    userID: userId,
   });
+  const { initialized: offlineDbInitialized, userId: offlineDbUserId } =
+    useStateStore(offlineDb?.state, selector) ?? {};
 
   useEffect(() => {
     if (!client) {
@@ -289,26 +271,17 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     installNativeMultipartAdapter(client);
   }, [client, useNativeMultipartUpload]);
 
-  const initialisedDatabase = !!offlineDbInitialized && userID === offlineDbUserId;
+  const initialisedDatabase = !!offlineDbInitialized && userId === offlineDbUserId;
 
-  const appSettings = useAppSettings(
+  const getAppSettings = useAppSettingsGetter({
     client,
-    isNetworkOnline,
-    enableOfflineSupport,
-    initialisedDatabase,
-  );
-
-  const chatContext = useCreateChatContext({
-    appSettings,
-    channel,
-    client,
-    enableOfflineSupport,
-    isMessageAIGenerated,
-    mutedUsers,
-    setActiveChannel,
+    ready: !enableOfflineSupport || initialisedDatabase,
+    userId,
   });
 
-  if (userID && enableOfflineSupport && !initialisedDatabase) {
+  const chatContext = useCreateChatContext({ client, getAppSettings, isMessageAIGenerated });
+
+  if (userId && enableOfflineSupport && !initialisedDatabase) {
     // if user id has been set and offline support is enabled, we need to wait for database to be initialised
     return ChatLoadingIndicator ? <ChatLoadingIndicator /> : null;
   }
@@ -328,12 +301,12 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
  *
  * The ChatContext provides the following props:
  *
- * - channel - currently active channel
  * - client - client connection
+ * - getAppSettings - resolves the app's settings
+ * - isMessageAIGenerated - decides whether a message renders as AI generated
  *
  * Connection status is NOT on this context. Read it with `useWSConnectionState()` (our socket)
  * or `useNetworkConnectionState()` (the device's network) — they are separate facts.
- * - setActiveChannel - function to set the currently active channel
  */
 export const Chat = (props: PropsWithChildren<ChatProps>) => {
   const { theme } = useTheme();
