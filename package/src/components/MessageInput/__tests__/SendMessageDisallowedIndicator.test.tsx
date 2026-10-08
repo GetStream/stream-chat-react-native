@@ -130,6 +130,34 @@ describe('SendMessageDisallowedIndicator', () => {
     });
   });
 
+  it('renders the SendMessageDisallowedIndicator once capabilities without send-message arrive', async () => {
+    // A channel opened before its query landed: neither initialized nor holding capabilities yet.
+    const data = channel.data!;
+    act(() => {
+      channel.initialized = false;
+      channel.data = { ...data, own_capabilities: undefined };
+    });
+
+    renderComponent({ channelProps: { channel, initializeOnMount: false }, client, props: {} });
+    await waitFor(() =>
+      expect(screen.queryByTestId('send-message-disallowed-indicator')).toBeNull(),
+    );
+
+    // The query response publishes the capabilities before the channel is marked initialized.
+    act(() => {
+      channel.data = {
+        ...data,
+        own_capabilities: data.own_capabilities!.filter(
+          (capability) => capability !== 'send-message',
+        ),
+      };
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('send-message-disallowed-indicator')).toBeTruthy(),
+    );
+  });
+
   it('should not render the SendMessageDisallowedIndicator if the channel is frozen and the send-message capability is present', async () => {
     const props = {};
     const channelProps = { channel };

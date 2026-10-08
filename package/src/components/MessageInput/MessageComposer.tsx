@@ -10,7 +10,12 @@ import Animated, {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type ChannelWatchState, type MembersState, type UserResponse } from 'stream-chat';
+import {
+  type ChannelDataState,
+  type ChannelWatchState,
+  type MembersState,
+  type UserResponse,
+} from 'stream-chat';
 
 import { MicPositionProvider } from './contexts/MicPositionContext';
 
@@ -173,6 +178,11 @@ type MessageComposerPropsWithContext = { isOnline: boolean } & Pick<
 
 const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
+});
+
+// Capabilities arrive with the channel's data, from the server or the offline database.
+const capabilitiesKnownSelector = (state: ChannelDataState) => ({
+  capabilitiesKnown: Array.isArray(state.data?.own_capabilities),
 });
 
 const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
@@ -616,6 +626,7 @@ export const MessageComposer = (props: MessageComposerProps) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel } = useChannelContext();
+  const { capabilitiesKnown } = useStateStore(channel.state, capabilitiesKnownSelector);
 
   const {
     audioRecorderManager,
@@ -655,7 +666,7 @@ export const MessageComposer = (props: MessageComposerProps) => {
    *
    */
   if (
-    channel.initialized &&
+    capabilitiesKnown &&
     !ownCapabilities.sendMessage &&
     !editing &&
     SendMessageDisallowedIndicator

@@ -7,9 +7,7 @@ import {
   ChannelLifecycleState,
   LocalMessage,
   MessageComposerConfig,
-  SendMessageOptions,
   Event as StreamEvent,
-  MessageRequest as StreamMessage,
   Thread,
 } from 'stream-chat';
 
@@ -73,7 +71,6 @@ import {
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 
-import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
@@ -252,19 +249,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     disableKeyboardCompatibleView?: boolean;
     /**
-     * A method invoked just after the first optimistic update of a new message,
-     * but before any other HTTP requests happen. Can be used to do extra work
-     * (such as creating a channel, or editing a message) before the local message
-     * is sent.
-     * @param channelId
-     * @param messageData Message object
-     */
-    preSendMessageRequest?: (options: {
-      localMessage: LocalMessage;
-      message: StreamMessage;
-      options?: SendMessageOptions;
-    }) => Promise<void>;
-    /**
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
@@ -356,7 +340,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
-    preSendMessageRequest,
     enableMessageGroupingByUser = true,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
@@ -649,58 +632,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     availableCommands: [],
   };
 
-  /**
-   * MESSAGE METHODS
-   */
-  const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
-    async ({ localMessage, message, options }) => {
-      if (preSendMessageRequest) {
-        await preSendMessageRequest({ localMessage, message, options });
-      }
-
-      // Preserve RN's moderation slash-command patching ("/mute @user" -> "/mute @userId").
-      const messageToSend = message
-        ? {
-            ...message,
-            text: patchMessageTextCommand(message.text ?? '', message.mentioned_users ?? []),
-          }
-        : message;
-
-      // The stream-chat message-operations engine owns the full optimistic lifecycle (pending ->
-      // received/failed), offline-DB persistence and paginator ingest — for both channel messages
-      // (channel.messagePaginator) and thread replies (thread.messagePaginator, which the thread
-      // instance ingests into directly). Its single optimistic ingest shows the message (pending)
-      // instantly, then it awaits any attachment uploads still in flight and POSTs — through a
-      // `sendMessageRequest` registered via `client.config.set(...)`, if any. It throws on failure, which the MessageInput send flow
-      // catches to surface a notification.
-      await (threadInstance ?? channel).messageOperations.send({
-        localMessage,
-        message: messageToSend,
-        options,
-      });
-    },
-  );
-
-  const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
-    async ({ localMessage, options }) => {
-      if (!channel) {
-        throw new Error('Channel has not been initialized');
-      }
-      // The LLC handles the optimistic local update, the network request (honoring any
-      // `updateMessageRequest` registered through `client.config.set({ channel: { requestHandlers } })`),
-      // the received/failed state transitions, offline queueing and the offline-DB write.
-      //
-      // Routed by MEMBERSHIP rather than "a thread is open", mirroring `useMessageOperations`'
-      // `sendReaction`: a reply loaded in the open thread is edited through the thread instance, and
-      // anything else — including the thread's own PARENT message, which the reply paginator cannot
-      // hold — through the channel.
-      const target = threadInstance?.messagePaginator.getItem(localMessage.id)
-        ? threadInstance
-        : channel;
-      await target.messageOperations.update({ localMessage, options });
-    },
-  );
-
   const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
   const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
 
@@ -763,7 +694,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channelId,
     compressImageQuality,
     createPollOptionGap,
-    editMessage,
     focusInputOnPickerClose,
     handleAttachButtonPress,
     hasCameraPicker,
@@ -773,7 +703,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     messageInputFloating,
     messageInputHeightStore,
     openPollCreationDialog,
-    sendMessage,
     setInputRef,
   });
 

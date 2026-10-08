@@ -1,9 +1,7 @@
-import { useCreateMessageComposer } from './useCreateMessageComposer';
-
 import { useMessageComposerContext } from '../../messageComposerContext/MessageComposerContext';
 
-export const useMessageComposer = () => {
-  const messageComposerContext = useMessageComposerContext();
-
-  return useCreateMessageComposer(messageComposerContext);
-};
+/**
+ * The composer in use: the edit composer while a message is being edited, otherwise the thread's or
+ * the channel's own.
+ */
+export const useMessageComposer = () => useMessageComposerContext().messageComposer;

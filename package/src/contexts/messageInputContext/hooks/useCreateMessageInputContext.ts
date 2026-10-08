@@ -16,7 +16,6 @@ export const useCreateMessageInputContext = ({
   closePollCreationDialog,
   compressImageQuality,
   createPollOptionGap,
-  editMessage,
   focusInputOnPickerClose,
   handleAttachButtonPress,
   hasCameraPicker,
@@ -59,7 +58,6 @@ export const useCreateMessageInputContext = ({
       closePollCreationDialog,
       compressImageQuality,
       createPollOptionGap,
-      editMessage,
       focusInputOnPickerClose,
       handleAttachButtonPress,
       hasCameraPicker,
@@ -86,7 +84,7 @@ export const useCreateMessageInputContext = ({
       stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [threadId, showPollCreationDialog],
+    [hasCommands, threadId, showPollCreationDialog],
   );
 
   return messageInputContext;

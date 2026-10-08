@@ -168,7 +168,7 @@ means changed. Details in the linked section.
 | `useThreadContext().reloadThread()` | `threadInstance.reload()` | §10 |
 | `openThread(msg)` / `closeThread()` | lift `onThreadSelect` → `<Channel thread={msg \| null} />` | §10.1 |
 | `useMessageComposerContext().thread` | `threadInstance` | §10.2 |
-| `editMessage()` → `UpdateMessageAPIResponse` | `editMessage()` → `Promise<void>`; for the response, `client.updateMessage()` | §11 |
+| `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
 | `<MessageList thread / targetedMessage / loadMoreThread …>` props | removed — list reads `threadInstance` + paginator internally | §12 |
 | custom `FooterComponent` / `HeaderComponent` reading `loadingMore` from context | receive `{ loadingMore?: boolean }` as a prop | §12.1 |
 | `<Channel messages / loadingMore / threadMessages / setThreadMessages …>` props | removed — state lives in the paginator | §13 |
@@ -680,20 +680,10 @@ const [thread, setThread] = useState<LocalMessage | null>(null);
   parent/`replyCount` off `threadInstance.state`.
 - **`MessageProps`**: removed `openThread` (§9).
 
-## 11. `InputMessageInputContextValue.editMessage` return retyped
+## 11. `InputMessageInputContextValue.editMessage` removed
 
-`editMessage` now returns `Promise<void>` (was
-`ReturnType<StreamChat['updateMessage']>`, i.e. a resolved
-`UpdateMessageAPIResponse`). Callers that read the resolved API response break —
-read the updated state from the paginator/composer after the promise resolves
-instead.
-
-```tsx
-// Before: const { message } = await editMessage(...);
-// After:
-await editMessage({ localMessage, options });
-// message state is already reflected in channel.messagePaginator
-```
+`editMessage` is gone from the message input context, along with `sendMessage` as a value you pass
+in. Submitting goes through the composer; see P.17.
 
 ---
 
@@ -1811,8 +1801,8 @@ whether the failure is shown on the message:
 
 - **Offline support enabled and the request was queued for replay** — the message does **not** enter a
   failed state. It is pending, not failed, and marking it failed lights up the retry affordance, which
-  re-*sends* the message rather than re-editing it. The promise still rejects, so any notification you
-  surface from a rejected `editMessage` is unaffected.
+  re-*sends* the message rather than re-editing it. The request still rejects, so the composer still
+  reports the failed edit.
 - **No offline DB, or a definitive rejection** (a server error that is not retryable, or a cancelled
   request) —
   the message keeps the edit and gains `status: 'failed'` plus `error`, as before.
@@ -2418,6 +2408,68 @@ with `client.channel(type, id)`.
   followed by `{ uploadFile: false }` used to keep the first override.
 - **Going to the background sends `typing.stop` only if the user was typing.** It used to send one for
   every mounted `<Channel>` each time.
+
+## P.17 The composer submits through `stream-chat` (breaking)
+
+`useMessageInputContext().sendMessage()` now submits the composer: `messageComposer.update()` while a
+message is being edited, `messageComposer.send()` otherwise. The SDK used to compose the message itself
+and hand it to `<Channel>`'s own send and edit functions. What the user sees is unchanged: the input
+clears at once, a poll keeps the rest of the draft, links are refused where they are not allowed, and an
+edited bounced message is sent again as a new one.
+
+| Removed | Use instead |
+| --- | --- |
+| `<Channel preSendMessageRequest>` | `client.config.set({ channel: { requestHandlers: { sendMessageRequest } } })` |
+| `sendMessage` / `editMessage` in a custom `MessageInputProvider` `value` | the `sendMessageRequest` / `updateMessageRequest` handlers |
+| `useMessageInputContext().editMessage` | `useMessageInputContext().sendMessage()` while editing |
+| `patchMessageTextCommand` | nothing; the backend resolves the target from the mentioned users |
+
+```diff
+- <Channel preSendMessageRequest={async ({ localMessage }) => prepare(localMessage)}>
++ client.config.set({
++   channel: {
++     requestHandlers: {
++       sendMessageRequest: async (params, defaultRequest) => {
++         await prepare(params.localMessage);
++         return defaultRequest(params);
++       },
++     },
++   },
++ });
+```
+
+The handler runs at a different point than `preSendMessageRequest` did. It runs after the message
+appears in the list and after its attachments finish uploading, not before. If it throws, the message
+is marked failed, where it used to stay pending. It runs for the first send only; retries go through
+`retrySendMessageRequest`.
+
+A failed send or edit is reported by the composer through `client.notifications`, with the type
+`CORE_NOTIFICATION_TYPE.messageSendFailed` or `messageUpdateFailed`. The toast copy is unchanged, and a
+failed request is no longer logged as `Error while sending message`.
+
+Moderation commands (`/mute`, `/unmute`, `/ban`, `/unban`) are sent as typed. The SDK used to rewrite
+the mentioned name into the user id (`/mute @Jane Doe` → `/mute @jane-id`) to work around a backend bug
+with names containing spaces. The backend now takes the target from the message's mentioned users, so the
+rewrite is gone, and so is the `patchMessageTextCommand` export (breaking). To keep rewriting command
+text, add a composition middleware through `client.setMessageComposerSetupFunction`.
+
+## P.18 Editing a message
+
+- Editing a message again after cancelling an edit starts from the message, not from the text the
+  cancelled edit left behind.
+- Saving or cancelling an edit leaves edit mode by itself; the composer clearing is the signal.
+- `useMessageComposer()` returns the same composer as before, read from context. Calling it no longer
+  subscribes the composer once per component.
+
+## P.19 Composer behaviour fixes
+
+- `SendMessageDisallowedIndicator` shows as soon as the channel's capabilities are known, including a
+  channel loaded from the offline database. It used to wait for the channel to be initialized, which
+  could arrive after the composer had already rendered.
+- The commands button, the attach button and the commands sheet follow capabilities and server config
+  that arrive after the composer mounted.
+- Attachment picker cells no longer re-render on every upload progress tick; a cell re-renders only
+  when its own selection changes.
 
 ---
 
