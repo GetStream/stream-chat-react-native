@@ -1,15 +1,13 @@
 import { useMemo } from 'react';
 
-import type { LocalMessage } from 'stream-chat';
-
-import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
+import type { LocalMessage, MessagePaginator } from 'stream-chat';
 
 import { useRAFCoalescedValue, useStateStore } from '../../../hooks';
 import { usePrunableMessageList } from '../../../hooks/usePrunableMessageList';
 
 export type UseMessageListParams = {
-  threadList?: boolean;
+  /** The paginator the list renders: the channel's, or the open thread's in a thread list. */
+  paginator: MessagePaginator | undefined;
   isLiveStreaming?: boolean;
   isFlashList?: boolean;
 };
@@ -28,18 +26,13 @@ const EMPTY_MESSAGES: LocalMessage[] = [];
 const messageListSelector = (state: { items?: LocalMessage[] }) => ({ messages: state.items });
 
 export const useMessageList = (params: UseMessageListParams) => {
-  const { threadList, isLiveStreaming, isFlashList = false } = params;
-  const { channel } = useChannelContext();
-  const { threadInstance } = useThreadContext();
-  const messagePaginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
-  const { messages } = useStateStore(messagePaginator?.state, messageListSelector) ?? {};
-  const { maxLoadedItems, viewabilityChangedCallback } = usePrunableMessageList({
-    paginator: messagePaginator,
-  });
+  const { isLiveStreaming, isFlashList = false, paginator } = params;
+  const { messages } = useStateStore(paginator?.state, messageListSelector) ?? {};
+  const { maxLoadedItems, viewabilityChangedCallback } = usePrunableMessageList({ paginator });
   const messageList = messages ?? EMPTY_MESSAGES;
 
   const processedMessageList = useMemo<LocalMessage[]>(
-    () => (isFlashList ? messageList.slice() : messageList.slice().reverse()),
+    () => (isFlashList ? messageList : messageList.slice().reverse()),
     [messageList, isFlashList],
   );
 
@@ -52,9 +45,9 @@ export const useMessageList = (params: UseMessageListParams) => {
        * the paginator rather than a prop — it is state-layer configuration.
        */
       maxLoadedItems,
-      /** Messages enriched with dates/readby/groups and also reversed in order */
+      /** Render order: newest first for the inverted FlatList, oldest first for FlashList. */
       processedMessageList: data,
-      /** Raw messages from the channel state */
+      /** The paginator's messages, oldest first. */
       rawMessageList: messageList,
       viewabilityChangedCallback,
     }),

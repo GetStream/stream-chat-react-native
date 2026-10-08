@@ -21,8 +21,6 @@ import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitie
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
-import { DEFAULT_HIGHLIGHT_DURATION } from './hooks/useMessageListPagination';
-
 import {
   AttachmentPickerContextValue,
   AttachmentPickerProvider,
@@ -79,6 +77,7 @@ import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
+import { DEFAULT_HIGHLIGHT_DURATION } from '../MessageList/hooks/useMessageListFocus';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';

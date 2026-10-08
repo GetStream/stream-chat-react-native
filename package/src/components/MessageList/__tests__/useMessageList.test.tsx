@@ -1,10 +1,7 @@
-import React from 'react';
-
 import { renderHook } from '@testing-library/react-native';
 
 import type { Channel, LocalMessage } from 'stream-chat';
 
-import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { useMessageList } from '../hooks/useMessageList';
@@ -28,11 +25,7 @@ describe('useMessageList', () => {
   });
 
   it('should always return a list of reversed messages', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ChannelProvider value={{ channel } as never}>{children}</ChannelProvider>
-    );
-
-    const { result } = renderHook(() => useMessageList({ threadList: false }), { wrapper });
+    const { result } = renderHook(() => useMessageList({ paginator: channel.messagePaginator }));
 
     const reversedMessages = [...messages].reverse();
     expect(result.current.processedMessageList.map(({ id }) => id)).toEqual(

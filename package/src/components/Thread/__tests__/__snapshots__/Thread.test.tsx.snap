@@ -249,7 +249,6 @@ exports[`Thread should match thread snapshot 1`] = `
             },
           ]
         }
-        extraData={false}
         getItem={[Function]}
         getItemCount={[Function]}
         invertStickyHeaders={true}

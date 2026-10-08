@@ -1,7 +1,6 @@
 import type {
   ChannelFilters,
   SortParamRequest,
-  ChannelState,
   FileReference,
   LocalAudioAttachment,
   LocalUploadAttachment,
@@ -99,8 +98,6 @@ export type ChannelListEventListenerOptions = {
 export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
-
-export type ChannelUnreadState = Omit<ValueOf<ChannelState['read']>, 'user'>;
 
 // ASYNC AUDIO EXPO:
 export enum AndroidOutputFormat {

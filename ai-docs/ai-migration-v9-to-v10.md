@@ -435,8 +435,8 @@ on `MessageListProps`; `channelUnreadStateStore` on
 `UnreadMessagesNotificationProps`; `unreadCount` on `ScrollToBottomButtonProps`).
 
 The unread snapshot now lives on `channel.messagePaginator.unreadStateSnapshot`
-(a `StateStore`). An internal `getChannelUnreadState(channel)` helper maps it to
-the public `ChannelUnreadState` shape for imperative readers.
+(a `StateStore` of `UnreadSnapshotState`). Read it with `useStateStore`, or
+`getLatestValue()` for a one-off read. The SDK's own `ChannelUnreadState` type is gone (P.9).
 
 | Removed | Replacement |
 |---|---|
@@ -708,8 +708,8 @@ Removed props (from both list components): `channelUnreadStateStore`,
 unread from the paginator snapshot (§7), and targeting from the focus signal
 (§6) — all internally.
 
-`loadMore` / `loadMoreRecent` / `markRead` are still passed but are now inline
-prop types; `loadingMore?` / `loadingMoreRecent?` are **added**.
+The paging props `loadMore`, `loadMoreRecent`, `hasMore`, `loadingMore` and `loadingMoreRecent` are
+removed too: the list pages its own paginator (P.7). `markRead` is still passed.
 
 ### 12.1 Custom `FooterComponent` / `HeaderComponent` receive `loadingMore` as a prop
 
@@ -1118,9 +1118,9 @@ Highlights that hit integrator code:
   What changed on **this SDK's** own surface:
   - **`findInMessagesByDate(messages, targetTimestamp)`** takes a `TimestampNS` (was a `Date`).
     Exported from the package root. Pass a server timestamp, or `msToNs(ms)` / `dateToNs(date)`.
-  - **`getChannelUnreadState`** returns `last_read` as a `TimestampNS`, and the epoch
-    (`asTimestampNS(0)`) — not `new Date(0)` — is the "never read" sentinel. Guard it with `!= null`,
-    never with truthiness.
+  - **`getChannelUnreadState`** (internal) and the `ChannelUnreadState` type are removed (P.9). The
+    snapshot's `lastReadAt` is a `TimestampNS | null`; the lists treat `null` as the epoch, meaning the
+    whole channel is unread. Guard it with `!= null`, never with truthiness.
   - **`useIsChannelMuted`**'s `muteStatus` is core's `ChannelMuteStatus`: `{ createdAt: TimestampNS |
     null; expiresAt: TimestampNS | null; muted: boolean }`.
   - **Offline DB rows** hold plain integers. The SDK's read mappers brand them on the way out
@@ -2274,6 +2274,57 @@ Every `OfflineStoreApis` function that took `currentUserId` now takes `userId`, 
 
 `OfflineStoreApis.deleteReactionsForMessage` is removed. Nothing called it and `AbstractOfflineDB` has no
 slot for it; `deleteReaction` deletes one reaction.
+
+## P.7 Message lists page their own paginator (breaking)
+
+`<MessageList>` and `<MessageFlashList>` no longer take `loadMore`, `loadMoreRecent`, `hasMore`,
+`loadingMore` or `loadingMoreRecent`. They page the paginator they render (the channel's, or the open
+thread's in a thread list) with `toTail()` (older) and `toHead()` (newer), and track the two loading
+flags themselves. The paginator already ignores a request while one is running or when that end has
+nothing more.
+
+```diff
+- <MessageList loadMore={myLoadMore} loadMoreRecent={myLoadMoreRecent} />
++ <MessageList />
+```
+
+To change how a page is fetched, configure the paginator instead:
+`client.config.set({ channel: { messagePaginator: { … } } })`, or a request handler. A custom
+`FooterComponent` (`MessageList`) / `HeaderComponent` (`MessageFlashList`) still receives
+`{ loadingMore }` (§12.1).
+
+## P.8 `useMessageList` takes the paginator (breaking)
+
+```diff
+- const { processedMessageList } = useMessageList({ threadList });
++ const { processedMessageList } = useMessageList({ paginator: useMessagePaginator() });
+```
+
+## P.9 Unread state types (breaking, type-level)
+
+| Removed                                    | Use instead                                                                       |
+| ------------------------------------------ | --------------------------------------------------------------------------------- |
+| `ChannelUnreadState` type                  | `UnreadSnapshotState` from `stream-chat` (`channel.messagePaginator.unreadStateSnapshot`) |
+| `UnreadMessagesNotificationProps.unreadCount` | Nothing. It was never applied; the count comes from the unread snapshot.       |
+
+## P.10 Message list behaviour fixes
+
+These change what the user sees:
+
+- **Thread lists use the thread's paginator for everything.** They used to drive the channel's. So:
+  - closing a thread no longer leaves the channel counting new messages as unread while the user is at
+    its bottom (the "1 new messages" separator that stuck after returning from a thread);
+  - the scroll-to-bottom button in a thread jumps the thread to its latest replies, where it used to
+    move the hidden channel list;
+  - in `MessageFlashList` threads, a channel that had jumped away no longer turns autoscroll off;
+  - the sticky date header hides at the top of the thread;
+  - a spinner shows while newer replies load, and the empty-state check follows `threadList`.
+- **A failed page no longer stops pagination.** The lists remembered every list length they had
+  requested at, so after a failed request that edge stayed dead until a new message arrived.
+- **Removing a message no longer scrolls `MessageList` to the bottom.** Cancelling a giphy or a hard
+  delete used to jump a user who had scrolled up back to the newest message. (`MessageFlashList` never
+  scrolled; it only blocked paging for a moment.)
+- The scroll-to-bottom accessibility action's unread count updates as reads arrive.
 
 ---
 
