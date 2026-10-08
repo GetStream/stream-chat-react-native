@@ -9,6 +9,7 @@ import {
   finalizeCloseOverlay,
   openOverlay,
   overlayStore,
+  scheduleActionOnClose,
   setClosingPortalLayout,
   useClosingPortalHostBlacklist,
   useClosingPortalHostBlacklistState,
@@ -25,6 +26,14 @@ type RegisteredLayout = {
 const flushAnimationFrameQueue = () => {
   act(() => {
     jest.runAllTimers();
+  });
+};
+
+// Runs `fn` and lets the async close-action flush (`await action()` per queued action) settle.
+const actAndFlushPromises = async (fn: () => void) => {
+  await act(async () => {
+    fn();
+    await Promise.resolve();
   });
 };
 
@@ -123,6 +132,77 @@ describe('message overlay store portal hooks', () => {
 
     first.unmount();
     second.unmount();
+  });
+
+  it('keeps running queued actions when one of them fails and does not rerun it on the next close', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const failingAction = jest.fn(() => Promise.reject(new Error('action failed')));
+    const throwingAction = jest.fn(() => {
+      throw new Error('sync action failed');
+    });
+    const followingAction = jest.fn();
+
+    act(() => {
+      openOverlay('message-1');
+    });
+    scheduleActionOnClose(failingAction);
+    scheduleActionOnClose(throwingAction);
+    scheduleActionOnClose(followingAction);
+
+    await actAndFlushPromises(finalizeCloseOverlay);
+
+    expect(failingAction).toHaveBeenCalledTimes(1);
+    expect(throwingAction).toHaveBeenCalledTimes(1);
+    expect(followingAction).toHaveBeenCalledTimes(1);
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(2);
+
+    const nextAction = jest.fn();
+
+    act(() => {
+      openOverlay('message-2');
+    });
+    scheduleActionOnClose(nextAction);
+
+    await actAndFlushPromises(finalizeCloseOverlay);
+
+    expect(nextAction).toHaveBeenCalledTimes(1);
+    expect(failingAction).toHaveBeenCalledTimes(1);
+    expect(throwingAction).toHaveBeenCalledTimes(1);
+
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('defers actions scheduled during a flush to the next close instead of running them twice', async () => {
+    let resolveSlowAction: () => void = () => {};
+    const slowAction = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSlowAction = resolve;
+        }),
+    );
+    const laterAction = jest.fn();
+
+    act(() => {
+      openOverlay('message-1');
+    });
+    scheduleActionOnClose(slowAction);
+
+    await actAndFlushPromises(finalizeCloseOverlay);
+    expect(slowAction).toHaveBeenCalledTimes(1);
+
+    // The overlay reopens and an action is scheduled while the first flush is still awaiting.
+    act(() => {
+      openOverlay('message-2');
+    });
+    scheduleActionOnClose(laterAction);
+
+    await actAndFlushPromises(resolveSlowAction);
+    expect(laterAction).not.toHaveBeenCalled();
+
+    await actAndFlushPromises(finalizeCloseOverlay);
+
+    expect(laterAction).toHaveBeenCalledTimes(1);
+    expect(slowAction).toHaveBeenCalledTimes(1);
   });
 
   it('does not enter closing when closeOverlay is called without an active overlay id', () => {

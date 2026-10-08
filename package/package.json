@@ -78,7 +78,7 @@
     "path": "0.12.7",
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^2.0.0",
-    "stream-chat": "^9.51.0",
+    "stream-chat": "^9.54.0",
     "use-sync-external-store": "^1.5.0"
   },
   "peerDependencies": {
@@ -115,7 +115,7 @@
     "@react-native-community/netinfo": "^12.0.1",
     "@react-native/babel-preset": "0.87.0",
     "@react-native/jest-preset": "0.87.0",
-    "@shopify/flash-list": "^2.3.2",
+    "@shopify/flash-list": "^2.3.3",
     "@stream-io/typescript-config": "workspace:^",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "13.2.0",

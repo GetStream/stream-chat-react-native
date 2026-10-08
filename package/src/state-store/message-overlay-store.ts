@@ -216,12 +216,17 @@ const actionQueueSelector = (nextState: OverlayState) => ({ active: !!nextState.
 //  integrations causing UI issues.
 overlayStore.subscribeWithSelector(actionQueueSelector, async ({ active }) => {
   if (!active) {
-    // flush the queue
-    for (const action of actionQueue) {
-      await action();
-    }
-
+    const actions = actionQueue;
     actionQueue = [];
+
+    // flush the queue
+    for (const action of actions) {
+      try {
+        await action();
+      } catch (error) {
+        console.warn('A message overlay action failed after the overlay closed:', error);
+      }
+    }
   }
 });
 

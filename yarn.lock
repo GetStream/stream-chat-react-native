@@ -5951,14 +5951,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "@shopify/flash-list@npm:2.3.2"
+"@shopify/flash-list@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "@shopify/flash-list@npm:2.3.3"
   peerDependencies:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/3e58913506b1dc7f02dd0696c478fd963ede413d9d7121705a08ff505d5c21e611813ce9370068238b8983ff582ed7b8ee94f68e94f99a1ac8f600c01fff118e
+  checksum: 10c0/c94af22f8b034d9f24e8ea3628ac20597cdb00f8c250d24a8e7adb86bc2a41cf10234c2fd87315bf7a34211db87d7eba40bddda610847cb6afedd2d6a1a3ffe5
   languageName: node
   linkType: hard
 
@@ -6971,7 +6971,7 @@ __metadata:
     "@react-native-firebase/messaging": "npm:^24.0.0"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@rnx-kit/metro-resolver-symlinks": "npm:^0.2.6"
-    "@shopify/flash-list": "npm:^2.3.2"
+    "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.2.10"
     expo: "npm:^57.0.7"
@@ -7006,7 +7006,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-web: "npm:^0.21.2"
     react-native-worklets: "npm:0.11.1"
-    stream-chat: "npm:^9.51.0"
+    stream-chat: "npm:^9.54.0"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18387,7 +18387,7 @@ __metadata:
     "@react-navigation/native": "npm:^7.3.11"
     "@react-navigation/native-stack": "npm:^7.18.3"
     "@rnx-kit/metro-config": "npm:^2.1.0"
-    "@shopify/flash-list": "npm:^2.3.2"
+    "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
     "@types/react": "npm:^19.2.0"
@@ -18412,7 +18412,7 @@ __metadata:
     react-native-teleport: "npm:^1.1.12"
     react-native-video: "npm:^6.19.2"
     react-native-worklets: "npm:^0.12.1"
-    stream-chat: "npm:^9.51.0"
+    stream-chat: "npm:^9.54.0"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19119,7 +19119,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:^12.0.1"
     "@react-native/babel-preset": "npm:0.87.0"
     "@react-native/jest-preset": "npm:0.87.0"
-    "@shopify/flash-list": "npm:^2.3.2"
+    "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/typescript-config": "workspace:^"
     "@testing-library/jest-native": "npm:^5.4.3"
     "@testing-library/react-native": "npm:13.2.0"
@@ -19164,7 +19164,7 @@ __metadata:
     react-native-worklets: "npm:^0.12.1"
     react-test-renderer: "npm:19.2.3"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^9.51.0"
+    stream-chat: "npm:^9.54.0"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -19238,9 +19238,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.51.0":
-  version: 9.51.0
-  resolution: "stream-chat@npm:9.51.0"
+"stream-chat@npm:^9.54.0":
+  version: 9.54.0
+  resolution: "stream-chat@npm:9.54.0"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
@@ -19256,7 +19256,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/a2888b1dad9496f8ba35e5afb44f88a6ce6b64785780b0244eba349ee10c52594f43c08a16a23924b14640a50849ce835773f016435725378bf0bbcfe0d636ed
+  checksum: 10c0/f8c02372ffa672e759970223811667b8263bbded048a85adbdd6c3ed60a16f72c882d9700538b94a3148a8e4bfa259eafae5effdc0d8e7ffd2525e61f27a190e
   languageName: node
   linkType: hard
 
