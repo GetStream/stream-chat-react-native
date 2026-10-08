@@ -2383,6 +2383,42 @@ resolved only noticed the user, and only set up the offline database for them, i
 unrelated re-rendered it. It now re-reads the user whenever the client's connection state changes,
 and the offline database's state from the instance it attached. No API change.
 
+## P.15 `<Channel>` keeps rendering a deleted channel (breaking, behavioural)
+
+`<Channel>` used to render nothing once its channel was deleted, through its own `channel.deleted`
+listener. It no longer handles a gone channel at all, as in `stream-chat-react`: what to show is up to the
+app. A channel instance is gone for good when the channel is deleted, when the user is removed from it,
+or when the client disconnects, and its `pendingDisposal` state says so. To keep the old behaviour, or show
+something else, read that state above `<Channel>`:
+
+```tsx
+const selector = (state: ChannelLifecycleState) => ({ pendingDisposal: state.pendingDisposal });
+
+const { pendingDisposal } = useStateStore(channel.state, selector);
+if (pendingDisposal) return null; // or your own "this channel is gone" view
+return <Channel channel={channel}>…</Channel>;
+```
+
+The SampleApp's `useLeaveGoneChannel` (`examples/SampleApp/src/hooks/useLeaveGoneChannel.ts`) does this
+on the channel and thread screens, returning to the channel list.
+
+Message rows no longer check `channel.pendingDisposal` each either, so a gone channel's messages stay
+visible. A disposed instance is never revived. To open the same conversation again, get a new instance
+with `client.channel(type, id)`.
+
+## P.16 Channel behaviour fixes
+
+- **The contexts follow the channel instance, not its id.** A disposed channel comes back as a new
+  instance under the same cid. `ChannelContext` kept handing out the old one, whose paginators were
+  already disposed. `useCreateChannelContext` now rebuilds when `channel` changes.
+- **`useChannelContext().disabled` updates when the channel is frozen or unfrozen.** It used to update
+  only because an unrelated write happened to re-render `<Channel>`.
+- **`<Channel>` no longer re-renders on channel updates that leave its own capabilities unchanged.**
+- **`overrideOwnCapabilities` applies when a different capability is overridden.** `{ sendMessage: false }`
+  followed by `{ uploadFile: false }` used to keep the first override.
+- **Going to the background sends `typing.stop` only if the user was typing.** It used to send one for
+  every mounted `<Channel>` each time.
+
 ---
 
 # Part I — i18n

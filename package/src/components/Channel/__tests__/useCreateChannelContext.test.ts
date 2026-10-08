@@ -5,9 +5,11 @@ import type { Channel } from 'stream-chat';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { useCreateChannelContext } from '../hooks/useCreateChannelContext';
 
+const channel = { id: 'channel-1' } as unknown as Channel;
+
 const baseInput = (overrides: Partial<ChannelContextValue> = {}) =>
   ({
-    channel: { id: 'channel-1' } as unknown as Channel,
+    channel,
     disabled: false,
     enableMessageGroupingByUser: true,
     enforceUniqueReaction: false,
@@ -37,6 +39,8 @@ describe('useCreateChannelContext', () => {
 
   it.each([
     ['channel id', { channel: { id: 'channel-2' } as unknown as Channel }],
+    // A disposed channel is replaced by a new instance under the same id.
+    ['channel instance', { channel: { id: 'channel-1' } as unknown as Channel }],
     ['disabled', { disabled: true }],
     ['threadList', { threadList: true }],
   ])('builds a new object when %s changes', (_label, overrides) => {

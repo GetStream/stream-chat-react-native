@@ -1,5 +1,5 @@
 import React, { type ComponentProps, useContext, useEffect } from 'react';
-import { View } from 'react-native';
+import { AppState, AppStateStatus, View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
@@ -13,13 +13,20 @@ import {
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
 
+import {
+  OwnCapabilitiesContext,
+  type OwnCapabilitiesContextValue,
+} from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
+import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
 import dispatchConnectionChanged from '../../../mock-builders/event/connectionChanged';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
+import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -28,6 +35,7 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
+import { MessageList } from '../../MessageList/MessageList';
 import { Thread as ThreadComponent } from '../../Thread/Thread';
 import { Channel } from '../Channel';
 import * as CreateChannelContext from '../hooks/useCreateChannelContext';
@@ -491,6 +499,127 @@ describe('Channel', () => {
 
     expect(seen.length).toBe(rendersBefore);
     expect(new Set(seen).size).toBe(1);
+  });
+
+  it.each([
+    ['deleted', () => dispatchChannelDeletedEvent(chatClient, { cid: channel.cid })],
+    [
+      'left because the user was removed',
+      () => dispatchNotificationRemovedFromChannel(chatClient, { cid: channel.cid }),
+    ],
+  ])('keeps rendering its messages once the channel is %s', async (_label, dispose) => {
+    const { getByText } = renderComponent({ channel, children: <MessageList /> });
+    await waitFor(() => expect(getByText(messages[0].text as string)).toBeTruthy());
+
+    act(() => dispose());
+
+    expect(channel.pendingDisposal).toBe(true);
+    expect(getByText(messages[0].text as string)).toBeTruthy();
+  });
+
+  it('marks the channel context disabled when channel.updated freezes the channel', async () => {
+    const seen: ChannelContextValue[] = [];
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <ContextConsumer
+            context={ChannelContext as React.Context<unknown>}
+            fn={(ctx) => seen.push(ctx as ChannelContextValue)}
+          />
+        </Channel>
+      </Chat>,
+    );
+    await waitFor(() => expect(channel.initialized).toBe(true));
+    expect(seen.at(-1)?.disabled).toBe(false);
+
+    act(() => dispatchChannelUpdatedEvent(chatClient, { ...channel.data, frozen: true }));
+
+    await waitFor(() => expect(seen.at(-1)?.disabled).toBe(true));
+  });
+
+  it('does not re-render when channel.updated changes nothing it shows', async () => {
+    const renderSpy = jest.spyOn(CreateChannelContext, 'useCreateChannelContext');
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={channel} />
+      </Chat>,
+    );
+    await waitFor(() => expect(channel.initialized).toBe(true));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const rendersBefore = renderSpy.mock.calls.length;
+    const capabilitiesBefore = channel.state.getLatestValue().ownCapabilities;
+
+    act(() => dispatchChannelUpdatedEvent(chatClient, { ...channel.data }));
+
+    // Guard against a vacuous pass: the update was applied and republished the capabilities.
+    expect(channel.state.getLatestValue().ownCapabilities).not.toBe(capabilitiesBefore);
+    expect(channel.state.getLatestValue().ownCapabilities).toEqual(capabilitiesBefore);
+    expect(renderSpy.mock.calls.length).toBe(rendersBefore);
+  });
+
+  it('rebuilds own capabilities when a different capability is overridden', async () => {
+    let capabilities: OwnCapabilitiesContextValue | undefined;
+    const renderChannel = (overrideOwnCapabilities: Partial<OwnCapabilitiesContextValue>) => (
+      <Chat client={chatClient}>
+        <Channel channel={channel} overrideOwnCapabilities={overrideOwnCapabilities}>
+          <ContextConsumer
+            context={OwnCapabilitiesContext as React.Context<unknown>}
+            fn={(ctx) => {
+              capabilities = ctx as OwnCapabilitiesContextValue;
+            }}
+          />
+        </Channel>
+      </Chat>
+    );
+
+    const { rerender } = render(renderChannel({ sendMessage: false }));
+    await waitFor(() => expect(capabilities?.sendMessage).toBe(false));
+    expect(capabilities?.uploadFile).toBe(true);
+
+    rerender(renderChannel({ uploadFile: false }));
+
+    await waitFor(() => expect(capabilities?.uploadFile).toBe(false));
+    expect(capabilities?.sendMessage).toBe(true);
+  });
+
+  it.each([
+    [true, 1],
+    [false, 0],
+  ])('when isTyping is %s, sends %i typing.stop on background', async (isTyping, sent) => {
+    const mockedChannel = generateChannelResponse({
+      channel: { cid: channelCid, own_capabilities: ['send-typing-events'] },
+      id: channelId,
+      members: [generateMember({ user })],
+      messages,
+      type: channelType,
+    });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    await channel.watch();
+    const sendEventSpy = jest.spyOn(channel, 'sendEvent').mockResolvedValue({} as never);
+    const addEventListenerSpy = jest.spyOn(AppState, 'addEventListener');
+
+    render(
+      <Chat client={chatClient} closeConnectionOnBackground={false}>
+        <Channel channel={channel} />
+      </Chat>,
+    );
+    await waitFor(() => expect(addEventListenerSpy).toHaveBeenCalled());
+
+    channel.isTyping = isTyping;
+    act(() => {
+      addEventListenerSpy.mock.calls.forEach(([, handler]) =>
+        (handler as (state: AppStateStatus) => void)('background'),
+      );
+    });
+
+    expect(sendEventSpy).toHaveBeenCalledTimes(sent);
+    if (sent) {
+      expect(sendEventSpy).toHaveBeenCalledWith({
+        event: { parent_id: undefined, type: 'typing.stop' },
+      });
+    }
   });
 });
 

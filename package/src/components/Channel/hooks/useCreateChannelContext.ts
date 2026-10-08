@@ -14,8 +14,6 @@ export const useCreateChannelContext = ({
   hasPendingInitialTargetLoad,
   threadList,
 }: ChannelContextValue) => {
-  const channelId = channel?.id;
-
   const channelContext: ChannelContextValue = useMemo(
     () => ({
       channel,
@@ -30,7 +28,7 @@ export const useCreateChannelContext = ({
       threadList,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelId, disabled, threadList],
+    [channel, disabled, threadList],
   );
 
   return channelContext;

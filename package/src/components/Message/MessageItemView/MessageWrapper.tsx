@@ -125,9 +125,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     },
   } = useTheme();
   const styles = useStyles();
-  if (!channel || channel.pendingDisposal) {
-    return null;
-  }
 
   const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 

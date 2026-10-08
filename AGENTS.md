@@ -211,7 +211,7 @@ Native code shared by both wrappers lives in `package/shared-native/{ios,android
 ### DO NOT
 
 1. **Edit generated or synced files** (see below) — regenerate them instead.
-2. **Add `channel` or `channel.state` to dependency arrays** — use `channel.cid`, which is stable.
+2. **Key on `channel.cid` where you mean the channel instance** — depend on `channel` itself. A disposed channel comes back as a new instance under the same cid, so anything bound to the instance (a context value holding it, a `useStateStore` subscription, a listener, `watch()`) must rebuild when `channel` changes. Use `cid` only when you mean the conversation.
 3. **Mutate `channel.state.messages` directly** — go through the `stream-chat` client's state API.
 4. **Inline a `useStateStore` selector** — define it at module scope.
 5. **Use unguarded web-only APIs in shared code** — it runs on Hermes, not a browser.

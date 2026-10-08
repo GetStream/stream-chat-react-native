@@ -3,6 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import {
   ChannelConfig,
+  ChannelDataState,
+  ChannelLifecycleState,
   LocalMessage,
   MessageComposerConfig,
   SendMessageOptions,
@@ -320,6 +322,11 @@ const channelQuerySelector = (state: { items?: unknown[]; lastQueryError?: Error
   blockingError: state.items?.length ? undefined : state.lastQueryError,
 });
 
+const channelStatusSelector = (state: ChannelDataState & ChannelLifecycleState) => ({
+  frozen: state.data?.frozen ?? false,
+  pendingDisposal: state.pendingDisposal,
+});
+
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
@@ -432,7 +439,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const { thread: threadProps, threadInstance: threadInstanceFromProps } = threadFromProps;
 
   const styles = useStyles();
-  const [deleted, setDeleted] = useState<boolean>(false);
   // The active thread is fully prop-driven: derive it synchronously during render so the reply
   // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
   // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
@@ -455,12 +461,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const { blockingError } =
     useStateStore(channel.messagePaginator.state, channelQuerySelector) ?? {};
 
+  const { frozen, pendingDisposal } = useStateStore(channel.state, channelStatusSelector);
+
   const channelId = channel?.id || '';
   const { pollsEnabled } = useStateStore(
     channel?.messageComposer?.configState,
     composerPollsSelector,
   ) ?? { pollsEnabled: false };
-  const pollCreationEnabled = !channel.pendingDisposal && !!channel?.id && pollsEnabled;
+  const pollCreationEnabled = !pendingDisposal && !!channel?.id && pollsEnabled;
 
   const { addNotification } = useNotificationApi();
 
@@ -570,7 +578,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     initChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.cid, shouldSyncChannel]);
+  }, [channel, shouldSyncChannel]);
 
   // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
   // Channel instance shared with the channel-list preview or a thread stays active until the last
@@ -580,29 +588,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // instance before activating the new one.
   useEffect(() => channel?.activate(), [channel]);
 
-  // subscribe to channel.deleted event
-  useEffect(() => {
-    const { unsubscribe } = client.on('channel.deleted', (event) => {
-      if (event.cid === channel?.cid) {
-        setDeleted(true);
-      }
-    });
-
-    return unsubscribe;
-  }, [channel?.cid, client]);
-
+  // Sent directly rather than through `channel.stopTyping()`, which does nothing once the socket is
+  // closed, and `<Chat>` usually closes it on background before this runs.
   const handleAppBackground = useCallback(() => {
-    const channelData = channel.data;
-    if (channelData?.own_capabilities?.includes('send-typing-events')) {
-      channel.sendEvent({
-        event: {
-          parent_id: thread?.id,
-          type: 'typing.stop',
-        },
-      } as { event: StreamEvent });
+    if (!channel.isTyping || !channel.data?.own_capabilities?.includes('send-typing-events')) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thread?.id, channelId]);
+    channel.sendEvent({
+      event: {
+        parent_id: thread?.id,
+        type: 'typing.stop',
+      },
+    } as { event: StreamEvent });
+  }, [channel, thread?.id]);
 
   useAppStateListener(undefined, handleAppBackground);
 
@@ -742,7 +740,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    disabled: !!channel?.data?.frozen,
+    disabled: frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     allowDateSeparatorForSystemMessages,
@@ -842,11 +840,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     () => ({ channel, threadInstance }),
     [channel, threadInstance],
   );
-
-  // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
-  if (deleted) {
-    return null;
-  }
 
   if (!channel || blockingError) {
     // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
