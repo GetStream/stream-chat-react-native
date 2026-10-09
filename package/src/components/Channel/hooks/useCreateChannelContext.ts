@@ -33,8 +33,9 @@ export const useCreateChannelContext = ({
       hasPendingInitialTargetLoad,
       threadList,
     }),
+    // Keyed on the instance as well, since a superseded instance shares its id with its successor
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channelId, disabled, isChannelActive, threadList],
+    [channel, channelId, disabled, isChannelActive, threadList],
   );
 
   return channelContext;

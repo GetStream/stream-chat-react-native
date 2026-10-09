@@ -23,6 +23,8 @@ import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
 import { DEFAULT_HIGHLIGHT_DURATION } from './hooks/useMessageListPagination';
 
+import { useSupersededChannelSwap } from './hooks/useSupersededChannelSwap';
+
 import {
   AttachmentPickerContextValue,
   AttachmentPickerProvider,
@@ -940,9 +942,10 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, isMessageAIGenerated } = useChatContext();
   const isOnline = useSettledWSConnectionHealth();
   const { t } = useTranslationContext();
+  const channel = useSupersededChannelSwap(props.channel);
   const notificationHostId =
     props.notificationHostId ??
-    (props.channel?.cid ? getChannelNotificationHostId(props.channel.cid) : undefined);
+    (channel?.cid ? getChannelNotificationHostId(channel.cid) : undefined);
 
   const threadFromProps = props?.thread;
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
@@ -964,6 +967,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
         t,
       }}
       {...props}
+      channel={channel}
       shouldSyncChannel={shouldSyncChannel}
       {...{
         isMessageAIGenerated,

@@ -221,10 +221,8 @@ export const Generic = () => {
       // back as a top-level field on the generated channel response — keep the runtime shape and
       // widen the input type.
       // The list below filters on the custom field `foo`, so every channel the server returns for it
-      // carries `foo: 'bar'`. Client-side filter matching (channel.updated / channel.truncated) relies on it.
-      // INTENTIONALLY RED until the LLC resolves custom fields in that matching (stream-chat-js#1901,
-      // custom fields live under `data.custom`): the three truncation tests and the hidden/visible test
-      // fail because the list drops the truncated channel and doesn't take back the visible one.
+      // carries `foo: 'bar'`. Client-side filter matching (channel.updated / channel.truncated) relies on it,
+      // reading custom fields from `data.custom`.
       return generateChannelResponse({
         channel: { custom: { foo: 'bar' } },
         cid,
@@ -416,9 +414,7 @@ export const Generic = () => {
     });
 
     // `disconnectUser()` is not always a logout (e.g. `useCreateChatClient` unmounting), so it must not
-    // touch what the offline DB cached for the user. INTENTIONALLY RED until stream-chat-js#1901 resets
-    // the lists before clearing the channel store: each removal re-persists a shrinking cid list, so the
-    // cached list ends up `[]` and the next offline cold start shows nothing.
+    // touch what the offline DB cached for the user, or the next offline cold start shows nothing.
     it('keeps the cached channel list when the user disconnects', async () => {
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       await renderComponent();
