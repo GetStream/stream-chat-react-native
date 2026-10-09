@@ -73,4 +73,47 @@ describe('useMessageDeliveryStatus', () => {
     );
     expect(result.current.status).toBe(MessageDeliveryStatus.READ);
   });
+
+  // The receipts tracker rebuilds its reader arrays on every snapshot, presence and user updates
+  // included, so a preview row must only re-render when the status itself changes.
+  it('does not re-render when the receipts change without changing the status', async () => {
+    const {
+      channels: [channel],
+      client,
+    } = await initiateClientWithChannels({ customUser: generateUser({ id: 'me' }) });
+    const wrapper = ({ children }: PropsWithChildren) => <Chat client={client}>{children}</Chat>;
+    let renders = 0;
+    const { result } = renderHook(
+      () => {
+        renders++;
+        return useMessageDeliveryStatus({
+          channel,
+          isReadEventsEnabled: true,
+          lastMessage: ownMessage,
+        });
+      },
+      { wrapper },
+    );
+
+    act(() =>
+      setReceipts(channel, {
+        delivered: { [ownMessage.id]: [fromPartial<UserResponse>({ id: 'other' })] },
+      }),
+    );
+    expect(result.current.status).toBe(MessageDeliveryStatus.DELIVERED);
+    const rendersWhenDelivered = renders;
+
+    act(() =>
+      setReceipts(channel, {
+        delivered: {
+          [ownMessage.id]: [
+            fromPartial<UserResponse>({ id: 'other' }),
+            fromPartial<UserResponse>({ id: 'third' }),
+          ],
+        },
+      }),
+    );
+    expect(result.current.status).toBe(MessageDeliveryStatus.DELIVERED);
+    expect(renders).toBe(rendersWhenDelivered);
+  });
 });

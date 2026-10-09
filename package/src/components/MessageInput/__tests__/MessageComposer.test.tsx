@@ -3,12 +3,15 @@ import React from 'react';
 import { Alert } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, StreamChat, UserResponse } from 'stream-chat';
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import { generateMember } from '../../../mock-builders/generator/member';
+import { generateUser } from '../../../mock-builders/generator/user';
 
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
 import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
@@ -69,6 +72,41 @@ describe('MessageComposer', () => {
     act(() => {
       channel.messageComposer.clear();
     });
+  });
+
+  // Mention candidates are read from the channel when `Input` asks for them. A member added after mount
+  // (or a presence / user update, which republishes members) must not leave them stale.
+  it('gives Input the current members as mention candidates', async () => {
+    let getUsers: () => UserResponse[] = () => [];
+    const CapturingInput = (props: { getUsers: () => UserResponse[] }) => {
+      getUsers = props.getUsers;
+      return null;
+    };
+
+    render(
+      <OverlayProvider>
+        <Chat client={client}>
+          <WithComponents overrides={{ Input: CapturingInput }}>
+            <Channel channel={channel}>
+              <MessageComposer />
+            </Channel>
+          </WithComponents>
+        </Chat>
+      </OverlayProvider>,
+    );
+    await waitFor(() => expect(getUsers().length).toBeGreaterThan(0));
+
+    const newcomer = generateUser({ id: 'newcomer' });
+    act(() =>
+      channel.state.partialNext({
+        members: {
+          ...channel.state.getLatestValue().members,
+          [newcomer.id]: generateMember({ user: newcomer }),
+        },
+      }),
+    );
+
+    expect(getUsers().map((user) => user.id)).toContain(newcomer.id);
   });
 
   it('should render MessageComposer', async () => {

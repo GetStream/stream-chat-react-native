@@ -133,7 +133,7 @@ export const usePaginatedChannels = ({
 
       // Do NOT skip state initialization on the (re)query. `activeChannels.current` is
       // `Object.keys(channelsState)` — every channel ever MOUNTED, and it is never cleared on
-      // navigate-back — so passing it as `skipInitialization` made `hydrateActiveChannels` skip
+      // navigate-back — so passing it as `skipInitialization` made `hydrateChannels` skip
       // `seedFirstPageSync`/`_initializeState` for every previously-opened channel on each reconnect.
       // Those channels' `messagePaginator.aggregateState` then never re-seeds on the fresh socket, so
       // their list-row preview (last message / unread, sourced from that aggregate) freezes while the

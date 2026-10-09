@@ -137,8 +137,8 @@ type MessageComposerPropsWithContext = { isOnline: boolean } & Pick<
   ChannelContextValue,
   'channel'
 > & {
-    members: MembersState['members'];
-    watchers: ChannelWatchState['watchers'];
+    members?: MembersState['members'];
+    watchers?: ChannelWatchState['watchers'];
   } & Pick<
     MessageInputContextValue,
     | 'audioRecorderManager'
@@ -175,16 +175,12 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
 
-const membersAndWatchersSelector = (state: ChannelWatchState & MembersState) => ({
-  members: state.members,
-  watchers: state.watchers,
-});
-
 const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const {
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesSlideToCancelDistance,
+    channel,
     closeAttachmentPicker,
     closePollCreationDialog,
     createPollOptionGap,
@@ -259,8 +255,9 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
   const getMembers = () => {
     const result: UserResponse[] = [];
-    if (members && Object.values(members).length) {
-      Object.values(members).forEach((member) => {
+    const channelMembers = members ?? channel.state.getLatestValue().members;
+    if (channelMembers && Object.values(channelMembers).length) {
+      Object.values(channelMembers).forEach((member) => {
         if (member.user) {
           result.push(member.user);
         }
@@ -287,8 +284,9 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
   const getWatchers = () => {
     const result: UserResponse[] = [];
-    if (watchers && Object.values(watchers).length) {
-      result.push(...Object.values(watchers));
+    const channelWatchers = watchers ?? channel.state.getLatestValue().watchers;
+    if (channelWatchers && Object.values(channelWatchers).length) {
+      result.push(...Object.values(channelWatchers));
     }
 
     return result;
@@ -618,10 +616,6 @@ export const MessageComposer = (props: MessageComposerProps) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
   const { channel } = useChannelContext();
-  const { members, watchers } = useStateStore(channel.state, membersAndWatchersSelector) ?? {
-    members: {},
-    watchers: {},
-  };
 
   const {
     audioRecorderManager,
@@ -692,7 +686,6 @@ export const MessageComposer = (props: MessageComposerProps) => {
         inputBoxRef,
         isKeyboardVisible,
         isOnline,
-        members,
         messageInputFloating,
         messageInputHeightStore,
         openPollCreationDialog,
@@ -700,7 +693,6 @@ export const MessageComposer = (props: MessageComposerProps) => {
         showPollCreationDialog,
         t,
         uploadNewFile,
-        watchers,
       }}
       {...props}
     />
