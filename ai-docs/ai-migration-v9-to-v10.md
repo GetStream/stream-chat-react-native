@@ -2511,6 +2511,12 @@ subscribing, no longer picks up changes through other rows' updates. Subscribe i
   It used to stay on its loading skeleton.
 - **A channel row shows a draft that has only attachments**, as thread rows already did.
 
+## P.22 Thread list behaviour fix
+
+A thread list row takes its latest reply, which sets its avatar and time, from
+`thread.messagePaginator.aggregateState`. It used to take the last reply of the thread's loaded page,
+which is an older reply once the thread has been scrolled back.
+
 ---
 
 # Part I — i18n

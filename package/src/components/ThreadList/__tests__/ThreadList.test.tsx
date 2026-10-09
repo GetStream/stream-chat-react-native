@@ -111,6 +111,36 @@ describe('ThreadList loading states', () => {
     await waitFor(() => expect(rows()).toHaveLength(2));
     expect(footer()).toBeUndefined();
   });
+  it('shows the newest reply when the loaded replies are an older page', async () => {
+    const thread = makeThread();
+    const reply = (text: string, timestamp: Date) =>
+      channel.state.formatMessage(
+        generateMessage({
+          cid: channel.cid,
+          timestamp,
+          parent_id: thread.id,
+          text,
+        }),
+      );
+    const olderReply = reply('older reply', new Date('2024-03-05T10:00:00.000Z'));
+    thread.messagePaginator.ingestItem(olderReply);
+    thread.messagePaginator.ingestItem(reply('newest reply', new Date('2025-07-09T10:00:00.000Z')));
+    // The thread was scrolled back to an older page of replies.
+    thread.messagePaginator.state.partialNext({ items: [olderReply] });
+    jest
+      .spyOn(chatClient, 'queryThreadsAndHydrate')
+      .mockResolvedValueOnce({ next: undefined, threads: [thread] });
+
+    render(
+      <Chat client={chatClient}>
+        <ThreadList isFocused />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(screen.getByText('07/09/2025')).toBeTruthy());
+    expect(screen.queryByText('03/05/2024')).toBeNull();
+  });
+
   it('pluralizes the unseen-threads banner', async () => {
     jest
       .spyOn(chatClient, 'queryThreadsAndHydrate')
