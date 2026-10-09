@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
+  BackHandler,
   I18nManager,
   Platform,
   Pressable,
@@ -100,6 +101,19 @@ export const MessageOverlayHostLayer = () => {
       announcedOpenRef.current = false;
     }
   }, [isActive, overlayOpenHint, announce]);
+
+  useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      closeOverlay();
+      return true;
+    });
+
+    return () => subscription.remove();
+  }, [isActive]);
 
   // When orientation changes, we dismiss the overlay. While it is possible
   // (and I have a working PoC of) a repositioning solution, it is pretty
