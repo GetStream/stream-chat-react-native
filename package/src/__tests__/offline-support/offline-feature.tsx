@@ -934,7 +934,6 @@ export const Generic = () => {
                 .pendingProps.testID,
           );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
-        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
         const messagesRows = await BetterSqlite.selectFromTable('messages');
         const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
@@ -948,6 +947,7 @@ export const Generic = () => {
         expect(matchingReadRows.length).toBe(1);
         expect(matchingReadRows[0].unreadMessages).toBe(0);
       });
+      await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should truncate the correct messages if channel.truncated arrives with truncated_at', async () => {
@@ -985,7 +985,6 @@ export const Generic = () => {
                 .pendingProps.testID,
           );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
-        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
         const messagesRows = await BetterSqlite.selectFromTable('messages');
         const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
@@ -1001,6 +1000,7 @@ export const Generic = () => {
         expect(matchingReadRows.length).toBe(1);
         expect(matchingReadRows[0].unreadMessages).toBe(messagesLeft);
       });
+      await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should gracefully handle a truncated_at date before each message', async () => {
@@ -1030,13 +1030,13 @@ export const Generic = () => {
                 .pendingProps.testID,
           );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
-        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
         const messagesRows = await BetterSqlite.selectFromTable('messages');
         const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
 
         expect(matchingMessagesRows.length).toBe(channelResponse.messages.length);
       });
+      await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should gracefully handle a truncated_at date after each message', async () => {
@@ -1071,13 +1071,13 @@ export const Generic = () => {
                 .pendingProps.testID,
           );
         expect(channelIdsOnUI.includes(channelToTruncate.cid)).toBeTruthy();
-        expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
 
         const messagesRows = await BetterSqlite.selectFromTable('messages');
         const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
 
         expect(matchingMessagesRows.length).toBe(0);
       });
+      await expectCIDsOnUIToBeInDB(screen.queryAllByLabelText);
     });
 
     it('should add a reaction to DB when a new reaction is added', async () => {
