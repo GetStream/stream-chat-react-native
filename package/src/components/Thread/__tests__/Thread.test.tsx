@@ -208,6 +208,24 @@ describe('Thread', () => {
   // Metadata (parent, read state, participants) comes with a queried page. A thread `ensure` builds for a
   // parent that has replies has only that parent, so it starts stale and reloads once on open; one that
   // already has its data doesn't.
+  // An activation that is never released keeps the thread active for the session, so recovery
+  // keeps reloading it and it keeps being read automatically.
+  it('releases its activation of the thread on unmount', async () => {
+    const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+    const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+    jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+    const { unmount } = renderComponent({
+      channel,
+      chatClient,
+      thread: { thread: parentMessage, threadInstance },
+    });
+    await waitFor(() => expect(threadInstance.state.getLatestValue().active).toBe(true));
+
+    unmount();
+    expect(threadInstance.state.getLatestValue().active).toBe(false);
+  });
+
   describe('metadata reload on open', () => {
     const openThread = (
       threadInstance: ThreadClass,
@@ -269,6 +287,8 @@ describe('Thread', () => {
         text: 'Parent',
       });
       const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+      // the thread list's query hydrates what it lists, so a listed thread isn't stale
+      threadInstance.state.partialNext({ isStateStale: false });
       act(() => {
         chatClient.threads.paginator.setItems({
           isFirstPage: true,

@@ -393,6 +393,68 @@ describe('Channel', () => {
     expect(otherChannel.active).toBe(false);
   });
 
+  // A channel created from members whose first query finds its real cid already stored (e.g. by
+  // `notification.added_to_channel`) gets no events from then on, so <Channel> moves to the stored one.
+  describe('when the channel is superseded by the stored instance', () => {
+    const setup = () => {
+      const otherUser = generateUser({ id: 'other' });
+      const draft = chatClient.channel('messaging', {
+        members: [{ user_id: user.id }, { user_id: otherUser.id }],
+      });
+      const stored = chatClient.channel('messaging', '!members-xyz');
+      // the mount's first-page load would query (and so supersede) the draft before the test does
+      jest.spyOn(draft.messagePaginator, 'reload').mockResolvedValue(undefined);
+      useMockedApis(chatClient, [
+        getOrCreateChannelApi(
+          generateChannelResponse({
+            id: '!members-xyz',
+            members: [generateMember({ user }), generateMember({ user: otherUser })],
+            type: channelType,
+          }),
+        ),
+      ]);
+      let contextChannel: ChannelType | undefined;
+      renderComponent({ channel: draft, initializeOnMount: false }, (ctx) => {
+        contextChannel = (ctx as ChannelContextValue).channel;
+      });
+      return { draft, getContextChannel: () => contextChannel, stored };
+    };
+
+    it('renders the stored instance, with what was typed', async () => {
+      const { draft, getContextChannel, stored } = setup();
+      await waitFor(() => expect(draft.active).toBe(true));
+      draft.messageComposer.textComposer.setText('hello');
+
+      await act(async () => {
+        await draft.watch();
+      });
+
+      await waitFor(() => expect(getContextChannel()).toBe(stored));
+      expect(draft.supersededBy).toBe(stored);
+      expect(stored.active).toBe(true);
+      expect(draft.active).toBe(false);
+      expect(stored.messageComposer.textComposer.text).toBe('hello');
+    });
+
+    it('waits while the stored instance is open elsewhere and the composer holds a draft', async () => {
+      const { draft, getContextChannel, stored } = setup();
+      const releaseElsewhere = stored.activate();
+      await waitFor(() => expect(draft.active).toBe(true));
+      draft.messageComposer.textComposer.setText('hello');
+
+      await act(async () => {
+        await draft.watch();
+      });
+
+      expect(draft.supersededBy).toBe(stored);
+      expect(getContextChannel()).toBe(draft);
+
+      act(() => draft.messageComposer.clear());
+      await waitFor(() => expect(getContextChannel()).toBe(stored));
+      releaseElsewhere();
+    });
+  });
+
   it('does not re-render while the message list queries', async () => {
     // `Channel` subscribes to the paginator for `hasMessages` (what to show when a query errors).
     // That selector must not carry `isLoading` with it: nothing here reads it, but `useStateStore`

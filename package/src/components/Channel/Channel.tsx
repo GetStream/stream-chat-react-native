@@ -21,6 +21,8 @@ import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitie
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
+import { useSupersededChannelSwap } from './hooks/useSupersededChannelSwap';
+
 import {
   AttachmentPickerContextValue,
   AttachmentPickerProvider,
@@ -837,9 +839,10 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, isMessageAIGenerated } = useChatContext();
   const { t } = useTranslationContext();
+  const channel = useSupersededChannelSwap(props.channel);
   const notificationHostId =
     props.notificationHostId ??
-    (props.channel?.cid ? getChannelNotificationHostId(props.channel.cid) : undefined);
+    (channel?.cid ? getChannelNotificationHostId(channel.cid) : undefined);
 
   const threadFromProps = props?.thread;
   const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
@@ -861,6 +864,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
         t,
       }}
       {...props}
+      channel={channel}
       shouldSyncChannel={shouldSyncChannel}
       {...{
         isMessageAIGenerated,

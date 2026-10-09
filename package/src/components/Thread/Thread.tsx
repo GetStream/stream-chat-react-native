@@ -114,12 +114,8 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
 
   // Activating registers the thread with `client.threads` for the session, which keeps it subscribed
   // (incoming replies, read state, thread.updated) whether or not the thread list holds it. Keyed on
-  // the instance, which can arrive after mount; the cleanup deactivates the previous one.
-  useEffect(() => {
-    if (!threadInstance) return;
-    threadInstance.activate?.();
-    return () => threadInstance.deactivate?.();
-  }, [threadInstance]);
+  // the instance, which can arrive after mount; `activate()` returns the release of this activation.
+  useEffect(() => threadInstance?.activate(), [threadInstance]);
 
   // Load the first reply page, but only when the paginator hasn't already been seeded from the
   // thread's `latest_replies` (managed/queried threads seed on construction) or loaded/loading. A

@@ -5,6 +5,7 @@ import type { Channel } from 'stream-chat';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { useCreateChannelContext } from '../hooks/useCreateChannelContext';
 
+// one instance, as the channel store keeps one per cid and channel traffic never replaces it
 const channel = { id: 'channel-1' } as unknown as Channel;
 
 const baseInput = (overrides: Partial<ChannelContextValue> = {}) =>
@@ -39,7 +40,7 @@ describe('useCreateChannelContext', () => {
 
   it.each([
     ['channel id', { channel: { id: 'channel-2' } as unknown as Channel }],
-    // A disposed channel is replaced by a new instance under the same id.
+    // a superseded instance shares its id with the instance that replaced it
     ['channel instance', { channel: { id: 'channel-1' } as unknown as Channel }],
     ['disabled', { disabled: true }],
     ['threadList', { threadList: true }],
