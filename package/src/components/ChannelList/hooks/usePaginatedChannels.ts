@@ -16,6 +16,7 @@ import { useStateStore } from '../../../hooks';
 import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { generateRandomId } from '../../../utils/utils';
+import { useClientUserId } from '../../Chat/hooks/useClientUserId';
 
 /**
  * Custom `queryChannels` implementation for a `ChannelList`. Mapped straight onto the paginator's
@@ -171,6 +172,8 @@ export const usePaginatedChannels = ({
 
   const reloadList = useStableCallback(() => queryChannels('reload'));
 
+  const refreshListWithDefaults = useStableCallback(() => refreshList());
+
   const loadNextPage = useStableCallback(() => queryChannels('loadChannels'));
 
   /**
@@ -196,6 +199,15 @@ export const usePaginatedChannels = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStr, optionsStr, sortStr, paginator]);
 
+  // A list reset to "never queried" while mounted (by `client.disconnectUser`) loads again once a
+  // user is connected. A reload already in flight is left alone.
+  const userId = useClientUserId(client);
+  const isUnloaded = channels === undefined;
+  useEffect(() => {
+    if (!isUnloaded || !userId || paginator.isLoading) return;
+    reloadList();
+  }, [isUnloaded, paginator, reloadList, userId]);
+
   // Propagate runtime `lockChannelOrder` changes without a re-query (matches the legacy `setOptions`
   // effect). Only affects how subsequent event-driven ingests reorder the list.
   useEffect(() => {
@@ -216,8 +228,9 @@ export const usePaginatedChannels = ({
     loadingChannels: channels === undefined && !error,
     loadingNextPage: activeQueryType === 'loadChannels' && !!isLoading,
     loadNextPage,
+    paginator,
     refreshing: activeQueryType === 'refresh',
-    refreshList: () => refreshList(),
+    refreshList: refreshListWithDefaults,
     reloadList,
   };
 };

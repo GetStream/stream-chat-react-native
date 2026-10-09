@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { FlatListProps, StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
 import { Channel, ChannelFilters, ChannelOptions, SortParamRequest } from 'stream-chat';
@@ -20,6 +20,7 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { SwipeRegistryProvider } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useLazyRef } from '../../hooks/useLazyRef';
+import { useStableCallback } from '../../hooks/useStableCallback';
 import { generateRandomId } from '../../utils/utils';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
@@ -75,6 +76,7 @@ export type ChannelListProps = Partial<
   notificationHostId?: string;
 };
 
+const DEFAULT_ADDITIONAL_FLAT_LIST_PROPS: Partial<FlatListProps<Channel>> = {};
 const DEFAULT_FILTERS = {};
 const DEFAULT_OPTIONS = {};
 const DEFAULT_SORT: SortParamRequest[] = [];
@@ -87,7 +89,7 @@ const DEFAULT_SORT: SortParamRequest[] = [];
  */
 export const ChannelList = (props: ChannelListProps) => {
   const {
-    additionalFlatListProps = {},
+    additionalFlatListProps = DEFAULT_ADDITIONAL_FLAT_LIST_PROPS,
     channelRenderFilterFn,
     filters = DEFAULT_FILTERS,
     // https://stackoverflow.com/a/60666252/10826415
@@ -107,7 +109,6 @@ export const ChannelList = (props: ChannelListProps) => {
     swipeActionsEnabled = true,
   } = props;
 
-  const [forceUpdate] = useState(0);
   const fallbackNotificationHostIdRef = useLazyRef(() => `channel-list:${generateRandomId()}`);
   const notificationHostId = notificationHostIdProp ?? fallbackNotificationHostIdRef.current;
   const { client } = useChatContext();
@@ -125,6 +126,7 @@ export const ChannelList = (props: ChannelListProps) => {
     loadingChannels,
     loadingNextPage,
     loadNextPage,
+    paginator,
     refreshing,
     refreshList,
     reloadList,
@@ -136,30 +138,25 @@ export const ChannelList = (props: ChannelListProps) => {
     sort,
   });
 
+  const onFlatListRef = useStableCallback((ref: FlatList<Channel> | null) => {
+    if (setFlatListRef) {
+      setFlatListRef(ref);
+    }
+  });
+
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,
-    channelListInitialized,
-    channels: channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : (channels ?? null),
-    error,
-    forceUpdate,
-    hasNextPage,
-    loadingChannels,
-    loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
     maxUnreadCount,
     numberOfSkeletons,
     onSelect,
     getChannelActionItems,
+    paginator,
     swipeActionsEnabled,
-    refreshing,
     refreshList,
     reloadList,
-    setFlatListRef: (ref: FlatList<Channel> | null) => {
-      if (setFlatListRef) {
-        setFlatListRef(ref);
-      }
-    },
+    setFlatListRef: onFlatListRef,
     mutedStatusPosition,
     pinnedStatusPosition,
   });
@@ -169,7 +166,17 @@ export const ChannelList = (props: ChannelListProps) => {
       <ChannelsProvider value={channelsContext}>
         <SwipeRegistryProvider>
           <View style={styles.container}>
-            <ChannelListView />
+            <ChannelListView
+              channelListInitialized={channelListInitialized}
+              channels={
+                channelRenderFilterFn ? channelRenderFilterFn(channels ?? []) : (channels ?? null)
+              }
+              error={error}
+              hasNextPage={hasNextPage}
+              loadingChannels={loadingChannels}
+              loadingNextPage={loadingNextPage}
+              refreshing={refreshing}
+            />
             <NotificationList />
           </View>
         </SwipeRegistryProvider>

@@ -165,12 +165,11 @@ const MemoizedChannelPreviewViewWithContext = React.memo(
  * from the ChannelPreview component.
  */
 export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
-  const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition, pinnedStatusPosition } =
+  const { maxUnreadCount, onSelect, mutedStatusPosition, pinnedStatusPosition } =
     useChannelsContext();
   return (
     <MemoizedChannelPreviewViewWithContext
       {...{
-        forceUpdate,
         maxUnreadCount,
         onSelect,
         mutedStatusPosition,

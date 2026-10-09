@@ -17,16 +17,55 @@ import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
 import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
+/**
+ * The list's query state, passed down by `ChannelList`.
+ */
+export type ChannelListState = {
+  /**
+   * A control prop used to determine whether the first query of the channel list has succeeded.
+   */
+  channelListInitialized: boolean;
+  /**
+   * The channels to render.
+   */
+  channels: Channel[] | null;
+  /**
+   * Whether or not the FlatList has another page to render
+   */
+  hasNextPage: boolean;
+  /**
+   * Initial channels query loading state, triggers the LoadingIndicator
+   */
+  loadingChannels: boolean;
+  /**
+   * Whether or not additional channels are being loaded, triggers the
+   * ChannelListFooterLoadingIndicator
+   */
+  loadingNextPage: boolean;
+  /**
+   * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
+   */
+  refreshing: boolean;
+  /**
+   * Error in channels query, if any
+   */
+  error?: Error;
+};
+
 export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
   'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect'
->;
+> &
+  ChannelListState;
 
-const StatusIndicator = () => {
+const StatusIndicator = ({
+  error,
+  loadingChannels,
+  refreshList,
+}: Pick<ChannelListViewPropsWithContext, 'error' | 'loadingChannels' | 'refreshList'>) => {
   const isNetworkOnline = useNetworkConnectionState()?.isOnline;
   const isWSOnline = useSettledWSConnectionHealth();
   const styles = useStyles();
-  const { error, loadingChannels, refreshList } = useChannelsContext();
   const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =
     useComponentsContext();
 
@@ -63,7 +102,6 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     channelListInitialized,
     channels,
     error,
-    forceUpdate,
     hasNextPage,
     loadingChannels,
     loadingNextPage,
@@ -119,7 +157,6 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
       <FlatList
         contentContainerStyle={styles.flatListContentContainer}
         data={channels ?? undefined}
-        extraData={forceUpdate}
         keyExtractor={keyExtractor}
         ListEmptyComponent={
           loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
@@ -133,16 +170,21 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={renderItem}
+        // Rows subscribe to their own channel, so a list update re-renders only the cells it changed.
+        strictMode
         style={styles.flatList}
         testID='channel-list-view'
         {...additionalFlatListProps}
       />
-      <StatusIndicator />
+      <StatusIndicator error={error} loadingChannels={loadingChannels} refreshList={refreshList} />
     </>
   );
 };
 
-export type ChannelListViewProps = Partial<ChannelListViewPropsWithContext>;
+export type ChannelListViewProps = Partial<
+  Omit<ChannelListViewPropsWithContext, keyof ChannelListState>
+> &
+  ChannelListState;
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation. It
@@ -153,16 +195,9 @@ export type ChannelListViewProps = Partial<ChannelListViewPropsWithContext>;
 export const ChannelListView = (props: ChannelListViewProps) => {
   const {
     additionalFlatListProps,
-    channelListInitialized,
-    channels,
-    error,
-    forceUpdate,
-    hasNextPage,
-    loadingChannels,
-    loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
-    refreshing,
+    paginator,
     refreshList,
     reloadList,
     setFlatListRef,
@@ -172,16 +207,9 @@ export const ChannelListView = (props: ChannelListViewProps) => {
     <ChannelListViewWithContext
       {...{
         additionalFlatListProps,
-        channelListInitialized,
-        channels,
-        error,
-        forceUpdate,
-        hasNextPage,
-        loadingChannels,
-        loadingNextPage,
         loadMoreThreshold,
         loadNextPage,
-        refreshing,
+        paginator,
         refreshList,
         reloadList,
         setFlatListRef,

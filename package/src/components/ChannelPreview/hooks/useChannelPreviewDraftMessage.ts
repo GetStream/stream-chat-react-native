@@ -32,20 +32,22 @@ export const useChannelPreviewDraftMessage = ({ channel }: UseChannelPreviewDraf
     stateSelector,
   );
 
-  const draftMessage: DraftMessage | undefined = useMemo(
-    () =>
-      !channel.messageComposer.compositionIsEmpty
-        ? attachments && draftText
-          ? {
-              attachments,
-              custom: {},
-              id: channel.messageComposer.id,
-              text: draftText,
-            }
-          : undefined
-        : undefined,
-    [channel.messageComposer, attachments, draftText],
-  );
+  const draftMessage = useMemo<DraftMessage | undefined>(() => {
+    if (channel.messageComposer.compositionIsEmpty) {
+      return undefined;
+    }
+
+    if (!draftText && !attachments?.length) {
+      return undefined;
+    }
+
+    return {
+      attachments,
+      custom: {},
+      id: channel.messageComposer.id,
+      text: draftText ?? '',
+    };
+  }, [channel.messageComposer, attachments, draftText]);
 
   return draftMessage;
 };

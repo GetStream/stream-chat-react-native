@@ -3,7 +3,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { FlatListProps } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, ChannelPaginator } from 'stream-chat';
 
 import type { GetChannelActionItems } from '../../hooks/actions/useChannelActionItems';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -30,31 +30,6 @@ export type ChannelsContextValue = {
    */
   additionalFlatListProps: Partial<FlatListProps<Channel>>;
   /**
-   * A control prop used to determine whether the first query of the channel list has succeeded.
-   */
-  channelListInitialized: boolean;
-  /**
-   * Channels can be either an array of channels or a promise which resolves to an array of channels
-   */
-  channels: Channel[] | null;
-  /**
-   * Incremental number change to force update the FlatList
-   */
-  forceUpdate: number;
-  /**
-   * Whether or not the FlatList has another page to render
-   */
-  hasNextPage: boolean;
-  /**
-   * Initial channels query loading state, triggers the LoadingIndicator
-   */
-  loadingChannels: boolean;
-  /**
-   * Whether or not additional channels are being loaded, triggers the
-   * ChannelListFooterLoadingIndicator
-   */
-  loadingNextPage: boolean;
-  /**
    * The React Native FlatList threshold to fetch more data
    * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
    * */
@@ -72,9 +47,10 @@ export type ChannelsContextValue = {
    */
   numberOfSkeletons: number;
   /**
-   * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
+   * The list's `ChannelPaginator`. Read the loaded channels and the query state from
+   * `paginator.state`, e.g. `useStateStore(paginator.state, selector)`.
    */
-  refreshing: boolean;
+  paginator: ChannelPaginator;
   /**
    * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
    * from UI before loading the new ones
@@ -97,10 +73,6 @@ export type ChannelsContextValue = {
    * ```
    */
   setFlatListRef: (ref: FlatList<Channel> | null) => void;
-  /**
-   * Error in channels query, if any
-   */
-  error?: Error;
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
    *

@@ -2471,6 +2471,46 @@ text, add a composition middleware through `client.setMessageComposerSetupFuncti
 - Attachment picker cells no longer re-render on every upload progress tick; a cell re-renders only
   when its own selection changes.
 
+## P.20 `ChannelsContext` holds the list's configuration, not its state (breaking)
+
+`ChannelsContext` used to carry a copy of the list's query state next to its configuration, and every
+channel row read it. Any list update re-rendered every row: a reorder, a new message in any channel, an
+unread count, a presence change. The context now holds the configuration, the list's
+`ChannelPaginator` and the stable `loadNextPage` / `refreshList` / `reloadList` functions. `ChannelList`
+passes the query state to `ChannelListView` as props.
+
+| Removed from `ChannelsContextValue` | Use instead |
+| --- | --- |
+| `channels`, `hasNextPage`, `error` | `useStateStore(useChannelsContext().paginator.state, selector)`: `items`, `hasMoreTail`, `lastQueryError` |
+| `loadingChannels`, `channelListInitialized` | the same store: `items === undefined` |
+| `loadingNextPage`, `refreshing` | `ChannelListView` props |
+| `forceUpdate` | nothing; it was always `0` |
+
+```tsx
+const selector = (state: ChannelPaginatorState) => ({ channels: state.items });
+
+const { paginator } = useChannelsContext();
+const { channels } = useStateStore(paginator.state, selector);
+```
+
+`ChannelListViewProps` now requires the query state (`channels`, `channelListInitialized`, `error`,
+`hasNextPage`, `loadingChannels`, `loadingNextPage`, `refreshing`).
+
+A channel row now re-renders only when its own channel changes (the list's FlatList also sets
+`strictMode`). A custom `ChannelPreview` that reads `channel.data` or `channel.state` directly, without
+subscribing, no longer picks up changes through other rows' updates. Subscribe instead, for example with
+`useChannelName(channel)` or `useStateStore(channel.state, selector)`.
+
+## P.21 Channel list behaviour fixes
+
+- **Changing `onSelect`, `getChannelActionItems`, `maxUnreadCount`, `additionalFlatListProps`,
+  `loadMoreThreshold`, `numberOfSkeletons` or `setFlatListRef` on a mounted `ChannelList` takes effect.**
+  They used to be kept until the list happened to change. `setFlatListRef` is no longer called with
+  `null` and then the list again on every list update.
+- **A mounted `ChannelList` loads again after `client.disconnectUser()` and the next `connectUser()`.**
+  It used to stay on its loading skeleton.
+- **A channel row shows a draft that has only attachments**, as thread rows already did.
+
 ---
 
 # Part I — i18n

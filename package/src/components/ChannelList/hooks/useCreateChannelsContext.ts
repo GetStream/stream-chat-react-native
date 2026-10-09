@@ -4,76 +4,51 @@ import type { ChannelsContextValue } from '../../../contexts/channelsContext/Cha
 
 export const useCreateChannelsContext = ({
   additionalFlatListProps,
-  channelListInitialized,
-  channels,
-  error,
-  forceUpdate,
-  hasNextPage,
-  loadingChannels,
-  loadingNextPage,
+  getChannelActionItems,
   loadMoreThreshold,
   loadNextPage,
   maxUnreadCount,
+  mutedStatusPosition,
   numberOfSkeletons,
   onSelect,
-  getChannelActionItems,
-  swipeActionsEnabled,
-  refreshing,
+  paginator,
+  pinnedStatusPosition,
   refreshList,
   reloadList,
   setFlatListRef,
-  mutedStatusPosition,
-  pinnedStatusPosition,
-}: ChannelsContextValue) => {
-  const channelValueString = channels
-    ?.map(
-      (channel) =>
-        `${channel.data?.custom?.name ?? ''}${channel.id ?? ''}${
-          channel?.state?.unreadCount ?? ''
-        }${Object.values(channel.state.members)
-          .map((member) => member.user?.online)
-          .join()}`,
-    )
-    .join();
-  const channelsContext: ChannelsContextValue = useMemo(
+  swipeActionsEnabled,
+}: ChannelsContextValue) =>
+  useMemo<ChannelsContextValue>(
     () => ({
       additionalFlatListProps,
-      channelListInitialized,
-      channels,
-      error,
-      forceUpdate,
-      hasNextPage,
-      loadingChannels,
-      loadingNextPage,
+      getChannelActionItems,
       loadMoreThreshold,
       loadNextPage,
       maxUnreadCount,
+      mutedStatusPosition,
       numberOfSkeletons,
       onSelect,
-      getChannelActionItems,
-      swipeActionsEnabled,
-      refreshing,
+      paginator,
+      pinnedStatusPosition,
       refreshList,
       reloadList,
       setFlatListRef,
-      mutedStatusPosition,
-      pinnedStatusPosition,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      channelValueString,
-      error,
-      forceUpdate,
-      hasNextPage,
-      loadingChannels,
-      loadingNextPage,
-      channelListInitialized,
       swipeActionsEnabled,
-      refreshing,
+    }),
+    [
+      additionalFlatListProps,
+      getChannelActionItems,
+      loadMoreThreshold,
+      loadNextPage,
+      maxUnreadCount,
       mutedStatusPosition,
+      numberOfSkeletons,
+      onSelect,
+      paginator,
       pinnedStatusPosition,
+      refreshList,
+      reloadList,
+      setFlatListRef,
+      swipeActionsEnabled,
     ],
   );
-
-  return channelsContext;
-};
