@@ -16,6 +16,7 @@ import { useStateStore } from '../../../hooks';
 import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useStableCallback } from '../../../hooks/useStableCallback';
 import { generateRandomId } from '../../../utils/utils';
+import { useClientUserId } from '../../Chat/hooks/useClientUserId';
 
 /**
  * Custom `queryChannels` implementation for a `ChannelList`. Mapped straight onto the paginator's
@@ -73,9 +74,6 @@ export const usePaginatedChannels = ({
     }
     const { limit, offset: _offset, ...requestOptions } = options;
     return new ChannelPaginator({
-      channelStateOptions: {
-        skipInitialization: undefined,
-      },
       client,
       filters,
       id: paginatorIdRef.current,
@@ -131,18 +129,6 @@ export const usePaginatedChannels = ({
         return;
       }
 
-      // Do NOT skip state initialization on the (re)query. `activeChannels.current` is
-      // `Object.keys(channelsState)` — every channel ever MOUNTED, and it is never cleared on
-      // navigate-back — so passing it as `skipInitialization` made `hydrateChannels` skip
-      // `seedFirstPageSync`/`_initializeState` for every previously-opened channel on each reconnect.
-      // Those channels' `messagePaginator.aggregateState` then never re-seeds on the fresh socket, so
-      // their list-row preview (last message / unread, sourced from that aggregate) freezes while the
-      // list still reorders. Re-initializing matches the offline-enabled path; the client still guards a
-      // scrolled-up open channel from being clobbered via the `isActiveIntervalAtHead` check.
-      paginator.channelStateOptions = {
-        skipInitialization: undefined,
-      };
-
       setActiveQueryType(queryType);
 
       try {
@@ -186,6 +172,8 @@ export const usePaginatedChannels = ({
 
   const reloadList = useStableCallback(() => queryChannels('reload'));
 
+  const refreshListWithDefaults = useStableCallback(() => refreshList());
+
   const loadNextPage = useStableCallback(() => queryChannels('loadChannels'));
 
   /**
@@ -211,6 +199,15 @@ export const usePaginatedChannels = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStr, optionsStr, sortStr, paginator]);
 
+  // A list reset to "never queried" while mounted (by `client.disconnectUser`) loads again once a
+  // user is connected. A reload already in flight is left alone.
+  const userId = useClientUserId(client);
+  const isUnloaded = channels === undefined;
+  useEffect(() => {
+    if (!isUnloaded || !userId || paginator.isLoading) return;
+    reloadList();
+  }, [isUnloaded, paginator, reloadList, userId]);
+
   // Propagate runtime `lockChannelOrder` changes without a re-query (matches the legacy `setOptions`
   // effect). Only affects how subsequent event-driven ingests reorder the list.
   useEffect(() => {
@@ -231,8 +228,9 @@ export const usePaginatedChannels = ({
     loadingChannels: channels === undefined && !error,
     loadingNextPage: activeQueryType === 'loadChannels' && !!isLoading,
     loadNextPage,
+    paginator,
     refreshing: activeQueryType === 'refresh',
-    refreshList: () => refreshList(),
+    refreshList: refreshListWithDefaults,
     reloadList,
   };
 };

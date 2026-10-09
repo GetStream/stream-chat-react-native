@@ -39,13 +39,11 @@ export class OfflineDB extends AbstractOfflineDB {
 
   upsertChannels = api.upsertChannels;
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   upsertUserSyncStatus = ({ userId, lastSyncedAt, execute }: DBUpsertUserSyncStatusType) =>
-    api.upsertUserSyncStatus({ currentUserId: userId, execute, lastSyncedAt });
+    api.upsertUserSyncStatus({ execute, lastSyncedAt, userId });
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   upsertAppSettings = ({ appSettings, userId, execute }: DBUpsertAppSettingsType) =>
-    api.upsertAppSettings({ appSettings, currentUserId: userId, execute });
+    api.upsertAppSettings({ appSettings, execute, userId });
 
   upsertPoll = api.upsertPoll;
 
@@ -65,27 +63,22 @@ export class OfflineDB extends AbstractOfflineDB {
 
   updateMessage = api.updateMessage;
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   getChannels = ({ cids, userId }: DBGetChannelsType) =>
-    api.getChannels({ channelIds: cids, currentUserId: userId });
+    api.getChannels({ channelIds: cids, userId });
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   getChannelsForQuery = ({ userId, options }: DBGetChannelsForQueryType) =>
     api.getChannelsForFilterSort({
-      currentUserId: userId,
       filters: options?.filter_conditions,
       options,
       sort: options?.sort,
+      userId,
     });
 
   getAllChannelCids = api.getAllChannelIds;
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getLastSyncedAt = ({ userId }: DBGetLastSyncedAtType) =>
-    api.getLastSyncedAt({ currentUserId: userId });
+  getLastSyncedAt = ({ userId }: DBGetLastSyncedAtType) => api.getLastSyncedAt({ userId });
 
-  getAppSettings = ({ userId }: DBGetAppSettingsType) =>
-    api.getAppSettings({ currentUserId: userId });
+  getAppSettings = ({ userId }: DBGetAppSettingsType) => api.getAppSettings({ userId });
 
   getReactions = api.getReactionsForFilterSort;
 

@@ -10,13 +10,6 @@ import React, {
 import { Alert, Linking, TextInputProps } from 'react-native';
 
 import { lookup as lookupMimeType } from 'mime-types';
-import {
-  LocalMessage,
-  MessageComposer,
-  MessageRequest as StreamMessage,
-  SendMessageOptions,
-  UpdateMessageOptions,
-} from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { useMessageComposer } from './hooks/useMessageComposer';
@@ -24,7 +17,6 @@ import { useMessageComposer } from './hooks/useMessageComposer';
 import { dismissKeyboard } from '../../components/KeyboardCompatibleView/KeyboardCompatibleView';
 import { parseLinksFromText } from '../../components/Message/MessageItemView/utils/parseLinks';
 import { useAudioRecorder } from '../../components/MessageInput/hooks/useAudioRecorder';
-import { useNotificationApi } from '../../components/Notifications';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { setupVideoAttachmentPreviewMiddleware } from '../../middlewares/attachments';
 
@@ -35,7 +27,6 @@ import { TextInputRef } from '../../types/react-native-compat';
 import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
-import { useMessageComposerAPIContext } from '../messageComposerContext/MessageComposerAPIContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
@@ -116,11 +107,6 @@ export type InputMessageInputContextValue = {
    */
   attachmentSelectionBarHeight: number;
 
-  editMessage: (params: {
-    localMessage: LocalMessage;
-    options?: UpdateMessageOptions;
-  }) => Promise<void>;
-
   /**
    * Controls what happens when the attach button is pressed while the attachment picker is open.
    * When true (default), the message input is focused, toggling from the picker to the keyboard.
@@ -140,11 +126,6 @@ export type InputMessageInputContextValue = {
   /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
 
-  sendMessage: (params: {
-    localMessage: LocalMessage;
-    message: StreamMessage;
-    options?: SendMessageOptions;
-  }) => Promise<void>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
    *
@@ -190,8 +171,7 @@ export type InputMessageInputContextValue = {
   messageInputHeightStore: MessageInputHeightStore;
 };
 
-export type MessageInputContextValue = LocalMessageInputContext &
-  Omit<InputMessageInputContextValue, 'sendMessage'>;
+export type MessageInputContextValue = LocalMessageInputContext & InputMessageInputContextValue;
 
 export const MessageInputContext = React.createContext(
   DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
@@ -213,10 +193,8 @@ export const MessageInputProvider = ({
   const channelCapabilities = useOwnCapabilitiesContext();
   const [audioRecorderManager] = useState(new AudioRecorderManager());
 
-  const { clearEditingState } = useMessageComposerAPIContext();
   const { threadInstance } = useThreadContext();
   const { t } = useTranslationContext();
-  const { addNotification } = useNotificationApi();
   const inputBoxRef = useRef<InputBoxRef | null>(null);
 
   const [showPollCreationDialog, setShowPollCreationDialog] = useState(false);
@@ -227,7 +205,7 @@ export const MessageInputProvider = ({
   const { openPollCreationDialog: openPollCreationDialogFromContext } = value;
 
   const messageComposer = useMessageComposer();
-  const { attachmentManager, editedMessage } = messageComposer;
+  const { attachmentManager } = messageComposer;
 
   /**
    * Composer middleware this SDK owns.
@@ -369,107 +347,32 @@ export const MessageInputProvider = ({
   }, [closePicker, attachmentPickerStore]);
 
   const sendMessage = useStableCallback(async () => {
-    const textToRestore = messageComposer.textComposer.text;
-    let compositionAccepted = false;
+    const text = messageComposer.textComposer.text;
+
+    if (!channelCapabilities.sendLinks && parseLinksFromText(text).length > 0) {
+      Alert.alert(
+        t('common.linksDisabled.title', 'Links are disabled'),
+        t('common.linksDisabled.text', 'Sending links is not allowed in this conversation'),
+      );
+      return;
+    }
 
     inputBoxRef.current?.clearState();
 
     try {
-      const composition = await messageComposer.compose();
+      // A bounced message (type 'error') is never updated: editing it sends it again as a new message.
+      const { editedMessage } = messageComposer;
+      const result =
+        editedMessage && editedMessage.type !== 'error'
+          ? await messageComposer.update()
+          : await messageComposer.send();
 
-      if (!composition || !composition.message) {
-        inputBoxRef.current?.restoreState(textToRestore);
-        return;
-      }
-
-      const { localMessage, message, sendOptions } = composition;
-      const linkInfos = parseLinksFromText(localMessage.text);
-
-      if (!channelCapabilities.sendLinks && linkInfos.length > 0) {
-        Alert.alert(
-          t('common.linksDisabled.title', 'Links are disabled'),
-          t('common.linksDisabled.text', 'Sending links is not allowed in this conversation'),
-        );
-
-        inputBoxRef.current?.restoreState(textToRestore);
-        return;
-      }
-
-      compositionAccepted = true;
-
-      // MODERATION: This is for the case where the message is of type 'error' and if you try to edit it, it will throw an error.
-      if (editedMessage && editedMessage.type !== 'error') {
-        try {
-          clearEditingState();
-          await value.editMessage({ localMessage, options: sendOptions });
-        } catch (error) {
-          addNotification(
-            {
-              message: t('common.editMessageFailed.error', 'Edit message request failed'),
-              options: {
-                ...(error instanceof Error ? { originalError: error } : {}),
-                severity: 'error',
-              },
-              origin: { emitter: 'MessageComposer' },
-            },
-            {
-              incident: {
-                domain: 'api',
-                entity: 'message',
-                operation: 'edit',
-              },
-            },
-          );
-          throw new Error('Error while editing message');
-        }
-      } else {
-        try {
-          // Since the message id does not get cleared, we have to handle this manually
-          // and let the poll creation dialog handle clearing the rest of the state. Once
-          // sending a message has been moved to the composer as an API, this will be
-          // redundant and can be removed.
-          if (localMessage.poll_id) {
-            messageComposer.state.partialNext({
-              id: MessageComposer.generateId(),
-              pollId: null,
-            });
-          } else {
-            messageComposer.clear();
-          }
-          // Even though we edit, but we eventually send the message as a regular message, so we need to clear the editing state.
-          if (editedMessage) {
-            clearEditingState();
-          }
-          await value.sendMessage({
-            localMessage,
-            message: message as StreamMessage,
-            options: sendOptions,
-          });
-        } catch (error) {
-          addNotification(
-            {
-              message: t('common.sendMessageFailed.error', 'Send message request failed'),
-              options: {
-                ...(error instanceof Error ? { originalError: error } : {}),
-                severity: 'error',
-              },
-              origin: { emitter: 'MessageComposer' },
-            },
-            {
-              incident: {
-                domain: 'api',
-                entity: 'message',
-                operation: 'send',
-              },
-            },
-          );
-          throw new Error('Error while sending message');
-        }
+      if (result === 'nothing-to-send') {
+        inputBoxRef.current?.restoreState(text);
       }
     } catch (error) {
-      if (!compositionAccepted) {
-        inputBoxRef.current?.restoreState(textToRestore);
-      }
+      // Only composing can throw; a failed request is reported by the composer itself.
+      inputBoxRef.current?.restoreState(text);
       console.error('Error while sending message:', error);
     }
   });
@@ -547,7 +450,7 @@ export const MessageInputProvider = ({
     ...value,
     closePollCreationDialog,
     openPollCreationDialog,
-    sendMessage, // overriding the originally passed in sendMessage
+    sendMessage,
     showPollCreationDialog,
     audioRecorderManager,
     startVoiceRecording,

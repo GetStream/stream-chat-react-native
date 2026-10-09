@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, GetApplicationResponse, StreamChat, UserMuteResponse } from 'stream-chat';
+import type { GetApplicationResponse, StreamChat } from 'stream-chat';
 
 import { MessageContextValue } from '../messageContext/MessageContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -9,9 +9,11 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChatContextValue = {
   /**
-   * Object of application settings returned from Stream.
-   * */
-  appSettings: GetApplicationResponse | null;
+   * Resolves the application settings returned from Stream. The first call fetches them and later
+   * calls reuse the result. With offline support enabled, it falls back to the copy stored in the
+   * offline database while the request cannot be made.
+   */
+  getAppSettings: () => Promise<GetApplicationResponse>;
   /**
    * The StreamChat client object
    *
@@ -29,32 +31,6 @@ export type ChatContextValue = {
    * @overrideType StreamChat
    * */
   client: StreamChat;
-  enableOfflineSupport: boolean;
-  mutedUsers: UserMuteResponse[];
-  /**
-   * @param newChannel Channel to set as active.
-   *
-   * @overrideType Function
-   */
-  setActiveChannel: (newChannel?: Channel) => void;
-  /**
-   * Instance of channel object from stream-chat package.
-   *
-   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
-   *
-   * ```
-   * import { StreamChat, Channel } from 'stream-chat';
-   * import { Chat, Channel} from 'stream-chat-react-native';
-   *
-   * const client = StreamChat.getInstance('api_key');
-   * await client.connectUser('user_id', 'user_token');
-   * const channel = client.channel('messaging', 'channel_id');
-   * await channel.watch();
-   * ```
-   *
-   * @overrideType Channel
-   */
-  channel?: Channel;
 } & Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>>;
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);

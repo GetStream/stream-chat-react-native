@@ -1,13 +1,15 @@
-import { Channel, ChannelMute, EventType, StreamChat } from 'stream-chat';
+import type { ChannelMute, EventType, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
-import { useSyncClientEventsToChannel } from '../../../hooks/useSyncClientEvents';
+import { useSyncClientEvents } from '../../../hooks/useSyncClientEvents';
 
-const selector = (_channel: Channel, client: StreamChat) => client.mutedChannels;
+const selector = (client: StreamChat) => client.mutedChannels;
 const keys: EventType[] = ['health.check', 'notification.channel_mutes_updated'];
-export function useMutedChannels(channel: Channel): Array<ChannelMute>;
-export function useMutedChannels(channel?: Channel): Array<ChannelMute> | undefined;
-export function useMutedChannels(channel?: Channel) {
+
+/**
+ * Returns the current user's muted channels.
+ */
+export const useMutedChannels = (): Array<ChannelMute> => {
   const { client } = useChatContext();
-  return useSyncClientEventsToChannel({ channel, client, selector, stateChangeEventKeys: keys });
-}
+  return useSyncClientEvents({ client, selector, stateChangeEventKeys: keys });
+};

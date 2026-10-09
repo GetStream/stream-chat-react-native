@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import type { UnreadSnapshotState } from 'stream-chat';
 
+import { DEFAULT_HIGHLIGHT_DURATION } from './hooks/useMessageListFocus';
+
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -10,7 +12,6 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
-import { DEFAULT_HIGHLIGHT_DURATION } from '../Channel/hooks/useMessageListPagination';
 import { useNotificationApi } from '../Notifications';
 import { Button } from '../ui';
 
@@ -28,28 +29,22 @@ export type UnreadMessagesNotificationProps = {
    * Callback to handle the press event
    */
   onPressHandler?: () => Promise<void>;
-  /**
-   * Unread count
-   */
-  unreadCount?: number;
 };
 
 const unreadCountSelector = (snapshot: UnreadSnapshotState) => ({
-  unread_messages: snapshot.unreadCount,
+  count: snapshot.unreadCount,
 });
 
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { markRead, onCloseHandler, onPressHandler, unreadCount } = props;
+  const { markRead, onCloseHandler, onPressHandler } = props;
   const { t } = useTranslationContext();
   const { icons } = useComponentsContext();
   const { channel } = useChannelContext();
   const { addNotification } = useNotificationApi();
-  const { unread_messages } = useStateStore(
+  const { count } = useStateStore(
     channel.messagePaginator.unreadStateSnapshot,
     unreadCountSelector,
   );
-
-  const count = unread_messages ?? unreadCount;
 
   const handleOnPress = async () => {
     if (onPressHandler) {

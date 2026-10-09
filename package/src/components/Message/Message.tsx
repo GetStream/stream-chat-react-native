@@ -33,7 +33,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   KeyboardContextValue,
@@ -253,7 +253,6 @@ export type MessagePropsWithContext = Pick<
     | 'supportedReactions'
   > &
   Pick<TranslationContextValue, 't'> & {
-    chatContext: ChatContextValue;
     messagesContext: MessagesContextValue;
     /**
      * Whether or not users are able to long press messages.
@@ -280,10 +279,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
+  const { client } = useChatContext();
 
   const {
     channel,
-    chatContext,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
     dismissKeyboardOnMessageTouch,
@@ -348,7 +347,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   );
   const messageOverlayId = useMemo(() => createMessageOverlayId(message.id), [message.id]);
   const isMessageTypeDeleted = message.type === 'deleted';
-  const { client } = chatContext;
 
   const rectRef = useRef<Rect>(undefined);
   const bubbleRect = useRef<Rect>(undefined);
@@ -956,7 +954,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
 const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWithContext) => {
   const {
-    chatContext: { mutedUsers: prevMutedUsers },
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
@@ -968,7 +965,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     t: prevT,
   } = prevProps;
   const {
-    chatContext: { mutedUsers: nextMutedUsers },
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
@@ -1066,14 +1062,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const mutedUserSame =
-    prevMutedUsers.length === nextMutedUsers.length ||
-    prevMutedUsers.some((mutedUser) => mutedUser.target?.id === prevMessage.user?.id) ===
-      nextMutedUsers.some((mutedUser) => mutedUser.target?.id === nextMessage.user?.id);
-  if (!mutedUserSame) {
-    return false;
-  }
-
   const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
   if (!showUnreadUnderlayEqual) {
     return false;
@@ -1126,7 +1114,6 @@ export type MessageProps = Partial<
  */
 export const Message = (props: MessageProps) => {
   const { channel, enforceUniqueReaction } = useChannelContext();
-  const chatContext = useChatContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
   const messageOperations = useMessageOperations();
@@ -1139,7 +1126,6 @@ export const Message = (props: MessageProps) => {
       {...messageOperations}
       {...{
         channel,
-        chatContext,
         dismissKeyboard,
         enforceUniqueReaction,
         messagesContext,

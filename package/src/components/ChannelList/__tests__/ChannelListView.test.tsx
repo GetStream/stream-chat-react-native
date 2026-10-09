@@ -55,25 +55,25 @@ const ComponentWithContextOverrides = ({
       value={
         {
           additionalFlatListProps: {},
-          channelListInitialized: !loadingChannels && !error,
-          channels: error ? null : [],
-          error: error ? new Error('test error') : undefined,
-          forceUpdate: 0,
-          hasNextPage: false,
-          loadingChannels,
-          loadingNextPage: false,
           loadMoreThreshold: 0.1,
           loadNextPage: noop,
           maxUnreadCount: 255,
           numberOfSkeletons: 8,
-          refreshing: false,
           refreshList: noop,
           reloadList: noop,
           setFlatListRef: noop,
         } as unknown as ChannelsContextValue
       }
     >
-      <ChannelListView />
+      <ChannelListView
+        channelListInitialized={!loadingChannels && !error}
+        channels={error ? null : []}
+        error={error ? new Error('test error') : undefined}
+        hasNextPage={false}
+        loadingChannels={loadingChannels}
+        loadingNextPage={false}
+        refreshing={false}
+      />
     </ChannelsProvider>
   </Chat>
 );

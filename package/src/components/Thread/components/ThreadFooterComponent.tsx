@@ -13,10 +13,12 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStateStore } from '../../../hooks';
 import { primitives } from '../../../theme';
 
-type ThreadFooterComponentPropsWithContext = Pick<
-  ThreadContextValue,
-  'parentMessagePreventPress' | 'threadInstance'
->;
+type ThreadFooterComponentPropsWithContext = Pick<ThreadContextValue, 'threadInstance'> & {
+  /**
+   * Boolean to enable/disable parent message press
+   */
+  parentMessagePreventPress?: boolean;
+};
 
 const loadingSelector = (state: { isLoading: boolean }) => ({ isLoading: state.isLoading });
 
@@ -113,21 +115,13 @@ const MemoizedThreadFooter = React.memo(
 ) as typeof ThreadFooterComponentWithContext;
 
 export type ThreadFooterComponentProps = Partial<
-  Pick<ThreadContextValue, 'parentMessagePreventPress'>
+  Pick<ThreadFooterComponentPropsWithContext, 'parentMessagePreventPress'>
 >;
 
 export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
-  const { parentMessagePreventPress, threadInstance } = useThreadContext();
+  const { threadInstance } = useThreadContext();
 
-  return (
-    <MemoizedThreadFooter
-      {...{
-        parentMessagePreventPress,
-        threadInstance,
-      }}
-      {...props}
-    />
-  );
+  return <MemoizedThreadFooter threadInstance={threadInstance} {...props} />;
 };
 
 const useStyles = () => {

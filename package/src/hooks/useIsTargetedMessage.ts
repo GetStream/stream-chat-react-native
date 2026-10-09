@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { useActiveMessagePaginator } from './useActiveMessagePaginator';
+import { useMessagePaginator } from './useMessagePaginator';
 import { useStateStore } from './useStateStore';
 
 type MessageFocusSignalState = { signal: { messageId?: string } | null };
@@ -16,7 +16,7 @@ type MessageFocusSignalState = { signal: { messageId?: string } | null };
  * and the row gaining it.
  */
 export const useIsTargetedMessage = (messageId: string) => {
-  const paginator = useActiveMessagePaginator();
+  const paginator = useMessagePaginator();
 
   const selector = useCallback(
     (state: MessageFocusSignalState) => ({

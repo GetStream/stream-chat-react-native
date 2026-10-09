@@ -6,6 +6,7 @@ import {
   convertTimestampToDate,
   DraftMessage,
   LocalMessage,
+  MessagePaginatorAggregateState,
   TextComposerState,
   Thread,
   ThreadState,
@@ -47,11 +48,9 @@ const attachmentManagerStateSelector = (state: AttachmentManagerState) => ({
   attachments: state.attachments,
 });
 
-type ThreadReplyPaginatorState = { items?: LocalMessage[] };
-
-// The messagePaginator is the sole reply source (Thread.state.replies was removed).
-const lastReplySelector = (state: ThreadReplyPaginatorState) => ({
-  lastReply: state.items?.at(-1),
+// The newest reply, also when the loaded page of replies is not the newest one.
+const lastReplySelector = (state: MessagePaginatorAggregateState) => ({
+  lastReply: state.lastMessage ?? undefined,
 });
 
 export const ThreadListItemComponent = () => {
@@ -173,7 +172,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
     selector,
   );
 
-  const { lastReply } = useStateStore(thread.messagePaginator.state, lastReplySelector) ?? {};
+  const { lastReply } = useStateStore(thread.messagePaginator.aggregateState, lastReplySelector);
 
   const timestamp = lastReply?.created_at;
 

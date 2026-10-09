@@ -17,9 +17,7 @@ const baseInput = (overrides: Partial<ChannelContextValue> = {}) =>
     hasPendingInitialTargetLoad: () => false,
     hideDateSeparators: false,
     hideStickyDateHeader: false,
-    isChannelActive: true,
     maxTimeBetweenGroupedMessages: 1000,
-    scrollToFirstUnreadThreshold: 4,
     threadList: false,
     ...overrides,
   }) as ChannelContextValue;
@@ -35,7 +33,7 @@ describe('useCreateChannelContext', () => {
     );
     const first = result.current;
 
-    rerender(baseInput({ hideDateSeparators: true, scrollToFirstUnreadThreshold: 99 }));
+    rerender(baseInput({ hideDateSeparators: true, maxTimeBetweenGroupedMessages: 99 }));
 
     expect(result.current).toBe(first);
   });
@@ -45,7 +43,6 @@ describe('useCreateChannelContext', () => {
     // a superseded instance shares its id with the instance that replaced it
     ['channel instance', { channel: { id: 'channel-1' } as unknown as Channel }],
     ['disabled', { disabled: true }],
-    ['isChannelActive', { isChannelActive: false }],
     ['threadList', { threadList: true }],
   ])('builds a new object when %s changes', (_label, overrides) => {
     const { rerender, result } = renderHook(

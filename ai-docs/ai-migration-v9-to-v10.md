@@ -24,7 +24,8 @@
 3. **Resolution hooks** (new in v10, additive — use these as the entry points):
    - `useChannelContext().channel` — the active `Channel` instance.
    - `useChannel()` — `threadInstance?.channel ?? channel` (thread-aware).
-   - `useMessagePaginator()` — `threadInstance?.messagePaginator ?? channel.messagePaginator`.
+   - `useMessagePaginator()` — the open thread's `messagePaginator` when the subtree renders a thread
+     list (`threadList`), `channel.messagePaginator` otherwise.
    - `useStateStore(store, selector)` — subscribe to a `StateStore` with a
      memo-stable selector (return a stable object; do not allocate fresh arrays
      inside the selector).
@@ -154,7 +155,7 @@ means changed. Details in the linked section.
 | `channel.serverConfig?.typing_events` (and the other gated flags) | `channel.config.typingEvents.enabled` — resolved, server ANDed with yours | §13.1 |
 | `client.setMessageComposerSetupFunction(fn)` | `client.config.setSetupFunction('messageComposer', fn)` | §13.1 |
 | re-setting `channel.messagePaginator.pageSize` after mount | `client.config.set({ channel: { messagePaginator: { pageSize } } })` | §13.1, §16.1 |
-| `useTargetedMessage()` / `setTargetedMessage(id)` | `useActiveMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
+| `useTargetedMessage()` / `setTargetedMessage(id)` | `useMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
 | `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state` `read` (override the component to control) | §7 |
 | app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.activeChannels` | §7.1 |
@@ -167,7 +168,7 @@ means changed. Details in the linked section.
 | `useThreadContext().reloadThread()` | `threadInstance.reload()` | §10 |
 | `openThread(msg)` / `closeThread()` | lift `onThreadSelect` → `<Channel thread={msg \| null} />` | §10.1 |
 | `useMessageComposerContext().thread` | `threadInstance` | §10.2 |
-| `editMessage()` → `UpdateMessageAPIResponse` | `editMessage()` → `Promise<void>`; for the response, `client.updateMessage()` | §11 |
+| `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
 | `<MessageList thread / targetedMessage / loadMoreThread …>` props | removed — list reads `threadInstance` + paginator internally | §12 |
 | custom `FooterComponent` / `HeaderComponent` reading `loadingMore` from context | receive `{ loadingMore?: boolean }` as a prop | §12.1 |
 | `<Channel messages / loadingMore / threadMessages / setThreadMessages …>` props | removed — state lives in the paginator | §13 |
@@ -303,9 +304,8 @@ const loadMore = () => channel.messagePaginator.toTail();
 ```
 
 Use `channel.messagePaginator` for the channel message list. For thread replies,
-use `useMessagePaginator()` (thread-aware) — but note the **main** channel list
-must read `channel.messagePaginator` directly so it keeps showing channel
-messages while a thread is open.
+use `useMessagePaginator()`. It follows `threadList`, so the **main** channel
+list keeps reading `channel.messagePaginator` even while a thread is open.
 
 ---
 
@@ -411,12 +411,12 @@ setTargetedMessage(messageId);
 **After (v10):**
 
 ```tsx
-import { useActiveMessagePaginator, useIsTargetedMessage, DEFAULT_HIGHLIGHT_DURATION } from 'stream-chat-react-native';
+import { useMessagePaginator, useIsTargetedMessage, DEFAULT_HIGHLIGHT_DURATION } from 'stream-chat-react-native';
 
 // Jump to + highlight a message (loads it if not in the current window).
-// useActiveMessagePaginator resolves to the open thread's reply list when
+// useMessagePaginator resolves to the open thread's reply list when
 // `threadList` is set, and the channel's main list otherwise.
-const paginator = useActiveMessagePaginator();
+const paginator = useMessagePaginator();
 await paginator?.jumpToMessage(messageId, {
   focusReason: 'jump-to-message',
   focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
@@ -435,8 +435,8 @@ on `MessageListProps`; `channelUnreadStateStore` on
 `UnreadMessagesNotificationProps`; `unreadCount` on `ScrollToBottomButtonProps`).
 
 The unread snapshot now lives on `channel.messagePaginator.unreadStateSnapshot`
-(a `StateStore`). An internal `getChannelUnreadState(channel)` helper maps it to
-the public `ChannelUnreadState` shape for imperative readers.
+(a `StateStore` of `UnreadSnapshotState`). Read it with `useStateStore`, or
+`getLatestValue()` for a one-off read. The SDK's own `ChannelUnreadState` type is gone (P.9).
 
 | Removed | Replacement |
 |---|---|
@@ -519,7 +519,7 @@ only once the query lands, which for a message that is not loaded yet is a round
 removed prop encoded this precedence internally (`!messageId && initialScrollToFirstUnreadMessage`);
 the caller states it now. With both enabled at once the two jumps race and the last one wins.
 
-where `const paginator = useActiveMessagePaginator()` — thread-aware: the open
+where `const paginator = useMessagePaginator()` — thread-aware: the open
 thread's reply paginator when `threadList` is set, the channel's otherwise. Use
 `channel.messagePaginator` directly if you specifically want the channel list.
 
@@ -680,20 +680,10 @@ const [thread, setThread] = useState<LocalMessage | null>(null);
   parent/`replyCount` off `threadInstance.state`.
 - **`MessageProps`**: removed `openThread` (§9).
 
-## 11. `InputMessageInputContextValue.editMessage` return retyped
+## 11. `InputMessageInputContextValue.editMessage` removed
 
-`editMessage` now returns `Promise<void>` (was
-`ReturnType<StreamChat['updateMessage']>`, i.e. a resolved
-`UpdateMessageAPIResponse`). Callers that read the resolved API response break —
-read the updated state from the paginator/composer after the promise resolves
-instead.
-
-```tsx
-// Before: const { message } = await editMessage(...);
-// After:
-await editMessage({ localMessage, options });
-// message state is already reflected in channel.messagePaginator
-```
+`editMessage` is gone from the message input context, along with `sendMessage` as a value you pass
+in. Submitting goes through the composer; see P.17.
 
 ---
 
@@ -708,8 +698,8 @@ Removed props (from both list components): `channelUnreadStateStore`,
 unread from the paginator snapshot (§7), and targeting from the focus signal
 (§6) — all internally.
 
-`loadMore` / `loadMoreRecent` / `markRead` are still passed but are now inline
-prop types; `loadingMore?` / `loadingMoreRecent?` are **added**.
+The paging props `loadMore`, `loadMoreRecent`, `hasMore`, `loadingMore` and `loadingMoreRecent` are
+removed too: the list pages its own paginator (P.7). `markRead` is still passed.
 
 ### 12.1 Custom `FooterComponent` / `HeaderComponent` receive `loadingMore` as a prop
 
@@ -1118,9 +1108,9 @@ Highlights that hit integrator code:
   What changed on **this SDK's** own surface:
   - **`findInMessagesByDate(messages, targetTimestamp)`** takes a `TimestampNS` (was a `Date`).
     Exported from the package root. Pass a server timestamp, or `msToNs(ms)` / `dateToNs(date)`.
-  - **`getChannelUnreadState`** returns `last_read` as a `TimestampNS`, and the epoch
-    (`asTimestampNS(0)`) — not `new Date(0)` — is the "never read" sentinel. Guard it with `!= null`,
-    never with truthiness.
+  - **`getChannelUnreadState`** (internal) and the `ChannelUnreadState` type are removed (P.9). The
+    snapshot's `lastReadAt` is a `TimestampNS | null`; the lists treat `null` as the epoch, meaning the
+    whole channel is unread. Guard it with `!= null`, never with truthiness.
   - **`useIsChannelMuted`**'s `muteStatus` is core's `ChannelMuteStatus`: `{ createdAt: TimestampNS |
     null; expiresAt: TimestampNS | null; muted: boolean }`.
   - **Offline DB rows** hold plain integers. The SDK's read mappers brand them on the way out
@@ -1811,8 +1801,8 @@ whether the failure is shown on the message:
 
 - **Offline support enabled and the request was queued for replay** — the message does **not** enter a
   failed state. It is pending, not failed, and marking it failed lights up the retry affordance, which
-  re-*sends* the message rather than re-editing it. The promise still rejects, so any notification you
-  surface from a rejected `editMessage` is unaffected.
+  re-*sends* the message rather than re-editing it. The request still rejects, so the composer still
+  reports the failed edit.
 - **No offline DB, or a definitive rejection** (a server error that is not retryable, or a cancelled
   request) —
   the message keeps the edit and gains `status: 'failed'` plus `error`, as before.
@@ -2200,6 +2190,332 @@ channel for all of them, so one check covers a channel and its threads. Branch o
 **Affects:** anyone passing `allowSendBeforeAttachmentsUpload` or `enableOfflineSupport` to
 `<Channel>`, or reading `allowSendBeforeAttachmentsUpload` from `useMessageInputContext()`. The
 props are **removed, not deprecated**, so TypeScript flags them.
+
+---
+
+# Part P — UI state cleanup over the v10 state layer
+
+The SDK no longer keeps its own copies of state that `stream-chat` v10 publishes reactively. This part
+lists what that cleanup removed or renamed. Every entry names its replacement.
+
+## P.1 Unused exports removed (breaking)
+
+These had no callers left in the SDK and only existed for the pre-v10 state model:
+
+| Removed                                                                   | Use instead                                                                                     |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `useSelectedChannelState({ channel, selector, stateChangeEventKeys })`     | `useStateStore(channel.state, selector)`. The old hook only updated on the events you listed.    |
+| `reduceMessagesToString`, `findInMessagesById`, `findInMessagesByDate`     | `channel.messagePaginator.getItem(id)`, `jumpToMessage(id)`, `jumpToTheFirstUnreadMessage()`     |
+| `getLastReceivedMessage(messages)`                                         | `messages.find((m) => m.status !== 'failed')`, which is what it did                              |
+| `DebugContextProvider`, `useDebugContext`, `DebugContextValue`, `DebugDataType` | Nothing. It fed the Flipper plugin, which React Native dropped in 0.74.                     |
+
+## P.2 `useIsOnline` → `useConnectionLifecycle` (breaking)
+
+In v9 `useIsOnline(client)` returned `{ isOnline, connectionRecovering }`. In v10 it only installs the
+NetInfo status reporter and closes/reopens the socket on background/foreground, and it returns nothing.
+It is renamed to say so:
+
+```diff
+- useIsOnline(client, closeConnectionOnBackground);
++ useConnectionLifecycle(client, closeConnectionOnBackground);
+```
+
+`<Chat>` already calls it, so most apps never did. To read the status, use `useNetworkConnectionState()`
+for the device's network or `useWSConnectionState()` for the socket.
+
+## P.3 `useMutedChannels()` takes no argument (breaking)
+
+It returns the current user's muted channels, a client-wide list. The `channel` argument was never used,
+but without it the hook returned `undefined`.
+
+```diff
+- const mutedChannels = useMutedChannels(channel);
++ const mutedChannels = useMutedChannels();
+```
+
+For one channel's mute state use `useIsChannelMuted(channel)`.
+
+## P.4 Context fields that nothing read (breaking, type-level)
+
+| Removed                                            | Use instead                                                                                  |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `useChannelContext().isChannelActive`              | `!thread \|\| threadList` for the old meaning; `useStateStore(channel.state, (s) => ({ active: s.active }))` for "is this channel being read" |
+| `useChannelContext().scrollToFirstUnreadThreshold` | Nothing. It was always `0`.                                                                  |
+| `useMessagesContext().initialScrollToFirstUnreadMessage` | The value you pass to `<Channel initialScrollToFirstUnreadMessage>`                    |
+| `useMessagesContext().quotedMessage`               | It was never set. Read the composer: `useStateStore(messageComposer.state, (s) => ({ quotedMessage: s.quotedMessage }))` |
+| `useThreadContext().parentMessagePreventPress`     | It was never set. Pass `parentMessagePreventPress` to `<Thread>` or `<ThreadFooterComponent>`, as before. |
+
+## P.5 Props that did nothing (breaking, type-level)
+
+- `<MessageList>` / `<MessageFlashList>`: `scrollToFirstUnreadThreshold` and `shouldShowUnreadUnderlay`.
+  Rows read `shouldShowUnreadUnderlay` from `<Channel>`, so set it there.
+- `<MessageFlashList FlatList>`: FlashList never used it.
+- `<Channel isOnline>`: accepted by the props type and ignored.
+
+## P.6 `OfflineStoreApis`: `currentUserId` → `userId` (breaking)
+
+Every `OfflineStoreApis` function that took `currentUserId` now takes `userId`, matching
+`AbstractOfflineDB`:
+
+```diff
+- OfflineStoreApis.getChannels({ channelIds, currentUserId });
++ OfflineStoreApis.getChannels({ channelIds, userId });
+```
+
+`OfflineStoreApis.deleteReactionsForMessage` is removed. Nothing called it and `AbstractOfflineDB` has no
+slot for it; `deleteReaction` deletes one reaction.
+
+## P.7 Message lists page their own paginator (breaking)
+
+`<MessageList>` and `<MessageFlashList>` no longer take `loadMore`, `loadMoreRecent`, `hasMore`,
+`loadingMore` or `loadingMoreRecent`. They page the paginator they render (the channel's, or the open
+thread's in a thread list) with `toTail()` (older) and `toHead()` (newer), and track the two loading
+flags themselves. The paginator already ignores a request while one is running or when that end has
+nothing more.
+
+```diff
+- <MessageList loadMore={myLoadMore} loadMoreRecent={myLoadMoreRecent} />
++ <MessageList />
+```
+
+To change how a page is fetched, configure the paginator instead:
+`client.config.set({ channel: { messagePaginator: { … } } })`, or a request handler. A custom
+`FooterComponent` (`MessageList`) / `HeaderComponent` (`MessageFlashList`) still receives
+`{ loadingMore }` (§12.1).
+
+## P.8 `useMessageList` takes the paginator (breaking)
+
+```diff
+- const { processedMessageList } = useMessageList({ threadList });
++ const { processedMessageList } = useMessageList({ paginator: useMessagePaginator() });
+```
+
+## P.9 Unread state types (breaking, type-level)
+
+| Removed                                    | Use instead                                                                       |
+| ------------------------------------------ | --------------------------------------------------------------------------------- |
+| `ChannelUnreadState` type                  | `UnreadSnapshotState` from `stream-chat` (`channel.messagePaginator.unreadStateSnapshot`) |
+| `UnreadMessagesNotificationProps.unreadCount` | Nothing. It was never applied; the count comes from the unread snapshot.       |
+
+## P.10 Message list behaviour fixes
+
+These change what the user sees:
+
+- **Thread lists use the thread's paginator for everything.** They used to drive the channel's. So:
+  - closing a thread no longer leaves the channel counting new messages as unread while the user is at
+    its bottom (the "1 new messages" separator that stuck after returning from a thread);
+  - the scroll-to-bottom button in a thread jumps the thread to its latest replies, where it used to
+    move the hidden channel list;
+  - in `MessageFlashList` threads, a channel that had jumped away no longer turns autoscroll off;
+  - the sticky date header hides at the top of the thread;
+  - a spinner shows while newer replies load, and the empty-state check follows `threadList`.
+- **A failed page no longer stops pagination.** The lists remembered every list length they had
+  requested at, so after a failed request that edge stayed dead until a new message arrived.
+- **Removing a message no longer scrolls `MessageList` to the bottom.** Cancelling a giphy or a hard
+  delete used to jump a user who had scrolled up back to the newest message. (`MessageFlashList` never
+  scrolled; it only blocked paging for a moment.)
+- The scroll-to-bottom accessibility action's unread count updates as reads arrive.
+
+
+## P.11 `ChatContext` holds only `client`, `getAppSettings` and `isMessageAIGenerated` (breaking)
+
+The other fields were either never read or duplicated state the client already publishes. Each one
+made `<Chat>` rebuild the context, and every component reading `useChatContext()` re-rendered with it.
+The context value now only changes with the `client` or `isMessageAIGenerated` props.
+
+| Removed | Use instead |
+| --- | --- |
+| `useChatContext().appSettings` | `await useChatContext().getAppSettings()` |
+| `useChatContext().channel`, `.setActiveChannel` | Keep the open channel in your own navigation state and render `<Channel channel={…}>`. Inside a `<Channel>`, `useChannelContext().channel`. |
+| `useChatContext().mutedUsers` | `useMutedUsers()` |
+| `useChatContext().enableOfflineSupport` | `client.offlineDb !== undefined` |
+
+`getAppSettings()` works like the one in `stream-chat-react`: the first call fetches the app settings
+and later calls reuse them. `<Chat>` already calls it once the user is connected, so it usually
+resolves immediately. With offline support, a successful fetch is copied to the offline database and a
+failed one falls back to that copy. A failed fetch is not kept, so the next call tries again.
+
+```diff
+- const { appSettings, mutedUsers } = useChatContext();
++ const { getAppSettings } = useChatContext();
++ const mutedUsers = useMutedUsers();
++ const appSettings = await getAppSettings();
+```
+
+`useCreateChatContext` takes `{ client, getAppSettings, isMessageAIGenerated }` and memoizes on
+exactly those three.
+
+## P.12 Chat hooks removed (breaking)
+
+| Removed | Use instead |
+| --- | --- |
+| `useClientMutedUsers(client)` | `useMutedUsers()`. Same store, same result. |
+| `useAppSettings(client, isOnline, enableOfflineSupport, dbReady)` | `useChatContext().getAppSettings()` |
+
+## P.13 `MessagePropsWithContext.chatContext` removed (breaking, type-level)
+
+`Message` passed the whole chat context to its memoized inner component. The inner component now reads
+`useChatContext()` itself, which is safe because the context no longer changes. Only code typed against
+`MessagePropsWithContext` changes:
+
+```diff
+- const { chatContext } = props as MessagePropsWithContext;
+- const { client } = chatContext;
++ const { client } = useChatContext();
+```
+
+A message row still updates when its author is muted: the row reads the mutes itself.
+
+## P.14 `<Chat>` follows the connected user
+
+`<Chat>` used to read `client.userID` during render, so a `<Chat>` mounted before `connectUser()`
+resolved only noticed the user, and only set up the offline database for them, if something
+unrelated re-rendered it. It now re-reads the user whenever the client's connection state changes,
+and the offline database's state from the instance it attached. No API change.
+
+## P.15 `<Channel>` keeps rendering a deleted channel (breaking, behavioural)
+
+`<Channel>` used to render nothing once its channel was deleted, through its own `channel.deleted`
+listener. It no longer handles a gone channel at all, as in `stream-chat-react`: what to show is up to the
+app. A channel instance is gone for good when the channel is deleted, when the user is removed from it,
+or when the client disconnects, and its `pendingDisposal` state says so. To keep the old behaviour, or show
+something else, read that state above `<Channel>`:
+
+```tsx
+const selector = (state: ChannelLifecycleState) => ({ pendingDisposal: state.pendingDisposal });
+
+const { pendingDisposal } = useStateStore(channel.state, selector);
+if (pendingDisposal) return null; // or your own "this channel is gone" view
+return <Channel channel={channel}>…</Channel>;
+```
+
+The SampleApp's `useLeaveGoneChannel` (`examples/SampleApp/src/hooks/useLeaveGoneChannel.ts`) does this
+on the channel and thread screens, returning to the channel list.
+
+Message rows no longer check `channel.pendingDisposal` each either, so a gone channel's messages stay
+visible. A disposed instance is never revived. To open the same conversation again, get a new instance
+with `client.channel(type, id)`.
+
+## P.16 Channel behaviour fixes
+
+- **The contexts follow the channel instance, not its id.** A disposed channel comes back as a new
+  instance under the same cid. `ChannelContext` kept handing out the old one, whose paginators were
+  already disposed. `useCreateChannelContext` now rebuilds when `channel` changes.
+- **`useChannelContext().disabled` updates when the channel is frozen or unfrozen.** It used to update
+  only because an unrelated write happened to re-render `<Channel>`.
+- **`<Channel>` no longer re-renders on channel updates that leave its own capabilities unchanged.**
+- **`overrideOwnCapabilities` applies when a different capability is overridden.** `{ sendMessage: false }`
+  followed by `{ uploadFile: false }` used to keep the first override.
+- **Going to the background sends `typing.stop` only if the user was typing.** It used to send one for
+  every mounted `<Channel>` each time.
+
+## P.17 The composer submits through `stream-chat` (breaking)
+
+`useMessageInputContext().sendMessage()` now submits the composer: `messageComposer.update()` while a
+message is being edited, `messageComposer.send()` otherwise. The SDK used to compose the message itself
+and hand it to `<Channel>`'s own send and edit functions. What the user sees is unchanged: the input
+clears at once, a poll keeps the rest of the draft, links are refused where they are not allowed, and an
+edited bounced message is sent again as a new one.
+
+| Removed | Use instead |
+| --- | --- |
+| `<Channel preSendMessageRequest>` | `client.config.set({ channel: { requestHandlers: { sendMessageRequest } } })` |
+| `sendMessage` / `editMessage` in a custom `MessageInputProvider` `value` | the `sendMessageRequest` / `updateMessageRequest` handlers |
+| `useMessageInputContext().editMessage` | `useMessageInputContext().sendMessage()` while editing |
+| `patchMessageTextCommand` | nothing; the backend resolves the target from the mentioned users |
+
+```diff
+- <Channel preSendMessageRequest={async ({ localMessage }) => prepare(localMessage)}>
++ client.config.set({
++   channel: {
++     requestHandlers: {
++       sendMessageRequest: async (params, defaultRequest) => {
++         await prepare(params.localMessage);
++         return defaultRequest(params);
++       },
++     },
++   },
++ });
+```
+
+The handler runs at a different point than `preSendMessageRequest` did. It runs after the message
+appears in the list and after its attachments finish uploading, not before. If it throws, the message
+is marked failed, where it used to stay pending. It runs for the first send only; retries go through
+`retrySendMessageRequest`.
+
+A failed send or edit is reported by the composer through `client.notifications`, with the type
+`CORE_NOTIFICATION_TYPE.messageSendFailed` or `messageUpdateFailed`. The toast copy is unchanged, and a
+failed request is no longer logged as `Error while sending message`.
+
+Moderation commands (`/mute`, `/unmute`, `/ban`, `/unban`) are sent as typed. The SDK used to rewrite
+the mentioned name into the user id (`/mute @Jane Doe` → `/mute @jane-id`) to work around a backend bug
+with names containing spaces. The backend now takes the target from the message's mentioned users, so the
+rewrite is gone, and so is the `patchMessageTextCommand` export (breaking). To keep rewriting command
+text, add a composition middleware through `client.setMessageComposerSetupFunction`.
+
+## P.18 Editing a message
+
+- Editing a message again after cancelling an edit starts from the message, not from the text the
+  cancelled edit left behind.
+- Saving or cancelling an edit leaves edit mode by itself; the composer clearing is the signal.
+- `useMessageComposer()` returns the same composer as before, read from context. Calling it no longer
+  subscribes the composer once per component.
+
+## P.19 Composer behaviour fixes
+
+- `SendMessageDisallowedIndicator` shows as soon as the channel's capabilities are known, including a
+  channel loaded from the offline database. It used to wait for the channel to be initialized, which
+  could arrive after the composer had already rendered.
+- The commands button, the attach button and the commands sheet follow capabilities and server config
+  that arrive after the composer mounted.
+- Attachment picker cells no longer re-render on every upload progress tick; a cell re-renders only
+  when its own selection changes.
+
+## P.20 `ChannelsContext` holds the list's configuration, not its state (breaking)
+
+`ChannelsContext` used to carry a copy of the list's query state next to its configuration, and every
+channel row read it. Any list update re-rendered every row: a reorder, a new message in any channel, an
+unread count, a presence change. The context now holds the configuration, the list's
+`ChannelPaginator` and the stable `loadNextPage` / `refreshList` / `reloadList` functions. `ChannelList`
+passes the query state to `ChannelListView` as props.
+
+| Removed from `ChannelsContextValue` | Use instead |
+| --- | --- |
+| `channels`, `hasNextPage`, `error` | `useStateStore(useChannelsContext().paginator.state, selector)`: `items`, `hasMoreTail`, `lastQueryError` |
+| `loadingChannels`, `channelListInitialized` | the same store: `items === undefined` |
+| `loadingNextPage`, `refreshing` | `ChannelListView` props |
+| `forceUpdate` | nothing; it was always `0` |
+
+```tsx
+const selector = (state: ChannelPaginatorState) => ({ channels: state.items });
+
+const { paginator } = useChannelsContext();
+const { channels } = useStateStore(paginator.state, selector);
+```
+
+`ChannelListViewProps` now requires the query state (`channels`, `channelListInitialized`, `error`,
+`hasNextPage`, `loadingChannels`, `loadingNextPage`, `refreshing`).
+
+A channel row now re-renders only when its own channel changes (the list's FlatList also sets
+`strictMode`). A custom `ChannelPreview` that reads `channel.data` or `channel.state` directly, without
+subscribing, no longer picks up changes through other rows' updates. Subscribe instead, for example with
+`useChannelName(channel)` or `useStateStore(channel.state, selector)`.
+
+## P.21 Channel list behaviour fixes
+
+- **Changing `onSelect`, `getChannelActionItems`, `maxUnreadCount`, `additionalFlatListProps`,
+  `loadMoreThreshold`, `numberOfSkeletons` or `setFlatListRef` on a mounted `ChannelList` takes effect.**
+  They used to be kept until the list happened to change. `setFlatListRef` is no longer called with
+  `null` and then the list again on every list update.
+- **A mounted `ChannelList` loads again after `client.disconnectUser()` and the next `connectUser()`.**
+  It used to stay on its loading skeleton.
+- **A channel row shows a draft that has only attachments**, as thread rows already did.
+
+## P.22 Thread list behaviour fix
+
+A thread list row takes its latest reply, which sets its avatar and time, from
+`thread.messagePaginator.aggregateState`. It used to take the last reply of the thread's loaded page,
+which is an older reply once the thread has been scrolled back.
 
 ---
 

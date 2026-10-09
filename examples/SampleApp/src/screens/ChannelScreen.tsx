@@ -37,6 +37,7 @@ import {
 import { useAppContext } from '../context/AppContext';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
+import { useLeaveGoneChannel } from '../hooks/useLeaveGoneChannel';
 import type { StreamThemeWithColors } from '../theme/AppTheme';
 
 import type { StackNavigatorParamList } from '../types';
@@ -192,6 +193,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   const [selectedMessage, setSelectedMessage] = useState<LocalMessage | undefined>(undefined);
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
+  useLeaveGoneChannel(channel);
 
   useLayoutEffect(() => {
     if (!channel || !messageId) {

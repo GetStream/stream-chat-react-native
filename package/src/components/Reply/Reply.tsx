@@ -16,6 +16,7 @@ import {
   isFileAttachment,
   isImageAttachment,
   isVideoAttachment,
+  LocalMessage,
   MessageComposerState,
 } from 'stream-chat';
 
@@ -29,7 +30,6 @@ import {
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
-import { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks';
@@ -97,8 +97,8 @@ const RightContent = React.memo(
 export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageProps> } & Pick<
   MessageContextValue,
   'message'
-> &
-  Pick<MessagesContextValue, 'quotedMessage'> & {
+> & {
+    quotedMessage?: LocalMessage | null;
     isMyMessage: boolean;
     isParentMessageMine?: boolean;
     onDismiss?: () => void;
@@ -307,7 +307,7 @@ export const Reply = (props: ReplyProps) => {
   );
 
   const quotedMessage = messageFromContext
-    ? (messageFromContext.quoted_message as MessagesContextValue['quotedMessage'])
+    ? (messageFromContext.quoted_message as ReplyPropsWithContext['quotedMessage'])
     : quotedMessageFromComposer;
 
   // `mode='edit'` supplies the edited message via `props.quotedMessage` and leaves

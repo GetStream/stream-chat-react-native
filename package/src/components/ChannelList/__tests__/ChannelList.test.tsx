@@ -17,6 +17,7 @@ import {
   useComponentsContext,
   WithComponents,
 } from '../../../contexts/componentsContext/ComponentsContext';
+import { useChannelName } from '../../../hooks/useChannelName';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
@@ -34,7 +35,7 @@ import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { getTestClientWithUser, setUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 
@@ -51,12 +52,15 @@ jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
  * Custom ChannelPreview component used via WithComponents to verify channel rendering.
  * Receives { channel, muted, unread, lastMessage } from ChannelPreview.
  */
-const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => (
-  <View accessibilityLabel='list-item' testID={channel.id}>
-    <Text>{channel.data?.custom?.name}</Text>
-    <Text>{channel.messagePaginator.headItems[0]?.text}</Text>
-  </View>
-);
+const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => {
+  const name = useChannelName(channel);
+  return (
+    <View accessibilityLabel='list-item' testID={channel.id}>
+      <Text>{name}</Text>
+      <Text>{channel.messagePaginator.headItems[0]?.text}</Text>
+    </View>
+  );
+};
 
 /**
  * Probe that reads swipeActionsEnabled from ChannelsContext.
@@ -68,12 +72,9 @@ const SwipeActionsProbe = () => {
 };
 
 /**
- * Probe that reads refreshing from ChannelsContext.
+ * Probe that renders once the list has loaded.
  */
-const RefreshingProbe = () => {
-  const { refreshing } = useChannelsContext();
-  return <Text testID='refreshing'>{`${refreshing}`}</Text>;
-};
+const LoadedProbe = () => <Text testID='loaded'>loaded</Text>;
 
 /**
  * Probe that captures the context `refreshList` (the public, non-forced pull-to-refresh handler) so a
@@ -81,10 +82,12 @@ const RefreshingProbe = () => {
  */
 let capturedRefreshList: (() => void | Promise<void>) | undefined;
 const RefreshListProbe = () => {
-  const { refreshing, refreshList } = useChannelsContext();
+  const { refreshList } = useChannelsContext();
   capturedRefreshList = refreshList;
-  return <Text testID='refreshing'>{`${refreshing}`}</Text>;
+  return <Text testID='loaded'>loaded</Text>;
 };
+
+const isRefreshing = () => screen.getByTestId('channel-list-view').props.refreshing;
 
 const ChannelPreviewContent = ({ unread }: { unread?: number }) => (
   <Text testID='preview-unread'>{`${unread}`}</Text>
@@ -860,7 +863,7 @@ describe('ChannelList', () => {
 
         render(
           <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: RefreshingProbe }}>
+            <WithComponents overrides={{ ChannelPreview: LoadedProbe }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -868,8 +871,9 @@ describe('ChannelList', () => {
 
         // The probe only renders once the mount query populates the list.
         await waitFor(() => {
-          expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+          expect(screen.getByTestId('loaded')).toBeTruthy();
         });
+        expect(isRefreshing()).toBe(false);
 
         // Advance the clock 6s past mount so both reconnects observe t=6000.
         dateNowSpy.mockReturnValue(6000);
@@ -902,7 +906,7 @@ describe('ChannelList', () => {
         });
 
         // Background reconnection refreshes never surface in the pull-to-refresh UI.
-        expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+        expect(isRefreshing()).toBe(false);
 
         await waitFor(() => {
           expect(
@@ -930,8 +934,9 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+          expect(screen.getByTestId('loaded')).toBeTruthy();
         });
+        expect(isRefreshing()).toBe(false);
 
         const channelManager = chatClient.channelManager;
         const querySpy = jest.spyOn(chatClient, 'queryChannels');
@@ -958,6 +963,101 @@ describe('ChannelList', () => {
 
         dateNowSpy.mockRestore();
       });
+    });
+  });
+
+  describe('rows', () => {
+    const previewRenders: Record<string, number> = {};
+    const CountingPreview = ({ channel }: { channel: ChannelType }) => {
+      const id = channel.id ?? '';
+      previewRenders[id] = (previewRenders[id] ?? 0) + 1;
+      return <View accessibilityLabel='list-item' testID={id} />;
+    };
+
+    it('re-renders only the row of the channel that received a message', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2, testChannel3])]);
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: CountingPreview }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+
+      await waitFor(() => expect(screen.getAllByLabelText('list-item')).toHaveLength(3));
+      const [firstId, ...otherIds] = screen
+        .getAllByLabelText('list-item')
+        .map((item) => item.props.testID);
+      const firstChannel = [testChannel1, testChannel2, testChannel3].find(
+        ({ channel }) => channel.id === firstId,
+      )?.channel;
+      Object.keys(previewRenders).forEach((id) => {
+        previewRenders[id] = 0;
+      });
+
+      act(() =>
+        dispatchMessageNewEvent(
+          chatClient,
+          generateMessage({ cid: firstChannel?.cid, user: generateUser() }),
+          firstChannel,
+        ),
+      );
+
+      await waitFor(() => expect(previewRenders[firstId]).toBeGreaterThan(0));
+      otherIds.forEach((id) => expect(previewRenders[id]).toBe(0));
+    });
+
+    it('selects with the latest onSelect', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+      const firstOnSelect = jest.fn();
+      const secondOnSelect = jest.fn();
+
+      render(
+        <Chat client={chatClient}>
+          <ChannelList {...props} onSelect={firstOnSelect} />
+        </Chat>,
+      );
+      await waitFor(() => expect(screen.getByTestId('channel-preview-button')).toBeTruthy());
+
+      screen.rerender(
+        <Chat client={chatClient}>
+          <ChannelList {...props} onSelect={secondOnSelect} />
+        </Chat>,
+      );
+      fireEvent.press(screen.getByTestId('channel-preview-button'));
+
+      expect(firstOnSelect).not.toHaveBeenCalled();
+      expect(secondOnSelect).toHaveBeenCalledTimes(1);
+    });
+
+    it('loads the list again once a user connects after a disconnect', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+      await waitFor(() => expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy());
+
+      const querySpy = jest.spyOn(chatClient, 'queryChannels');
+      await act(async () => {
+        await chatClient.disconnectUser();
+        // The mocked socket does not report its own close.
+        chatClient.wsConnection.state.partialNext({ isHealthy: false });
+      });
+
+      expect(screen.queryByTestId(testChannel1.channel.id)).toBeNull();
+      expect(querySpy).not.toHaveBeenCalled();
+
+      useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+      await act(() => setUser(chatClient, { id: 'dan' }));
+
+      await waitFor(() => expect(screen.getByTestId(testChannel2.channel.id)).toBeTruthy());
+      expect(querySpy).toHaveBeenCalledTimes(1);
     });
   });
 });

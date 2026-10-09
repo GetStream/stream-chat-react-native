@@ -25,6 +25,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import { useAppContext } from '../context/AppContext.ts';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
+import { useLeaveGoneChannel } from '../hooks/useLeaveGoneChannel';
 import { useLegacyColors } from '../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
@@ -110,6 +111,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   const { messageInputFloating, messageListImplementation } = useAppContext();
 
   const { setInputRef } = useScreenReaderComposerFocusEffect();
+  useLeaveGoneChannel(channel);
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
     payload,

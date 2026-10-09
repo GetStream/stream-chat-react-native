@@ -2,15 +2,15 @@ import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const getLastSyncedAt = async ({
-  currentUserId,
+  userId,
 }: {
-  currentUserId: string;
+  userId: string;
 }): Promise<string | undefined> => {
-  SqliteClient.logger?.('info', 'getLastSyncedAt', { currentUserId });
+  SqliteClient.logger?.('info', 'getLastSyncedAt', { userId });
   const result = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {
-      userId: currentUserId,
+      userId,
     }),
   );
 

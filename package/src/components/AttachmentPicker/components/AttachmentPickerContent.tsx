@@ -22,6 +22,7 @@ import {
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
 
@@ -124,13 +125,13 @@ const useCommandPickerStyle = () => {
 
 export const AttachmentCommandPicker = () => {
   const { t } = useTranslationContext();
-  const messageComposer = useMessageComposer();
-  const [commands] = useState(() => {
-    const commandsSearchSource = new CommandSearchSource(messageComposer.channel);
-    const result = commandsSearchSource.query('');
-
-    return result.items;
-  });
+  const { channel } = useMessageComposer();
+  const commandSearchSource = useMemo(() => new CommandSearchSource(channel), [channel]);
+  const commandsSelector = useCallback(
+    () => ({ commands: commandSearchSource.query('').items }),
+    [commandSearchSource],
+  );
+  const { commands } = useStateStore(channel.configState, commandsSelector);
   const styles = useCommandPickerStyle();
 
   return (

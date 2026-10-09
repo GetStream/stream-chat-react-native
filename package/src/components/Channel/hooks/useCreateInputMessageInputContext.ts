@@ -14,7 +14,6 @@ export const useCreateInputMessageInputContext = ({
   channelId,
   compressImageQuality,
   createPollOptionGap,
-  editMessage,
   focusInputOnPickerClose,
   handleAttachButtonPress,
   hasCameraPicker,
@@ -24,7 +23,6 @@ export const useCreateInputMessageInputContext = ({
   messageInputFloating,
   messageInputHeightStore,
   openPollCreationDialog,
-  sendMessage,
   setInputRef,
   showPollCreationDialog,
 }: InputMessageInputContextValue & {
@@ -45,7 +43,6 @@ export const useCreateInputMessageInputContext = ({
       audioRecordingEnabled,
       compressImageQuality,
       createPollOptionGap,
-      editMessage,
       focusInputOnPickerClose,
       handleAttachButtonPress,
       hasCameraPicker,
@@ -55,12 +52,11 @@ export const useCreateInputMessageInputContext = ({
       messageInputFloating,
       messageInputHeightStore,
       openPollCreationDialog,
-      sendMessage,
       setInputRef,
       showPollCreationDialog,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [compressImageQuality, channelId, showPollCreationDialog],
+    [channelId, compressImageQuality, hasCommands, showPollCreationDialog],
   );
 
   return inputMessageInputContext;

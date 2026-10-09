@@ -629,9 +629,9 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
-                callback={async ({ editMessage }) => {
+                callback={async () => {
                   await flushMountEffects();
-                  await editMessage({
+                  await channel.messageOperations.update({
                     localMessage: {
                       ...message,
                       cid: channel.cid,
@@ -696,10 +696,10 @@ export const OptimisticUpdates = () => {
               // one.
             >
               <CallbackEffectWithContext
-                callback={async ({ editMessage }) => {
+                callback={async () => {
                   await flushMountEffects();
                   try {
-                    await editMessage({
+                    await channel.messageOperations.update({
                       localMessage: {
                         ...message,
                         cid: channel.cid,
@@ -766,9 +766,9 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
-                callback={async ({ editMessage }) => {
+                callback={async () => {
                   await flushMountEffects();
-                  await editMessage({
+                  await channel.messageOperations.update({
                     localMessage: {
                       ...message,
                       cid: channel.cid,
@@ -845,10 +845,10 @@ export const OptimisticUpdates = () => {
               // Persist the optimistic attachment edit locally, then reject the request (offline).
             >
               <CallbackEffectWithContext
-                callback={async ({ editMessage }) => {
+                callback={async () => {
                   await flushMountEffects();
                   try {
-                    await editMessage({
+                    await channel.messageOperations.update({
                       localMessage: {
                         ...message,
                         attachments: editedAttachments,
@@ -906,18 +906,18 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient} enableOfflineSupport>
             <Channel channel={channel}>
               <CallbackEffectWithContext
-                callback={async ({ editMessage }) => {
+                callback={async () => {
                   // Same barrier every other "edit message" test uses. Without it the edit fires from
                   // this child mount effect BEFORE `Channel`'s own effect runs `channel.watch()`, whose
                   // seed then re-ingests the pre-edit copy from the mocked query response and overwrites
-                  // the optimistic edit. Measured: the optimistic copy is correct at `editMessage`
+                  // the optimistic edit. Measured: the optimistic copy is correct at `messageOperations.update`
                   // resolution and still correct a macrotask later, then the in-flight watch lands on
                   // top of it. That window is unreachable in production (see flushMountEffects).
                   await flushMountEffects();
                   // Go offline BEFORE editing so the default (no-handler) offline path runs.
                   markConnectionUnhealthy(chatClient);
                   try {
-                    await editMessage({
+                    await channel.messageOperations.update({
                       localMessage: { ...message, cid: channel.cid, text: editedText },
                       options: {},
                     });
@@ -1139,10 +1139,10 @@ export const OptimisticUpdates = () => {
           <Chat client={chatClient}>
             <Channel channel={channel}>
               <CallbackEffectWithContext
-                callback={async ({ editMessage }) => {
+                callback={async () => {
                   await flushMountEffects();
                   try {
-                    await editMessage({
+                    await channel.messageOperations.update({
                       localMessage: { ...message, cid: channel.cid, text: editedText },
                       options: {},
                     });

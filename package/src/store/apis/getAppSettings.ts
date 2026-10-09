@@ -4,17 +4,17 @@ import { createSelectQuery } from '../sqlite-utils/createSelectQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const getAppSettings = async ({
-  currentUserId,
+  userId,
 }: {
-  currentUserId: string;
+  userId: string;
 }): Promise<GetApplicationResponse | null> => {
   SqliteClient.logger?.('info', 'getAppSettings', {
-    currentUserId,
+    userId,
   });
   const result = await SqliteClient.executeSql.apply(
     null,
     createSelectQuery('userSyncStatus', ['*'], {
-      userId: currentUserId,
+      userId,
     }),
   );
 

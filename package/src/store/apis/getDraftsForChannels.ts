@@ -10,10 +10,10 @@ import { TableRow } from '../types';
 
 export const getDraftForChannels = async ({
   channelIds,
-  currentUserId,
+  userId,
 }: {
   channelIds: string[];
-  currentUserId: string;
+  userId: string;
 }) => {
   SqliteClient.logger?.('info', 'getDraftsForChannel', { channelIds });
 
@@ -43,7 +43,7 @@ export const getDraftForChannels = async ({
 
     cidVsDrafts[row.cid] = mapStorableToDraft({
       channelRow: channelRows[0] as unknown as TableRow<'channels'>,
-      currentUserId,
+      userId,
       draftRow: row,
       pollRow: polls[0],
       quotedMessageRow,

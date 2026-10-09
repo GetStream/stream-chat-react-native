@@ -2,7 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 
 import { StreamChat } from 'stream-chat';
 
-import { netInfoStatusReporter } from '../useIsOnline';
+import { netInfoStatusReporter } from '../useConnectionLifecycle';
 
 /**
  * The reporter has to be named in the client's OWN options, not installed from an effect: until

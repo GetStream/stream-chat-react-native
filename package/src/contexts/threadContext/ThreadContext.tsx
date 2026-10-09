@@ -14,10 +14,6 @@ export type AlsoSentToChannelHeaderPressPayload = {
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
-  /**
-   * Boolean to enable/disable parent message press
-   */
-  parentMessagePreventPress?: boolean;
   threadInstance?: Thread | null;
   /**
    * Function to handle press on the "Also sent to channel" header action.

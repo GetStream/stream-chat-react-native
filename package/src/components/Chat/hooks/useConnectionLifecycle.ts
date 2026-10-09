@@ -20,7 +20,7 @@ import { useAppStateListener } from '../../../hooks/useAppStateListener';
  * 2. **Background/foreground.** Close the socket when the app backgrounds and reopen it on
  *    foreground, because push notifications are only delivered while no socket is active.
  */
-export const useIsOnline = (client: StreamChat, closeConnectionOnBackground = true) => {
+export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBackground = true) => {
   const clientExists = !!client;
 
   const onBackground = useCallback(() => {

@@ -16,7 +16,7 @@ describe('row -> model mappers keep required timestamps numeric', () => {
 
   it('mapStorableToMessage', () => {
     const message = mapStorableToMessage({
-      currentUserId: 'u1',
+      userId: 'u1',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       messageRow: { ...nullDates, id: 'm1', type: 'regular', user: userRow } as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

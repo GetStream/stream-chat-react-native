@@ -2,12 +2,7 @@ import type React from 'react';
 
 import dayjs from 'dayjs';
 import EmojiRegex from 'emoji-regex';
-import type {
-  AttachmentLoadingState,
-  LocalMessage,
-  MessageResponse,
-  TimestampNS,
-} from 'stream-chat';
+import type { AttachmentLoadingState, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { IconProps } from '../../src/icons/utils/base';
 import { ValueOf } from '../types/types';
@@ -191,20 +186,6 @@ export const stringifyMessage = ({
 };
 
 /**
- * Reduces a list of messages to strings that are used in useEffect & useMemo
- * @param {messages} messages - the array of messages to be compared
- * @returns {string} The mapped message string
- */
-export const reduceMessagesToString = (messages: LocalMessage[]): string =>
-  messages
-    .map((message) =>
-      message?.quoted_message
-        ? `${stringifyMessage({ message })}_${message.quoted_message.type}_${message.quoted_message.deleted_at}_${message.quoted_message.text}_${message.quoted_message.updated_at}`
-        : stringifyMessage({ message }),
-    )
-    .join();
-
-/**
  * Utility to get the file name from the path using regex.
  * `[^/]+` matches one or more characters that are not a slash (/), ensuring we capture the filename part.
  * `\.` matches the period before the file extension.
@@ -265,54 +246,6 @@ export const formatMsToMinSec = (ms: number) => {
 export function escapeRegExp(text: string) {
   return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
 }
-
-/**
- * Utility to find the index of a message in the messages array by id.
- * @param messages
- * @param targetId
- * @returns number
- */
-export const findInMessagesById = (messages: LocalMessage[], targetId: string) => {
-  const idx = messages.findIndex((message) => message.id === targetId);
-  return idx;
-};
-
-/**
- * Utility to find the index of a message in the messages array by timestamp.
- * @param messages
- * @param targetTimestamp Unix nanoseconds, the same unit the messages' `created_at` carries.
- * @returns an object with the index and the message object
- */
-export const findInMessagesByDate = (
-  messages: MessageResponse[] | LocalMessage[],
-  targetTimestamp: TimestampNS,
-) => {
-  // Binary search
-  let left = 0;
-  let right = messages.length - 1;
-  let middle = 0;
-  while (left <= right) {
-    middle = Math.floor(left + (right - left) / 2);
-    const middleTimestamp = messages[middle].created_at;
-    const middleLeftTimestamp = messages[middle - 1]?.created_at;
-    const middleRightTimestamp = messages[middle + 1]?.created_at;
-    if (
-      middleTimestamp === targetTimestamp ||
-      (middleLeftTimestamp != null &&
-        middleRightTimestamp != null &&
-        middleLeftTimestamp < targetTimestamp &&
-        middleRightTimestamp > targetTimestamp)
-    ) {
-      return { index: middle, message: messages[middle] };
-    } else if (middleTimestamp < targetTimestamp) {
-      left = middle + 1;
-    } else {
-      right = middle - 1;
-    }
-  }
-
-  return { index: -1 };
-};
 
 /**
  * The purpose of this function is to compare two messages and determine if they are equal.

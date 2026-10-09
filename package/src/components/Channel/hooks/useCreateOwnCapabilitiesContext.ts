@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, OwnCapabilitiesState } from 'stream-chat';
 
 import {
   allOwnCapabilities,
@@ -9,8 +9,10 @@ import {
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 
-const selector = (state: { ownCapabilities: string[] }) => ({
-  ownCapabilities: state.ownCapabilities,
+// TODO: Move own_capabilities as part of channel state rather than having to do
+//       stuff like this.
+const selector = (state: OwnCapabilitiesState) => ({
+  ownCapabilities: state.ownCapabilities.join(','),
 });
 
 export const useCreateOwnCapabilitiesContext = ({
@@ -22,26 +24,25 @@ export const useCreateOwnCapabilitiesContext = ({
 }) => {
   // Sourced reactively from channel.state (kept up to date by the client
   // on watch/query and `capabilities.changed`).
-  const { ownCapabilities = [] } = useStateStore(channel.state, selector) ?? {};
+  const { ownCapabilities } = useStateStore(channel.state, selector);
 
-  const overrideCapabilitiesStr = overrideCapabilities
-    ? JSON.stringify(Object.values(overrideCapabilities))
-    : null;
-  const ownCapabilitiesStr = JSON.stringify(ownCapabilities);
+  const overrideCapabilitiesKey = overrideCapabilities
+    ? JSON.stringify(overrideCapabilities)
+    : undefined;
 
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
-    const capabilities = ownCapabilities as Array<string>;
+    const capabilities = ownCapabilities.split(',');
     return Object.keys(allOwnCapabilities).reduce(
       (result, capability) => ({
         ...result,
         [capability]:
           overrideCapabilities?.[capability as OwnCapability] ??
-          !!capabilities.includes(allOwnCapabilities[capability as OwnCapability]),
+          capabilities.includes(allOwnCapabilities[capability as OwnCapability]),
       }),
       {} as OwnCapabilitiesContextValue,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, overrideCapabilitiesStr, ownCapabilitiesStr]);
+  }, [overrideCapabilitiesKey, ownCapabilities]);
 
   return ownCapabilitiesContext;
 };

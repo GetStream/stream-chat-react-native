@@ -3,11 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import {
   ChannelConfig,
+  ChannelDataState,
+  ChannelLifecycleState,
   LocalMessage,
   MessageComposerConfig,
-  SendMessageOptions,
   Event as StreamEvent,
-  MessageRequest as StreamMessage,
   Thread,
 } from 'stream-chat';
 
@@ -20,8 +20,6 @@ import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
 
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
-
-import { DEFAULT_HIGHLIGHT_DURATION } from './hooks/useMessageListPagination';
 
 import { useSupersededChannelSwap } from './hooks/useSupersededChannelSwap';
 
@@ -75,13 +73,12 @@ import {
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 
-import { patchMessageTextCommand } from '../../utils/patchMessageTextCommand';
 import { ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
+import { DEFAULT_HIGHLIGHT_DURATION } from '../MessageList/hooks/useMessageListFocus';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
 import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
@@ -91,7 +88,7 @@ import { NotificationTargetProvider } from '../Notifications/NotificationTargetC
 
 export type MarkReadFunctionOptions = {
   /**
-   * Signal, whether the `channelUnreadUiState` should be updated.
+   * Signal, whether the message paginator's unread snapshot should be updated.
    * By default, the local state update is prevented when the Channel component is mounted.
    * This is in order to keep the UI indicating the original unread state, when the user opens a channel.
    */
@@ -131,12 +128,6 @@ export const reactionData: ReactionData[] = [
 ];
 
 /**
- * If count of unread messages is less than 4, then no need to scroll to first unread message,
- * since first unread message will be in visible frame anyways.
- */
-const scrollToFirstUnreadThreshold = 0;
-
-/**
  * Initial message-list page size. stream-chat's `MessagePaginator` defaults to 100
  * (`DEFAULT_CHANNEL_MESSAGE_LIST_PAGE_SIZE`). On native that makes the initial load — and therefore
  * every subsequent message-list commit, whose cost scales with the number of loaded messages — several
@@ -168,7 +159,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'maxTimeBetweenGroupedMessages'
     >
   > &
-  Pick<ChatContextValue, 'client'> & { isOnline: boolean } & Partial<
+  Pick<ChatContextValue, 'client'> &
+  Partial<
     Pick<
       InputMessageInputContextValue,
       | 'additionalTextInputProps'
@@ -259,19 +251,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     disableKeyboardCompatibleView?: boolean;
     /**
-     * A method invoked just after the first optimistic update of a new message,
-     * but before any other HTTP requests happen. Can be used to do extra work
-     * (such as creating a channel, or editing a message) before the local message
-     * is sent.
-     * @param channelId
-     * @param messageData Message object
-     */
-    preSendMessageRequest?: (options: {
-      localMessage: LocalMessage;
-      message: StreamMessage;
-      options?: SendMessageOptions;
-    }) => Promise<void>;
-    /**
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
@@ -282,7 +261,8 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
      */
     markReadOnMount?: boolean;
     /**
-     * Load the channel at a specified message instead of the most recent message.
+     * The notification host this channel's notifications are routed to. Defaults to the channel's
+     * own host, derived from its cid.
      */
     notificationHostId?: string;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
@@ -328,6 +308,11 @@ const channelQuerySelector = (state: { items?: unknown[]; lastQueryError?: Error
   blockingError: state.items?.length ? undefined : state.lastQueryError,
 });
 
+const channelStatusSelector = (state: ChannelDataState & ChannelLifecycleState) => ({
+  frozen: state.data?.frozen ?? false,
+  pendingDisposal: state.pendingDisposal,
+});
+
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
@@ -357,7 +342,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
-    preSendMessageRequest,
     enableMessageGroupingByUser = true,
     enableSwipeToReply = true,
     enforceUniqueReaction = false,
@@ -440,7 +424,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const { thread: threadProps, threadInstance: threadInstanceFromProps } = threadFromProps;
 
   const styles = useStyles();
-  const [deleted, setDeleted] = useState<boolean>(false);
   // The active thread is fully prop-driven: derive it synchronously during render so the reply
   // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
   // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
@@ -463,12 +446,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const { blockingError } =
     useStateStore(channel.messagePaginator.state, channelQuerySelector) ?? {};
 
+  const { frozen, pendingDisposal } = useStateStore(channel.state, channelStatusSelector);
+
   const channelId = channel?.id || '';
   const { pollsEnabled } = useStateStore(
     channel?.messageComposer?.configState,
     composerPollsSelector,
   ) ?? { pollsEnabled: false };
-  const pollCreationEnabled = !channel.pendingDisposal && !!channel?.id && pollsEnabled;
+  const pollCreationEnabled = !pendingDisposal && !!channel?.id && pollsEnabled;
 
   const { addNotification } = useNotificationApi();
 
@@ -511,7 +496,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       return false;
     }
 
-    return (unreadCount ?? channel.countUnread()) > scrollToFirstUnreadThreshold;
+    return (unreadCount ?? channel.countUnread()) > 0;
   });
 
   const hasPendingInitialTargetLoad = useStableCallback(() => {
@@ -578,7 +563,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     initChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.cid, shouldSyncChannel]);
+  }, [channel, shouldSyncChannel]);
 
   // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
   // Channel instance shared with the channel-list preview or a thread stays active until the last
@@ -588,29 +573,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // instance before activating the new one.
   useEffect(() => channel?.activate(), [channel]);
 
-  // subscribe to channel.deleted event
-  useEffect(() => {
-    const { unsubscribe } = client.on('channel.deleted', (event) => {
-      if (event.cid === channel?.cid) {
-        setDeleted(true);
-      }
-    });
-
-    return unsubscribe;
-  }, [channel?.cid, client]);
-
+  // Sent directly rather than through `channel.stopTyping()`, which does nothing once the socket is
+  // closed, and `<Chat>` usually closes it on background before this runs.
   const handleAppBackground = useCallback(() => {
-    const channelData = channel.data;
-    if (channelData?.own_capabilities?.includes('send-typing-events')) {
-      channel.sendEvent({
-        event: {
-          parent_id: thread?.id,
-          type: 'typing.stop',
-        },
-      } as { event: StreamEvent });
+    if (!channel.isTyping || !channel.data?.own_capabilities?.includes('send-typing-events')) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [thread?.id, channelId]);
+    channel.sendEvent({
+      event: {
+        parent_id: thread?.id,
+        type: 'typing.stop',
+      },
+    } as { event: StreamEvent });
+  }, [channel, thread?.id]);
 
   useAppStateListener(undefined, handleAppBackground);
 
@@ -659,58 +634,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     availableCommands: [],
   };
 
-  /**
-   * MESSAGE METHODS
-   */
-  const sendMessage: InputMessageInputContextValue['sendMessage'] = useStableCallback(
-    async ({ localMessage, message, options }) => {
-      if (preSendMessageRequest) {
-        await preSendMessageRequest({ localMessage, message, options });
-      }
-
-      // Preserve RN's moderation slash-command patching ("/mute @user" -> "/mute @userId").
-      const messageToSend = message
-        ? {
-            ...message,
-            text: patchMessageTextCommand(message.text ?? '', message.mentioned_users ?? []),
-          }
-        : message;
-
-      // The stream-chat message-operations engine owns the full optimistic lifecycle (pending ->
-      // received/failed), offline-DB persistence and paginator ingest — for both channel messages
-      // (channel.messagePaginator) and thread replies (thread.messagePaginator, which the thread
-      // instance ingests into directly). Its single optimistic ingest shows the message (pending)
-      // instantly, then it awaits any attachment uploads still in flight and POSTs — through a
-      // `sendMessageRequest` registered via `client.config.set(...)`, if any. It throws on failure, which the MessageInput send flow
-      // catches to surface a notification.
-      await (threadInstance ?? channel).messageOperations.send({
-        localMessage,
-        message: messageToSend,
-        options,
-      });
-    },
-  );
-
-  const editMessage: InputMessageInputContextValue['editMessage'] = useStableCallback(
-    async ({ localMessage, options }) => {
-      if (!channel) {
-        throw new Error('Channel has not been initialized');
-      }
-      // The LLC handles the optimistic local update, the network request (honoring any
-      // `updateMessageRequest` registered through `client.config.set({ channel: { requestHandlers } })`),
-      // the received/failed state transitions, offline queueing and the offline-DB write.
-      //
-      // Routed by MEMBERSHIP rather than "a thread is open", mirroring `useMessageOperations`'
-      // `sendReaction`: a reply loaded in the open thread is edited through the thread instance, and
-      // anything else — including the thread's own PARENT message, which the reply paginator cannot
-      // hold — through the channel.
-      const target = threadInstance?.messagePaginator.getItem(localMessage.id)
-        ? threadInstance
-        : channel;
-      await target.messageOperations.update({ localMessage, options });
-    },
-  );
-
   const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
   const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
 
@@ -750,31 +673,16 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
   const channelContext = useCreateChannelContext({
     channel,
-    disabled: !!channel?.data?.frozen,
+    disabled: frozen,
     enableMessageGroupingByUser,
     enforceUniqueReaction,
     allowDateSeparatorForSystemMessages,
     hideDateSeparators,
     hideStickyDateHeader,
-    isChannelActive: shouldSyncChannel,
     maxTimeBetweenGroupedMessages,
-    scrollToFirstUnreadThreshold,
     hasPendingInitialTargetLoad,
     threadList,
   });
-
-  // This is mainly a hack to get around an issue with sendMessage not being passed correctly as a
-  // useMemo() dependency. The easy fix is to add it to the dependency array, however that would mean
-  // that this (very used) context is essentially going to cause rerenders on pretty much every Channel
-  // render, since sendMessage is an inline function. Wrapping it in useCallback() is one way to fix it
-  // but it is definitely not trivial, especially considering it depends on other inline functions that
-  // are not wrapped in a useCallback() themselves hence creating a huge cascading change. Can be removed
-  // once our memoization issues are fixed in most places in the app or we move to a reactive state store.
-  // const sendMessageRef = useRef<InputMessageInputContextValue['sendMessage']>(sendMessage);
-  // sendMessageRef.current = sendMessage;
-  // const sendMessageStable = useCallback<InputMessageInputContextValue['sendMessage']>((...args) => {
-  //   return sendMessageRef.current(...args);
-  // }, []);
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
@@ -788,7 +696,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     channelId,
     compressImageQuality,
     createPollOptionGap,
-    editMessage,
     focusInputOnPickerClose,
     handleAttachButtonPress,
     hasCameraPicker,
@@ -798,7 +705,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     messageInputFloating,
     messageInputHeightStore,
     openPollCreationDialog,
-    sendMessage,
     setInputRef,
   });
 
@@ -830,9 +736,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     handleBlockUser,
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
-    // A message is already targeted (by the prop or by the integrator's own jump), so first-unread
-    // must not take the scroll off it.
-    initialScrollToFirstUnreadMessage: !hasFocusTarget() && initialScrollToFirstUnreadMessage,
     isAttachmentEqual,
     isMessageAIGenerated,
     markdownRules,
@@ -868,11 +771,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     () => ({ channel, threadInstance }),
     [channel, threadInstance],
   );
-
-  // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
-  if (deleted) {
-    return null;
-  }
 
   if (!channel || blockingError) {
     // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
@@ -940,7 +838,6 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client, isMessageAIGenerated } = useChatContext();
-  const isOnline = useSettledWSConnectionHealth();
   const { t } = useTranslationContext();
   const channel = useSupersededChannelSwap(props.channel);
   const notificationHostId =
@@ -971,7 +868,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       shouldSyncChannel={shouldSyncChannel}
       {...{
         isMessageAIGenerated,
-        isOnline,
         thread,
       }}
     />
