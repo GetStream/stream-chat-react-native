@@ -148,6 +148,23 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     expect(getByText('2 love')).toBeDefined();
   });
 
+  it('counts reactions from reaction_groups, which optimistic reactions update', () => {
+    const { getByText } = renderComponent({
+      message: {
+        ...generateMessage(),
+        reaction_counts: { like: 1, love: 1 },
+        reaction_groups: { like: { count: 3, sum_scores: 3 }, love: { count: 2, sum_scores: 2 } },
+      },
+    });
+
+    expect(getByText('3')).toBeTruthy();
+    expect(getByText('2')).toBeTruthy();
+    expect(mockTranslations.t).toHaveBeenLastCalledWith(
+      'messageMenu.userReactions.title',
+      expect.objectContaining({ count: 5 }),
+    );
+  });
+
   it('uses provided reactions when passed as a prop', () => {
     const propReactions = [{ id: '3', image: 'user3.jpg', name: 'User 3', type: 'wow' }];
     const { getByText } = renderComponent({ reactions: propReactions });

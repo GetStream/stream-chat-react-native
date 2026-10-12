@@ -59,10 +59,6 @@ export type MessageContextValue = {
   messageHasOnlySingleAttachment: boolean;
   /** The images attached to a message */
   images: Attachment[];
-  /**
-   * A factory function that determines whether a message is AI generated or not.
-   */
-  isMessageAIGenerated: (message: LocalMessage) => boolean;
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */

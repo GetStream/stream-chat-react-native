@@ -28,6 +28,10 @@ yarn.lock
 package/src/components/docs/
 package/src/theme/generated/
 
+# Perf gauntlet output and generated tokens (gitignored)
+perf/gauntlet/out/
+perf/gauntlet/runtime/generated/
+
 # Workflow / tooling configs not owned by this project's Prettier
 .github/
 .husky/

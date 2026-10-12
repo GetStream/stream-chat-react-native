@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { Thread } from 'stream-chat';
 
@@ -156,5 +156,27 @@ describe('ThreadList loading states', () => {
     await waitFor(() => expect(screen.getByText('1 new thread')).toBeTruthy());
     act(() => chatClient.threads.state.partialNext({ unseenThreadIds: ['a', 'b'] }));
     await waitFor(() => expect(screen.getByText('2 new threads')).toBeTruthy());
+  });
+
+  it('offers a retry when loading the new threads fails', async () => {
+    const query = jest
+      .spyOn(chatClient, 'queryThreadsAndHydrate')
+      .mockResolvedValueOnce({ next: undefined, threads: [makeThread()] });
+    render(
+      <Chat client={chatClient}>
+        <ThreadList isFocused />
+      </Chat>,
+    );
+    await waitFor(() => expect(rows()).toHaveLength(1));
+    act(() => chatClient.threads.state.partialNext({ unseenThreadIds: ['a'] }));
+
+    query.mockRejectedValueOnce(new Error('offline'));
+    fireEvent.press(await screen.findByText('1 new thread'));
+    const retry = await screen.findByText("Couldn't load new threads. Tap to retry");
+
+    query.mockResolvedValueOnce({ next: undefined, threads: [makeThread(), makeThread()] });
+    fireEvent.press(retry);
+    await waitFor(() => expect(rows()).toHaveLength(2));
+    expect(screen.queryByText("Couldn't load new threads. Tap to retry")).toBeNull();
   });
 });

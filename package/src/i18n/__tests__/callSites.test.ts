@@ -26,12 +26,15 @@ import { runtimeDefaults } from '../runtimeDefaults';
 
 const SRC = path.resolve(__dirname, '../..');
 const catalog = catalogJson as Record<string, string>;
-const bundledKeys = new Set(Object.keys(runtimeDefaults));
+const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
+// A bundled plural is stored as `<key>_one` / `<key>_other` and called as the bare `<key>`.
+const bundledKeys = new Set(
+  Object.keys(runtimeDefaults).map((key) => key.replace(PLURAL_SUFFIX, '')),
+);
 
 /** Callables that translate their first argument. None of them takes an inline default. */
 const TRANSLATING = new Set(['t', 'translate', 'useA11yLabel']);
 
-const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
 const catalogKeys = new Set(Object.keys(catalog));
 const pluralBases = new Set(
   Object.keys(catalog)

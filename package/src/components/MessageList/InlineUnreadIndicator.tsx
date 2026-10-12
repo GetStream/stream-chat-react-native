@@ -18,7 +18,11 @@ export const InlineUnreadIndicator = (props: InlineUnreadIndicatorProps) => {
     <View accessibilityLabel='Inline unread indicator' style={styles.container}>
       <Text style={styles.text}>
         {unreadCount
-          ? t('messageList.newMessages.text', '{{count}} new messages', { count: unreadCount })
+          ? t('messageList.newMessages.text', {
+              count: unreadCount,
+              defaultValue_one: '{{count}} new message',
+              defaultValue_other: '{{count}} new messages',
+            })
           : t('messageList.unreadMessages.label', 'Unread Messages')}
       </Text>
     </View>

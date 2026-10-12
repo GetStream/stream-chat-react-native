@@ -60,7 +60,8 @@ export type TranslationCatalog = {
   'autoCompleteInput.suggestions.mentionsAvailable.accessibilityLabel': 'Mention suggestions available';
   'avatar.accessibilityLabel': 'Avatar of {{name}}';
   'avatar.channel.direct.accessibilityLabel': 'Direct chat with {{name}}';
-  'avatar.channel.group.accessibilityLabel': 'Channel with {{count}} members';
+  'avatar.channel.group.accessibilityLabel_one': 'Channel with {{count}} member';
+  'avatar.channel.group.accessibilityLabel_other': 'Channel with {{count}} members';
   'channel.addMembersFailed.error': 'Failed to add members';
   'channel.archiveUpdateFailed.error': 'Failed to update channel archive status';
   'channel.archived.text': 'Channel archived';
@@ -177,7 +178,8 @@ export type TranslationCatalog = {
   'channelPreview.typing.withTwoUsers.label': '{{ firstUser }} and {{ secondUser }} are typing';
   'channelPreview.typing.withUser.label': '{{ user }} is typing';
   'channelPreview.typing.withUserCount.label': '{{ numberOfUsers }} people are typing';
-  'channelPreview.unreadCount.accessibilityLabel': '{{count}} unread messages';
+  'channelPreview.unreadCount.accessibilityLabel_one': '{{count}} unread message';
+  'channelPreview.unreadCount.accessibilityLabel_other': '{{count}} unread messages';
   'common.anonymousUser.label': 'Anonymous';
   'common.cameraPermission.text': 'Device camera is used to take photos or videos.';
   'common.cameraPermission.title': 'Allow camera access in device settings';
@@ -251,7 +253,8 @@ export type TranslationCatalog = {
   'message.pinMessage.label': 'Pin to Conversation';
   'message.pinned.text': 'Message pinned';
   'message.pinnedBy.text': 'Pinned by';
-  'message.reactionList.more.accessibilityLabel': 'and {{count}} more reactions';
+  'message.reactionList.more.accessibilityLabel_one': 'and {{count}} more reaction';
+  'message.reactionList.more.accessibilityLabel_other': 'and {{count}} more reactions';
   'message.reactionList.viewHint.accessibilityLabel': 'Double tap to view reactions';
   'message.reactionList.youReacted.accessibilityLabel': 'you reacted';
   'message.reminderOverdue.text': 'Reminder overdue';
@@ -299,9 +302,11 @@ export type TranslationCatalog = {
   'messageInput.sendMessage.accessibilityLabel': 'Send message';
   'messageInput.sendMessageDisallowed.text': "You can't send messages in this channel";
   'messageList.dismissUnread.accessibilityLabel': 'Dismiss unread messages';
-  'messageList.newMessages.text': '{{count}} new messages';
+  'messageList.newMessages.text_one': '{{count}} new message';
+  'messageList.newMessages.text_other': '{{count}} new messages';
   'messageList.scrollToBottom.accessibilityLabel': 'Scroll to bottom';
-  'messageList.scrollToBottom.withCount.accessibilityLabel': 'Scroll to bottom, {{count}} new messages';
+  'messageList.scrollToBottom.withCount.accessibilityLabel_one': 'Scroll to bottom, {{count}} new message';
+  'messageList.scrollToBottom.withCount.accessibilityLabel_other': 'Scroll to bottom, {{count}} new messages';
   'messageList.typing.withMoreUsers.label': '{{ firstUser }} and {{ nonSelfUserLength }} more are typing';
   'messageList.unreadMessages.label': 'Unread Messages';
   'messageList.unreadMessages.withCount.label': '{{count}} unread';
@@ -450,7 +455,6 @@ export type BundledTranslationKey =
   | 'autoCompleteInput.suggestions.mentionsAvailable.accessibilityLabel'
   | 'avatar.accessibilityLabel'
   | 'avatar.channel.direct.accessibilityLabel'
-  | 'avatar.channel.group.accessibilityLabel'
   | 'channelDetails.addMembers.accessibilityLabel'
   | 'channelDetails.editChannel.accessibilityLabel'
   | 'channelDetails.editChannel.upload.accessibilityLabel'
@@ -465,7 +469,6 @@ export type BundledTranslationKey =
   | 'channelPreview.lastMessage.accessibilityLabel'
   | 'channelPreview.muted.accessibilityLabel'
   | 'channelPreview.pinned.accessibilityLabel'
-  | 'channelPreview.unreadCount.accessibilityLabel'
   | 'common.close.accessibilityLabel'
   | 'common.messageOverlay.swipeHint.accessibilityLabel'
   | 'duration.messageReminder'
@@ -477,7 +480,6 @@ export type BundledTranslationKey =
   | 'message.content.contextMenuHint.accessibilityLabel'
   | 'message.content.fromSender.accessibilityLabel'
   | 'message.content.fromYou.accessibilityLabel'
-  | 'message.reactionList.more.accessibilityLabel'
   | 'message.reactionList.viewHint.accessibilityLabel'
   | 'message.reactionList.youReacted.accessibilityLabel'
   | 'message.status.delivered.accessibilityLabel'
@@ -495,7 +497,6 @@ export type BundledTranslationKey =
   | 'messageInput.sendMessage.accessibilityLabel'
   | 'messageList.dismissUnread.accessibilityLabel'
   | 'messageList.scrollToBottom.accessibilityLabel'
-  | 'messageList.scrollToBottom.withCount.accessibilityLabel'
   | 'messageMenu.actionList.accessibilityLabel'
   | 'messageMenu.reactionPicker.moreReactions.accessibilityLabel'
   | 'notifications.attachmentUploadFailed.error'

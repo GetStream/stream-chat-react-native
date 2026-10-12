@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { Attachment, LocalMessage } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   Alignment,
@@ -34,21 +35,14 @@ const isDirectChannelSelector = (state: { memberCount: number }) => ({
 
 type MessageFooterPropsWithContext = Pick<
   MessageContextValue,
-  'alignment' | 'message' | 'showMessageStatus' | 'lastGroupMessage' | 'isMessageAIGenerated'
+  'alignment' | 'message' | 'showMessageStatus' | 'lastGroupMessage'
 > &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
-  const {
-    alignment,
-    date,
-    formattedDate,
-    isMessageAIGenerated,
-    lastGroupMessage,
-    message,
-    showMessageStatus,
-  } = props;
+  const { alignment, date, formattedDate, lastGroupMessage, message, showMessageStatus } = props;
   const { channel } = useChannelContext();
+  const { isMessageAIGenerated } = useChatContext();
   const { isDirectChannel } = useStateStore(channel.state, isDirectChannelSelector) ?? {
     isDirectChannel: false,
   };
@@ -173,14 +167,12 @@ export type MessageFooterProps = MessageFooterComponentProps & {
 };
 
 export const MessageFooter = (props: MessageFooterProps) => {
-  const { alignment, isMessageAIGenerated, lastGroupMessage, message, showMessageStatus } =
-    useMessageContext();
+  const { alignment, lastGroupMessage, message, showMessageStatus } = useMessageContext();
 
   return (
     <MemoizedMessageFooter
       {...{
         alignment,
-        isMessageAIGenerated,
         lastGroupMessage,
         message,
         showMessageStatus,

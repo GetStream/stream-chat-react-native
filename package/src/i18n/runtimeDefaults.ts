@@ -74,7 +74,8 @@ export const runtimeDefaults = {
     'Mention suggestions available',
   'avatar.accessibilityLabel': 'Avatar of {{name}}',
   'avatar.channel.direct.accessibilityLabel': 'Direct chat with {{name}}',
-  'avatar.channel.group.accessibilityLabel': 'Channel with {{count}} members',
+  'avatar.channel.group.accessibilityLabel_one': 'Channel with {{count}} member',
+  'avatar.channel.group.accessibilityLabel_other': 'Channel with {{count}} members',
   'channelDetails.addMembers.accessibilityLabel': 'Add members',
   'channelDetails.editChannel.accessibilityLabel': 'Edit channel',
   'channelDetails.editChannel.upload.accessibilityLabel': 'Upload channel image',
@@ -89,7 +90,8 @@ export const runtimeDefaults = {
   'channelPreview.lastMessage.accessibilityLabel': 'Last message {{date}}',
   'channelPreview.muted.accessibilityLabel': 'Muted',
   'channelPreview.pinned.accessibilityLabel': 'Pinned',
-  'channelPreview.unreadCount.accessibilityLabel': '{{count}} unread messages',
+  'channelPreview.unreadCount.accessibilityLabel_one': '{{count}} unread message',
+  'channelPreview.unreadCount.accessibilityLabel_other': '{{count}} unread messages',
   'common.close.accessibilityLabel': 'Close',
   'common.messageOverlay.swipeHint.accessibilityLabel':
     'Swipe right to go through different actions',
@@ -102,7 +104,8 @@ export const runtimeDefaults = {
     'Double tap and hold to activate contextual menu',
   'message.content.fromSender.accessibilityLabel': 'Message from {{sender}}',
   'message.content.fromYou.accessibilityLabel': 'Message from you',
-  'message.reactionList.more.accessibilityLabel': 'and {{count}} more reactions',
+  'message.reactionList.more.accessibilityLabel_one': 'and {{count}} more reaction',
+  'message.reactionList.more.accessibilityLabel_other': 'and {{count}} more reactions',
   'message.reactionList.viewHint.accessibilityLabel': 'Double tap to view reactions',
   'message.reactionList.youReacted.accessibilityLabel': 'you reacted',
   'message.status.delivered.accessibilityLabel': 'Delivered',
@@ -120,7 +123,9 @@ export const runtimeDefaults = {
   'messageInput.sendMessage.accessibilityLabel': 'Send message',
   'messageList.dismissUnread.accessibilityLabel': 'Dismiss unread messages',
   'messageList.scrollToBottom.accessibilityLabel': 'Scroll to bottom',
-  'messageList.scrollToBottom.withCount.accessibilityLabel':
+  'messageList.scrollToBottom.withCount.accessibilityLabel_one':
+    'Scroll to bottom, {{count}} new message',
+  'messageList.scrollToBottom.withCount.accessibilityLabel_other':
     'Scroll to bottom, {{count}} new messages',
   'messageMenu.actionList.accessibilityLabel': 'Message actions',
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Open more reactions',

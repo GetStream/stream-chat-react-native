@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { GetApplicationResponse, StreamChat } from 'stream-chat';
+import type { GetApplicationResponse, LocalMessage, StreamChat } from 'stream-chat';
 
-import { MessageContextValue } from '../messageContext/MessageContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -31,7 +30,9 @@ export type ChatContextValue = {
    * @overrideType StreamChat
    * */
   client: StreamChat;
-} & Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>>;
+  /** Decides whether a message renders as AI generated. Defaults to never. */
+  isMessageAIGenerated: (message: LocalMessage) => boolean;
+};
 
 export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);
 

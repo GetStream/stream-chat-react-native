@@ -22,6 +22,7 @@ export const useStickyHeaderDate = () => {
       topVisibleMessage: LocalMessage;
     }) => {
       if (isAtOldestMessage) {
+        stickyHeaderDateRef.current = undefined;
         setStickyHeaderDate(undefined);
         return;
       }

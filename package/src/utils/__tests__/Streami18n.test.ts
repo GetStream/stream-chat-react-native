@@ -58,6 +58,17 @@ describe('runtimeDefaults', () => {
       'timestamp.UserActivityStatus',
     ]);
   });
+
+  it.each([
+    ['avatar.channel.group.accessibilityLabel', 'Channel with 1 member'],
+    ['channelPreview.unreadCount.accessibilityLabel', '1 unread message'],
+    ['message.reactionList.more.accessibilityLabel', 'and 1 more reaction'],
+    ['messageList.scrollToBottom.withCount.accessibilityLabel', 'Scroll to bottom, 1 new message'],
+  ])('uses the singular of %s for a count of 1', async (key, singular) => {
+    const { t } = await new Streami18n().init();
+
+    expect(t(key as never, { count: 1 })).toBe(singular);
+  });
 });
 
 describe('English calendar wording', () => {

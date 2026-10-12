@@ -65,7 +65,6 @@ export type MessageContentPropsWithContext = Pick<
   | 'otherAttachments'
   | 'preventPress'
   | 'threadList'
-  | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue,
@@ -113,7 +112,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     groupStyles,
     goToMessage,
     hasInteractiveAccessibilityContent,
-    isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
     message,
@@ -129,7 +127,7 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     hidePaddingHorizontal,
     hidePaddingBottom,
   } = props;
-  const { client } = useChatContext();
+  const { client, isMessageAIGenerated } = useChatContext();
   const accessibilityHint = useA11yLabel('message.content.contextMenuHint.accessibilityLabel');
   const a11ySenderLabel = useA11yLabel(
     isMyMessage
@@ -615,7 +613,6 @@ export const MessageContent = (props: MessageContentProps) => {
     groupStyles,
     hasInteractiveAccessibilityContent,
     images,
-    isMessageAIGenerated,
     isMyMessage,
     message,
     messageContentOrder,
@@ -681,7 +678,6 @@ export const MessageContent = (props: MessageContentProps) => {
         groupStyles,
         hasInteractiveAccessibilityContent,
         isAttachmentEqual,
-        isMessageAIGenerated,
         isMyMessage,
         message,
         messageContentOrder,

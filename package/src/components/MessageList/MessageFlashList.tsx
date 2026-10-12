@@ -517,10 +517,16 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const viewableMessages = viewableItems.map((viewable) => viewable.item);
     // Not inverted: the first viewable item is the topmost one on screen.
     const topVisibleMessage = viewableMessages[0];
+    // Content shorter than the window cannot scroll, so FlashList keeps the offset of its initial
+    // scroll and misses the oldest message on screen. Short content shows every message.
+    const list = flashListRef.current;
+    const contentFitsWindow = list
+      ? list.getChildContainerDimensions().height <= list.getWindowSize().height
+      : false;
     const isAtOldestMessage =
       topVisibleMessage !== undefined &&
       !paginator?.hasMoreTail &&
-      processedMessageList[0]?.id === topVisibleMessage.id;
+      (contentFitsWindow || processedMessageList[0]?.id === topVisibleMessage.id);
 
     if (!hideStickyDateHeader && topVisibleMessage) {
       updateStickyHeaderDate({ isAtOldestMessage, topVisibleMessage });

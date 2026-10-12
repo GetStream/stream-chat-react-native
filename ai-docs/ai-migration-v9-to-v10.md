@@ -2519,6 +2519,84 @@ which is an older reply once the thread has been scrolled back.
 
 ---
 
+# Part Q — Bug fixes after the state cleanup
+
+## Q.1 Count strings are plural keys (breaking for translations)
+
+Five strings that take a `{{count}}` read "1 new messages" for a count of 1. They are plural keys now,
+like every other count string in the SDK. A translation dictionary has to provide the `_one` /
+`_other` forms (plus `_few`, `_many` and so on where the language needs them). i18next looks up the
+bundled English plural before an override of the bare key, so an override of the bare key no longer
+applies.
+
+| Key | Where |
+| --- | --- |
+| `messageList.newMessages.text` | the unread separator in a message list |
+| `messageList.scrollToBottom.withCount.accessibilityLabel` | the scroll-to-bottom button |
+| `channelPreview.unreadCount.accessibilityLabel` | a channel row's unread badge |
+| `message.reactionList.more.accessibilityLabel` | the clustered reaction list |
+| `avatar.channel.group.accessibilityLabel` | a group channel's avatar |
+
+```ts
+// Before
+'messageList.newMessages.text': '{{count}} neue Nachrichten',
+// After
+'messageList.newMessages.text_one': '{{count}} neue Nachricht',
+'messageList.newMessages.text_other': '{{count}} neue Nachrichten',
+```
+
+`TranslationDictionary` rejects the bare key, so a typed dictionary fails to compile until it is
+updated.
+
+## Q.2 Behaviour fixes
+
+- **Reactions sheet** (`MessageUserReactions` / `useFetchReactions`):
+  - reactions added to other messages no longer appear in an open sheet;
+  - the sheet no longer refetches, and briefly empties, on every reaction to its message;
+  - offline, the sheet shows the reactions stored in the offline database again, through
+    `client.queryReactionsAndHydrate` (as in v9);
+  - the counts come from `reaction_groups`, so a reaction added offline or not yet confirmed is
+    counted.
+- **Reminder header:** setting or clearing the time of an existing reminder switches the message
+  header between "Saved for later" and the reminder right away.
+- **`useHandleLiveLocationEvents`:** another message's ended share no longer marks the watched
+  location as stopped.
+- **`usePollAnswersPagination` / `usePollOptionVotesPagination`:** votes and answers that arrive
+  together are all kept. Only the last one used to survive.
+- **Thread list:** a failed refresh from the "new threads" banner shows "Couldn't load new threads. Tap
+  to retry", and tapping it retries. The tile could not appear before, and was not pressable.
+- **Channel list swipe sheet:** a direct chat shows "Online" when the other member is online. It used to
+  read the watcher count, which includes the current user, so the label was inverted.
+- **Sticky date header:** it shows again after scrolling back down from the oldest message.
+- **`MessageFlashList`:** a channel whose messages fit on screen no longer shows the date twice (the
+  sticky header over the inline separator).
+
+## Q.3 `isMessageAIGenerated` lives on `<Chat>` only (breaking)
+
+`<Chat isMessageAIGenerated>` is the only place to set it, and it defaults to a function that returns
+`false`. `<Channel>` no longer accepts the prop: `<Chat>`'s value always overrode it, in v9 as well, so
+it never had an effect. The message components read it from `useChatContext()`, and it is no longer on
+the message contexts.
+
+| Removed | Use instead |
+| --- | --- |
+| `<Channel isMessageAIGenerated={…}>` | `<Chat isMessageAIGenerated={…}>` |
+| `useMessagesContext().isMessageAIGenerated` | `useChatContext().isMessageAIGenerated` |
+| `useMessageContext().isMessageAIGenerated` | `useChatContext().isMessageAIGenerated` |
+| `MessageContent`'s `isMessageAIGenerated` prop | `<Chat isMessageAIGenerated={…}>` |
+
+```diff
+- <Channel channel={channel} isMessageAIGenerated={isAIMessage}>
++ <Chat client={client} isMessageAIGenerated={isAIMessage}>
+```
+
+```diff
+- const { isMessageAIGenerated } = useMessageContext();
++ const { isMessageAIGenerated } = useChatContext();
+```
+
+---
+
 # Part I — i18n
 
 ## 19. English-only bundle, dotted keys, shared runtime
