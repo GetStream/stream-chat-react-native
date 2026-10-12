@@ -10,11 +10,16 @@ import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMember
 const getMemberName = (member: ChannelMemberResponse) =>
   member.user?.name || member.user?.id || 'Unknown User';
 
+const pickName = (member: ChannelMemberResponse) => ({
+  id: member.user?.id,
+  name: member.user?.name,
+});
+
 export const useChannelPreviewDisplayName = (channel?: Channel) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const currentUserId = client?.userID;
-  const members = useChannelMembersState(channel);
+  const members = useChannelMembersState(channel, pickName);
   const channelName = useChannelName(channel);
 
   const displayName = useMemo(() => {
