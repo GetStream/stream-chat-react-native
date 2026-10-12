@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.9.4](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.3...v9.9.4) (2026-10-12)
+
+### Bug Fixes
+
+* remove bottom sheet pinned version ([#3849](https://github.com/GetStream/stream-chat-react-native/issues/3849)) ([b6a714b](https://github.com/GetStream/stream-chat-react-native/commit/b6a714b1fa4f2bd1ef30a1dd79421bb65c53d3e9))
+* remove bottom sheet pinned version ([#3849](https://github.com/GetStream/stream-chat-react-native/issues/3849)) ([497d8c3](https://github.com/GetStream/stream-chat-react-native/commit/497d8c311b95cf2bd34b2c8ebe30ad8bfe81339b))
+
 ## [9.9.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.2...v9.9.3) (2026-10-08)
 
 ### Bug Fixes
