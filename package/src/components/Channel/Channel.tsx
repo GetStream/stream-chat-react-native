@@ -36,7 +36,6 @@ import { ChannelContextValue, ChannelProvider } from '../../contexts/channelCont
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
-import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
   InputMessageInputContextValue,
   MessageInputProvider,
@@ -231,7 +230,6 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'hasCreatePoll'
     >
   > &
-  Partial<Pick<MessageContextValue, 'isMessageAIGenerated'>> &
   Partial<
     Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'>
   > & {
@@ -375,7 +373,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hideStickyDateHeader = false,
     initialScrollToFirstUnreadMessage = false,
     isAttachmentEqual,
-    isMessageAIGenerated = () => false,
     keyboardBehavior,
     keyboardVerticalOffset,
     markdownRules,
@@ -737,7 +734,6 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     hasCreatePoll:
       hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
     isAttachmentEqual,
-    isMessageAIGenerated,
     markdownRules,
     messageActions,
     messageContentOrder,
@@ -837,7 +833,7 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'th
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
-  const { client, isMessageAIGenerated } = useChatContext();
+  const { client } = useChatContext();
   const { t } = useTranslationContext();
   const channel = useSupersededChannelSwap(props.channel);
   const notificationHostId =
@@ -866,10 +862,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       {...props}
       channel={channel}
       shouldSyncChannel={shouldSyncChannel}
-      {...{
-        isMessageAIGenerated,
-        thread,
-      }}
+      thread={thread}
     />
   );
 

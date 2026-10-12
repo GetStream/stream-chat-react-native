@@ -137,13 +137,13 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
             ...reactionData,
             onSelectReaction,
             selectedReaction,
-            count: (message?.reaction_counts?.[reactionData.type] ?? 0).toString(),
+            count: (message?.reaction_groups?.[reactionData.type]?.count ?? 0).toString(),
           });
         }
         return acc;
       }, []),
     [
-      message?.reaction_counts,
+      message?.reaction_groups,
       onSelectReaction,
       reactionTypes,
       selectedReaction,
@@ -194,11 +194,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const totalReactionCount = useMemo(
     () =>
-      Object.values(message?.reaction_counts ?? {}).reduce(
-        (acc, reactionCount) => acc + reactionCount,
+      Object.values(message?.reaction_groups ?? {}).reduce(
+        (acc, reactionGroup) => acc + reactionGroup.count,
         0,
       ),
-    [message?.reaction_counts],
+    [message?.reaction_groups],
   );
 
   const reactions = useMemo(

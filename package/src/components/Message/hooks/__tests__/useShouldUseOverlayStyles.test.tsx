@@ -26,7 +26,6 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     hasAttachmentActions: false,
     hasReactions: false,
     images: [],
-    isMessageAIGenerated: jest.fn(),
     isMyMessage: false,
     lastGroupMessage: false,
     members: {},

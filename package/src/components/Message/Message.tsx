@@ -211,10 +211,8 @@ export type MessagePropsWithContext = Pick<
   'channel' | 'enforceUniqueReaction'
 > &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<
-    Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message' | 'isMessageAIGenerated'>
-  > &
-  Pick<MessageContextValue, 'groupStyles' | 'message' | 'isMessageAIGenerated'> &
+  Partial<Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message'>> &
+  Pick<MessageContextValue, 'groupStyles' | 'message'> &
   Pick<
     MessageOperations,
     | 'sendReaction'
@@ -279,7 +277,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
-  const { client } = useChatContext();
+  const { client, isMessageAIGenerated } = useChatContext();
 
   const {
     channel,
@@ -340,7 +338,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   } = useComponentsContext();
   // TODO: V9: Reconsider using safe area insets in every message.
   const insets = useSafeAreaInsets();
-  const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
@@ -731,7 +728,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleToggleReaction,
     hasReactions,
     images: attachments.images,
-    isMessageAIGenerated,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     message: overlayActive ? frozenMessage.current : message,

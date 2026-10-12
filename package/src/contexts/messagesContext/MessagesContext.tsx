@@ -15,7 +15,7 @@ import type { MessageActionType } from '../../components/MessageMenu/MessageActi
 import { NativeHandlers } from '../../native';
 
 import type { ReactionData } from '../../utils/utils';
-import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
+import type { Alignment } from '../messageContext/MessageContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
@@ -36,7 +36,7 @@ export type MessageLocationProps = {
   message: LocalMessage;
 };
 
-export type MessagesContextValue = Pick<MessageContextValue, 'isMessageAIGenerated'> & {
+export type MessagesContextValue = {
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
 

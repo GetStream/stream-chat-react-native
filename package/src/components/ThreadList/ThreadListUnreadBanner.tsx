@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ThreadManagerState } from 'stream-chat';
@@ -11,9 +11,13 @@ import { primitives } from '../../theme';
 const selector = (nextValue: ThreadManagerState) =>
   ({ unseenThreadIds: nextValue.unseenThreadIds }) as const;
 
+// The paginator records a failed reload and clears it on the next successful query.
+const lastQueryErrorSelector = (nextValue: { lastQueryError?: Error }) => ({
+  lastQueryError: nextValue.lastQueryError,
+});
+
 export const ThreadListUnreadBanner = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
@@ -22,16 +26,30 @@ export const ThreadListUnreadBanner = () => {
   } = useTheme();
   const styles = useStyles();
   const { unseenThreadIds } = useStateStore(client.threads.state, selector);
+  const { lastQueryError } = useStateStore(client.threads.paginator.state, lastQueryErrorSelector);
+
+  const pressableStyle = useCallback(
+    ({ pressed }: { pressed: boolean }) => [
+      styles.container,
+      {
+        backgroundColor: pressed
+          ? semantics.backgroundUtilityPressed
+          : semantics.backgroundCoreSurfaceDefault,
+      },
+    ],
+    [semantics, styles],
+  );
+
   if (!unseenThreadIds.length) {
     return null;
   }
 
   const handlePress = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       await client.threads.reload();
-    } catch (err) {
-      setError(err as Error);
+    } catch {
+      // Only with the paginator's `throwErrors`; the error is already in its state.
     } finally {
       setLoading(false);
     }
@@ -46,29 +64,19 @@ export const ThreadListUnreadBanner = () => {
     );
   }
 
-  if (error) {
+  if (lastQueryError) {
     return (
-      <View style={styles.container}>
+      <Pressable onPress={handlePress} style={pressableStyle}>
         <icons.ExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
         <Text style={styles.text}>
           {t('threadList.unreadBanner.loadFailed.error', "Couldn't load new threads. Tap to retry")}
         </Text>
-      </View>
+      </Pressable>
     );
   }
 
   return (
-    <Pressable
-      onPress={handlePress}
-      style={({ pressed }) => [
-        styles.container,
-        {
-          backgroundColor: pressed
-            ? semantics.backgroundUtilityPressed
-            : semantics.backgroundCoreSurfaceDefault,
-        },
-      ]}
-    >
+    <Pressable onPress={handlePress} style={pressableStyle}>
       <icons.Reload stroke={semantics.textSecondary} height={20} width={20} />
       <Text style={styles.text}>
         {t('threadList.unreadBanner.newThreads.label', {

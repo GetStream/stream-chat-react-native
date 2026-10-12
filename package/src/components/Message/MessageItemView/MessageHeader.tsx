@@ -2,35 +2,36 @@ import React, { useMemo } from 'react';
 
 import { View, ViewStyle } from 'react-native';
 
+import type { Reminder, ReminderState } from 'stream-chat';
+
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useMessageReminder } from '../../../hooks/useMessageReminder';
+import { useStateStore } from '../../../hooks/useStateStore';
 
 type MessageHeaderPropsWithContext = Pick<MessageContextValue, 'alignment' | 'message'> & {
-  shouldShowSavedForLaterHeader?: boolean;
+  reminder?: Reminder;
   shouldShowPinnedHeader: boolean;
-  shouldShowReminderHeader: boolean;
   shouldShowSentToChannelHeader: boolean;
 };
 
+// Setting or clearing the time of an existing reminder publishes only on the reminder's own state.
+const hasRemindAtSelector = (state: ReminderState) => ({ hasRemindAt: state.remind_at != null });
+
+// Mounted only for a message with a reminder, so other messages never subscribe to one.
+const MessageReminderHeaderSwitch = ({ reminder }: { reminder: Reminder }) => {
+  const { MessageReminderHeader, MessageSavedForLaterHeader } = useComponentsContext();
+  const { hasRemindAt } = useStateStore(reminder.state, hasRemindAtSelector);
+  return hasRemindAt ? <MessageReminderHeader /> : <MessageSavedForLaterHeader />;
+};
+
 const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
-  const {
-    alignment,
-    message,
-    shouldShowSavedForLaterHeader,
-    shouldShowPinnedHeader,
-    shouldShowReminderHeader,
-    shouldShowSentToChannelHeader,
-  } = props;
-  const {
-    MessagePinnedHeader,
-    MessageReminderHeader,
-    MessageSavedForLaterHeader,
-    SentToChannelHeader,
-  } = useComponentsContext();
+  const { alignment, message, reminder, shouldShowPinnedHeader, shouldShowSentToChannelHeader } =
+    props;
+  const { MessagePinnedHeader, SentToChannelHeader } = useComponentsContext();
 
   const containerStyle: ViewStyle = useMemo(() => {
     return {
@@ -40,8 +41,7 @@ const MessageHeaderWithContext = (props: MessageHeaderPropsWithContext) => {
 
   return (
     <View style={containerStyle}>
-      {shouldShowReminderHeader && <MessageReminderHeader />}
-      {shouldShowSavedForLaterHeader && <MessageSavedForLaterHeader />}
+      {reminder ? <MessageReminderHeaderSwitch reminder={reminder} /> : null}
       {shouldShowPinnedHeader && <MessagePinnedHeader message={message} />}
       {shouldShowSentToChannelHeader && <SentToChannelHeader />}
     </View>
@@ -54,16 +54,14 @@ const areEqual = (
 ) => {
   const {
     alignment: prevAlignment,
-    shouldShowSavedForLaterHeader: prevShouldShowSavedForLaterHeader,
+    reminder: prevReminder,
     shouldShowPinnedHeader: prevShouldShowPinnedHeader,
-    shouldShowReminderHeader: prevShouldShowReminderHeader,
     shouldShowSentToChannelHeader: prevShouldShowSentToChannelHeader,
   } = prevProps;
   const {
     alignment: nextAlignment,
-    shouldShowSavedForLaterHeader: nextShouldShowSavedForLaterHeader,
+    reminder: nextReminder,
     shouldShowPinnedHeader: nextShouldShowPinnedHeader,
-    shouldShowReminderHeader: nextShouldShowReminderHeader,
     shouldShowSentToChannelHeader: nextShouldShowSentToChannelHeader,
   } = nextProps;
 
@@ -72,20 +70,13 @@ const areEqual = (
     return false;
   }
 
-  const shouldShowSavedForLaterHeaderEqual =
-    prevShouldShowSavedForLaterHeader === nextShouldShowSavedForLaterHeader;
-  if (!shouldShowSavedForLaterHeaderEqual) {
+  const reminderEqual = prevReminder === nextReminder;
+  if (!reminderEqual) {
     return false;
   }
 
   const shouldShowPinnedHeaderEqual = prevShouldShowPinnedHeader === nextShouldShowPinnedHeader;
   if (!shouldShowPinnedHeaderEqual) {
-    return false;
-  }
-
-  const shouldShowReminderHeaderEqual =
-    prevShouldShowReminderHeader === nextShouldShowReminderHeader;
-  if (!shouldShowReminderHeaderEqual) {
     return false;
   }
 
@@ -109,17 +100,10 @@ export const MessageHeader = (props: MessageHeaderProps) => {
   const { alignment, message } = useMessageContext();
   const reminder = useMessageReminder(message.id);
 
-  const shouldShowSavedForLaterHeader = reminder != null && reminder.remindAt == null;
-  const shouldShowReminderHeader = reminder?.remindAt != null;
   const shouldShowPinnedHeader = !!message?.pinned;
   const shouldShowSentToChannelHeader = !!message?.show_in_channel;
 
-  if (
-    !shouldShowPinnedHeader &&
-    !shouldShowSavedForLaterHeader &&
-    !shouldShowReminderHeader &&
-    !shouldShowSentToChannelHeader
-  ) {
+  if (!shouldShowPinnedHeader && !reminder && !shouldShowSentToChannelHeader) {
     return null;
   }
 
@@ -127,9 +111,8 @@ export const MessageHeader = (props: MessageHeaderProps) => {
     <MemoizedMessageHeader
       alignment={alignment}
       message={message}
-      shouldShowSavedForLaterHeader={shouldShowSavedForLaterHeader}
+      reminder={reminder}
       shouldShowPinnedHeader={shouldShowPinnedHeader}
-      shouldShowReminderHeader={shouldShowReminderHeader}
       shouldShowSentToChannelHeader={shouldShowSentToChannelHeader}
       {...props}
     />

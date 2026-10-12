@@ -55,7 +55,8 @@ export const usePollOptionVotesPagination = ({
   const [error, setError] = useState<Error>();
   const cursorRef = useRef<string | null>(undefined);
   const queryInProgress = useRef(false);
-  const optionFilter = useMemo(() => ({ option_id: option.id }), [option.id]);
+  const optionId = option.id;
+  const optionFilter = useMemo(() => ({ option_id: optionId }), [optionId]);
 
   const loadMore = useCallback(async () => {
     if (cursorRef.current === null || queryInProgress.current) {
@@ -96,10 +97,10 @@ export const usePollOptionVotesPagination = ({
         }
         const vote = event.poll_vote;
         if (vote && !isVoteAnswer(vote)) {
-          if (vote.option_id === option.id) {
-            setVotes([vote, ...votes.filter((v) => v.id !== vote.id)]);
+          if (vote.option_id === optionId) {
+            setVotes((prev) => [vote, ...prev.filter((v) => v.id !== vote.id)]);
           } else if (eventName === 'poll.vote_changed') {
-            setVotes(votes.filter((v) => v.id !== vote.id));
+            setVotes((prev) => prev.filter((v) => v.id !== vote.id));
           }
         }
       }),
@@ -110,8 +111,8 @@ export const usePollOptionVotesPagination = ({
         return;
       }
       const vote = event.poll_vote;
-      if (vote && !isVoteAnswer(vote) && vote.option_id === option.id) {
-        setVotes(votes.filter((v) => v.id !== vote.id));
+      if (vote && !isVoteAnswer(vote) && vote.option_id === optionId) {
+        setVotes((prev) => prev.filter((v) => v.id !== vote.id));
       }
     });
 
@@ -119,7 +120,7 @@ export const usePollOptionVotesPagination = ({
       castedListeners.forEach((listener) => listener.unsubscribe());
       removedListener.unsubscribe();
     };
-  }, [client, option, poll, votes]);
+  }, [client, optionId, poll]);
 
   return {
     error,

@@ -3,6 +3,7 @@ import React from 'react';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { nowNs } from 'stream-chat';
 
+import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -124,5 +125,34 @@ describe('ScrollToBottomButton', () => {
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
     });
+  });
+
+  it.each([
+    [1, 'Scroll to bottom, 1 new message'],
+    [3, 'Scroll to bottom, 3 new messages'],
+  ])('labels the button for %i unread messages as "%s"', async (unreadMessages, label) => {
+    const translators = await new Streami18n().init();
+    const channel = {
+      state: generateChannelState({
+        read: { me: { last_read: nowNs(), unread_messages: unreadMessages, user: { id: 'me' } } },
+      }),
+    };
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <AccessibilityProvider value={{ enabled: true }}>
+          <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
+            <ChatProvider value={{ client: { userID: 'me' } } as unknown as ChatContextValue}>
+              <ChannelProvider
+                value={{ channel, threadList: false } as unknown as ChannelContextValue}
+              >
+                <ScrollToBottomButton onPress={() => null} showNotification={true} />
+              </ChannelProvider>
+            </ChatProvider>
+          </TranslationProvider>
+        </AccessibilityProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('scroll-to-bottom-button').props.accessibilityLabel).toBe(label);
   });
 });

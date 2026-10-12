@@ -39,14 +39,12 @@ export const useHandleLiveLocationEvents = ({
   useEffect(() => {
     const handleMessageUpdate = (event: EventPayload<'message.updated'>) => {
       const { message } = event;
-      if (!message || !message.shared_location) {
+      if (!message || !message.shared_location || message.id !== messageId) {
         return;
       }
       const { shared_location } = message;
-      if (message.id === messageId) {
-        setLocationResponse(message.shared_location as SharedLocationResponse);
-        onLocationUpdate?.(message.shared_location as SharedLocationResponse);
-      }
+      setLocationResponse(shared_location as SharedLocationResponse);
+      onLocationUpdate?.(shared_location as SharedLocationResponse);
       if (shared_location.end_at != null && shared_location.end_at <= nowNs()) {
         setIsLiveLocationStopped(true);
       }

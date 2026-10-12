@@ -170,6 +170,8 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
     style?: ThemeStyle;
   };
 
+const isNeverAIGenerated = () => false;
+
 const selector = (nextValue: OfflineDBState) =>
   ({
     initialized: nextValue.initialized,
@@ -184,7 +186,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     enableOfflineSupport = false,
     getOfflineDbEncryptionKey,
     i18nInstance,
-    isMessageAIGenerated,
+    isMessageAIGenerated = isNeverAIGenerated,
     maxSyncEventsLimit = DEFAULT_MAX_SYNC_EVENTS_LIMIT,
     style,
     useNativeMultipartUpload = false,
