@@ -3047,28 +3047,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/bottom-sheet@npm:5.2.9":
-  version: 5.2.9
-  resolution: "@gorhom/bottom-sheet@npm:5.2.9"
-  dependencies:
-    "@gorhom/portal": "npm:1.0.14"
-    invariant: "npm:^2.2.4"
-  peerDependencies:
-    "@types/react": "*"
-    "@types/react-native": "*"
-    react: "*"
-    react-native: "*"
-    react-native-gesture-handler: ">=2.16.1"
-    react-native-reanimated: "*"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    "@types/react-native":
-      optional: true
-  checksum: 10c0/306a81b4d19010e1347581c3902c0b3de295545bc523eb9350a26c1743a9fb09c689ec5d2ceb56827e9f984e856e08f1d9fc6eb36b2cd6aeaaaceb56ca33d84b
-  languageName: node
-  linkType: hard
-
 "@gorhom/bottom-sheet@npm:^5.2.14":
   version: 5.2.14
   resolution: "@gorhom/bottom-sheet@npm:5.2.14"
@@ -19114,7 +19092,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.29.0"
     "@babel/runtime": "npm:^7.29.2"
-    "@gorhom/bottom-sheet": "npm:5.2.9"
+    "@gorhom/bottom-sheet": "npm:^5.2.14"
     "@op-engineering/op-sqlite": "npm:^18.1.0"
     "@react-native-community/netinfo": "npm:^12.0.1"
     "@react-native/babel-preset": "npm:0.87.0"
