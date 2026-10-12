@@ -349,6 +349,7 @@ This repo ships three project skills — load the relevant one **before** touchi
 
 - `.claude/skills/accessibility` — VoiceOver/TalkBack work: interactive components, gestures, modals, lists, media controls, focus behavior, live announcements
 - `.claude/skills/rtl` — anything with a horizontal or directional axis: styles, positioning, flex, swipe gestures, animated transforms, icons, text alignment
+- `.claude/skills/perf-gauntlet` — the full multi-hour base-vs-head performance gauntlet (release builds with React's profiling renderer, every major flow on FlatList and FlashList, per-component mount/re-render numbers, session-level statistics). Harness in `perf/gauntlet/`.
 - `.claude/skills/perf-benchmarking` — on-device measurement: Hermes CPU profiles, render profiling, deterministic call counting, memory/jank capture. Drives `examples/SampleApp` on a connected Android device via the `perf/` toolkit (`scenario-lib.sh`, `capture-hermes-profile.js`, `analyze-react-profile.js`, `analyze-cpuprofile.js`, `android-heap-dump.sh`; see `perf/README.md`).
 
 Accessibility is **opt-in** — see `ai-docs/accessibility.md` for the full contract. New interactive UI should reuse the primitives in `package/src/a11y/`.
@@ -456,7 +457,7 @@ Never commit API keys or real user data. Example code must use obvious placehold
 ## References
 
 - **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9) and `ai-docs/ai-migration-v9-to-v10.md` (v9 → v10) — load these instead of the prose upgrade guides for agent-driven migrations; `ai-docs/accessibility.md` (opt-in a11y layer); `ai-docs/i18n-v10-migration.md` + `ai-docs/i18n-v10-key-map.json` (English-only i18n, and the reviewed old-key → dotted-key map)
-- **Repo skills:** `.claude/skills/{accessibility,rtl,perf-benchmarking}`, `perf/README.md`
+- **Repo skills:** `.claude/skills/{accessibility,rtl,perf-benchmarking,perf-gauntlet}`, `perf/README.md`, `perf/gauntlet/README.md`
 - **Contributing / process:** `CONTRIBUTING.md`, `RELEASE_PROCESS.md`, `PULL_REQUEST_TEMPLATE.md`, `SECURITY.md`
 - **Component docs:** https://getstream.io/chat/docs/sdk/reactnative/
 - **Stream Chat API:** https://getstream.io/chat/docs/javascript/

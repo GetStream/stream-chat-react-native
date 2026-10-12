@@ -5,6 +5,8 @@ description: Measure React Native performance on-device for stream-chat-react-na
 
 # Perf benchmarking (on-device, stream-chat-react-native)
 
+> For a full multi-hour base-vs-head comparison of every major flow (release builds, FlatList and FlashList, statistics), use the `perf-gauntlet` skill instead.
+
 How to measure SDK performance for real, against the **SampleApp running on a physical Android device**, using the committed `perf/` toolkit. This skill exists because the methodology is full of traps that produce confidently-wrong numbers; follow the rules and recipes here instead of improvising.
 
 Prerequisites for almost everything below:

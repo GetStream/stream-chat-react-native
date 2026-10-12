@@ -1320,7 +1320,7 @@
     "a11y/Channel with {{count}} members": {
       "key": "avatar.channel.group.accessibilityLabel",
       "prose": true,
-      "plural": false
+      "plural": true
     },
     "a11y/Clear search": {
       "key": "uiComponents.searchInput.clear.accessibilityLabel",
@@ -1630,7 +1630,7 @@
     "a11y/Scroll to bottom, {{count}} new messages": {
       "key": "messageList.scrollToBottom.withCount.accessibilityLabel",
       "prose": true,
-      "plural": false
+      "plural": true
     },
     "a11y/Search members": {
       "key": "channelDetails.memberList.search.accessibilityLabel",
@@ -1715,7 +1715,7 @@
     "a11y/and {{count}} more reactions": {
       "key": "message.reactionList.more.accessibilityLabel",
       "prose": true,
-      "plural": false
+      "plural": true
     },
     "a11y/you reacted": {
       "key": "message.reactionList.youReacted.accessibilityLabel",
@@ -1730,7 +1730,7 @@
     "a11y/{{count}} unread messages": {
       "key": "channelPreview.unreadCount.accessibilityLabel",
       "prose": true,
-      "plural": false
+      "plural": true
     },
     "a11y/{{name}} is already a member": {
       "key": "channelDetails.addMembers.alreadyMember.accessibilityLabel",
@@ -1925,7 +1925,7 @@
     "{{count}} new messages": {
       "key": "messageList.newMessages.text",
       "prose": true,
-      "plural": false
+      "plural": true
     },
     "{{count}} new threads": {
       "key": "threadList.unreadBanner.newThreads.label",

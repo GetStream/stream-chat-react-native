@@ -76,7 +76,8 @@ export const it: TranslationDictionary = {
   // Avatars
   'avatar.accessibilityLabel': 'Avatar di {{name}}',
   'avatar.channel.direct.accessibilityLabel': 'Chat diretta con {{name}}',
-  'avatar.channel.group.accessibilityLabel': 'Canale con {{count}} membri',
+  'avatar.channel.group.accessibilityLabel_one': 'Canale con {{count}} membro',
+  'avatar.channel.group.accessibilityLabel_other': 'Canale con {{count}} membri',
 
   // Channel screen, system messages and errors
   'channel.addMembersFailed.error': 'Impossibile aggiungere membri',
@@ -210,7 +211,8 @@ export const it: TranslationDictionary = {
   'channelPreview.typing.withTwoUsers.label': '{{ firstUser }} e {{ secondUser }} stanno scrivendo',
   'channelPreview.typing.withUser.label': '{{ user }} sta scrivendo',
   'channelPreview.typing.withUserCount.label': '{{ numberOfUsers }} persone stanno scrivendo',
-  'channelPreview.unreadCount.accessibilityLabel': '{{count}} messaggi non letti',
+  'channelPreview.unreadCount.accessibilityLabel_one': '{{count}} messaggio non letto',
+  'channelPreview.unreadCount.accessibilityLabel_other': '{{count}} messaggi non letti',
 
   // Shared labels reused across screens
   'common.anonymousUser.label': 'Anonimo',
@@ -301,7 +303,8 @@ export const it: TranslationDictionary = {
   'message.pinMessage.label': 'Metti in evidenza',
   'message.pinned.text': 'Messaggio fissato',
   'message.pinnedBy.text': 'Fissato da',
-  'message.reactionList.more.accessibilityLabel': 'e altre {{count}} reazioni',
+  'message.reactionList.more.accessibilityLabel_one': "e un'altra reazione",
+  'message.reactionList.more.accessibilityLabel_other': 'e altre {{count}} reazioni',
   'message.reactionList.viewHint.accessibilityLabel': 'Tocca due volte per vedere le reazioni',
   'message.reactionList.youReacted.accessibilityLabel': 'hai reagito',
   'message.reminderOverdue.text': 'Promemoria scaduto',
@@ -355,9 +358,12 @@ export const it: TranslationDictionary = {
 
   // Message list
   'messageList.dismissUnread.accessibilityLabel': 'Ignora i messaggi non letti',
-  'messageList.newMessages.text': '{{count}} nuovi messaggi',
+  'messageList.newMessages.text_one': '{{count}} nuovo messaggio',
+  'messageList.newMessages.text_other': '{{count}} nuovi messaggi',
   'messageList.scrollToBottom.accessibilityLabel': 'Vai in fondo',
-  'messageList.scrollToBottom.withCount.accessibilityLabel':
+  'messageList.scrollToBottom.withCount.accessibilityLabel_one':
+    'Vai in fondo, {{count}} nuovo messaggio',
+  'messageList.scrollToBottom.withCount.accessibilityLabel_other':
     'Vai in fondo, {{count}} nuovi messaggi',
   'messageList.typing.withMoreUsers.label':
     '{{ firstUser }} e altri {{ nonSelfUserLength }} stanno scrivendo',

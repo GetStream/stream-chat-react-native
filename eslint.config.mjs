@@ -68,6 +68,10 @@ export default tsEslint.config(
       'package/native-package/',
       'package/expo-package/',
 
+      // Perf gauntlet: Node CommonJS scripts, an ES5 probe loaded ahead of the app, and
+      // exported baseline trees (with their own sources) under out/
+      'perf/gauntlet/',
+
       // Repo metadata
       '.github/',
       '.husky/',

@@ -81,7 +81,8 @@ export const de: TranslationDictionary = {
   // Avatars
   'avatar.accessibilityLabel': 'Avatar von {{name}}',
   'avatar.channel.direct.accessibilityLabel': 'Direktchat mit {{name}}',
-  'avatar.channel.group.accessibilityLabel': 'Kanal mit {{count}} Mitgliedern',
+  'avatar.channel.group.accessibilityLabel_one': 'Kanal mit {{count}} Mitglied',
+  'avatar.channel.group.accessibilityLabel_other': 'Kanal mit {{count}} Mitgliedern',
 
   // Channel screen, system messages and errors
   'channel.addMembersFailed.error': 'Mitglieder konnten nicht hinzugefügt werden',
@@ -216,7 +217,8 @@ export const de: TranslationDictionary = {
   'channelPreview.typing.withTwoUsers.label': '{{ firstUser }} und {{ secondUser }} tippen',
   'channelPreview.typing.withUser.label': '{{ user }} tippt',
   'channelPreview.typing.withUserCount.label': '{{ numberOfUsers }} Personen tippen',
-  'channelPreview.unreadCount.accessibilityLabel': '{{count}} ungelesene Nachrichten',
+  'channelPreview.unreadCount.accessibilityLabel_one': '{{count}} ungelesene Nachricht',
+  'channelPreview.unreadCount.accessibilityLabel_other': '{{count}} ungelesene Nachrichten',
 
   // Shared labels reused across screens
   'common.anonymousUser.label': 'Anonym',
@@ -305,7 +307,8 @@ export const de: TranslationDictionary = {
   'message.pinMessage.label': 'An Unterhaltung anheften',
   'message.pinned.text': 'Nachricht angeheftet',
   'message.pinnedBy.text': 'Angeheftet von',
-  'message.reactionList.more.accessibilityLabel': 'und {{count}} weitere Reaktionen',
+  'message.reactionList.more.accessibilityLabel_one': 'und {{count}} weitere Reaktion',
+  'message.reactionList.more.accessibilityLabel_other': 'und {{count}} weitere Reaktionen',
   'message.reactionList.viewHint.accessibilityLabel':
     'Doppelt tippen, um die Reaktionen anzuzeigen',
   'message.reactionList.youReacted.accessibilityLabel': 'du hast reagiert',
@@ -359,9 +362,12 @@ export const de: TranslationDictionary = {
 
   // Message list
   'messageList.dismissUnread.accessibilityLabel': 'Ungelesene Nachrichten ausblenden',
-  'messageList.newMessages.text': '{{count}} neue Nachrichten',
+  'messageList.newMessages.text_one': '{{count}} neue Nachricht',
+  'messageList.newMessages.text_other': '{{count}} neue Nachrichten',
   'messageList.scrollToBottom.accessibilityLabel': 'Nach unten scrollen',
-  'messageList.scrollToBottom.withCount.accessibilityLabel':
+  'messageList.scrollToBottom.withCount.accessibilityLabel_one':
+    'Nach unten scrollen, {{count}} neue Nachricht',
+  'messageList.scrollToBottom.withCount.accessibilityLabel_other':
     'Nach unten scrollen, {{count}} neue Nachrichten',
   'messageList.typing.withMoreUsers.label':
     '{{ firstUser }} und {{ nonSelfUserLength }} weitere tippen',

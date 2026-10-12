@@ -57,7 +57,8 @@ Integrators override per key:
 const i18n = new Streami18n({ language: 'nl' });
 i18n.registerTranslation('nl', {
   'avatar.accessibilityLabel': 'Avatar van {{name}}',
-  'messageList.scrollToBottom.withCount.accessibilityLabel': '{{count}} nieuwe berichten',
+  'messageList.scrollToBottom.withCount.accessibilityLabel_one': '{{count}} nieuw bericht',
+  'messageList.scrollToBottom.withCount.accessibilityLabel_other': '{{count}} nieuwe berichten',
 });
 <OverlayProvider accessibility={{ enabled: true }} i18nInstance={i18n}>
   <Chat client={client} i18nInstance={i18n}>
