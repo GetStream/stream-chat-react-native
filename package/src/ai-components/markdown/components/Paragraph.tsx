@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Text, type TextStyle, View } from 'react-native';
 
-import { size, some } from 'lodash';
+import size from 'lodash/size';
+import some from 'lodash/some';
 
 import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 

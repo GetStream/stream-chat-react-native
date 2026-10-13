@@ -7,7 +7,9 @@ import SimpleMarkdown, {
   type ParserRules,
   type ReactOutputRule,
 } from '@khanacademy/simple-markdown';
-import { isArray, isEqual, merge } from 'lodash';
+import isArray from 'lodash/isArray';
+import isEqual from 'lodash/isEqual';
+import merge from 'lodash/merge';
 
 import { useTheme } from '../../contexts';
 import { getLocalRules } from '../rules';

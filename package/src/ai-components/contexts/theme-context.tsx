@@ -1,6 +1,6 @@
 import React, { createContext, type PropsWithChildren, useContext, useMemo } from 'react';
 
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 
 import { defaultTheme, type Theme } from '../theme';
 
