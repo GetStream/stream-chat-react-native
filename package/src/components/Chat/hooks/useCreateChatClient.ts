@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 
 import type {
+  DeepPartial,
+  InstanceConfigTree,
   OwnUserResponse,
-  StreamChatOptions,
   TokenOrProvider,
   UserResponse,
 } from 'stream-chat';
@@ -24,16 +25,15 @@ import { netInfoStatusReporter } from './useConnectionLifecycle';
  *
  * A `statusReporter` the caller passed themselves wins — it is spread last.
  */
-const withNetInfoReporter = (options?: StreamChatOptions): StreamChatOptions => ({
+const withNetInfoReporter = (
+  options?: DeepPartial<InstanceConfigTree>,
+): DeepPartial<InstanceConfigTree> => ({
   ...options,
-  config: {
-    ...options?.config,
-    client: {
-      ...options?.config?.client,
-      networkConnection: {
-        statusReporter: netInfoStatusReporter,
-        ...options?.config?.client?.networkConnection,
-      },
+  client: {
+    ...options?.client,
+    networkConnection: {
+      statusReporter: netInfoStatusReporter,
+      ...options?.client?.networkConnection,
     },
   },
 });
@@ -50,7 +50,7 @@ export const useCreateChatClient = ({
   apiKey: string;
   tokenOrProvider: TokenOrProvider;
   userData: OwnUserResponse | UserResponse;
-  options?: StreamChatOptions;
+  options?: DeepPartial<InstanceConfigTree>;
 }) => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [cachedUserData, setCachedUserData] = useState(userData);

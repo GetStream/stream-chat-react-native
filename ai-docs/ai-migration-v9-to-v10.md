@@ -187,6 +187,7 @@ means changed. Details in the linked section.
 | `<Channel>` refreshing the channel / open thread on reconnect | `client.connectionRecovery`; `<Channel>` only marks them active | §L.4 |
 | a custom channel/thread view built on the contexts | call `channel.activate()` / `thread.activate()`, balanced with `deactivate()`, or recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
 | `new StreamChat(key, { recoverStateOnReconnect: false })` | `client.config.set({ client: { connectionRecovery: { enabled: false } } })` | §L.1 |
+| `new StreamChat(key, { axiosRequestConfig, persistUserOnConnectionFailure, … })` / `useCreateChatClient({ options })` | the same fields under `client`: `new StreamChat(key, { client: { … } })` | §17.7 |
 | a `connection.changed` listener re-querying a list / re-watching a channel | delete it — `client.connectionRecovery` owns reconnect | §L |
 | `connection.recovered` as "the `_reconnect()` path fired" | now dispatched on **every** reconnect path, after the recovery reload | §L.2 |
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
@@ -1224,6 +1225,41 @@ local URI:
   remote. It also accepts `undefined` and returns `false` for it; v9 threw.
 - `makeImageCompatibleUrl(url?)` accepts `undefined` and returns it unchanged; v9 threw.
 
+## 17.7 Client options are the configuration tree (breaking — `stream-chat`)
+
+`StreamChatOptions` and `client.options` are gone. `new StreamChat(key, config)` and
+`StreamChat.getInstance(key, config)` take the same tree `client.config.set()` takes, and each former
+option is a field of its `client` slice. The old `config` wrapper is dropped, so the tree is the
+argument itself:
+
+```ts
+// v9
+const client = StreamChat.getInstance(apiKey, {
+  axiosRequestConfig: { timeout: 6000 },
+  persistUserOnConnectionFailure: true,
+});
+
+// v10
+const client = StreamChat.getInstance(apiKey, {
+  client: {
+    axiosRequestConfig: { timeout: 6000 },
+    persistUserOnConnectionFailure: true,
+  },
+});
+```
+
+The same goes for `allowServerSideConnect`, `baseURL` and `browser`. `notifications` (a
+`NotificationManager` instance) became `client.notificationManager`. The `stream-chat` guide
+`v9-to-v10-migration-guide-client-construction.md` has the full mapping.
+
+`useCreateChatClient({ options })` takes this tree too (`DeepPartial<InstanceConfigTree>`, both
+exported from `stream-chat`), so move whatever you passed there under `client`, or drop the `config`
+wrapper if you used one.
+
+`client.persistUserOnConnectionFailure` is no longer a field, so assigning it does nothing. `<Chat>`
+already writes it from `enableOfflineSupport`. To set it yourself, use
+`client.config.setConfig('client', { persistUserOnConnectionFailure: true })`.
+
 ---
 
 # Part J — `ChannelList` & `ChannelManager` (orchestrator)
@@ -1546,7 +1582,7 @@ const client = new StreamChat(apiKey, { recoverStateOnReconnect: false });
 
 // After (v10) — at construction
 const client = new StreamChat(apiKey, {
-  config: { client: { connectionRecovery: { enabled: false } } },
+  client: { connectionRecovery: { enabled: false } },
 });
 
 // After (v10) — at any point afterwards; read when a recovery actually runs, so it takes effect
@@ -2157,7 +2193,7 @@ all:
 client.config.set({ messageComposer: { attachments: { pendingUploadsEnabled: false } } });
 // or at construction
 new StreamChat(apiKey, {
-  config: { messageComposer: { attachments: { pendingUploadsEnabled: false } } },
+  messageComposer: { attachments: { pendingUploadsEnabled: false } },
 });
 ```
 
