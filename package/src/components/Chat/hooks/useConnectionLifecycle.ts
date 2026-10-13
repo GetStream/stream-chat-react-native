@@ -94,7 +94,7 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
  *
  * ```ts
  * new StreamChat(apiKey, {
- *   config: { client: { networkConnection: { statusReporter: netInfoStatusReporter } } },
+ *   client: { networkConnection: { statusReporter: netInfoStatusReporter } },
  * });
  * ```
  *

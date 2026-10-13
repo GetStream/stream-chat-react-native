@@ -234,7 +234,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
         version,
       };
       client.deviceIdentifier = { os: `${Platform.OS} ${Platform.Version}` };
-      client.persistUserOnConnectionFailure = enableOfflineSupport;
+      client.config.setConfig('client', { persistUserOnConnectionFailure: enableOfflineSupport });
     }
   }, [client, enableOfflineSupport]);
 
