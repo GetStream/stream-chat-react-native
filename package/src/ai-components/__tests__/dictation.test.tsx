@@ -37,6 +37,9 @@ const renderComposer = () =>
 describe('ai-components dictation', () => {
   afterEach(() => {
     mockNativeModule = null;
+    act(() => {
+      aiComponents.dictationStoreApi.reset();
+    });
   });
 
   describe('when the native module is not compiled in', () => {
@@ -108,6 +111,36 @@ describe('ai-components dictation', () => {
       // Once dictation finishes with text in the input, the send button replaces the mic.
       expect(screen.getByTestId('send-up')).toBeTruthy();
       expect(nativeModule.cancel).toHaveBeenCalled();
+    });
+
+    it('applies a final result that arrives after the recognizer stopped listening', async () => {
+      mockNativeModule = createNativeModule();
+      renderComposer();
+
+      await act(async () => {
+        fireEvent.press(screen.UNSAFE_getByProps({ fill: '#7A7A7A' }));
+        await flushPromises();
+      });
+      // Some recognizers (e.g. the Android emulator) send no interim results, only a final one
+      // after `stopping`.
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'listening' });
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'stopping' });
+        DeviceEventEmitter.emit('AIDictationOnResult', { isFinal: true, text: 'test test' });
+      });
+
+      expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('test test');
+    });
+
+    it('does not restore the transcript of an earlier dictation when the input mounts', () => {
+      mockNativeModule = createNativeModule();
+      act(() => {
+        aiComponents.dictationStore.partialNext({ transcript: 'an earlier dictation' });
+      });
+
+      renderComposer();
+
+      expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('');
     });
 
     it('stores native errors', async () => {

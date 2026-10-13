@@ -64,6 +64,8 @@ class AIDictationController(
     private var silenceTimeoutMs: Long = DEFAULT_SILENCE_TIMEOUT_MS
     private var lastSpeechTimeMs: Long = 0L
 
+    private var isSpeechInProgress: Boolean = false
+
     private var silenceRunnable: Runnable? = null
 
     /** Called from the owning module's `initialize()`. */
@@ -144,12 +146,13 @@ class AIDictationController(
                         RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
                     )
                     putExtra(RecognizerIntent.EXTRA_LANGUAGE, currentLocale.toLanguageTag())
-                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, interimResultsEnabled)
+                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
                     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
                     putExtra(RecognizerIntent.EXTRA_PROMPT, "Listening...")
                 }
 
                 lastSpeechTimeMs = System.currentTimeMillis()
+                isSpeechInProgress = false
                 isListening.set(true)
                 emitState(STATE_LISTENING)
 
@@ -302,8 +305,11 @@ class AIDictationController(
      *   ([interimResultsEnabled] == true)
      *   - Will try to extract the best segmented transcript
      *
-     * - All other callbacks ([onReadyForSpeech], [onBeginningOfSpeech], [onRmsChanged],
-     *   [onBufferReceived], [onEndOfSpeech], [onEvent]) are currently treated as no-ops
+     * - [RecognitionListener.onBeginningOfSpeech] / [RecognitionListener.onEndOfSpeech]:
+     *   - Mark speech as in progress, which keeps the silence monitor from stopping the session
+     *
+     * - All other callbacks ([onReadyForSpeech], [onRmsChanged], [onBufferReceived], [onEvent])
+     *   are currently treated as no-ops
      *
      * This method should be called before starting a new dictation session to ensure
      * that a configured [SpeechRecognizer] instance is available.
@@ -317,10 +323,18 @@ class AIDictationController(
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(reactContext).apply {
             setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) = Unit
-                override fun onBeginningOfSpeech() = Unit
+                override fun onBeginningOfSpeech() {
+                    isSpeechInProgress = true
+                    lastSpeechTimeMs = System.currentTimeMillis()
+                }
+
                 override fun onRmsChanged(rmsdB: Float) = Unit
                 override fun onBufferReceived(buffer: ByteArray?) = Unit
-                override fun onEndOfSpeech() = Unit
+
+                override fun onEndOfSpeech() {
+                    isSpeechInProgress = false
+                    lastSpeechTimeMs = System.currentTimeMillis()
+                }
 
                 override fun onError(error: Int) {
                     stopSilenceMonitor()
@@ -345,8 +359,6 @@ class AIDictationController(
                 }
 
                 override fun onPartialResults(partialResults: Bundle?) {
-                    if (!interimResultsEnabled) return
-
                     val text = partialResults
                         ?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         ?.firstOrNull()
@@ -354,7 +366,9 @@ class AIDictationController(
 
                     if (text.isNotBlank()) {
                         lastSpeechTimeMs = System.currentTimeMillis()
-                        emitResult(text, false)
+                        if (interimResultsEnabled) {
+                            emitResult(text, false)
+                        }
                     }
                 }
 
@@ -402,6 +416,7 @@ class AIDictationController(
      *
      * Periodically checks the time since the last speech activity and if the
      * elapsed time exceeds [silenceTimeoutMs] while still listening, calls [stop].
+     * Never stops while the recognizer reports speech in progress.
      */
     private fun startSilenceMonitor() {
         stopSilenceMonitor()
@@ -411,7 +426,7 @@ class AIDictationController(
                 if (!isListening.get()) return
 
                 val elapsed = System.currentTimeMillis() - lastSpeechTimeMs
-                if (elapsed >= silenceTimeoutMs) {
+                if (!isSpeechInProgress && elapsed >= silenceTimeoutMs) {
                     stop()
                     return
                 }

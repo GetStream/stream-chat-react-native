@@ -288,7 +288,9 @@ public class AIDictationModule: NSObject {
         recognitionTask = nil
 
         let request = SFSpeechAudioBufferRecognitionRequest()
-        request.shouldReportPartialResults = interimResultsEnabled
+        // Always requested: partial results also drive the silence monitor. They are only
+        // forwarded to JS when `interimResults` is enabled.
+        request.shouldReportPartialResults = true
         recognitionRequest = request
 
         let inputNode = audioEngine.inputNode
@@ -316,7 +318,9 @@ public class AIDictationModule: NSObject {
                 let text = result.bestTranscription.formattedString
                 if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     self.lastSpeechTimeMs = self.currentTimeMs()
-                    self.emitResult(text: text, isFinal: result.isFinal)
+                    if result.isFinal || self.interimResultsEnabled {
+                        self.emitResult(text: text, isFinal: result.isFinal)
+                    }
                 }
 
                 if result.isFinal {

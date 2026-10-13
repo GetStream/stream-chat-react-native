@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
@@ -104,9 +104,12 @@ export const AIMessageInput = () => {
   const { text } = useComposerText();
   const { transcript } = useDictationTranscript();
   const { setText } = useMessageComposerContext();
+  const previousTranscript = useRef(transcript);
 
   useEffect(() => {
-    if (isRecording && !error) {
+    const transcriptChanged = transcript !== previousTranscript.current;
+    previousTranscript.current = transcript;
+    if (!error && (isRecording || transcriptChanged)) {
       setText(transcript);
     }
   }, [isRecording, transcript, error, setText]);
