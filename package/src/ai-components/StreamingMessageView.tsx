@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { generateMarkdownText } from './markdown';
-import { Markdown } from './markdown';
-import type { MarkdownRules } from './markdown';
+
 import { Linking } from 'react-native';
 
 import { useStableCallback } from './internal/hooks/useStableCallback';
+import { generateMarkdownText } from './markdown';
+import { Markdown } from './markdown';
+import type { MarkdownRules } from './markdown';
 
 export type UseStreamingMessageProps = {
   text: string;
@@ -30,11 +31,8 @@ export const useStreamingMessage = ({
       const newText = text.substring(0, newCursorValue);
       textCursor.current += newText.length - textCursor.current;
       const codeBlockCounts = (newText.match(/```/g) || []).length;
-      const shouldOptimisticallyCloseCodeBlock =
-        codeBlockCounts > 0 && codeBlockCounts % 2 > 0;
-      setStreamedMessageText(
-        shouldOptimisticallyCloseCodeBlock ? newText + '```' : newText,
-      );
+      const shouldOptimisticallyCloseCodeBlock = codeBlockCounts > 0 && codeBlockCounts % 2 > 0;
+      setStreamedMessageText(shouldOptimisticallyCloseCodeBlock ? newText + '```' : newText);
     }, letterInterval);
 
     return () => {
@@ -68,20 +66,19 @@ export const StreamingMessageView = ({
     renderingLetterCount,
   });
 
-  const onLink = useStableCallback((url: string) =>
+  const onLink = useStableCallback((url: string): void | Promise<void> =>
     onLinkParam
       ? onLinkParam(url)
-      : Linking.canOpenURL(url).then(
-          (canOpenUrl) => canOpenUrl && Linking.openURL(url),
-        ),
+      : Linking.canOpenURL(url).then((canOpenUrl) => {
+          if (canOpenUrl) {
+            return Linking.openURL(url);
+          }
+          return undefined;
+        }),
   );
 
   return (
-    <Markdown
-      rules={rules}
-      onLink={onLink}
-      paragraphNumberOfLines={paragraphNumberOfLines}
-    >
+    <Markdown rules={rules} onLink={onLink} paragraphNumberOfLines={paragraphNumberOfLines}>
       {streamedMessageText}
     </Markdown>
   );

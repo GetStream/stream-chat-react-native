@@ -62,6 +62,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
 - `icons/` — SVG icon components
 - `mock-builders/` — test fixtures and fakes (also aliased as `mock-builders` in Jest)
 - `native.ts` — native-capability interfaces + `registerNativeHandlers()`
+- `ai-components/` — the AI components (markdown, syntax highlighting, charts, AI composer, dictation), published as the separate entry point `stream-chat-react-native/ai-components` (`stream-chat-expo/ai-components`). See [AI components entry point](#ai-components-entry-point).
 
 Use the closest folder's patterns and conventions when editing.
 
@@ -97,6 +98,7 @@ cd package && yarn test:typecheck                     # SDK src + tests + mock-b
 # Lint / format
 yarn lint                     # prettier --list-different + eslint --max-warnings 0 + validate-translations
 yarn lint-fix                 # ALWAYS run this before committing
+yarn workspace stream-chat-react-native-core validate-entry-isolation   # main and ai-components entry points stay apart (part of yarn lint)
 yarn eslint <path>            # eslint a single path
 
 # Translations
@@ -184,6 +186,17 @@ Both wrappers are thin. They:
 3. re-export everything: `export * from 'stream-chat-react-native-core'`
 
 Native code shared by both wrappers lives in `package/shared-native/{ios,android}` and is copied into each wrapper by `shared-native:sync`. **Edit `shared-native/`, never the synced copies.**
+
+### AI components entry point
+
+`package/src/ai-components/` (ported 1:1 from the deprecated `@stream-io/chat-react-native-ai`) is reachable only through the `ai-components` subpath, implemented as physical folders (`package/ai-components/package.json`, `package/{native,expo}-package/ai-components/`) rather than an `exports` map, which would break deep imports. Metro does not tree-shake, so `bin/validate-entry-isolation.js` (run by `yarn lint`) enforces both directions:
+
+- the main entry points must never reach `src/ai-components` or its dependencies (`react-syntax-highlighter`, `@khanacademy/simple-markdown`, `@stream-io/state-store`, `zod`, `victory-native`, Skia);
+- the AI entry points may only reach `src/ai-components` plus an explicit allowlist (`src/native.ts`, the native shimmer). The wrappers' `ai-components/index.js` registers the native pieces the AI code needs itself and must never import the wrappers' `src/index.js`.
+
+Do not add AI slots to `DEFAULT_COMPONENTS`; core `require`s the defaults, which would break isolation. Skia and `victory-native` are optional peers (native libraries must be owned by the app); the JS-only AI dependencies are regular dependencies.
+
+Native pieces live in `package/shared-native/`: the Android-only `PerfText` Fabric view (Kotlin plus a C++ shadow node in `shared-native/android/jni`, built through each wrapper's `android/src/main/jni/CMakeLists.txt`, registered with `cmakeListsPath`/`componentDescriptors` in `react-native.config.js`) and the `AIDictation` TurboModule. **The iOS dictation sources are excluded from the pod unless the app opts in** (`$StreamChatEnableDictation = true` in the Podfile, or the `stream-chat-expo` config plugin in `package/expo-package/plugin`), because referencing the Speech framework makes App Store Connect demand a speech recognition usage description from every app. Never declare `RECORD_AUDIO` in a library manifest. The dictation codegen spec is duplicated into each wrapper's `src/native/` (codegen only reads a package's own `jsSrcsDir`); the isolation check keeps the copies identical.
 
 ## Critical architectural patterns
 

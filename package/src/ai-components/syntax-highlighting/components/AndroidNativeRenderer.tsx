@@ -1,6 +1,7 @@
-import { flattenRowsToTextAndColorRanges } from '../utils';
-import { PerfText } from '../../components';
 import React from 'react';
+
+import { PerfText } from '../../components';
+import { flattenRowsToTextAndColorRanges } from '../utils';
 
 export const AndroidNativeRenderer = ({
   rows,
@@ -24,12 +25,5 @@ export const AndroidNativeRenderer = ({
     fontSize,
   });
 
-  return (
-    <PerfText
-      text={text}
-      ranges={ranges}
-      lineHeight={lineHeight}
-      fontSize={fontSize}
-    />
-  );
+  return <PerfText text={text} ranges={ranges} lineHeight={lineHeight} fontSize={fontSize} />;
 };

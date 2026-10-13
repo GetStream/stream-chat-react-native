@@ -1,26 +1,28 @@
 import React, { useEffect, useMemo } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
-import { BottomSheet } from '../components/BottomSheet';
-import { BottomSheetContent } from './ActionSheet';
 
 import Animated, { LinearTransition } from 'react-native-reanimated';
+
+import type { StateStore } from '@stream-io/state-store';
+
+import { ActionButton } from './ActionButton';
+import { BottomSheetContent } from './ActionSheet';
+
+import { AttachmentButton } from './AttachmentButton';
+
+import { MediaPreviewList } from './MediaPreviewList';
+
+import { BottomSheet } from '../components/BottomSheet';
+
+import { ComposerProvider, useMessageComposerContext, useTheme } from '../contexts';
 import type {
   AbstractMediaPickerService,
   MediaPickerState,
 } from '../services/media-picker-service/AbstractMediaPickerService';
+import { useComposerText } from '../store';
+import type { ComposerState } from '../store';
 import { useDictationState } from '../store/dictation/useDictationState';
 import { useDictationTranscript } from '../store/dictation/useDictationTranscript';
-import { AttachmentButton } from './AttachmentButton';
-import { ActionButton } from './ActionButton';
-import { MediaPreviewList } from './MediaPreviewList';
-import {
-  ComposerProvider,
-  useMessageComposerContext,
-  useTheme,
-} from '../contexts';
-import { useComposerText } from '../store';
-import type { StateStore } from '@stream-io/state-store';
-import type { ComposerState } from '../store';
 
 export type BottomSheetOption = {
   title: string;
@@ -75,10 +77,7 @@ export const ComposerViewUI = ({
           <MediaPreviewList />
           <View style={[styles.inputPill, inputPill]}>
             <AIMessageInput />
-            <ActionButton
-              isGenerating={isGenerating}
-              stopGenerating={stopGenerating}
-            />
+            <ActionButton isGenerating={isGenerating} stopGenerating={stopGenerating} />
           </View>
         </Animated.View>
       </View>

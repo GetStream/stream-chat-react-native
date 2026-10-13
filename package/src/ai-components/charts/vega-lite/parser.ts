@@ -1,4 +1,5 @@
 import type { VegaLite } from './schema';
+
 import type { ChartSpec, Datum } from '../types';
 import { colorFromLabel } from '../utils';
 
@@ -31,10 +32,7 @@ export const parseVegalite = (spec: VegaLite): ChartSpec => {
 
   const data = (spec.data?.values ?? [])
     .map((d) => {
-      const xv =
-        xIsTime && typeof d[xField] === 'string'
-          ? new Date(d[xField])
-          : d[xField];
+      const xv = xIsTime && typeof d[xField] === 'string' ? new Date(d[xField]) : d[xField];
       const yv = Number(d[yField]);
       if (!Number.isFinite(yv)) return null;
       const c = color?.field ? String(d[color.field]) : undefined;

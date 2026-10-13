@@ -1,10 +1,12 @@
 import React, { type PropsWithChildren, useMemo, useState } from 'react';
-import type { AbstractMediaPickerService } from '../services/media-picker-service/AbstractMediaPickerService';
-import { type ComposerState, createNewComposerStore } from '../store';
-import { MediaPickerService } from '../services';
+
 import type { StateStore } from '@stream-io/state-store';
+
 import { useStableCallback } from '../internal/hooks/useStableCallback';
 import type { ComposerViewProps } from '../message-composer';
+import { MediaPickerService } from '../services';
+import type { AbstractMediaPickerService } from '../services/media-picker-service/AbstractMediaPickerService';
+import { type ComposerState, createNewComposerStore } from '../store';
 
 export type ComposerContext = {
   state: StateStore<ComposerState>;
@@ -17,9 +19,7 @@ export type ComposerContextProps = PropsWithChildren<
   Pick<ComposerViewProps, 'onSendMessage' | 'mediaPickerService' | 'state'>
 >;
 
-export const ComposerContext = React.createContext<ComposerContext | undefined>(
-  undefined,
-);
+export const ComposerContext = React.createContext<ComposerContext | undefined>(undefined);
 
 export const ComposerProvider = ({
   onSendMessage,
@@ -28,15 +28,11 @@ export const ComposerProvider = ({
   children,
 }: ComposerContextProps) => {
   const [mediaPickerService] = useState(
-    () =>
-      mediaPickerServiceOverride ??
-      (MediaPickerService ? new MediaPickerService() : undefined),
+    () => mediaPickerServiceOverride ?? (MediaPickerService ? new MediaPickerService() : undefined),
   );
   const [state] = useState(() => stateOverride ?? createNewComposerStore());
 
-  const setText = useStableCallback((text: string) =>
-    state.partialNext({ text }),
-  );
+  const setText = useStableCallback((text: string) => state.partialNext({ text }));
 
   const clearState = useStableCallback(() => {
     setText('');
@@ -62,11 +58,7 @@ export const ComposerProvider = ({
     [state, mediaPickerService, setText, sendMessage, clearState],
   );
 
-  return (
-    <ComposerContext.Provider value={contextValue}>
-      {children}
-    </ComposerContext.Provider>
-  );
+  return <ComposerContext.Provider value={contextValue}>{children}</ComposerContext.Provider>;
 };
 
 export const useMessageComposerContext = () => {

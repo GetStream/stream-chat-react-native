@@ -1,17 +1,17 @@
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { SendUp } from '../internal/icons/SendUp';
 import React, { useMemo } from 'react';
-import {
-  dictationStore,
-  type DictationStoreState,
-  useComposerHasText,
-} from '../store';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+
 import { useStateStore } from '@stream-io/state-store/react-bindings';
-import { useMessageComposerContext, useTheme } from '../contexts';
+
 import type { ComposerViewProps } from './ComposerView';
-import { CircleStop } from '../internal/icons/CircleStop';
+
 import { SpeechToTextButton } from './SpeechToTextButton';
+
+import { useMessageComposerContext, useTheme } from '../contexts';
+import { CircleStop } from '../internal/icons/CircleStop';
+import { SendUp } from '../internal/icons/SendUp';
+import { dictationStore, type DictationStoreState, useComposerHasText } from '../store';
 
 const selector = ({ isRecording }: DictationStoreState) => ({
   isRecording,
@@ -39,10 +39,7 @@ export const ActionButton = ({
         entering={ZoomIn.duration(250)}
         exiting={ZoomOut.duration(250)}
       >
-        <Pressable
-          style={[styles.iconButton, iconButton]}
-          onPress={stopGenerating}
-        >
+        <Pressable style={[styles.iconButton, iconButton]} onPress={stopGenerating}>
           <View style={[styles.stopGeneratingIcon, stopGeneratingIcon]}>
             <CircleStop fill={black} size={32} />
           </View>

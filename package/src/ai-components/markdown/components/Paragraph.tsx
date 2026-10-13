@@ -1,7 +1,9 @@
-import { Text, type TextStyle, View } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
-import { size, some } from 'lodash';
 import { useMemo } from 'react';
+import { Text, type TextStyle, View } from 'react-native';
+
+import { size, some } from 'lodash';
+
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const Paragraph = ({
   children,
@@ -21,13 +23,7 @@ export const Paragraph = ({
     }
 
     return style;
-  }, [
-    node.content,
-    state.withinList,
-    styles.paragraph,
-    styles.paragraphCenter,
-    styles.noMargin,
-  ]);
+  }, [node.content, state.withinList, styles.paragraph, styles.paragraphCenter, styles.noMargin]);
 
   return (
     <Text style={paragraphStyle} numberOfLines={paragraphNumberOfLines}>
@@ -36,10 +32,7 @@ export const Paragraph = ({
   );
 };
 
-export const ParagraphWithImage = ({
-  children,
-  styles,
-}: MarkdownComponentProps) => (
+export const ParagraphWithImage = ({ children, styles }: MarkdownComponentProps) => (
   <View style={styles.paragraphWithImage}>{children}</View>
 );
 
@@ -54,13 +47,7 @@ export const renderParagraph: RuleRenderFunction = ({
     state.withinParagraphWithImage = true;
 
     return (
-      <ParagraphWithImage
-        key={state.key}
-        node={node}
-        output={output}
-        state={state}
-        styles={styles}
-      >
+      <ParagraphWithImage key={state.key} node={node} output={output} state={state} styles={styles}>
         {output(node.content, state)}
       </ParagraphWithImage>
     );

@@ -1,5 +1,5 @@
-import { parseVegalite, VegaLiteSchema } from '../vega-lite';
 import type { ChartSpec } from '../types';
+import { parseVegalite, VegaLiteSchema } from '../vega-lite';
 
 export const parseJsonChart = (code: string): ChartSpec => {
   const json = JSON.parse(code);

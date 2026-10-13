@@ -1,8 +1,7 @@
 import React from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
-import PerfTextNative, {
-  type ColorRange as NativeColorRange,
-} from '../native-specs/PerfTextNativeComponent';
+
+import { NativeHandlers } from '../../native';
 import type { ColorRange } from '../syntax-highlighting';
 
 export type PerfTextProps = {
@@ -14,19 +13,20 @@ export type PerfTextProps = {
   lineHeight?: number;
 };
 
-export const PerfText = ({
-  style,
-  fontSize,
-  lineHeight,
-  ranges,
-  text,
-}: PerfTextProps) => (
-  <PerfTextNative
-    style={style}
-    text={text}
-    colorRanges={ranges as NativeColorRange[]}
-    fontFamily={'monospace'}
-    fontSize={fontSize}
-    lineHeight={lineHeight}
-  />
-);
+export const PerfText = ({ style, fontSize, lineHeight, ranges, text }: PerfTextProps) => {
+  const PerfTextNative = NativeHandlers.PerfText;
+  if (!PerfTextNative) {
+    return null;
+  }
+
+  return (
+    <PerfTextNative
+      style={style}
+      text={text}
+      colorRanges={ranges as { color: number; end: number; start: number }[]}
+      fontFamily={'monospace'}
+      fontSize={fontSize}
+      lineHeight={lineHeight}
+    />
+  );
+};

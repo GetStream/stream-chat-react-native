@@ -1,0 +1,6 @@
+{
+  "main": "../lib/commonjs/ai-components/index.js",
+  "module": "../lib/module/ai-components/index.js",
+  "react-native": "../src/ai-components/index.ts",
+  "types": "../lib/typescript/ai-components/index.d.ts"
+}

@@ -1,4 +1,5 @@
 import { Text } from 'react-native';
+
 import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const Url = ({ children, styles, onPress }: MarkdownComponentProps) => (
@@ -7,13 +8,7 @@ export const Url = ({ children, styles, onPress }: MarkdownComponentProps) => (
   </Text>
 );
 
-export const renderUrl: RuleRenderFunction = ({
-  node,
-  output,
-  state,
-  styles,
-  onLink,
-}) => {
+export const renderUrl: RuleRenderFunction = ({ node, output, state, styles, onLink }) => {
   state.withinLink = true;
   const onLinkPress = () => onLink && onLink(node.target);
   return (

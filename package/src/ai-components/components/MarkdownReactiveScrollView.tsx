@@ -1,12 +1,8 @@
 import { type PropsWithChildren, useMemo } from 'react';
-import Animated, {
-  clamp,
-  scrollTo,
-  useAnimatedRef,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { clamp, scrollTo, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
+
 import { useStableCallback } from '../internal/hooks/useStableCallback';
 
 export const MarkdownReactiveScrollView = ({ children }: PropsWithChildren) => {
@@ -28,12 +24,8 @@ export const MarkdownReactiveScrollView = ({ children }: PropsWithChildren) => {
             return;
           }
 
-          const xDiff = Math.abs(
-            event.changedTouches[0]!.x - touchStart.value.x,
-          );
-          const yDiff = Math.abs(
-            event.changedTouches[0]!.y - touchStart.value.y,
-          );
+          const xDiff = Math.abs(event.changedTouches[0]!.x - touchStart.value.x);
+          const yDiff = Math.abs(event.changedTouches[0]!.y - touchStart.value.y);
           const isHorizontalPanning = xDiff > yDiff;
 
           if (isHorizontalPanning) {
@@ -45,12 +37,7 @@ export const MarkdownReactiveScrollView = ({ children }: PropsWithChildren) => {
         .onUpdate((event) => {
           const { translationX } = event;
 
-          scrollTo(
-            scrollViewRef,
-            offsetBeforeScroll.value - translationX,
-            0,
-            false,
-          );
+          scrollTo(scrollViewRef, offsetBeforeScroll.value - translationX, 0, false);
         })
         .onEnd((event) => {
           const { translationX } = event;
@@ -67,13 +54,7 @@ export const MarkdownReactiveScrollView = ({ children }: PropsWithChildren) => {
 
           scrollTo(scrollViewRef, finalPosition, 0, true);
         }),
-    [
-      contentWidth,
-      offsetBeforeScroll,
-      scrollViewRef,
-      touchStart,
-      visibleContentWidth,
-    ],
+    [contentWidth, offsetBeforeScroll, scrollViewRef, touchStart, visibleContentWidth],
   );
 
   const onContentSizeChange = useStableCallback((width: number) => {

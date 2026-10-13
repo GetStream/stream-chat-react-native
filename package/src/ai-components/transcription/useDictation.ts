@@ -1,13 +1,12 @@
 import { useCallback, useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { AIDictation } from '../native/AIDictation';
-import type {
-  DictationResult,
-  DictationStartOptions,
-} from '../native-specs/NativeAIDictation';
-import { useStableCallback } from '../internal/hooks/useStableCallback';
-import { dictationStore, type DictationStoreState } from '../store';
+
 import { useStateStore } from '@stream-io/state-store/react-bindings';
+
+import { useStableCallback } from '../internal/hooks/useStableCallback';
+import { AIDictation } from '../native/AIDictation';
+import type { DictationResult, DictationStartOptions } from '../native-specs/NativeAIDictation';
+import { dictationStore, type DictationStoreState } from '../store';
 
 const DEFAULT_OPTIONS = {
   language: 'en-US',
@@ -18,9 +17,7 @@ const DEFAULT_OPTIONS = {
 const ensureAndroidRecordingPermissions = async (): Promise<boolean> => {
   if (Platform.OS !== 'android') return true;
 
-  const granted = await PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  );
+  const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
 
   return granted === PermissionsAndroid.RESULTS.GRANTED;
 };
@@ -30,20 +27,16 @@ const selector = ({ isRecording }: DictationStoreState) => ({
 });
 
 // TODO: add proper jsdocs
-export const useDictation = (
-  defaultOptions: DictationStartOptions = DEFAULT_OPTIONS,
-) => {
+export const useDictation = (defaultOptions: DictationStartOptions = DEFAULT_OPTIONS) => {
   const { isRecording } = useStateStore(dictationStore, selector);
 
   useEffect(() => {
-    const unsubscribeResult = AIDictation.addResultListener(
-      (result: DictationResult) => {
-        dictationStore.partialNext({
-          transcript: result.text,
-          ...(result.isFinal ? { isRecording: false, state: 'idle' } : {}),
-        });
-      },
-    );
+    const unsubscribeResult = AIDictation.addResultListener((result: DictationResult) => {
+      dictationStore.partialNext({
+        transcript: result.text,
+        ...(result.isFinal ? { isRecording: false, state: 'idle' } : {}),
+      });
+    });
 
     const unsubscribeState = AIDictation.addStateListener(({ state: next }) => {
       dictationStore.partialNext({

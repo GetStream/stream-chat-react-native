@@ -1,8 +1,10 @@
-import type { SyntaxHighlighterStylesheet } from '../types';
+import { processColor } from 'react-native';
+
 // @ts-expect-error createStyleObject is not available in the type exports, it is still exported though
 import { createStyleObject } from 'react-syntax-highlighter/dist/esm/create-element';
-import { processColor } from 'react-native';
+
 import type { ColorRange } from '../SyntaxHighlighter';
+import type { SyntaxHighlighterStylesheet } from '../types';
 
 type FlattenOptions = {
   nodes: rendererNode | rendererNode[];
@@ -20,15 +22,11 @@ export const flattenNodesToTextAndColorRanges = ({
   fontSize = 13,
 }: FlattenOptions): { text: string; ranges: ColorRange[] } => {
   let text = '';
-  const rawRanges: { start: number; end: number; color: string | number }[] =
-    [];
+  const rawRanges: { start: number; end: number; color: string | number }[] = [];
 
   const startingStyle = { fontFamily, fontSize };
 
-  const walk = (
-    node: rendererNode | null | undefined,
-    inheritedColor: string | number,
-  ) => {
+  const walk = (node: rendererNode | null | undefined, inheritedColor: string | number) => {
     if (!node) return;
 
     const { type, tagName, value, properties } = node;
@@ -53,11 +51,7 @@ export const flattenNodesToTextAndColorRanges = ({
         properties && properties.className
           ? createStyleObject(
               properties.className,
-              Object.assign(
-                { color: defaultColor },
-                properties.style,
-                startingStyle,
-              ),
+              Object.assign({ color: defaultColor }, properties.style, startingStyle),
               stylesheet,
             )
           : { ...startingStyle, color: defaultColor };
@@ -66,7 +60,7 @@ export const flattenNodesToTextAndColorRanges = ({
       // if present and finally the block's default color if all else
       // fails.
       const effectiveColor =
-        (baseStyle as any).color ?? inheritedColor ?? defaultColor;
+        (baseStyle as { color?: string | number }).color ?? inheritedColor ?? defaultColor;
 
       const children = node.children || [];
       const childArray = Array.isArray(children) ? children : [children];

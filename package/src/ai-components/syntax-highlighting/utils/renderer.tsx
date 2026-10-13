@@ -1,16 +1,20 @@
+import React from 'react';
+import { Platform, Text } from 'react-native';
+
+import type { SyntaxHighlighterProps } from 'react-syntax-highlighter';
+
+// @ts-expect-error createStyleObject is not available in the type exports, it is still exported though
+import { createStyleObject } from 'react-syntax-highlighter/dist/esm/create-element';
+
+import { cssToRNTextStyle } from './converter';
+
+import { AndroidNativeRenderer } from '../components';
 import type {
   NativeSyntaxHighlighterProps,
   RNSheet,
   RNStyle,
   SyntaxHighlighterStylesheet,
 } from '../types';
-import { cssToRNTextStyle } from './converter';
-import { Platform, Text } from 'react-native';
-// @ts-expect-error createStyleObject is not available in the type exports, it is still exported though
-import { createStyleObject } from 'react-syntax-highlighter/dist/esm/create-element';
-import type { SyntaxHighlighterProps } from 'react-syntax-highlighter';
-import { AndroidNativeRenderer } from '../components';
-import React from 'react';
 
 export const DEFAULT_FONT_SIZE = 13;
 
@@ -34,9 +38,7 @@ export const generateNewStylesheet = ({
   );
 
   const topLevel = (
-    highlighter === 'prism'
-      ? transformedStyle['pre[class*="language-"]']
-      : transformedStyle.hljs
+    highlighter === 'prism' ? transformedStyle['pre[class*="language-"]'] : transformedStyle.hljs
   ) as RNStyle;
 
   const defaultColor = (topLevel && topLevel.color) || '#000';
@@ -88,10 +90,7 @@ export const createNativeElement = ({
   const startingStyle = { fontFamily, fontSize };
   if (type === 'text') {
     return (
-      <Text
-        key={key}
-        style={Object.assign({ color: defaultColor }, startingStyle)}
-      >
+      <Text key={key} style={Object.assign({ color: defaultColor }, startingStyle)}>
         {value}
       </Text>
     );
@@ -104,24 +103,18 @@ export const createNativeElement = ({
     const style = properties
       ? createStyleObject(
           properties.className,
-          Object.assign(
-            { color: defaultColor },
-            properties.style,
-            startingStyle,
-          ),
+          Object.assign({ color: defaultColor }, properties.style, startingStyle),
           stylesheet,
         )
       : {};
-    const children = childrenFactory(
-      node.children,
-      style.color || defaultColor,
-    );
+    const children = childrenFactory(node.children, style.color || defaultColor);
     return (
       <Text key={key} style={style}>
         {children}
       </Text>
     );
   }
+  return null;
 };
 
 export const nativeRenderer = ({

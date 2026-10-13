@@ -11,13 +11,6 @@ import type {
 } from '@khanacademy/simple-markdown';
 import SimpleMarkdown from '@khanacademy/simple-markdown';
 
-import type {
-  MarkdownOptions,
-  MarkdownState,
-  MarkdownStyle,
-  RuleRenderFunction,
-  RuleRenderFunctionEnrichedProps,
-} from './types';
 import {
   renderAutolink,
   renderBlockQuote,
@@ -38,6 +31,13 @@ import {
   renderText,
   renderUrl,
 } from './components';
+import type {
+  MarkdownOptions,
+  MarkdownState,
+  MarkdownStyle,
+  RuleRenderFunction,
+  RuleRenderFunctionEnrichedProps,
+} from './types';
 
 const LINK_INSIDE = '(?:\\[(?:\\\\.|[^\\\\\\[\\]])*\\]|\\\\.|[^\\[\\]\\\\])*';
 /**
@@ -52,9 +52,7 @@ const LINK_HREF_AND_TITLE =
   '|\\(((?:\\\\.|[^)\\\\])*)\\)' + // 4: (title)
   ')?\\s*';
 
-const LINK_REGEX = new RegExp(
-  '^\\[(' + LINK_INSIDE + ')\\]\\(' + LINK_HREF_AND_TITLE + '\\)',
-);
+const LINK_REGEX = new RegExp('^\\[(' + LINK_INSIDE + ')\\]\\(' + LINK_HREF_AND_TITLE + '\\)');
 
 export const getLocalRules = (
   styles: MarkdownStyle,
@@ -119,15 +117,8 @@ export const getLocalRules = (
   };
 
   const enrichedRenderFunction =
-    (
-      render: RuleRenderFunction,
-      options: Partial<RuleRenderFunctionEnrichedProps> = {},
-    ) =>
-    (
-      node: SingleASTNode,
-      output: Output<React.ReactNode>,
-      { ...state }: MarkdownState,
-    ) =>
+    (render: RuleRenderFunction, options: Partial<RuleRenderFunctionEnrichedProps> = {}) =>
+    (node: SingleASTNode, output: Output<React.ReactNode>, { ...state }: MarkdownState) =>
       render({ node, output, state, styles, ...options });
 
   return {

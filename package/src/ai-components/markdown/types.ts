@@ -1,3 +1,6 @@
+import type { JSX } from 'react';
+import type React from 'react';
+import { type PropsWithChildren } from 'react';
 import type {
   GestureResponderEvent,
   ImageStyle,
@@ -5,9 +8,7 @@ import type {
   TextStyle,
   ViewStyle,
 } from 'react-native';
-import type { JSX } from 'react';
-import type React from 'react';
-import { type PropsWithChildren } from 'react';
+
 import type SimpleMarkdown from '@khanacademy/simple-markdown';
 import type { Output } from '@khanacademy/simple-markdown';
 import type {
@@ -16,6 +17,7 @@ import type {
   SingleASTNode,
   State,
 } from '@khanacademy/simple-markdown';
+
 import type { DeepPartial } from '../contexts';
 
 export type LinkInfo = {
@@ -38,9 +40,7 @@ export type MarkdownProps = {
   paragraphNumberOfLines?: number;
 };
 
-export type MarkdownOptions = Partial<
-  Pick<MarkdownProps, 'onLink' | 'paragraphNumberOfLines'>
->;
+export type MarkdownOptions = Partial<Pick<MarkdownProps, 'onLink' | 'paragraphNumberOfLines'>>;
 
 export type MarkdownStyleProp = TextStyle | ViewStyle;
 
@@ -158,9 +158,6 @@ export type RuleRenderFunctionEnrichedProps = {
   paragraphNumberOfLines?: number;
 };
 
-export type RuleRenderFunctionProps = RuleOutputProps &
-  RuleRenderFunctionEnrichedProps;
+export type RuleRenderFunctionProps = RuleOutputProps & RuleRenderFunctionEnrichedProps;
 
-export type RuleRenderFunction = (
-  props: RuleRenderFunctionProps,
-) => JSX.Element;
+export type RuleRenderFunction = (props: RuleRenderFunctionProps) => JSX.Element;

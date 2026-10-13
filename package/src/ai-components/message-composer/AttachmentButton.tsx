@@ -1,7 +1,8 @@
-import { sheetStoreApi } from '../store';
-import { Pressable, StyleSheet, Text } from 'react-native';
 import React, { useMemo } from 'react';
+import { Pressable, StyleSheet, Text } from 'react-native';
+
 import { useTheme } from '../contexts';
+import { sheetStoreApi } from '../store';
 
 export const AttachmentButton = () => {
   const {
@@ -12,10 +13,7 @@ export const AttachmentButton = () => {
   const styles = useStyles();
 
   return (
-    <Pressable
-      style={[styles.roundButton, roundButton]}
-      onPress={sheetStoreApi.openSheet}
-    >
+    <Pressable style={[styles.roundButton, roundButton]} onPress={sheetStoreApi.openSheet}>
       <Text style={[styles.attachIcon, attachIcon]}>+</Text>
     </Pressable>
   );

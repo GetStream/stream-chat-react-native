@@ -1,5 +1,6 @@
-import type { MarkdownStyle } from './markdown';
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
+
+import type { MarkdownStyle } from './markdown';
 
 export const colors = {
   accent_blue: '#005FFF',

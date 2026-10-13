@@ -9,5 +9,4 @@ const DEFAULT_STATE: ComposerState = {
   text: '',
 };
 
-export const createNewComposerStore = () =>
-  new StateStore<ComposerState>(DEFAULT_STATE);
+export const createNewComposerStore = () => new StateStore<ComposerState>(DEFAULT_STATE);

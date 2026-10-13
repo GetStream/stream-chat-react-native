@@ -1,15 +1,16 @@
+import { Image, Platform } from 'react-native';
+
+import type { ImagePickerAsset } from 'expo-image-picker';
+
 import {
   AbstractMediaPickerService,
   type MediaAsset,
   type PickMediaOpts,
 } from './AbstractMediaPickerService';
-import { Image, Platform } from 'react-native';
-import type { ImagePickerAsset } from 'expo-image-picker';
 
 let internalService = undefined;
 
 try {
-  // eslint-disable-next-line
   internalService = require('expo-image-picker');
 } catch (_error) {
   /* do nothing */
@@ -25,14 +26,12 @@ class ExpoMediaPickerService extends AbstractMediaPickerService {
     try {
       let permissionGranted = true;
       if (Platform.OS === 'ios') {
-        const permissionCheck =
-          await internalService!.getMediaLibraryPermissionsAsync();
+        const permissionCheck = await internalService!.getMediaLibraryPermissionsAsync();
         const canRequest = permissionCheck.canAskAgain;
         permissionGranted = permissionCheck.granted;
         if (!permissionGranted) {
           if (canRequest) {
-            const response =
-              await internalService!.requestMediaLibraryPermissionsAsync();
+            const response = await internalService!.requestMediaLibraryPermissionsAsync();
             permissionGranted = response.granted;
           } else {
             return { askToOpenSettings: true, cancelled: true };
@@ -72,14 +71,12 @@ class ExpoMediaPickerService extends AbstractMediaPickerService {
 
   takeMedia = async ({ compressionQuality = 1 }) => {
     try {
-      const permissionCheck =
-        await internalService!.getCameraPermissionsAsync();
+      const permissionCheck = await internalService!.getCameraPermissionsAsync();
       const canRequest = permissionCheck.canAskAgain;
       let permissionGranted = permissionCheck.granted;
       if (!permissionGranted) {
         if (canRequest) {
-          const response =
-            await internalService!.requestCameraPermissionsAsync();
+          const response = await internalService!.requestCameraPermissionsAsync();
           permissionGranted = response.granted;
         } else {
           return { askToOpenSettings: true, cancelled: true };
@@ -91,12 +88,7 @@ class ExpoMediaPickerService extends AbstractMediaPickerService {
           mediaTypes: 'images',
           quality: Math.min(Math.max(0, compressionQuality), 1),
         });
-        if (
-          !result ||
-          !result.assets ||
-          !result.assets.length ||
-          result.canceled
-        ) {
+        if (!result || !result.assets || !result.assets.length || result.canceled) {
           return { cancelled: true };
         }
         // since we only support single photo upload for now we will only be focusing on 0'th element.
@@ -104,13 +96,7 @@ class ExpoMediaPickerService extends AbstractMediaPickerService {
         if (!photo) {
           return { cancelled: true };
         }
-        if (
-          photo &&
-          photo.mimeType.includes('image') &&
-          photo.height &&
-          photo.width &&
-          photo.uri
-        ) {
+        if (photo && photo.mimeType.includes('image') && photo.height && photo.width && photo.uri) {
           let size: Size = {};
           if (Platform.OS === 'android') {
             const getSize = (): Promise<Size> =>
@@ -125,10 +111,7 @@ class ExpoMediaPickerService extends AbstractMediaPickerService {
               size.height = height;
               size.width = width;
             } catch (e) {
-              console.warn(
-                'Error get image size of picture caputred from camera ',
-                e,
-              );
+              console.warn('Error get image size of picture caputred from camera ', e);
             }
           } else {
             size = {

@@ -1,6 +1,7 @@
-import { Text } from 'react-native';
-import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 import { useMemo } from 'react';
+import { Text } from 'react-native';
+
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const TextUI = ({ children, styles, state }: MarkdownComponentProps) => {
   const textStyle = useMemo(() => {
@@ -27,20 +28,9 @@ export const TextUI = ({ children, styles, state }: MarkdownComponentProps) => {
   return <Text style={textStyle}>{children}</Text>;
 };
 
-export const renderText: RuleRenderFunction = ({
-  node,
-  output,
-  state,
-  styles,
-}) => {
+export const renderText: RuleRenderFunction = ({ node, output, state, styles }) => {
   return (
-    <TextUI
-      key={state.key}
-      node={node}
-      output={output}
-      state={state}
-      styles={styles}
-    >
+    <TextUI key={state.key} node={node} output={output} state={state} styles={styles}>
       {node.content}
     </TextUI>
   );

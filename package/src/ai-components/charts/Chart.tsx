@@ -1,7 +1,7 @@
 import React from 'react';
-import type { ChartSpec } from './types';
 
 import { VictoryChart } from './components';
+import type { ChartSpec } from './types';
 
 export type ChartFromBlockProps = {
   spec: ChartSpec;

@@ -1,8 +1,6 @@
 import { StateStore } from '@stream-io/state-store';
-import type {
-  DictationError,
-  DictationStateValue,
-} from '../../native-specs/NativeAIDictation';
+
+import type { DictationError, DictationStateValue } from '../../native-specs/NativeAIDictation';
 
 export type DictationStoreState = {
   state: DictationStateValue;
@@ -18,9 +16,7 @@ const DEFAULT_STATE: DictationStoreState = {
   error: null,
 };
 
-export const dictationStore = new StateStore<DictationStoreState>(
-  DEFAULT_STATE,
-);
+export const dictationStore = new StateStore<DictationStoreState>(DEFAULT_STATE);
 
 const reset = () => dictationStore.next(DEFAULT_STATE);
 

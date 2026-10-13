@@ -8,6 +8,7 @@ export type DrawerNavigatorParamList = {
 };
 
 export type StackNavigatorParamList = {
+  AIAssistantScreen: undefined;
   ChannelFilesScreen: {
     channel: Channel;
   };

@@ -1,18 +1,5 @@
-import React, {
-  type PropsWithChildren,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Dimensions,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, { type PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -25,6 +12,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+
 import { sheetStoreApi, useBottomSheetState } from '../store';
 
 type Props = PropsWithChildren;
@@ -40,10 +28,7 @@ export function BottomSheet({ children }: Props) {
   const maxTranslateY = SCREEN_H;
   const translateY = useSharedValue(maxTranslateY);
 
-  const bottomSheetHeight = useMemo(
-    () => Math.min(height, MAX_BOTTOM_SHEET_HEIGHT),
-    [height],
-  );
+  const bottomSheetHeight = useMemo(() => Math.min(height, MAX_BOTTOM_SHEET_HEIGHT), [height]);
   const bottomSheetY = SCREEN_H - bottomSheetHeight;
 
   useEffect(() => {
@@ -92,25 +77,18 @@ export function BottomSheet({ children }: Props) {
     .onEnd((e) => {
       // very basic momentum bias
       const projected = e.translationY + e.velocityY * 0.15;
-      const nearest =
-        projected >= bottomSheetHeight * 0.5 ? maxTranslateY : bottomSheetY;
+      const nearest = projected >= bottomSheetHeight * 0.5 ? maxTranslateY : bottomSheetY;
       translateY.value = withTiming(nearest, SPRING, (finished) => {
-        if (finished && nearest === maxTranslateY)
-          runOnJS(sheetStoreApi.closeSheet)();
+        if (finished && nearest === maxTranslateY) runOnJS(sheetStoreApi.closeSheet)();
       });
     });
 
   const backdropStyle = useAnimatedStyle(() => {
     const minY = bottomSheetY;
-    const t =
-      1 -
-      Math.min(
-        1,
-        Math.max(0, (translateY.value - minY) / (maxTranslateY - minY)),
-      );
+    const t = 1 - Math.min(1, Math.max(0, (translateY.value - minY) / (maxTranslateY - minY)));
     return {
       opacity: t * BACKDROP_OPACITY,
-      pointerEvents: t > 0.02 ? 'auto' : ('none' as any),
+      pointerEvents: t > 0.02 ? ('auto' as const) : ('none' as const),
     };
   });
 
@@ -118,22 +96,14 @@ export function BottomSheet({ children }: Props) {
     transform: [{ translateY: translateY.value }],
   }));
 
-  const sheetContentStyle = useMemo(
-    () => ({ height: bottomSheetHeight }),
-    [bottomSheetHeight],
-  );
+  const sheetContentStyle = useMemo(() => ({ height: bottomSheetHeight }), [bottomSheetHeight]);
 
   return (
     <Modal visible={bottomSheetModalOpen} transparent={true}>
       <GestureHandlerRootView style={styles.gestureHandlerRootView}>
         <View style={StyleSheet.absoluteFill} pointerEvents={'box-none'}>
-          <Animated.View
-            style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}
-          >
-            <Pressable
-              style={StyleSheet.absoluteFill}
-              onPress={sheetStoreApi.closeSheet}
-            />
+          <Animated.View style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}>
+            <Pressable style={StyleSheet.absoluteFill} onPress={sheetStoreApi.closeSheet} />
           </Animated.View>
 
           <GestureDetector gesture={pan}>
@@ -145,9 +115,7 @@ export function BottomSheet({ children }: Props) {
               <View style={[styles.content, sheetContentStyle]}>
                 <View style={styles.contentContainer}>
                   {open ? (
-                    <GestureDetector gesture={nativeScroll}>
-                      {children}
-                    </GestureDetector>
+                    <GestureDetector gesture={nativeScroll}>{children}</GestureDetector>
                   ) : null}
                 </View>
               </View>

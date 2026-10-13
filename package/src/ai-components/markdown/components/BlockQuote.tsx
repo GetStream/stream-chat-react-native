@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+
 import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const BlockQuote = ({ children, styles }: MarkdownComponentProps) => (
@@ -8,21 +9,10 @@ export const BlockQuote = ({ children, styles }: MarkdownComponentProps) => (
   </View>
 );
 
-export const renderBlockQuote: RuleRenderFunction = ({
-  node,
-  output,
-  state,
-  styles,
-}) => {
+export const renderBlockQuote: RuleRenderFunction = ({ node, output, state, styles }) => {
   state.withinQuote = true;
   return (
-    <BlockQuote
-      key={state.key}
-      node={node}
-      output={output}
-      state={state}
-      styles={styles}
-    >
+    <BlockQuote key={state.key} node={node} output={output} state={state} styles={styles}>
       {output(node.content, state)}
     </BlockQuote>
   );

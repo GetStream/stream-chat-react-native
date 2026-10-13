@@ -1,20 +1,13 @@
-import type {
-  BulletProps,
-  MarkdownComponentProps,
-  RuleRenderFunction,
-} from '../types';
-import { Text, type TextProps, View, type ViewProps } from 'react-native';
-import type { SingleASTNode } from '@khanacademy/simple-markdown';
 import type { PropsWithChildren } from 'react';
+import { Text, type TextProps, View, type ViewProps } from 'react-native';
+
+import type { SingleASTNode } from '@khanacademy/simple-markdown';
+
+import type { BulletProps, MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 const parentTypes = ['text', 'paragraph', 'strong'];
 
-export const List = ({
-  node,
-  output,
-  state,
-  styles,
-}: MarkdownComponentProps) => {
+export const List = ({ node, output, state, styles }: MarkdownComponentProps) => {
   let isSublist = state.withinList;
 
   return (
@@ -27,26 +20,21 @@ export const List = ({
             <ListRow key={index} style={styles?.listRow}>
               <Bullet
                 index={node.ordered && indexAfterStart}
-                style={
-                  node.ordered ? styles?.listItemNumber : styles?.listItemBullet
-                }
+                style={node.ordered ? styles?.listItemNumber : styles?.listItemBullet}
               />
             </ListRow>
           );
         }
 
         isSublist = item.length > 1 && item[1].type === 'list';
-        const isSublistWithinText =
-          parentTypes.includes((item[0] ?? {}).type) && isSublist;
+        const isSublistWithinText = parentTypes.includes((item[0] ?? {}).type) && isSublist;
         const style = isSublistWithinText ? { marginBottom: 0 } : {};
 
         return (
           <ListRow key={index} style={styles?.listRow}>
             <Bullet
               index={node.ordered && indexAfterStart}
-              style={
-                node.ordered ? styles?.listItemNumber : styles?.listItemBullet
-              }
+              style={node.ordered ? styles?.listItemNumber : styles?.listItemBullet}
             />
             <ListItem key={1} style={[styles?.listItemText, style]}>
               {output(item, { ...state, withinList: true })}
@@ -72,17 +60,6 @@ const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (
   <Text style={style}>{children}</Text>
 );
 
-export const renderList: RuleRenderFunction = ({
-  node,
-  output,
-  state,
-  styles,
-}) => (
-  <List
-    key={`list-${state.key}`}
-    node={node}
-    output={output}
-    state={state}
-    styles={styles}
-  />
+export const renderList: RuleRenderFunction = ({ node, output, state, styles }) => (
+  <List key={`list-${state.key}`} node={node} output={output} state={state} styles={styles} />
 );

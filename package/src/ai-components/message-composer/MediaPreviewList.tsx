@@ -1,18 +1,14 @@
-import { useMediaPickerState } from '../services/media-picker-service/hooks/useMediaPickerState';
-import { Image, Pressable, ScrollView, StyleSheet } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  LinearTransition,
-} from 'react-native-reanimated';
-import { Close } from '../internal/icons/Close';
 import React, { useMemo } from 'react';
+import { Image, Pressable, ScrollView, StyleSheet } from 'react-native';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+
 import { useMessageComposerContext, useTheme } from '../contexts';
+import { Close } from '../internal/icons/Close';
+import { useMediaPickerState } from '../services/media-picker-service/hooks/useMediaPickerState';
 
 export const MediaPreviewList = () => {
   const { mediaPickerService } = useMessageComposerContext();
-  const { attachments } =
-    useMediaPickerState({ service: mediaPickerService }) ?? {};
+  const { attachments } = useMediaPickerState({ service: mediaPickerService }) ?? {};
   const {
     theme: {
       colors: { white },

@@ -1,7 +1,6 @@
 let Clipboard: { setString: (string: string) => void } | undefined;
 
 try {
-  // eslint-disable-next-line
   Clipboard = require('@react-native-clipboard/clipboard').default;
 } catch (_) {
   // do nothing

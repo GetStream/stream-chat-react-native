@@ -1,5 +1,6 @@
-import { StateStore } from '@stream-io/state-store';
 import { Keyboard } from 'react-native';
+
+import { StateStore } from '@stream-io/state-store';
 
 export type BottomSheetState = {
   open: boolean;

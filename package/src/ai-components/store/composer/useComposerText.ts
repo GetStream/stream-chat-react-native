@@ -1,5 +1,7 @@
-import { type ComposerState } from './store';
 import { useStateStore } from '@stream-io/state-store/react-bindings';
+
+import { type ComposerState } from './store';
+
 import { useMessageComposerContext } from '../../contexts';
 
 const selector = ({ text }: ComposerState) => ({

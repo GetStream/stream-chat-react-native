@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise -- FNV-1a hashing and xorshift PRNG are bitwise by definition */
 // hashing and rng
 export const hashLabel = (raw: string) => {
   const s = raw.trim().toLowerCase().normalize('NFKC');

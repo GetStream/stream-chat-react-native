@@ -14,6 +14,11 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+# Compiles in the speech-to-text dictation of `stream-chat-react-native/ai-components` (see the AI
+# Assistant screen). Apps that don't use dictation leave this out and need no speech recognition
+# usage description.
+$StreamChatEnableDictation = true
+
 target 'SampleApp' do
   config = use_native_modules!
 

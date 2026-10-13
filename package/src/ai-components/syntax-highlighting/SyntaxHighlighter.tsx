@@ -3,20 +3,14 @@ import { Platform, type ProcessedColorValue } from 'react-native';
 
 import './prism-config';
 
-import SyntaxHighlighterHljs, {
-  Prism as SyntaxHighlighterPrism,
-} from 'react-syntax-highlighter';
+import SyntaxHighlighterHljs, { Prism as SyntaxHighlighterPrism } from 'react-syntax-highlighter';
+
 import { defaultStyle } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { prism as prismDefaultStyle } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import {
-  DEFAULT_FONT_SIZE,
-  generateNewStylesheet,
-  nativeRenderer,
-} from './utils';
-import type {
-  NativeSyntaxHighlighterProps,
-  SyntaxHighlighterStylesheet,
-} from './types';
+
+import type { NativeSyntaxHighlighterProps, SyntaxHighlighterStylesheet } from './types';
+import { DEFAULT_FONT_SIZE, generateNewStylesheet, nativeRenderer } from './utils';
+
 import { MarkdownReactiveScrollView } from '../components';
 
 export type ColorRange = {
@@ -53,8 +47,7 @@ export const SyntaxHighlighter = ({
     [defaultColor, fontFamily, fontSize],
   );
 
-  const Highlighter =
-    highlighter === 'prism' ? SyntaxHighlighterPrism : SyntaxHighlighterHljs;
+  const Highlighter = highlighter === 'prism' ? SyntaxHighlighterPrism : SyntaxHighlighterHljs;
 
   return (
     <Highlighter

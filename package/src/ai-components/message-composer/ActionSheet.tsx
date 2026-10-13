@@ -1,16 +1,16 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
 import type { BottomSheetOption, ComposerViewProps } from './ComposerView';
-import { sheetStoreApi } from '../store';
+
+import { withCloseSheet } from './utils/withCloseSheet';
+
+import { useMessageComposerContext, useTheme } from '../contexts';
 import { Camera } from '../internal/icons/Camera';
 import { Picture } from '../internal/icons/Picture';
-import { withCloseSheet } from './utils/withCloseSheet';
-import { useMessageComposerContext, useTheme } from '../contexts';
+import { sheetStoreApi } from '../store';
 
-type BottomSheetContentProps = Pick<
-  ComposerViewProps,
-  'bottomSheetOptions' | 'bottomSheetInsets'
->;
+type BottomSheetContentProps = Pick<ComposerViewProps, 'bottomSheetOptions' | 'bottomSheetInsets'>;
 
 export const BottomSheetContent = ({
   bottomSheetOptions,
@@ -37,11 +37,7 @@ export const BottomSheetContent = ({
 
   return (
     <ScrollView
-      contentContainerStyle={[
-        styles.contentContainer,
-        insetStyle,
-        contentContainer,
-      ]}
+      contentContainerStyle={[styles.contentContainer, insetStyle, contentContainer]}
       showsVerticalScrollIndicator={false}
       onContentSizeChange={onContentSizeChange}
     >
@@ -78,11 +74,7 @@ type QuickActionButtonProps = {
   onPress?: () => void;
 };
 
-export const QuickActionButton = ({
-  label,
-  Icon,
-  onPress,
-}: QuickActionButtonProps) => {
+export const QuickActionButton = ({ label, Icon, onPress }: QuickActionButtonProps) => {
   const {
     theme: {
       sheet: { quickAction, quickActionLabel },
@@ -93,11 +85,7 @@ export const QuickActionButton = ({
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.quickAction,
-        quickAction,
-        pressed && styles.pressedView,
-      ]}
+      style={({ pressed }) => [styles.quickAction, quickAction, pressed && styles.pressedView]}
     >
       <Icon />
       <Text style={[styles.quickActionLabel, quickActionLabel]}>{label}</Text>
@@ -122,11 +110,7 @@ export const ListItem = ({ option }: ListItemProps) => {
   return (
     <Pressable
       onPress={withCloseSheet(action)}
-      style={({ pressed }) => [
-        styles.listItem,
-        listItem,
-        pressed && styles.pressedView,
-      ]}
+      style={({ pressed }) => [styles.listItem, listItem, pressed && styles.pressedView]}
     >
       {Icon ? (
         <View style={[styles.listIcon, listIcon]}>

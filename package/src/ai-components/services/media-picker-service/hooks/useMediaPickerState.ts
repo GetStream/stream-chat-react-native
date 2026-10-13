@@ -1,6 +1,7 @@
+import { useStateStore } from '@stream-io/state-store/react-bindings';
+
 import type { AbstractMediaPickerService } from '../AbstractMediaPickerService';
 import { type MediaPickerState } from '../AbstractMediaPickerService';
-import { useStateStore } from '@stream-io/state-store/react-bindings';
 
 export const selector = (nextState: MediaPickerState) => ({
   attachments: nextState.assets,

@@ -1,4 +1,5 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
+
 import type { Theme } from '../theme';
 
 export const getLocalStyles = ({ theme }: { theme: Theme }) => {

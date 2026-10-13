@@ -1,13 +1,14 @@
 import type { TextStyle } from 'react-native';
+
 import type { ConvertOpts, CSSP } from '../types';
 
 const EM_DEFAULT = 16;
 
+// React Native's strict TypeScript API declares style properties as readonly.
+type MutableTextStyle = { -readonly [K in keyof TextStyle]: TextStyle[K] };
+
 /** Parse CSS lengths like 14, "14", "14px", "1.25em", "0.875rem" */
-const len = (
-  v: unknown,
-  { baseFontSize, rootFontSize }: ConvertOpts,
-): number | undefined => {
+const len = (v: unknown, { baseFontSize, rootFontSize }: ConvertOpts): number | undefined => {
   if (v == null) return undefined;
   if (typeof v === 'number') return v;
   if (typeof v !== 'string') return undefined;
@@ -33,7 +34,7 @@ const len = (
 
 /** Font shorthand: e.g. "italic small-caps 700 14px/20px Menlo, monospace" */
 const parseFontShorthand = (v: string, opts: ConvertOpts) => {
-  const out: Partial<TextStyle> = {};
+  const out: MutableTextStyle = {};
   const parts = v.split(/\s+/);
   // Very light parser: pick out style, weight, size[/lineHeight], and family
   // Strategy:
@@ -58,9 +59,7 @@ const parseFontShorthand = (v: string, opts: ConvertOpts) => {
   // weight
   if (/^(normal|bold|[1-9]00)$/.test(parts[i] ?? '')) {
     const token = parts[i]!;
-    out.fontWeight = (
-      token === 'normal' ? undefined : token
-    ) as TextStyle['fontWeight'];
+    out.fontWeight = (token === 'normal' ? undefined : token) as TextStyle['fontWeight'];
     i++;
   }
 
@@ -68,8 +67,7 @@ const parseFontShorthand = (v: string, opts: ConvertOpts) => {
   const sizeToken = parts[i];
   if (
     sizeToken &&
-    (/.+(px|em|rem)$/.test(sizeToken) ||
-      /^[\d.]+(\/[\d.]+)?(px|em|rem)?$/.test(sizeToken))
+    (/.+(px|em|rem)$/.test(sizeToken) || /^[\d.]+(\/[\d.]+)?(px|em|rem)?$/.test(sizeToken))
   ) {
     const [fs, lh] = sizeToken.split('/');
     const fontSize = len(fs, opts);
@@ -96,24 +94,20 @@ const parseFontShorthand = (v: string, opts: ConvertOpts) => {
 };
 
 /** map CSS (web) to RN TextStyle */
-export const cssToRNTextStyle = (
-  css: Partial<CSSP>,
-  options: ConvertOpts = {},
-): TextStyle => {
+export const cssToRNTextStyle = (css: Partial<CSSP>, options: ConvertOpts = {}): TextStyle => {
   const opts: ConvertOpts = {
     baseFontSize: options.baseFontSize ?? EM_DEFAULT,
     rootFontSize: options.rootFontSize ?? options.baseFontSize ?? EM_DEFAULT,
   };
 
-  const out: Partial<TextStyle> = {};
+  const out: MutableTextStyle = {};
 
   // Simple 1:1 or unit-converted mappings
   if (css.color) out.color = String(css.color);
 
   if (css.fontFamily) out.fontFamily = String(css.fontFamily);
   if (css.fontStyle) out.fontStyle = css.fontStyle as TextStyle['fontStyle'];
-  if (css.fontWeight)
-    out.fontWeight = String(css.fontWeight) as TextStyle['fontWeight'];
+  if (css.fontWeight) out.fontWeight = String(css.fontWeight) as TextStyle['fontWeight'];
 
   if (css.fontSize != null) {
     const n = len(css.fontSize, opts);
@@ -137,8 +131,7 @@ export const cssToRNTextStyle = (
   }
 
   // Simulating the closest we can get to a CSS overflow-like functionality
-  const overflowLike =
-    (css as any).overflow ?? (css as any).overflowX ?? (css as any).overflowY;
+  const overflowLike = css.overflow ?? css.overflowX ?? css.overflowY;
   if (typeof overflowLike === 'string') {
     out.overflow =
       overflowLike === 'hidden'

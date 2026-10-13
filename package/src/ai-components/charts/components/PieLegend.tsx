@@ -1,14 +1,9 @@
-import type { Datum } from '../types';
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-export const PieLegend = ({
-  items,
-  maxRows = 3,
-}: {
-  items: Datum[];
-  maxRows?: number;
-}) => {
+import type { Datum } from '../types';
+
+export const PieLegend = ({ items, maxRows = 3 }: { items: Datum[]; maxRows?: number }) => {
   return (
     <View style={styles.container}>
       {items.slice(0, maxRows * 4).map((item, i) => (

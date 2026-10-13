@@ -1,22 +1,39 @@
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Mic } from '../internal/icons/Mic';
 import React, { useEffect } from 'react';
-import { useDictation } from '../transcription/useDictation';
-import { useTheme } from '../contexts';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+
 import { useStateStore } from '@stream-io/state-store/react-bindings';
-import { dictationStore, type DictationStoreState } from '../store';
+
+import { useTheme } from '../contexts';
+import { Mic } from '../internal/icons/Mic';
+
+import { isDictationAvailable, warnIfDictationUnavailable } from '../native/AIDictation';
 import type { DictationStartOptions } from '../native-specs/NativeAIDictation';
+import { dictationStore, type DictationStoreState } from '../store';
+import { useDictation } from '../transcription/useDictation';
 
 const selector = ({ isRecording }: DictationStoreState) => ({
   isRecording,
 });
 
-export const SpeechToTextButton = ({
-  options,
-}: {
+type SpeechToTextButtonProps = {
   options?: DictationStartOptions;
-}) => {
+};
+
+/**
+ * Renders nothing when the native dictation module is not part of the build (see
+ * `isDictationAvailable`), so that pressing the button can never reach a missing module.
+ */
+export const SpeechToTextButton = (props: SpeechToTextButtonProps) => {
+  if (!isDictationAvailable()) {
+    warnIfDictationUnavailable();
+    return null;
+  }
+
+  return <AvailableSpeechToTextButton {...props} />;
+};
+
+const AvailableSpeechToTextButton = ({ options }: SpeechToTextButtonProps) => {
   const {
     theme: {
       colors: { grey, accent_blue },
@@ -41,11 +58,7 @@ export const SpeechToTextButton = ({
     >
       <Pressable style={[styles.iconButton, iconButton]} onPress={toggle}>
         <View style={[styles.micIcon, micIcon]}>
-          <Mic
-            size={32}
-            viewBox={`0 0 ${32} ${28}`}
-            fill={isRecording ? accent_blue : grey}
-          />
+          <Mic size={32} viewBox={`0 0 ${32} ${28}`} fill={isRecording ? accent_blue : grey} />
         </View>
       </Pressable>
     </Animated.View>

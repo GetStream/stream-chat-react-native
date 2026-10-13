@@ -43,6 +43,8 @@
 	<string>$(PRODUCT_NAME) would like share live location when in use in a message.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like to use your microphone for voice recording.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>$(PRODUCT_NAME) uses speech recognition to transcribe your voice into messages.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.</string>
 	<key>RCTNewArchEnabled</key>

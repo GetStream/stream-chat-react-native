@@ -1,12 +1,7 @@
 import { z } from 'zod';
 
 /* primitives */
-export const VLType = z.enum([
-  'quantitative',
-  'ordinal',
-  'nominal',
-  'temporal',
-]);
+export const VLType = z.enum(['quantitative', 'ordinal', 'nominal', 'temporal']);
 
 const FieldRef = z.object({
   field: z.string(),
@@ -79,12 +74,13 @@ const VL_PIE = BaseVL.extend({
 
 const normalizeMarkName = (m: unknown): string | undefined => {
   if (typeof m === 'string') return m.toLowerCase();
-  if (m && typeof m === 'object' && typeof (m as any).type === 'string') {
-    return String((m as any).type).toLowerCase();
+  if (m && typeof m === 'object' && typeof (m as { type?: unknown }).type === 'string') {
+    return String((m as { type?: unknown }).type).toLowerCase();
   }
   return undefined;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON input, validated by the zod schema below
 const deriveMarkName = (o: any): string | undefined => {
   // spec.mark (string or MarkDef)
   const direct = normalizeMarkName(o?.mark);
@@ -92,21 +88,18 @@ const deriveMarkName = (o: any): string | undefined => {
 
   // first layer's mark.type
   const firstLayerMark =
-    Array.isArray(o?.layer) && o.layer[0]?.mark
-      ? normalizeMarkName(o.layer[0].mark)
-      : undefined;
+    Array.isArray(o?.layer) && o.layer[0]?.mark ? normalizeMarkName(o.layer[0].mark) : undefined;
   if (firstLayerMark) return firstLayerMark;
 
   // first marks[] item .type
-  return Array.isArray(o?.marks) && o.marks.length > 0
-    ? normalizeMarkName(o.marks[0])
-    : undefined;
+  return Array.isArray(o?.marks) && o.marks.length > 0 ? normalizeMarkName(o.marks[0]) : undefined;
 };
 
 export const VegaLiteCore = z.discriminatedUnion('type', [VL_XY, VL_PIE]);
 
 /* final schema: preprocess to inject needed metadata, then discriminated union */
 export const VegaLiteSchema = z.preprocess((raw) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON input, validated by the zod schema below
   const o: any = raw ?? {};
   const markName = deriveMarkName(o);
   const hasTheta = !!o?.encoding?.theta;

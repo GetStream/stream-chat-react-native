@@ -1,47 +1,73 @@
-![Integrating Stream Chat with AI](./public/chat-ai-react-native.png)
+# AI components for Stream Chat React Native
 
-# [React Native](https://getstream.io/chat/react-native-chat/tutorial/) AI components for Stream Chat
+`stream-chat-react-native/ai-components` (and `stream-chat-expo/ai-components`) contains Stream Chat's UI components for AI-first applications. Paired with the [Chat API](https://getstream.io/chat/), they render responses from LLM providers such as ChatGPT, Gemini, Anthropic or any custom backend: Markdown, code blocks with syntax highlighting, tables, charts, thinking indicators and more.
 
-This official repository for Stream Chat's UI components is designed specifically for AI-first applications written in React Native. When paired with our real-time [Chat API](https://getstream.io/chat/), it makes integrating with and rendering responses from LLM providers such as ChatGPT, Gemini, Anthropic or any custom backend easier by providing rich with out-of-the-box components able to render Markdown, Code blocks, tables, thinking indicators, images, etc.
+- `StreamingMessageView` - renders text, markdown and code in real time, using a ChatGPT-like typewriter animation
+- `ComposerView` - a prompt composer with attachments and speech input
+- `SpeechToTextButton` - records voice input and streams the recognized transcript into your UI
+- `AITypingIndicatorView` - displays the state of the LLM (thinking, checking external sources, etc.)
 
-To start, this library includes the following components which assist with this task:
+The components live in their own entry point. Apps that never import `stream-chat-react-native/ai-components` do not bundle any of it, and apps that only use the AI components do not bundle the rest of the chat SDK.
 
-- `StreamingMessageView` - a component that is able to render text, markdown and code in real-time, using a typewriter, character-by-character animation, similar to ChatGPT
-- `ComposerView` - a fully featured prompt composer with attachments and speech input
-- `SpeechToTextButton` - a reusable button that records voice input and streams the recognized transcript back into your UI
-- `AITypingIndicatorView` - a component that can display different states of the LLM (thinking, checking external sources, etc)
+## Migrating from `@stream-io/chat-react-native-ai`
 
-Our team plans to keep iterating and adding more components over time. If there's a component you use every day in your apps and would like to see added, please open an issue and we will take it into consideration.
+These components used to ship as the standalone `@stream-io/chat-react-native-ai` package, which is now deprecated. Their API is unchanged; to migrate:
+
+1. Uninstall `@stream-io/chat-react-native-ai` and import from `stream-chat-react-native/ai-components` (or `stream-chat-expo/ai-components`) instead:
+
+   ```diff
+   - import { ComposerView, StreamingMessageView } from '@stream-io/chat-react-native-ai';
+   + import { ComposerView, StreamingMessageView } from 'stream-chat-react-native/ai-components';
+   ```
+
+2. Dictation is now opt-in on iOS (see [Dictation](#dictation-speech-to-text)): add `$StreamChatEnableDictation = true` to your `Podfile`, or, with Expo, replace the `@stream-io/chat-react-native-ai` config plugin with `stream-chat-expo`.
+3. Keep the `export-namespace-from` Babel plugin (see [Installation](#️-installation)); it is needed by the `zod` dependency.
+4. `ShimmeringView` and `toHexFromRNColor` were removed. `AITypingIndicatorView` now uses the SDK's native shimmer, so `@shopify/react-native-skia` is only needed for charts.
+5. `SpeechToTextButton` and `isDictationAvailable` are now exported.
 
 ## 🛠️ Installation
 
-The `@stream-io/chat-react-native-ai` SDK is available on NPM.
-
-To install it and its peer dependencies, you may run the following command:
+The AI components ship with `stream-chat-react-native` and `stream-chat-expo`; their JavaScript dependencies are installed with them. Charts additionally need the following peer dependencies, which only apps using the AI components have to install:
 
 ```bash
-yarn add @stream-io/chat-react-native-ai react-native-reanimated react-native-worklets react-native-gesture-handler react-native-svg victory-native @shopify/react-native-skia @babel/plugin-proposal-export-namespace-from
+yarn add victory-native @shopify/react-native-skia
 ```
 
-After this finishes, you'll need to add the respective `babel` plugins to your `babel.config.js` file, like so:
+`react-native-reanimated`, `react-native-gesture-handler` and `react-native-svg` are already required by the chat SDK.
+
+The `zod` dependency ships `export * as` syntax, which the React Native Babel preset does not transform, so add the `export-namespace-from` plugin to your `babel.config.js`:
+
+```bash
+yarn add -D @babel/plugin-transform-export-namespace-from
+```
 
 ```js
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
   plugins: [
     // ... rest of your @babel plugins
-    '@babel/plugin-proposal-export-namespace-from',
+    '@babel/plugin-transform-export-namespace-from',
     // react-native-worklets/plugin has to be the last one
     'react-native-worklets/plugin',
   ],
 };
 ```
 
-Finally, in order for the speech-to-text feature to work you will need toa add the required capabilities.
+Apps that do not import the AI components do not bundle `zod` and do not need the plugin.
+
+### Dictation (speech-to-text)
+
+The speech-to-text button uses the platform speech recognizers.
 
 #### `iOS`
 
-Within `Info.plist`:
+Because App Store Connect requires a speech recognition usage description from every app whose binary references the Speech framework, the dictation module is only compiled into apps that opt in. Add this to your `Podfile`, before `use_native_modules!`, and run `pod install`:
+
+```ruby
+$StreamChatEnableDictation = true
+```
+
+(`STREAM_CHAT_ENABLE_DICTATION=1 pod install` works as well.) Then add the usage descriptions to your `Info.plist`:
 
 ```txt
 <key>NSMicrophoneUsageDescription</key>
@@ -50,11 +76,11 @@ Within `Info.plist`:
 <string>$(PRODUCT_NAME) would like to access speech recognition to transcribe your voice.</string>
 ```
 
-The text you pick for the capabilities is up to you.
+The text you pick for the capabilities is up to you. Without the opt-in the speech-to-text button is hidden, and a development-only warning explains how to enable it.
 
 #### `Android`
 
-Within `android/app/AndroidManifest.xml`:
+Add the permission to `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -62,82 +88,42 @@ Within `android/app/AndroidManifest.xml`:
 
 #### `Expo`
 
-If you're using `Expo` without a bare workflow, we've built a config plugin that you can include to add these permissions for you.
-
-You can do this by adding it to your `app.json`/`app.config.[js|ts]` file like so:
+Add the `stream-chat-expo` config plugin to your `app.json`/`app.config.[js|ts]`. It enables the dictation module and adds the permissions (with default descriptions unless you provide your own):
 
 ```json
 "plugins": [
-      // ... rest of your plugins
-      [
-        "@stream-io/chat-react-native-ai",
-        {
-          "dictationMicrophoneUsageDescription": "$(PRODUCT_NAME) would like to access your microphone to capture your voice.",
-          "dictationSpeechRecognitionUsageDescription": "$(PRODUCT_NAME) would like to access speech recognition to transcribe your voice."
-        }
-      ]
-    ],
+  // ... rest of your plugins
+  [
+    "stream-chat-expo",
+    {
+      "dictationMicrophoneUsageDescription": "$(PRODUCT_NAME) would like to access your microphone to capture your voice.",
+      "dictationSpeechRecognitionUsageDescription": "$(PRODUCT_NAME) would like to access speech recognition to transcribe your voice."
+    }
+  ]
+],
 ```
 
-If you're using a bare `Expo` workflow, you may do the manual steps for `iOS` and `Android` mentioned before.
+Pass `"enableDictation": false` to leave dictation out.
 
 ## Optional features
 
-Additionally, you may also include the optional dependencies that enable pluggable features.
-
 ### Media Picker
 
-The media picker feature allows you to pick existing images and take photos with your camera and then use them directly.
+The media picker of the `ComposerView` picks existing images and takes photos with the camera. It works with whichever of these libraries you have installed:
 
-The SDK has built-in support for 2 libraries that allow you to achieve this:
-
-#### `react-native-image-picker`
-
-This RN CLI library is meant to be used in vanilla React Native projects.
-
-To install it, you can run:
-
-```bash
-yarn add react-native-image-picker
-```
-
-Please note that for the image capture capabilities to work, you'll also need to include the following permissions:
-
-`Info.plist`:
-
-```txt
-<key>NSCameraUsageDescription</key>
-<string>$(PRODUCT_NAME) would like to use your camera to share an image in a message.</string>
-```
-
-`AndroidManifest.xml`:
-
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-```
-
-respectively.
-
-#### `expo-image-picker`
-
-This `Expo` library is meant to be used in `Expo` projects.
-
-To install it, you can run:
-
-```bash
-npx expo install expo-image-picker
-```
-
-Then, you can refer to [their documentation about adding permissions](https://docs.expo.dev/versions/latest/sdk/imagepicker/#example-appjson-with-config-plugin) and add the `photosPermission` and `cameraPermission` fields.
+- `react-native-image-picker` (React Native CLI). For the camera, add `NSCameraUsageDescription` to your `Info.plist` and the `android.permission.CAMERA` permission to your `AndroidManifest.xml`.
+- `expo-image-picker` (Expo). See the [Expo documentation](https://docs.expo.dev/versions/latest/sdk/imagepicker/) for its permissions.
 
 ### Clipboard
 
-The clipboard feature allows you to copy the code within markdown codeblocks if they are rendered.
+The copy button of code blocks works with whichever of these libraries you have installed:
 
-The SDK has built-in support for 2 libraries that allow you to achieve this:
+- `@react-native-clipboard/clipboard` (React Native CLI)
+- `expo-clipboard` (Expo)
 
-- `@react-native-clipboard/clipboard` (for RN CLI apps)
-- `expo-clipboard` (for `Expo` apps)
+### Syntax highlighting on Android
+
+On Android with the New Architecture, highlighted code is rendered by a native `PerfText` view: a single text view with colour spans instead of one `Text` per token, which keeps long code blocks cheap to render and scroll. Elsewhere, code is rendered with nested `Text`.
 
 ## ⚙️ Usage
 
@@ -151,14 +137,14 @@ The `StreamingMessageView` is a component that can render markdown content effic
 
 Under the hood, it implements a letter-by-letter typewriter animation with a character queue, similar to ChatGPT.
 
-| Name                         | Type                                                                                                                                                               | Required | Description                                                                                                                                                                                                                                                                                                                                                                   |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`                       | `string`                                                                                                                                                           | yes      | The text we want to pass as markdown.                                                                                                                                                                                                                                                                                                                                         |
-| `paragraphTextNumberOfLines` | `boolean`                                                                                                                                                          | no       | A boolean signifying if `numberOfLines` should be applied as a property to markdown `Paragraph` and `Text` components. Particularly useful if we want to display the same message, but in a "cut" fashion (for example when replying to someone).                                                                                                                             |
-| `rules`                      | [`MarkdownRules`](https://github.com/GetStream/ai-components-js/blob/11314d5b7e888ed4585e6c4790eb173e928be6b3/packages/react-native-sdk/src/markdown/types.ts#L24) | no       | An object of `MarkdownRules` that is then going to be deeply merged with our default rules, based on the [`SimpleMarkdown` parsing engine](https://github.com/Khan/perseus/tree/main/packages/simple-markdown#adding-a-simple-extension). Can be used to add custom rules or change existing rules. You can disable a rule by passing `{ [ruleName]: { match: () => null }}`. |
-| `onLink`                     | `(url: string) => void`                                                                                                                                            | no       | A function that is going to be invoked whenever a link is pressed within markdown parsed text.                                                                                                                                                                                                                                                                                |
-| `letterInterval`             | `number`                                                                                                                                                           | no       | A number signifying the interval at which the typewriter animation is going to render characters. Defaults to `0`                                                                                                                                                                                                                                                             |
-| `renderingLetterCount`       | `number`                                                                                                                                                           | no       | A number signifying the number of letters that are going to be rendered per tick of the interval during the typewriter animation. Defaults to `2`                                                                                                                                                                                                                             |
+| Name                     | Type                                   | Required | Description                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------ | -------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`                   | `string`                               | yes      | The text we want to pass as markdown.                                                                                                                                                                                                                                                                                                                                         |
+| `paragraphNumberOfLines` | `number`                               | no       | The `numberOfLines` applied to markdown `Paragraph` and `Text` components. Particularly useful if we want to display the same message, but in a "cut" fashion (for example when replying to someone).                                                                                                                                                                         |
+| `rules`                  | [`MarkdownRules`](./markdown/types.ts) | no       | An object of `MarkdownRules` that is then going to be deeply merged with our default rules, based on the [`SimpleMarkdown` parsing engine](https://github.com/Khan/perseus/tree/main/packages/simple-markdown#adding-a-simple-extension). Can be used to add custom rules or change existing rules. You can disable a rule by passing `{ [ruleName]: { match: () => null }}`. |
+| `onLink`                 | `(url: string) => void`                | no       | A function that is going to be invoked whenever a link is pressed within markdown parsed text.                                                                                                                                                                                                                                                                                |
+| `letterInterval`         | `number`                               | no       | A number signifying the interval at which the typewriter animation is going to render characters. Defaults to `0`                                                                                                                                                                                                                                                             |
+| `renderingLetterCount`   | `number`                               | no       | A number signifying the number of letters that are going to be rendered per tick of the interval during the typewriter animation. Defaults to `2`                                                                                                                                                                                                                             |
 
 #### Example
 
@@ -198,15 +184,15 @@ The `AITypingIndicatorView` is used to represent different states of the LLM, su
 
 The `ComposerView` gives users a modern text entry surface with attachment previews, actionable bottom sheet, speech-to-text button and an integrated send button.
 
-| Name                 | Type                                                                                                                                                                                        | Required | Description                                                                                                                                                                                                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `onSendMessage`      | `(opts: { text: string; attachments?: MediaPickerState['assets']; custom?: Record<string, unknown>; }) => Promise<void>`                                                                    | yes      | A callback that will be invoked whenever the send button is pressed. The `text`, `attachments` and any `custom` data we've added to the state will be passed to it.                                                                                                            |
-| `bottomSheetOptions` | [`BottomSheetOption[]`](https://github.com/GetStream/ai-components-js/blob/11314d5b7e888ed4585e6c4790eb173e928be6b3/packages/react-native-sdk/src/message-composer/MessageComposer.tsx#L19) | no       | An array of [`BottomSheetOption`](https://github.com/GetStream/ai-components-js/blob/11314d5b7e888ed4585e6c4790eb173e928be6b3/packages/react-native-sdk/src/message-composer/MessageComposer.tsx#L19) objects that will render the extra options in the bottom sheet.          |
-| `bottomSheetInsets`  | `{ top: number; bottom: number; left: number; right: number }`                                                                                                                              | no       | An object containing extra insets we can pass to the `ComposerView` in order to make sure the bottom sheet can extend properly beyond them.                                                                                                                                    |
-| `isGenerating`       | `boolean`                                                                                                                                                                                   | no       | A boolean signifying whether the LLM is currently generating a response or not. It will be used to render the stop-generating button in the composer instead of the send button whenever this happens.                                                                         |
-| `stopGenerating`     | `() => Promise<void>`                                                                                                                                                                       | no       | A callback that is going to be invoked if the stop-generating button is clicked.                                                                                                                                                                                               |
-| `mediaPickerService` | `AbstractMediaPickerService`                                                                                                                                                                | no       | An instance of the `MediaPickerService` we may decide to inject from the outside for more fine-grained control over attachment state. You can create an instance as `const customInstance = MediaPickerService()` and it will automatically detect which library you're using. |
-| `state`              | `StateStore<ComposerState>`                                                                                                                                                                 | no       | A state store of the `ComposerState` we may decide to inject from the outside for more fine-grained control over the composer state. You can create an instance as `const customComposerState = createNewComposerStore()`.                                                     |
+| Name                 | Type                                                                                                                     | Required | Description                                                                                                                                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `onSendMessage`      | `(opts: { text: string; attachments?: MediaPickerState['assets']; custom?: Record<string, unknown>; }) => Promise<void>` | yes      | A callback that will be invoked whenever the send button is pressed. The `text`, `attachments` and any `custom` data we've added to the state will be passed to it.                                                                                                            |
+| `bottomSheetOptions` | [`BottomSheetOption[]`](./message-composer/ComposerView.tsx)                                                             | no       | An array of [`BottomSheetOption`](./message-composer/ComposerView.tsx) objects that will render the extra options in the bottom sheet.                                                                                                                                         |
+| `bottomSheetInsets`  | `{ top: number; bottom: number; left: number; right: number }`                                                           | no       | An object containing extra insets we can pass to the `ComposerView` in order to make sure the bottom sheet can extend properly beyond them.                                                                                                                                    |
+| `isGenerating`       | `boolean`                                                                                                                | no       | A boolean signifying whether the LLM is currently generating a response or not. It will be used to render the stop-generating button in the composer instead of the send button whenever this happens.                                                                         |
+| `stopGenerating`     | `() => Promise<void>`                                                                                                    | no       | A callback that is going to be invoked if the stop-generating button is clicked.                                                                                                                                                                                               |
+| `mediaPickerService` | `AbstractMediaPickerService`                                                                                             | no       | An instance of the `MediaPickerService` we may decide to inject from the outside for more fine-grained control over attachment state. You can create an instance as `const customInstance = MediaPickerService()` and it will automatically detect which library you're using. |
+| `state`              | `StateStore<ComposerState>`                                                                                              | no       | A state store of the `ComposerState` we may decide to inject from the outside for more fine-grained control over the composer state. You can create an instance as `const customComposerState = createNewComposerStore()`.                                                     |
 
 #### Example
 
@@ -230,11 +216,7 @@ const options = [
 
 const insets = useSafeAreaInsets();
 
-<ComposerView
-  onSendMessage={sendMessage}
-  bottomSheetOptions={bottomSheetOptions}
-  bottomSheetInsets={insets}
-/>;
+<ComposerView onSendMessage={sendMessage} bottomSheetOptions={bottomSheetOptions} bottomSheetInsets={insets} />;
 ```
 
 ### `SpeechToTextButton`
@@ -245,28 +227,28 @@ It uses the `useDictation` hook under the hood, which can also be used without t
 
 It takes a single property named `options` that has the following keys:
 
-| Name                  | Type      | Required | Description                                                                                                                                                                        |
-| --------------------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `language`            | `string`  | no       | The language we want to transcribe from. It will default to `en-US`.                                                                                                               |
-| `intermediateResults` | `boolean` | no       | A boolean signifying whether we want to receive the intermediate results from the transcription or just the final result when the transcription is deemed done. Defaults to `true` |
-| `silenceTimeoutMs`    | `number`  | no       | A number signifying the number of milliseconds of silence until transcription is deemed finished. Defaults to `2500`.                                                              |
+| Name               | Type      | Required | Description                                                                                                                                                                        |
+| ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `language`         | `string`  | no       | The language we want to transcribe from. It will default to `en-US`.                                                                                                               |
+| `interimResults`   | `boolean` | no       | A boolean signifying whether we want to receive the intermediate results from the transcription or just the final result when the transcription is deemed done. Defaults to `true` |
+| `silenceTimeoutMs` | `number`  | no       | A number signifying the number of milliseconds of silence until transcription is deemed finished. Defaults to `2500`.                                                              |
 
 ```tsx
 const options = {
   language: 'de-DE', // set the language to german
-  intermediateResults: false, // disable intermediate results and only use the final results
+  interimResults: false, // disable intermediate results and only use the final results
   silenceTimeoutMs: 3500 // set the silence timeout to 3.5 seconds
 }
 <SpeechToTextButton options={options} />
 ```
 
-The `SpeechToTextButton` is already integrated within the `ComposerView`, however feel free to use it elsewhere as well.
+The `SpeechToTextButton` is already integrated within the `ComposerView`, however feel free to use it elsewhere as well. It renders nothing when dictation is not part of the build (see [Dictation](#dictation-speech-to-text)); `isDictationAvailable()` tells you whether it is.
 
 ### Theming
 
 Each one of the components in the SDK is fully theme-compatible. The `StreamTheme` provider takes care of this for you.
 
-In order to modify the theme, you may refer to our full fledged theme object [as seen here](https://github.com/GetStream/ai-components-js/blob/main/packages/react-native-sdk/src/theme.ts).
+In order to modify the theme, you may refer to our full fledged theme object [as seen here](./theme.ts).
 
 #### Example
 
@@ -294,57 +276,4 @@ const customTheme = {
 }
 
 <StreamTheme style={customTheme}>{children}</StreamTheme>
-```
-
-<br />
-
-<a href="https://getstream.io?utm_source=Github&utm_medium=Github_Repo_Content&utm_content=Developer&utm_campaign=Github_Swift_AI_SDK&utm_term=DevRelOss">
-<img src="https://user-images.githubusercontent.com/24237865/138428440-b92e5fb7-89f8-41aa-96b1-71a5486c5849.png" align="right" width="12%"/>
-</a>
-
-## 🛥 What is Stream?
-
-Stream allows developers to rapidly deploy scalable feeds, chat messaging and video with an industry leading 99.999% uptime SLA guarantee.
-
-Stream provides UI components and state handling that make it easy to build real-time chat and video calling for your app. Stream runs and maintains a global network of edge servers around the world, ensuring optimal latency and reliability regardless of where your users are located.
-
-## 📕 Tutorials
-
-To learn more about integrating AI and chatbots into your application, we recommend checking out the full list of tutorials across all of our supported frontend SDKs and providers. Stream's Chat SDK is natively supported across:
-
-- [React](https://getstream.io/chat/react-chat/tutorial/)
-- [React Native](https://getstream.io/chat/react-native-chat/tutorial/)
-- [Angular](https://getstream.io/chat/angular/tutorial/)
-- [Jetpack Compose](https://getstream.io/tutorials/android-chat/)
-- [SwiftUI](https://getstream.io/tutorials/ios-chat/)
-- [Flutter](https://getstream.io/chat/flutter/tutorial/)
-- [Javascript/Bring your own](https://getstream.io/chat/docs/javascript/)
-
-## 👩‍💻 Free for Makers 👨‍💻
-
-Stream is free for most side and hobby projects. To qualify, your project/company needs to have < 5 team members and < $10k in monthly revenue. Makers get $100 in monthly credit for video for free.
-For more details, check out the [Maker Account](https://getstream.io/maker-account?utm_source=Github&utm_medium=Github_Repo_Content&utm_content=Developer&utm_campaign=Github_Swift_AI_SDK&utm_term=DevRelOss).
-
-## 💼 We are hiring!
-
-We've closed a [\$38 million Series B funding round](https://techcrunch.com/2021/03/04/stream-raises-38m-as-its-chat-and-activity-feed-apis-power-communications-for-1b-users/) in 2021 and we keep actively growing.
-Our APIs are used by more than a billion end-users, and you'll have a chance to make a huge impact on the product within a team of the strongest engineers all over the world.
-Check out our current openings and apply via [Stream's website](https://getstream.io/team/#jobs).
-
-## License
-
-```
-Copyright (c) 2014-2024 Stream.io Inc. All rights reserved.
-
-Licensed under the Stream License;
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   https://github.com/GetStream/stream-chat-swift-ai/blob/main/LICENSE
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 ```

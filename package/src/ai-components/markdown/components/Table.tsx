@@ -1,20 +1,17 @@
+import { useCallback, useMemo } from 'react';
 import { Text, View } from 'react-native';
+
+import type { SingleASTNode } from '@khanacademy/simple-markdown';
+
+import { MarkdownReactiveScrollView } from '../../components';
 import type {
   MarkdownComponentProps,
   MarkdownOutputProps,
   MarkdownTableRowProps,
   RuleRenderFunction,
 } from '../types';
-import { MarkdownReactiveScrollView } from '../../components';
-import type { SingleASTNode } from '@khanacademy/simple-markdown';
-import { useCallback, useMemo } from 'react';
 
-export const Table = ({
-  node,
-  output,
-  styles,
-  state,
-}: MarkdownComponentProps) => (
+export const Table = ({ node, output, styles, state }: MarkdownComponentProps) => (
   <MarkdownReactiveScrollView>
     <MarkdownTable node={node} output={output} state={state} styles={styles} />
   </MarkdownReactiveScrollView>
@@ -26,12 +23,7 @@ const transpose = (matrix: SingleASTNode[][]) =>
   // when parsing a table. Hence, we use the forced type coercion.
   (matrix[0] ?? []).map((_, colIndex) => matrix.map((row) => row[colIndex]!));
 
-const MarkdownTable = ({
-  node,
-  output,
-  state,
-  styles,
-}: MarkdownOutputProps) => {
+const MarkdownTable = ({ node, output, state, styles }: MarkdownOutputProps) => {
   const content = useMemo(() => {
     const nodeContent = [node?.header, ...(node?.cells ?? [])];
     return transpose(nodeContent);
@@ -54,12 +46,7 @@ const MarkdownTable = ({
   );
 };
 
-const MarkdownTableColumn = ({
-  items,
-  output,
-  state,
-  styles,
-}: MarkdownTableRowProps) => {
+const MarkdownTableColumn = ({ items, output, state, styles }: MarkdownTableRowProps) => {
   const [headerCellContent, ...columnCellContents] = items;
 
   const ColumnCell = useCallback(
@@ -76,9 +63,7 @@ const MarkdownTableColumn = ({
     <View style={{ flex: 1, flexDirection: 'column' }}>
       {headerCellContent ? (
         <View key={-1} style={styles.tableHeader}>
-          <Text style={styles.tableHeaderCell}>
-            {output(headerCellContent, state)}
-          </Text>
+          <Text style={styles.tableHeaderCell}>{output(headerCellContent, state)}</Text>
         </View>
       ) : null}
       {columnCellContents &&
@@ -89,19 +74,8 @@ const MarkdownTableColumn = ({
   );
 };
 
-export const renderTable: RuleRenderFunction = ({
-  node,
-  output,
-  state,
-  styles,
-}) => (
-  <Table
-    key={state.key}
-    node={node}
-    output={output}
-    state={state}
-    styles={styles}
-  >
+export const renderTable: RuleRenderFunction = ({ node, output, state, styles }) => (
+  <Table key={state.key} node={node} output={output} state={state} styles={styles}>
     {node.content?.trim()}
   </Table>
 );

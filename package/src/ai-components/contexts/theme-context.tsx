@@ -1,15 +1,10 @@
-import React, {
-  createContext,
-  type PropsWithChildren,
-  useContext,
-  useMemo,
-} from 'react';
+import React, { createContext, type PropsWithChildren, useContext, useMemo } from 'react';
 
 import { merge } from 'lodash';
 
 import { defaultTheme, type Theme } from '../theme';
 
-export type DeepPartial<T> = T extends (...args: any) => any
+export type DeepPartial<T> = T extends (...args: never[]) => unknown
   ? T
   : T extends object
     ? { [K in keyof T]?: DeepPartial<T[K]> }
@@ -60,20 +55,14 @@ export const StreamTheme = (
     return mergeThemes({ style, theme });
   }, [mergedStyle, style, theme]);
 
-  return (
-    <ThemeContext.Provider value={modifiedTheme}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={modifiedTheme}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => {
   const theme = useContext(ThemeContext);
 
   if (theme === undefined) {
-    throw new Error(
-      'The useTheme hook was called outside the StreamTheme Provider.',
-    );
+    throw new Error('The useTheme hook was called outside the StreamTheme Provider.');
   }
   return { theme };
 };

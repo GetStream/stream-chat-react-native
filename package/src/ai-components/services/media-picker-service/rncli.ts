@@ -1,15 +1,15 @@
+import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
+import type { Asset } from 'react-native-image-picker';
+
 import {
   AbstractMediaPickerService,
   type MediaAsset,
   type PickMediaOpts,
 } from './AbstractMediaPickerService';
-import { AppState, Image, PermissionsAndroid, Platform } from 'react-native';
-import type { Asset } from 'react-native-image-picker';
 
 let internalService = undefined;
 
 try {
-  // eslint-disable-next-line
   internalService = require('react-native-image-picker');
 } catch (_error) {
   /* do nothing */
@@ -48,9 +48,7 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
     }
   };
 
-  takeMedia = async ({
-    compressionQuality = Platform.OS === 'ios' ? 0.8 : 1,
-  }) => {
+  takeMedia = async ({ compressionQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     if (Platform.OS === 'android') {
       const cameraPermissions = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -61,9 +59,7 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
         );
         if (androidPermissionStatus === PermissionsAndroid.RESULTS.DENIED) {
           return { cancelled: true };
-        } else if (
-          androidPermissionStatus === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
-        ) {
+        } else if (androidPermissionStatus === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
           return { askToOpenSettings: true, cancelled: true };
         }
       }
@@ -73,12 +69,7 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
         mediaType: 'photo',
         quality: Math.min(Math.max(0, compressionQuality), 1),
       });
-      if (
-        !result ||
-        !result.assets ||
-        !result.assets.length ||
-        result.didCancel
-      ) {
+      if (!result || !result.assets || !result.assets.length || result.didCancel) {
         return {
           cancelled: true,
         };
@@ -106,10 +97,7 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
             size.width = width;
           } catch (e) {
             // do nothing
-            console.warn(
-              'Error while getting image size of picture captured from camera ',
-              e,
-            );
+            console.warn('Error while getting image size of picture captured from camera ', e);
           }
         } else {
           size = {
@@ -136,8 +124,7 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
       if (e instanceof Error) {
         // on iOS: if it was in inactive state, then the user had just denied the permissions
         if (Platform.OS === 'ios' && AppState.currentState === 'active') {
-          const cameraPermissionDeniedMsg =
-            'User did not grant camera permission.';
+          const cameraPermissionDeniedMsg = 'User did not grant camera permission.';
           // Open settings when the user did not allow camera permissions
           if (e.message === cameraPermissionDeniedMsg) {
             return { askToOpenSettings: true, cancelled: true };
@@ -150,8 +137,6 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
   };
 }
 
-const MediaPickerService = internalService
-  ? RNCLIMediaPickerService
-  : undefined;
+const MediaPickerService = internalService ? RNCLIMediaPickerService : undefined;
 
 export { MediaPickerService };

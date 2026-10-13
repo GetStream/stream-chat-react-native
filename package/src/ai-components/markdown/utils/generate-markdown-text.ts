@@ -1,6 +1,6 @@
+import { find } from 'linkifyjs';
 import truncate from 'lodash/truncate';
 
-import { find } from 'linkifyjs';
 import type { LinkInfo } from '../index';
 
 export function escapeRegExp(text: string) {
@@ -11,8 +11,7 @@ export function escapeRegExp(text: string) {
  * This is done to remove all markdown formatted links.
  * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
  * */
-const removeMarkdownLinksFromText = (input: string) =>
-  input.replace(/\[.*\]\(.*\)/g, '');
+const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
 
 /**
  * This is done to avoid parsing usernames with dot as well as an email address in it.
@@ -24,10 +23,10 @@ export const parseLinksFromText = (input?: string): LinkInfo[] => {
   if (!input) {
     return [];
   }
-  const strippedInput = [
-    removeMarkdownLinksFromText,
-    removeUserNamesWithEmailFromText,
-  ].reduce((acc, fn) => fn(acc), input);
+  const strippedInput = [removeMarkdownLinksFromText, removeUserNamesWithEmailFromText].reduce(
+    (acc, fn) => fn(acc),
+    input,
+  );
 
   const links = find(strippedInput, 'url');
   const emails = find(strippedInput, 'email');
@@ -69,7 +68,7 @@ export const generateMarkdownText = (text?: string) => {
     // Eg: Hi @getstream.io -> Hi @[getstream.io](getstream.io).
     const normalRegEx = new RegExp(escapeRegExp(linkInfo.raw), 'g');
     const markdown = `[${displayLink}](${linkInfo.url})`;
-    resultText = text.replace(normalRegEx, markdown);
+    resultText = resultText.replace(normalRegEx, markdown);
 
     // After previous step, in some cases, the mentioned user after `@` might have a link/email so we convert it back to normal raw text.
     // Eg: Hi, @[test.user@gmail.com](mailto:test.user@gmail.com) to @test.user@gmail.com.
@@ -85,8 +84,7 @@ export const generateMarkdownText = (text?: string) => {
   //   - unordered bullet: -, *, +
   //   - or ordered marker: 1. 2. 10.
   // and at least one space after the marker.
-  const LIST_START_RE =
-    /^[ \t]*(?:> ?)*?(?:[*+-]|\d+\.)(?: |\t)(?:\[(?: |x|X)\] )?/;
+  const LIST_START_RE = /^[ \t]*(?:> ?)*?(?:[*+-]|\d+\.)(?: |\t)(?:\[(?: |x|X)\] )?/;
 
   resultText = resultText.replace(
     // 1) fenced code blocks (``` <some code here> ```)

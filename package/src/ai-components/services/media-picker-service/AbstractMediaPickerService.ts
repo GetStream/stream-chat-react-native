@@ -19,9 +19,7 @@ export type PickMediaReturnType = {
   cancelled?: boolean;
   askToOpenSettings?: boolean;
 };
-export type PickMediaApi = (
-  opts: PickMediaOpts,
-) => Promise<PickMediaReturnType>;
+export type PickMediaApi = (opts: PickMediaOpts) => Promise<PickMediaReturnType>;
 
 export type TakeMediaOpts = { compressionQuality?: number };
 export type TakeMediaReturnType = {
@@ -29,9 +27,7 @@ export type TakeMediaReturnType = {
   cancelled?: boolean;
   askToOpenSettings?: boolean;
 };
-export type TakeMediaApi = (
-  opts: TakeMediaOpts,
-) => Promise<TakeMediaReturnType>;
+export type TakeMediaApi = (opts: TakeMediaOpts) => Promise<TakeMediaReturnType>;
 
 export abstract class AbstractMediaPickerService {
   public state: StateStore<MediaPickerState>;
