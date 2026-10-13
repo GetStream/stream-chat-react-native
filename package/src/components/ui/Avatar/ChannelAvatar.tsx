@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { Channel, UserResponse } from 'stream-chat';
+import { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
 
 import { Avatar } from './Avatar';
 
@@ -17,6 +17,12 @@ import { useChannelName } from '../../../hooks/useChannelName';
 import { hashStringToNumber } from '../../../utils/utils';
 import { CompositeAccessibilityProbe } from '../../Accessibility/CompositeAccessibilityProbe';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
+
+const pickAvatarFields = (member: ChannelMemberResponse) => ({
+  id: member.user?.id,
+  image: member.user?.image,
+  name: member.user?.name,
+});
 
 export type ChannelAvatarProps = {
   channel: Channel;
@@ -59,7 +65,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const channelImage = useChannelImage(channel);
   const imageToDisplay = isPreview ? previewUri : channelImage;
 
-  const members = useChannelMembersState(channel);
+  const members = useChannelMembersState(channel, pickAvatarFields);
   const usersForGroup = useMemo(
     () => Object.values(members ?? {}).map((member) => member.user as UserResponse),
     [members],

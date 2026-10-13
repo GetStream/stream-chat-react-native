@@ -148,6 +148,25 @@ describe('Channel', () => {
     await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
   });
 
+  it('does not watch or load a draft channel, which has no id and is marked initialized', async () => {
+    const draft = chatClient.channel('messaging', {
+      members: [{ user_id: user.id }, { user_id: 'other' }],
+    } as never);
+    draft.initialized = true;
+    const watchSpy = jest.spyOn(draft, 'watch');
+    const reloadSpy = jest.spyOn(draft.messagePaginator, 'reload');
+
+    renderComponent({ channel: draft });
+    // let the mount effect run to its end
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(draft.isProvisional).toBe(true);
+    expect(watchSpy).not.toHaveBeenCalled();
+    expect(reloadSpy).not.toHaveBeenCalled();
+  });
+
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
     const watchError = new Error('channel watch fail');
     // Rejected persistently, at the API seam: an offline open fails the mount `watch()` AND the

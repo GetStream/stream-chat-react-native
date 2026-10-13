@@ -1,5 +1,7 @@
 import type { TokenOrProvider, TokenProvider } from 'stream-chat';
 
+import AsyncStore from './AsyncStore';
+
 import type { LoginConfig } from '../types';
 
 export const SAMPLE_APP_API_KEY = 'yjrt5yxw77ev';
@@ -20,10 +22,23 @@ export const DEFAULT_TOKEN_URL =
 const buildTokenRequestUrl = (tokenUrl: string, userId: string) =>
   `${tokenUrl}${tokenUrl.includes('?') ? '&' : '?'}user_id=${encodeURIComponent(userId)}`;
 
+const lastTokenKey = (userId: string) => `@stream-rn-sampleapp-last-token-${userId}`;
+
+export const clearLastToken = (userId: string) => AsyncStore.removeItem(lastTokenKey(userId));
+
 export const createTokenProvider =
   (tokenUrl: string, userId: string): TokenProvider =>
   async () => {
-    const response = await fetch(buildTokenRequestUrl(tokenUrl, userId));
+    let response: Response;
+    try {
+      response = await fetch(buildTokenRequestUrl(tokenUrl, userId));
+    } catch (error) {
+      // Offline the request fails before any response. The user's last token lets the client start
+      // from its offline data and reconnect when the network is back, which fetches a fresh one.
+      const lastToken = await AsyncStore.getItem<string | null>(lastTokenKey(userId), null);
+      if (lastToken) return lastToken;
+      throw error;
+    }
     if (!response.ok) {
       throw new Error(`Token generator responded with ${response.status}`);
     }
@@ -31,6 +46,7 @@ export const createTokenProvider =
     if (!token) {
       throw new Error('Token generator response did not contain a token');
     }
+    await AsyncStore.setItem(lastTokenKey(userId), token);
     return token;
   };
 
