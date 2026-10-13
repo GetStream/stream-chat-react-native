@@ -139,9 +139,6 @@ export const usePaginatedChannels = ({
           // Initial load / filters-sort-options change — fresh first page (blanks to the skeleton).
           await paginator.reload();
         } else {
-          // Pull-to-refresh / reconnect — first-page reset that REPLACES the list, but keeps the current
-          // channels visible during the fetch (no skeleton flash). `reset: 'yes'` re-establishes the
-          // window from page 1; `keepPreviousItems` keeps the list visible until the fresh page swaps in.
           await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
         }
       } catch (err: unknown) {
@@ -174,7 +171,10 @@ export const usePaginatedChannels = ({
 
   const refreshListWithDefaults = useStableCallback(() => refreshList());
 
-  const loadNextPage = useStableCallback(() => queryChannels('loadChannels'));
+  const loadNextPage = useStableCallback(async () => {
+    if (!paginator.isInitialized) return;
+    await queryChannels('loadChannels');
+  });
 
   /**
    * Equality check using stringified filters/options/sort ensures we don't run unnecessary queries

@@ -10,6 +10,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react-native';
+import { ChannelPaginator } from 'stream-chat';
 import type { Channel as ChannelType, StreamChat, UserResponse } from 'stream-chat';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
@@ -1029,6 +1030,33 @@ describe('ChannelList', () => {
 
       expect(firstOnSelect).not.toHaveBeenCalled();
       expect(secondOnSelect).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not load a next page before the first page', async () => {
+      jest.spyOn(chatClient, 'queryChannels').mockReturnValue(new Promise(() => {}));
+      let loadNextPage: (() => Promise<void>) | undefined;
+      const LoadNextPageProbe = () => {
+        loadNextPage = useChannelsContext().loadNextPage;
+        return null;
+      };
+      const executeQuery = jest.spyOn(ChannelPaginator.prototype, 'executeQuery');
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelListLoadingIndicator: LoadNextPageProbe }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+      // the mount query, which never resolves
+      await waitFor(() => expect(executeQuery).toHaveBeenCalledTimes(1));
+
+      await act(async () => {
+        await loadNextPage?.();
+      });
+
+      expect(executeQuery).toHaveBeenCalledTimes(1);
+      executeQuery.mockRestore();
     });
 
     it('loads the list again once a user connects after a disconnect', async () => {
