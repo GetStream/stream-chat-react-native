@@ -67,6 +67,10 @@ public class AIDictationModule: NSObject {
     // Timer used for the simple silence monitor.
     private var silenceTimer: Timer?
 
+    // Set while the permission prompts of the first `start()` are on screen. `stop()` and
+    // `cancel()` clear it, which abandons that start.
+    private var isAwaitingPermission: Bool = false
+
     // -------------------------------------------------------------------------
     // Event emitter plumbing
     // -------------------------------------------------------------------------
@@ -120,7 +124,7 @@ public class AIDictationModule: NSObject {
      */
     @objc
     public func start(_ options: NSDictionary?) {
-        if isListening {
+        if isListening || isAwaitingPermission {
             return
         }
 
@@ -142,10 +146,14 @@ public class AIDictationModule: NSObject {
             silenceTimeoutMs = DEFAULT_SILENCE_TIMEOUT_MS
         }
 
-        // Permissions
+        // Permissions: on first use, wait for the user to answer the prompts before starting.
+        // Starting right away would race the prompts and fail.
         if !hasAudioPermission() {
-            // If permissions are missing, request them and resolve via callback.
-            requestPermissions { granted in
+            isAwaitingPermission = true
+            requestPermissions { [weak self] granted in
+                guard let self = self, self.isAwaitingPermission else { return }
+                self.isAwaitingPermission = false
+
                 if !granted {
                     self.emitError(
                         self.ERROR_NO_PERMISSION,
@@ -154,9 +162,19 @@ public class AIDictationModule: NSObject {
                     self.emitState(self.STATE_IDLE)
                     return
                 }
+                self.startSession()
             }
+            return
         }
 
+        startSession()
+    }
+
+    /**
+     * Checks availability and starts the audio engine and recognition task. Called once the
+     * permissions are granted.
+     */
+    private func startSession() {
         // Availability
         guard let recognizer = SFSpeechRecognizer(locale: currentLocale), recognizer.isAvailable else {
             emitError(
@@ -197,6 +215,9 @@ public class AIDictationModule: NSObject {
      */
     @objc
     public func stop() {
+        if abandonPendingStart() {
+            return
+        }
         if !isListening {
             return
         }
@@ -221,6 +242,9 @@ public class AIDictationModule: NSObject {
      */
     @objc
     public func cancel() {
+        if abandonPendingStart() {
+            return
+        }
         if !isListening {
             return
         }
@@ -361,6 +385,17 @@ public class AIDictationModule: NSObject {
     }
 
     /**
+     * Abandons a `start()` that is still waiting for the permission prompts, so the session does
+     * not begin once they are answered. Returns `true` if there was one.
+     */
+    private func abandonPendingStart() -> Bool {
+        guard isAwaitingPermission else { return false }
+        isAwaitingPermission = false
+        emitState(STATE_IDLE)
+        return true
+    }
+
+    /**
      * Fully tears down the recognizer and audio engine and resets state.
      *
      * Intended for hard cleanup paths (e.g. deinit, React instance teardown).
@@ -422,10 +457,16 @@ public class AIDictationModule: NSObject {
         let audioSession = AVAudioSession.sharedInstance()
 
         audioSession.requestRecordPermission { micGranted in
+            // Without the microphone there is nothing to transcribe, so the speech recognition
+            // prompt is not shown.
+            guard micGranted else {
+                DispatchQueue.main.async { completion(false) }
+                return
+            }
             SFSpeechRecognizer.requestAuthorization { status in
                 let speechGranted = (status == .authorized)
                 DispatchQueue.main.async {
-                    completion(micGranted && speechGranted)
+                    completion(speechGranted)
                 }
             }
         }
