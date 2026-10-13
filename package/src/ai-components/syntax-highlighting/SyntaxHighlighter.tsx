@@ -3,10 +3,12 @@ import { Platform, type ProcessedColorValue } from 'react-native';
 
 import './prism-config';
 
-import SyntaxHighlighterHljs, { Prism as SyntaxHighlighterPrism } from 'react-syntax-highlighter';
-
-import { defaultStyle } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { prism as prismDefaultStyle } from 'react-syntax-highlighter/dist/esm/styles/prism';
+// Imported by file: Metro does not tree-shake, so the package index (every highlighter variant,
+// including the async ones) and the style indexes (every bundled theme) would all be bundled.
+import SyntaxHighlighterHljs from 'react-syntax-highlighter/dist/esm/default-highlight';
+import SyntaxHighlighterPrism from 'react-syntax-highlighter/dist/esm/prism';
+import defaultStyle from 'react-syntax-highlighter/dist/esm/styles/hljs/default-style';
+import prismDefaultStyle from 'react-syntax-highlighter/dist/esm/styles/prism/prism';
 
 import type { NativeSyntaxHighlighterProps, SyntaxHighlighterStylesheet } from './types';
 import { DEFAULT_FONT_SIZE, generateNewStylesheet, nativeRenderer } from './utils';

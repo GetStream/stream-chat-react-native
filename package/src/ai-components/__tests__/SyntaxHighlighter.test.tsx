@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { render, screen } from '@testing-library/react-native';
 
@@ -97,6 +97,24 @@ describe('ai-components syntax highlighting', () => {
     );
 
     expect(screen.getByText('const')).toBeTruthy();
+  });
+
+  it('highlights with highlight.js by default', () => {
+    setPlatform('ios');
+    render(
+      <StreamTheme>
+        <SyntaxHighlighter language='javascript'>{'const a = 1;'}</SyntaxHighlighter>
+      </StreamTheme>,
+    );
+
+    // Tokenized: the keyword is its own text node, inside a span styled by the highlight.js default
+    // theme (`hljs-keyword` is bold).
+    expect(screen.getByText('const')).toBeTruthy();
+    expect(
+      screen
+        .UNSAFE_getAllByType(Text)
+        .some((node) => StyleSheet.flatten(node.props.style)?.fontWeight === 'bold'),
+    ).toBe(true);
   });
 
   it('renders a single PerfText on Android', () => {
