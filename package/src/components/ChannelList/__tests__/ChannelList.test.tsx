@@ -26,7 +26,6 @@ import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import dispatchChannelHiddenEvent from '../../../mock-builders/event/channelHidden';
 import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
-import dispatchChannelVisibleEvent from '../../../mock-builders/event/channelVisible';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
@@ -552,10 +551,9 @@ describe('ChannelList', () => {
         ]);
       });
 
-      // v10: a `message.new` alone no longer un-hides a channel client-side (only `channel.visible`
-      // clears `data.hidden`), and there is no float-to-top, so a background message does not resurface
-      // a channel the user hid. The channel returns to the list when it becomes visible again.
-      it('should not resurface a hidden channel on a new message (channel.visible does)', async () => {
+      // The server unhides a channel on any new message without sending `channel.visible`, so a hidden
+      // channel comes back to the list with the new message, leading it as the most recent one.
+      it('should bring a hidden channel back to the list on a new message', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
@@ -565,7 +563,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
-        await waitForRenderedChannels(3);
+        const orderBefore = await waitForRenderedChannels(3);
 
         act(() => dispatchChannelHiddenEvent(chatClient, testChannel3.channel));
         await waitFor(() => {
@@ -573,19 +571,18 @@ describe('ChannelList', () => {
         });
 
         const newMessage = sendNewMessageOnChannel3();
-        // Give the async event pipeline a chance to run; the hidden channel must stay out of the list.
-        await act(async () => {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-        });
-        expect(getRenderedOrder()).toHaveLength(2);
-        expect(screen.queryByTestId(testChannel3.channel.id)).toBeNull();
-        expect(screen.queryByText(newMessage.text as string)).toBeNull();
 
-        act(() => dispatchChannelVisibleEvent(chatClient, testChannel3.channel));
         await waitFor(() => {
-          expect(getRenderedOrder()).toHaveLength(3);
+          expect(
+            within(screen.getByTestId(testChannel3.channel.id)).getByText(
+              newMessage.text as string,
+            ),
+          ).toBeTruthy();
         });
-        expect(screen.getByTestId(testChannel3.channel.id)).toBeTruthy();
+        expect(getRenderedOrder()).toEqual([
+          testChannel3.channel.id,
+          ...orderBefore.filter((id) => id !== testChannel3.channel.id),
+        ]);
       });
 
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
