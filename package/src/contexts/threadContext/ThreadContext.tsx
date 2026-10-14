@@ -13,7 +13,7 @@ export type AlsoSentToChannelHeaderPressPayload = {
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
-  threadInstance?: Thread | null;
+  thread?: Thread | null;
   /**
    * Function to handle press on the "Also sent to channel" header action.
    * @param payload - Navigation payload with the targeted message id and, from a channel list, its thread

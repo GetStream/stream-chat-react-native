@@ -29,7 +29,7 @@ describe('AttachmentCommandPicker', () => {
 
     render(
       <Chat client={chatClient}>
-        <MessageComposerProvider value={{ channel, threadInstance: undefined }}>
+        <MessageComposerProvider value={{ channel, thread: undefined }}>
           <AttachmentCommandPicker />
         </MessageComposerProvider>
       </Chat>,

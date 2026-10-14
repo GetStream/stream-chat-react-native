@@ -231,9 +231,9 @@ describe('Channel', () => {
     renderComponent(
       { channel, thread, threadList: true },
       (ctx) => {
-        const { threadInstance } = ctx as { threadInstance: { id: string } | null };
-        if (threadInstance) {
-          hasThread(threadInstance.id);
+        const { thread: contextThread } = ctx as ThreadContextValue;
+        if (contextThread) {
+          hasThread(contextThread.id);
         }
       },
       ThreadContext as React.Context<unknown>,

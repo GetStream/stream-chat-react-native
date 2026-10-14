@@ -27,7 +27,7 @@ describe('MessageComposerProvider', () => {
 
   const wrapper = ({ children }: PropsWithChildren) => (
     <Chat client={chatClient}>
-      <MessageComposerProvider value={{ channel, threadInstance: undefined }}>
+      <MessageComposerProvider value={{ channel, thread: undefined }}>
         {children}
       </MessageComposerProvider>
     </Chat>
@@ -64,7 +64,7 @@ describe('MessageComposerProvider', () => {
 
     render(
       <Chat client={chatClient}>
-        <MessageComposerProvider value={{ channel, threadInstance: undefined }}>
+        <MessageComposerProvider value={{ channel, thread: undefined }}>
           {Array.from({ length: 5 }, (_, i) => (
             <Reader key={i} />
           ))}

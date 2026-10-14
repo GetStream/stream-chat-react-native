@@ -189,7 +189,7 @@ type MessageListPropsWithContext = Pick<
     markRead: (options?: MarkReadFunctionOptions) => void;
   } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'FlatList' | 'myMessageTheme'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
-  Pick<ThreadContextValue, 'threadInstance'> & {
+  Pick<ThreadContextValue, 'thread'> & {
     /**
      * Whether the composer lets a message be sent while its attachments are still uploading
      * (`messageComposer.attachments.pendingUploadsEnabled`). Read from the composer by default.
@@ -302,7 +302,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onThreadSelect,
     readEvents,
     setFlatListRef,
-    threadInstance,
+    thread,
     threadList = false,
   } = props;
   const {
@@ -323,10 +323,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-  const paginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const paginator = threadList ? thread?.messagePaginator : channel.messagePaginator;
 
   useIncomingMessageAnnouncements({
-    activeThreadId: threadInstance?.id,
+    activeThreadId: thread?.id,
     channel,
     ownUserId: client.user?.id,
     threadList,
@@ -975,7 +975,7 @@ export const MessageList = (props: MessageListProps) => {
   const { disableTypingIndicator, FlatList, myMessageTheme } = useMessagesContext();
   const pendingUploadsEnabled = usePendingUploadsEnabled();
   const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
   return (
     <MessageListWithContext
@@ -994,7 +994,7 @@ export const MessageList = (props: MessageListProps) => {
         myMessageTheme,
         pendingUploadsEnabled,
         readEvents,
-        threadInstance,
+        thread,
         threadList,
       }}
       {...props}

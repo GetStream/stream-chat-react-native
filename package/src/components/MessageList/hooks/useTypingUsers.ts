@@ -28,7 +28,7 @@ export const useChannelTypingUsers = (channel: Channel, threadId?: string) => {
  */
 export const useTypingUsers = () => {
   const { channel } = useChannelContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
-  return useChannelTypingUsers(channel, threadInstance?.id);
+  return useChannelTypingUsers(channel, thread?.id);
 };

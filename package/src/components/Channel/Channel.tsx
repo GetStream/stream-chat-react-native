@@ -407,7 +407,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     shouldSyncChannel,
     supportedReactions = reactionData,
     t,
-    thread: threadInstance,
+    thread,
     threadList,
     topInset = 0,
     initializeOnMount = true,
@@ -468,7 +468,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * decision, and subscribing would re-render `Channel` on every jump for no benefit.
    */
   const hasFocusTarget = useStableCallback(
-    () => !!(threadInstance ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
+    () => !!(thread ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
   );
 
   const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
@@ -566,11 +566,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
     channel.sendEvent({
       event: {
-        parent_id: threadInstance?.id,
+        parent_id: thread?.id,
         type: 'typing.stop',
       },
     } as { event: StreamEvent });
-  }, [channel, threadInstance?.id]);
+  }, [channel, thread?.id]);
 
   useAppStateListener(undefined, handleAppBackground);
 
@@ -596,14 +596,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // when that window is at the newest, only if the user has paginated up into older history so leave
     // their read state alone.
     const { unsubscribe } = client.on('connection.recovered', () => {
-      if (threadInstance || channel.messagePaginator.hasMoreHead) {
+      if (thread || channel.messagePaginator.hasMoreHead) {
         return;
       }
       markRead();
     });
 
     return unsubscribe;
-  }, [channel, client, markRead, shouldSyncChannel, threadInstance]);
+  }, [channel, client, markRead, shouldSyncChannel, thread]);
 
   /**
    * Channel configs for use in disabling local functionality.
@@ -743,7 +743,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    threadInstance,
+    thread,
   });
 
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(
@@ -751,10 +751,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     [allowConcurrentAudioPlayback],
   );
 
-  const messageComposerContext = useMemo(
-    () => ({ channel, threadInstance }),
-    [channel, threadInstance],
-  );
+  const messageComposerContext = useMemo(() => ({ channel, thread }), [channel, thread]);
 
   if (!channel || blockingError) {
     // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,

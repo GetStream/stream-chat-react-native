@@ -12,7 +12,7 @@ import { useThreadContext } from '../contexts/threadContext/ThreadContext';
  */
 export const useMessagePaginator = () => {
   const { channel, threadList } = useChannelContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
-  return threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  return threadList ? thread?.messagePaginator : channel.messagePaginator;
 };

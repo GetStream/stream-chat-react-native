@@ -13,7 +13,7 @@ import { useThreadContext } from '../contexts/threadContext/ThreadContext';
  */
 export const useChannel = (): Channel => {
   const { channel } = useChannelContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
-  return threadInstance?.channel ?? channel;
+  return thread?.channel ?? channel;
 };

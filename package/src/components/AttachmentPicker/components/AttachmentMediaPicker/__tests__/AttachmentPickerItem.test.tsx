@@ -39,7 +39,7 @@ describe('AttachmentPickerItem', () => {
 
     render(
       <Chat client={chatClient}>
-        <MessageComposerProvider value={{ channel, threadInstance: undefined }}>
+        <MessageComposerProvider value={{ channel, thread: undefined }}>
           <Profiler id='cell' onRender={() => (renders += 1)}>
             {renderAttachmentPickerItem({
               item: { name: 'photo.jpg', size: 1024, type: 'image/jpeg', uri: 'file://photo.jpg' },
