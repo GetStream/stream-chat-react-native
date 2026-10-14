@@ -9,13 +9,14 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.uimanager.ViewManager;
 
 import java.util.HashMap;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class StreamChatReactNativePackage extends TurboReactPackage {
   private static final String STREAM_MULTIPART_UPLOADER_MODULE = "StreamMultipartUploader";
   private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
+  private static final String AI_DICTATION_MODULE = "AIDictation";
 
   @Nullable
   @Override
@@ -30,6 +31,11 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
     } else if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE)) {
         return createNewArchModule(
                 "com.streamchatreactnative.StreamVideoThumbnailModule",
+                reactContext
+        );
+    } else if (name.equals(AI_DICTATION_MODULE)) {
+        return createNewArchModule(
+                "com.streamchatreactnative.AIDictationModule",
                 reactContext
         );
     } else {
@@ -74,13 +80,25 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
                       false, // isCxxModule
                       true // isTurboModule
       ));
+
+      moduleInfos.put(
+              AI_DICTATION_MODULE,
+              new ReactModuleInfo(
+                      AI_DICTATION_MODULE,
+                      AI_DICTATION_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
+                      false, // isCxxModule
+                      true // isTurboModule
+      ));
       return moduleInfos;
     };
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.<ViewManager>singletonList(new StreamShimmerViewManager());
+    return Arrays.<ViewManager>asList(new StreamShimmerViewManager(), new PerfTextViewManager());
   }
 
   @Nullable

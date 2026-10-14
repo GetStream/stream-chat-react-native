@@ -20,7 +20,10 @@
     "ios",
     "*.podspec",
     "react-native.config.js",
-    "package.json"
+    "package.json",
+    "ai-components",
+    "app.plugin.js",
+    "plugin"
   ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",
@@ -30,6 +33,7 @@
     "stream-chat-react-native-core": "workspace:^"
   },
   "peerDependencies": {
+    "@shopify/react-native-skia": ">=2.0.0",
     "expo": ">=52.0.0",
     "expo-audio": "*",
     "expo-av": "*",
@@ -42,9 +46,13 @@
     "expo-media-library": "*",
     "expo-sharing": "*",
     "expo-video": "*",
-    "react-native": ">=0.76.0"
+    "react-native": ">=0.76.0",
+    "victory-native": ">=41.0.0"
   },
   "peerDependenciesMeta": {
+    "@shopify/react-native-skia": {
+      "optional": true
+    },
     "expo-audio": {
       "optional": true
     },
@@ -76,6 +84,9 @@
       "optional": true
     },
     "expo-video": {
+      "optional": true
+    },
+    "victory-native": {
       "optional": true
     }
   },

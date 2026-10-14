@@ -7,8 +7,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
+import com.streamchatreactnative.PerfTextViewManager;
 import com.streamchatreactnative.StreamShimmerViewManager;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 public class StreamChatExpoPackage extends TurboReactPackage {
   private static final String STREAM_MULTIPART_UPLOADER_MODULE = "StreamMultipartUploader";
   private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
+  private static final String AI_DICTATION_MODULE = "AIDictation";
 
   @Nullable
   @Override
@@ -26,6 +28,10 @@ public class StreamChatExpoPackage extends TurboReactPackage {
 
     if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE)) {
       return createNewArchModule("com.streamchatexpo.StreamVideoThumbnailModule", reactContext);
+    }
+
+    if (name.equals(AI_DICTATION_MODULE)) {
+      return createNewArchModule("com.streamchatexpo.AIDictationModule", reactContext);
     }
 
     return null;
@@ -57,13 +63,25 @@ public class StreamChatExpoPackage extends TurboReactPackage {
                       false, // isCxxModule
                       true // isTurboModule
               ));
+
+      moduleInfos.put(
+              AI_DICTATION_MODULE,
+              new ReactModuleInfo(
+                      AI_DICTATION_MODULE,
+                      AI_DICTATION_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
+                      false, // isCxxModule
+                      true // isTurboModule
+              ));
       return moduleInfos;
     };
   }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.<ViewManager>singletonList(new StreamShimmerViewManager());
+    return Arrays.<ViewManager>asList(new StreamShimmerViewManager(), new PerfTextViewManager());
   }
 
   @Nullable
