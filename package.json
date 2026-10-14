@@ -7,7 +7,8 @@
     "package/native-package",
     "package/expo-package",
     "examples/SampleApp",
-    "examples/ExpoMessaging"
+    "examples/ExpoMessaging",
+    "examples/ExpoChatGPTSample"
   ],
   "resolutions": {
     "@types/react": "^19.2.0"
@@ -66,15 +67,16 @@
     "release-next": "yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces foreach -A --topological-dev --include stream-chat-react-native-core --include sampleapp run extract-changelog",
     "eslint": "eslint .",
-    "lint": "prettier --list-different . && eslint . --max-warnings 0 && yarn workspace stream-chat-react-native-core validate-translations",
+    "lint": "prettier --list-different . && eslint . --max-warnings 0 && yarn workspace stream-chat-react-native-core validate-translations && yarn workspace stream-chat-react-native-core validate-entry-isolation",
     "lint-fix": "prettier --write . && eslint . --fix --max-warnings 0",
     "prettier": "prettier --list-different .",
     "prettier-fix": "prettier --write .",
-    "typecheck": "yarn workspaces foreach -A --parallel --include 'stream-chat-react-native-core' --include 'stream-chat-react-native' --include 'stream-chat-expo' --include 'sampleapp' --include 'ExpoMessaging' run typecheck",
+    "typecheck": "yarn workspaces foreach -A --parallel --include 'stream-chat-react-native-core' --include 'stream-chat-react-native' --include 'stream-chat-expo' --include 'sampleapp' --include 'ExpoMessaging' --include 'expochatgptsample' run typecheck",
     "build": "yarn workspace stream-chat-react-native-core build",
     "test:coverage": "yarn workspace stream-chat-react-native-core test:coverage",
     "test:unit": "yarn workspace stream-chat-react-native-core test:unit",
-    "minify-bundle": "uglifyjs package/lib/module/**/*.js -o package/lib/module/bundle.min.js -c -m"
+    "minify-bundle": "uglifyjs package/lib/module/*.js package/lib/module/!(ai-components)/**/*.js -o package/lib/module/bundle.min.js -c -m",
+    "minify-ai-components-bundle": "uglifyjs package/lib/module/ai-components/**/*.js -o package/lib/ai-components.min.js -c -m"
   },
   "packageManager": "yarn@4.15.0"
 }

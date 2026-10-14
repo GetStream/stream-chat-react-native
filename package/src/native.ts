@@ -334,6 +334,18 @@ export type NativeShimmerViewProps = ViewProps & {
   gradientColor?: ColorValue;
 };
 
+/**
+ * Props of the Android-only native `PerfText` component used by `stream-chat-react-native/ai-components`
+ * to render syntax highlighted code as a single native text view with colour spans.
+ */
+export type NativePerfTextProps = ViewProps & {
+  text: string;
+  colorRanges?: ReadonlyArray<{ color: number; end: number; start: number }>;
+  fontFamily?: string;
+  fontSize?: number;
+  lineHeight?: number;
+};
+
 type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
@@ -355,6 +367,7 @@ type Handlers = {
   shareImage?: ShareImage;
   Sound?: SoundType;
   NativeShimmerView?: React.ComponentType<NativeShimmerViewProps>;
+  PerfText?: React.ComponentType<NativePerfTextProps>;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
   Video?: React.ComponentType<VideoType>;
@@ -362,7 +375,7 @@ type Handlers = {
 
 export const NativeHandlers: Pick<
   Handlers,
-  'Audio' | 'FlatList' | 'NativeShimmerView' | 'Video' | 'Sound'
+  'Audio' | 'FlatList' | 'NativeShimmerView' | 'PerfText' | 'Video' | 'Sound'
 > &
   Required<
     Pick<
@@ -401,6 +414,7 @@ export const NativeHandlers: Pick<
   shareImage: fail,
   Sound: undefined,
   NativeShimmerView: undefined,
+  PerfText: undefined,
   takePhoto: fail,
   triggerHaptic: fail,
   Video: undefined,
@@ -476,6 +490,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.NativeShimmerView !== undefined) {
     NativeHandlers.NativeShimmerView = handlers.NativeShimmerView;
+  }
+
+  if (handlers.PerfText !== undefined) {
+    NativeHandlers.PerfText = handlers.PerfText;
   }
 
   if (handlers.takePhoto !== undefined) {

@@ -105,4 +105,13 @@ using namespace facebook::react;
 
 @end
 
+// React Native 0.76 resolves third-party Fabric components through a `<ComponentName>Cls()` function
+// (RCTThirdPartyFabricComponentsProvider); 0.77+ uses `codegenConfig.ios.componentProvider` instead.
+// The provider declares it with C linkage, so it must be defined as such to link.
+// This can be removed once the SDK's minimum version moves beyond 0.76.
+extern "C" Class<RCTComponentViewProtocol> StreamShimmerViewCls(void)
+{
+  return StreamShimmerViewComponentView.class;
+}
+
 #endif
