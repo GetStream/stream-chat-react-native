@@ -1,5 +1,11 @@
 # Change Log
 
+## [9.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.4...v9.10.0) (2026-10-14)
+
+### Features
+
+* ai-components-js port ([#3856](https://github.com/GetStream/stream-chat-react-native/issues/3856)) ([0e8d49a](https://github.com/GetStream/stream-chat-react-native/commit/0e8d49af8993d2f2dc3ea3e5d2858217e0888317))
+
 ## [9.9.4](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.3...v9.9.4) (2026-10-12)
 
 ### Bug Fixes
