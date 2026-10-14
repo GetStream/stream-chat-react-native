@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.16.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.3...sampleapp@v4.16.0) (2026-10-14)
+
+### Features
+
+* ai-components-js port ([#3856](https://github.com/GetStream/stream-chat-react-native/issues/3856)) ([0e8d49a](https://github.com/GetStream/stream-chat-react-native/commit/0e8d49af8993d2f2dc3ea3e5d2858217e0888317))
+
 ## [4.15.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.2...sampleapp@v4.15.3) (2026-10-08)
 
 ### Bug Fixes
