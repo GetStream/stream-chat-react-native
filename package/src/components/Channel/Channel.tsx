@@ -508,6 +508,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
         return;
       }
 
+      // a draft has no id and is marked initialized and querying it would create it on the server
+      if (channel.isProvisional && channel.initialized) {
+        return;
+      }
+
       // Keep the message-list page light: the list's per-update commit cost scales with the number
       // of loaded messages, and the paginator otherwise defaults to a 100-message page.
       channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;

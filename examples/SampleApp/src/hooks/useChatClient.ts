@@ -14,7 +14,7 @@ import { SqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
 import AsyncStore from '../utils/AsyncStore';
-import { getTokenOrProvider, SAMPLE_APP_API_KEY } from '../utils/tokenProvider';
+import { clearLastToken, getTokenOrProvider, SAMPLE_APP_API_KEY } from '../utils/tokenProvider';
 
 const messaging = getMessaging();
 
@@ -74,7 +74,12 @@ export const useChatClient = () => {
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance(config.apiKey, {
-      axiosRequestConfig: { timeout: 6000 },
+      client: {
+        axiosRequestConfig: { timeout: 6000 },
+        // keeps the user when connecting fails offline, so the app opens on its offline data and
+        // reconnects once the network is back
+        persistUserOnConnectionFailure: true,
+      },
       // logger: (type, msg) => console.log(type, msg)
     });
 
@@ -199,6 +204,7 @@ export const useChatClient = () => {
   };
 
   const logout = async () => {
+    if (chatClient?.userID) await clearLastToken(chatClient.userID);
     await SqliteClient.resetDB();
     setChatClient(null);
     chatClient?.disconnectUser();

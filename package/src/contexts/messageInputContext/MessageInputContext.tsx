@@ -28,7 +28,6 @@ import { File } from '../../types/types';
 import { compressedImageURI } from '../../utils/compressImage';
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
-import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
@@ -193,7 +192,6 @@ export const MessageInputProvider = ({
   const channelCapabilities = useOwnCapabilitiesContext();
   const [audioRecorderManager] = useState(new AudioRecorderManager());
 
-  const { threadInstance } = useThreadContext();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<InputBoxRef | null>(null);
 
@@ -445,7 +443,6 @@ export const MessageInputProvider = ({
     pickFile,
     setInputBoxRef,
     takeAndUploadImage,
-    threadInstance,
     uploadNewFile,
     ...value,
     closePollCreationDialog,

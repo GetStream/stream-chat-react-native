@@ -12,8 +12,8 @@ import { netInfoStatusReporter } from '../useConnectionLifecycle';
 describe('the NetInfo reporter at client construction', () => {
   it('is installed before anything renders, so the socket fallback is never reached', () => {
     const client = new StreamChat('key', {
-      config: { client: { networkConnection: { statusReporter: netInfoStatusReporter } } },
-    } as never);
+      client: { networkConnection: { statusReporter: netInfoStatusReporter } },
+    });
 
     expect(client.networkConnection.config.statusReporter).toBe(netInfoStatusReporter);
     expect(NetInfo.addEventListener).toHaveBeenCalled();

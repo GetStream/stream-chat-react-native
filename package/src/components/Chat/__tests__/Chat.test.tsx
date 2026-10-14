@@ -196,6 +196,29 @@ describe('Chat', () => {
     expect('isOnline' in context).toBe(false);
     expect('connectionRecovering' in context).toBe(false);
   });
+
+  it('keeps the user on a failed connect only while offline support is enabled', async () => {
+    // Assigning the old client field compiled and did nothing, so this guards the config write.
+    const { rerender } = render(
+      <Chat client={chatClient} enableOfflineSupport>
+        <View testID='children' />
+      </Chat>,
+    );
+
+    await waitFor(() =>
+      expect(chatClient.config.getConfig('client')?.persistUserOnConnectionFailure).toBe(true),
+    );
+
+    rerender(
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
+    );
+
+    await waitFor(() =>
+      expect(chatClient.config.getConfig('client')?.persistUserOnConnectionFailure).toBe(false),
+    );
+  });
 });
 
 describe('ChatContext', () => {

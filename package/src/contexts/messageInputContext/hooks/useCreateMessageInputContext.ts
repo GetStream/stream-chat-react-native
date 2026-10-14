@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import type { ThreadContextValue } from '../../threadContext/ThreadContext';
 import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = ({
@@ -40,10 +39,7 @@ export const useCreateMessageInputContext = ({
   deleteVoiceRecording,
   uploadVoiceRecording,
   stopVoiceRecording,
-  threadInstance,
-}: MessageInputContextValue & Pick<ThreadContextValue, 'threadInstance'>) => {
-  const threadId = threadInstance?.id;
-
+}: MessageInputContextValue) => {
   const messageInputContext: MessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
@@ -84,7 +80,7 @@ export const useCreateMessageInputContext = ({
       stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hasCommands, threadId, showPollCreationDialog],
+    [hasCommands, showPollCreationDialog],
   );
 
   return messageInputContext;

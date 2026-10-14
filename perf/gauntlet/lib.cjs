@@ -16,7 +16,7 @@ const tokenFor = async (id) => {
   return token;
 };
 const connect = async (id) => {
-  const client = new StreamChat(API_KEY, { allowServerSideConnect: true });
+  const client = new StreamChat(API_KEY, { client: { allowServerSideConnect: true } });
   await client.connectUser({ id }, await tokenFor(id));
   return client;
 };
