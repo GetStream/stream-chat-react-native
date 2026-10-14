@@ -10931,6 +10931,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expochatgptsample@workspace:examples/ExpoChatGPTSample":
+  version: 0.0.0-use.local
+  resolution: "expochatgptsample@workspace:examples/ExpoChatGPTSample"
+  dependencies:
+    "@babel/plugin-transform-export-namespace-from": "npm:^7.27.1"
+    "@react-native-community/netinfo": "npm:12.0.1"
+    "@rnx-kit/metro-config": "npm:^2.1.2"
+    "@shopify/react-native-skia": "npm:^2.13.0"
+    "@stream-io/typescript-config": "workspace:^"
+    "@types/react": "npm:~19.2.10"
+    expo: "npm:^57.0.7"
+    expo-clipboard: "npm:~57.0.1"
+    expo-constants: "npm:~57.0.6"
+    expo-image-manipulator: "npm:~57.0.5"
+    expo-image-picker: "npm:~57.0.5"
+    expo-linking: "npm:~57.0.3"
+    expo-router: "npm:~57.0.7"
+    react: "npm:19.2.3"
+    react-native: "npm:0.86.0"
+    react-native-gesture-handler: "npm:~2.32.0"
+    react-native-reanimated: "npm:4.5.2"
+    react-native-safe-area-context: "npm:~5.7.0"
+    react-native-screens: "npm:4.26.2"
+    react-native-svg: "npm:15.15.4"
+    react-native-teleport: "npm:^1.1.12"
+    react-native-worklets: "npm:0.11.1"
+    stream-chat: "npm:^9.54.0"
+    stream-chat-expo: "workspace:^"
+    stream-chat-react-native-core: "workspace:^"
+    typescript: "npm:6.0.3"
+    victory-native: "npm:^42.0.1"
+  languageName: unknown
+  linkType: soft
+
 "exponential-backoff@npm:^3.1.1":
   version: 3.1.1
   resolution: "exponential-backoff@npm:3.1.1"

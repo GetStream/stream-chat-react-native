@@ -1,0 +1,12 @@
+{
+  "extends": ["expo/tsconfig.base", "@stream-io/typescript-config/base.json"],
+  "compilerOptions": {
+    "paths": {
+      // Same as ExpoMessaging: this workspace keeps its own React Native (Expo 57 -> RN 0.86) while
+      // the SDK workspace is on RN 0.87, so the whole program is pinned to this workspace's copy.
+      "react-native": ["./node_modules/react-native"],
+      "react-native/*": ["./node_modules/react-native/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
+}
