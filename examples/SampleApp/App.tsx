@@ -42,7 +42,6 @@ import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
-import { AIAssistantScreen } from './src/screens/AIAssistantScreen';
 import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen.tsx';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
@@ -408,11 +407,6 @@ const HomeScreen = () => {
           gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
           headerShown: false,
         }}
-      />
-      <Stack.Screen
-        component={AIAssistantScreen}
-        name='AIAssistantScreen'
-        options={{ headerShown: false }}
       />
       <Stack.Screen
         name='MapScreen'

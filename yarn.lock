@@ -18880,7 +18880,6 @@ __metadata:
   resolution: "sampleapp@workspace:examples/SampleApp"
   dependencies:
     "@babel/core": "npm:^7.29.0"
-    "@babel/plugin-transform-export-namespace-from": "npm:^7.27.1"
     "@babel/runtime": "npm:^7.29.2"
     "@d11/react-native-fast-image": "npm:^8.13.0"
     "@emoji-mart/data": "npm:^1.2.1"
@@ -18909,7 +18908,6 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.18.3"
     "@rnx-kit/metro-config": "npm:^2.1.0"
     "@shopify/flash-list": "npm:^2.3.3"
-    "@shopify/react-native-skia": "npm:^2.13.0"
     "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
     "@types/react": "npm:^19.2.0"
@@ -18938,7 +18936,6 @@ __metadata:
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
-    victory-native: "npm:^42.0.1"
   languageName: unknown
   linkType: soft
 

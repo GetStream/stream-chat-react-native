@@ -184,27 +184,6 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
                 New Group
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('HomeScreen', {
-                  screen: 'AIAssistantScreen',
-                })
-              }
-              style={[styles.menuItem, isRTL && styles.rowReverse]}
-            >
-              <Edit height={24} stroke={grey} width={24} />
-              <Text
-                style={[
-                  styles.menuTitle,
-                  isRTL && { textAlign: 'right' },
-                  {
-                    color: black,
-                  },
-                ]}
-              >
-                AI Assistant
-              </Text>
-            </TouchableOpacity>
             <View style={[styles.menuItem, styles.rtlMenuItem, isRTL && styles.rowReverse]}>
               <View style={[styles.rtlMenuItemContent, isRTL && styles.rowReverse]}>
                 <User height={24} pathFill={grey} width={24} />
