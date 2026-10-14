@@ -394,7 +394,6 @@ describe('installNativeMultipartAdapter', () => {
     installNativeMultipartAdapter(client);
 
     expect(client.axiosInstance.defaults.adapter).toBe(defaultAdapter);
-    expect(client.axiosInstance.defaults.adapter).toEqual(['xhr', 'http', 'fetch']);
   });
 
   it('keeps a custom default adapter for non-multipart requests', async () => {
@@ -460,9 +459,71 @@ describe('installNativeMultipartAdapter', () => {
     };
 
     await expect(client.axiosInstance.post('/uploads/image', formData)).rejects.toThrow(
-      /replaced the file body/,
+      /request body changed/,
     );
     expect(NativeHandlers.multipartUpload).not.toHaveBeenCalled();
+  });
+
+  it('routes a FormData upload natively through axios’ default request transform', async () => {
+    // Every other test swaps `transformRequest` for a no-op. This one keeps axios' default, which
+    // runs between the install's interceptor (sees the body before it) and the native adapter (sees
+    // it after), so the body has to pass through it untouched. axios captures the global FormData
+    // when it loads, so it is loaded fresh with React Native's FormData installed globally — as it
+    // is in an app — instead of Node's.
+    const originalFormData = global.FormData;
+    const RNFormData = jest.requireActual('react-native/Libraries/Network/FormData').default;
+    global.FormData = RNFormData;
+
+    try {
+      let isolated!: {
+        getTestClient: typeof getTestClient;
+        installNativeMultipartAdapter: typeof installNativeMultipartAdapter;
+        NativeHandlers: typeof NativeHandlers;
+      };
+      jest.isolateModules(() => {
+        isolated = {
+          getTestClient: require('../../mock-builders/mock').getTestClient,
+          installNativeMultipartAdapter: require('../installNativeMultipartAdapter')
+            .installNativeMultipartAdapter,
+          NativeHandlers: require('../../native').NativeHandlers,
+        };
+      });
+      isolated.NativeHandlers.multipartUpload = NativeHandlers.multipartUpload;
+
+      const client = isolated.getTestClient();
+      const defaultAdapter = jest.fn();
+      client.axiosInstance.defaults.adapter = defaultAdapter;
+      isolated.installNativeMultipartAdapter(client);
+
+      const formData = new RNFormData();
+      formData.append('file', {
+        name: 'test.jpg',
+        type: 'image/jpeg',
+        uri: 'file:///tmp/test.jpg',
+      });
+      formData.append('user', JSON.stringify({ id: 'john' }));
+
+      const response = await client.axiosInstance.postForm('/uploads/image', formData);
+
+      expect(defaultAdapter).not.toHaveBeenCalled();
+      expect(NativeHandlers.multipartUpload).toHaveBeenCalledWith(
+        expect.objectContaining({
+          parts: [
+            {
+              fieldName: 'file',
+              fileName: 'test.jpg',
+              kind: 'file',
+              mimeType: 'image/jpeg',
+              uri: 'file:///tmp/test.jpg',
+            },
+            { fieldName: 'user', kind: 'text', value: JSON.stringify({ id: 'john' }) },
+          ],
+        }),
+      );
+      expect(response.status).toBe(200);
+    } finally {
+      global.FormData = originalFormData;
+    }
   });
 
   it('does not install when native multipart upload is unavailable', () => {

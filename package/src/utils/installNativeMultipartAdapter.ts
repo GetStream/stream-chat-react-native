@@ -260,8 +260,9 @@ const nativeMultipartAxiosAdapter = async (
 const createNativeMultipartAdapter =
   (client: StreamChat): AxiosAdapter =>
   (config) => {
-    // Built from the config the adapter receives, so it reflects every request interceptor —
-    // including those registered before this one, which axios runs after it.
+    // Built from the config the adapter receives, so it reflects everything that ran after routing:
+    // request interceptors registered before this one (axios runs them after it) and
+    // `transformRequest`.
     const nativeMultipartRequest = createNativeMultipartRequest(
       client,
       config as NativeMultipartAxiosRequestConfig,
@@ -270,7 +271,7 @@ const createNativeMultipartAdapter =
     if (!nativeMultipartRequest) {
       return Promise.reject(
         new Error(
-          'Native multipart upload: a request interceptor replaced the file body after it was routed to the native uploader.',
+          'Native multipart upload: the request body changed after it was routed to the native uploader.',
         ),
       );
     }
