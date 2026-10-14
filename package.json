@@ -75,7 +75,8 @@
     "build": "yarn workspace stream-chat-react-native-core build",
     "test:coverage": "yarn workspace stream-chat-react-native-core test:coverage",
     "test:unit": "yarn workspace stream-chat-react-native-core test:unit",
-    "minify-bundle": "uglifyjs package/lib/module/**/*.js -o package/lib/module/bundle.min.js -c -m"
+    "minify-bundle": "uglifyjs package/lib/module/*.js package/lib/module/!(ai-components)/**/*.js -o package/lib/module/bundle.min.js -c -m",
+    "minify-ai-components-bundle": "uglifyjs package/lib/module/ai-components/**/*.js -o package/lib/ai-components.min.js -c -m"
   },
   "packageManager": "yarn@4.15.0"
 }
