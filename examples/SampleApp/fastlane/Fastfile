@@ -213,7 +213,10 @@ lane :frameworks_sizes do
 end
 
 lane :show_frameworks_sizes do |options|
-  next unless is_check_required(sources: ['package/'], force_check: @force_check)
+  # Besides the SDK itself, changes to how the size is measured (this lane, its plugin, the root
+  # `minify-*` scripts) re-run the check too.
+  sources = ['package/', 'package.json', 'examples/SampleApp/fastlane/', 'examples/SampleApp/Gemfile.lock']
+  next unless is_check_required(sources: sources, force_check: @force_check)
 
   sizes = options[:sizes] || frameworks_sizes
   show_sdk_size(branch_sizes: sizes, github_repo: github_repo, size_ext: sdk_size_ext)
