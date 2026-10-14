@@ -14,7 +14,7 @@ import Animated from 'react-native-reanimated';
 
 import debounce from 'lodash/debounce';
 
-import type { LocalMessage } from 'stream-chat';
+import type { LocalMessage, Thread } from 'stream-chat';
 
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
@@ -236,9 +236,9 @@ type MessageListPropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param message A message object to open the thread upon.
+     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
      */
-    onThreadSelect?: (message: LocalMessage | null) => void;
+    onThreadSelect?: (thread: Thread) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *

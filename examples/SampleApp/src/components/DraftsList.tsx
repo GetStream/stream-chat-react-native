@@ -11,7 +11,6 @@ import {
   convertTimestampToDate,
   DraftMessage,
   DraftResponse,
-  LocalMessage,
   MessageResponse,
   TimestampNS,
 } from 'stream-chat';
@@ -55,12 +54,7 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
 
       if (type === 'thread' && thread?.id) {
         navigation.navigate('ThreadScreen', {
-          // `thread` is a draft's `parent_message` (`MessageResponseBase`, with
-          // string timestamps). ThreadScreen consumes it as a thread root typed
-          // as `LocalMessage | ThreadType`; the shapes only differ in date field
-          // types, so a targeted cast preserves the existing behavior. See the
-          // `DraftItemProps.thread` TODO about tightening this type upstream.
-          thread: thread as unknown as LocalMessage,
+          thread: client.threads.ensure({ channel: resultChannel, parentMessage: thread }),
           channel: resultChannel,
         });
       } else if (type === 'channel') {

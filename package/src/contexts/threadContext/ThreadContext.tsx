@@ -1,15 +1,14 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { LocalMessage, Thread } from 'stream-chat';
+import { Thread } from 'stream-chat';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export type ThreadType = { thread: LocalMessage; threadInstance: Thread };
 export type AlsoSentToChannelHeaderPressPayload = {
-  parentMessage?: LocalMessage;
   targetedMessageId: string;
+  thread?: Thread;
 };
 
 export type ThreadContextValue = {
@@ -17,7 +16,7 @@ export type ThreadContextValue = {
   threadInstance?: Thread | null;
   /**
    * Function to handle press on the "Also sent to channel" header action.
-   * @param payload - Navigation payload with optional parent thread message and targeted message id
+   * @param payload - Navigation payload with the targeted message id and, from a channel list, its thread
    * @returns void
    */
   onAlsoSentToChannelHeaderPress?: (payload: AlsoSentToChannelHeaderPressPayload) => void;

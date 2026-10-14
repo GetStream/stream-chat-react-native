@@ -2,12 +2,11 @@ import React, { useMemo } from 'react';
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { formatMessage } from 'stream-chat';
-
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -70,6 +69,7 @@ export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithConte
 
 export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
   const { onAlsoSentToChannelHeaderPress } = useThreadContext();
+  const { client } = useChatContext();
   const { channel, threadList } = useChannelContext();
   const { message } = useMessageContext();
 
@@ -87,15 +87,15 @@ export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
 
     try {
       const { messages } = await channel.getMessagesById([message.parent_id]);
-      const parentThreadMessage = formatMessage(messages?.[0]);
+      const parentMessage = messages?.[0];
 
-      if (!parentThreadMessage) {
+      if (!parentMessage) {
         return;
       }
 
       onAlsoSentToChannelHeaderPress?.({
-        parentMessage: formatMessage(parentThreadMessage),
         targetedMessageId: message.id,
+        thread: client.threads.ensure({ channel, parentMessage }),
       });
     } catch (error) {
       console.error('Error querying parent message:', error);

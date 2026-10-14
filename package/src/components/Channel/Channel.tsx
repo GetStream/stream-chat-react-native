@@ -5,7 +5,6 @@ import {
   ChannelConfig,
   ChannelDataState,
   ChannelLifecycleState,
-  LocalMessage,
   MessageComposerConfig,
   Event as StreamEvent,
   Thread,
@@ -49,11 +48,7 @@ import {
   OwnCapabilitiesProvider,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  ThreadContextValue,
-  ThreadProvider,
-  ThreadType,
-} from '../../contexts/threadContext/ThreadContext';
+import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -234,7 +229,11 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'>
   > & {
     shouldSyncChannel: boolean;
-    thread: ThreadType;
+    /**
+     * The thread to render. Pass the instance a thread was opened with (`onThreadSelect` on the
+     * message and thread lists), or one from `client.threads.ensure({ channel, parentMessage })`.
+     */
+    thread?: Thread | null;
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -408,7 +407,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     shouldSyncChannel,
     supportedReactions = reactionData,
     t,
-    thread: threadFromProps,
+    thread: threadInstance,
     threadList,
     topInset = 0,
     initializeOnMount = true,
@@ -418,23 +417,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const components = useComponentsContext();
   const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
 
-  const { thread: threadProps, threadInstance: threadInstanceFromProps } = threadFromProps;
-
   const styles = useStyles();
-  // The active thread is fully prop-driven: derive it synchronously during render so the reply
-  // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
-  // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
-  const thread = threadProps ?? null;
-  const threadInstance = useMemo(() => {
-    if (threadInstanceFromProps) {
-      return threadInstanceFromProps;
-    }
-    if (!threadProps?.id || !channel) {
-      return null;
-    }
-    return client.threads.ensure({ channel, parentMessage: threadProps });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadInstanceFromProps, threadProps?.id, channel, client]);
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
@@ -583,11 +566,11 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     }
     channel.sendEvent({
       event: {
-        parent_id: thread?.id,
+        parent_id: threadInstance?.id,
         type: 'typing.stop',
       },
     } as { event: StreamEvent });
-  }, [channel, thread?.id]);
+  }, [channel, threadInstance?.id]);
 
   useAppStateListener(undefined, handleAppBackground);
 
@@ -613,14 +596,14 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     // when that window is at the newest, only if the user has paginated up into older history so leave
     // their read state alone.
     const { unsubscribe } = client.on('connection.recovered', () => {
-      if (thread || channel.messagePaginator.hasMoreHead) {
+      if (threadInstance || channel.messagePaginator.hasMoreHead) {
         return;
       }
       markRead();
     });
 
     return unsubscribe;
-  }, [channel, client, markRead, shouldSyncChannel, thread]);
+  }, [channel, client, markRead, shouldSyncChannel, threadInstance]);
 
   /**
    * Channel configs for use in disabling local functionality.
@@ -824,10 +807,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 };
 
-export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'thread'>> &
-  Pick<ChannelPropsWithContext, 'channel'> & {
-    thread?: LocalMessage | ThreadType | null;
-  };
+export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel'>> &
+  Pick<ChannelPropsWithContext, 'channel'>;
 
 /**
  *
@@ -845,18 +826,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
     props.notificationHostId ??
     (channel?.cid ? getChannelNotificationHostId(channel.cid) : undefined);
 
-  const threadFromProps = props?.thread;
-  const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
-  const threadMessage = (
-    threadInstance ? (threadFromProps as ThreadType).thread : threadFromProps
-  ) as LocalMessage;
-
-  const thread: ThreadType = {
-    thread: threadMessage,
-    threadInstance,
-  };
-
-  const shouldSyncChannel = threadMessage?.id ? !!props.threadList : true;
+  const shouldSyncChannel = props.thread ? !!props.threadList : true;
 
   const channelWithContext = (
     <ChannelWithContext
@@ -867,7 +837,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       {...props}
       channel={channel}
       shouldSyncChannel={shouldSyncChannel}
-      thread={thread}
     />
   );
 

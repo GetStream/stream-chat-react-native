@@ -166,7 +166,8 @@ means changed. Details in the linked section.
 | `useThreadContext().loadMoreThread()` / `loadMoreRecentThread()` | `threadInstance.messagePaginator.toTail()` / `.toHead()` | §10 |
 | `useThreadContext().threadHasMore` / `threadLoadingMore` | `threadInstance.messagePaginator.state.hasMoreTail` / `.isLoading` | §10 |
 | `useThreadContext().reloadThread()` | `threadInstance.reload()` | §10 |
-| `openThread(msg)` / `closeThread()` | lift `onThreadSelect` → `<Channel thread={msg \| null} />` | §10.1 |
+| `openThread(msg)` / `closeThread()` | lift `onThreadSelect` → `<Channel thread={thread \| null} />` | §10.1 |
+| `ThreadType` / `<Channel thread={message}>` | a `Thread` instance; `client.threads.ensure({ channel, parentMessage })` builds one from a message | §10.1 |
 | `useMessageComposerContext().thread` | `threadInstance` | §10.2 |
 | `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
 | `<MessageList thread / targetedMessage / loadMoreThread …>` props | removed — list reads `threadInstance` + paginator internally | §12 |
@@ -652,19 +653,40 @@ into your own state from a list's `onThreadSelect`, then render
 `<Channel thread={...}>`; set it back to `null` to close.
 
 ```tsx
-const [thread, setThread] = useState<LocalMessage | null>(null);
+const [thread, setThread] = useState<Thread | null>(null);
 
 <MessageList onThreadSelect={setThread} />
-<Channel thread={thread} /* thread reply UI renders when set */ />
+{thread ? (
+  <Channel channel={thread.channel} thread={thread} threadList>
+    <Thread />
+  </Channel>
+) : null}
 ```
 
-`<Channel>`'s `thread` prop accepts `LocalMessage | ThreadType | null` (where
-`ThreadType = { thread: LocalMessage; threadInstance: Thread }`).
+Every thread API takes and passes a `stream-chat` `Thread` instance. `<Channel>`'s `thread` prop is
+`Thread | null`, and `onThreadSelect` is `(thread: Thread) => void` on `MessageList`,
+`MessageFlashList`, `Message` and `ThreadList`. The parent message is on
+`thread.state.getLatestValue().parentMessage` and the channel on `thread.channel`.
 
-> **`onThreadSelect` has different signatures per surface** — wire the right one:
-> - `MessageList` / `MessageFlashList`: `(message: LocalMessage | null) => void`
-> - message-level (`MessageProps`): `(message: LocalMessage) => void`
-> - `ThreadList` (`ThreadsContext`): `(thread: ThreadType, channel: Channel) => void`
+`ThreadType` (`{ thread: LocalMessage; threadInstance: Thread }`) is removed, and `<Channel>` no
+longer accepts a parent message. Where you only have the message, for example from a push
+notification, a deep link or a draft, build the thread with `client.threads.ensure`. It returns
+the instance the client already holds for that parent, or registers a new one.
+
+```diff
+- navigation.navigate('ThreadScreen', { thread: parentMessage });
++ navigation.navigate('ThreadScreen', {
++   thread: client.threads.ensure({ channel, parentMessage }),
++ });
+```
+
+```diff
+- <ThreadList onThreadSelect={({ thread, threadInstance }, channel) => open(threadInstance, channel)} />
++ <ThreadList onThreadSelect={(thread) => open(thread, thread.channel)} />
+```
+
+`onAlsoSentToChannelHeaderPress` receives `{ targetedMessageId, thread? }`. `thread` replaces
+`parentMessage` and is set when the header is pressed in a channel list.
 
 ### 10.2 Removed thread-related props / context fields
 
