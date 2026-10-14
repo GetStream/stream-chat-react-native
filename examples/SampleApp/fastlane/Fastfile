@@ -205,9 +205,10 @@ lane :frameworks_sizes do
     sh('yarn minify-bundle')
     sh('yarn minify-ai-components-bundle')
 
-    js_bundle_size = file_size(path: 'package/lib/module/bundle.min.js')
-    UI.message("ai_components_bundle_size: #{file_size(path: 'package/lib/ai-components.min.js').round} KB")
-    { js_bundle_size: js_bundle_size }
+    {
+      js_bundle_size: file_size(path: 'package/lib/module/bundle.min.js'),
+      ai_components_size: file_size(path: 'package/lib/ai-components.min.js')
+    }
   end
 end
 
