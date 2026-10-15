@@ -193,6 +193,51 @@ describe('Message', () => {
     expect(chatClient.threads.get(parentMessage.id)).toBe(thread);
   });
 
+  it('reuses the registered thread of the parent without fetching it', async () => {
+    const parentMessage = channel.state.formatMessage(generateMessage({ reply_count: 1, user }));
+    const registeredThread = chatClient.threads.ensure({ channel, parentMessage });
+    const reply = channel.state.formatMessage(
+      generateMessage({ parent_id: parentMessage.id, show_in_channel: true, user }),
+    );
+    const getMessagesById = jest.spyOn(channel, 'getMessagesById');
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const { getByText } = renderMessage({ message: reply }, { onAlsoSentToChannelHeaderPress });
+
+    await waitFor(() => expect(getByText('Replied to a thread')).toBeTruthy());
+    fireEvent.press(getByText('View'));
+
+    await waitFor(() =>
+      expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({
+        targetedMessageId: reply.id,
+        thread: registeredThread,
+      }),
+    );
+    expect(getMessagesById).not.toHaveBeenCalled();
+  });
+
+  it('builds the thread from a loaded parent without fetching it', async () => {
+    const parentMessage = channel.state.formatMessage(generateMessage({ reply_count: 1, user }));
+    chatClient.messageStore.upsert(parentMessage);
+    const reply = channel.state.formatMessage(
+      generateMessage({ parent_id: parentMessage.id, show_in_channel: true, user }),
+    );
+    const getMessagesById = jest.spyOn(channel, 'getMessagesById');
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const { getByText } = renderMessage({ message: reply }, { onAlsoSentToChannelHeaderPress });
+
+    await waitFor(() => expect(getByText('Replied to a thread')).toBeTruthy());
+    expect(chatClient.threads.get(parentMessage.id)).toBeUndefined();
+    fireEvent.press(getByText('View'));
+
+    await waitFor(() => expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledTimes(1));
+    expect(getMessagesById).not.toHaveBeenCalled();
+    const { thread } = onAlsoSentToChannelHeaderPress.mock.calls[0][0];
+    expect(thread.id).toBe(parentMessage.id);
+    expect(chatClient.threads.get(parentMessage.id)).toBe(thread);
+  });
+
   it('passes only the targeted message when "View" is pressed on a reply in the thread', async () => {
     const parentMessage = channel.state.formatMessage(generateMessage({ reply_count: 1, user }));
     const thread = chatClient.threads.ensure({ channel, parentMessage });
