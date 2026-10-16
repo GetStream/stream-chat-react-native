@@ -92,9 +92,9 @@
   },
   "devDependencies": {
     "@stream-io/typescript-config": "workspace:^",
-    "expo": "^57.0.7",
-    "expo-audio": "patch:expo-audio@npm%3A57.0.2#~/.yarn/patches/expo-audio-npm-57.0.2-7a40cb0b0a.patch",
-    "expo-image-manipulator": "~57.0.5",
+    "expo": "^58.0.8",
+    "expo-audio": "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch",
+    "expo-image-manipulator": "~58.0.14",
     "typescript": "6.0.3"
   },
   "scripts": {
