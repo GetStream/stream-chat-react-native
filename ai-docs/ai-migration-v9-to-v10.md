@@ -98,6 +98,9 @@ rg 'serverConfig\?\.(typing_events|read_events|replies|user_message_reminders|de
 # §14–§15 — hooks
 rg '\b(useMutedUsers|useCreateChannelContext|useCreateMessagesContext|useCreateThreadContext|useCreateMessageInputContext)\b' src/
 
+# §15.1 — message action hooks take no arguments
+rg '\b(useMessageActions|useMessageActionHandlers)\(\s*\{|\bMessageActionsHookProps\b' src/
+
 # §16 — behavioral (no symbol; review if you rely on send/mark-read/page-size behavior)
 rg '\b(sendMessage|SendMessageDisallowedIndicator)\b' src/
 
@@ -175,6 +178,7 @@ means changed. Details in the linked section.
 | `<Channel messages / loadingMore / threadMessages / setThreadMessages …>` props | removed — state lives in the paginator | §13 |
 | `useMutedUsers(channel)` | `useMutedUsers()` | §14 |
 | `useCreateTypingContext` / `useCreatePaginatedMessageListContext` | removed (their contexts are gone) | §15 |
+| `useMessageActions({ channel, client, message, … })` / `useMessageActionHandlers({ … })` | `useMessageActions()` / `useMessageActionHandlers()` inside a message; `MessageActionsHookProps` removed | §15.1 |
 | initial message-list page size ~100 | 25 — override via `channel.messagePaginator.pageSize` | §16.1 |
 | `sendMessage` errors swallowed | `sendMessage` throws — handle the rejection | §16.2 |
 | `stream-chat` v9 | `stream-chat` `^10.x` required | §17 |
@@ -564,8 +568,8 @@ updateMessage(updatedMessage: MessageResponse | LocalMessage): void; // single-a
 
 `updateMessage` is retyped to a single argument (was
 `(msg, extraState?, throttled?) => void`). This also affects
-`MessageProps.updateMessage` overrides and `useMessageActions` (which dropped its
-`openThread` prop).
+`MessageProps.updateMessage` overrides. `useMessageActions` now takes no
+arguments at all (§15.1).
 
 > **Note:** optimistic reactions are applied only when `enableOfflineSupport` is
 > on — this is **unchanged from v9** (`develop` gated the same optimistic block
@@ -1008,6 +1012,43 @@ parameter shapes dropped the removed fields:
 - `useCreateMessageInputContext` — no longer takes a thread.
 - `useCreateTypingContext` and `useCreatePaginatedMessageListContext` are
   **removed entirely** (§2/§3).
+
+## 15.1 `useMessageActions` / `useMessageActionHandlers` take no arguments
+
+Both hooks read everything from the contexts of the message they are called in
+(`MessageContext`, `MessagesContext`, `ChannelContext`, `ChatContext`, …), so
+the caller no longer collects ~28 arguments from four contexts.
+`MessageActionsHookProps` is removed. Call them inside a message: a custom
+message component, a custom `MessageActionList`, or overlay content.
+
+```tsx
+// Before
+const actions = useMessageActions({
+  channel,
+  client,
+  deleteMessage,
+  handleDelete,
+  message,
+  setEditingState,
+  t,
+  /* … */
+});
+const handlers = useMessageActionHandlers({ channel, client, message /* … */ });
+
+// After
+const actions = useMessageActions(); // same return shape: { copyMessage, deleteMessage, …, handleReaction }
+const handlers = useMessageActionHandlers(); // same shape: { handleCopyMessage, …, handleToggleReaction }
+```
+
+- `useMessageActionHandlers()` returns the message's own handler instance (also
+  on `MessageContext` as `messageActionHandlers`); every caller shares it.
+- The `handleX` callbacks (`handleDelete`, `handleCopy`, …) and
+  `selectReaction` are read from `MessagesContext`, i.e. the props set on
+  `<Channel>`. Passing them directly to a `<Message>` no longer reaches the
+  action menu; set them on `<Channel>`.
+- The `messageActions` prop (array or function) and `MessageActionsParams` are
+  unchanged. The SDK now builds the actions only when a message's menu opens,
+  so the function form runs at that point, not on every render of every row.
 
 ---
 

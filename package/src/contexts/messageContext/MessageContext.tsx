@@ -3,6 +3,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { Attachment, LocalMessage, Thread } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
+import type { MessageActionHandlerCallbacks } from '../../components/Message/hooks/useCreateMessageActionHandlers';
 import type { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
 import type {
   MessagePressableHandlerPayload,
@@ -45,6 +46,12 @@ export type MessageContextValue = {
   /** Whether or not any message attachment exposes actions. */
   hasAttachmentActions: boolean;
   handleToggleReaction: (reactionType: string) => Promise<void>;
+  /**
+   * The handlers behind this message's actions (copy, delete, edit, pin, mute, ...). Built once per
+   * message and shared by everything that acts on it, including the action menu, so a handler keeps
+   * working after the menu that invoked it has closed. Read it with `useMessageActionHandlers()`.
+   */
+  messageActionHandlers: MessageActionHandlerCallbacks;
   /**
    * Whether the message renders interactive children (poll options, attachment
    * cells, the quoted-reply navigator, shared location) and the row should

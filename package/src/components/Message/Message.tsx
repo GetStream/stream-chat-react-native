@@ -20,8 +20,8 @@ import {
   type UserResponse,
 } from 'stream-chat';
 
+import { useCreateMessageActionHandlers } from './hooks/useCreateMessageActionHandlers';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
-import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 import { useMessageActions } from './hooks/useMessageActions';
 import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
 import { useProcessReactions } from './hooks/useProcessReactions';
@@ -48,6 +48,7 @@ import {
   MessageContextValue,
   MessageOverlayRuntimeProvider,
   MessageProvider,
+  useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
 import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
@@ -269,6 +270,67 @@ export type MessagePropsWithContext = Pick<
     style?: StyleProp<ViewStyle>;
   } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
 
+type MessageActionListWithActionsProps = Pick<MessagesContextValue, 'messageActions'> &
+  Pick<MessageOperations, 'updateMessage'>;
+
+/**
+ * The action menu's list. Lives inside the open overlay, so the actions are only built while a
+ * menu is open rather than on every render of every message.
+ */
+const MessageActionListWithActions = ({
+  messageActions: messageActionsProp = defaultMessageActions,
+  updateMessage,
+}: MessageActionListWithActionsProps) => {
+  const { MessageActionList } = useComponentsContext();
+  const { dismissOverlay, isMyMessage, message, threadList } = useMessageContext();
+  const ownCapabilities = useOwnCapabilitiesContext();
+  const {
+    banUser,
+    blockUser,
+    copyMessage,
+    deleteForMeMessage,
+    deleteMessage,
+    editMessage,
+    flagMessage,
+    markUnread,
+    muteUser,
+    pinMessage,
+    quotedReply,
+    retry,
+    threadReply,
+    unpinMessage,
+  } = useMessageActions();
+
+  const messageActions =
+    typeof messageActionsProp !== 'function'
+      ? messageActionsProp
+      : messageActionsProp({
+          banUser,
+          blockUser,
+          copyMessage,
+          deleteForMeMessage,
+          deleteMessage,
+          dismissOverlay,
+          editMessage,
+          error: message.type === 'error' || message.status === MessageStatusTypes.FAILED,
+          flagMessage,
+          isMyMessage,
+          isThreadMessage: threadList || !!message.parent_id,
+          markUnread,
+          message,
+          muteUser,
+          ownCapabilities,
+          pinMessage,
+          quotedReply,
+          retry,
+          threadReply,
+          unpinMessage,
+          updateMessage,
+        });
+
+  return <MessageActionList dismissOverlay={dismissOverlay} messageActions={messageActions} />;
+};
+
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
@@ -286,24 +348,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     deleteReaction,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
-    enforceUniqueReaction,
     forceAlignMessages = false,
     goToMessage,
     groupStyles = ['bottom'],
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
     handleReaction: handleReactionProp,
-    handleRetry,
     handleThreadReply,
-    handleBlockUser,
     isTargetedMessage,
     message,
     messageActions: messageActionsProp = defaultMessageActions,
@@ -323,14 +372,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showAvatar,
     showMessageStatus,
     style,
-    supportedReactions,
-    t,
     threadList = false,
     updateMessage,
     setQuotedMessage,
   } = props;
   const {
-    MessageActionList,
     MessageBlocked,
     MessageBounce,
     MessageItemView,
@@ -571,6 +617,17 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
+  const messageActionHandlers = useCreateMessageActionHandlers({
+    channel,
+    client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
+    message,
+    retrySendMessage,
+    sendReaction,
+    setEditingState,
+    setQuotedMessage,
+  });
   const {
     handleCopyMessage,
     handleDeleteMessage,
@@ -584,98 +641,20 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleToggleMuteUser,
     handleTogglePinMessage,
     handleToggleReaction,
-  } = useMessageActionHandlers({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    enforceUniqueReaction,
-    message,
-    retrySendMessage,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
+  } = messageActionHandlers;
+
+  const onReaction = useStableCallback(async (reactionType: string) => {
+    if (handleReactionProp) {
+      handleReactionProp(message, reactionType);
+    }
+
+    await handleToggleReaction(reactionType);
   });
 
-  const {
-    banUser,
-    copyMessage,
-    deleteMessage,
-    deleteForMeMessage,
-    editMessage,
-    flagMessage,
-    handleReaction,
-    markUnread,
-    muteUser,
-    pinMessage,
-    quotedReply,
-    retry,
-    threadReply,
-    unpinMessage,
-    blockUser,
-  } = useMessageActions({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    dismissOverlay,
-    enforceUniqueReaction,
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
-    handleReaction: handleReactionProp,
-    handleRetry,
-    handleThreadReply,
-    handleBlockUser,
-    message,
-    onThreadSelect,
-    removeMessage,
-    retrySendMessage,
-    selectReaction,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
-    t,
-    updateMessage,
-  });
-
-  const isThreadMessage = threadList || !!message.parent_id;
-
-  const messageActions =
-    typeof messageActionsProp !== 'function'
-      ? messageActionsProp
-      : messageActionsProp({
-          banUser,
-          copyMessage,
-          deleteForMeMessage,
-          deleteMessage,
-          dismissOverlay,
-          editMessage,
-          error: errorOrFailed,
-          flagMessage,
-          isMyMessage,
-          isThreadMessage,
-          markUnread,
-          message,
-          muteUser,
-          ownCapabilities,
-          pinMessage,
-          quotedReply,
-          retry,
-          threadReply,
-          unpinMessage,
-          updateMessage,
-          blockUser,
-        });
+  const handleReaction = useMemo(
+    () => (errorOrFailed ? undefined : selectReaction ? selectReaction(message) : onReaction),
+    [errorOrFailed, message, onReaction, selectReaction],
+  );
 
   const actionHandlers: MessageActionHandlers = {
     copyMessage: handleCopyMessage,
@@ -732,6 +711,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     message: overlayActive ? frozenMessage.current : message,
+    messageActionHandlers,
     messageOverlayId,
     messageContentOrder,
     messageHasOnlySingleAttachment,
@@ -933,9 +913,9 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   });
                 }}
               >
-                <MessageActionList
-                  dismissOverlay={dismissOverlay}
-                  messageActions={messageActions}
+                <MessageActionListWithActions
+                  messageActions={messageActionsProp}
+                  updateMessage={updateMessage}
                 />
               </View>
             ) : null}

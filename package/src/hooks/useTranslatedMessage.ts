@@ -12,9 +12,13 @@ import { useTranslationContext } from '../contexts/translationContext/Translatio
  */
 type TranslationKey = `${string}_text`;
 
-export const useTranslatedMessage = (message?: LocalMessage | MessageResponse) => {
-  const { userLanguage } = useTranslationContext();
-
+/**
+ * `message` with its text swapped for the auto-translation into `userLanguage`, when there is one.
+ */
+export const getTranslatedMessage = (
+  message: LocalMessage | MessageResponse | undefined,
+  userLanguage: string,
+) => {
   const translationKey: TranslationKey = `${userLanguage}_text`;
 
   if (!message) {
@@ -29,4 +33,10 @@ export const useTranslatedMessage = (message?: LocalMessage | MessageResponse) =
   }
 
   return { ...message };
+};
+
+export const useTranslatedMessage = (message?: LocalMessage | MessageResponse) => {
+  const { userLanguage } = useTranslationContext();
+
+  return getTranslatedMessage(message, userLanguage);
 };
