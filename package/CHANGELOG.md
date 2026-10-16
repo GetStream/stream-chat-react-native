@@ -1,5 +1,26 @@
 # Change Log
 
+## [9.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.4...v9.10.0) (2026-10-14)
+
+### Features
+
+* ai-components-js port ([#3856](https://github.com/GetStream/stream-chat-react-native/issues/3856)) ([0e8d49a](https://github.com/GetStream/stream-chat-react-native/commit/0e8d49af8993d2f2dc3ea3e5d2858217e0888317))
+
+## [9.9.4](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.3...v9.9.4) (2026-10-12)
+
+### Bug Fixes
+
+* remove bottom sheet pinned version ([#3849](https://github.com/GetStream/stream-chat-react-native/issues/3849)) ([b6a714b](https://github.com/GetStream/stream-chat-react-native/commit/b6a714b1fa4f2bd1ef30a1dd79421bb65c53d3e9))
+* remove bottom sheet pinned version ([#3849](https://github.com/GetStream/stream-chat-react-native/issues/3849)) ([497d8c3](https://github.com/GetStream/stream-chat-react-native/commit/497d8c311b95cf2bd34b2c8ebe30ad8bfe81339b))
+
+## [9.9.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.2...v9.9.3) (2026-10-08)
+
+### Bug Fixes
+
+* bump flashlist in sample apps ([#3839](https://github.com/GetStream/stream-chat-react-native/issues/3839)) ([0285023](https://github.com/GetStream/stream-chat-react-native/commit/02850238f01bd0b28bc4c45c174f8c13563c7b6e))
+* ctx menu failure and imperative closure edge cases ([#3844](https://github.com/GetStream/stream-chat-react-native/issues/3844)) ([4de08ed](https://github.com/GetStream/stream-chat-react-native/commit/4de08ed5cf34dfbd8812ba837111d938ac13eca9))
+* widen endPoll type ([#3833](https://github.com/GetStream/stream-chat-react-native/issues/3833)) ([d12f687](https://github.com/GetStream/stream-chat-react-native/commit/d12f6876fe7be12d452d844d16793a81869e6f87))
+
 ## [9.9.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.1...v9.9.2) (2026-09-25)
 
 ### Bug Fixes

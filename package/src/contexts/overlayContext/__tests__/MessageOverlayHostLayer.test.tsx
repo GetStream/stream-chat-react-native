@@ -159,7 +159,7 @@ describe('MessageOverlayHostLayer', () => {
     const CustomBackground = () => <Text testID='custom-background'>Background</Text>;
     render(
       <WithComponents overrides={{ MessageOverlayBackground: CustomBackground }}>
-        <MessageOverlayHostLayer />
+        <MessageOverlayHostLayer hostLayerId='layer' />
       </WithComponents>,
     );
 
@@ -197,7 +197,7 @@ describe('MessageOverlayHostLayer', () => {
 
     render(
       <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
-        <MessageOverlayHostLayer />
+        <MessageOverlayHostLayer hostLayerId='layer' />
       </WithComponents>,
     );
 
@@ -239,7 +239,7 @@ describe('MessageOverlayHostLayer', () => {
   it('positions and translates the top, message, and bottom hosts using the registered rects', () => {
     const renderTree = () => (
       <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
-        <MessageOverlayHostLayer />
+        <MessageOverlayHostLayer hostLayerId='layer' />
       </WithComponents>
     );
     const { rerender } = render(renderTree());
@@ -289,7 +289,7 @@ describe('MessageOverlayHostLayer', () => {
   it('keeps the hosts mounted but resets their geometry after finalizeCloseOverlay', () => {
     const renderTree = () => (
       <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
-        <MessageOverlayHostLayer />
+        <MessageOverlayHostLayer hostLayerId='layer' />
       </WithComponents>
     );
     const { rerender } = render(renderTree());
@@ -341,7 +341,7 @@ describe('MessageOverlayHostLayer', () => {
 
     const renderTree = () => (
       <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
-        <MessageOverlayHostLayer />
+        <MessageOverlayHostLayer hostLayerId='layer' />
       </WithComponents>
     );
     const { rerender } = render(renderTree());
@@ -396,7 +396,7 @@ describe('MessageOverlayHostLayer', () => {
           MessageOverlayBackground: NoopBackground,
         }}
       >
-        <MessageOverlayHostLayer />
+        <MessageOverlayHostLayer hostLayerId='layer' />
       </WithComponents>
     );
     const { rerender } = render(renderTree());
@@ -432,5 +432,83 @@ describe('MessageOverlayHostLayer', () => {
       height: BOTTOM_RECT.h,
       width: BOTTOM_RECT.w,
     });
+  });
+
+  it('lets the most recently mounted host layer own the overlay and hands it back once that layer unmounts', () => {
+    const renderTree = (withNestedLayer: boolean) => (
+      <WithComponents overrides={{ MessageOverlayBackground: NoopBackground }}>
+        <MessageOverlayHostLayer hostLayerId='root-layer' />
+        {withNestedLayer ? <MessageOverlayHostLayer hostLayerId='nested-layer' /> : null}
+      </WithComponents>
+    );
+    const getHostsNamed = (name: string) =>
+      screen.UNSAFE_root.findAll(
+        (node) => typeof node.type === 'string' && node.props.name === name,
+      );
+    const { rerender } = render(renderTree(true));
+
+    // The nested layer owns the shared host names, the root layer parks its own.
+    expect(getHostsNamed('bottom-item')).toHaveLength(1);
+    expect(getHostsNamed('bottom-item:root-layer')).toHaveLength(1);
+
+    act(() => {
+      setOverlayTopH(TOP_RECT);
+      setOverlayMessageH(MESSAGE_RECT);
+      setOverlayBottomH(BOTTOM_RECT);
+      openOverlay('message-1');
+    });
+
+    rerender(renderTree(true));
+
+    expect(screen.getAllByTestId('message-overlay-backdrop')).toHaveLength(1);
+    const [rootBottomSlot, nestedBottomSlot] = screen.getAllByTestId('message-overlay-bottom');
+    expect(StyleSheet.flatten(nestedBottomSlot.props.style)).toMatchObject({
+      height: BOTTOM_RECT.h,
+      width: BOTTOM_RECT.w,
+    });
+    expect(StyleSheet.flatten(rootBottomSlot.props.style)).toMatchObject({ height: 0 });
+
+    act(() => {
+      finalizeCloseOverlay();
+    });
+
+    rerender(renderTree(false));
+
+    expect(getHostsNamed('bottom-item')).toHaveLength(1);
+    expect(getHostsNamed('bottom-item:root-layer')).toHaveLength(0);
+
+    act(() => {
+      setOverlayTopH(TOP_RECT);
+      setOverlayMessageH(MESSAGE_RECT);
+      setOverlayBottomH(BOTTOM_RECT);
+      openOverlay('message-2');
+    });
+
+    rerender(renderTree(false));
+
+    expect(screen.getAllByTestId('message-overlay-backdrop')).toHaveLength(1);
+    expect(
+      StyleSheet.flatten(screen.getByTestId('message-overlay-bottom').props.style),
+    ).toMatchObject({
+      height: BOTTOM_RECT.h,
+      width: BOTTOM_RECT.w,
+    });
+  });
+
+  it('renders a MessageActions override only in the top host layer', () => {
+    const renderTree = () => (
+      <WithComponents
+        overrides={{
+          MessageActions: CustomMessageActions,
+          MessageOverlayBackground: NoopBackground,
+        }}
+      >
+        <MessageOverlayHostLayer hostLayerId='root-layer' />
+        <MessageOverlayHostLayer hostLayerId='nested-layer' />
+      </WithComponents>
+    );
+    render(renderTree());
+
+    expect(screen.getAllByTestId('custom-message-actions')).toHaveLength(1);
   });
 });

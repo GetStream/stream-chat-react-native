@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import {
   BackHandler,
   I18nManager,
@@ -33,8 +33,10 @@ import { useScreenOrientation } from '../../hooks';
 import {
   closeOverlay,
   finalizeCloseOverlay,
+  registerOverlayHostLayer,
   registerOverlaySharedValueController,
   Rect,
+  useIsTopOverlayHostLayer,
   useOverlayController,
 } from '../../state-store';
 import { useComponentsContext } from '../componentsContext/ComponentsContext';
@@ -69,9 +71,21 @@ export type MessageActionsProps = {
   topItemStyle: StyleProp<AnimatedStyle<ViewStyle>>;
 };
 
-export const MessageOverlayHostLayer = () => {
+type MessageOverlayHostLayerProps = {
+  /**
+   * Id under which this layer registers on the host layer stack. `OverlayProvider` passes its own
+   * so that views inside the provider can tell whether this layer is the top one.
+   */
+  hostLayerId: string;
+};
+
+export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayerProps) => {
   const { MessageActions, MessageOverlayBackground } = useComponentsContext();
   const { id, closing } = useOverlayController();
+
+  useLayoutEffect(() => registerOverlayHostLayer(hostLayerId), [hostLayerId]);
+
+  const isTop = useIsTopOverlayHostLayer(hostLayerId);
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
   const messageH = useSharedValue<Rect>(undefined);
@@ -86,7 +100,7 @@ export const MessageOverlayHostLayer = () => {
   // if the navigation bar is actually 0 - we end up animating a little bit further.
   const bottomInset = insets.bottom === 0 && Platform.OS === 'android' ? 60 : insets.bottom;
 
-  const isActive = !!id;
+  const isActive = !!id && isTop;
 
   const announce = useAccessibilityAnnouncer();
   const overlayOpenHint = useA11yLabel('common.messageOverlay.swipeHint.accessibilityLabel');
@@ -127,8 +141,10 @@ export const MessageOverlayHostLayer = () => {
       return;
     }
     prevOrientationRef.current = orientation;
-    finalizeCloseOverlay();
-  }, [orientation]);
+    if (isTop) {
+      finalizeCloseOverlay();
+    }
+  }, [isTop, orientation]);
 
   const padding = 8;
   const minY = topInset + padding;
@@ -201,6 +217,9 @@ export const MessageOverlayHostLayer = () => {
   );
 
   useEffect(() => {
+    if (!isTop) {
+      return;
+    }
     const target = isActive && !closing ? 1 : 0;
     backdrop.value = withSpring(target, { duration: DURATION + target * 100 }, (finished) => {
       if (finished && closing) {
@@ -208,7 +227,7 @@ export const MessageOverlayHostLayer = () => {
       }
     });
     closeCoverOpacity.value = withSpring(closing ? 1 : 0, { duration: DURATION });
-  }, [isActive, closing, backdrop, closeCoverOpacity]);
+  }, [isActive, isTop, closing, backdrop, closeCoverOpacity]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdrop.value,
@@ -375,6 +394,10 @@ export const MessageOverlayHostLayer = () => {
     [bottomH, bottomShiftY, messageShiftY, pan, topH],
   );
 
+  const messageHostName = isTop ? 'message-overlay' : `message-overlay:${hostLayerId}`;
+  const topItemHostName = isTop ? 'top-item' : `top-item:${hostLayerId}`;
+  const bottomItemHostName = isTop ? 'bottom-item' : `bottom-item:${hostLayerId}`;
+
   return (
     <GestureDetector gesture={tap}>
       <View
@@ -398,12 +421,16 @@ export const MessageOverlayHostLayer = () => {
           ) : null}
 
           {MessageActions ? (
-            <MessageActions
-              bottomItemStyle={bottomItemStyle}
-              hostStyle={hostStyle}
-              portalHostStyle={styles.absoluteFill}
-              topItemStyle={topItemStyle}
-            />
+            // A custom `MessageActions` renders its own hosts with the shared names, so only the
+            // top layer renders it.
+            isTop ? (
+              <MessageActions
+                bottomItemStyle={bottomItemStyle}
+                hostStyle={hostStyle}
+                portalHostStyle={styles.absoluteFill}
+                topItemStyle={topItemStyle}
+              />
+            ) : null
           ) : (
             <>
               {/*
@@ -412,22 +439,26 @@ export const MessageOverlayHostLayer = () => {
               */}
               <GestureDetector gesture={pan}>
                 <Animated.View style={hostStyle} testID='message-overlay-message'>
-                  <PortalHost name='message-overlay' style={styles.absoluteFill} />
+                  <PortalHost name={messageHostName} style={styles.absoluteFill} />
                 </Animated.View>
               </GestureDetector>
 
               <Animated.View style={topItemStyle} testID='message-overlay-top'>
-                <PortalHost name='top-item' style={styles.absoluteFill} />
+                <PortalHost name={topItemHostName} style={styles.absoluteFill} />
               </Animated.View>
 
               <Animated.View style={bottomItemStyle} testID='message-overlay-bottom'>
-                <PortalHost name='bottom-item' style={styles.absoluteFill} />
+                <PortalHost name={bottomItemHostName} style={styles.absoluteFill} />
               </Animated.View>
             </>
           )}
         </View>
 
-        <ClosingPortalHostsLayer closeCoverOpacity={closeCoverOpacity} />
+        <ClosingPortalHostsLayer
+          closeCoverOpacity={closeCoverOpacity}
+          hostLayerId={hostLayerId}
+          isTopHostLayer={isTop}
+        />
       </View>
     </GestureDetector>
   );

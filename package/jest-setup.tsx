@@ -55,6 +55,10 @@ jest.mock('react-native-gesture-handler/lib/module/GestureHandlerRootViewContext
 });
 jest.mock('react-native-reanimated', () => {
   const RNReanimatedmock = require('react-native-reanimated/mock');
+  // RNGH (>= 3.3) subscribes to SharedValue-backed gesture config on the UI runtime via
+  // addListener/removeListener, which the mock's shared values do not implement. There is no
+  // UI runtime under Jest, so the listeners can safely be no-ops.
+  const noop = () => {};
   return {
     ...RNReanimatedmock,
     // RNGH v3 hooks introspect Reanimated's exports; the v4 mock omits several
@@ -65,7 +69,12 @@ jest.mock('react-native-reanimated', () => {
     // Reanimated's official mock implements makeMutable as an identity function
     // (returns the raw init value instead of a { value } wrapper), which breaks
     // any test that reads `.value` on a SharedValue. Replace with a real wrapper.
-    makeMutable: <T,>(init: T) => ({ value: init }),
+    makeMutable: <T,>(init: T) => ({ addListener: noop, removeListener: noop, value: init }),
+    useSharedValue: <T,>(init: T) =>
+      new Proxy(RNReanimatedmock.useSharedValue(init), {
+        get: (target, prop) =>
+          prop === 'addListener' || prop === 'removeListener' ? noop : Reflect.get(target, prop),
+      }),
     NativeEventsManager: class {
       attachEvents() {}
       detachEvents() {}
@@ -147,6 +156,31 @@ jest.mock('react-native-teleport', () => {
 });
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
+
+// Skia and victory-native are optional peers used by the `ai-components` charts. Skia's JS needs its
+// native module at import time, so both are replaced with inert stand-ins that render plain views.
+jest.mock('@shopify/react-native-skia', () => ({
+  LinearGradient: () => null,
+  matchFont: () => ({}),
+  vec: (x: number, y: number) => ({ x, y }),
+}));
+
+jest.mock('victory-native', () => {
+  const React = require('react');
+  const rn = require('react-native');
+  const Primitive = () => null;
+  const Chart = ({ children, testID }: { children?: unknown; testID?: string }) =>
+    React.createElement(rn.View, { testID }, typeof children === 'function' ? null : children);
+  return {
+    Area: Primitive,
+    Bar: Primitive,
+    CartesianChart: (props: object) => Chart({ ...props, testID: 'victory-cartesian-chart' }),
+    Line: Primitive,
+    Pie: { Chart: Primitive },
+    PolarChart: (props: object) => Chart({ ...props, testID: 'victory-polar-chart' }),
+    Scatter: Primitive,
+  };
+});
 
 jest.mock('./src/components/Message/utils/measureInWindow', () => ({
   measureInWindow: jest.fn(async () => ({
