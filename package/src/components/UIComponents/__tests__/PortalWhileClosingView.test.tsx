@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 
 import { act, cleanup, render, screen } from '@testing-library/react-native';
 
+import { OverlayHostLayerContext } from '../../../contexts/overlayContext/OverlayHostLayerContext';
 import * as stateStore from '../../../state-store';
 import { PortalWhileClosingView } from '../PortalWhileClosingView';
 
@@ -171,5 +172,42 @@ describe('PortalWhileClosingView', () => {
     );
 
     expect(screen.getByTestId('teleport-state')).toHaveTextContent('false');
+  });
+
+  it('stays in place while its overlay provider is not the top one', () => {
+    let unregisterRootLayer = () => {};
+    let unregisterNestedLayer = () => {};
+
+    act(() => {
+      unregisterRootLayer = stateStore.registerOverlayHostLayer('root-layer');
+      unregisterNestedLayer = stateStore.registerOverlayHostLayer('nested-layer');
+    });
+
+    render(
+      <OverlayHostLayerContext.Provider value='root-layer'>
+        <PortalWhileClosingView portalHostName='overlay-composer' portalName='composer-portal'>
+          <Text>Composer</Text>
+        </PortalWhileClosingView>
+      </OverlayHostLayerContext.Provider>,
+    );
+
+    act(() => {
+      stateStore.setClosingPortalLayout('overlay-composer', 'registration-1', BASE_RECT);
+      stateStore.openOverlay('message-1');
+      stateStore.closeOverlay();
+    });
+    flushAnimationFrameQueue();
+
+    expect(screen.queryByTestId('portal-while-closing-placeholder-composer-portal')).toBeNull();
+
+    act(() => {
+      unregisterNestedLayer();
+    });
+
+    expect(screen.getByTestId('portal-while-closing-placeholder-composer-portal')).toBeTruthy();
+
+    act(() => {
+      unregisterRootLayer();
+    });
   });
 });
