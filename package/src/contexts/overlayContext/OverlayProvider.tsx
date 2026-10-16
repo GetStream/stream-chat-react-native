@@ -8,10 +8,12 @@ import { PortalProvider } from 'react-native-teleport';
 
 import { MessageOverlayHostLayer } from './MessageOverlayHostLayer';
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
+import { OverlayHostLayerContext } from './OverlayHostLayerContext';
 
 import { OverlayA11yShield } from '../../components/Accessibility/OverlayA11yShield';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { useStreami18n } from '../../hooks/useStreami18n';
+import { createOverlayHostLayerId } from '../../state-store';
 
 import { AccessibilityProvider } from '../accessibilityContext/AccessibilityContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
@@ -55,6 +57,7 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
   } = props;
 
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
+  const [overlayHostLayerId] = useState(createOverlayHostLayerId);
 
   const overlayOpacity = useSharedValue(0);
 
@@ -110,13 +113,15 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
             <ImageGalleryProvider value={imageGalleryProviderProps}>
               <ThemeProvider style={overlayContext.style}>
                 <PortalProvider>
-                  {accessibility?.enabled ? (
-                    <OverlayA11yShield>{children}</OverlayA11yShield>
-                  ) : (
-                    children
-                  )}
-                  {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
-                  <MessageOverlayHostLayer />
+                  <OverlayHostLayerContext.Provider value={overlayHostLayerId}>
+                    {accessibility?.enabled ? (
+                      <OverlayA11yShield>{children}</OverlayA11yShield>
+                    ) : (
+                      children
+                    )}
+                    {overlay === 'gallery' && <ImageGallery overlayOpacity={overlayOpacity} />}
+                    <MessageOverlayHostLayer hostLayerId={overlayHostLayerId} />
+                  </OverlayHostLayerContext.Provider>
                 </PortalProvider>
               </ThemeProvider>
             </ImageGalleryProvider>

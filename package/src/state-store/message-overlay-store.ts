@@ -51,37 +51,43 @@ type OverlaySharedValueController = {
   setTopH: (rect: Rect) => void;
 };
 
-let sharedValueController: OverlaySharedValueController | undefined;
+// Every mounted `MessageOverlayHostLayer` registers its controller and the most recently registered
+// one drives the overlay. Unregistering hands control back to the previous controller, so nested
+// `OverlayProvider`s (one at the root and one inside a native modal, for example) can come and go.
+let sharedValueControllerStack: OverlaySharedValueController[] = [];
+
+const getSharedValueController = () =>
+  sharedValueControllerStack[sharedValueControllerStack.length - 1];
 
 export const registerOverlaySharedValueController = (controller: OverlaySharedValueController) => {
-  sharedValueController = controller;
+  sharedValueControllerStack = [...sharedValueControllerStack, controller];
   return () => {
-    if (sharedValueController === controller) {
-      sharedValueController = undefined;
-    }
+    sharedValueControllerStack = sharedValueControllerStack.filter(
+      (registeredController) => registeredController !== controller,
+    );
   };
 };
 
 export const setOverlayMessageH = (messageH: Rect) => {
-  sharedValueController?.setMessageH(messageH);
+  getSharedValueController()?.setMessageH(messageH);
 };
 
 export const setOverlayTopH = (topH: Rect) => {
-  sharedValueController?.setTopH(topH);
+  getSharedValueController()?.setTopH(topH);
 };
 
 export const setOverlayBottomH = (bottomH: Rect) => {
-  sharedValueController?.setBottomH(bottomH);
+  getSharedValueController()?.setBottomH(bottomH);
 };
 
 export const bumpOverlayLayoutRevision = (closeCorrectionDeltaY = 0) => {
-  sharedValueController?.incrementCloseCorrectionY(closeCorrectionDeltaY);
+  getSharedValueController()?.incrementCloseCorrectionY(closeCorrectionDeltaY);
 };
 
 export const openOverlay = (params: OpenOverlayParams | string) => {
   const overlayPayload = typeof params === 'string' ? { id: params, messageId: undefined } : params;
 
-  sharedValueController?.resetCloseCorrectionY();
+  getSharedValueController()?.resetCloseCorrectionY();
   overlayStore.partialNext({
     closing: false,
     closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
@@ -122,7 +128,7 @@ export const finalizeCloseOverlay = () => {
     ...DefaultState,
     closingPortalHostBlacklist: getCurrentClosingPortalHostBlacklist(),
   });
-  sharedValueController?.reset();
+  getSharedValueController()?.reset();
 };
 
 export const overlayStore = new StateStore<OverlayState>(DefaultState);
@@ -132,6 +138,59 @@ const closingPortalLayoutsStore = new StateStore<ClosingPortalLayoutsState>(
 
 export const createClosingPortalLayoutRegistrationId = () =>
   `closing-portal-layout-${closingPortalLayoutRegistrationCounter++}`;
+
+type OverlayHostLayersState = {
+  hostLayerIds: string[];
+};
+
+let overlayHostLayerRegistrationCounter = 0;
+
+const overlayHostLayersStore = new StateStore<OverlayHostLayersState>({ hostLayerIds: [] });
+
+export const createOverlayHostLayerId = () =>
+  `overlay-host-layer-${overlayHostLayerRegistrationCounter++}`;
+
+/**
+ * Registers a `MessageOverlayHostLayer` (one per `OverlayProvider`) using stack semantics.
+ *
+ * Only the most recently registered layer drives the overlay and owns the shared portal host names.
+ * Portal hosts are looked up by name in a single native registry, so two layers using the same
+ * names would take them over from each other. The other layers park their hosts under names unique
+ * to them, and when the top layer unregisters the previous one takes the shared names back.
+ */
+export const registerOverlayHostLayer = (id: string) => {
+  overlayHostLayersStore.partialNext({
+    hostLayerIds: [...overlayHostLayersStore.getLatestValue().hostLayerIds, id],
+  });
+
+  return () => {
+    overlayHostLayersStore.partialNext({
+      hostLayerIds: overlayHostLayersStore
+        .getLatestValue()
+        .hostLayerIds.filter((hostLayerId) => hostLayerId !== id),
+    });
+  };
+};
+
+const topOverlayHostLayer = { isTop: true };
+const notTopOverlayHostLayer = { isTop: false };
+
+/**
+ * Whether the host layer with the given id is the one that currently owns the overlay. A missing
+ * id (used outside of an `OverlayProvider`) or an empty stack counts as the top, which keeps the
+ * single provider setup identical to before the stack existed.
+ */
+export const useIsTopOverlayHostLayer = (id: string | undefined) => {
+  const isTopOverlayHostLayerSelector = useCallback(
+    ({ hostLayerIds }: OverlayHostLayersState) =>
+      !id || !hostLayerIds.length || hostLayerIds[hostLayerIds.length - 1] === id
+        ? topOverlayHostLayer
+        : notTopOverlayHostLayer,
+    [id],
+  );
+
+  return useStateStore(overlayHostLayersStore, isTopOverlayHostLayerSelector).isTop;
+};
 
 const getCurrentClosingPortalHostBlacklist = () =>
   closingPortalHostBlacklistStack[closingPortalHostBlacklistStack.length - 1]?.hostNames ?? [];
