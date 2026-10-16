@@ -183,7 +183,7 @@ const additionalFlatListProps = {
     minIndexForVisible: 0,
     autoscrollToTopThreshold: 0,
   },
-  ListHeaderComponent: null,
+  ListHeaderComponent: undefined,
 };
 
 export const ChatContent = () => {

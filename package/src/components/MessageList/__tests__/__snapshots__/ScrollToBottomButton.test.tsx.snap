@@ -49,104 +49,146 @@ exports[`ScrollToBottomButton should render the message notification and match s
         ]
       }
     >
-      <View
-        handlerTags={
+      <RNGestureHandlerButton
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "disabled": false,
+            "selected": false,
+          }
+        }
+        accessible={true}
+        activeUnderlayOpacity={0.105}
+        cancelOnLeave={true}
+        defaultOpacity={1}
+        defaultUnderlayOpacity={0}
+        enabled={true}
+        gestureHitSlop={
+          {
+            "bottom": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+          }
+        }
+        gestureTestID="scroll-to-bottom-button"
+        handlerTag={4}
+        hasLongPressHandler={false}
+        hitSlop={
+          {
+            "bottom": 0,
+            "left": 0,
+            "right": 0,
+            "top": 0,
+          }
+        }
+        hoverAnimationInDuration={50}
+        hoverAnimationOutDuration={100}
+        longPressAnimationOutDuration={100}
+        longPressDuration={500}
+        onButtonInteractionFinished={[Function]}
+        onButtonLongPress={[Function]}
+        onButtonPress={[Function]}
+        onButtonPressIn={[Function]}
+        onButtonPressOut={[Function]}
+        onLayout={[Function]}
+        onStartShouldSetResponderCapture={[Function]}
+        rippleColor="transparent"
+        style={
           [
-            12,
-            11,
-            10,
+            {},
+            [
+              {
+                "backgroundColor": "transparent",
+                "paddingHorizontal": 0,
+              },
+              {
+                "alignItems": "center",
+                "borderRadius": 9999,
+                "flex": 1,
+                "flexDirection": "row",
+                "gap": 8,
+                "justifyContent": "center",
+              },
+            ],
           ]
         }
-        onGestureHandlerEvent={[Function]}
-        onGestureHandlerReanimatedEvent={[Function]}
-        onGestureHandlerStateChange={[Function]}
-        onGestureHandlerTouchEvent={[Function]}
-        onStartShouldSetResponder={[Function]}
-        pointerEvents="box-none"
-        style={
-          {
-            "display": "contents",
-          }
-        }
+        tapAnimationInDuration={50}
+        tapAnimationOutDuration={100}
+        testID="scroll-to-bottom-button"
+        testOnly_onPress={[Function]}
+        underlayColor="transparent"
       >
-        <RNGestureHandlerButton
-          accessibilityRole="button"
-          accessibilityState={
-            {
-              "disabled": false,
-              "selected": false,
-            }
-          }
-          accessible={true}
-          enabled={true}
-          hitSlop={
-            {
-              "bottom": 0,
-              "left": 0,
-              "right": 0,
-              "top": 0,
-            }
-          }
-          onLayout={[Function]}
-          rippleColor="transparent"
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={20}
+          bbWidth={20}
+          fill="none"
+          focusable={false}
+          height={20}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          stroke="#1a1b25"
+          strokeWidth={1.5}
           style={
             [
-              {},
-              [
-                {
-                  "backgroundColor": "transparent",
-                  "paddingHorizontal": 0,
-                },
-                {
-                  "alignItems": "center",
-                  "borderRadius": 9999,
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "gap": 8,
-                  "justifyContent": "center",
-                },
-              ],
+              {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              {
+                "flex": 0,
+                "height": 20,
+                "width": 20,
+              },
             ]
           }
-          testID="scroll-to-bottom-button"
-          testOnly_onPress={[Function]}
+          vbHeight={20}
+          vbWidth={20}
+          width={20}
         >
-          <RNSVGSvgView
-            align="xMidYMid"
-            bbHeight={20}
-            bbWidth={20}
-            fill="none"
-            focusable={false}
-            height={20}
-            meetOrSlice={0}
-            minX={0}
-            minY={0}
-            stroke="#1a1b25"
-            strokeWidth={1.5}
-            style={
+          <RNSVGGroup
+            fill={null}
+            propList={
               [
-                {
-                  "backgroundColor": "transparent",
-                  "borderWidth": 0,
-                },
-                {
-                  "flex": 0,
-                  "height": 20,
-                  "width": 20,
-                },
+                "fill",
+                "stroke",
+                "strokeWidth",
               ]
             }
-            vbHeight={20}
-            vbWidth={20}
-            width={20}
+            stroke={
+              {
+                "payload": 4279900965,
+                "type": 0,
+              }
+            }
+            strokeWidth={1.5}
           >
-            <RNSVGGroup
-              fill={null}
+            <RNSVGPath
+              d="M10 16.875V3.125M10 3.125L4.375 8.75M10 3.125L15.625 8.75"
+              fill={
+                {
+                  "payload": 4278190080,
+                  "type": 0,
+                }
+              }
+              matrix={
+                [
+                  -1,
+                  1.2246467991473532e-16,
+                  -1.2246467991473532e-16,
+                  -1,
+                  20,
+                  20,
+                ]
+              }
               propList={
                 [
-                  "fill",
                   "stroke",
                   "strokeWidth",
+                  "strokeLinecap",
+                  "strokeLinejoin",
                 ]
               }
               stroke={
@@ -155,48 +197,13 @@ exports[`ScrollToBottomButton should render the message notification and match s
                   "type": 0,
                 }
               }
+              strokeLinecap={1}
+              strokeLinejoin={1}
               strokeWidth={1.5}
-            >
-              <RNSVGPath
-                d="M10 16.875V3.125M10 3.125L4.375 8.75M10 3.125L15.625 8.75"
-                fill={
-                  {
-                    "payload": 4278190080,
-                    "type": 0,
-                  }
-                }
-                matrix={
-                  [
-                    -1,
-                    1.2246467991473532e-16,
-                    -1.2246467991473532e-16,
-                    -1,
-                    20,
-                    20,
-                  ]
-                }
-                propList={
-                  [
-                    "stroke",
-                    "strokeWidth",
-                    "strokeLinecap",
-                    "strokeLinejoin",
-                  ]
-                }
-                stroke={
-                  {
-                    "payload": 4279900965,
-                    "type": 0,
-                  }
-                }
-                strokeLinecap={1}
-                strokeLinejoin={1}
-                strokeWidth={1.5}
-              />
-            </RNSVGGroup>
-          </RNSVGSvgView>
-        </RNGestureHandlerButton>
-      </View>
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </RNGestureHandlerButton>
     </View>
   </View>
   <View
