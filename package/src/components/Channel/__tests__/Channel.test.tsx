@@ -226,16 +226,14 @@ describe('Channel', () => {
 
   it('exposes a thread provided via props through the thread context', async () => {
     const threadMessage = messages[0];
+    const thread = chatClient.threads.ensure({ channel, parentMessage: threadMessage });
     const hasThread = jest.fn();
-    // Threads are now fully prop-driven: passing `thread` to Channel exposes it through
-    // ThreadContext synchronously as a `threadInstance` (whose `id` is the parent message id) —
-    // the context no longer carries a raw `thread` message.
     renderComponent(
-      { channel, thread: threadMessage, threadList: true },
+      { channel, thread, threadList: true },
       (ctx) => {
-        const { threadInstance } = ctx as { threadInstance: { id: string } | null };
-        if (threadInstance) {
-          hasThread(threadInstance.id);
+        const { thread: contextThread } = ctx as ThreadContextValue;
+        if (contextThread) {
+          hasThread(contextThread.id);
         }
       },
       ThreadContext as React.Context<unknown>,
@@ -994,30 +992,11 @@ describe('Channel initial load useEffect', () => {
     });
   });
 
-  it('registers the thread it builds for a thread prop before anything activates it', async () => {
-    const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
-    await testChannel.watch();
-    const parentMessage = testChannel.state.formatMessage(generateMessage({ user }));
-
-    // No <Thread>, so nothing calls activate(): a list query landing now must find this instance.
-    render(
-      <Chat client={chatClient}>
-        <Channel channel={testChannel} threadList thread={parentMessage} />
-      </Chat>,
-    );
-
-    await waitFor(() => expect(chatClient.threads.get(parentMessage.id)).toBeDefined());
-    expect(chatClient.threads.get(parentMessage.id)?.state.getLatestValue().active).toBe(false);
-  });
-
   // Regression guard for the reconnect refresh of an OPEN THREAD's replies, which now runs entirely in
   // `client.connectionRecovery` — this component's only part is marking the thread active.
   //
-  // Asserted end to end on purpose: a `threadInstance` passed in as a prop (not built by the
-  // `threadInstance` memo's `client.threads.ensure`) reaches the LLC's thread store only through
-  // `threadInstance.activate()`. Drop that effect and recovery silently skips the thread with nothing
+  // Asserted end to end on purpose: a thread constructed directly (not through
+  // `client.threads.ensure`) reaches the LLC's thread store only through `threadInstance.activate()`. Drop that effect and recovery silently skips the thread with nothing
   // else failing, so it is pinned here.
   it('reloads an open thread on reconnect', async () => {
     const mockedChannel = generateChannelResponse({ messages: [generateMessage({})] });
@@ -1043,7 +1022,7 @@ describe('Channel initial load useEffect', () => {
           // `threadList` is what makes this <Channel> the one that owns the thread view
           // (`shouldSyncChannel`); without it the channel view would claim it instead.
           threadList
-          thread={{ thread: testChannel.state.formatMessage(parentMessage), threadInstance }}
+          thread={threadInstance}
         >
           {/* The real <Thread> is what calls `threadInstance.activate()`, which is the ONLY thing
               that registers the instance with `client.threads` for recovery to find. Rendering it
@@ -1074,11 +1053,7 @@ describe('Channel initial load useEffect', () => {
     const openThread = (threadInstance: Thread, testChannel: ChannelType) =>
       render(
         <Chat client={chatClient}>
-          <Channel
-            channel={testChannel}
-            threadList
-            thread={{ thread: threadInstance.state.getLatestValue().parentMessage, threadInstance }}
-          >
+          <Channel channel={testChannel} threadList thread={threadInstance}>
             <ThreadComponent />
           </Channel>
         </Chat>,

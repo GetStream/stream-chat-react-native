@@ -14,7 +14,7 @@ import Animated from 'react-native-reanimated';
 
 import debounce from 'lodash/debounce';
 
-import type { LocalMessage } from 'stream-chat';
+import type { LocalMessage, Thread } from 'stream-chat';
 
 import { useMarkRead } from './hooks/useMarkRead';
 import { useMessageList } from './hooks/useMessageList';
@@ -189,7 +189,7 @@ type MessageListPropsWithContext = Pick<
     markRead: (options?: MarkReadFunctionOptions) => void;
   } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'FlatList' | 'myMessageTheme'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
-  Pick<ThreadContextValue, 'threadInstance'> & {
+  Pick<ThreadContextValue, 'thread'> & {
     /**
      * Whether the composer lets a message be sent while its attachments are still uploading
      * (`messageComposer.attachments.pendingUploadsEnabled`). Read from the composer by default.
@@ -236,9 +236,9 @@ type MessageListPropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param message A message object to open the thread upon.
+     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
      */
-    onThreadSelect?: (message: LocalMessage | null) => void;
+    onThreadSelect?: (thread: Thread) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -302,7 +302,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     onThreadSelect,
     readEvents,
     setFlatListRef,
-    threadInstance,
+    thread,
     threadList = false,
   } = props;
   const {
@@ -323,10 +323,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-  const paginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const paginator = threadList ? thread?.messagePaginator : channel.messagePaginator;
 
   useIncomingMessageAnnouncements({
-    activeThreadId: threadInstance?.id,
+    activeThreadId: thread?.id,
     channel,
     ownUserId: client.user?.id,
     threadList,
@@ -975,7 +975,7 @@ export const MessageList = (props: MessageListProps) => {
   const { disableTypingIndicator, FlatList, myMessageTheme } = useMessagesContext();
   const pendingUploadsEnabled = usePendingUploadsEnabled();
   const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
   return (
     <MessageListWithContext
@@ -994,7 +994,7 @@ export const MessageList = (props: MessageListProps) => {
         myMessageTheme,
         pendingUploadsEnabled,
         readEvents,
-        threadInstance,
+        thread,
         threadList,
       }}
       {...props}

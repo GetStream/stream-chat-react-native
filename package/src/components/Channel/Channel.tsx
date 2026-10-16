@@ -5,7 +5,6 @@ import {
   ChannelConfig,
   ChannelDataState,
   ChannelLifecycleState,
-  LocalMessage,
   MessageComposerConfig,
   Event as StreamEvent,
   Thread,
@@ -49,11 +48,7 @@ import {
   OwnCapabilitiesProvider,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  ThreadContextValue,
-  ThreadProvider,
-  ThreadType,
-} from '../../contexts/threadContext/ThreadContext';
+import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -234,7 +229,11 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'>
   > & {
     shouldSyncChannel: boolean;
-    thread: ThreadType;
+    /**
+     * The thread to render. Pass the instance a thread was opened with (`onThreadSelect` on the
+     * message and thread lists), or one from `client.threads.ensure({ channel, parentMessage })`.
+     */
+    thread?: Thread | null;
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -408,7 +407,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     shouldSyncChannel,
     supportedReactions = reactionData,
     t,
-    thread: threadFromProps,
+    thread,
     threadList,
     topInset = 0,
     initializeOnMount = true,
@@ -418,23 +417,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const components = useComponentsContext();
   const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
 
-  const { thread: threadProps, threadInstance: threadInstanceFromProps } = threadFromProps;
-
   const styles = useStyles();
-  // The active thread is fully prop-driven: derive it synchronously during render so the reply
-  // data is present on the first frame (no setState round-trip / one-frame gap). Opening a thread
-  // is the integrator's job via `onThreadSelect` (they render a Channel with the `thread` prop).
-  const thread = threadProps ?? null;
-  const threadInstance = useMemo(() => {
-    if (threadInstanceFromProps) {
-      return threadInstanceFromProps;
-    }
-    if (!threadProps?.id || !channel) {
-      return null;
-    }
-    return client.threads.ensure({ channel, parentMessage: threadProps });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [threadInstanceFromProps, threadProps?.id, channel, client]);
   const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
   const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
@@ -485,7 +468,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * decision, and subscribing would re-render `Channel` on every jump for no benefit.
    */
   const hasFocusTarget = useStableCallback(
-    () => !!(threadInstance ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
+    () => !!(thread ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
   );
 
   const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
@@ -760,7 +743,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const threadContext = useCreateThreadContext({
     allowThreadMessagesInChannel,
     onAlsoSentToChannelHeaderPress,
-    threadInstance,
+    thread,
   });
 
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(
@@ -768,10 +751,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     [allowConcurrentAudioPlayback],
   );
 
-  const messageComposerContext = useMemo(
-    () => ({ channel, threadInstance }),
-    [channel, threadInstance],
-  );
+  const messageComposerContext = useMemo(() => ({ channel, thread }), [channel, thread]);
 
   if (!channel || blockingError) {
     // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
@@ -824,10 +804,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   );
 };
 
-export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel' | 'thread'>> &
-  Pick<ChannelPropsWithContext, 'channel'> & {
-    thread?: LocalMessage | ThreadType | null;
-  };
+export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel'>> &
+  Pick<ChannelPropsWithContext, 'channel'>;
 
 /**
  *
@@ -845,18 +823,7 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
     props.notificationHostId ??
     (channel?.cid ? getChannelNotificationHostId(channel.cid) : undefined);
 
-  const threadFromProps = props?.thread;
-  const threadInstance = (threadFromProps as ThreadType)?.threadInstance as Thread;
-  const threadMessage = (
-    threadInstance ? (threadFromProps as ThreadType).thread : threadFromProps
-  ) as LocalMessage;
-
-  const thread: ThreadType = {
-    thread: threadMessage,
-    threadInstance,
-  };
-
-  const shouldSyncChannel = threadMessage?.id ? !!props.threadList : true;
+  const shouldSyncChannel = props.thread ? !!props.threadList : true;
 
   const channelWithContext = (
     <ChannelWithContext
@@ -867,7 +834,6 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
       {...props}
       channel={channel}
       shouldSyncChannel={shouldSyncChannel}
-      thread={thread}
     />
   );
 

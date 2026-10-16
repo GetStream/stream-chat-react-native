@@ -1,13 +1,13 @@
 import React from 'react';
 import { PropsWithChildren, createContext, useState } from 'react';
 
-import { Channel as ChannelType, LocalMessage } from 'stream-chat';
+import { Channel as ChannelType, Thread } from 'stream-chat';
 
 export type StreamChatContextType = {
   channel: ChannelType | undefined;
   setChannel: React.Dispatch<React.SetStateAction<ChannelType | undefined>>;
-  setThread: React.Dispatch<React.SetStateAction<LocalMessage | null | undefined>>;
-  thread: LocalMessage | null | undefined;
+  setThread: React.Dispatch<React.SetStateAction<Thread | null | undefined>>;
+  thread: Thread | null | undefined;
 };
 
 export const StreamChatContext = createContext<StreamChatContextType>({
@@ -19,7 +19,7 @@ export const StreamChatContext = createContext<StreamChatContextType>({
 
 export const StreamChatProvider = ({ children }: PropsWithChildren) => {
   const [channel, setChannel] = useState<ChannelType | undefined>(undefined);
-  const [thread, setThread] = useState<LocalMessage | null | undefined>(undefined);
+  const [thread, setThread] = useState<Thread | null | undefined>(undefined);
 
   return (
     <StreamChatContext.Provider value={{ channel, setChannel, thread, setThread }}>

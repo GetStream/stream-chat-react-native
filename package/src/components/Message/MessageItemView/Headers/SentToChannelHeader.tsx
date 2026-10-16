@@ -2,12 +2,11 @@ import React, { useMemo } from 'react';
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { formatMessage } from 'stream-chat';
-
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
@@ -70,32 +69,41 @@ export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithConte
 
 export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
   const { onAlsoSentToChannelHeaderPress } = useThreadContext();
+  const { client } = useChatContext();
   const { channel, threadList } = useChannelContext();
   const { message } = useMessageContext();
 
-  // TODO: V9: This should be handled by the channel/thread entirely. We should only fetch
-  //           if we don't have the message in state already.
   const handleOnPress = useStableCallback(async () => {
     if (threadList) {
       onAlsoSentToChannelHeaderPress?.({ targetedMessageId: message.id });
       return;
     }
 
-    if (!message.parent_id) {
+    const parentId = message.parent_id;
+    if (!parentId) {
+      return;
+    }
+
+    // The parent is only fetched when neither its thread nor the message itself is loaded. Opening
+    // the thread loads whatever else it is missing.
+    const registeredThread = client.threads.get(parentId);
+    if (registeredThread) {
+      onAlsoSentToChannelHeaderPress?.({ targetedMessageId: message.id, thread: registeredThread });
       return;
     }
 
     try {
-      const { messages } = await channel.getMessagesById([message.parent_id]);
-      const parentThreadMessage = formatMessage(messages?.[0]);
+      const parentMessage =
+        client.messageStore.get(parentId) ??
+        (await channel.getMessagesById([parentId])).messages?.[0];
 
-      if (!parentThreadMessage) {
+      if (!parentMessage) {
         return;
       }
 
       onAlsoSentToChannelHeaderPress?.({
-        parentMessage: formatMessage(parentThreadMessage),
         targetedMessageId: message.id,
+        thread: client.threads.ensure({ channel, parentMessage }),
       });
     } catch (error) {
       console.error('Error querying parent message:', error);

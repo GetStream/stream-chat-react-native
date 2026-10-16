@@ -4,20 +4,20 @@ import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadC
 
 // The ThreadContext now carries only the Thread instance (+ a few UI-config props). Reply data,
 // pagination and loading state — and the parent message — are read by consumers straight off
-// `threadInstance.messagePaginator` / `threadInstance.state` via useStateStore.
+// `thread.messagePaginator` / `thread.state` via useStateStore.
 export const useCreateThreadContext = ({
   allowThreadMessagesInChannel,
   onAlsoSentToChannelHeaderPress,
-  threadInstance,
+  thread,
 }: Pick<
   ThreadContextValue,
-  'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress' | 'threadInstance'
+  'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress' | 'thread'
 >): ThreadContextValue =>
   useMemo(
     () => ({
       allowThreadMessagesInChannel,
       onAlsoSentToChannelHeaderPress,
-      threadInstance,
+      thread,
     }),
-    [allowThreadMessagesInChannel, onAlsoSentToChannelHeaderPress, threadInstance],
+    [allowThreadMessagesInChannel, onAlsoSentToChannelHeaderPress, thread],
   );

@@ -55,7 +55,7 @@ describe("MessageInputContext's sendMessage", () => {
             { sendLinks: true, sendMessage: true, ...capabilities } as OwnCapabilitiesContextValue
           }
         >
-          <MessageComposerProvider value={{ channel, threadInstance: undefined }}>
+          <MessageComposerProvider value={{ channel, thread: undefined }}>
             <MessageInputProvider value={{} as InputMessageInputContextValue}>
               {children}
             </MessageInputProvider>

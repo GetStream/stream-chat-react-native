@@ -1250,7 +1250,7 @@ describe('MessageList in a thread', () => {
     const utils = render(
       <OverlayProvider>
         <Chat client={chatClient}>
-          <Channel channel={channel} thread={{ thread: parentMessage, threadInstance }} threadList>
+          <Channel channel={channel} thread={threadInstance} threadList>
             <MessageList threadList />
           </Channel>
         </Chat>

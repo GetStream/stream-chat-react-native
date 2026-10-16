@@ -57,14 +57,11 @@ export type TypingIndicatorContainerProps = PropsWithChildren<
 export const TypingIndicatorContainer = (props: TypingIndicatorContainerProps) => {
   const { channel } = useChannelContext();
   const { client } = useChatContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
   const { typing } = useStateStore(channel.state, typingSelector) ?? { typing: {} };
 
   return (
-    <TypingIndicatorContainerWithContext
-      {...{ client, threadId: threadInstance?.id, typing }}
-      {...props}
-    />
+    <TypingIndicatorContainerWithContext {...{ client, threadId: thread?.id, typing }} {...props} />
   );
 };
 

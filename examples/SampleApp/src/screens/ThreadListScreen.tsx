@@ -50,10 +50,10 @@ export const ThreadListScreen: React.FC<ThreadsScreenProps> = () => {
       <ChatScreenHeader />
       <ThreadList
         isFocused={isFocused}
-        onThreadSelect={(thread, channel) => {
+        onThreadSelect={(thread) => {
           navigation.navigate('ThreadScreen', {
+            channel: thread.channel,
             thread,
-            channel,
           });
         }}
       />

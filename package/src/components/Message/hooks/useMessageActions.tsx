@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import { LocalMessage } from 'stream-chat';
+import { Thread } from 'stream-chat';
 
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 import { MessageOperations } from './useMessageOperations';
@@ -55,7 +55,7 @@ export type MessageActionsHookProps = Pick<
   Pick<ChatContextValue, 'client'> &
   Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: LocalMessage) => void;
+    onThreadSelect?: (thread: Thread) => void;
   } & Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>;
 
 export const useMessageActions = ({
@@ -124,7 +124,7 @@ export const useMessageActions = ({
 
   const onOpenThread = useStableCallback(() => {
     if (onThreadSelect) {
-      onThreadSelect(message);
+      onThreadSelect(client.threads.ensure({ channel, parentMessage: message }));
     }
   });
 

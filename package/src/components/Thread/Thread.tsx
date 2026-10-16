@@ -29,7 +29,7 @@ try {
 }
 
 type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'threadInstance'> &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<ThreadFooterComponentProps, 'parentMessagePreventPress'> & {
     /**
      * Additional props for underlying MessageComposer component.
@@ -91,7 +91,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     onThreadDismount,
     notificationHostId: notificationHostIdProp,
     parentMessagePreventPress = true,
-    threadInstance,
+    thread,
     shouldUseFlashList = false,
   } = props;
   const {
@@ -101,42 +101,42 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   } = useComponentsContext();
 
   const { hasItems, isLoading, lastQueryError } =
-    useStateStore(threadInstance?.messagePaginator?.state, paginatorSelector) ?? {};
+    useStateStore(thread?.messagePaginator?.state, paginatorSelector) ?? {};
   const { isStateStale, isThreadReloading } =
-    useStateStore(threadInstance?.state, threadStaleSelector) ?? {};
-  const threadId = threadInstance?.id;
+    useStateStore(thread?.state, threadStaleSelector) ?? {};
+  const threadId = thread?.id;
 
   useEffect(() => {
-    if (threadInstance && isStateStale) {
-      void threadInstance.reload().catch((err) => console.warn('Thread reload failed', err));
+    if (thread && isStateStale) {
+      void thread.reload().catch((err) => console.warn('Thread reload failed', err));
     }
-  }, [isStateStale, threadInstance]);
+  }, [isStateStale, thread]);
 
   // Activating registers the thread with `client.threads` for the session, which keeps it subscribed
   // (incoming replies, read state, thread.updated) whether or not the thread list holds it. Keyed on
   // the instance, which can arrive after mount; `activate()` returns the release of this activation.
-  useEffect(() => threadInstance?.activate(), [threadInstance]);
+  useEffect(() => thread?.activate(), [thread]);
 
   // Load the first reply page, but only when the paginator hasn't already been seeded from the
   // thread's `latest_replies` (managed/queried threads seed on construction) or loaded/loading. A
   // seeded paginator already holds its first page, so we skip the fetch and let scroll-up load older
   // replies — mirroring stream-chat-react, whose thread list has no mount-time fetch. Reactive on
-  // `threadInstance`/`hasItems` because the instance can arrive after mount; the `hasItems`
+  // `thread`/`hasItems` because the instance can arrive after mount; the `hasItems`
   // guard makes this fire at most once (an unseeded thread fetches, and the fetch defines `items`).
   useEffect(() => {
-    if (!threadInstance || isLoading || hasItems || lastQueryError) {
+    if (!thread || isLoading || hasItems || lastQueryError) {
       return;
     }
     // A reload in flight (a stale thread's, started by the effect above in this same commit) seeds the
     // replies itself; read live, as this commit's render predates it. If it fails, this runs again.
-    if (isThreadReloading || threadInstance.state.getLatestValue().isLoading) {
+    if (isThreadReloading || thread.state.getLatestValue().isLoading) {
       return;
     }
-    void threadInstance.messagePaginator.toTail();
+    void thread.messagePaginator.toTail();
     // `lastQueryError` is load-bearing here, not decorative: a failed query flips `isLoading` back to
     // false with `hasItems` still false, which would re-run this effect and refetch forever. The
     // retry is the user's to make, through the error indicator below.
-  }, [threadInstance, hasItems, isLoading, lastQueryError, isThreadReloading]);
+  }, [thread, hasItems, isLoading, lastQueryError, isThreadReloading]);
 
   // Deactivation is the activation effect's cleanup; this only notifies the integrator.
   useEffect(
@@ -172,7 +172,7 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   // the reply paginator, and only this component knows how to retry it (a first-page `toTail`).
   if (lastQueryError && !hasItems) {
     const retry = () =>
-      threadInstance.messagePaginator
+      thread.messagePaginator
         .toTail()
         .catch((err: unknown) => console.warn('Reloading the thread replies failed:', err));
 
@@ -219,9 +219,9 @@ export type ThreadProps = Partial<ThreadPropsWithContext>;
 export const Thread = (props: ThreadProps) => {
   const { client } = useChatContext();
   const { threadList } = useChannelContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
-  if (threadInstance?.id && !threadList) {
+  if (thread?.id && !threadList) {
     throw new Error(
       'Please add a threadList prop to your Channel component when rendering a thread list. Check our Channel documentation for more info: https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#threadlist',
     );
@@ -231,7 +231,7 @@ export const Thread = (props: ThreadProps) => {
     <ThreadWithContext
       {...{
         client,
-        threadInstance,
+        thread,
       }}
       {...props}
     />

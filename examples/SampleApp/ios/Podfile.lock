@@ -242,7 +242,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - op-sqlite (18.1.1):
+  - op-sqlite (18.1.4):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3110,14 +3110,14 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 57270ccc2b77472d7e85c4cbe45972564eff78bb
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 766ace00c6b10d8148408f329d10c4f051931850
-  hermes-engine: 6a26e94b4a974cbadc751eed9caa12624c38f226
+  hermes-engine: 38b6a452e40fa51e26047d362f132f386320507b
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   NitroModules: 8cad24cfdb4fb7c561bc68d76b8e86c096a4e598
   NitroSound: bc4220718f728f1f83093166dc1b5487cfba973f
-  op-sqlite: 6c653c1e122b7b777bc0892839fd09a4bb0e264f
+  op-sqlite: e09741fc098106a52e33724080d3d3356fd7011e
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   RCT-Folly: 82921e585c0400eda46fac1068297aa9dfb035e4

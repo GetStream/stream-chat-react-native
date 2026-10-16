@@ -16,6 +16,7 @@ import {
   getAttachmentPreviewUrl,
   type LocalMessage,
   type MentionEntity,
+  type Thread,
   type UserResponse,
 } from 'stream-chat';
 
@@ -261,9 +262,9 @@ export type MessagePropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param message A message object to open the thread upon.
+     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
      */
-    onThreadSelect?: (message: LocalMessage) => void;
+    onThreadSelect?: (thread: Thread) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
   } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
@@ -556,7 +557,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const onOpenThread = () => {
     if (onThreadSelect) {
-      onThreadSelect(message);
+      onThreadSelect(client.threads.ensure({ channel, parentMessage: message }));
     }
   };
 

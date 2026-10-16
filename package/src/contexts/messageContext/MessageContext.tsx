@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment, LocalMessage } from 'stream-chat';
+import type { Attachment, LocalMessage, Thread } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import type { ReactionSummary } from '../../components/Message/hooks/useProcessReactions';
@@ -142,13 +142,10 @@ export type MessageContextValue = {
   showAvatar?: boolean;
   /**
    * Function to handle thread select
-   * @param message - The message to select
-   * @param targetedMessageId - The id of the targeted message
+   * @param thread - The thread of the message
    * @returns void
-   *
-   * TODO: V9: Change function params to an object
    */
-  onThreadSelect?: (message: LocalMessage, targetedMessageId?: string) => void;
+  onThreadSelect?: (thread: Thread) => void;
 } & Pick<ChannelContextValue, 'channel'> &
   Pick<MessageComposerAPIContextValue, 'setQuotedMessage'>;
 
