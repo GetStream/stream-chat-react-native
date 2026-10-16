@@ -1,12 +1,12 @@
 import React, { PropsWithChildren, createContext, useState } from 'react';
 
-import { Channel as ChannelType, LocalMessage } from 'stream-chat';
+import { Channel as ChannelType, Thread } from 'stream-chat';
 
 export type AppContextType = {
   channel: ChannelType | undefined;
   setChannel: React.Dispatch<React.SetStateAction<ChannelType | undefined>>;
-  setThread: React.Dispatch<React.SetStateAction<LocalMessage | null | undefined>>;
-  thread: LocalMessage | null | undefined;
+  setThread: React.Dispatch<React.SetStateAction<Thread | null | undefined>>;
+  thread: Thread | null | undefined;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -18,7 +18,7 @@ export const AppContext = createContext<AppContextType>({
 
 export const AppProvider = ({ children }: PropsWithChildren) => {
   const [channel, setChannel] = useState<ChannelType | undefined>(undefined);
-  const [thread, setThread] = useState<LocalMessage | null | undefined>(undefined);
+  const [thread, setThread] = useState<Thread | null | undefined>(undefined);
 
   return (
     <AppContext.Provider value={{ channel, setChannel, thread, setThread }}>

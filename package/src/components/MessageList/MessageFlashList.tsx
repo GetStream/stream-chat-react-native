@@ -4,7 +4,7 @@ import { LayoutChangeEvent, ScrollViewProps, StyleSheet, View, useColorScheme } 
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
-import type { LocalMessage } from 'stream-chat';
+import type { LocalMessage, Thread } from 'stream-chat';
 
 import { getAttachmentPreviewUrl } from 'stream-chat';
 
@@ -108,7 +108,7 @@ type MessageFlashListPropsWithContext = Pick<
     pendingUploadsEnabled: boolean;
     markRead: (options?: MarkReadFunctionOptions) => void;
   } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'myMessageTheme'> &
-  Pick<ThreadContextValue, 'threadInstance'> & {
+  Pick<ThreadContextValue, 'thread'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
      * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -150,9 +150,9 @@ type MessageFlashListPropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param message A message object to open the thread upon.
+     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
      */
-    onThreadSelect?: (message: LocalMessage | null) => void;
+    onThreadSelect?: (thread: Thread) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -289,7 +289,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     onThreadSelect,
     setFlatListRef,
     hasPendingInitialTargetLoad,
-    threadInstance,
+    thread,
     threadList = false,
   } = props;
   const {
@@ -310,7 +310,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-  const paginator = threadList ? threadInstance?.messagePaginator : channel.messagePaginator;
+  const paginator = threadList ? thread?.messagePaginator : channel.messagePaginator;
 
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
@@ -922,7 +922,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const markRead = useMarkRead(channel);
   const { client } = useChatContext();
   const { disableTypingIndicator, myMessageTheme } = useMessagesContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const pendingUploadsEnabled = usePendingUploadsEnabled();
   const { messageInputFloating, messageInputHeightStore } = useMessageInputContext();
@@ -944,7 +944,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         pendingUploadsEnabled,
         readEvents,
         hasPendingInitialTargetLoad,
-        threadInstance,
+        thread,
         threadList,
       }}
       {...props}

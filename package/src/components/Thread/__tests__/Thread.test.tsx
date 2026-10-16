@@ -3,7 +3,6 @@ import React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type {
   Channel as ChannelType,
-  LocalMessage,
   MessageResponse,
   StreamChat,
   UserResponse,
@@ -38,7 +37,7 @@ const renderComponent = ({
   channel: ChannelType;
   chatClient: StreamChat;
   props?: Partial<React.ComponentProps<typeof Thread>>;
-  thread: LocalMessage | { thread: LocalMessage; threadInstance: ThreadClass };
+  thread: ThreadClass;
 }) => {
   return render(
     <OverlayProvider>
@@ -89,7 +88,7 @@ describe('Thread', () => {
       isLastPage: true,
     });
 
-    renderComponent({ channel, chatClient, thread: { thread, threadInstance } });
+    renderComponent({ channel, chatClient, thread: threadInstance });
 
     const { getAllByText, getByText, queryByText } = screen;
 
@@ -170,7 +169,7 @@ describe('Thread', () => {
           <ImageGalleryProvider
             value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
           >
-            <Channel channel={channel} thread={{ thread, threadInstance }} threadList>
+            <Channel channel={channel} thread={threadInstance} threadList>
               <Thread />
             </Channel>
           </ImageGalleryProvider>
@@ -218,7 +217,7 @@ describe('Thread', () => {
     const { unmount } = renderComponent({
       channel,
       chatClient,
-      thread: { thread: parentMessage, threadInstance },
+      thread: threadInstance,
     });
     await waitFor(() => expect(threadInstance.state.getLatestValue().active).toBe(true));
 
@@ -227,15 +226,12 @@ describe('Thread', () => {
   });
 
   describe('metadata reload on open', () => {
-    const openThread = (
-      threadInstance: ThreadClass,
-      parentMessage: ReturnType<typeof generateMessage>,
-    ) => {
+    const openThread = (threadInstance: ThreadClass) => {
       const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
       const toTail = jest
         .spyOn(threadInstance.messagePaginator, 'toTail')
         .mockResolvedValue(undefined);
-      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      renderComponent({ channel, chatClient, thread: threadInstance });
       return { reload, toTail };
     };
 
@@ -246,7 +242,7 @@ describe('Thread', () => {
         text: 'Parent',
       });
       const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
-      const { reload } = openThread(threadInstance, parentMessage);
+      const { reload } = openThread(threadInstance);
 
       await waitFor(() => expect(reload).toHaveBeenCalled());
     });
@@ -267,7 +263,7 @@ describe('Thread', () => {
       const toTail = jest
         .spyOn(threadInstance.messagePaginator, 'toTail')
         .mockResolvedValue(undefined);
-      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      renderComponent({ channel, chatClient, thread: threadInstance });
 
       await waitFor(() => expect(threadInstance.reload).toHaveBeenCalled());
       expect(toTail).not.toHaveBeenCalled();
@@ -296,7 +292,7 @@ describe('Thread', () => {
           valueOrFactory: [threadInstance],
         });
       });
-      const { reload, toTail } = openThread(threadInstance, parentMessage);
+      const { reload, toTail } = openThread(threadInstance);
 
       // The first-page fetch runs from the same mount, so its call marks the effects as settled.
       await waitFor(() => expect(toTail).toHaveBeenCalled());
@@ -313,11 +309,11 @@ describe('Thread', () => {
         client: chatClient,
         parentMessage,
       });
-      return { parentMessage, threadInstance };
+      return threadInstance;
     };
 
     it('renders the error indicator when the reply query failed and nothing loaded', async () => {
-      const { parentMessage, threadInstance } = makeThread();
+      const threadInstance = makeThread();
       // A failed first page leaves `items` undefined — the error belongs to the THREAD's paginator,
       // so <Channel> must not be the one showing it.
       jest
@@ -329,7 +325,7 @@ describe('Thread', () => {
         });
       });
 
-      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      renderComponent({ channel, chatClient, thread: threadInstance });
 
       await waitFor(() => {
         expect(screen.getByTestId('loading-error')).toBeTruthy();
@@ -337,7 +333,7 @@ describe('Thread', () => {
     });
 
     it('retries the reply query — and only the reply query — from the indicator', async () => {
-      const { parentMessage, threadInstance } = makeThread();
+      const threadInstance = makeThread();
       const toTail = jest
         .spyOn(threadInstance.messagePaginator, 'toTail')
         .mockRejectedValue(new Error('replies boom'));
@@ -348,7 +344,7 @@ describe('Thread', () => {
         });
       });
 
-      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      renderComponent({ channel, chatClient, thread: threadInstance });
 
       const indicator = await waitFor(() => screen.getByTestId('loading-error'));
       // Clear AFTER mount: <Channel> seeds its own list on open, which is not what this asserts.
@@ -365,7 +361,7 @@ describe('Thread', () => {
     });
 
     it('does not refetch in a loop while the query is failing', async () => {
-      const { parentMessage, threadInstance } = makeThread();
+      const threadInstance = makeThread();
       // The first-page effect reruns whenever `isLoading` settles back to false. Without the
       // `lastQueryError` guard it would refetch forever and the indicator could never stay up.
       const toTail = jest
@@ -378,7 +374,7 @@ describe('Thread', () => {
           return Promise.resolve();
         });
 
-      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      renderComponent({ channel, chatClient, thread: threadInstance });
 
       await waitFor(() => {
         expect(screen.getByTestId('loading-error')).toBeTruthy();
@@ -387,14 +383,14 @@ describe('Thread', () => {
     });
 
     it('keeps the reply list when a later query fails but replies are already loaded', async () => {
-      const { parentMessage, threadInstance } = makeThread();
+      const threadInstance = makeThread();
       act(() => {
         threadInstance.messagePaginator.setItems({
           valueOrFactory: [
             channel.state.formatMessage(
               generateMessage({
                 cid: 'messaging:test-channel',
-                parent_id: parentMessage.id,
+                parent_id: threadInstance.id,
                 text: 'Loaded reply',
               }) as unknown as MessageResponse,
             ),
@@ -407,7 +403,7 @@ describe('Thread', () => {
         });
       });
 
-      renderComponent({ channel, chatClient, thread: { thread: parentMessage, threadInstance } });
+      renderComponent({ channel, chatClient, thread: threadInstance });
 
       await waitFor(() => {
         expect(screen.getByText('Loaded reply')).toBeTruthy();

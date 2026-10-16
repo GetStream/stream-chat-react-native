@@ -17,7 +17,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageComposerContextValue = {
   channel: ChannelProps['channel'];
-  threadInstance: ThreadContextValue['threadInstance'];
+  thread: ThreadContextValue['thread'];
   /**
    * The composer in use: the edit composer while a message is being edited, otherwise the thread's
    * or the channel's own.
@@ -34,7 +34,7 @@ export const MessageComposerContext = React.createContext(
 );
 
 type Props = React.PropsWithChildren<{
-  value: Pick<MessageComposerContextValue, 'channel' | 'threadInstance'>;
+  value: Pick<MessageComposerContextValue, 'channel' | 'thread'>;
 }>;
 
 const editedMessageSelector = (state: MessageComposerState) => ({
@@ -43,11 +43,10 @@ const editedMessageSelector = (state: MessageComposerState) => ({
 
 export const MessageComposerProvider = ({ children, value }: Props) => {
   const { client } = useChatContext();
-  const { channel, threadInstance } = value;
+  const { channel, thread } = value;
   const [editComposer, setEditComposer] = useState<MessageComposer | undefined>(undefined);
 
-  const messageComposer =
-    editComposer ?? threadInstance?.messageComposer ?? channel.messageComposer;
+  const messageComposer = editComposer ?? thread?.messageComposer ?? channel.messageComposer;
 
   // Submitting or clearing the edit composer clears its edited message, which ends the edit.
   const { editedMessage } = useStateStore(editComposer?.state, editedMessageSelector) ?? {};
@@ -93,8 +92,8 @@ export const MessageComposerProvider = ({ children, value }: Props) => {
   );
 
   const messageComposerContextValue = useMemo(
-    () => ({ channel, editing: editedMessage ?? undefined, messageComposer, threadInstance }),
-    [channel, editedMessage, messageComposer, threadInstance],
+    () => ({ channel, editing: editedMessage ?? undefined, messageComposer, thread }),
+    [channel, editedMessage, messageComposer, thread],
   );
 
   const messageComposerAPIContextValue = useMemo(

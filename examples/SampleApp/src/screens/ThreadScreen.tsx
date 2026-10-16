@@ -5,14 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
+import { Thread as ThreadInstance, ThreadState } from 'stream-chat';
 import {
   DEFAULT_HIGHLIGHT_DURATION,
   AlsoSentToChannelHeaderPressPayload,
   Channel,
   MessageActionsParams,
   Thread,
-  ThreadType,
   useChatContext,
   useTheme,
   useTranslationContext,
@@ -54,18 +53,13 @@ type ThreadScreenProps = {
 };
 
 export type ThreadHeaderProps = {
-  thread: LocalMessage | ThreadType;
+  thread: ThreadInstance;
 };
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
-  let subtitleText = ((thread as LocalMessage)?.user as UserResponse)?.name;
-  const { parentMessage } =
-    useStateStore((thread as ThreadType)?.threadInstance?.state, selector) || {};
-
-  if (subtitleText == null) {
-    subtitleText = (parentMessage?.user as UserResponse)?.name;
-  }
+  const { parentMessage } = useStateStore(thread.state, selector);
+  const subtitleText = parentMessage?.user?.name;
 
   useCreateDraftFocusEffect();
 
@@ -89,18 +83,17 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
    * message list picks its initial anchor in a passive effect — so the jump lands first and there
    * is no scroll-then-jump.
    */
-  const threadInstanceForJump = (thread as ThreadType)?.threadInstance;
   useLayoutEffect(() => {
-    if (!threadInstanceForJump || !targetedMessageIdFromParams) {
+    if (!targetedMessageIdFromParams) {
       return;
     }
-    threadInstanceForJump.messagePaginator
+    thread.messagePaginator
       .jumpToMessage(targetedMessageIdFromParams, {
         focusReason: 'jump-to-message',
         focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
       })
       .catch((error: unknown) => console.warn('Jump to reply failed:', error));
-  }, [threadInstanceForJump, targetedMessageIdFromParams]);
+  }, [thread, targetedMessageIdFromParams]);
   const {
     theme: { semantics },
   } = useTheme();

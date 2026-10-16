@@ -30,7 +30,7 @@ export type MessageOperations = {
 export const useMessageOperations = (): MessageOperations => {
   const { client } = useChatContext();
   const { channel, enforceUniqueReaction } = useChannelContext();
-  const { threadInstance } = useThreadContext();
+  const { thread } = useThreadContext();
 
   const updateMessage: MessageOperations['updateMessage'] = useStableCallback((updatedMessage) => {
     if (!channel) {
@@ -42,7 +42,7 @@ export const useMessageOperations = (): MessageOperations => {
       channel.messagePaginator.ingestItem(formatted);
     }
     if (updatedMessage.parent_id) {
-      threadInstance?.messagePaginator?.ingestItem(formatted);
+      thread?.messagePaginator?.ingestItem(formatted);
     }
   });
 
@@ -57,7 +57,7 @@ export const useMessageOperations = (): MessageOperations => {
       // write (that store is being removed).
       channel.messagePaginator.removeItem({ id: message.id });
       if (message.parent_id) {
-        threadInstance?.messagePaginator?.removeItem({ id: message.id });
+        thread?.messagePaginator?.removeItem({ id: message.id });
       }
     }
 
@@ -68,7 +68,7 @@ export const useMessageOperations = (): MessageOperations => {
 
   const retrySendMessage: MessageOperations['retrySendMessage'] = useStableCallback(
     async (localMessage) => {
-      await (threadInstance ?? channel).messageOperations.retry({ localMessage });
+      await (thread ?? channel).messageOperations.retry({ localMessage });
     },
   );
 
@@ -83,7 +83,7 @@ export const useMessageOperations = (): MessageOperations => {
       // paginator can't), otherwise the channel. Both instances forward the request through
       // `channel.sendReaction`, so this only decides the optimistic ingest target — never sending a
       // channel message's reaction into the thread paginator while a (channel-wide) thread is open.
-      const target = threadInstance?.messagePaginator.getItem(messageId) ? threadInstance : channel;
+      const target = thread?.messagePaginator.getItem(messageId) ? thread : channel;
 
       await target.messageOperations.addReaction({
         messageId,
@@ -99,7 +99,7 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized');
       }
 
-      const target = threadInstance?.messagePaginator.getItem(messageId) ? threadInstance : channel;
+      const target = thread?.messagePaginator.getItem(messageId) ? thread : channel;
 
       await target.messageOperations.deleteReaction({ messageId, type });
     },
@@ -134,9 +134,7 @@ export const useMessageOperations = (): MessageOperations => {
       // Routed by MEMBERSHIP, like `sendReaction` above: a reply loaded in the open thread goes through
       // the thread instance, everything else — including the thread's own parent message, which the
       // reply paginator cannot hold — through the channel.
-      const target = threadInstance?.messagePaginator.getItem(message.id)
-        ? threadInstance
-        : channel;
+      const target = thread?.messagePaginator.getItem(message.id) ? thread : channel;
       await target.messageOperations.delete({
         localMessage: message,
         options,

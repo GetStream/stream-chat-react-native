@@ -82,10 +82,7 @@ export const ThreadListItemComponent = () => {
       <Pressable
         onPress={() => {
           if (onThreadSelect) {
-            onThreadSelect(
-              { thread: parentMessage as LocalMessage, threadInstance: thread },
-              channel,
-            );
+            onThreadSelect(thread);
           }
         }}
         style={({ pressed }) => [

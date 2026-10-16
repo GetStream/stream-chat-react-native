@@ -58,7 +58,7 @@ describe('useNotificationTarget', () => {
   it('prioritizes thread over channel', () => {
     const wrapper = ({ children }: PropsWithChildren) => (
       <ChannelProvider value={channelContext}>
-        <ThreadProvider value={{ threadInstance: {} } as never}>{children}</ThreadProvider>
+        <ThreadProvider value={{ thread: {} } as never}>{children}</ThreadProvider>
       </ChannelProvider>
     );
 
