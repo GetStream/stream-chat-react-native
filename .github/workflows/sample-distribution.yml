@@ -6,10 +6,13 @@ concurrency:
 
 on:
   push:
+    branches:
+      - develop
     paths:
       - '.github/workflows/sample-distribution.yml'
       - 'package/**'
       - 'examples/SampleApp/**'
+  workflow_dispatch:
 
 permissions:
   actions: write
