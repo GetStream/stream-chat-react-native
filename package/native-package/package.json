@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native",
   "description": "The official React Native SDK for Stream Chat, a service for building chat applications",
-  "version": "9.9.2",
+  "version": "9.10.0",
   "homepage": "https://www.npmjs.com/package/stream-chat-react-native",
   "author": {
     "company": "Stream.io Inc",
@@ -22,7 +22,8 @@
     "ios",
     "*.podspec",
     "react-native.config.js",
-    "package.json"
+    "package.json",
+    "ai-components"
   ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",
@@ -36,6 +37,7 @@
     "@react-native-camera-roll/camera-roll": ">=7.9.0",
     "@react-native-clipboard/clipboard": ">=1.16.0",
     "@react-native-documents/picker": ">=10.1.1",
+    "@shopify/react-native-skia": ">=2.0.0",
     "react-native": ">=0.79.0",
     "react-native-audio-recorder-player": ">=3.6.13",
     "react-native-blob-util": ">=0.22.0",
@@ -43,7 +45,8 @@
     "react-native-image-picker": ">=7.1.2",
     "react-native-nitro-sound": ">=0.2.9",
     "react-native-share": ">=11.0.0",
-    "react-native-video": ">=6.18.0"
+    "react-native-video": ">=6.18.0",
+    "victory-native": ">=41.0.0"
   },
   "peerDependenciesMeta": {
     "@react-native-camera-roll/camera-roll": {
@@ -53,6 +56,9 @@
       "optional": true
     },
     "@react-native-documents/picker": {
+      "optional": true
+    },
+    "@shopify/react-native-skia": {
       "optional": true
     },
     "react-native-audio-recorder-player": {
@@ -75,6 +81,9 @@
     },
     "react-native-video": {
       "optional": true
+    },
+    "victory-native": {
+      "optional": true
     }
   },
   "scripts": {
@@ -84,7 +93,7 @@
   },
   "devDependencies": {
     "@stream-io/typescript-config": "workspace:^",
-    "react-native": "0.87.0",
+    "react-native": "0.88.0",
     "typescript": "6.0.3"
   },
   "codegenConfig": {

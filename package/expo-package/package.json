@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-expo",
   "description": "The official Expo SDK for Stream Chat, a service for building chat applications",
-  "version": "9.9.2",
+  "version": "9.10.0",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -20,7 +20,10 @@
     "ios",
     "*.podspec",
     "react-native.config.js",
-    "package.json"
+    "package.json",
+    "ai-components",
+    "app.plugin.js",
+    "plugin"
   ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",
@@ -30,6 +33,7 @@
     "stream-chat-react-native-core": "workspace:^"
   },
   "peerDependencies": {
+    "@shopify/react-native-skia": ">=2.0.0",
     "expo": ">=53.0.0",
     "expo-audio": "*",
     "expo-av": "*",
@@ -42,9 +46,13 @@
     "expo-media-library": "*",
     "expo-sharing": "*",
     "expo-video": "*",
-    "react-native": ">=0.79.0"
+    "react-native": ">=0.79.0",
+    "victory-native": ">=41.0.0"
   },
   "peerDependenciesMeta": {
+    "@shopify/react-native-skia": {
+      "optional": true
+    },
     "expo-audio": {
       "optional": true
     },
@@ -77,13 +85,16 @@
     },
     "expo-video": {
       "optional": true
+    },
+    "victory-native": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@stream-io/typescript-config": "workspace:^",
-    "expo": "^57.0.7",
-    "expo-audio": "patch:expo-audio@npm%3A57.0.2#~/.yarn/patches/expo-audio-npm-57.0.2-7a40cb0b0a.patch",
-    "expo-image-manipulator": "~57.0.5",
+    "expo": "^58.0.8",
+    "expo-audio": "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch",
+    "expo-image-manipulator": "~58.0.14",
     "typescript": "6.0.3"
   },
   "scripts": {

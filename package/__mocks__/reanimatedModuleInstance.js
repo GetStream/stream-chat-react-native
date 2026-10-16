@@ -3,8 +3,8 @@
 /**
  * Test-environment shim for Reanimated's `ReanimatedModule` singleton.
  *
- * Reanimated regression, introduced between 4.5.2 and 4.6.0 and STILL PRESENT IN 4.6.0 STABLE
- * (re-verified 2026-08-25): `initializeReanimatedModule()` calls `setCSSEventHandler()`
+ * Reanimated regression, introduced between 4.5.2 and 4.6.0 and STILL PRESENT IN 4.7.1
+ * (re-verified 2026-10-16): `initializeReanimatedModule()` calls `setCSSEventHandler()`
  * unconditionally at import time. On the JS-only `JSReanimated` backend
  * that Jest resolves to, that method *throws* (`[Reanimated] setCSSEventHandler is not available in
  * JSReanimated.`), whereas the native backend's stub is a harmless no-op. The result is that merely

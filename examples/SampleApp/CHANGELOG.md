@@ -1,5 +1,19 @@
 # Change Log
 
+## [4.16.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.3...sampleapp@v4.16.0) (2026-10-14)
+
+### Features
+
+* ai-components-js port ([#3856](https://github.com/GetStream/stream-chat-react-native/issues/3856)) ([0e8d49a](https://github.com/GetStream/stream-chat-react-native/commit/0e8d49af8993d2f2dc3ea3e5d2858217e0888317))
+
+## [4.15.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.2...sampleapp@v4.15.3) (2026-10-08)
+
+### Bug Fixes
+
+* bump flashlist in sample apps ([#3839](https://github.com/GetStream/stream-chat-react-native/issues/3839)) ([0285023](https://github.com/GetStream/stream-chat-react-native/commit/02850238f01bd0b28bc4c45c174f8c13563c7b6e))
+* bump java runner to 21 ([#3841](https://github.com/GetStream/stream-chat-react-native/issues/3841)) ([0ab5ecb](https://github.com/GetStream/stream-chat-react-native/commit/0ab5ecbae06681ca9b93d23621046e7b08b7ef6b))
+* widen endPoll type ([#3833](https://github.com/GetStream/stream-chat-react-native/issues/3833)) ([d12f687](https://github.com/GetStream/stream-chat-react-native/commit/d12f6876fe7be12d452d844d16793a81869e6f87))
+
 ## [4.15.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.1...sampleapp@v4.15.2) (2026-09-25)
 
 ### Bug Fixes

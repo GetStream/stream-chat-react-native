@@ -1,0 +1,96 @@
+import React, { type PropsWithChildren, useCallback, useMemo } from 'react';
+import { Pressable, type PressableProps, Text, View } from 'react-native';
+
+import { parseJsonChart } from '../../charts';
+import { parseMermaid } from '../../charts';
+import Chart from '../../charts/Chart';
+import { MarkdownReactiveScrollView } from '../../components';
+import { useStableCallback } from '../../internal/hooks/useStableCallback';
+import { setClipboardString } from '../../services';
+import { SyntaxHighlighter } from '../../syntax-highlighting';
+import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
+
+export const CodeBlockCopyButton = ({ onPress }: { onPress?: PressableProps['onPress'] }) => (
+  <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })} onPress={onPress}>
+    <Text style={{ fontSize: 15 }}>{'\u29C9'}</Text>
+  </Pressable>
+);
+
+const areEqual = (prev: MarkdownComponentProps, next: MarkdownComponentProps) =>
+  prev.node.content === next.node.content;
+
+export const CodeBlock = React.memo(({ styles, node }: MarkdownComponentProps) => {
+  const text = useMemo(() => node.content?.trim(), [node.content]);
+
+  const copyText = useStableCallback(() => {
+    if (setClipboardString) {
+      setClipboardString(text);
+    }
+  });
+
+  const CodeTag = useCallback(
+    ({ children }: PropsWithChildren) => (
+      <View style={styles.codeBlockContainer}>
+        <Text style={styles.codeBlock}>{children}</Text>
+      </View>
+    ),
+    [styles],
+  );
+
+  const CodeBlockHeader = useCallback(
+    () => (
+      <View style={styles.codeBlockHeaderContainer}>
+        <Text style={styles.codeBlockHeaderTitle}>{node.lang}</Text>
+        <CodeBlockCopyButton onPress={copyText} />
+      </View>
+    ),
+    [styles, node.lang, copyText],
+  );
+
+  const CodeBlockWrapper = useCallback(
+    ({ children }: PropsWithChildren) => (
+      <View style={styles.codeBlockWrapper}>
+        <CodeBlockHeader />
+        <MarkdownReactiveScrollView>{children}</MarkdownReactiveScrollView>
+      </View>
+    ),
+    [CodeBlockHeader, styles.codeBlockWrapper],
+  );
+
+  if (node.lang === 'mermaid') {
+    try {
+      const parsed = parseMermaid(text);
+      if (parsed) {
+        return <Chart spec={parsed} />;
+      }
+    } catch (_e) {
+      /* do nothing */
+    }
+  }
+
+  if (node.lang === 'json') {
+    try {
+      const parsed = parseJsonChart(text);
+      if (parsed) {
+        return <Chart spec={parsed} />;
+      }
+    } catch (_e) {
+      /* do nothing */
+    }
+  }
+
+  return (
+    <SyntaxHighlighter
+      language={node.lang}
+      highlighter={'prism'}
+      CodeTag={CodeTag}
+      PreTag={CodeBlockWrapper}
+    >
+      {text}
+    </SyntaxHighlighter>
+  );
+}, areEqual);
+
+export const renderCodeBlock: RuleRenderFunction = ({ node, output, state, styles }) => (
+  <CodeBlock key={state.key} node={node} output={output} state={state} styles={styles} />
+);

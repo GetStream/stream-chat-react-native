@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
 import { measureInWindow } from '../../components/Message/utils/measureInWindow';
+import { useOverlayHostLayerId } from '../../contexts/overlayContext/OverlayHostLayerContext';
 import { useStableCallback } from '../../hooks';
 import {
   clearClosingPortalLayout,
@@ -14,6 +15,7 @@ import {
   useShouldTeleportToClosingPortal,
   useHasActiveId,
   useIsOverlayClosing,
+  useIsTopOverlayHostLayer,
 } from '../../state-store';
 import type { ViewRef } from '../../types/react-native-compat';
 
@@ -79,11 +81,16 @@ export const PortalWhileClosingView = ({
 
   const registrationId = registrationIdRef.current;
 
+  const overlayHostLayerId = useOverlayHostLayerId();
+  const isTopOverlayHostLayer = useIsTopOverlayHostLayer(overlayHostLayerId);
+
   const { syncPortalLayout, containerRef, placeholderLayout } = useSyncingApi(
     portalHostName,
     registrationId,
+    isTopOverlayHostLayer,
   );
-  const shouldTeleport = useShouldTeleportToClosingPortal(portalHostName, registrationId);
+  const shouldTeleport =
+    useShouldTeleportToClosingPortal(portalHostName, registrationId) && isTopOverlayHostLayer;
 
   useEffect(() => {
     return () => {
@@ -114,7 +121,11 @@ export const PortalWhileClosingView = ({
   );
 };
 
-const useSyncingApi = (portalHostName: string, registrationId: string) => {
+const useSyncingApi = (
+  portalHostName: string,
+  registrationId: string,
+  isTopOverlayHostLayer: boolean,
+) => {
   const containerRef = useRef<ViewRef | null>(null);
   const placeholderLayout = useSharedValue({ h: 0, w: 0 });
   const insets = useSafeAreaInsets();
@@ -122,7 +133,7 @@ const useSyncingApi = (portalHostName: string, registrationId: string) => {
   const isClosing = useIsOverlayClosing();
 
   const syncPortalLayout = useStableCallback(() => {
-    if (!hasActiveId && !isClosing) {
+    if ((!hasActiveId && !isClosing) || !isTopOverlayHostLayer) {
       return;
     }
 
@@ -140,7 +151,7 @@ const useSyncingApi = (portalHostName: string, registrationId: string) => {
     if (hasActiveId || isClosing) {
       syncPortalLayout();
     }
-  }, [insets.bottom, isClosing, hasActiveId, syncPortalLayout]);
+  }, [insets.bottom, isClosing, hasActiveId, isTopOverlayHostLayer, syncPortalLayout]);
 
   return useMemo(
     () => ({ syncPortalLayout, containerRef, placeholderLayout }),
