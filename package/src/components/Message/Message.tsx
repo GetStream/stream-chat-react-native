@@ -20,15 +20,13 @@ import {
   type UserResponse,
 } from 'stream-chat';
 
+import { useCreateMessageActionHandlers } from './hooks/useCreateMessageActionHandlers';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
-import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
-import { useMessageActions } from './hooks/useMessageActions';
 import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
 import { MessageOverlayWrapper } from './MessageOverlayWrapper';
 import { measureInWindow } from './utils/measureInWindow';
-import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
   ChannelContextValue,
@@ -86,6 +84,7 @@ import {
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { MessageActionListWithActions } from '../MessageMenu/MessageActionListWithActions';
 import { BottomSheetModal } from '../UIComponents';
 
 const createMessageOverlayId = (messageId?: string) =>
@@ -227,29 +226,15 @@ export type MessagePropsWithContext = Pick<
     MessagesContextValue,
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
-    | 'handleBan'
-    | 'handleCopy'
-    | 'handleDelete'
-    | 'handleDeleteForMe'
-    | 'handleEdit'
-    | 'handleFlag'
-    | 'handleMarkUnread'
-    | 'handleMute'
-    | 'handlePinMessage'
-    | 'handleQuotedReply'
     | 'handleReaction'
-    | 'handleRetry'
     | 'handleThreadReply'
-    | 'handleBlockUser'
     | 'isAttachmentEqual'
-    | 'messageActions'
     | 'messageOverlayTargetId'
     | 'messageContentOrder'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'selectReaction'
-    | 'supportedReactions'
   > &
   Pick<TranslationContextValue, 't'> & {
     messagesContext: MessagesContextValue;
@@ -286,27 +271,13 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     deleteReaction,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
-    enforceUniqueReaction,
     forceAlignMessages = false,
     goToMessage,
     groupStyles = ['bottom'],
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
     handleReaction: handleReactionProp,
-    handleRetry,
     handleThreadReply,
-    handleBlockUser,
     isTargetedMessage,
     message,
-    messageActions: messageActionsProp = defaultMessageActions,
     messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
@@ -323,14 +294,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showAvatar,
     showMessageStatus,
     style,
-    supportedReactions,
-    t,
     threadList = false,
     updateMessage,
     setQuotedMessage,
   } = props;
   const {
-    MessageActionList,
     MessageBlocked,
     MessageBounce,
     MessageItemView,
@@ -571,6 +539,17 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
+  const messageActionHandlers = useCreateMessageActionHandlers({
+    channel,
+    client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
+    message,
+    retrySendMessage,
+    sendReaction,
+    setEditingState,
+    setQuotedMessage,
+  });
   const {
     handleCopyMessage,
     handleDeleteMessage,
@@ -584,98 +563,20 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleToggleMuteUser,
     handleTogglePinMessage,
     handleToggleReaction,
-  } = useMessageActionHandlers({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    enforceUniqueReaction,
-    message,
-    retrySendMessage,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
+  } = messageActionHandlers;
+
+  const onReaction = useStableCallback(async (reactionType: string) => {
+    if (handleReactionProp) {
+      handleReactionProp(message, reactionType);
+    }
+
+    await handleToggleReaction(reactionType);
   });
 
-  const {
-    banUser,
-    copyMessage,
-    deleteMessage,
-    deleteForMeMessage,
-    editMessage,
-    flagMessage,
-    handleReaction,
-    markUnread,
-    muteUser,
-    pinMessage,
-    quotedReply,
-    retry,
-    threadReply,
-    unpinMessage,
-    blockUser,
-  } = useMessageActions({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    dismissOverlay,
-    enforceUniqueReaction,
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
-    handleReaction: handleReactionProp,
-    handleRetry,
-    handleThreadReply,
-    handleBlockUser,
-    message,
-    onThreadSelect,
-    removeMessage,
-    retrySendMessage,
-    selectReaction,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
-    t,
-    updateMessage,
-  });
-
-  const isThreadMessage = threadList || !!message.parent_id;
-
-  const messageActions =
-    typeof messageActionsProp !== 'function'
-      ? messageActionsProp
-      : messageActionsProp({
-          banUser,
-          copyMessage,
-          deleteForMeMessage,
-          deleteMessage,
-          dismissOverlay,
-          editMessage,
-          error: errorOrFailed,
-          flagMessage,
-          isMyMessage,
-          isThreadMessage,
-          markUnread,
-          message,
-          muteUser,
-          ownCapabilities,
-          pinMessage,
-          quotedReply,
-          retry,
-          threadReply,
-          unpinMessage,
-          updateMessage,
-          blockUser,
-        });
+  const handleReaction = useMemo(
+    () => (errorOrFailed ? undefined : selectReaction ? selectReaction(message) : onReaction),
+    [errorOrFailed, message, onReaction, selectReaction],
+  );
 
   const actionHandlers: MessageActionHandlers = {
     copyMessage: handleCopyMessage,
@@ -732,6 +633,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     message: overlayActive ? frozenMessage.current : message,
+    messageActionHandlers,
     messageOverlayId,
     messageContentOrder,
     messageHasOnlySingleAttachment,
@@ -933,10 +835,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   });
                 }}
               >
-                <MessageActionList
-                  dismissOverlay={dismissOverlay}
-                  messageActions={messageActions}
-                />
+                <MessageActionListWithActions />
               </View>
             ) : null}
           </Portal>

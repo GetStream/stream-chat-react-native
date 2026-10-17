@@ -1,8 +1,9 @@
 import React from 'react';
 import { Switch, Text } from 'react-native';
 
+import { StateStore } from '@stream-io/state-store';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
-import type { Channel } from 'stream-chat';
+import type { Channel, UserMuteResponse } from 'stream-chat';
 
 import { ChannelDetailsContextProvider } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { ChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -13,7 +14,6 @@ import { TranslationProvider } from '../../../contexts/translationContext/Transl
 import type { ChannelActionItem } from '../../../hooks/actions/useChannelActionItems';
 import * as useChannelActionsModule from '../../../hooks/actions/useChannelActions';
 import * as useIsDirectChatModule from '../../../hooks/useIsDirectChat';
-import * as useMutedUsersModule from '../../ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../ChannelPreview/hooks/useIsChannelMuted';
 import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
 import { ChannelDetailsActionsSection } from '../components/ChannelDetailsActionsSection';
@@ -30,6 +30,8 @@ const buildItem = (overrides: Partial<ChannelActionItem> = {}): ChannelActionIte
   type: 'standard',
   ...overrides,
 });
+
+const mutedUsersStore = new StateStore<{ mutedUsers: UserMuteResponse[] }>({ mutedUsers: [] });
 
 const channel = {
   cid: 'messaging:test',
@@ -65,6 +67,7 @@ const sectionElement = () => (
           {
             client: {
               mutedUsers: [],
+              mutedUsersStore,
               on: () => ({ unsubscribe: () => undefined }),
               userID: 'me',
             },
@@ -83,11 +86,13 @@ const sectionElement = () => (
 
 const renderSection = () => render(sectionElement());
 
+const setMutedUsers = (mutedUsers: Array<{ target: { id: string }; user: { id: string } }>) =>
+  act(() => mutedUsersStore.partialNext({ mutedUsers: mutedUsers as UserMuteResponse[] }));
+
 describe('ChannelDetailsActionsSection', () => {
   let useIsDirectChatSpy: jest.SpyInstance;
   let useActionItemsSpy: jest.SpyInstance;
   let useIsChannelMutedSpy: jest.SpyInstance;
-  let useMutedUsersSpy: jest.SpyInstance;
   let getOtherUserSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -101,7 +106,7 @@ describe('ChannelDetailsActionsSection', () => {
     useIsChannelMutedSpy = jest
       .spyOn(useIsChannelMutedModule, 'useIsChannelMuted')
       .mockReturnValue({ createdAt: null, expiresAt: null, muted: false });
-    useMutedUsersSpy = jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([]);
+    mutedUsersStore.partialNext({ mutedUsers: [] });
     getOtherUserSpy = jest
       .spyOn(useChannelActionsModule, 'getOtherUserInDirectChannel')
       .mockReturnValue(undefined);
@@ -269,7 +274,7 @@ describe('ChannelDetailsActionsSection', () => {
     it('reflects userMuted state on the muteUser item Switch in direct chats', () => {
       useIsDirectChatSpy.mockReturnValue(true);
       getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
-      useMutedUsersSpy.mockReturnValue([{ target: { id: 'other-user' }, user: { id: 'me' } }]);
+      setMutedUsers([{ target: { id: 'other-user' }, user: { id: 'me' } }]);
       useActionItemsSpy.mockReturnValue([buildItem({ id: 'muteUser', label: 'Unmute User' })]);
       renderSection();
       const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
@@ -280,7 +285,7 @@ describe('ChannelDetailsActionsSection', () => {
       const action = jest.fn();
       useIsDirectChatSpy.mockReturnValue(true);
       getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
-      useMutedUsersSpy.mockReturnValue([]);
+      setMutedUsers([]);
       useActionItemsSpy.mockReturnValue([
         buildItem({ action, id: 'muteUser', label: 'Mute User' }),
       ]);
@@ -300,7 +305,7 @@ describe('ChannelDetailsActionsSection', () => {
       const action = jest.fn();
       useIsDirectChatSpy.mockReturnValue(true);
       getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
-      useMutedUsersSpy.mockReturnValue([]);
+      setMutedUsers([]);
       useActionItemsSpy.mockReturnValue([
         buildItem({ action, id: 'muteUser', label: 'Mute User' }),
       ]);
@@ -310,7 +315,7 @@ describe('ChannelDetailsActionsSection', () => {
       fireEvent(userMuteSwitch, 'valueChange', true);
       expect(screen.getByTestId('channel-details-action-muteUser-switch').props.value).toBe(true);
       // A server event reports the user as muted before the request resolves.
-      useMutedUsersSpy.mockReturnValue([{ target: { id: 'other-user' }, user: { id: 'me' } }]);
+      setMutedUsers([{ target: { id: 'other-user' }, user: { id: 'me' } }]);
       rerender(sectionElement());
       // The request fails: revert to the current hook value (true), not !value (false).
       act(() => {
@@ -322,7 +327,7 @@ describe('ChannelDetailsActionsSection', () => {
     it('userMuted is false when the other user is not in mutedUsers', () => {
       useIsDirectChatSpy.mockReturnValue(true);
       getOtherUserSpy.mockReturnValue({ user: { id: 'other-user' } });
-      useMutedUsersSpy.mockReturnValue([{ target: { id: 'someone-else' }, user: { id: 'me' } }]);
+      setMutedUsers([{ target: { id: 'someone-else' }, user: { id: 'me' } }]);
       useActionItemsSpy.mockReturnValue([buildItem({ id: 'muteUser', label: 'Mute User' })]);
       renderSection();
       const userMuteSwitch = screen.getByTestId('channel-details-action-muteUser-switch');
