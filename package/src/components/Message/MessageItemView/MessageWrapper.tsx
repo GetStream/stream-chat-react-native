@@ -14,6 +14,7 @@ import { useMessagesContext } from '../../../contexts/messagesContext/MessagesCo
 import { ThemeProvider, useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { useIsTargetedMessage } from '../../../hooks/useIsTargetedMessage';
+import { useMessagePaginator } from '../../../hooks/useMessagePaginator';
 import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 
@@ -26,13 +27,10 @@ export type MessageWrapperProps = {
 export const MessageWrapper = React.memo(function MessageWrapper(props: MessageWrapperProps) {
   const { message, previousMessage, nextMessage } = props;
   const { client } = useChatContext();
-  const {
-    allowDateSeparatorForSystemMessages,
-    channel,
-    hideDateSeparators,
-    maxTimeBetweenGroupedMessages,
-  } = useChannelContext();
+  const { allowDateSeparatorForSystemMessages, hideDateSeparators, maxTimeBetweenGroupedMessages } =
+    useChannelContext();
 
+  const messagePaginator = useMessagePaginator();
   const isTargetedMessage = useIsTargetedMessage(message.id);
   const { InlineDateSeparator, InlineUnreadIndicator, Message, MessageSystem } =
     useComponentsContext();
@@ -114,7 +112,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     [createdAtTimestamp, messageId, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
   );
   const { showUnreadSeparator, unreadCount } = useStateStore(
-    channel.messagePaginator.unreadStateSnapshot,
+    messagePaginator.unreadStateSnapshot,
     showUnreadSeparatorSelector,
   );
 
@@ -139,6 +137,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
       goToMessage={goToMessage}
       groupStyles={groupStyles}
       isTargetedMessage={isTargetedMessage}
+      isVeryLastMessage={!nextMessage}
       message={message}
       onThreadSelect={onThreadSelect}
       showUnreadUnderlay={showUnreadUnderlay}

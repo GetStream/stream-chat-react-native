@@ -68,6 +68,8 @@ export type MessageContextValue = {
   images: Attachment[];
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
+  /** Whether this is the newest message in its list, with nothing newer loaded below it */
+  isVeryLastMessage?: boolean;
   /** Whether or not this is the last message in a group of messages */
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */

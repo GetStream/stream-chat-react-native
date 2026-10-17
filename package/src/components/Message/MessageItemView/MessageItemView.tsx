@@ -333,10 +333,7 @@ const areEqual = (
     return false;
   }
 
-  const channelEqual =
-    prevChannel?.messagePaginator.state.getLatestValue().items?.length ===
-    nextChannel?.messagePaginator.state.getLatestValue().items?.length;
-  if (!channelEqual) {
+  if (prevChannel !== nextChannel) {
     return false;
   }
 

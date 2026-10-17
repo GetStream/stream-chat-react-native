@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FlatList } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 
 import { act, cleanup, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import type { LocalMessage, StreamChat as StreamChatClient, UserResponse } from 'stream-chat';
@@ -19,6 +19,7 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { primitives } from '../../../theme';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 
@@ -70,6 +71,54 @@ describe('MessageList', () => {
       expect(queryAllByTestId('scroll-to-bottom-button')).toHaveLength(0);
       expect(getByText(newMessage.text as string)).toBeTruthy();
     });
+  }, 10000);
+
+  // Only the newest row in the list carries the last-bubble spacing, so a message arriving below it
+  // takes the spacing over.
+  it('moves the last-bubble spacing to a newly arrived message', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const first = generateMessage({ timestamp: new Date(base), user: user1 });
+    const second = generateMessage({ timestamp: new Date(base + 1000), user: user1 });
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+      messages: [first, second],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    const lastBubbleSpacing = (messageId: string) =>
+      StyleSheet.flatten(
+        within(getByTestId(`message-list-item-${messageId}`)).getByTestId('message-wrapper').props
+          .style,
+      ).marginBottom;
+
+    await waitFor(() => expect(lastBubbleSpacing(second.id)).toBe(primitives.spacingSm));
+    expect(lastBubbleSpacing(first.id)).not.toBe(primitives.spacingSm);
+
+    const third = generateMessage({
+      cid: channel.cid,
+      timestamp: new Date(base + 2000),
+      user: user2,
+    });
+    act(() => dispatchMessageNewEvent(chatClient, third, mockedChannel.channel));
+
+    await waitFor(() => expect(lastBubbleSpacing(third.id)).toBe(primitives.spacingSm));
+    expect(lastBubbleSpacing(second.id)).not.toBe(primitives.spacingSm);
   }, 10000);
 
   it('should render a system message in the list', async () => {
@@ -1259,7 +1308,7 @@ describe('MessageList in a thread', () => {
     );
     await waitFor(() => expect(utils.getByText('reply-4')).toBeTruthy());
 
-    return { ...utils, channel, threadInstance };
+    return { ...utils, channel, chatClient, replies, threadInstance };
   };
 
   it("leaves the channel's viewing-live flag as the channel list reported it", async () => {
@@ -1292,9 +1341,55 @@ describe('MessageList in a thread', () => {
       });
     });
     const button = await waitFor(() => getByTestId('scroll-to-bottom-button'));
-    act(() => fireEvent.press(button));
+    await act(() => {
+      fireEvent.press(button);
+      return Promise.resolve();
+    });
 
     await waitFor(() => expect(jumpThread).toHaveBeenCalledTimes(1));
     expect(jumpChannel).not.toHaveBeenCalled();
+  });
+  it('does not mark the channel read from the scroll to bottom button', async () => {
+    const { channel, chatClient, getByTestId } = await setup();
+    const throttledMarkRead = jest.spyOn(chatClient.messageDeliveryReporter, 'throttledMarkRead');
+    const markReadLocally = jest.spyOn(channel, 'markReadLocally');
+
+    act(() => {
+      fireEvent(getByTestId('message-flat-list'), 'scroll', {
+        nativeEvent: {
+          contentOffset: { y: 1900 },
+          contentSize: { height: 2000, width: 200 },
+          layoutMeasurement: { height: 400, width: 200 },
+        },
+      });
+    });
+    const button = await waitFor(() => getByTestId('scroll-to-bottom-button'));
+    await act(async () => {
+      fireEvent.press(button);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(throttledMarkRead).not.toHaveBeenCalledWith(channel);
+    expect(markReadLocally).not.toHaveBeenCalled();
+  });
+
+  it("places the unread separator from the thread's unread state, not the channel's", async () => {
+    const { channel, queryAllByLabelText, replies, threadInstance } = await setup();
+
+    act(() =>
+      channel.messagePaginator.unreadStateSnapshot.partialNext({
+        firstUnreadMessageId: replies[2].id,
+        unreadCount: 3,
+      }),
+    );
+    expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
+
+    act(() =>
+      threadInstance.messagePaginator.unreadStateSnapshot.partialNext({
+        firstUnreadMessageId: replies[3].id,
+        unreadCount: 2,
+      }),
+    );
+    await waitFor(() => expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(1));
   });
 });

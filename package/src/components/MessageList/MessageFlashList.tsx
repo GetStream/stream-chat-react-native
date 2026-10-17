@@ -151,7 +151,7 @@ type MessageFlashListPropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
+     * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
     onThreadSelect?: (thread: Thread) => void;
     /**
@@ -626,6 +626,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
 
     setScrollToBottomButtonVisible(false);
+    // A thread marks itself read while it is open, and the channel underneath keeps its own unread
+    // state, so only a channel list marks read here.
+    if (thread) {
+      return;
+    }
     /**
      *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
      We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
