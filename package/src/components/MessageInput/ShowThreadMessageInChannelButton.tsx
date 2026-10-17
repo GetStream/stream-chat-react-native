@@ -5,10 +5,6 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { MessageComposerState } from 'stream-chat';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -26,16 +22,16 @@ const stateSelector = (state: MessageComposerState) => ({
 
 export type ShowThreadMessageInChannelButtonWithContextProps = Pick<
   ThreadContextValue,
-  'allowThreadMessagesInChannel'
+  'allowThreadMessagesInChannel' | 'thread'
 > &
-  Pick<TranslationContextValue, 't'> & { threadList?: ChannelContextValue['threadList'] };
+  Pick<TranslationContextValue, 't'>;
 
 export const ShowThreadMessageInChannelButtonWithContext = (
   props: ShowThreadMessageInChannelButtonWithContextProps,
 ) => {
   const styles = useStyles();
   const { icons } = useComponentsContext();
-  const { allowThreadMessagesInChannel, t, threadList } = props;
+  const { allowThreadMessagesInChannel, t, thread } = props;
   const messageComposer = useMessageComposer();
   const { showReplyInChannel } = useStateStore(messageComposer.state, stateSelector);
 
@@ -59,7 +55,7 @@ export const ShowThreadMessageInChannelButtonWithContext = (
     messageComposer.toggleShowReplyInChannel();
   }, [messageComposer]);
 
-  if (!threadList || !allowThreadMessagesInChannel) {
+  if (!thread || !allowThreadMessagesInChannel) {
     return null;
   }
 
@@ -108,12 +104,12 @@ const areEqual = (
   const {
     allowThreadMessagesInChannel: prevAllowThreadMessagesInChannel,
     t: prevT,
-    threadList: prevThreadList,
+    thread: prevThread,
   } = prevProps;
   const {
     allowThreadMessagesInChannel: nextAllowThreadMessagesInChannel,
     t: nextT,
-    threadList: nextThreadList,
+    thread: nextThread,
   } = nextProps;
 
   const tEqual = prevT === nextT;
@@ -121,8 +117,8 @@ const areEqual = (
     return false;
   }
 
-  const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) {
+  const threadEqual = prevThread === nextThread;
+  if (!threadEqual) {
     return false;
   }
 
@@ -145,15 +141,14 @@ export type ShowThreadMessageInChannelButtonProps =
 
 export const ShowThreadMessageInChannelButton = (props: ShowThreadMessageInChannelButtonProps) => {
   const { t } = useTranslationContext();
-  const { allowThreadMessagesInChannel } = useThreadContext();
-  const { threadList } = useChannelContext();
+  const { allowThreadMessagesInChannel, thread } = useThreadContext();
 
   return (
     <MemoizedShowThreadMessageInChannelButton
       {...{
         allowThreadMessagesInChannel,
         t,
-        threadList,
+        thread,
       }}
       {...props}
     />

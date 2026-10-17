@@ -294,7 +294,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showAvatar,
     showMessageStatus,
     style,
-    threadList = false,
     updateMessage,
     setQuotedMessage,
   } = props;
@@ -717,7 +716,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showMessageOverlay,
     showReactionsOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
-    threadList,
     videos: attachments.videos,
   });
   const messageOverlayRuntimeContext = useMemo(

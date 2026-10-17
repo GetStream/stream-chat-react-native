@@ -27,7 +27,6 @@ export const useNotificationTarget = (): NotificationTargetPanel | undefined => 
   const threadContext = useContext(ThreadContext) as ThreadContextValue;
   const threadsContext = useContext(ThreadsContext) as ThreadsContextValue;
 
-  if (isProvided(channelContext) && channelContext.threadList) return 'thread';
   if (isProvided(threadContext) && threadContext.thread) return 'thread';
   if (isProvided(channelContext) && channelContext.channel) return 'channel';
   if (isProvided(threadsContext)) return 'thread-list';

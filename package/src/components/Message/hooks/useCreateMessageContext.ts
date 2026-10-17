@@ -53,7 +53,6 @@ export const useCreateMessageContext = ({
   showMessageOverlay,
   showReactionsOverlay,
   showMessageStatus,
-  threadList,
   videos,
   setQuotedMessage,
 }: Omit<MessageContextValue, 'hasInteractiveAccessibilityContent'>) => {
@@ -116,7 +115,6 @@ export const useCreateMessageContext = ({
       showMessageOverlay,
       showReactionsOverlay,
       showMessageStatus,
-      threadList,
       videos,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,7 +135,6 @@ export const useCreateMessageContext = ({
       stringifiedQuotedMessage,
       showAvatar,
       showMessageStatus,
-      threadList,
       preventPress,
       unregisterMessageOverlayTarget,
     ],

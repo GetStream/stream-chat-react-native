@@ -432,7 +432,6 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     hideStickyDateHeader,
     maxTimeBetweenGroupedMessages,
     hasPendingInitialTargetLoad,
-    threadList: !!thread,
   });
 
   const inputMessageInputContext = useCreateInputMessageInputContext({

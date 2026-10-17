@@ -128,8 +128,6 @@ export type MessageContextValue = {
   showMessageOverlay: () => void;
   showReactionsOverlay: (selectedReaction?: string) => void;
   showMessageStatus: boolean;
-  /** Whether or not the Message is part of a Thread */
-  threadList: boolean;
   /** The videos attached to a message */
   videos: Attachment[];
   goToMessage?: (messageId: string) => void;

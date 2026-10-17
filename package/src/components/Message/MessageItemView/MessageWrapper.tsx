@@ -31,7 +31,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     channel,
     hideDateSeparators,
     maxTimeBetweenGroupedMessages,
-    threadList,
   } = useChannelContext();
 
   const isTargetedMessage = useIsTargetedMessage(message.id);
@@ -144,7 +143,6 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
       onThreadSelect={onThreadSelect}
       showUnreadUnderlay={showUnreadUnderlay}
       style={[messageContainer]}
-      threadList={threadList}
     />
   );
 

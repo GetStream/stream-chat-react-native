@@ -106,7 +106,7 @@ describe('useNotificationApi', () => {
       },
     };
     const { result } = renderHook(() => useNotificationApi(), {
-      wrapper: createWrapper(client, { threadList: true }),
+      wrapper: createWrapper(client),
     });
 
     const id = result.current.addSystemNotification({

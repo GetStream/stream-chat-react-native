@@ -98,7 +98,7 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
-    'channel' | 'disabled' | 'hideStickyDateHeader' | 'hasPendingInitialTargetLoad' | 'threadList'
+    'channel' | 'disabled' | 'hideStickyDateHeader' | 'hasPendingInitialTargetLoad'
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> & {
@@ -291,12 +291,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     setFlatListRef,
     hasPendingInitialTargetLoad,
     thread,
-    threadList = false,
   } = props;
 
   // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
   const HeaderComponent =
-    HeaderComponentProp ?? (threadList ? ThreadFooterComponent : InlineLoadingMoreIndicator);
+    HeaderComponentProp ?? (thread ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
     AutoCompleteSuggestionList,
     EmptyStateIndicator,
@@ -315,7 +314,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-  const paginator = threadList ? thread?.messagePaginator : channel.messagePaginator;
+  const paginator = thread ? thread.messagePaginator : channel.messagePaginator;
 
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
@@ -349,7 +348,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     channel,
     markRead,
     paginator,
-    threadList,
+    thread,
     userId: client.user?.id,
   });
   const { stickyHeaderDate, updateStickyHeaderDate } = useStickyHeaderDate();
@@ -536,7 +535,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (!hideStickyDateHeader && topVisibleMessage) {
       updateStickyHeaderDate({ isAtOldestMessage, topVisibleMessage });
     }
-    if (!threadList) {
+    if (!thread) {
       updateUnreadNotification({ isAtOldestMessage, topVisibleMessage, viewableMessages });
     }
     // Viewability reflects the real layout, so this is right even at mount: a channel opened at its
@@ -637,7 +636,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   });
 
   const scrollToBottomUnreadCount = useOwnUnreadCount(
-    scrollToBottomButtonVisible && !threadList ? channel : undefined,
+    scrollToBottomButtonVisible && !thread ? channel : undefined,
   );
   const {
     accessibilityActions: messageListAccessibilityActions,
@@ -768,7 +767,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   return (
     <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
-      {processedMessageList.length === 0 && !threadList ? (
+      {processedMessageList.length === 0 && !thread ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
@@ -831,7 +830,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         />
       </Animated.View>
       <NetworkDownIndicator />
-      {isUnreadNotificationOpen && !threadList ? (
+      {isUnreadNotificationOpen && !thread ? (
         <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification
             markRead={markRead}
@@ -922,7 +921,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     enableMessageGroupingByUser,
     hideStickyDateHeader,
     hasPendingInitialTargetLoad,
-    threadList,
   } = useChannelContext();
   const markRead = useMarkRead(channel);
   const { client } = useChatContext();
@@ -950,7 +948,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         readEvents,
         hasPendingInitialTargetLoad,
         thread,
-        threadList,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}

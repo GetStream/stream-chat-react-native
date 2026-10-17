@@ -70,7 +70,6 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
         message={parentMessage}
         preventPress={parentMessagePreventPress}
         showMessageStatus={false}
-        threadList
       />
       <View style={styles.newThread}>
         <Text style={styles.text}>

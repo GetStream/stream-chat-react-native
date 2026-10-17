@@ -185,7 +185,7 @@ type MessageListPropsWithContext = Pick<
   'closePicker' | 'attachmentPickerStore'
 > &
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
-  Pick<ChannelContextValue, 'channel' | 'disabled' | 'hideStickyDateHeader' | 'threadList'> &
+  Pick<ChannelContextValue, 'channel' | 'disabled' | 'hideStickyDateHeader'> &
   Pick<ChatContextValue, 'client'> & {
     markRead: (options?: MarkReadFunctionOptions) => void;
   } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'FlatList' | 'myMessageTheme'> &
@@ -304,12 +304,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     readEvents,
     setFlatListRef,
     thread,
-    threadList = false,
   } = props;
 
   // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
   const FooterComponent =
-    FooterComponentProp ?? (threadList ? ThreadFooterComponent : InlineLoadingMoreIndicator);
+    FooterComponentProp ?? (thread ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,
@@ -328,13 +327,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-  const paginator = threadList ? thread?.messagePaginator : channel.messagePaginator;
+  const paginator = thread ? thread.messagePaginator : channel.messagePaginator;
 
   useIncomingMessageAnnouncements({
     activeThreadId: thread?.id,
     channel,
     ownUserId: client.user?.id,
-    threadList,
   });
 
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
@@ -355,7 +353,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     channel,
     markRead,
     paginator,
-    threadList,
+    thread,
     userId: client.user?.id,
   });
   const { stickyHeaderDate, updateStickyHeaderDate } = useStickyHeaderDate();
@@ -456,7 +454,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     if (!hideStickyDateHeader && topVisibleMessage) {
       updateStickyHeaderDate({ isAtOldestMessage, topVisibleMessage });
     }
-    if (!threadList) {
+    if (!thread) {
       updateUnreadNotification({ isAtOldestMessage, topVisibleMessage, viewableMessages });
     }
     reportViewableMessages(viewableMessages);
@@ -483,7 +481,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [disabled]);
 
   useEffect(() => {
-    if (threadList) {
+    if (thread) {
       setAutoscrollToRecent(true);
       return;
     }
@@ -531,7 +529,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   }, [
     paginator,
-    threadList,
+    thread,
     processedMessageList,
     shouldScrollToRecentOnNewOwnMessageRef,
     maxLoadedItems,
@@ -656,7 +654,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   });
 
   const scrollToBottomUnreadCount = useOwnUnreadCount(
-    scrollToBottomButtonVisible && !threadList ? channel : undefined,
+    scrollToBottomButtonVisible && !thread ? channel : undefined,
   );
   const {
     accessibilityActions: messageListAccessibilityActions,
@@ -858,7 +856,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   return (
     <View style={styles.container} testID='message-flat-list-wrapper'>
       {/* Don't show the empty list indicator for Thread messages */}
-      {processedMessageList.length === 0 && !threadList ? (
+      {processedMessageList.length === 0 && !thread ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
@@ -936,7 +934,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       ) : null}
 
       <NetworkDownIndicator />
-      {isUnreadNotificationOpen && !threadList ? (
+      {isUnreadNotificationOpen && !thread ? (
         <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification
             markRead={markRead}
@@ -972,7 +970,7 @@ export type MessageListProps = Partial<MessageListPropsWithContext>;
 
 export const MessageList = (props: MessageListProps) => {
   const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
-  const { channel, disabled, enableMessageGroupingByUser, hideStickyDateHeader, threadList } =
+  const { channel, disabled, enableMessageGroupingByUser, hideStickyDateHeader } =
     useChannelContext();
   const markRead = useMarkRead(channel);
   const { client } = useChatContext();
@@ -1000,7 +998,6 @@ export const MessageList = (props: MessageListProps) => {
         pendingUploadsEnabled,
         readEvents,
         thread,
-        threadList,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}

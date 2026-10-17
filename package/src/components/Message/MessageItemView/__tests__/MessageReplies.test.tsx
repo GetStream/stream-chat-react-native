@@ -86,22 +86,5 @@ describe('MessageReplies', () => {
     await waitFor(() => {
       expect(screen.queryAllByTestId('message-replies')).toHaveLength(0);
     });
-
-    const message2 = generateMessage({
-      reply_count: 1,
-      user,
-    });
-
-    screen.rerender(
-      <TranslationProvider value={{ t } as unknown as TranslationContextValue}>
-        <ThemeProvider style={defaultTheme}>
-          <MessageReplies alignment='right' message={message2} onPress={() => null} threadList />
-        </ThemeProvider>
-      </TranslationProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.queryAllByTestId('message-replies')).toHaveLength(0);
-    });
   });
 });
