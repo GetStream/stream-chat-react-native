@@ -12,7 +12,7 @@ import { useCreateMessageActionHandlers } from '../useCreateMessageActionHandler
 
 const createClient = (mutedUsers: UserMuteResponse[] = []) =>
   ({
-    moderation: { ban: jest.fn(), mute: jest.fn(), unmute: jest.fn() },
+    moderation: { mute: jest.fn(), unmute: jest.fn() },
     mutedUsersStore: new StateStore<{ mutedUsers: UserMuteResponse[] }>({ mutedUsers }),
     notifications: {
       add: jest.fn(() => 'notification-id'),
@@ -21,21 +21,18 @@ const createClient = (mutedUsers: UserMuteResponse[] = []) =>
     },
     on: jest.fn(() => ({ unsubscribe: jest.fn() })),
     pinMessage: jest.fn(),
-    unbanUser: jest.fn(),
     unpinMessage: jest.fn(),
     userID: 'current-user-id',
   }) as unknown as StreamChat & {
-    moderation: { ban: jest.Mock; mute: jest.Mock; unmute: jest.Mock };
+    moderation: { mute: jest.Mock; unmute: jest.Mock };
     notifications: { add: jest.Mock; remove: jest.Mock; startTimeout: jest.Mock };
     pinMessage: jest.Mock;
-    unbanUser: jest.Mock;
     unpinMessage: jest.Mock;
   };
 
-const createChannel = (members: Record<string, { banned: boolean }> = {}) =>
+const createChannel = () =>
   ({
     markUnread: jest.fn(),
-    state: { members },
   }) as unknown as Channel & { markUnread: jest.Mock };
 
 const createWrapper =
@@ -236,47 +233,5 @@ describe('useCreateMessageActionHandlers state read at call time', () => {
 
     expect(client.moderation.mute).toHaveBeenCalledWith({ target_ids: ['message-user-id'] });
     expect(client.moderation.unmute).not.toHaveBeenCalled();
-  });
-
-  it('unbans when the channel member is banned, although the message author is not', async () => {
-    const client = createClient();
-    const channel = createChannel({ 'message-user-id': { banned: true } });
-    const { result } = renderUseMessageActionHandlers({ channel, client });
-
-    await act(async () => {
-      await result.current.handleToggleBanUser();
-    });
-
-    expect(client.unbanUser).toHaveBeenCalledWith('message-user-id');
-    expect(client.moderation.ban).not.toHaveBeenCalled();
-  });
-
-  it('unbans an app-wide banned author whose channel member record is not banned', async () => {
-    const client = createClient();
-    const channel = createChannel({ 'message-user-id': { banned: false } });
-    const message = createMessage({
-      user: { banned: true, id: 'message-user-id', name: 'Message User' } as LocalMessage['user'],
-    });
-    const { result } = renderUseMessageActionHandlers({ channel, client, message });
-
-    await act(async () => {
-      await result.current.handleToggleBanUser();
-    });
-
-    expect(client.unbanUser).toHaveBeenCalledWith('message-user-id');
-    expect(client.moderation.ban).not.toHaveBeenCalled();
-  });
-
-  it('bans when neither the channel member nor the author is banned', async () => {
-    const client = createClient();
-    const channel = createChannel({ 'message-user-id': { banned: false } });
-    const { result } = renderUseMessageActionHandlers({ channel, client });
-
-    await act(async () => {
-      await result.current.handleToggleBanUser();
-    });
-
-    expect(client.moderation.ban).toHaveBeenCalledWith({ target_user_id: 'message-user-id' });
-    expect(client.unbanUser).not.toHaveBeenCalled();
   });
 });

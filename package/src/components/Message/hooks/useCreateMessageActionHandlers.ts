@@ -46,19 +46,6 @@ export const useWithPortalKeyboardSafety = <T extends unknown[]>(
   return usePortalSettledCallback(callbackAfterKeyboardOpen);
 };
 
-/**
- * Whether the author of `message` is banned. The channel's member record is updated by
- * `user.banned` / `user.unbanned` events, which the message's own copy of its author is not; the
- * author's `banned` flag still carries an app-wide ban that the member record may not reflect.
- */
-export const isMessageUserBanned = (channel: Channel, message: LocalMessage) => {
-  const userId = message.user?.id;
-  if (!userId) {
-    return false;
-  }
-  return !!channel.state.members[userId]?.banned || !!message.user?.banned;
-};
-
 export type MessageActionHandlerCallbacks = {
   handleCopyMessage: () => void;
   handleDeleteForMeMessage: () => Promise<void>;
@@ -247,7 +234,7 @@ export const useCreateMessageActionHandlers = ({
       return;
     }
 
-    if (isMessageUserBanned(channel, message)) {
+    if (messageUser.banned) {
       await client.unbanUser(messageUser.id);
     } else {
       await client.moderation.ban({ target_user_id: messageUser.id });

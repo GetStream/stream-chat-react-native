@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import { isMessageUserBanned } from './useCreateMessageActionHandlers';
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 import { useUserMuteActive } from './useUserMuteActive';
 
@@ -162,7 +161,7 @@ export const useMessageActions = () => {
   });
 
   const isMuted = useUserMuteActive(message.user);
-  const isBanned = isMessageUserBanned(channel, message);
+  const isBanned = message.user?.banned;
   const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(
     message.user?.id ?? '',
   );
