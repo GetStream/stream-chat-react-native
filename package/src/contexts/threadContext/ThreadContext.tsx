@@ -2,10 +2,6 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { Thread } from 'stream-chat';
 
-import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
-
-import { isTestEnvironment } from '../utils/isTestEnvironment';
-
 export type AlsoSentToChannelHeaderPressPayload = {
   targetedMessageId: string;
   thread?: Thread;
@@ -13,36 +9,32 @@ export type AlsoSentToChannelHeaderPressPayload = {
 
 export type ThreadContextValue = {
   allowThreadMessagesInChannel: boolean;
-  thread?: Thread | null;
   /**
-   * Function to handle press on the "Also sent to channel" header action.
-   * @param payload - Navigation payload with the targeted message id and, from a channel list, its thread
-   * @returns void
+   * The thread this subtree renders. Set by `<Thread>`; `undefined` everywhere else.
    */
-  onAlsoSentToChannelHeaderPress?: (payload: AlsoSentToChannelHeaderPressPayload) => void;
+  thread?: Thread;
 };
 
-export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);
+/**
+ * What `useThreadContext()` returns outside a `<Thread>`. Only `<Thread>` provides this context, so
+ * its absence is how a component knows it is not rendering a thread.
+ */
+const NO_THREAD_CONTEXT_VALUE: ThreadContextValue = {
+  allowThreadMessagesInChannel: false,
+  thread: undefined,
+};
+
+export const ThreadContext = React.createContext<ThreadContextValue>(NO_THREAD_CONTEXT_VALUE);
 
 export const ThreadProvider = ({
   children,
   value,
 }: PropsWithChildren<{
   value: ThreadContextValue;
-}>) => (
-  <ThreadContext.Provider value={value as unknown as ThreadContextValue}>
-    {children}
-  </ThreadContext.Provider>
-);
+}>) => <ThreadContext.Provider value={value}>{children}</ThreadContext.Provider>;
 
-export const useThreadContext = () => {
-  const contextValue = useContext(ThreadContext) as unknown as ThreadContextValue;
-
-  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
-    throw new Error(
-      'The useThreadContext hook was called outside of the ThreadContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
-    );
-  }
-
-  return contextValue;
-};
+/**
+ * The thread the calling component renders, if any. Unlike the other context hooks this one does not
+ * throw outside its provider: outside a `<Thread>` it returns `{ thread: undefined }`.
+ */
+export const useThreadContext = () => useContext(ThreadContext);

@@ -15,7 +15,6 @@ import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
-import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 
 import {
   AttachmentPickerContextValue,
@@ -40,7 +39,6 @@ import {
   OwnCapabilitiesContextValue,
   OwnCapabilitiesProvider,
 } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import { useStableCallback } from '../../hooks';
 import { useAppStateListener } from '../../hooks/useAppStateListener';
 import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
@@ -177,6 +175,7 @@ export type ChannelConfigProps = Partial<
       | 'messageTextNumberOfLines'
       | 'messageSwipeToReplyHitSlop'
       | 'myMessageTheme'
+      | 'onAlsoSentToChannelHeaderPress'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
@@ -187,8 +186,7 @@ export type ChannelConfigProps = Partial<
       | 'supportedReactions'
       | 'hasCreatePoll'
     >
-  > &
-  Partial<Pick<ThreadContextValue, 'onAlsoSentToChannelHeaderPress'>> & {
+  > & {
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -212,15 +210,14 @@ export type ChannelConfigProps = Partial<
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
   };
 
-type ChannelShellProps = ChannelConfigProps &
-  Partial<Pick<ThreadContextValue, 'allowThreadMessagesInChannel'>> & {
-    channel: Channel;
-    hasPendingInitialTargetLoad: () => boolean;
-    /**
-     * Set by `<Thread>`: the list and the composer below show this thread's replies.
-     */
-    thread?: Thread;
-  };
+type ChannelShellProps = ChannelConfigProps & {
+  channel: Channel;
+  hasPendingInitialTargetLoad: () => boolean;
+  /**
+   * Set by `<Thread>`: the list and the composer below show this thread's replies.
+   */
+  thread?: Thread;
+};
 
 /**
  * Poll composition, resolved: the channel type's `polls` flag already ANDed with anything registered
@@ -255,7 +252,6 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     additionalPressableProps,
     additionalTextInputProps,
     allowConcurrentAudioPlayback = false,
-    allowThreadMessagesInChannel = true,
     asyncMessagesLockDistance = 50,
     asyncMessagesMinimumPressDuration = 500,
     asyncMessagesSlideToCancelDistance = 75,
@@ -499,6 +495,7 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     messageSwipeToReplyHitSlop,
     messageTextNumberOfLines,
     myMessageTheme,
+    onAlsoSentToChannelHeaderPress,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -508,12 +505,6 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     shouldShowUnreadUnderlay,
     supportedReactions,
     urlPreviewType,
-  });
-
-  const threadContext = useCreateThreadContext({
-    allowThreadMessagesInChannel,
-    onAlsoSentToChannelHeaderPress,
-    thread,
   });
 
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(
@@ -533,19 +524,17 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
       <ChannelProvider value={channelContext}>
         <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
           <MessagesProvider value={messagesContext}>
-            <ThreadProvider value={threadContext}>
-              <AttachmentPickerProvider value={attachmentPickerContext}>
-                <MessageComposerProvider value={messageComposerContext}>
-                  <MessageInputProvider value={inputMessageInputContext}>
-                    <AudioPlayerProvider value={audioPlayerContext}>
-                      <NotificationAnnouncer />
-                      <View style={{ height: '100%' }}>{children}</View>
-                      {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
-                    </AudioPlayerProvider>
-                  </MessageInputProvider>
-                </MessageComposerProvider>
-              </AttachmentPickerProvider>
-            </ThreadProvider>
+            <AttachmentPickerProvider value={attachmentPickerContext}>
+              <MessageComposerProvider value={messageComposerContext}>
+                <MessageInputProvider value={inputMessageInputContext}>
+                  <AudioPlayerProvider value={audioPlayerContext}>
+                    <NotificationAnnouncer />
+                    <View style={{ height: '100%' }}>{children}</View>
+                    {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
+                  </AudioPlayerProvider>
+                </MessageInputProvider>
+              </MessageComposerProvider>
+            </AttachmentPickerProvider>
           </MessagesProvider>
         </OwnCapabilitiesProvider>
       </ChannelProvider>

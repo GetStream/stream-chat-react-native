@@ -3,10 +3,11 @@ import React, { PropsWithChildren, useEffect } from 'react';
 import type { LocalMessage, Thread as ThreadInstance } from 'stream-chat';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import type { ThreadContextValue } from '../../contexts/threadContext/ThreadContext';
+import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
 import { ChannelConfigProps, ChannelShell } from '../Channel/ChannelShell';
+import { useCreateThreadContext } from '../Channel/hooks/useCreateThreadContext';
 import { getThreadNotificationHostId } from '../Notifications/notificationTarget';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
@@ -63,6 +64,7 @@ const threadStaleSelector = (state: { isLoading: boolean; isStateStale: boolean 
  */
 export const Thread = (props: PropsWithChildren<ThreadProps>) => {
   const {
+    allowThreadMessagesInChannel = true,
     children,
     notificationHostId: notificationHostIdProp,
     onThreadDismount,
@@ -70,6 +72,7 @@ export const Thread = (props: PropsWithChildren<ThreadProps>) => {
     ...shellProps
   } = props;
   const { LoadingErrorIndicator } = useComponentsContext();
+  const threadContext = useCreateThreadContext({ allowThreadMessagesInChannel, thread });
 
   const { hasItems, isLoading, lastQueryError } =
     useStateStore(thread.messagePaginator.state, paginatorSelector) ?? {};
@@ -153,14 +156,16 @@ export const Thread = (props: PropsWithChildren<ThreadProps>) => {
       key={`thread-${thread.id}`}
       panel='thread'
     >
-      <ChannelShell
-        {...shellProps}
-        channel={thread.channel}
-        hasPendingInitialTargetLoad={hasPendingInitialTargetLoad}
-        thread={thread}
-      >
-        {children}
-      </ChannelShell>
+      <ThreadProvider value={threadContext}>
+        <ChannelShell
+          {...shellProps}
+          channel={thread.channel}
+          hasPendingInitialTargetLoad={hasPendingInitialTargetLoad}
+          thread={thread}
+        >
+          {children}
+        </ChannelShell>
+      </ThreadProvider>
     </NotificationTargetProvider>
   );
 };
