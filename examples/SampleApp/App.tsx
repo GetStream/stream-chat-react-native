@@ -103,7 +103,8 @@ const RTL_STORAGE_KEY = '@stream-rn-sampleapp-rtl-enabled';
 const accessibilityConfig = { enabled: true };
 
 const App = () => {
-  const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
+  const { channelListPaginator, chatClient, isConnecting, loginUser, logout, switchUser } =
+    useChatClient();
   const [rtlEnabled, setRtlEnabled] = useState<boolean | undefined>(undefined);
   const [messageListImplementation, setMessageListImplementation] = useState<
     MessageListImplementationConfigItem['id'] | undefined
@@ -296,6 +297,7 @@ const App = () => {
               >
                 <AppContext.Provider
                   value={{
+                    channelListPaginator,
                     chatClient,
                     loginUser,
                     logout,

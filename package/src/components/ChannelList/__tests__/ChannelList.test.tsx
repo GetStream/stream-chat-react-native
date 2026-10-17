@@ -11,7 +11,12 @@ import {
   within,
 } from '@testing-library/react-native';
 import { ChannelPaginator } from 'stream-chat';
-import type { Channel as ChannelType, StreamChat, UserResponse } from 'stream-chat';
+import type {
+  Channel as ChannelType,
+  ChannelPaginatorOptions,
+  StreamChat,
+  UserResponse,
+} from 'stream-chat';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 import {
@@ -121,14 +126,27 @@ describe('ChannelList', () => {
   let testChannel1: ReturnType<typeof generateChannelResponse>;
   let testChannel2: ReturnType<typeof generateChannelResponse>;
   let testChannel3: ReturnType<typeof generateChannelResponse>;
-  const props: Partial<React.ComponentProps<typeof ChannelList>> = {
-    filters: {},
+  let props: React.ComponentProps<typeof ChannelList>;
+  let paginatorCount = 0;
+
+  // The app owns the list's paginator: it creates it and registers it on the channel manager.
+  const createPaginator = (options: Omit<ChannelPaginatorOptions, 'client'> = {}) => {
+    paginatorCount += 1;
+    const paginator = new ChannelPaginator({
+      client: chatClient,
+      filters: {},
+      id: `channels:test-${paginatorCount}`,
+      ...options,
+    });
+    chatClient.channelManager.insertPaginator({ paginator });
+    return paginator;
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
     expectedChannelDetailsBottomSheetOverride = undefined;
     chatClient = await getTestClientWithUser({ id: 'dan' } as UserResponse);
+    props = { paginator: createPaginator() };
     testChannel1 = generateChannelResponse();
     testChannel2 = generateChannelResponse();
     testChannel3 = generateChannelResponse();
@@ -164,7 +182,7 @@ describe('ChannelList', () => {
     await waitFor(() => expect(getByTestId(testChannel1.channel.id)).toBeTruthy());
   });
 
-  it('should re-query channels when filters change', async () => {
+  it('should load a new paginator when the paginator prop changes', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     render(
@@ -187,7 +205,9 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={{ dummyFilter: true } as React.ComponentProps<typeof ChannelList>['filters']}
+            paginator={createPaginator({
+              filters: { dummyFilter: true } as ChannelPaginatorOptions['filters'],
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -198,7 +218,7 @@ describe('ChannelList', () => {
     });
   });
 
-  it('should re-query channels when predefined filter options change', async () => {
+  it('should query with the paginator request options and load a swapped-in paginator', async () => {
     const queryChannelsSpy = jest.spyOn(chatClient, 'queryChannels');
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
@@ -207,10 +227,12 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            options={{
-              filter_values: { user_id: 'dan' },
-              predefined_filter: 'user_messaging',
-            }}
+            paginator={createPaginator({
+              requestOptions: {
+                filter_values: { user_id: 'dan' },
+                predefined_filter: 'user_messaging',
+              },
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -243,10 +265,12 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            options={{
-              filter_values: { user_id: 'sara' },
-              predefined_filter: 'user_messaging',
-            }}
+            paginator={createPaginator({
+              requestOptions: {
+                filter_values: { user_id: 'sara' },
+                predefined_filter: 'user_messaging',
+              },
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -269,7 +293,7 @@ describe('ChannelList', () => {
     );
   });
 
-  it('should re-query and swap results when filters are updated', async () => {
+  it('should swap results when a paginator with other filters replaces the current one', async () => {
     const deferredCallForStaleFilter = new DeferredPromise();
     const deferredCallForFreshFilter = new DeferredPromise();
     const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
@@ -295,7 +319,9 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={staleFilter as React.ComponentProps<typeof ChannelList>['filters']}
+            paginator={createPaginator({
+              filters: staleFilter as ChannelPaginatorOptions['filters'],
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -311,9 +337,7 @@ describe('ChannelList', () => {
       );
     });
 
-    // Settle the in-flight first-page query before flipping the filter. The v10 `ChannelPaginator`
-    // serializes queries (`canExecuteQuery` blocks while `isLoading`), so a filter change is only
-    // guaranteed to trigger a fresh query once the previous one is no longer loading.
+    // Settle the first paginator's query before swapping in the second one.
     await act(async () => {
       deferredCallForStaleFilter.resolve({ channels: [staleChannel] });
       await deferredCallForStaleFilter.promise;
@@ -327,13 +351,15 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={freshFilter as React.ComponentProps<typeof ChannelList>['filters']}
+            paginator={createPaginator({
+              filters: freshFilter as ChannelPaginatorOptions['filters'],
+            })}
           />
         </WithComponents>
       </Chat>,
     );
 
-    // The filter change triggers a fresh re-query; its response is still awaiting at this point.
+    // The new paginator loads its first page; its response is still awaiting at this point.
     await waitFor(() => {
       expect(spy).toHaveBeenNthCalledWith(
         2,
@@ -346,7 +372,7 @@ describe('ChannelList', () => {
       deferredCallForFreshFilter.resolve({ channels: [freshChannel] });
       await deferredCallForFreshFilter.promise;
     });
-    // Once the fresh api call resolves the list reflects the new filter, replacing the stale channel.
+    // Once it resolves the list shows the new paginator's channels instead of the old ones.
     await waitFor(() => {
       expect(queryByTestId('new-channel')).toBeTruthy();
       expect(queryByTestId('stale-channel')).toBeNull();
@@ -585,11 +611,13 @@ describe('ChannelList', () => {
         ]);
       });
 
-      it('should not alter order if `lockChannelOrder` prop is true', async () => {
+      it('should not alter order if the paginator locks its item order', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList lockChannelOrder={true} />
+              <ChannelList
+                paginator={createPaginator({ paginatorOptions: { lockItemOrder: true } })}
+              />
             </WithComponents>
           </Chat>,
         );
@@ -1054,6 +1082,49 @@ describe('ChannelList', () => {
 
       expect(executeQuery).toHaveBeenCalledTimes(1);
       executeQuery.mockRestore();
+    });
+
+    it('shows the channels it already has when it mounts again, without a query', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+      const { unmount } = render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+      await waitFor(() => expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy());
+      unmount();
+
+      const querySpy = jest.spyOn(chatClient, 'queryChannels');
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+
+      expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy();
+      expect(querySpy).not.toHaveBeenCalled();
+    });
+
+    it('leaves the paginator registered and loaded when it unmounts', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+      const { unmount } = render(
+        <Chat client={chatClient}>
+          <ChannelList {...props} />
+        </Chat>,
+      );
+      await waitFor(() => expect(props.paginator.items?.length).toBe(1));
+      unmount();
+
+      expect(chatClient.channelManager.getPaginatorById(props.paginator.id)).toBe(props.paginator);
+      expect(props.paginator.items?.map((channel) => channel.id)).toEqual([
+        testChannel1.channel.id,
+      ]);
     });
 
     it('loads the list again once a user connects after a disconnect', async () => {

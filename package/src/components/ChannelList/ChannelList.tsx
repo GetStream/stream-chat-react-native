@@ -3,14 +3,11 @@ import React, { useEffect } from 'react';
 import { FlatListProps, StyleSheet, View } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
-import { Channel, ChannelFilters, ChannelOptions, SortParamRequest } from 'stream-chat';
+import type { Channel, ChannelPaginator } from 'stream-chat';
 
 import { ChannelListView } from './ChannelListView';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import {
-  ChannelListQueryChannelsOverride,
-  usePaginatedChannels,
-} from './hooks/usePaginatedChannels';
+import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 
 import {
   ChannelsContextValue,
@@ -42,47 +39,19 @@ export type ChannelListProps = Partial<
   /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
   channelRenderFilterFn?: (channels: Array<Channel>) => Array<Channel>;
   /**
-   * Object containing channel query filters
-   *
-   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available filter fields
-   *
-   * @overrideType object
-   * */
-  filters?: ChannelFilters;
-  /**
-   * If set to true, channels won't dynamically sort by most recent message, defaults to false
+   * The `ChannelPaginator` this list renders. The app creates it with the list's filters, sort and
+   * request options, and registers it on `client.channelManager` with `insertPaginator` so it receives
+   * events. The list loads its first page when it has none and never disposes it, so a list that
+   * mounts again shows the channels it already has.
    */
-  lockChannelOrder?: boolean;
-  /**
-   * Object containing channel query options
-   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available option fields
-   * */
-  options?: ChannelOptions;
-  /**
-   * Object containing channel sort parameters
-   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available sorting fields
-   * */
-  sort?: SortParamRequest[];
-
-  /**
-   * A custom request implementation for this list's `ChannelPaginator` (its `doRequest`). Use it to
-   * query a specific set of channels while still paginating over them. Call `client.queryChannels(...)`
-   * inside so client state stays in sync, and return `{ items }`.
-   *
-   * NOTE (breaking change vs v9): this replaces the previous `queryChannelsOverride` typed as the
-   * removed `QueryChannelsRequestType` (which returned `Channel[]`).
-   */
-  queryChannelsOverride?: ChannelListQueryChannelsOverride;
+  paginator: ChannelPaginator;
   notificationHostId?: string;
 };
 
 const DEFAULT_ADDITIONAL_FLAT_LIST_PROPS: Partial<FlatListProps<Channel>> = {};
-const DEFAULT_FILTERS = {};
-const DEFAULT_OPTIONS = {};
-const DEFAULT_SORT: SortParamRequest[] = [];
 
 /**
- * This component fetches a list of channels, allowing you to select the channel you want to open.
+ * Renders the channels of an app-owned `ChannelPaginator` and lets the user select one to open.
  * The ChannelList renders a ChannelListView which provides the UI for the underlying React Native FlatList.
  *
  * @example ./ChannelList.md
@@ -91,18 +60,14 @@ export const ChannelList = (props: ChannelListProps) => {
   const {
     additionalFlatListProps = DEFAULT_ADDITIONAL_FLAT_LIST_PROPS,
     channelRenderFilterFn,
-    filters = DEFAULT_FILTERS,
     // https://stackoverflow.com/a/60666252/10826415
     loadMoreThreshold = 0.1,
-    lockChannelOrder = false,
     maxUnreadCount = 255,
     numberOfSkeletons = 8,
     onSelect,
-    options = DEFAULT_OPTIONS,
     getChannelActionItems,
     setFlatListRef,
-    sort = DEFAULT_SORT,
-    queryChannelsOverride,
+    paginator,
     notificationHostId: notificationHostIdProp,
     mutedStatusPosition = 'inlineTitle',
     pinnedStatusPosition = 'inlineTitle',
@@ -126,17 +91,10 @@ export const ChannelList = (props: ChannelListProps) => {
     loadingChannels,
     loadingNextPage,
     loadNextPage,
-    paginator,
     refreshing,
     refreshList,
     reloadList,
-  } = usePaginatedChannels({
-    filters,
-    lockChannelOrder,
-    options,
-    queryChannelsOverride,
-    sort,
-  });
+  } = usePaginatedChannels({ paginator });
 
   const onFlatListRef = useStableCallback((ref: FlatList<Channel> | null) => {
     if (setFlatListRef) {
