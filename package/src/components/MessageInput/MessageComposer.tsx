@@ -170,7 +170,6 @@ type MessageComposerPropsWithContext = { isOnline: boolean } & Pick<
   Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
     isKeyboardVisible: boolean;
-    threadList?: boolean;
     TextInputComponent?: TextInputOverrideComponent;
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;

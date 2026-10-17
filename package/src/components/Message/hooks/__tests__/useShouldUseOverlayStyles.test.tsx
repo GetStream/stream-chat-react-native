@@ -47,7 +47,6 @@ const createMessageContextValue = (overrides: Partial<MessageContextValue>): Mes
     showMessageOverlay: jest.fn(),
     showReactionsOverlay: jest.fn(),
     showMessageStatus: false,
-    threadList: false,
     unregisterMessageOverlayTarget: jest.fn(),
     videos: [],
     ...overrides,

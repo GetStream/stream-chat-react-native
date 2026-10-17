@@ -4,6 +4,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { MessageStatusTypes } from '../../utils/utils';
 import { useMessageActions } from '../Message/hooks/useMessageActions';
 import { useMessageOperations } from '../Message/hooks/useMessageOperations';
@@ -15,7 +16,8 @@ import { messageActions as defaultMessageActions } from '../Message/utils/messag
  */
 export const MessageActionListWithActions = () => {
   const { MessageActionList } = useComponentsContext();
-  const { dismissOverlay, isMyMessage, message, threadList } = useMessageContext();
+  const { dismissOverlay, isMyMessage, message } = useMessageContext();
+  const { thread } = useThreadContext();
   const { messageActions: messageActionsProp = defaultMessageActions } = useMessagesContext();
   const { updateMessage } = useMessageOperations();
   const ownCapabilities = useOwnCapabilitiesContext();
@@ -50,7 +52,7 @@ export const MessageActionListWithActions = () => {
           error: message.type === 'error' || message.status === MessageStatusTypes.FAILED,
           flagMessage,
           isMyMessage,
-          isThreadMessage: threadList || !!message.parent_id,
+          isThreadMessage: !!thread || !!message.parent_id,
           markUnread,
           message,
           muteUser,

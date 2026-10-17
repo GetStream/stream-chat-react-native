@@ -4,7 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, StreamChat, Thread as ThreadInstance } from 'stream-chat';
 
 import type { ComponentOverrides } from '../../../../contexts/componentsContext/ComponentsContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -22,6 +22,7 @@ import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { MessageComposer } from '../../../MessageInput/MessageComposer';
+import { Thread } from '../../../Thread/Thread';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 import { Message } from '../../Message';
 import { MessageOverlayWrapper } from '../../MessageOverlayWrapper';
@@ -61,7 +62,10 @@ describe('Message', () => {
   let renderMessage: (
     options: Omit<React.ComponentProps<typeof Message>, 'groupStyles'> &
       Partial<Pick<React.ComponentProps<typeof Message>, 'groupStyles'>>,
-    channelProps?: Partial<React.ComponentProps<typeof Channel>>,
+    channelProps?: Partial<React.ComponentProps<typeof Channel>> & {
+      /** Renders the message inside `<Thread thread>` instead of `<Channel>`. */
+      thread?: ThreadInstance;
+    },
     componentOverrides?: ComponentOverrides,
   ) => ReturnType<typeof render>;
 
@@ -79,8 +83,24 @@ describe('Message', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.channel.id);
 
-    renderMessage = (options, channelProps, componentOverrides) =>
-      render(
+    renderMessage = (options, channelProps, componentOverrides) => {
+      const { thread, ...listProps } = channelProps ?? {};
+      const content = (
+        <>
+          <Message groupStyles={['bottom']} {...options} />
+          <MessageComposer />
+        </>
+      );
+      const container = thread ? (
+        <Thread thread={thread} {...listProps}>
+          {content}
+        </Thread>
+      ) : (
+        <Channel channel={channel} {...listProps}>
+          {content}
+        </Channel>
+      );
+      return render(
         <SafeAreaProvider>
           <OverlayProvider>
             <MessageListItemProvider
@@ -95,23 +115,16 @@ describe('Message', () => {
             >
               <Chat client={chatClient}>
                 {componentOverrides ? (
-                  <WithComponents overrides={componentOverrides}>
-                    <Channel channel={channel} {...channelProps}>
-                      <Message groupStyles={['bottom']} {...options} />
-                      <MessageComposer />
-                    </Channel>
-                  </WithComponents>
+                  <WithComponents overrides={componentOverrides}>{container}</WithComponents>
                 ) : (
-                  <Channel channel={channel} {...channelProps}>
-                    <Message groupStyles={['bottom']} {...options} />
-                    <MessageComposer />
-                  </Channel>
+                  container
                 )}
               </Chat>
             </MessageListItemProvider>
           </OverlayProvider>
         </SafeAreaProvider>,
       );
+    };
   });
 
   afterEach(() => {
@@ -249,7 +262,7 @@ describe('Message', () => {
 
     const { getByText } = renderMessage(
       { message: reply },
-      { onAlsoSentToChannelHeaderPress, thread, threadList: true },
+      { onAlsoSentToChannelHeaderPress, thread },
     );
 
     await waitFor(() => expect(getByText('Also sent in channel')).toBeTruthy());

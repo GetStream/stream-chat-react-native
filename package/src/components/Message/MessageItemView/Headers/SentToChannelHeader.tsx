@@ -2,21 +2,22 @@ import React, { useMemo } from 'react';
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../../contexts/channelContext/ChannelContext';
+import { useChannelContext } from '../../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { useMessageContext } from '../../../../contexts/messageContext/MessageContext';
+import { useMessagesContext } from '../../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
-import { useThreadContext } from '../../../../contexts/threadContext/ThreadContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../../hooks';
 import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
-type SentToChannelHeaderPropsWithContext = Pick<ChannelContextValue, 'threadList'> & {
+type SentToChannelHeaderPropsWithContext = Pick<ThreadContextValue, 'thread'> & {
   /**
    * Function to handle press on the sent to channel header
    * @returns void
@@ -30,7 +31,7 @@ type SentToChannelHeaderPropsWithContext = Pick<ChannelContextValue, 'threadList
 };
 
 const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithContext) => {
-  const { threadList, onPress, showViewText } = props;
+  const { onPress, showViewText, thread } = props;
   const { t } = useTranslationContext();
   const styles = useStyles();
   const { icons } = useComponentsContext();
@@ -39,7 +40,7 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
       <icons.ArrowUpRight height={16} width={16} stroke={styles.link.color} />
       <Text style={styles.label}>
-        {threadList
+        {thread
           ? t('message.sentToChannelHeader.alsoSent.text', 'Also sent in channel')
           : t('message.sentToChannelHeader.repliedToThread.text', 'Replied to a thread')}
       </Text>
@@ -68,13 +69,14 @@ const MemoizedSentToChannelHeader = React.memo(
 export type SentToChannelHeaderProps = Partial<SentToChannelHeaderPropsWithContext>;
 
 export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
-  const { onAlsoSentToChannelHeaderPress } = useThreadContext();
+  const { onAlsoSentToChannelHeaderPress } = useMessagesContext();
   const { client } = useChatContext();
-  const { channel, threadList } = useChannelContext();
+  const { channel } = useChannelContext();
+  const { thread } = useThreadContext();
   const { message } = useMessageContext();
 
   const handleOnPress = useStableCallback(async () => {
-    if (threadList) {
+    if (thread) {
       onAlsoSentToChannelHeaderPress?.({ targetedMessageId: message.id });
       return;
     }
@@ -118,7 +120,7 @@ export const SentToChannelHeader = (props: SentToChannelHeaderProps) => {
     <MemoizedSentToChannelHeader
       onPress={handleOnPress}
       showViewText={showViewText}
-      threadList={threadList}
+      thread={thread}
       {...props}
     />
   );

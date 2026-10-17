@@ -92,9 +92,7 @@ describe('ScrollToBottomButton', () => {
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t } as unknown as TranslationContextValue}>
           <ChatProvider value={{ client: { userID: 'me' } } as unknown as ChatContextValue}>
-            <ChannelProvider
-              value={{ channel, threadList: false } as unknown as ChannelContextValue}
-            >
+            <ChannelProvider value={{ channel } as unknown as ChannelContextValue}>
               <ScrollToBottomButton onPress={() => null} showNotification={true} />
             </ChannelProvider>
           </ChatProvider>
@@ -142,9 +140,7 @@ describe('ScrollToBottomButton', () => {
         <AccessibilityProvider value={{ enabled: true }}>
           <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
             <ChatProvider value={{ client: { userID: 'me' } } as unknown as ChatContextValue}>
-              <ChannelProvider
-                value={{ channel, threadList: false } as unknown as ChannelContextValue}
-              >
+              <ChannelProvider value={{ channel } as unknown as ChannelContextValue}>
                 <ScrollToBottomButton onPress={() => null} showNotification={true} />
               </ChannelProvider>
             </ChatProvider>

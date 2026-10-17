@@ -18,6 +18,7 @@ import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
+import type { AlsoSentToChannelHeaderPressPayload } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -295,6 +296,12 @@ export type MessagesContextValue = {
    * ```
    */
   onPressMessage?: (payload: MessagePressableHandlerPayload) => void;
+  /**
+   * Handles a press on the "Also sent in channel" / "Replied to a thread" header's "View" action.
+   * Inside a thread the payload carries the targeted message id; in a channel it also carries the
+   * reply's thread.
+   */
+  onAlsoSentToChannelHeaderPress?: (payload: AlsoSentToChannelHeaderPressPayload) => void;
   /**
    * The position of the reaction list in the message
    */

@@ -24,8 +24,8 @@
 3. **Resolution hooks** (new in v10, additive — use these as the entry points):
    - `useChannelContext().channel` — the active `Channel` instance.
    - `useChannel()` — `thread?.channel ?? channel` (thread-aware).
-   - `useMessagePaginator()` — the open thread's `messagePaginator` when the subtree renders a thread
-     list (`threadList`), `channel.messagePaginator` otherwise.
+   - `useMessagePaginator()` — the thread's `messagePaginator` inside a `<Thread>`,
+     `channel.messagePaginator` otherwise.
    - `useStateStore(store, selector)` — subscribe to a `StateStore` with a
      memo-stable selector (return a stable object; do not allocate fresh arrays
      inside the selector).
@@ -76,8 +76,9 @@ rg 'useChannelContext\(\)' -A8 src/ | rg '\b(loading|highlightedMessageId)\b'
 rg 'useMessagesContext\(\)' -A10 src/ | rg '\b(sendReaction|deleteReaction|deleteMessage|removeMessage|retrySendMessage|updateMessage)\b'
 rg '\buseMessageActions\b' src/
 
-# §10 — thread API (instance + prop-driven)
-rg '\b(useThreadContext|openThread|closeThread|reloadThread|loadMoreThread|threadMessages|closeThreadOnDismount|ThreadFooterComponent)\b' src/
+# §10 — thread API (instance + standalone <Thread>)
+rg '\b(useThreadContext|openThread|closeThread|reloadThread|loadMoreThread|threadMessages|closeThreadOnDismount|ThreadFooterComponent|threadList|ThreadMessageComposer|additionalMessageListProps|additionalMessageInputProps|shouldUseFlashList)\b' src/
+rg '<Channel\b' -A20 src/ | rg '\bthread\b'
 
 # §11 — editMessage return type
 rg '\beditMessage\b' src/
@@ -169,8 +170,11 @@ means changed. Details in the linked section.
 | `useThreadContext().loadMoreThread()` / `loadMoreRecentThread()` | `thread.messagePaginator.toTail()` / `.toHead()` | §10 |
 | `useThreadContext().threadHasMore` / `threadLoadingMore` | `thread.messagePaginator.state.hasMoreTail` / `.isLoading` | §10 |
 | `useThreadContext().reloadThread()` | `thread.reload()` | §10 |
-| `openThread(msg)` / `closeThread()` | lift `onThreadSelect` → `<Channel thread={thread \| null} />` | §10.1 |
+| `openThread(msg)` / `closeThread()` | lift `onThreadSelect` into app state, render `<Thread thread={thread}>` | §10.1 |
 | `ThreadType` / `<Channel thread={message}>` | a `Thread` instance; `client.threads.ensure({ channel, parentMessage })` builds one from a message | §10.1 |
+| `<Channel thread={thread} threadList><Thread /></Channel>` | `<Thread thread={thread}><MessageList /><MessageComposer /></Thread>`, no `<Channel>` around it | §10.1 |
+| `threadList` (prop or context field) | `useThreadContext().thread` | §10.2 |
+| `ThreadMessageComposer` slot / `additionalMessageInputProps` | a `MessageComposer` child of `<Thread>` with its own props | §10.2 |
 | `useMessageComposerContext().thread` (parent message) | `thread` is now the `Thread`; parent on `thread.state` | §10.2 |
 | `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
 | `<MessageList thread / targetedMessage / loadMoreThread …>` props | removed — list reads the `Thread` from `ThreadContext` + paginator internally | §12 |
@@ -310,8 +314,9 @@ const loadMore = () => channel.messagePaginator.toTail();
 ```
 
 Use `channel.messagePaginator` for the channel message list. For thread replies,
-use `useMessagePaginator()`. It follows `threadList`, so the **main** channel
-list keeps reading `channel.messagePaginator` even while a thread is open.
+use `useMessagePaginator()` inside the `<Thread>`. Outside a `<Thread>` it returns
+`channel.messagePaginator`, so the **main** channel list keeps reading the channel's paginator even
+while a thread is open.
 
 ---
 
@@ -420,8 +425,8 @@ setTargetedMessage(messageId);
 import { useMessagePaginator, useIsTargetedMessage, DEFAULT_HIGHLIGHT_DURATION } from 'stream-chat-react-native';
 
 // Jump to + highlight a message (loads it if not in the current window).
-// useMessagePaginator resolves to the open thread's reply list when
-// `threadList` is set, and the channel's main list otherwise.
+// useMessagePaginator resolves to the thread's reply list inside a `<Thread>`,
+// and the channel's main list otherwise.
 const paginator = useMessagePaginator();
 await paginator?.jumpToMessage(messageId, {
   focusReason: 'jump-to-message',
@@ -525,8 +530,8 @@ only once the query lands, which for a message that is not loaded yet is a round
 removed prop encoded this precedence internally (`!messageId && initialScrollToFirstUnreadMessage`);
 the caller states it now. With both enabled at once the two jumps race and the last one wins.
 
-where `const paginator = useMessagePaginator()` — thread-aware: the open
-thread's reply paginator when `threadList` is set, the channel's otherwise. Use
+where `const paginator = useMessagePaginator()` — thread-aware: the thread's
+reply paginator inside a `<Thread>`, the channel's otherwise. Use
 `channel.messagePaginator` directly if you specifically want the channel list.
 
 The jump methods emit `messageFocusSignal`, which drives both the highlight and
@@ -615,15 +620,18 @@ will double-apply or conflict.
 
 # Part D — Threads
 
-## 10. Thread API: instance-based + prop-driven
+## 10. Thread API: instance-based, rendered by a standalone `<Thread>`
 
-This is the largest behavioral shift. `ThreadContextValue` is reduced to **four
-fields** — everything else is derived from `thread` (a `stream-chat` `Thread`),
-and opening/closing a thread is now **prop-driven** (no imperative
-`openThread` / `closeThread`).
+This is the largest behavioral shift. A thread is a `stream-chat` `Thread` instance, and
+`<Thread thread={thread}>` renders it on its own, next to `<Channel>` rather than inside it.
+`ThreadContextValue` is reduced to **two fields**; everything else is derived from `thread`.
+Opening and closing a thread is up to the app (no imperative `openThread` / `closeThread`).
 
-**`ThreadContextValue` now = `{ thread?, allowThreadMessagesInChannel,
-parentMessagePreventPress?, onAlsoSentToChannelHeaderPress? }`.**
+**`ThreadContextValue` now = `{ thread?: Thread, allowThreadMessagesInChannel: boolean }`.**
+
+Only `<Thread>` provides it. `useThreadContext()` no longer throws outside a provider: everywhere
+else it returns `{ thread: undefined, allowThreadMessagesInChannel: false }`, and an `undefined`
+`thread` is how a component knows it is not rendering a thread.
 
 > **`thread` keeps its name but changes type.** In v9 `useThreadContext().thread` was the parent
 > `LocalMessage`. In v10 it is the `Thread` instance. `thread.id` is the same value in both, since a
@@ -643,46 +651,77 @@ Removed or retyped fields (all derivable from `thread`):
 | `threadHasMore` | `thread.messagePaginator.state.hasMoreTail` |
 | `threadLoadingMore` / `threadLoadingMoreRecent` | `thread.messagePaginator.state.isLoading` |
 | `reloadThread` | `thread.reload()` |
-| `openThread` / `closeThread` / `setThreadLoadingMore` | removed — see prop-driven flow below |
+| `openThread` / `closeThread` / `setThreadLoadingMore` | removed - see 10.1 |
+| `parentMessagePreventPress` | removed from the context - a `<ThreadFooterComponent>` prop, default `true` |
+| `onAlsoSentToChannelHeaderPress` | moved to `MessagesContext`; still a prop on `<Channel>` and `<Thread>` |
 
 ```tsx
 import { useThreadContext, useStateStore } from 'stream-chat-react-native';
 
 const { thread } = useThreadContext();
-const { parentMessage } = useStateStore(thread.state, (s) => ({
+const { parentMessage } = useStateStore(thread?.state, (s) => ({
   parentMessage: s.parentMessage,
 }));
-const { replies } = useStateStore(thread.messagePaginator.state, (s) => ({
+const { replies } = useStateStore(thread?.messagePaginator.state, (s) => ({
   replies: s.items,
 }));
 ```
 
-### 10.1 Prop-driven open/close
+### 10.1 `<Thread thread>` is a sibling of `<Channel>`
 
-There is no imperative `openThread` / `closeThread`. Lift the selected thread
-into your own state from a list's `onThreadSelect`, then render
-`<Channel thread={...}>`; set it back to `null` to close.
+There is no imperative `openThread` / `closeThread`, and `<Channel>` has no `thread` or
+`threadList` prop. Lift the selected thread into your own state (or navigation params) from a
+list's `onThreadSelect`, then render `<Thread thread={thread}>` with the thread UI as its children.
+`<Thread>` needs no `<Channel>` above it: it uses `thread.channel`.
 
-```tsx
-const [thread, setThread] = useState<Thread | null>(null);
-
-<MessageList onThreadSelect={setThread} />
-{thread ? (
-  <Channel channel={thread.channel} thread={thread} threadList>
-    <Thread />
-  </Channel>
-) : null}
+```diff
+- <Channel channel={channel} thread={thread} threadList>
+-   <Thread />
+- </Channel>
++ <Thread thread={thread} onThreadDismount={() => setThread(undefined)}>
++   <MessageList />
++   <MessageComposer />
++ </Thread>
 ```
 
-Every thread API takes and passes a `stream-chat` `Thread` instance. `<Channel>`'s `thread` prop is
-`Thread | null`, and `onThreadSelect` is `(thread: Thread) => void` on `MessageList`,
-`MessageFlashList`, `Message` and `ThreadList`. The parent message is on
-`thread.state.getLatestValue().parentMessage` and the channel on `thread.channel`.
+```tsx
+// Channel screen
+<Channel channel={channel}>
+  <MessageList onThreadSelect={(thread) => navigation.navigate('ThreadScreen', { thread })} />
+  <MessageComposer />
+</Channel>
 
-`ThreadType` (`{ thread: LocalMessage; threadInstance: Thread }`) is removed, and `<Channel>` no
-longer accepts a parent message. Where you only have the message, for example from a push
-notification, a deep link or a draft, build the thread with `client.threads.ensure`. It returns
-the instance the client already holds for that parent, or registers a new one.
+// Thread screen
+<Thread thread={route.params.thread}>
+  <MessageList />
+  <MessageComposer />
+</Thread>
+```
+
+- **Children, not a built-in layout.** `<Thread>` renders `{children}`; compose `MessageList` (or
+  `MessageFlashList`) and `MessageComposer` yourself. Inside a `<Thread>`, `MessageList` defaults its
+  `FooterComponent` and `MessageFlashList` its `HeaderComponent` to `ThreadFooterComponent`, so the
+  parent message renders above the replies as before.
+- **Same configuration props as `<Channel>`.** `<Thread>` accepts the shared configuration props
+  (`messageActions`, `onPressMessage`, `supportedReactions`, `keyboardVerticalOffset`, `topInset`,
+  `audioRecordingEnabled`, `onAlsoSentToChannelHeaderPress`, ...), so pass the same set you pass to
+  your `<Channel>`. Thread-only props: `allowThreadMessagesInChannel` (default `true`),
+  `notificationHostId`, and `onThreadDismount`.
+- **Lifecycle.** `<Thread>` activates the thread (it marks itself read while open and reloads when
+  stale), loads the first reply page when nothing is loaded yet, and, for a thread opened from the
+  thread list whose channel nothing has queried, watches that channel once so capabilities are
+  known. It does **not** run the channel's open sequence: opening a thread no longer marks the
+  channel read.
+
+Every thread API takes and passes a `stream-chat` `Thread` instance. `onThreadSelect` is
+`(thread: Thread) => void` on `MessageList`, `MessageFlashList`, `Message` and `ThreadList`. The
+parent message is on `thread.state.getLatestValue().parentMessage` and the channel on
+`thread.channel`.
+
+`ThreadType` (`{ thread: LocalMessage; threadInstance: Thread }`) is removed. Where you only have
+the message, for example from a push notification, a deep link or a draft, build the thread with
+`client.threads.ensure`. It returns the instance the client already holds for that parent, or
+registers a new one.
 
 ```diff
 - navigation.navigate('ThreadScreen', { thread: parentMessage });
@@ -701,19 +740,44 @@ the instance the client already holds for that parent, or registers a new one.
 
 ### 10.2 Removed thread-related props / context fields
 
-- **`ThreadProps`**: removed `closeThread`, `loadMoreThread`, `reloadThread`.
-  `thread` is now the `Thread` instance (it was the parent message) and defaults
-  to the one in `ThreadContext`.
-  - ⚠️ `closeThreadOnDismount?: boolean` **still exists on the type but is
-    inert** (never read — the thread no longer auto-closes on unmount, it only
-    `deactivate()`s). No TS error; silent behavior change.
-- **`MessageComposerContextValue`**: `thread` is now the `Thread` instance (it
-  was the parent message).
-- **`ThreadFooterComponentProps`**: `thread` removed (type is now
-  `Partial<Pick<ThreadContextValue, 'parentMessagePreventPress'>>`). Read
-  `thread` via `useThreadContext()` inside a custom footer and get the
-  parent/`replyCount` off `thread.state`.
+- **`<Channel>`**: `thread` and `threadList` removed. A `<Channel>` only ever renders its channel's
+  main list; render a `<Thread>` for replies.
+- **`ThreadProps`**: removed `closeThread`, `loadMoreThread`, `reloadThread`,
+  `additionalMessageListProps`, `additionalMessageInputProps`, `shouldUseFlashList`, `autoFocus`,
+  `disabled`, `closeThreadOnDismount` and `parentMessagePreventPress`. `thread` is required and is
+  the `Thread` instance (it was the parent message). Configure the list and composer through their
+  own props (they are your children now), use `onThreadDismount` for cleanup on unmount, and pass
+  `parentMessagePreventPress` to `ThreadFooterComponent`.
+- **`ThreadMessageComposer` slot**: removed from `WithComponents`. Render the composer you want as a
+  child of `<Thread>`.
+- **`threadList`**: removed everywhere - `ChannelContextValue.threadList`,
+  `MessageContextValue.threadList`, the `threadList` prop of `Message`, `MessageList`,
+  `MessageFlashList` and `MessageComposer`, and `useIncomingMessageAnnouncements({ threadList })`.
+  Use `useThreadContext().thread` to tell whether a subtree renders a thread. Components that took a
+  `threadList` prop now take `thread` (`Thread | undefined`): `MessageItemView`,
+  `SentToChannelHeader` and `ShowThreadMessageInChannelButton`.
+- **`MessageComposerContextValue`**: `thread` is now the `Thread` instance (it was the parent
+  message).
+- **`ThreadFooterComponentProps`**: `thread` removed; the type is now
+  `{ parentMessagePreventPress?: boolean }`, and `parentMessagePreventPress` defaults to `true`. Read
+  `thread` via `useThreadContext()` inside a custom footer and get the parent/`replyCount` off
+  `thread.state`.
+- **`MessageReplies`**: no longer knows about threads. `MessageItemView` hides the replies row inside
+  a `<Thread>`; a custom layout that renders `MessageReplies` directly inside a thread must check
+  `useThreadContext().thread` itself (v9 hid it).
 - **`MessageProps`**: removed `openThread` (§9).
+
+### 10.3 Behavior inside a `<Thread>`
+
+- `useMessagePaginator()` resolves to `thread.messagePaginator` inside a `<Thread>` and to
+  `channel.messagePaginator` everywhere else. `useChannel()` resolves to `thread.channel` inside a
+  `<Thread>`.
+- Rows read the thread's paginator: the unread separator comes from
+  `thread.messagePaginator.unreadStateSnapshot`, and the newest reply gets the last-bubble style.
+  `MessageContextValue.isVeryLastMessage` (new, optional) marks the newest row of the list a
+  message renders in; the thread's parent message is never marked.
+- The scroll-to-bottom button in a thread jumps the thread's replies and does not mark the channel
+  read (the thread marks itself read while open).
 
 ## 11. `InputMessageInputContextValue.editMessage` removed
 
@@ -1007,8 +1071,7 @@ parameter shapes dropped the removed fields:
 - `useCreateMessagesContext` — no longer accepts the removed `MessagesContext`
   ops (§9) or `openThread`.
 - `useCreateThreadContext` — accepts only `Pick<ThreadContextValue,
-  'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress' |
-  'thread'>` (§10).
+  'allowThreadMessagesInChannel' | 'thread'>` (§10).
 - `useCreateMessageInputContext` — no longer takes a thread.
 - `useCreateTypingContext` and `useCreatePaginatedMessageListContext` are
   **removed entirely** (§2/§3).
@@ -1727,8 +1790,8 @@ useEffect(() => { channel?.activate?.(); return () => channel?.deactivate?.(); }
 ```
 
 The open thread is declared the same way, but by **`<Thread>`**, which already did this before v10 —
-`thread.activate()` on mount, `deactivate()` on unmount. `<Channel>` does not need to (and
-does not) activate it as well.
+`thread.activate()` on mount, `deactivate()` on unmount. `<Thread>` renders on its own, next to
+`<Channel>`, so the channel and the thread are each activated by their own component.
 
 Neither reconnect handler was ever exported, so there is no symbol to migrate — this is here because
 the behaviour relocated, and because the *capability* is unchanged: an integrator who relied on
@@ -2129,7 +2192,7 @@ message in your own state; there is no replacement on `SearchController`.
 - Run the app and exercise: typing indicator; member/watcher counts;
   message-list scroll pagination (both directions); mark-read on scroll-to-bottom
   and banner dismiss; message send/edit/delete/react (online + offline);
-  thread open/reply/close (prop-driven); jump-to-message highlight (quoted-reply
+  thread open/reply/close (`<Thread>` screens); jump-to-message highlight (quoted-reply
   tap) and jump-to-first-unread; the unread separator, scroll-to-bottom button,
   and unread notification; and any custom overrides of `Message`, the list
   loading indicators, the thread footer, or the typing indicator.
@@ -2349,11 +2412,11 @@ For one channel's mute state use `useIsChannelMuted(channel)`.
 
 | Removed                                            | Use instead                                                                                  |
 | -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `useChannelContext().isChannelActive`              | `!thread \|\| threadList` for the old meaning; `useStateStore(channel.state, (s) => ({ active: s.active }))` for "is this channel being read" |
+| `useChannelContext().isChannelActive`              | `!useThreadContext().thread` for the old meaning; `useStateStore(channel.state, (s) => ({ active: s.active }))` for "is this channel being read" |
 | `useChannelContext().scrollToFirstUnreadThreshold` | Nothing. It was always `0`.                                                                  |
 | `useMessagesContext().initialScrollToFirstUnreadMessage` | The value you pass to `<Channel initialScrollToFirstUnreadMessage>`                    |
 | `useMessagesContext().quotedMessage`               | It was never set. Read the composer: `useStateStore(messageComposer.state, (s) => ({ quotedMessage: s.quotedMessage }))` |
-| `useThreadContext().parentMessagePreventPress`     | It was never set. Pass `parentMessagePreventPress` to `<Thread>` or `<ThreadFooterComponent>`, as before. |
+| `useThreadContext().parentMessagePreventPress`     | It was never set. Pass `parentMessagePreventPress` to `<ThreadFooterComponent>` (default `true`). |
 
 ## P.5 Props that did nothing (breaking, type-level)
 
@@ -2396,7 +2459,7 @@ To change how a page is fetched, configure the paginator instead:
 ## P.8 `useMessageList` takes the paginator (breaking)
 
 ```diff
-- const { processedMessageList } = useMessageList({ threadList });
+- const { processedMessageList } = useMessageList({ threadList: true });
 + const { processedMessageList } = useMessageList({ paginator: useMessagePaginator() });
 ```
 
@@ -2418,7 +2481,9 @@ These change what the user sees:
     move the hidden channel list;
   - in `MessageFlashList` threads, a channel that had jumped away no longer turns autoscroll off;
   - the sticky date header hides at the top of the thread;
-  - a spinner shows while newer replies load, and the empty-state check follows `threadList`.
+  - a spinner shows while newer replies load, and the empty-state check follows the thread;
+  - rows in a thread read the thread's unread separator and last-bubble state, and the
+    scroll-to-bottom button in a thread no longer marks the channel read.
 - **A failed page no longer stops pagination.** The lists remembered every list length they had
   requested at, so after a failed request that edge stayed dead until a new message arrived.
 - **Removing a message no longer scrolls `MessageList` to the bottom.** Cancelling a giphy or a hard

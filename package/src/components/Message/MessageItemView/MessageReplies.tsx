@@ -24,7 +24,6 @@ export type MessageRepliesPropsWithContext = Pick<
   | 'onPressIn'
   | 'onOpenThread'
   | 'preventPress'
-  | 'threadList'
 > &
   Pick<TranslationContextValue, 't'>;
 
@@ -39,7 +38,6 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
     onPressIn,
     preventPress,
     t,
-    threadList,
   } = props;
   const { icons, MessageRepliesAvatars } = useComponentsContext();
 
@@ -69,7 +67,7 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
       <icons.ReplyConnectorRight height={48} width={16} stroke={connectorStroke} />
     );
 
-  if (threadList || !message.reply_count) {
+  if (!message.reply_count) {
     return null;
   }
 
@@ -136,23 +134,8 @@ const areEqual = (
   prevProps: MessageRepliesPropsWithContext,
   nextProps: MessageRepliesPropsWithContext,
 ) => {
-  const {
-    message: prevMessage,
-    onOpenThread: prevOnOpenThread,
-    t: prevT,
-    threadList: prevThreadList,
-  } = prevProps;
-  const {
-    message: nextMessage,
-    onOpenThread: nextOnOpenThread,
-    t: nextT,
-    threadList: nextThreadList,
-  } = nextProps;
-
-  const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) {
-    return false;
-  }
+  const { message: prevMessage, onOpenThread: prevOnOpenThread, t: prevT } = prevProps;
+  const { message: nextMessage, onOpenThread: nextOnOpenThread, t: nextT } = nextProps;
 
   const messageReplyCountEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!messageReplyCountEqual) {
@@ -189,7 +172,6 @@ export const MessageReplies = (props: MessageRepliesProps) => {
     onPress,
     onPressIn,
     preventPress,
-    threadList,
   } = useMessageContext();
   const { t } = useTranslationContext();
 
@@ -205,7 +187,6 @@ export const MessageReplies = (props: MessageRepliesProps) => {
         onPressIn,
         preventPress,
         t,
-        threadList,
       }}
       {...props}
     />

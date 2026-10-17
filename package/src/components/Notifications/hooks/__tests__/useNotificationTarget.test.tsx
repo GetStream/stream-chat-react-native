@@ -43,18 +43,6 @@ describe('useNotificationTarget', () => {
     expect(result.current).toBe('channel');
   });
 
-  it('targets thread when Channel is in thread-list mode', () => {
-    const wrapper = ({ children }: PropsWithChildren) => (
-      <ChannelProvider value={{ ...(channelContext as object), threadList: true } as never}>
-        {children}
-      </ChannelProvider>
-    );
-
-    const { result } = renderHook(() => useNotificationTarget(), { wrapper });
-
-    expect(result.current).toBe('thread');
-  });
-
   it('prioritizes thread over channel', () => {
     const wrapper = ({ children }: PropsWithChildren) => (
       <ChannelProvider value={channelContext}>

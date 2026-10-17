@@ -61,7 +61,6 @@ export type ChannelContextValue = {
    * to still consider them grouped together
    */
   maxTimeBetweenGroupedMessages?: number;
-  threadList?: boolean;
 };
 
 export const ChannelContext = React.createContext(
