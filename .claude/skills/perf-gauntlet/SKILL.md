@@ -112,8 +112,10 @@ are opened/closed by `devmark.sh` (`PERFMARK S|E <label> <device ms> <thread tic
 device clock. Commit ids and name ids restart per app process: everything is keyed by pid.
 
 Bundle-time changes (`gauntlet-transformer.js`, Metro config), identical on both sides:
-- SampleApp `ChannelListScreen` `message_limit: 25` -> `100` (so an opened channel has 100 loaded messages without
-  a network round trip; the bundle FAILS if the pattern disappears: update `MESSAGE_LIMIT_FROM`).
+- SampleApp channel list query `message_limit: 25` -> `100` (so an opened channel has 100 loaded messages without
+  a network round trip). The query is in `ChannelListScreen` on older trees and in `src/hooks/useChatClient.ts` once
+  the app owns the list's paginator; whichever file defines it is patched, and the bundle FAILS if that file lost
+  the pattern: update `MESSAGE_LIMIT_FROM`.
 - static tokens for the bench users replace `src/ChatUsers` (`runtime/generated/`, gitignored, 7-day validity).
 - `keep_fnames`/`keep_classnames`: without it the minifier mangles component names and attribution is wrong.
 - Diagnostic builds only (`GAUNTLET_DIAG=1`): hook counts per mount, context-value changes per commit, and which
