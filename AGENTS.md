@@ -20,7 +20,7 @@ Targets iOS and Android.
 - **Languages:** TypeScript + React Native
 - **Runtime:** Node 24 (`.nvmrc` is `v24`; root `engines.node` is `>=22.13.0`; CI runs `24.x`)
 - **Package manager:** Yarn 4.15.0 (Berry). The binary lives at `.yarn/releases/yarn-4.15.0.cjs` and is activated via `yarnPath` in `.yarnrc.yml`. Any globally installed `yarn` (even the Homebrew classic 1.x) acts only as a launcher — no Corepack required.
-- **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/ExpoMessaging`. **No Lerna.**
+- **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/ExpoMessaging`, `examples/ExpoChatGPTSample`. **No Lerna.**
 - **Testing:** Jest with the `@react-native/jest-preset` + `@testing-library/react-native`.
 - **Build:** `react-native-builder-bob` → CommonJS (`lib/commonjs`), ESM (`lib/module`), types (`lib/typescript`)
 - **Lint/format:** ESLint 9 flat config + Prettier, strict (`--max-warnings 0`)
@@ -41,7 +41,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
   - `native-package/` — bare RN wrapper (`stream-chat-react-native`)
   - `expo-package/` — Expo wrapper (`stream-chat-expo`)
   - `shared-native/{ios,android}` — native source shared by both wrappers; synced into them, never edited in place
-- `examples/` — `SampleApp` (full-featured), `ExpoMessaging`
+- `examples/` — `SampleApp` (full-featured), `ExpoMessaging`, `ExpoChatGPTSample` (AI components)
 - `configs/typescript-config/` — shared `tsconfig` presets
 - `ai-docs/` — agent-facing deep dives (see [References](#references))
 - `perf/` — on-device performance toolkit (see [Accessibility, RTL & performance](#accessibility-rtl--performance))
@@ -123,14 +123,22 @@ yarn workspace sampleapp android
 ### Component hierarchy
 
 ```
-<OverlayProvider>            # gesture/overlay host, accessibility config
-  └─ <Chat client={client}>  # root: SDK metadata, offline DB, subscriptions
+<OverlayProvider>                  # gesture/overlay host, accessibility config
+  └─ <Chat client={client}>        # root: SDK metadata, offline DB, subscriptions
       ├─ <ChannelList>
-      └─ <Channel>           # state container: messages, threads, composer
-          ├─ <MessageList>
-          ├─ <MessageInput>
-          └─ <Thread>
+      ├─ <Channel channel={channel}> # a channel's main list: lifecycle + config providers
+      │   ├─ <MessageList>
+      │   └─ <MessageComposer>
+      └─ <Thread thread={thread}>  # a thread's replies, rendered next to <Channel>, not inside it
+          ├─ <MessageList>         # renders the parent message above the replies
+          └─ <MessageComposer>
 ```
+
+`<Channel>` and `<Thread>` share one provider shell (`components/Channel/ChannelShell.tsx`) and take
+the same configuration props; each owns only its own lifecycle. Only `<Thread>` provides
+`ThreadContext`, and `useThreadContext().thread` is `undefined` outside it, which is how a component
+knows it is not rendering a thread. Resolve the list's data with `useMessagePaginator()` /
+`useChannel()` rather than branching on a thread yourself.
 
 `<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider`.
 
