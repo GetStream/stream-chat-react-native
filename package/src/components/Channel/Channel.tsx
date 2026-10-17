@@ -1,84 +1,29 @@
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { PropsWithChildren, useEffect, useMemo } from 'react';
+import { StyleSheet, Text } from 'react-native';
 
-import {
-  ChannelConfig,
-  ChannelDataState,
-  ChannelLifecycleState,
-  MessageComposerConfig,
-  Event as StreamEvent,
-  Thread,
-} from 'stream-chat';
-
-import { useCreateChannelContext } from './hooks/useCreateChannelContext';
-
-import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
-
-import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
-
-import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
-
-import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+import { ChannelConfigProps, ChannelShell } from './ChannelShell';
 
 import { useSupersededChannelSwap } from './hooks/useSupersededChannelSwap';
 
-import {
-  AttachmentPickerContextValue,
-  AttachmentPickerProvider,
-} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import {
-  AudioPlayerContextProps,
-  AudioPlayerProvider,
-} from '../../contexts/audioPlayerContext/AudioPlayerContext';
-
-import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
+import { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { MessageComposerProvider } from '../../contexts/messageComposerContext/MessageComposerContext';
-import {
-  InputMessageInputContextValue,
-  MessageInputProvider,
-} from '../../contexts/messageInputContext/MessageInputContext';
-import {
-  MessagesContextValue,
-  MessagesProvider,
-} from '../../contexts/messagesContext/MessagesContext';
-import {
-  OwnCapabilitiesContextValue,
-  OwnCapabilitiesProvider,
-} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks';
-import { useAppStateListener } from '../../hooks/useAppStateListener';
-
-import { useAttachmentPickerBottomSheet } from '../../hooks/useAttachmentPickerBottomSheet';
 import { useStateStore } from '../../hooks/useStateStore';
-import {
-  isDocumentPickerAvailable,
-  isImageMediaLibraryAvailable,
-  isImagePickerAvailable,
-  NativeHandlers,
-} from '../../native';
-import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
 import { primitives } from '../../theme';
 
-import { ReactionData } from '../../utils/utils';
-import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
-import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
-import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { useMarkRead } from '../MessageList/hooks/useMarkRead';
 import { DEFAULT_HIGHLIGHT_DURATION } from '../MessageList/hooks/useMessageListFocus';
-import { Emoji } from '../MessageMenu/EmojiPickerList';
-import { emojis } from '../MessageMenu/emojis';
-import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarString';
 import { useNotificationApi } from '../Notifications';
 import { getChannelNotificationHostId } from '../Notifications/notificationTarget';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
+
+export { reactionData } from './ChannelShell';
 
 export type MarkReadFunctionOptions = {
   /**
@@ -88,38 +33,6 @@ export type MarkReadFunctionOptions = {
    */
   updateChannelUnreadState?: boolean;
 };
-
-export const reactionData: ReactionData[] = [
-  {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'👍'} size={size} />,
-    type: 'like',
-    isMain: true,
-  },
-  {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😂'} size={size} />,
-    type: 'haha',
-    isMain: true,
-  },
-  {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'❤️'} size={size} />,
-    type: 'love',
-    isMain: true,
-  },
-  {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😮'} size={size} />,
-    type: 'wow',
-    isMain: true,
-  },
-  {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😢'} size={size} />,
-    type: 'sad',
-    isMain: true,
-  },
-  ...emojis.map((emoji) => ({
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={emoji} size={size} />,
-    type: toUnicodeScalarString(emoji),
-  })),
-];
 
 /**
  * Initial message-list page size. stream-chat's `MessagePaginator` defaults to 100
@@ -131,147 +44,17 @@ export const reactionData: ReactionData[] = [
 const DEFAULT_MESSAGE_LIST_PAGE_SIZE = 25;
 
 export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
-  Partial<
-    Pick<
-      AttachmentPickerContextValue,
-      | 'bottomInset'
-      | 'topInset'
-      | 'disableAttachmentPicker'
-      | 'shouldRenderAttachmentPicker'
-      | 'numberOfAttachmentPickerImageColumns'
-      | 'numberOfAttachmentImagesToLoadPerCall'
-    >
-  > &
-  Partial<
-    Pick<
-      ChannelContextValue,
-      | 'enableMessageGroupingByUser'
-      | 'enforceUniqueReaction'
-      | 'hideStickyDateHeader'
-      | 'allowDateSeparatorForSystemMessages'
-      | 'hideDateSeparators'
-      | 'maxTimeBetweenGroupedMessages'
-    >
-  > &
   Pick<ChatContextValue, 'client'> &
-  Partial<
-    Pick<
-      InputMessageInputContextValue,
-      | 'additionalTextInputProps'
-      | 'asyncMessagesLockDistance'
-      | 'asyncMessagesMinimumPressDuration'
-      | 'audioRecordingSendOnComplete'
-      | 'asyncMessagesSlideToCancelDistance'
-      | 'attachmentPickerBottomSheetHeight'
-      | 'attachmentSelectionBarHeight'
-      | 'audioRecordingEnabled'
-      | 'compressImageQuality'
-      | 'createPollOptionGap'
-      | 'focusInputOnPickerClose'
-      | 'handleAttachButtonPress'
-      | 'hasCameraPicker'
-      | 'hasCommands'
-      | 'hasFilePicker'
-      | 'hasImagePicker'
-      | 'messageInputFloating'
-      | 'openPollCreationDialog'
-      | 'setInputRef'
-    >
-  > &
   Pick<TranslationContextValue, 't'> &
-  Partial<
-    Pick<
-      MessagesContextValue,
-      | 'additionalPressableProps'
-      | 'customMessageSwipeAction'
-      | 'disableTypingIndicator'
-      | 'dismissKeyboardOnMessageTouch'
-      | 'enableSwipeToReply'
-      | 'urlPreviewType'
-      | 'FlatList'
-      | 'forceAlignMessages'
-      | 'getMessageGroupStyle'
-      | 'giphyVersion'
-      | 'handleBan'
-      | 'handleCopy'
-      | 'handleDelete'
-      | 'handleDeleteForMe'
-      | 'handleEdit'
-      | 'handleFlag'
-      | 'handleMarkUnread'
-      | 'handleMute'
-      | 'handlePinMessage'
-      | 'handleReaction'
-      | 'handleQuotedReply'
-      | 'handleRetry'
-      | 'handleThreadReply'
-      | 'handleBlockUser'
-      | 'isAttachmentEqual'
-      | 'markdownRules'
-      | 'messageActions'
-      | 'messageContentOrder'
-      | 'messageOverlayTargetId'
-      | 'messageTextNumberOfLines'
-      | 'messageSwipeToReplyHitSlop'
-      | 'myMessageTheme'
-      | 'onLongPressMessage'
-      | 'onPressInMessage'
-      | 'onPressMessage'
-      | 'reactionListPosition'
-      | 'reactionListType'
-      | 'shouldShowUnreadUnderlay'
-      | 'selectReaction'
-      | 'supportedReactions'
-      | 'hasCreatePoll'
-    >
-  > &
-  Partial<
-    Pick<ThreadContextValue, 'allowThreadMessagesInChannel' | 'onAlsoSentToChannelHeaderPress'>
-  > & {
-    shouldSyncChannel: boolean;
-    /**
-     * The thread to render. Pass the instance a thread was opened with (`onThreadSelect` on the
-     * message and thread lists), or one from `client.threads.ensure({ channel, parentMessage })`.
-     */
-    thread?: Thread | null;
-    /**
-     * Additional props passed to keyboard avoiding view
-     */
-    additionalKeyboardAvoidingViewProps?: Partial<KeyboardCompatibleViewProps>;
-    /**
-     * When true, disables the KeyboardCompatibleView wrapper
-     *
-     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
-     * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
-     * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
-     * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
-     */
-    disableKeyboardCompatibleView?: boolean;
+  ChannelConfigProps & {
     /**
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
-    keyboardBehavior?: KeyboardCompatibleViewProps['behavior'];
-    keyboardVerticalOffset?: number;
     /**
      * Boolean flag to enable/disable marking the channel as read on mount
      */
     markReadOnMount?: boolean;
-    /**
-     * The notification host this channel's notifications are routed to. Defaults to the channel's
-     * own host, derived from its cid.
-     */
-    notificationHostId?: string;
-    overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
-    /**
-     * If true, multiple audio players will be allowed to play simultaneously
-     * @default true
-     */
-    allowConcurrentAudioPlayback?: boolean;
-    /**
-     * Tells if channel is rendering a thread list
-     */
-    threadList?: boolean;
     /**
      * A boolean signifying whether the Channel component should run channel.watch()
      * whenever it mounts up a new channel. If set to `false`, it is the integrator's
@@ -285,155 +68,28 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
     initializeOnMount?: boolean;
   };
 
-/**
- * Poll composition, resolved: the channel type's `polls` flag already ANDed with anything registered
- * through `client.config.set({ messageComposer: { polls } })`. Module scope keeps the reference stable.
- */
-const composerPollsSelector = (state: MessageComposerConfig) => ({
-  pollsEnabled: state.polls.enabled,
-});
-
-/**
- * The slash commands this channel type offers, as the server reports them. Lives on resolved channel
- * configuration so there is one place to read from — see `ChannelConfig.availableCommands`.
- */
-const availableCommandsSelector = (state: ChannelConfig) => ({
-  availableCommands: state.availableCommands,
-});
-
 const channelQuerySelector = (state: { items?: unknown[]; lastQueryError?: Error }) => ({
   blockingError: state.items?.length ? undefined : state.lastQueryError,
 });
 
-const channelStatusSelector = (state: ChannelDataState & ChannelLifecycleState) => ({
-  frozen: state.data?.frozen ?? false,
-  pendingDisposal: state.pendingDisposal,
-});
-
 const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) => {
   const {
-    disableAttachmentPicker = !isImageMediaLibraryAvailable(),
-    shouldRenderAttachmentPicker = true,
-    additionalKeyboardAvoidingViewProps,
-    additionalPressableProps,
-    additionalTextInputProps,
-    allowConcurrentAudioPlayback = false,
-    allowThreadMessagesInChannel = true,
-    asyncMessagesLockDistance = 50,
-    asyncMessagesMinimumPressDuration = 500,
-    asyncMessagesSlideToCancelDistance = 75,
-    audioRecordingSendOnComplete = false,
-    attachmentPickerBottomSheetHeight = disableAttachmentPicker ? 72 : 333,
-    attachmentSelectionBarHeight = 72,
-    audioRecordingEnabled = false,
-    numberOfAttachmentImagesToLoadPerCall = 25,
-    numberOfAttachmentPickerImageColumns = 3,
-    giphyVersion = 'fixed_height',
-    bottomInset = 0,
     channel,
     children,
     client,
-    compressImageQuality,
-    createPollOptionGap,
-    customMessageSwipeAction,
-    disableKeyboardCompatibleView = false,
-    disableTypingIndicator,
-    dismissKeyboardOnMessageTouch = true,
-    enableMessageGroupingByUser = true,
-    enableSwipeToReply = true,
-    enforceUniqueReaction = false,
-    FlatList = NativeHandlers.FlatList,
-    focusInputOnPickerClose = true,
-    forceAlignMessages,
-    getMessageGroupStyle,
-    handleAttachButtonPress,
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
-    handleReaction,
-    handleRetry,
-    handleThreadReply,
-    handleBlockUser,
-    hasCameraPicker = isImagePickerAvailable(),
-    hasCommands,
-    hasCreatePoll,
-    // If pickDocument isn't available, default to hiding the file picker
-    hasFilePicker = isDocumentPickerAvailable(),
-    hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
-    allowDateSeparatorForSystemMessages = false,
-    hideDateSeparators = false,
-    hideStickyDateHeader = false,
     initialScrollToFirstUnreadMessage = false,
-    isAttachmentEqual,
-    keyboardBehavior,
-    keyboardVerticalOffset,
-    markdownRules,
-    markReadOnMount = true,
-    maxTimeBetweenGroupedMessages,
-    messageActions,
-    messageContentOrder = [
-      'quoted_reply',
-      'gallery',
-      'files',
-      'poll',
-      'ai_text',
-      'attachments',
-      'location',
-      'text',
-    ],
-    messageOverlayTargetId,
-    messageInputFloating = false,
-    messageSwipeToReplyHitSlop,
-    messageTextNumberOfLines,
-    myMessageTheme,
-    onLongPressMessage,
-    onPressInMessage,
-    onPressMessage,
-    onAlsoSentToChannelHeaderPress,
-    openPollCreationDialog,
-    overrideOwnCapabilities,
-    reactionListPosition = 'top',
-    reactionListType = 'clustered',
-    selectReaction,
-    setInputRef,
-    shouldShowUnreadUnderlay = true,
-    shouldSyncChannel,
-    supportedReactions = reactionData,
-    t,
-    thread,
-    threadList,
-    topInset = 0,
     initializeOnMount = true,
-    urlPreviewType = 'full',
+    markReadOnMount = true,
+    t,
+    ...shellProps
   } = props;
 
-  const components = useComponentsContext();
-  const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
+  const { LoadingErrorIndicator } = useComponentsContext();
 
   const styles = useStyles();
-  const [messageInputHeightStore] = useState(() => new MessageInputHeightStore());
-  const { bottomSheetRef, closePicker, openPicker } = useAttachmentPickerBottomSheet();
 
-  // The CHANNEL's paginator. A thread's reply query fails on its own paginator and is rendered by
-  // `<Thread>` — this component has no business replacing the thread UI with a channel-level error.
   const { blockingError } =
     useStateStore(channel.messagePaginator.state, channelQuerySelector) ?? {};
-
-  const { frozen, pendingDisposal } = useStateStore(channel.state, channelStatusSelector);
-
-  const channelId = channel?.id || '';
-  const { pollsEnabled } = useStateStore(
-    channel?.messageComposer?.configState,
-    composerPollsSelector,
-  ) ?? { pollsEnabled: false };
-  const pollCreationEnabled = !pendingDisposal && !!channel?.id && pollsEnabled;
 
   const { addNotification } = useNotificationApi();
 
@@ -468,7 +124,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
    * decision, and subscribing would re-render `Channel` on every jump for no benefit.
    */
   const hasFocusTarget = useStableCallback(
-    () => !!(thread ?? channel).messagePaginator.messageFocusSignal.getLatestValue().signal,
+    () => !!channel.messagePaginator.messageFocusSignal.getLatestValue().signal,
   );
 
   const shouldLoadInitialChannelAtFirstUnreadMessage = useStableCallback((unreadCount?: number) => {
@@ -487,7 +143,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
     const initChannel = async () => {
       const unreadCount = channel.countUnread();
       const shouldLoadAtFirstUnread = shouldLoadInitialChannelAtFirstUnreadMessage(unreadCount);
-      if (!channel || !shouldSyncChannel) {
+      if (!channel) {
         return;
       }
 
@@ -548,31 +204,15 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
 
     initChannel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, shouldSyncChannel]);
+  }, [channel]);
 
   // Mark the channel active while this <Channel> is mounted. The LLC refcounts `active`, so a
-  // Channel instance shared with the channel-list preview or a thread stays active until the last
+  // Channel instance shared with the channel-list preview stays active until the last
   // mount unmounts. Being active enables auto-mark-read-on-focus and suppresses destructive
   // channel-list re-seeding of the open channel's message list on reconnect. `activate()` returns
   // the release for this exact activation, so swapping the `channel` prop releases the previous
   // instance before activating the new one.
   useEffect(() => channel?.activate(), [channel]);
-
-  // Sent directly rather than through `channel.stopTyping()`, which does nothing once the socket is
-  // closed, and `<Chat>` usually closes it on background before this runs.
-  const handleAppBackground = useCallback(() => {
-    if (!channel.isTyping || !channel.data?.own_capabilities?.includes('send-typing-events')) {
-      return;
-    }
-    channel.sendEvent({
-      event: {
-        parent_id: thread?.id,
-        type: 'typing.stop',
-      },
-    } as { event: StreamEvent });
-  }, [channel, thread?.id]);
-
-  useAppStateListener(undefined, handleAppBackground);
 
   /**
    * CHANNEL METHODS
@@ -587,171 +227,19 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   // moment the socket does. Only the reload moved into the LLC; whether a caught-up channel is
   // marked read stays a UI decision (see `useMarkRead`).
   useEffect(() => {
-    if (!shouldSyncChannel) {
-      return;
-    }
-
     // Mark read has to wait for `connection.recovered`, as it is dispatched once the reloads have
     // landed, so `hasMoreHead` read here reflects the refreshed window. Channel view only, and only
     // when that window is at the newest, only if the user has paginated up into older history so leave
     // their read state alone.
     const { unsubscribe } = client.on('connection.recovered', () => {
-      if (thread || channel.messagePaginator.hasMoreHead) {
+      if (channel.messagePaginator.hasMoreHead) {
         return;
       }
       markRead();
     });
 
     return unsubscribe;
-  }, [channel, client, markRead, shouldSyncChannel, thread]);
-
-  /**
-   * Channel configs for use in disabling local functionality.
-   * Nullish coalescing is used to give first priority to props to override
-   * the server settings. Then priority to server settings to override defaults.
-   *
-   * Read from the channel's *resolved* configuration, which carries the server's command list as
-   * `availableCommands`. That is reactive, so the list no longer has to be re-read imperatively on
-   * every render — and it no longer throws for a channel pending disposal, which is why the previous
-   * try/catch wrapper is gone.
-   */
-  const { availableCommands } = useStateStore(channel?.configState, availableCommandsSelector) ?? {
-    availableCommands: [],
-  };
-
-  const handleClosePicker = useStableCallback(() => closePicker(bottomSheetRef));
-  const handleOpenPicker = useStableCallback(() => openPicker(bottomSheetRef));
-
-  const attachmentPickerContext = useMemo(
-    () => ({
-      bottomInset,
-      bottomSheetRef,
-      closePicker: handleClosePicker,
-      disableAttachmentPicker,
-      openPicker: handleOpenPicker,
-      shouldRenderAttachmentPicker,
-      topInset,
-      numberOfAttachmentPickerImageColumns,
-      attachmentPickerBottomSheetHeight,
-      attachmentSelectionBarHeight,
-      numberOfAttachmentImagesToLoadPerCall,
-    }),
-    [
-      bottomInset,
-      bottomSheetRef,
-      handleClosePicker,
-      disableAttachmentPicker,
-      handleOpenPicker,
-      shouldRenderAttachmentPicker,
-      topInset,
-      numberOfAttachmentPickerImageColumns,
-      attachmentPickerBottomSheetHeight,
-      attachmentSelectionBarHeight,
-      numberOfAttachmentImagesToLoadPerCall,
-    ],
-  );
-
-  const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
-    channel,
-    overrideCapabilities: overrideOwnCapabilities,
-  });
-
-  const channelContext = useCreateChannelContext({
-    channel,
-    disabled: frozen,
-    enableMessageGroupingByUser,
-    enforceUniqueReaction,
-    allowDateSeparatorForSystemMessages,
-    hideDateSeparators,
-    hideStickyDateHeader,
-    maxTimeBetweenGroupedMessages,
-    hasPendingInitialTargetLoad,
-    threadList,
-  });
-
-  const inputMessageInputContext = useCreateInputMessageInputContext({
-    additionalTextInputProps,
-    asyncMessagesLockDistance,
-    asyncMessagesMinimumPressDuration,
-    audioRecordingSendOnComplete,
-    asyncMessagesSlideToCancelDistance,
-    attachmentPickerBottomSheetHeight,
-    attachmentSelectionBarHeight,
-    audioRecordingEnabled,
-    channelId,
-    compressImageQuality,
-    createPollOptionGap,
-    focusInputOnPickerClose,
-    handleAttachButtonPress,
-    hasCameraPicker,
-    hasCommands: hasCommands ?? !!availableCommands.length,
-    hasFilePicker,
-    hasImagePicker,
-    messageInputFloating,
-    messageInputHeightStore,
-    openPollCreationDialog,
-    setInputRef,
-  });
-
-  const messagesContext = useCreateMessagesContext({
-    additionalPressableProps,
-    channelId,
-    customMessageSwipeAction,
-    disableTypingIndicator,
-    dismissKeyboardOnMessageTouch,
-    enableMessageGroupingByUser,
-    enableSwipeToReply,
-    FlatList,
-    forceAlignMessages,
-    getMessageGroupStyle,
-    giphyVersion,
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
-    handleReaction,
-    handleRetry,
-    handleThreadReply,
-    handleBlockUser,
-    hasCreatePoll:
-      hasCreatePoll === undefined ? pollCreationEnabled : hasCreatePoll && pollCreationEnabled,
-    isAttachmentEqual,
-    markdownRules,
-    messageActions,
-    messageContentOrder,
-    messageOverlayTargetId,
-    messageSwipeToReplyHitSlop,
-    messageTextNumberOfLines,
-    myMessageTheme,
-    onLongPressMessage,
-    onPressInMessage,
-    onPressMessage,
-    reactionListPosition,
-    reactionListType,
-    selectReaction,
-    shouldShowUnreadUnderlay,
-    supportedReactions,
-    urlPreviewType,
-  });
-
-  const threadContext = useCreateThreadContext({
-    allowThreadMessagesInChannel,
-    onAlsoSentToChannelHeaderPress,
-    thread,
-  });
-
-  const audioPlayerContext = useMemo<AudioPlayerContextProps>(
-    () => ({ allowConcurrentAudioPlayback }),
-    [allowConcurrentAudioPlayback],
-  );
-
-  const messageComposerContext = useMemo(() => ({ channel, thread }), [channel, thread]);
+  }, [channel, client, markRead]);
 
   if (!channel || blockingError) {
     // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
@@ -775,55 +263,42 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   }
 
   return (
-    <KeyboardCompatibleView
-      behavior={keyboardBehavior}
-      enabled={!disableKeyboardCompatibleView}
-      keyboardVerticalOffset={keyboardVerticalOffset}
-      {...additionalKeyboardAvoidingViewProps}
+    <ChannelShell
+      {...shellProps}
+      channel={channel}
+      hasPendingInitialTargetLoad={hasPendingInitialTargetLoad}
     >
-      <ChannelProvider value={channelContext}>
-        <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-          <MessagesProvider value={messagesContext}>
-            <ThreadProvider value={threadContext}>
-              <AttachmentPickerProvider value={attachmentPickerContext}>
-                <MessageComposerProvider value={messageComposerContext}>
-                  <MessageInputProvider value={inputMessageInputContext}>
-                    <AudioPlayerProvider value={audioPlayerContext}>
-                      <NotificationAnnouncer />
-                      <View style={{ height: '100%' }}>{children}</View>
-                      {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
-                    </AudioPlayerProvider>
-                  </MessageInputProvider>
-                </MessageComposerProvider>
-              </AttachmentPickerProvider>
-            </ThreadProvider>
-          </MessagesProvider>
-        </OwnCapabilitiesProvider>
-      </ChannelProvider>
-    </KeyboardCompatibleView>
+      {children}
+    </ChannelShell>
   );
 };
 
 export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel'>> &
-  Pick<ChannelPropsWithContext, 'channel'>;
+  Pick<ChannelPropsWithContext, 'channel'> & {
+    /**
+     * The notification host this channel's notifications are routed to. Defaults to the channel's
+     * own host, derived from its cid.
+     */
+    notificationHostId?: string;
+  };
 
 /**
  *
  * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
- * to receive the StreamChat client instance. MessageList, Thread, and MessageComposer must be
- * children of the Channel component to receive the ChannelContext.
+ * to receive the StreamChat client instance. MessageList and MessageComposer must be children of
+ * the Channel component to receive the ChannelContext. A thread is rendered by `<Thread>`, next to
+ * the channel rather than inside it.
  *
  * @example ./Channel.md
  */
 export const Channel = (props: PropsWithChildren<ChannelProps>) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
+  const { notificationHostId: notificationHostIdProp, ...channelProps } = props;
   const channel = useSupersededChannelSwap(props.channel);
   const notificationHostId =
-    props.notificationHostId ??
+    notificationHostIdProp ??
     (channel?.cid ? getChannelNotificationHostId(channel.cid) : undefined);
-
-  const shouldSyncChannel = props.thread ? !!props.threadList : true;
 
   const channelWithContext = (
     <ChannelWithContext
@@ -831,9 +306,8 @@ export const Channel = (props: PropsWithChildren<ChannelProps>) => {
         client,
         t,
       }}
-      {...props}
+      {...channelProps}
       channel={channel}
-      shouldSyncChannel={shouldSyncChannel}
     />
   );
 

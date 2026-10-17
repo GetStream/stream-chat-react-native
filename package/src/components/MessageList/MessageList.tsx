@@ -79,6 +79,7 @@ import { useIncomingMessageAnnouncements } from '../Accessibility/hooks/useIncom
 import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
+import { ThreadFooterComponent } from '../Thread/components/ThreadFooterComponent';
 import { PortalWhileClosingView } from '../UIComponents';
 
 // This is just to make sure that the scrolling happens in a different task queue.
@@ -287,7 +288,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     disabled,
     disableTypingIndicator,
     FlatList,
-    FooterComponent = InlineLoadingMoreIndicator,
+    FooterComponent: FooterComponentProp,
     HeaderComponent,
     hideStickyDateHeader,
     inverted = true,
@@ -305,6 +306,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     thread,
     threadList = false,
   } = props;
+
+  // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
+  const FooterComponent =
+    FooterComponentProp ?? (threadList ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
     EmptyStateIndicator,
     MessageListLoadingIndicator: LoadingIndicator,

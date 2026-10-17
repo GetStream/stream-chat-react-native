@@ -22,6 +22,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 
+import { Thread as ThreadComponent } from '../../Thread/Thread';
 import { SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME } from '../hooks/useScrollToBottomAccessibilityAction';
 import { MessageList } from '../MessageList';
 
@@ -1250,9 +1251,9 @@ describe('MessageList in a thread', () => {
     const utils = render(
       <OverlayProvider>
         <Chat client={chatClient}>
-          <Channel channel={channel} thread={threadInstance} threadList>
-            <MessageList threadList />
-          </Channel>
+          <ThreadComponent thread={threadInstance}>
+            <MessageList />
+          </ThreadComponent>
         </Chat>
       </OverlayProvider>,
     );

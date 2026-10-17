@@ -4,7 +4,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { LocalMessage, Channel as StreamChatChannel, StreamChat, Thread } from 'stream-chat';
 import {
@@ -205,8 +205,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
       .catch((error: unknown) => console.warn('Jump to message failed:', error));
   }, [channel, messageId]);
 
-  const [selectedThread, setSelectedThread] = useState<Thread | null>();
-
   /**
    * Message-list pruning is state-layer configuration now, not a `<Channel>` prop: the paginator
    * bounds its own loaded window. Set on the instance so the secret-menu toggle applies to the open
@@ -236,10 +234,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     initChannel();
   }, [channelFromProp, channelId, chatClient]);
 
-  useFocusEffect(() => {
-    setSelectedThread(undefined);
-  });
-
   const { setInputRef } = useScreenReaderComposerFocusEffect();
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
@@ -263,7 +257,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         navigation.setParams({ messageId: undefined });
       }
 
-      setSelectedThread(thread);
       setThread(thread);
       navigation.navigate('ThreadScreen', {
         channel,
@@ -284,7 +277,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         navigation.setParams({ messageId: undefined });
       }
 
-      setSelectedThread(thread);
       setThread(thread);
       const params: StackNavigatorParamList['ThreadScreen'] = {
         channel,
@@ -390,7 +382,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-        thread={selectedThread}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />

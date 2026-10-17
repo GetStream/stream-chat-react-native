@@ -1388,7 +1388,6 @@ exports[`Thread should match thread snapshot 1`] = `
                   [
                     undefined,
                     {
-                      "marginBottom": 12,
                       "paddingHorizontal": 16,
                       "paddingVertical": 8,
                     },

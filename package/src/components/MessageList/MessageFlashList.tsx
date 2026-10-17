@@ -64,6 +64,7 @@ import { transitions } from '../../utils/animations/transitions';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
+import { ThreadFooterComponent } from '../Thread/components/ThreadFooterComponent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
@@ -275,7 +276,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     disabled,
     disableTypingIndicator,
     FooterComponent,
-    HeaderComponent = InlineLoadingMoreIndicator,
+    HeaderComponent: HeaderComponentProp,
     hideStickyDateHeader,
     isLiveStreaming = false,
     markRead,
@@ -292,6 +293,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     thread,
     threadList = false,
   } = props;
+
+  // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
+  const HeaderComponent =
+    HeaderComponentProp ?? (threadList ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
     AutoCompleteSuggestionList,
     EmptyStateIndicator,

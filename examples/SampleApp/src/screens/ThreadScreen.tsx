@@ -9,8 +9,10 @@ import { Thread as ThreadInstance, ThreadState } from 'stream-chat';
 import {
   DEFAULT_HIGHLIGHT_DURATION,
   AlsoSentToChannelHeaderPressPayload,
-  Channel,
   MessageActionsParams,
+  MessageComposer,
+  MessageFlashList,
+  MessageList,
   Thread,
   useChatContext,
   useTheme,
@@ -75,9 +77,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
 
   /**
-   * Targeting a reply. `<Channel>` has no `messageId` prop any more — jumping is the paginator's
-   * job, so the caller does it. This screen is a thread (`threadList`), so the target lives in the
-   * THREAD's reply paginator, not the channel's.
+   * Targeting a reply. Jumping is the paginator's job, so the caller does it. This screen is a
+   * thread, so the target lives in the THREAD's reply paginator, not the channel's.
    *
    * `useLayoutEffect`, not `useEffect`: React runs layout effects before passive ones, and the
    * message list picks its initial anchor in a passive effect — so the jump lands first and there
@@ -106,7 +107,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   const { setInputRef } = useScreenReaderComposerFocusEffect();
   useLeaveGoneChannel(channel);
 
-  const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
+  const onPressMessage: NonNullable<React.ComponentProps<typeof Thread>['onPressMessage']> = (
     payload,
   ) => {
     const { message, defaultHandler, emitter } = payload;
@@ -171,26 +172,23 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
       onAccessibilityEscape={() => navigation.goBack()}
       style={[styles.container, { backgroundColor: white }]}
     >
-      <Channel
+      <Thread
         audioRecordingEnabled={true}
-        channel={channel}
         setInputRef={setInputRef}
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         thread={thread}
-        threadList
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        onThreadDismount={onThreadDismount}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ThreadHeader thread={thread} />
         </PortalWhileClosingView>
-        <Thread
-          onThreadDismount={onThreadDismount}
-          shouldUseFlashList={messageListImplementation === 'flashlist'}
-        />
-      </Channel>
+        {messageListImplementation === 'flashlist' ? <MessageFlashList /> : <MessageList />}
+        <MessageComposer />
+      </Thread>
     </SafeAreaView>
   );
 };
