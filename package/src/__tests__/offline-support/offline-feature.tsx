@@ -18,7 +18,7 @@ import type {
   TimestampNS,
   UserResponse,
 } from 'stream-chat';
-import { asTimestampNS, dateToNs, nowNs, nsToMs } from 'stream-chat';
+import { ChannelPaginator, asTimestampNS, dateToNs, nowNs, nsToMs } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 // Tests exercise internal APIs on StreamChat (private sync manager, legacy `wsConnection`).
@@ -267,10 +267,14 @@ export const Generic = () => {
     const sort: SortParamRequest[] = [{ direction: 1, field: 'last_updated' }];
 
     const renderComponent = async () => {
+      // The app owns the list's paginator, so it exists before `<Chat>` sets up the offline DB.
+      const paginator = new ChannelPaginator({ client: chatClient, filters, id: uuidv4(), sort });
+      chatClient.channelManager.insertPaginator({ paginator });
+
       const result = render(
         <Chat client={chatClient} enableOfflineSupport>
           <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-            <ChannelList filters={filters} sort={sort} swipeActionsEnabled={false} />
+            <ChannelList paginator={paginator} swipeActionsEnabled={false} />
           </WithComponents>
         </Chat>,
       );

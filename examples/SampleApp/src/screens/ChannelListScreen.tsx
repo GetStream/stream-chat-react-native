@@ -71,16 +71,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const baseOptions = {
-  presence: true,
-  state: true,
-  watch: true,
-  message_limit: 25,
-  predefined_filter: 'basic_channel_list_filter',
-};
-
 export const ChannelListScreen: React.FC = () => {
-  const { chatClient } = useAppContext();
+  const { channelListPaginator, chatClient } = useAppContext();
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   useTheme();
   const { black, grey, grey_gainsboro, grey_whisper, white, white_snow } = useLegacyColors();
@@ -94,17 +86,6 @@ export const ChannelListScreen: React.FC = () => {
 
   const { loading, loadMore, messages, refreshing, refreshList, reset } =
     usePaginatedSearchedMessages(searchQuery);
-
-  const chatClientUserId = chatClient?.user?.id || '';
-  const options = useMemo(
-    () => ({
-      ...baseOptions,
-      filter_values: {
-        user_id: chatClientUserId,
-      },
-    }),
-    [chatClientUserId],
-  );
 
   useScrollToTop(scrollRef as RefObject<FlatList<Channel>>);
 
@@ -251,14 +232,16 @@ export const ChannelListScreen: React.FC = () => {
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList
-              additionalFlatListProps={additionalFlatListProps}
-              maxUnreadCount={99}
-              onSelect={onSelect}
-              options={options}
-              setFlatListRef={setScrollRef}
-              getChannelActionItems={getChannelActionItems}
-            />
+            {channelListPaginator ? (
+              <ChannelList
+                additionalFlatListProps={additionalFlatListProps}
+                maxUnreadCount={99}
+                onSelect={onSelect}
+                paginator={channelListPaginator}
+                setFlatListRef={setScrollRef}
+                getChannelActionItems={getChannelActionItems}
+              />
+            ) : null}
           </View>
         </View>
       </View>

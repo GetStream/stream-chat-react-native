@@ -8,7 +8,7 @@ import {
   AuthorizationStatus,
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
-import { StreamChat, PushProvider } from 'stream-chat';
+import { ChannelPaginator, StreamChat, PushProvider } from 'stream-chat';
 import { SqliteClient } from 'stream-chat-react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
@@ -60,8 +60,18 @@ const requestAndroidPermission = async () => {
   return true;
 };
 
+// The query the channel list shows. With a predefined filter the server owns the filter and sort.
+const channelListRequestOptions = {
+  presence: true,
+  state: true,
+  watch: true,
+  message_limit: 25,
+  predefined_filter: 'basic_channel_list_filter',
+};
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
+  const [channelListPaginator, setChannelListPaginator] = useState<ChannelPaginator | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const unsubscribePushListenersRef = useRef<() => void>(undefined);
@@ -96,6 +106,16 @@ export const useChatClient = () => {
         drafts: { enabled: true },
       },
     });
+
+    // The app owns the channel list's paginator. It lives as long as the user is connected, so the
+    // list keeps its channels when its screen unmounts, and is removed on logout.
+    const paginator = new ChannelPaginator({
+      client,
+      id: 'channel-list',
+      requestOptions: { ...channelListRequestOptions, filter_values: { user_id: config.userId } },
+    });
+    client.channelManager.insertPaginator({ paginator });
+    setChannelListPaginator(paginator);
 
     setChatClient(client);
 
@@ -207,6 +227,13 @@ export const useChatClient = () => {
     if (chatClient?.userID) await clearLastToken(chatClient.userID);
     await SqliteClient.resetDB();
     setChatClient(null);
+    setChannelListPaginator(null);
+    // `disconnectUser` empties the registered channel lists but keeps them registered, so the list
+    // that belonged to this user is removed here.
+    if (channelListPaginator) {
+      chatClient?.channelManager.removePaginator(channelListPaginator);
+      channelListPaginator.dispose();
+    }
     chatClient?.disconnectUser();
     await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
@@ -222,6 +249,7 @@ export const useChatClient = () => {
   }, []);
 
   return {
+    channelListPaginator,
     chatClient,
     isConnecting,
     loginUser,

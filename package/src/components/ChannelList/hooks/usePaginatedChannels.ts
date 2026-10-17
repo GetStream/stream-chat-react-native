@@ -1,41 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelPaginator,
-  ChannelPaginatorState,
-  ChannelQueryShape,
-  SortParamRequest,
-  PaginatorOptions,
-} from 'stream-chat';
+import type { ChannelPaginator, ChannelPaginatorState } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useStateStore } from '../../../hooks';
-import { useLazyRef } from '../../../hooks/useLazyRef';
 import { useStableCallback } from '../../../hooks/useStableCallback';
-import { generateRandomId } from '../../../utils/utils';
 import { useClientUserId } from '../../Chat/hooks/useClientUserId';
-
-/**
- * Custom `queryChannels` implementation for a `ChannelList`. Mapped straight onto the paginator's
- * `doRequest`: it receives the request the paginator would have sent and must return the resolved
- * channels (call `client.queryChannels(...)` inside so client state stays in sync). It supersedes the
- * legacy `queryChannelsOverride` (which was typed as the now-removed `QueryChannelsRequestType`).
- */
-export type ChannelListQueryChannelsOverride = PaginatorOptions<
-  Channel,
-  ChannelQueryShape
->['doRequest'];
-
-type Parameters = {
-  filters: ChannelFilters;
-  options: ChannelOptions;
-  sort: SortParamRequest[];
-  lockChannelOrder?: boolean;
-  queryChannelsOverride?: ChannelListQueryChannelsOverride;
-};
 
 const RETRY_INTERVAL_IN_MS = 5000;
 
@@ -49,46 +19,9 @@ const selector = (nextValue: ChannelPaginatorState) =>
     lastQueryError: nextValue.lastQueryError,
   }) as const;
 
-export const usePaginatedChannels = ({
-  filters = {},
-  lockChannelOrder = false,
-  options = {},
-  queryChannelsOverride,
-  sort = [],
-}: Parameters) => {
+export const usePaginatedChannels = ({ paginator }: { paginator: ChannelPaginator }) => {
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>(null);
   const { client } = useChatContext();
-  const channelManager = client.channelManager;
-
-  /**
-   * One `ChannelPaginator` per `<ChannelList>` instance, contributed to the shared `ChannelManager`.
-   * The id is stable for the component's lifetime so the manager routes events to it and we can remove
-   * it on unmount. Filters/sort/options are updated in place via setters when props change (the setters
-   * do NOT reset the paginator, so the list is not blanked on a re-query — matching the legacy behavior).
-   */
-  const paginatorIdRef = useLazyRef(() => `channels:${generateRandomId()}`);
-  const paginator = useMemo(() => {
-    const existing = channelManager.getPaginatorById(paginatorIdRef.current);
-    if (existing) {
-      return existing as ChannelPaginator;
-    }
-    const { limit, offset: _offset, ...requestOptions } = options;
-    return new ChannelPaginator({
-      client,
-      filters,
-      id: paginatorIdRef.current,
-      paginatorOptions: {
-        doRequest: queryChannelsOverride,
-        lockItemOrder: lockChannelOrder,
-        ...(typeof limit === 'number' ? { pageSize: limit } : {}),
-      },
-      requestOptions,
-      sort,
-    });
-    // Only (re)create when the manager or client identity changes. Prop changes are applied via
-    // setters below; recreating would blank the list.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelManager, client]);
 
   const { channels, hasNextPage, isLoading, lastQueryError } =
     useStateStore(paginator.state, selector) ?? {};
@@ -106,23 +39,6 @@ export const usePaginatedChannels = ({
     };
   }, []);
 
-  /**
-   * Insert the paginator into the shared manager on mount and remove it on unmount. `removePaginator`
-   * detaches it from the manager (restores its own query filtering and cancels any scheduled query);
-   * `dispose()` then releases the paginator's own throttles and index so it stops handling events.
-   */
-  useEffect(() => {
-    channelManager.insertPaginator({ paginator });
-
-    return () => {
-      // TODO: Figure out if we really want to dispose of paginators. Why would we want to create a new
-      //       paginator each time this mounts and then dispose it ? Perhaps a better way is to keep the
-      //       state stable and perhaps only dispose on user disconnect or something like that.
-      channelManager.removePaginator(paginator);
-      paginator.dispose();
-    };
-  }, [channelManager, paginator]);
-
   const queryChannels = useStableCallback(
     async (queryType: QueryType = 'loadChannels'): Promise<void> => {
       if (!client || !isMountedRef.current) {
@@ -136,7 +52,7 @@ export const usePaginatedChannels = ({
           // Next page — append toward the tail, keeping the current list.
           await paginator.toTail();
         } else if (queryType === 'reload') {
-          // Initial load / filters-sort-options change — fresh first page (blanks to the skeleton).
+          // First page from scratch (blanks to the skeleton).
           await paginator.reload();
         } else {
           await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
@@ -176,49 +92,15 @@ export const usePaginatedChannels = ({
     await queryChannels('loadChannels');
   });
 
-  /**
-   * Equality check using stringified filters/options/sort ensures we don't run unnecessary queries
-   * when a parent re-render passes new object references with the same value.
-   */
-  const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
-  const optionsStr = useMemo(() => JSON.stringify(options), [options]);
-  const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
-
-  useEffect(() => {
-    // Sync the paginator config with the current props (setters don't reset state → no blank flash),
-    // then reload with the new query shape.
-    paginator.staticFilters = filters;
-    paginator.sort = sort;
-    const { limit, offset: _offset, ...requestOptions } = options;
-    paginator.options = requestOptions;
-    if (typeof limit === 'number') {
-      paginator.pageSize = limit;
-    }
-
-    reloadList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStr, optionsStr, sortStr, paginator]);
-
-  // A list reset to "never queried" while mounted (by `client.disconnectUser`) loads again once a
-  // user is connected. A reload already in flight is left alone.
+  // Load the first page whenever the paginator has none: on the first mount, after the app swaps in a
+  // new paginator, and after `client.disconnectUser` resets it. A paginator that already has channels
+  // is shown as is, and a load already in flight is left alone.
   const userId = useClientUserId(client);
   const isUnloaded = channels === undefined;
   useEffect(() => {
     if (!isUnloaded || !userId || paginator.isLoading) return;
     reloadList();
   }, [isUnloaded, paginator, reloadList, userId]);
-
-  // Propagate runtime `lockChannelOrder` changes without a re-query (matches the legacy `setOptions`
-  // effect). Only affects how subsequent event-driven ingests reorder the list.
-  useEffect(() => {
-    paginator.updateConfig({ lockItemOrder: lockChannelOrder });
-  }, [paginator, lockChannelOrder]);
-
-  // Propagate a runtime `queryChannelsOverride` swap (matches the legacy `setQueryChannelsRequest`
-  // effect). The next query picks it up; no immediate reload needed.
-  useEffect(() => {
-    paginator.updateConfig({ doRequest: queryChannelsOverride });
-  }, [paginator, queryChannelsOverride]);
 
   return {
     channelListInitialized,
@@ -228,7 +110,6 @@ export const usePaginatedChannels = ({
     loadingChannels: channels === undefined && !error,
     loadingNextPage: activeQueryType === 'loadChannels' && !!isLoading,
     loadNextPage,
-    paginator,
     refreshing: activeQueryType === 'refresh',
     refreshList: refreshListWithDefaults,
     reloadList,

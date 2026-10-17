@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { StreamChat } from 'stream-chat';
+import type { ChannelPaginator, StreamChat } from 'stream-chat';
 
 import {
   MessageInputFloatingConfigItem,
@@ -11,6 +11,7 @@ import {
 import type { LoginConfig } from '../types';
 
 type AppContextType = {
+  channelListPaginator: ChannelPaginator | null;
   chatClient: StreamChat | null;
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
