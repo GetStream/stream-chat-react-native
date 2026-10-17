@@ -1045,7 +1045,11 @@ const handlers = useMessageActionHandlers(); // same shape: { handleCopyMessage,
 - The `handleX` callbacks (`handleDelete`, `handleCopy`, …) and
   `selectReaction` are read from `MessagesContext`, i.e. the props set on
   `<Channel>`. Passing them directly to a `<Message>` no longer reaches the
-  action menu; set them on `<Channel>`.
+  action menu; set them on `<Channel>`. `MessageProps` no longer declares
+  `handleBan`, `handleBlockUser`, `handleCopy`, `handleDelete`,
+  `handleDeleteForMe`, `handleEdit`, `handleFlag`, `handleMarkUnread`,
+  `handleMute`, `handlePinMessage`, `handleQuotedReply`, `handleRetry`,
+  `messageActions` or `supportedReactions`.
 - The `messageActions` prop (array or function) and `MessageActionsParams` are
   unchanged. The SDK now builds the actions only when a message's menu opens,
   so the function form runs at that point, not on every render of every row.
