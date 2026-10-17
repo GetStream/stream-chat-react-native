@@ -22,13 +22,11 @@ import {
 
 import { useCreateMessageActionHandlers } from './hooks/useCreateMessageActionHandlers';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
-import { useMessageActions } from './hooks/useMessageActions';
 import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
 import { MessageOverlayWrapper } from './MessageOverlayWrapper';
 import { measureInWindow } from './utils/measureInWindow';
-import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
   ChannelContextValue,
@@ -48,7 +46,6 @@ import {
   MessageContextValue,
   MessageOverlayRuntimeProvider,
   MessageProvider,
-  useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
 import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
@@ -87,6 +84,7 @@ import {
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { MessageActionListWithActions } from '../MessageMenu/MessageActionListWithActions';
 import { BottomSheetModal } from '../UIComponents';
 
 const createMessageOverlayId = (messageId?: string) =>
@@ -270,67 +268,6 @@ export type MessagePropsWithContext = Pick<
     style?: StyleProp<ViewStyle>;
   } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
 
-type MessageActionListWithActionsProps = Pick<MessagesContextValue, 'messageActions'> &
-  Pick<MessageOperations, 'updateMessage'>;
-
-/**
- * The action menu's list. Lives inside the open overlay, so the actions are only built while a
- * menu is open rather than on every render of every message.
- */
-const MessageActionListWithActions = ({
-  messageActions: messageActionsProp = defaultMessageActions,
-  updateMessage,
-}: MessageActionListWithActionsProps) => {
-  const { MessageActionList } = useComponentsContext();
-  const { dismissOverlay, isMyMessage, message, threadList } = useMessageContext();
-  const ownCapabilities = useOwnCapabilitiesContext();
-  const {
-    banUser,
-    blockUser,
-    copyMessage,
-    deleteForMeMessage,
-    deleteMessage,
-    editMessage,
-    flagMessage,
-    markUnread,
-    muteUser,
-    pinMessage,
-    quotedReply,
-    retry,
-    threadReply,
-    unpinMessage,
-  } = useMessageActions();
-
-  const messageActions =
-    typeof messageActionsProp !== 'function'
-      ? messageActionsProp
-      : messageActionsProp({
-          banUser,
-          blockUser,
-          copyMessage,
-          deleteForMeMessage,
-          deleteMessage,
-          dismissOverlay,
-          editMessage,
-          error: message.type === 'error' || message.status === MessageStatusTypes.FAILED,
-          flagMessage,
-          isMyMessage,
-          isThreadMessage: threadList || !!message.parent_id,
-          markUnread,
-          message,
-          muteUser,
-          ownCapabilities,
-          pinMessage,
-          quotedReply,
-          retry,
-          threadReply,
-          unpinMessage,
-          updateMessage,
-        });
-
-  return <MessageActionList dismissOverlay={dismissOverlay} messageActions={messageActions} />;
-};
-
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
@@ -355,7 +292,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleThreadReply,
     isTargetedMessage,
     message,
-    messageActions: messageActionsProp = defaultMessageActions,
     messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
@@ -913,10 +849,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   });
                 }}
               >
-                <MessageActionListWithActions
-                  messageActions={messageActionsProp}
-                  updateMessage={updateMessage}
-                />
+                <MessageActionListWithActions />
               </View>
             ) : null}
           </Portal>
