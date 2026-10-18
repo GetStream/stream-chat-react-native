@@ -69,6 +69,18 @@ const channelListRequestOptions = {
   predefined_filter: 'basic_channel_list_filter',
 };
 
+// The app's single client. It lives at module level, so it outlives the components that use it.
+const getChatClient = (apiKey: string) =>
+  StreamChat.getInstance(apiKey, {
+    client: {
+      axiosRequestConfig: { timeout: 6000 },
+      // keeps the user when connecting fails offline, so the app opens on its offline data and
+      // reconnects once the network is back
+      persistUserOnConnectionFailure: true,
+    },
+    // logger: (type, msg) => console.log(type, msg)
+  });
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
   const [channelListPaginator, setChannelListPaginator] = useState<ChannelPaginator | null>(null);
@@ -83,15 +95,7 @@ export const useChatClient = () => {
   const loginUser = async (config: LoginConfig) => {
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
-    const client = StreamChat.getInstance(config.apiKey, {
-      client: {
-        axiosRequestConfig: { timeout: 6000 },
-        // keeps the user when connecting fails offline, so the app opens on its offline data and
-        // reconnects once the network is back
-        persistUserOnConnectionFailure: true,
-      },
-      // logger: (type, msg) => console.log(type, msg)
-    });
+    const client = getChatClient(config.apiKey);
 
     // Declarative configuration for the instances the SDK builds for us. Registered here, at the
     // client-creation site, rather than from a component effect: some configuration is read once when
@@ -214,7 +218,18 @@ export const useChatClient = () => {
         );
 
         if (config) {
-          await loginUser(config);
+          const client = getChatClient(config.apiKey);
+          // The client is still connected as this user when the app mounts again on a running
+          // JS context (on Android, back on the root screen closes the activity but keeps the
+          // process). We do not want to login again in that case.
+          if (client.userID === config.userId) {
+            setChannelListPaginator(
+              client.channelManager.paginators.find((p) => p.id === 'channel-list') ?? null,
+            );
+            setChatClient(client);
+          } else {
+            await loginUser(config);
+          }
         }
       }
     } catch (e) {
