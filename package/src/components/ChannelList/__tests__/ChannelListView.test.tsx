@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { FlatList } from 'react-native';
+
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { ChannelPaginator } from 'stream-chat';
 import type { Channel, ChannelPaginatorOptions, StreamChat, UserResponse } from 'stream-chat';
 
@@ -124,6 +126,49 @@ describe('ChannelListView', () => {
     await waitFor(() => {
       expect(getByTestId('loading-error')).toBeTruthy();
     });
+  });
+
+  it('loads the next page every time the end is reached', () => {
+    const loadNextPage = jest.fn();
+    const Listing = ({ channels = null }: { channels?: Channel[] | null }) => (
+      <Chat client={chatClient}>
+        <ChannelsProvider
+          value={
+            {
+              additionalFlatListProps: {},
+              loadMoreThreshold: 0.1,
+              loadNextPage,
+              maxUnreadCount: 255,
+              numberOfSkeletons: 8,
+              refreshList: noop,
+              reloadList: noop,
+              setFlatListRef: noop,
+            } as unknown as ChannelsContextValue
+          }
+        >
+          <ChannelListView
+            channelListInitialized={channels !== null}
+            channels={channels}
+            hasNextPage={true}
+            loadingChannels={channels === null}
+            loadingNextPage={false}
+            refreshing={false}
+          />
+        </ChannelsProvider>
+      </Chat>
+    );
+
+    const { rerender, UNSAFE_getByType } = render(<Listing />);
+    const reachEnd = () =>
+      act(() => UNSAFE_getByType(FlatList).props.onEndReached({ distanceFromEnd: 0 }));
+    // An empty list reaches its end as soon as it mounts.
+    reachEnd();
+
+    rerender(<Listing channels={defaultChannels} />);
+    reachEnd();
+    // Reaching the end again within the same drag, after a page has arrived, loads the next one too.
+    reachEnd();
+    expect(loadNextPage).toHaveBeenCalledTimes(3);
   });
 
   it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {
