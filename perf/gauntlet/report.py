@@ -29,6 +29,9 @@ from collections import defaultdict
 
 EVENT_PREFIXES = ('ch_', 'composer_', 'thread_reply_event', 'list_')
 SIDES = ('base', 'head')
+# For runs with more than two sides (run3.sh), GAUNTLET_COMPARE=<side>:<side> picks the pair to report: the
+# first is shown as "base", the second as "head", and sessions of any other side are skipped.
+COMPARE = os.environ.get('GAUNTLET_COMPARE')
 
 
 def sessions(args):
@@ -59,6 +62,11 @@ def load(dirs, keep_batches=False):
     per_session = {s: [] for s in SIDES}
     for d in dirs:
         side = meta(d)['side']
+        if COMPARE:
+            pair = COMPARE.split(':')
+            if side not in pair:
+                continue
+            side = SIDES[pair.index(side)]
         ws = json.load(open(os.path.join(d, 'windows.json')))
         per_session[side].append(ws)
         for w in ws:
@@ -249,6 +257,7 @@ if __name__ == '__main__':
         mode_diff(sessions(rest[1:]), rest[0])
     elif mode == 'ci':
         mode_ci(sessions(rest), [('open_channel_flat', 'x_open_flat'), ('scroll_flat', 'x_scroll_flat'),
-                                 ('open_channel_flash',), ('scroll_flash',), ('cold_start',)])
+                                 ('open_channel_flash', 'x_open_flash'), ('scroll_flash', 'x_scroll_flash'),
+                                 ('cold_start',)])
     else:
         {'main': mode_main, 'lists': mode_lists, 'comps': mode_comps}[mode](sessions(rest))
