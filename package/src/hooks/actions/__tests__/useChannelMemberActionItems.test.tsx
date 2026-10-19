@@ -1,10 +1,10 @@
 import React, { PropsWithChildren } from 'react';
 import { Alert } from 'react-native';
 
+import { StateStore } from '@stream-io/state-store';
 import { renderHook } from '@testing-library/react-native';
 import type { Channel, ChannelMemberResponse, UserMuteResponse } from 'stream-chat';
 
-import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { defaultIcons } from '../../../contexts/componentsContext/defaultComponents';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
@@ -61,7 +61,6 @@ describe('useChannelMemberActionItems', () => {
           t: (value: string, d?: unknown) => (typeof d === 'string' ? d : value),
         }) as unknown as TranslationContextValue,
     );
-    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
     jest.spyOn(useUserActionsModule, 'useUserActions').mockReturnValue(userActions);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
     jest.spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities').mockReturnValue([]);
@@ -95,14 +94,14 @@ describe('useChannelMemberActionItems', () => {
   });
 
   it('toggles muteUser to unmuteUser when the member is already muted', () => {
-    jest
-      .spyOn(useMutedUsersModule, 'useMutedUsers')
-      .mockReturnValue([
+    const mutedUsersStore = new StateStore<{ mutedUsers: UserMuteResponse[] }>({
+      mutedUsers: [
         { target: { id: 'target-user-id' }, user: { id: 'current-user-id' } },
-      ] as UserMuteResponse[]);
+      ] as UserMuteResponse[],
+    });
 
     const wrapper = ({ children }: PropsWithChildren) => (
-      <ChatProvider value={{ client: { userID: 'current-user-id' } } as never}>
+      <ChatProvider value={{ client: { mutedUsersStore, userID: 'current-user-id' } } as never}>
         {children}
       </ChatProvider>
     );
