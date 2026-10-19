@@ -245,7 +245,7 @@ export const useCreateMessageActionHandlers = ({
     const isPinned = !!message.pinned;
     try {
       if (!isPinned) {
-        await client.pinMessage(message, null);
+        await client.pinMessage(message);
         addNotification({
           message: t('message.pinned.text', 'Message pinned'),
           options: { severity: 'success', type: 'api:message:pin:success' },
@@ -296,7 +296,7 @@ export const useCreateMessageActionHandlers = ({
         {
           onPress: async () => {
             try {
-              await client.moderation.flagMessage(message.id);
+              await client.moderation.flagMessage({ message_id: message.id });
               addNotification({
                 message: t('message.flagged.text', 'Message has been successfully flagged'),
                 options: { severity: 'success', type: 'api:message:flag:success' },

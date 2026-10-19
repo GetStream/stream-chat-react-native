@@ -89,7 +89,7 @@ describe('useCreateMessageActionHandlers notifications', () => {
       await result.current.handleTogglePinMessage();
     });
 
-    expect(client.pinMessage).toHaveBeenCalledWith(message, null);
+    expect(client.pinMessage).toHaveBeenCalledWith(message);
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: 'Message pinned',
       options: {
