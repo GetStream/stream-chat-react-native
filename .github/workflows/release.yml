@@ -8,6 +8,11 @@ on:
   # Manual runs cut pre-release (RC) builds from the branch that defines them. GitHub reads this
   # trigger from the default branch, so it has to live here even though develop never uses it.
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: compute the release version, publish nothing'
+        type: boolean
+        default: true
 
 permissions:
   id-token: write # for OIDC / npm provenance if you use it
@@ -65,6 +70,8 @@ jobs:
       - name: Publish RC Release (V10)
         if: github.ref == 'refs/heads/V10'
         run: yarn release-next
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
 
       - name: Publish Release (main)
         if: github.ref == 'refs/heads/main'

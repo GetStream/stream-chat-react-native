@@ -3,7 +3,7 @@ const semanticRelease = require('semantic-release').default;
 
 const configPromise = require('./release.config.js');
 
-const dryRun = false;
+const dryRun = process.env.DRY_RUN === 'true';
 
 configPromise.then((config) => {
   return semanticRelease({
