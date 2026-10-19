@@ -29,6 +29,8 @@ LABEL=
 win() { LABEL=$1; A shell dumpsys gfxinfo $P reset >/dev/null; A shell sh /data/local/tmp/devmark.sh S "$LABEL" $P; }
 endwin() { A shell sh /data/local/tmp/devmark.sh E "$LABEL" $P; A shell dumpsys gfxinfo $P > "$OUT/gfx/$LABEL.txt"; }
 settle() { sleep "${1:-2}"; }
+# result snapshot (UI texts + screenshot) for the correctness read-out; only ever between windows
+snap() { mkdir -p "$OUT/snap"; U dump > "$OUT/snap/$1.txt" 2>&1; U shot "$OUT/snap/$1.png" >/dev/null 2>&1; }
 back() { A shell input keyevent 4; }
 hide_kb() { A shell dumpsys input_method | grep -q 'mInputShown=true' && back; return 0; }
 findre() { python3 "$B/find.py" $S "$1"; }
@@ -57,7 +59,7 @@ set_list_impl() { # FlatList|FlashList
 
 # logcat for the whole session
 A logcat -c; A logcat -G 16M >/dev/null
-adb -s $S logcat -v epoch -s ReactNativeJS:V PERFMARK:V > "$OUT/logcat.txt" &
+adb -s $S logcat -v epoch -s ReactNativeJS:V PERFMARK:V AndroidRuntime:E > "$OUT/logcat.txt" &
 LC=$!
 trap 'kill $LC 2>/dev/null' EXIT
 A push "$B/devmark.sh" /data/local/tmp/devmark.sh >/dev/null
@@ -98,6 +100,7 @@ if has cold; then
     on_list || U wait-id channel-list-view 30
     sleep 6
   done
+  snap list-after-cold-start
 fi
 
 if has list; then
@@ -115,6 +118,7 @@ if has list; then
     win "list_presence_on#$i"; act "online?user=bench_dan" >/dev/null; settle 4; endwin; sleep 2
     win "list_presence_off#$i"; act "offline?user=bench_dan" >/dev/null; settle 4; endwin; sleep 2
   done
+  sleep 2; snap list-after-events
 fi
 
 # Channel-screen phase for one list implementation: open/close, live events, composer, scroll, thread, menu.
@@ -155,7 +159,8 @@ for l in sys.stdin:
     if [ -n "$SEND" ]; then win "ch_own_send_$impl#$i"; A shell input tap $SEND; settle 3; endwin; else log "WARN no send button"; fi
     hide_kb; sleep 1.5
   done
-  back; sleep 2; to_list; sleep 2
+  sleep 2; snap "channel-after-events-$impl"
+  back; sleep 2; to_list; sleep 2; snap "list-after-channel-$impl"
   log "$impl scroll"
   for i in $(seq 1 $R); do
     open_channel_unmeasured "Bench Mount"; sleep 4
@@ -182,6 +187,7 @@ for l in sys.stdin:
     if [ $i -le 3 ]; then
       win "thread_reply_event_$impl#$i"; act "reply?cid=$MOUNT_CID&parent=$PARENT&user=bench_ana&text=bench-reply-$impl-$i" >/dev/null; settle 3; endwin
     fi
+    [ $i = 3 ] && { sleep 1; snap "thread-after-replies-$impl"; }
     sleep 1
     win "thread_close_$impl#$i"; back; settle 3; endwin
     back; sleep 2; to_list; sleep 1
@@ -221,6 +227,23 @@ if has rowcost; then
     win "x_scroll_flat#$i"; scroll_up_n 6; settle 2; endwin
     back; sleep 2; to_list; sleep 1
   done
+fi
+
+# The same extra samples on FlashList: switch, warm the list the way the flash phase does, then measure.
+if has rowcostflash; then
+  set_list_impl FlashList
+  open_channel_unmeasured "Bench Mount" && { sleep 4; scroll_up_n 8; back; sleep 2; }
+  to_list; sleep 2
+  for i in $(seq 1 $R); do
+    log "rowcost flash #$i"
+    xy=$(row_xy "Bench Mount"); sleep 2
+    win "x_open_flash#$i"; A shell input tap $xy; settle 6; endwin
+    U has-id message-flat-list || { log "WARN x_open_flash#$i: list not visible"; to_list; continue; }
+    sleep 1
+    win "x_scroll_flash#$i"; scroll_up_n 6; settle 2; endwin
+    back; sleep 2; to_list; sleep 1
+  done
+  set_list_impl FlatList
 fi
 
 # Diagnostic: open the channel, open and close the 40-reply thread (diag builds log areEqual results).

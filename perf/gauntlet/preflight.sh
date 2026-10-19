@@ -24,6 +24,11 @@ q=$(pgrep -f qemu-system | head -1)
 if [ -n "$q" ]; then
   nice=$(ps -o nice= -p "$q" | tr -d ' ')
   [ "$nice" = 0 ] || { echo "preflight: emulator runs at nice $nice (start it from the user's Terminal panel)"; exit 1; }
+  # App Nap: a windowed emulator whose window is hidden or occluded runs every thread at background QoS
+  # (priority 4), several times slower, even at nice 0. A headless emulator (-no-window) is never napped.
+  bg=$(ps -M -p "$q" | awk 'NR>1' | grep -cE ' [RSU] +4[A-Z]? ')
+  all=$(ps -M -p "$q" | awk 'NR>1' | grep -cE ' [RSU] +[0-9]+[A-Z]? ')
+  [ "$bg" -lt $((all / 2)) ] || { echo "preflight: $bg of $all emulator threads run at background priority (App Nap): restart it with -no-window"; exit 1; }
 fi
 # Host memory: compressed or swapped emulator RAM makes memory-heavy work (React) several x slower while
 # CPU loops look normal. Require host free memory >= 20% and < 512 MB of the emulator compressed.

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 // RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
 import { FlatList, StyleSheet, View } from 'react-native';
@@ -96,7 +96,6 @@ const renderItem = ({ item }: { item: Channel }) => <ChannelPreview channel={ite
 const keyExtractor = (item: Channel) => item.cid;
 
 const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
-  const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
     channelListInitialized,
@@ -120,24 +119,11 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     ChannelListLoadingIndicator: LoadingIndicator,
   } = useComponentsContext();
 
-  /**
-   * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
-   * we set the loading state one cycle behind to ensure the channels are set before the
-   * change to loadingChannels is registered.
-   */
-  const [loading, setLoading] = useState(true);
   const styles = useStyles();
 
-  useEffect(() => {
-    if (!!loadingChannels !== loading) {
-      setLoading(!!loadingChannels);
-    }
-  }, [loading, loadingChannels]);
-
   const onEndReached = useStableCallback(() => {
-    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
+    if (hasNextPage) {
       loadNextPage();
-      onEndReachedCalledDuringCurrentScrollRef.current = true;
     }
   });
 
@@ -159,13 +145,12 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
         data={channels ?? undefined}
         keyExtractor={keyExtractor}
         ListEmptyComponent={
-          loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
+          loadingChannels ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
         }
         ListFooterComponent={loadingNextPage ? <ChannelListFooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
-        onMomentumScrollBegin={() => (onEndReachedCalledDuringCurrentScrollRef.current = false)}
         onRefresh={refreshList}
         ref={setFlatListRef}
         refreshing={refreshing}

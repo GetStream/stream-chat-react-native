@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useContext } from 'react';
 import { Alert, Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Stack, useRouter } from 'expo-router';
@@ -10,12 +10,6 @@ import { AppContext } from '../context/AppContext';
 
 import { useUserContext } from '@/context/UserContext';
 import { getInitialsOfName } from '@/utils/getInitialsOfName';
-
-const baseOptions = {
-  predefined_filter: 'basic_channel_list_filter',
-  state: true,
-  watch: true,
-};
 
 const LogoutButton = () => {
   const { logOut, user } = useUserContext();
@@ -50,31 +44,22 @@ const LogoutButton = () => {
 const renderLogoutButton = () => <LogoutButton />;
 
 export default function ChannelListScreen() {
-  const { user } = useUserContext();
-  const userId = user?.id || '';
-  const options = useMemo(
-    () => ({
-      ...baseOptions,
-      filter_values: {
-        user_id: userId,
-      },
-    }),
-    [userId],
-  );
   const router = useRouter();
-  const { setChannel } = useContext(AppContext);
+  const { channelListPaginator, setChannel } = useContext(AppContext);
 
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: 'Channel List Screen', headerLeft: renderLogoutButton }} />
 
-      <ChannelList
-        onSelect={(channel) => {
-          setChannel(channel);
-          router.push(`/channel/${channel.cid}`);
-        }}
-        options={options}
-      />
+      {channelListPaginator ? (
+        <ChannelList
+          onSelect={(channel) => {
+            setChannel(channel);
+            router.push(`/channel/${channel.cid}`);
+          }}
+          paginator={channelListPaginator}
+        />
+      ) : null}
     </View>
   );
 }

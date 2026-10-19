@@ -109,6 +109,7 @@ rg '\b(sendMessage|SendMessageDisallowedIndicator)\b' src/
 rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|ChannelListEventHandler|useChannelUpdated|queryChannelsOverride)\b' src/
 rg 'useChatContext\(\)' -A6 src/ | rg '\bchannelManager\b'
 rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
+rg '<ChannelList\b' -A15 src/ | rg '\b(filters|sort|options|lockChannelOrder|queryChannelsOverride)\b'
 
 # §L — connection recovery moved into the client
 rg '\b(recoverState|recoverStateOnReconnect|preventThreadCleanup)\b' src/
@@ -186,8 +187,9 @@ means changed. Details in the linked section.
 | initial message-list page size ~100 | 25 — override via `channel.messagePaginator.pageSize` | §16.1 |
 | `sendMessage` errors swallowed | `sendMessage` throws — handle the rejection | §16.2 |
 | `stream-chat` v9 | `stream-chat` `^10.x` required | §17 |
-| `<ChannelList onNewMessage / onAddedToChannel / …>` event callbacks | `client.channelManager.addEventHandler(...)` / `client.on(...)`; membership+order via `filters`/`sort` | §18 |
-| `queryChannelsOverride` returning `Channel[]` | now the paginator `doRequest` → `return { items }` | §18.1 |
+| `<ChannelList onNewMessage / onAddedToChannel / …>` event callbacks | `client.channelManager.addEventHandler(...)` / `client.on(...)`; membership+order via the paginator's `filters`/`sort` | §18 |
+| `<ChannelList filters sort options lockChannelOrder>` | `<ChannelList paginator>` with an app-owned `ChannelPaginator` registered on `client.channelManager` | §18.6 |
+| `queryChannelsOverride` returning `Channel[]` | removed - the paginator's `paginatorOptions.doRequest` → `return { items }` | §18.1 |
 | `useChannelUpdated()` | removed — `channel.updated` is handled by the orchestrator | §18.2 |
 | `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
 | `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
@@ -1042,8 +1044,8 @@ the key names.
   and `messageOperations`. Register the value, or use a setup function.
 - **`X.config` is `Readonly`.** Assigning to a field is a compile error; nested writes
   throw at runtime because the defaults are deep-frozen. Use `updateConfig()`.
-- **`<ChannelList>`'s `lockChannelOrder` and `queryChannelsOverride` stay props.** There is
-  no configuration key that reaches a channel-list paginator, so these are unchanged.
+- **No configuration key reaches a channel-list paginator.** `lockItemOrder` and `doRequest` live on
+  the app-owned `ChannelPaginator` (§18.6): set them in its constructor or with `updateConfig()`.
 
 ---
 
@@ -1402,8 +1404,8 @@ already writes it from `enableOfflineSupport`. To set it yourself, use
 # Part J — `ChannelList` & `ChannelManager` (orchestrator)
 
 `<ChannelList>` now runs on `stream-chat` v10's client-owned orchestrator: `client.channelManager`
-(one instance per client) plus one `ChannelPaginator` per list. The list is a **deterministic
-projection of its `filters` + `sort`** — every query (initial load, pagination, pull-to-refresh,
+(one instance per client) plus one `ChannelPaginator` per list, which the app creates and registers
+(§18.6). The list is a **deterministic projection of its paginator's `filters` + `sort`** — every query (initial load, pagination, pull-to-refresh,
 reconnect) re-asserts them, so the list can no longer silently drift from, or be forced to
 contradict, its own query. Most of the removed API below existed to make the list disagree with its
 query; that is intentionally gone (a footgun removed). What you actually need is served by `filters`,
@@ -1424,7 +1426,7 @@ expressible declaratively. Map what each override did to its v10 equivalent:
 | The override did… | v10 |
 |---|---|
 | decide membership (keep/drop a channel) | `filters` — the query is the source of truth |
-| decide order | `sort` (+ `lockChannelOrder` to freeze order across events) |
+| decide order | `sort` (+ `paginatorOptions.lockItemOrder` to freeze order across events) |
 | filter what renders without changing the query | `channelRenderFilterFn` (unchanged prop) |
 | briefly float a channel to the top | `paginator.boost(cid, { ttlMs })` (survives queries) |
 | genuinely global event handling (new event type, SDK-bug hotfix, side effect) | `client.channelManager.addEventHandler(...)` or `client.on(...)` |
@@ -1447,20 +1449,28 @@ const unsubscribe = client.channelManager.addEventHandler({
 > restored the default — clobbering a still-mounted sibling. Global handlers belong on
 > `client.channelManager`; per-list shaping stays in each list's `filters` / `sort`.
 
-## 18.1 `queryChannelsOverride` retyped
+## 18.1 `queryChannelsOverride` removed → `paginatorOptions.doRequest`
 
-Still a prop, but it is now the paginator's `doRequest` rather than a `Channel[]`-returning function.
-It receives the query params the paginator would have sent and must return `{ items }` — call
-`client.queryChannels(...)` inside so client state stays in sync:
+The prop is gone with the other query props (§18.6). Its replacement is the paginator's `doRequest`,
+which receives the query params the paginator would have sent and must return `{ items }`, not a
+`Channel[]`. Call `client.queryChannels(...)` inside so client state stays in sync:
 
 ```tsx
-// v9: queryChannelsOverride = (filters, sort, options) => Promise<Channel[]>
+// v9: <ChannelList queryChannelsOverride={(filters, sort, options) => Promise<Channel[]>} />
 // v10:
-queryChannelsOverride={async (queryParams) => {
-  const items = await client.queryChannels(queryParams);
-  return { items };
-}}
+const paginator = new ChannelPaginator({
+  client,
+  id: 'channels:main',
+  paginatorOptions: {
+    doRequest: async (queryParams) => {
+      const items = await client.queryChannels(queryParams);
+      return { items };
+    },
+  },
+});
 ```
+
+To swap it at runtime, call `paginator.updateConfig({ doRequest })`.
 
 ## 18.2 `useChannelUpdated` removed
 
@@ -1508,6 +1518,59 @@ Configure the shared manager through its own API (`client.channelManager.setEven
   channel that was never watched, or that you explicitly `stopWatching()`d, stays unwatched, so the
   client's watch count can never exceed what it already had, and blanket auto-watch never risks the
   watch limit. To watch a specific channel yourself, call `channel.watch()`.
+
+## 18.6 `<ChannelList>` takes an app-owned `paginator` (breaking)
+
+`<ChannelList>` no longer creates its own `ChannelPaginator`. The app creates one, registers it on
+`client.channelManager` and passes it as the required `paginator` prop. The props that configured the
+SDK-created paginator are removed:
+
+| Removed prop | On the app's `ChannelPaginator` |
+|---|---|
+| `filters` | `new ChannelPaginator({ filters })`, later `paginator.staticFilters = …` |
+| `sort` | `new ChannelPaginator({ sort })`, later `paginator.sort = …` |
+| `options` | `requestOptions` (`state`, `watch`, `presence`, `message_limit`, `predefined_filter`, `filter_values`, …); `options.limit` → `paginatorOptions.pageSize` |
+| `lockChannelOrder` | `paginatorOptions.lockItemOrder`, later `paginator.updateConfig({ lockItemOrder })` |
+| `queryChannelsOverride` | `paginatorOptions.doRequest` (§18.1) |
+
+```tsx
+// v9
+<ChannelList filters={filters} sort={sort} options={options} onSelect={onSelect} />
+
+// v10, next to `connectUser`: one paginator per connected user
+const paginator = new ChannelPaginator({
+  client,
+  filters,
+  id: 'channel-list',
+  requestOptions: options,
+  sort,
+});
+client.channelManager.insertPaginator({ paginator });
+await client.connectUser(user, token);
+
+<ChannelList onSelect={onSelect} paginator={paginator} />;
+
+// on logout
+client.channelManager.removePaginator(paginator);
+paginator.dispose();
+await client.disconnectUser();
+```
+
+Behaviour:
+
+- **Registration is the app's job.** A paginator that is not inserted into `client.channelManager`
+  loads, but receives no events, so the list does not update live.
+- **The list loads the paginator's first page only when it has none** - on first mount, after
+  `client.disconnectUser()` resets it, or when a different paginator is passed. A list that mounts
+  again with the same paginator shows its channels without a query.
+- **The list never removes or disposes the paginator.** Create it with the user, not in the list's
+  screen, so the list keeps its channels when the screen unmounts (for example while search results
+  replace it). Remove and dispose it on logout: `client.disconnectUser()` empties the registered
+  lists but keeps them registered.
+- **Changing the query is a paginator change.** Either set `staticFilters` / `sort` / `options` on it
+  and call `paginator.reload()`, or create a new paginator with a new `id` and pass that instead. A
+  prop change no longer re-queries by itself.
+- **Use a unique `id` per list.** The manager keys its lists by it.
 
 ---
 
@@ -2155,19 +2218,19 @@ The `SyncStatus` name family deliberately stays: `onSyncStatusChange`,
 `ChannelPaginator` treated `sort` with `??`, which does not catch `[]`. An empty array is now read as
 "unspecified" and resolves to `DEFAULT_BACKEND_SORT` — `[{ last_message_at: -1 }, { updated_at: -1 }]`.
 
-`<ChannelList>` ships `DEFAULT_SORT = []`, so **this is the default integrator experience**, offline
-support or not. Before, the comparator was built from zero sort fields: every comparison tied, the cid
+A `ChannelPaginator` created without `sort` gets `[]`, so **this is the default integrator experience**,
+offline support or not. Before, the comparator was built from zero sort fields: every comparison tied, the cid
 tiebreaker decided, and the list held server order until the first live ingest re-sorted the whole
 window alphabetically by cid. Now such a list is ordered by recency and reorders live.
 
-Visible delta for a list with no `sort` prop:
+Visible delta for a list whose paginator has no `sort`:
 
 - a new message **moves its channel to the top**, where previously nothing moved
 - the alphabetical-by-cid collapse on the first ingest is gone
 - `paginator.sort` returns `DEFAULT_BACKEND_SORT` rather than the `[]` you passed, so an assertion of
   `toStrictEqual([])` on it fails
 
-**→** nothing to do if recency is what you wanted. Pass an explicit `sort` to `<ChannelList>` to pin a
+**→** nothing to do if recency is what you wanted. Pass an explicit `sort` to the `ChannelPaginator` to pin a
 different order — including a `pinned_at`-first sort if you want pinned channels to stay on top, which
 the backend default does not do. Note that "sort by nothing" is not expressible and never was: the
 server applies its own default whenever a request carries no sort, so honouring `[]` client-side could
