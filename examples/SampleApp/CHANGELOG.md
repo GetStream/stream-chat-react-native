@@ -1,5 +1,11 @@
 # Change Log
 
+## [4.16.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.0...sampleapp@v4.16.1) (2026-10-19)
+
+### Refactors
+
+* rn 0.88 and expo 58 upgrade ([#3864](https://github.com/GetStream/stream-chat-react-native/issues/3864)) ([42662cd](https://github.com/GetStream/stream-chat-react-native/commit/42662cdb1fce74776a534204e75ca36b5d9b7360))
+
 ## [4.16.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.15.3...sampleapp@v4.16.0) (2026-10-14)
 
 ### Features
