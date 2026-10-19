@@ -106,7 +106,7 @@ rg '\b(useMessageActions|useMessageActionHandlers)\(\s*\{|\bMessageActionsHookPr
 rg '\b(sendMessage|SendMessageDisallowedIndicator)\b' src/
 
 # §18 — ChannelList event-override props + channelManager (orchestrator)
-rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|ChannelListEventHandler|useChannelUpdated|queryChannelsOverride)\b' src/
+rg '\b(onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|useChannelUpdated|queryChannelsOverride|createChannelManager)\b' src/
 rg 'useChatContext\(\)' -A6 src/ | rg '\bchannelManager\b'
 rg '<Chat\b' -A10 src/ | rg '\bchannelManager\b'
 rg '<ChannelList\b' -A15 src/ | rg '\b(filters|sort|options|lockChannelOrder|queryChannelsOverride)\b'
@@ -126,8 +126,46 @@ rg '\bchannel\.data\.(member_count|own_capabilities)\s*=' src/
 # §19 — i18n: keys, the Streami18n API, and the a11y namespace
 rg '\bStreami18n\b|registerTranslation|translationsForLanguage|setLanguage|getTranslators' src/
 rg "t\(\s*'a11y/|'[A-Z][a-z]+ [a-z]" src/          # v9 keys WERE the English copy
-rg '\b(enTranslations|deTranslations|frTranslations|esTranslations|itTranslations|nlTranslations|ptBrTranslations|ruTranslations|trTranslations|jaTranslations|koTranslations|hiTranslations|heTranslations|arTranslations)\b' src/
+rg '\b(enTranslations|esTranslations|frTranslations|heTranslations|hiTranslations|itTranslations|jaTranslations|koTranslations|nlTranslations|ptBRTranslations|ruTranslations|trTranslations)\b' src/
 rg 'getDateString|getDateStringForA11y' -A4 src/ | rg '\bdate:'
+
+# §R.1 — platform floors and packaging (also check package.json: react-native >=0.79, expo >=53)
+rg "from 'stream-chat'" src/ | rg '\b(StateStore|Unsubscribe)\b'
+
+# §R.2 — connection status off ChatContext
+rg '\b(isOnline|connectionRecovering)\b' src/
+
+# §R.3 — delivery receipts
+rg '\b(readBy|deliveredToCount)\b' src/
+
+# §R.4 — more removed / retyped context fields and props
+rg '\b(maximumMessageLimit|uploadAbortControllerRef|doFileUploadRequest|threadInstance|forceUpdate|useCreateMessageContext|InlineLoadingMoreIndicator|InlineLoadingMoreRecentIndicator|LoadingErrorIndicator|CommandSuggestionItem)\b' src/
+rg '\bAIStates\.\w+\s*\]\.includes\b' src/
+
+# §R.5 — <Channel> / <Thread> behaviour
+rg '\b(initializeOnMount|isLocalUnreadCountEnabled|supersededBy|UnreadMessagesNotification)\b' src/
+
+# §R.6 — channel list query
+rg '<ChannelList\b' -A12 src/ | rg '\b(filters|options|offset)\b'
+
+# §R.7 — stream-chat state read directly
+rg 'channel\.state\.(messages|latestMessages|messageSets|threads|pinnedMessages|isUpToDate|findMessage|loadMessageIntoState|addMessageSorted|mutedUsers)\b' src/
+rg '\.lastMessage\(\)|\b(activeChannels|hydrateActiveChannels|threadsById)\b' src/
+rg 'client\.threads\.(state|loadNextPage)\b|thread\.(loadNextPage|loadPrevPage|queryReplies)\b|thread\.state\b' src/
+
+# §R.8 — stream-chat client calls
+rg '\b(addDevice|getDevices|removeDevice|setLocalDevice|queryChannels|queryUsers|queryMembers|muteUser|unmuteUser|flagMessage|flagUser|banUser|shadowBan|upsertReminder|createReminder|stopLiveLocationSharing|sendEvent|ErrorFromResponse|ai_generated)\b' src/
+rg 'client\.channel\(' -A3 src/ | rg '\b(name|members)\b'
+
+# §R.9 — offline DB contract (custom offline code only)
+rg '\b(getChannelsForQuery|handleOfflineFailedUpdateMessagePendingTask|mergeFailedMessageUpdateIntoPendingSendMessage|deleteMessagesForChannel|OfflineStoreApis)\b|SqliteClient\.logger' src/
+
+# §R.10 — i18n gaps
+rg '\b(geti18Instance|getAvailableLanguages|getTranslations|addOnTFunctionOverrideListener|userLanguage|isDayOrMoment|SCROLL_TO_BOTTOM_\w+)\b' src/
+rg 'Location end at|Remind Me|ReminderNotification|MessageEditedTimestamp' src/
+
+# §R.11 — deep imports
+rg "stream-chat-react-native(-core)?/(src|lib)/" src/
 ```
 
 ---
@@ -146,7 +184,7 @@ means changed. Details in the linked section.
 | …`.loadMore()` / `.loadMoreRecent()` | `channel.messagePaginator.toTail()` / `.toHead()` | §3 |
 | …`.loadLatestMessages()` | `channel.messagePaginator.jumpToTheLatestMessage()` | §3 |
 | `useChannelContext().members` / `read` / `watchers` / `watcherCount` | `useStateStore(channel.state, selector)` (one store; selector picks the slice) | §4 |
-| `useChannelContext().markRead()` | `useMarkRead(channel)()` — or `channel.markRead()` | §5 |
+| `useChannelContext().markRead()` | `useMarkRead(channel)()` — or `channel.markReadViaReporter()` (`channel.markRead()` is now the direct request) | §5 |
 | `<Channel doMarkReadRequest>` | `client.config.set({ channel: { requestHandlers: { markReadRequest } } })` | §13.1 |
 | `<Channel doUpdateMessageRequest>` | `…{ requestHandlers: { updateMessageRequest } }` | §13.1 |
 | `<Channel doSendMessageRequest>` | `…{ requestHandlers: { sendMessageRequest } }` (retry: `retrySendMessageRequest`) | §13.1 |
@@ -163,7 +201,7 @@ means changed. Details in the linked section.
 | `useTargetedMessage()` / `setTargetedMessage(id)` | `useMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
 | `<ScrollToBottomButton unreadCount={n} />` | self-derived from `channel.state` `read` (override the component to control) | §7 |
-| app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.activeChannels` | §7.1 |
+| app-wide unread from `event.total_unread_count` | sum `channel.countUnread()` over `client.channelManager.values()` | §7.1 |
 | `useMessagesContext()` → `sendReaction` / `deleteReaction` / `deleteMessage` / `removeMessage` / `retrySendMessage` / `updateMessage` | `useMessageOperations()` (same names) | §9 |
 | `useMessagesContext().targetedMessage` | `useIsTargetedMessage(messageId)` (per row) | §6 |
 | `useThreadContext().thread` (parent message) | `thread` is now the `Thread`; parent via `useStateStore(thread.state, s => ({ parentMessage: s.parentMessage }))` | §10 |
@@ -176,30 +214,30 @@ means changed. Details in the linked section.
 | `<Channel thread={thread} threadList><Thread /></Channel>` | `<Thread thread={thread}><MessageList /><MessageComposer /></Thread>`, no `<Channel>` around it | §10.1 |
 | `threadList` (prop or context field) | `useThreadContext().thread` | §10.2 |
 | `ThreadMessageComposer` slot / `additionalMessageInputProps` | a `MessageComposer` child of `<Thread>` with its own props | §10.2 |
-| `useMessageComposerContext().thread` (parent message) | `thread` is now the `Thread`; parent on `thread.state` | §10.2 |
+| `useMessageComposerContext().thread` (parent message; deep import only) | `thread` is now the `Thread`; parent on `thread.state` | §10.2 |
 | `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
-| `<MessageList thread / targetedMessage / loadMoreThread …>` props | removed — list reads the `Thread` from `ThreadContext` + paginator internally | §12 |
+| `<MessageList targetedMessage / loadMoreThread / threadInstance …>` props | removed — list reads the `Thread` from `ThreadContext` + paginator internally; `thread` stays, retyped to `Thread \| null` | §12 |
 | custom `FooterComponent` / `HeaderComponent` reading `loadingMore` from context | receive `{ loadingMore?: boolean }` as a prop | §12.1 |
 | `<Channel messages / loadingMore / threadMessages / setThreadMessages …>` props | removed — state lives in the paginator | §13 |
 | `useMutedUsers(channel)` | `useMutedUsers()` | §14 |
 | `useCreateTypingContext` / `useCreatePaginatedMessageListContext` | removed (their contexts are gone) | §15 |
 | `useMessageActions({ channel, client, message, … })` / `useMessageActionHandlers({ … })` | `useMessageActions()` / `useMessageActionHandlers()` inside a message; `MessageActionsHookProps` removed | §15.1 |
-| initial message-list page size ~100 | 25 — override via `channel.messagePaginator.pageSize` | §16.1 |
+| initial message-list page size ~100 | 25 — `<Channel>`'s default when no `pageSize` is registered through `client.config` | §16.1 |
 | `sendMessage` errors swallowed | `sendMessage` throws — handle the rejection | §16.2 |
 | `stream-chat` v9 | `stream-chat` `^10.x` required | §17 |
 | `<ChannelList onNewMessage / onAddedToChannel / …>` event callbacks | `client.channelManager.addEventHandler(...)` / `client.on(...)`; membership+order via the paginator's `filters`/`sort` | §18 |
 | `<ChannelList filters sort options lockChannelOrder>` | `<ChannelList paginator>` with an app-owned `ChannelPaginator` registered on `client.channelManager` | §18.6 |
 | `queryChannelsOverride` returning `Channel[]` | removed - the paginator's `paginatorOptions.doRequest` → `return { items }` | §18.1 |
 | `useChannelUpdated()` | removed — `channel.updated` is handled by the orchestrator | §18.2 |
-| `loadNextPage(filters, sort, options)` | `loadNextPage()` (no args) | §18.3 |
-| `<Chat channelManager={…}>` / `useChatContext().channelManager` | `client.channelManager` | §18.4 |
+| `loadNextPage(queryType?, retryCount?)` | `loadNextPage()` (no args; a no-op until the first page has loaded) | §18.3 |
+| `client.createChannelManager(…)` | `client.channelManager` — one per client | §18.4 |
 | `client.recoverState()` | `client.connectionRecovery.recover()` | §L.6 |
 | `useChannelContext().error` | `useStateStore((thread ?? channel).messagePaginator.state, sel).lastQueryError` | §L.7 |
 | `<Channel>` refreshing the channel / open thread on reconnect | `client.connectionRecovery`; `<Channel>` only marks them active | §L.4 |
-| a custom channel/thread view built on the contexts | call `channel.activate()` / `thread.activate()`, balanced with `deactivate()`, or recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
+| a custom channel/thread view built on the contexts | `useEffect(() => channel.activate(), [channel])` (same for `thread.activate()`) — `activate()` returns its release function; there is no `deactivate()`. Without it recovery cannot see them (`<Channel>` and `<Thread>` do it for you) | §L.4 |
 | `new StreamChat(key, { recoverStateOnReconnect: false })` | `client.config.set({ client: { connectionRecovery: { enabled: false } } })` | §L.1 |
 | `new StreamChat(key, { axiosRequestConfig, persistUserOnConnectionFailure, … })` / `useCreateChatClient({ options })` | the same fields under `client`: `new StreamChat(key, { client: { … } })` | §17.7 |
-| a `connection.changed` listener re-querying a list / re-watching a channel | delete it — `client.connectionRecovery` owns reconnect | §L |
+| a `connection.changed` listener | delete it — the event is **no longer dispatched** (it compiles and never fires). Reconnect is `client.connectionRecovery`'s job; status is `client.wsConnection.state` / `client.networkConnection.state` (`useWSConnectionState()`, `useNetworkConnectionState()`, `useSettledWSConnectionHealth()`) | §L, §R.2 |
 | `connection.recovered` as "the `_reconnect()` path fired" | now dispatched on **every** reconnect path, after the recovery reload | §L.2 |
 | `useStateStore(channel.state.readStore / typingStore / membersStore / watcherStore / ownCapabilitiesStore, sel)` | `useStateStore(channel.state, sel)` — drop the `.<X>Store`, keep the selector | §K.1 |
 | `channel.state.mutedUsersStore` | `client.mutedUsersStore` (via `useMutedUsers()`) | §K.2 |
@@ -208,8 +246,7 @@ means changed. Details in the linked section.
 | `WatcherState` type | `ChannelWatchState` (now also carries `watchStatus`) | §K.3 |
 | `t('Send Message')` — the key *was* the English copy | `t('messageInput.sendMessage.accessibilityLabel', 'Send Message')` — stable dotted key, copy inline | §19 |
 | `t('a11y/Send message')` | the `.accessibilityLabel` leaf of the owning component's key | §19 |
-| `import { deTranslations } from 'stream-chat-react-native'` | removed — English is the only bundled language; supply your own dictionary | §19 |
-| `new Streami18n('nl')` | `new Streami18n({ language: 'nl' })` — options object; the class name is unchanged | §19 |
+| `import { frTranslations } from 'stream-chat-react-native'` | removed — English is the only bundled language; supply your own dictionary | §19 |
 | `new Streami18n(opts, i18nextConfig)` | `new Streami18n({ ...opts, i18nextConfigOverrides: i18nextConfig })` | §19 |
 | `const t = await i18n.setLanguage('de')` | `await i18n.setLanguage('de')` → `void`; read `i18n.t` or subscribe to `i18n.state` | §19 |
 | `i18n.addOnLanguageChangeListener(fn)` | `i18n.state.subscribeWithSelector(({ t }) => ({ t }), fn)` | §19 |
@@ -218,6 +255,24 @@ means changed. Details in the linked section.
 | `getDateString({ date, … })` | `getDateString({ messageCreatedAt, … })`; returns `null`, not `undefined`, when unrenderable | §19 |
 | `getDateStringForA11y({ date, … })` | `getCalendarDateStringForA11y({ messageCreatedAt, … })` — same behaviour under a new name | §19 |
 | poll `state.errors.x` as an English string | a `PollComposerValidationError` — key your copy on `error.code`, fall back to `error.message` | §19 |
+| React Native 0.76–0.78 / Expo SDK 52 | React Native ≥0.79 / Expo SDK ≥53 | §R.1 |
+| `import { StateStore, Unsubscribe } from 'stream-chat'` | the same names from `@stream-io/state-store` (one copy) | §R.1 |
+| `useChatContext().isOnline` / `.connectionRecovering` | `useNetworkConnectionState()?.isOnline === false` (device) / `useSettledWSConnectionHealth()` (socket) | §R.2 |
+| `useMessageContext().readBy` / `.deliveredToCount` | `useIsMessageReadByOthers({ message })` / `useIsMessageDeliveredToOthers({ message })` | §R.3 |
+| `<MessageStatus readBy={n} deliveredToCount={n} />` | `<MessageStatus read={bool} delivered={bool} />` | §R.3 |
+| `useMessageContext().members` | `useStateStore(channel.state, (s) => ({ members: s.members }))` | §4 |
+| `<ChannelList options={{ offset }}>` | ignored — the list pages itself; `options.limit` is the page size | §R.6 |
+| `<ChannelList filters={{ myField: x }}>` | `filters={{ 'custom.myField': x }}` | §R.6 |
+| `channel.state.messages` / `channel.lastMessage()` | `channel.messagePaginator.state` (`items`) / `channel.messagePaginator.lastMessage` | §R.7 |
+| `client.activeChannels[cid]` | `client.channelManager.get(cid)` | §R.7 |
+| `client.threads.state` `threads` / `client.threads.loadNextPage()` | `client.threads.paginator.state` `items` / `client.threads.paginator.toTail()` | §R.7 |
+| `client.addDevice(token, provider)` / `getDevices()` / `removeDevice(id)` | `client.createDevice({ id: token, push_provider })` / `listDevices()` / `deleteDevice({ id })` | §R.8 |
+| `client.queryChannels(filters, sort, options)` returning `Channel[]` | `client.queryChannelsAndHydrate({ filter_conditions: filters, sort, ...options })` | §R.8 |
+| `client.muteUser(id)` / `client.banUser(id)` / `client.flagMessage(id)` | `client.moderation.mute({ target_ids: [id] })` / `.ban({ target_user_id: id })` / `.flagMessage(id)` | §R.8 |
+| `message.ai_generated` | `message.custom?.ai_generated` | §R.8 |
+| custom `AbstractOfflineDB.getChannelsForQuery({ filters, sort })` | `getChannelsForQuery({ userId, options })` — `options.filter_conditions`, `options.sort` | §R.9 |
+| `i18n.geti18Instance()` | `i18n.i18nInstance` | §R.10 |
+| `t('timestamp/ReminderNotification', …)` and the other app-callable formatter keys | register the expression yourself in a `LooseTranslationDictionary` | §R.10 |
 
 ---
 
@@ -259,7 +314,7 @@ unchanged from any earlier pre-release that used `channel.state.typingStore` —
   `threadId?: string` instead. `typing` is retyped
   `TypingContextValue['typing']` → `TypingUsersState['typing']` (same runtime
   shape).
-- **`filterTypingUsers` util**: signature changed
+- **`filterTypingUsers` util** (deep import only in v9 and v10): signature changed
   `({ client, thread, typing })` → `({ client, threadId, typing })` where
   `typing: TypingUsersState['typing']`. Pass `threadId: thread?.id`.
 
@@ -360,12 +415,12 @@ const { members } = useStateStore(channel.state, membersSelector) ?? { members: 
 const { watcherCount } = useStateStore(channel.state, watcherSelector) ?? {};
 ```
 
-Note: `members` remains available on the per-message `MessageContext`
-(`useMessageContext().members`, retyped to `MembersState['members']` — same
-shape) for message-level consumers such as a custom message footer. Only the
-**channel-level** `ChannelContext.members` was removed.
+`members` is gone from the per-message surface too: `MessageContextValue.members`, the `members` prop of
+`<Message>`, `MessageFooter` and `MessageItemView`, and the `members` param of `useCreateMessageContext`. A custom
+message footer reads the channel state itself, as above. The built-in footer only needs to know whether the channel is
+a 1:1, so it reads `memberCount` (see §R.5).
 
-## 5. `ChannelContext.markRead` removed → `useMarkRead(channel)` / `channel.markRead()`
+## 5. `ChannelContext.markRead` removed → `useMarkRead(channel)` / `channel.markReadViaReporter()`
 
 `markRead` is removed from `ChannelContextValue`. Mark-read now fires
 automatically inside the SDK (the `useMarkRead` hook is wired into `MessageList` /
@@ -376,7 +431,10 @@ throttle/debounce is gone.
 > **Replacement hook: `useMarkRead(channel)`** (exported; new in v10). It returns
 > a stable `markRead(options?)` callback — the drop-in replacement for the old
 > context `markRead`. Most apps can just **drop manual calls** (mark-read is
-> automatic now). `channel.markRead()` also works for a one-off imperative call.
+> automatic now). For a one-off imperative call use `channel.markReadViaReporter()`.
+> **`channel.markRead()` is now the direct request**: it skips the delivery reporter and
+> any `markReadRequest` handler you registered, and it throws when read events are
+> disabled.
 
 **Before (v9):**
 
@@ -393,7 +451,7 @@ import { useChannelContext, useMarkRead } from 'stream-chat-react-native';
 const { channel } = useChannelContext();
 const markRead = useMarkRead(channel); // 1:1 replacement for the old context markRead
 markRead();
-// or, imperatively (no hook): await channel.markRead();
+// or, imperatively (no hook): await channel.markReadViaReporter();
 ```
 
 A custom mark-read handler is still honored, but it is no longer a `Channel` prop —
@@ -471,11 +529,11 @@ active channel reports `0` locally while the server total may still briefly coun
 it, so the server total can transiently over-count.
 
 ```tsx
-const total = Object.values(client.activeChannels).reduce(
-  (n, c) => n + c.countUnread(),
-  0,
-);
+const total = client.channelManager.values().reduce((n, c) => n + c.countUnread(), 0);
 ```
+
+`client.activeChannels` no longer exists (§R.7): `client.channelManager.values()` lists the stored channels and
+`client.channelManager.get(cid)` returns one.
 
 ## 8. `ChannelContext` loaders removed — jump through the paginator
 
@@ -557,10 +615,10 @@ moved to the exported `useMessageOperations()` hook (returning a
 > context methods had — the drop-in replacement for the removed
 > `useMessagesContext()` ops. **Custom `Message` overrides also still receive all
 > six as props** (the built-in `Message` spreads them in), so override users need
-> no change. Prefer the hook over the raw `channel.*` methods below: for
-> **reactions** especially, the hook applies the optimistic paginator ingest that
-> raw `channel.sendReaction` skips (raw `channel.sendReaction` only renders once
-> the WS echo lands).
+> no change. Prefer the hook over raw `channel.*` requests: for **reactions**
+> especially, the hook applies the optimistic update that raw
+> `channel.sendReaction` skips (raw `channel.sendReaction` only renders once the
+> WS echo lands).
 
 The hook's op signatures:
 
@@ -578,10 +636,11 @@ updateMessage(updatedMessage: MessageResponse | LocalMessage): void; // single-a
 `MessageProps.updateMessage` overrides. `useMessageActions` now takes no
 arguments at all (§15.1).
 
-> **Note:** optimistic reactions are applied only when `enableOfflineSupport` is
-> on — this is **unchanged from v9** (`develop` gated the same optimistic block
-> on `enableOfflineSupport`), so it is not a v10 regression. With it off,
-> reactions render on the WS echo either way.
+> **Note (behavioural):** reactions are now **always** optimistic, with or without
+> `enableOfflineSupport` (v9 applied them optimistically only with offline support
+> on). A reaction that fails definitively is rolled back and the promise rejects; one
+> queued for offline replay keeps its optimistic state. Remove any reaction
+> optimism of your own, or it applies twice.
 
 **Before (v9):**
 
@@ -606,17 +665,20 @@ await deleteMessage(message);
 const MyMessage = ({ sendReaction, deleteMessage, updateMessage }) => { /* … */ };
 ```
 
-**Lower level (non-React call sites):** `channel.deleteMessageWithLocalUpdate`,
-`channel.retrySendMessageWithLocalUpdate`, `channel.sendReaction` /
-`deleteReaction` remain available — but `channel.sendReaction` does **not** apply
-the optimistic update, so use the hook in UI code.
+**Lower level (non-React call sites):** `channel.messageOperations` — `send`,
+`update`, `retry`, `delete({ localMessage, options })`,
+`addReaction({ messageId, reaction })`, `deleteReaction({ messageId, type })` —
+runs the same optimistic lifecycle as the hook; `thread.messageOperations` does
+the same for replies loaded in a thread. `stream-chat` v10 has **no**
+`*WithLocalUpdate` methods. Plain `channel.sendMessage` / `channel.sendReaction`
+are HTTP-only and apply no optimistic update, so use the hook in UI code.
 
 ### 9.1 Optimistic lifecycle is LLC-owned (behavioral)
 
 Do **not** hand-roll optimistic message/reaction state. The
-`*WithLocalUpdate` engine + `messagePaginator.ingestItem/removeItem` + the
-offline DB own the pending → received/failed lifecycle. Custom optimistic layers
-will double-apply or conflict.
+`channel.messageOperations` / `thread.messageOperations` engine + the message
+paginators + the offline DB own the pending → received/failed lifecycle. Custom
+optimistic layers will double-apply or conflict.
 
 ---
 
@@ -626,7 +688,8 @@ will double-apply or conflict.
 
 This is the largest behavioral shift. A thread is a `stream-chat` `Thread` instance, and
 `<Thread thread={thread}>` renders it on its own, next to `<Channel>` rather than inside it.
-`ThreadContextValue` is reduced to **two fields**; everything else is derived from `thread`.
+`ThreadContextValue` is reduced to **two fields**; everything else is derived from `thread`. The separate
+`threadInstance` field is gone: `thread` is the instance now.
 Opening and closing a thread is up to the app (no imperative `openThread` / `closeThread`).
 
 **`ThreadContextValue` now = `{ thread?: Thread, allowThreadMessagesInChannel: boolean }`.**
@@ -653,6 +716,7 @@ Removed or retyped fields (all derivable from `thread`):
 | `threadHasMore` | `thread.messagePaginator.state.hasMoreTail` |
 | `threadLoadingMore` / `threadLoadingMoreRecent` | `thread.messagePaginator.state.isLoading` |
 | `reloadThread` | `thread.reload()` |
+| `threadInstance` | `thread` |
 | `openThread` / `closeThread` / `setThreadLoadingMore` | removed - see 10.1 |
 | `parentMessagePreventPress` | removed from the context - a `<ThreadFooterComponent>` prop, default `true` |
 | `onAlsoSentToChannelHeaderPress` | moved to `MessagesContext`; still a prop on `<Channel>` and `<Thread>` |
@@ -744,7 +808,7 @@ registers a new one.
 
 - **`<Channel>`**: `thread` and `threadList` removed. A `<Channel>` only ever renders its channel's
   main list; render a `<Thread>` for replies.
-- **`ThreadProps`**: removed `closeThread`, `loadMoreThread`, `reloadThread`,
+- **`ThreadProps`**: removed `closeThread`, `loadMoreThread`, `reloadThread`, `threadInstance`,
   `additionalMessageListProps`, `additionalMessageInputProps`, `shouldUseFlashList`, `autoFocus`,
   `disabled`, `closeThreadOnDismount` and `parentMessagePreventPress`. `thread` is required and is
   the `Thread` instance (it was the parent message). Configure the list and composer through their
@@ -758,7 +822,7 @@ registers a new one.
   Use `useThreadContext().thread` to tell whether a subtree renders a thread. Components that took a
   `threadList` prop now take `thread` (`Thread | undefined`): `MessageItemView`,
   `SentToChannelHeader` and `ShowThreadMessageInChannelButton`.
-- **`MessageComposerContextValue`**: `thread` is now the `Thread` instance (it was the parent
+- **`MessageComposerContextValue`** (deep import only in v9 and v10): `thread` is now the `Thread` instance (it was the parent
   message).
 - **`ThreadFooterComponentProps`**: `thread` removed; the type is now
   `{ parentMessagePreventPress?: boolean }`, and `parentMessagePreventPress` defaults to `true`. Read
@@ -793,11 +857,15 @@ in. Submitting goes through the composer; see P.17.
 ## 12. `MessageList` / `MessageFlashList` props
 
 Removed props (from both list components): `channelUnreadStateStore`,
-`setChannelUnreadState`, `setTargetedMessage`, `targetedMessage`, `thread`
-(old `ThreadType` prop), `threadHasMore`, `loadMoreThread`,
-`loadMoreRecentThread`. The list now reads thread state from the `Thread` in `ThreadContext`,
-unread from the paginator snapshot (§7), and targeting from the focus signal
-(§6) — all internally.
+`setChannelUnreadState`, `setTargetedMessage`, `targetedMessage`, `threadHasMore`, `loadMoreThread`,
+`loadMoreRecentThread`, `threadInstance`, `loadChannelAroundMessage`, `loading`, `reloadChannel`,
+`maximumMessageLimit` (O.1), plus `highlightedMessageId` on `MessageFlashList`. The list now reads
+thread state from the `Thread` in `ThreadContext`, unread from the paginator snapshot (§7), and
+targeting from the focus signal (§6) — all internally. `allowSendBeforeAttachmentsUpload` became
+`pendingUploadsEnabled` (O.3).
+
+`thread` is **not** removed: it is retyped `LocalMessage | null` → `Thread | null`. Pass the instance,
+or leave it out and the list reads the one in `ThreadContext`.
 
 The paging props `loadMore`, `loadMoreRecent`, `hasMore`, `loadingMore` and `loadingMoreRecent` are
 removed too: the list pages its own paginator (P.7). `markRead` is still passed.
@@ -831,6 +899,11 @@ const MyFooter = ({ loadingMore }: { loadingMore?: boolean }) =>
 
 No-prop override components remain assignable (the prop is optional), so
 overrides that don't read the flag need no change.
+
+The **newer** end gets nothing: a custom `HeaderComponent` (`MessageList`) or `FooterComponent`
+(`MessageFlashList`) is rendered with no props, and with `PaginatedMessageListContext` gone there is no
+SDK source for `loadingMoreRecent`. Read `isLoading` from the paginator instead
+(`useStateStore(useMessagePaginator()?.state, selector)`); it is not direction-specific.
 
 ## 13. `ChannelProps`
 
@@ -1037,6 +1110,9 @@ the key names.
 - **`pageSize` is not `channelQueryOptions.messages.limit`.** The prop sizes the *initial*
   channel query; `pageSize` sizes every *subsequent* page. They are different numbers and
   you usually want both.
+- **`<Channel>`'s 25-message default is itself an imperative patch**, applied on mount only
+  when no `pageSize` is registered under `channel.messagePaginator` or `messagePaginator`
+  (§16.1). Register a value to opt out of it.
 - **Imperative `updateConfig()` does not survive a re-derivation**, except on
   `MessageComposer`. `channel.messagePaginator.updateConfig({ pageSize: 200 })` is dropped
   the next time anything re-resolves that paginator's configuration — including a
@@ -1127,7 +1203,8 @@ const handlers = useMessageActionHandlers(); // same shape: { handleCopyMessage,
 
 - **16.1 Initial message-list page size 100 → 25.** The `stream-chat` default is 100;
   v10 resolves 25. Apps that assumed ~100 messages loaded on open now get 25 and
-  paginate the rest in. To change it, **register** the value —
+  paginate the rest in. `<Channel>` applies the 25 on mount only when no `pageSize` is
+  registered. To change it, **register** the value —
   `client.config.set({ channel: { messagePaginator: { pageSize: 50 } } })` (§13.1).
   Do **not** re-set `channel.messagePaginator.pageSize` after mount: that is an
   imperative patch and is dropped the next time the paginator's configuration
@@ -1135,7 +1212,7 @@ const handlers = useMessageActionHandlers(); // same shape: { handleCopyMessage,
   sizes only the initial query.
 - **16.2 `sendMessage` throws on failure** (previously swallowed). The built-in
   `MessageInput` catches the rejection and shows a notification. Any custom code
-  that calls the context `sendMessage` (or `channel.sendMessageWithLocalUpdate`)
+  that calls the context `sendMessage` (or `channel.messageOperations.send`)
   directly must handle the rejected promise itself.
 - **16.3 `SendMessageDisallowedIndicator` is gated on `channel.initialized`** —
   it no longer flashes during the pre-init window (before capabilities resolve).
@@ -1148,8 +1225,9 @@ const handlers = useMessageActionHandlers(); // same shape: { handleCopyMessage,
 ## 17. `stream-chat` must be v10
 
 v10 SDK code hard-depends on `stream-chat` v10 APIs (`channel.messagePaginator`,
-the unified reactive `channel.state`, `*WithLocalUpdate`, `messageDeliveryReporter`,
-`channel.messageFocusSignal`). Ensure your app resolves `stream-chat` to `^10.x`.
+the unified reactive `channel.state`, `channel.messageOperations`, `messageDeliveryReporter`,
+`messagePaginator.messageFocusSignal`). Ensure your app resolves `stream-chat` to `^10.x`.
+Platform floors and other packaging changes are in §R.1.
 
 > Repo note (for SDK maintainers, not integrators): the published `stream-chat`
 > range in `package/package.json` must be bumped to `^10.x`, and the local
@@ -1216,7 +1294,9 @@ detection won't fire.**
 
 If you call the `stream-chat` client/channel directly or annotate with its types, see the LLC's own
 guides in `stream-chat-js`: `v9-to-v10-migration-guide-{type-renames,other,sort,methods,logging,client-construction}.md`.
-Highlights that hit integrator code:
+The long-term reference is the consolidated list `ai-docs/v10-breaking-changes.md` in `stream-chat-js` (branch
+`claude/sdk-v10-breaking-changes-f64baf`), which replaces those per-topic guides once it lands. The calls RN apps
+make most are in §R.7 and §R.8. Highlights that hit integrator code:
 
 - **Server-sent dates are unix-nanosecond numbers** on every response and event type (`created_at`,
   `updated_at`, `last_read`, …) — not `Date` objects and not ISO strings. They are typed
@@ -1246,8 +1326,8 @@ Highlights that hit integrator code:
   sort the raw numbers directly; only convert where a `Date` is actually required.
 
   What changed on **this SDK's** own surface:
-  - **`findInMessagesByDate(messages, targetTimestamp)`** takes a `TimestampNS` (was a `Date`).
-    Exported from the package root. Pass a server timestamp, or `msToNs(ms)` / `dateToNs(date)`.
+  - **`findInMessagesByDate`** is removed (P.1); compare `created_at` numbers yourself, or jump with
+    `channel.messagePaginator.jumpToMessage(id)`.
   - **`getChannelUnreadState`** (internal) and the `ChannelUnreadState` type are removed (P.9). The
     snapshot's `lastReadAt` is a `TimestampNS | null`; the lists treat `null` as the epoch, meaning the
     whole channel is unread. Guard it with `!= null`, never with truthiness.
@@ -1271,7 +1351,9 @@ Highlights that hit integrator code:
 - **Type renames** — `EventTypes`→`EventType`, `Mute`→`UserMuteResponse`,
   `PollOption`→`PollOptionResponseData`, `ReadResponse`→`ReadStateResponse`,
   `AppSettingsAPIResponse`→`GetApplicationResponse`, `FormatMessageResponse`→`LocalMessage`,
-  `Role`→`RoleName`, `Logger`→`Sink`, `*SortBase`→`*Sort`, `TranslationLanguages`→`TranslationLanguage`.
+  `Logger`→`Sink`, `*SortBase`→`*Sort`, `TranslationLanguages`→`TranslationLanguage`. `Role` is **not**
+  renamed: it now names the generated role *object*, and role names are plain `string` (there is no
+  `RoleName`).
 - **`Event` is a discriminated union** — narrow with `EventPayload<'the.type'>`, or drop the `: Event`
   annotation so `client.on('x', cb)` narrows automatically.
 - **Method signatures collapsed to request objects, with path parameters split out** — a method whose
@@ -1293,7 +1375,7 @@ Highlights that hit integrator code:
   be explicit, it just lives on the descriptor now; the same shape applies to `client.uploadFile`
   and `channel.uploadFile` / `channel.uploadImage` (which replace `channel.sendFile` /
   `sendImage`); the `client` constructor is 1–2 args; `client.listeners` is a `Map`;
-  `createAbortControllerForNextRequest` moved to `client.api`.
+  `createAbortControllerForNextRequest` is removed — pass `{ signal }` as the request options instead.
 - **Sort is `SortParamRequest[]`** — `{ last_message_at: -1 }` → `[{ field: 'last_message_at', direction: -1 }]`.
 
 ## 17.6 Attachments mid-upload carry `localMetadata`, not `custom.*`
@@ -1396,8 +1478,11 @@ exported from `stream-chat`), so move whatever you passed there under `client`, 
 wrapper if you used one.
 
 `client.persistUserOnConnectionFailure` is no longer a field, so assigning it does nothing. `<Chat>`
-already writes it from `enableOfflineSupport`. To set it yourself, use
-`client.config.setConfig('client', { persistUserOnConnectionFailure: true })`.
+already writes it from `enableOfflineSupport`: on mount (and whenever `client` or `enableOfflineSupport`
+changes) it runs `client.config.setConfig('client', { persistUserOnConnectionFailure: enableOfflineSupport })`,
+which **overwrites** a value you registered at construction or with `setConfig` yourself. With
+`enableOfflineSupport={false}` it is written back to `false`; to keep it `true`, set it again after `<Chat>` has
+mounted, or enable offline support.
 
 ---
 
@@ -1413,8 +1498,8 @@ query; that is intentionally gone (a footgun removed). What you actually need is
 
 ## 18. `<ChannelList>` per-event override props removed
 
-Removed props (and the exported `ChannelListEventHandler` type):
-`onAddedToChannel`, `onRemovedFromChannel`, `onChannelDeleted`, `onChannelHidden`,
+Removed props (the v9 options type `ChannelListEventListenerOptions` is still exported, but nothing
+takes it any more): `onAddedToChannel`, `onRemovedFromChannel`, `onChannelDeleted`, `onChannelHidden`,
 `onChannelVisible`, `onChannelUpdated`, `onChannelTruncated`, `onChannelMemberUpdated`,
 `onNewMessage`, `onNewMessageNotification`.
 
@@ -1452,8 +1537,10 @@ const unsubscribe = client.channelManager.addEventHandler({
 ## 18.1 `queryChannelsOverride` removed → `paginatorOptions.doRequest`
 
 The prop is gone with the other query props (§18.6). Its replacement is the paginator's `doRequest`,
-which receives the query params the paginator would have sent and must return `{ items }`, not a
-`Channel[]`. Call `client.queryChannels(...)` inside so client state stays in sync:
+which receives the query params the paginator would have sent (a `QueryChannelsRequest` plus an optional
+`stateOptions`, which is not part of the request) and must return `{ items }`, not a `Channel[]`. Call
+`client.queryChannelsAndHydrate(...)` inside so client state stays in sync. Plain `client.queryChannels` is the
+raw call in v10: it returns the response object, creates no `Channel` instances and stores nothing.
 
 ```tsx
 // v9: <ChannelList queryChannelsOverride={(filters, sort, options) => Promise<Channel[]>} />
@@ -1462,10 +1549,9 @@ const paginator = new ChannelPaginator({
   client,
   id: 'channels:main',
   paginatorOptions: {
-    doRequest: async (queryParams) => {
-      const items = await client.queryChannels(queryParams);
-      return { items };
-    },
+    doRequest: async ({ stateOptions, ...request }) => ({
+      items: await client.queryChannelsAndHydrate(request, stateOptions),
+    }),
   },
 });
 ```
@@ -1480,29 +1566,21 @@ the usage.
 
 ## 18.3 `ChannelsContextValue.loadNextPage` retyped
 
-`loadNextPage` is now `() => Promise<void>` (it dropped its optional query-type arguments):
+`loadNextPage` is now `() => Promise<void>` (it dropped its optional `queryType` / `retryCount`
+arguments). It is also a **no-op until the list has finished its first query**:
 
 ```tsx
-// Before: loadNextPage(filters, sort, options)
+// Before: loadNextPage(queryType?, retryCount?)
 // After:
 loadNextPage();
 ```
 
-## 18.4 `<Chat channelManager>` prop + `ChatContext.channelManager` removed
+## 18.4 One `client.channelManager` per client
 
-`ChannelManager` is a singleton per client, so `<Chat>` no longer accepts a `channelManager` prop and
-`useChatContext()` no longer returns one. Read `client.channelManager` directly:
-
-```tsx
-// Before
-const { channelManager } = useChatContext();
-// After
-const { client } = useChatContext();
-const channelManager = client.channelManager;
-```
-
-Configure the shared manager through its own API (`client.channelManager.setEventHandlers(...)`,
-`setOwnershipResolver(...)`) instead of the removed prop.
+No v9 prop or context field existed for this: v9's `<ChannelList>` created a manager of its own with
+`client.createChannelManager(...)`. That method is gone. There is one `ChannelManager` per client, every
+list shares it, and you read it as `client.channelManager`. Configure it through its own API
+(`client.channelManager.setEventHandlers(...)`, `setOwnershipResolver(...)`).
 
 ## 18.5 Behavioral: channel-list ordering & watch defaults
 
@@ -1642,14 +1720,18 @@ The `MutedUsersState` type and the `channel.state.mutedUsersStore` handle are re
 const name = useStateStore(channel.state, s => ({ name: s.data?.custom?.name }))?.name;
 ```
 
-## K.4 `channel.activate()` / `deactivate()` / `channel.active` (additive)
+## K.4 `channel.activate()` / `channel.active` (additive)
 
-New refcounted lifecycle API mirroring `thread.activate()`. `<Channel>` calls
-`activate()` on mount and `deactivate()` on unmount for you; `channel.active` is a reactive
-boolean. While active, the channel auto-marks messages read on focus and the channel-list
-hydration does not destructively re-seed the open channel's message list on reconnect. Custom
-navigation that mounts a channel outside `<Channel>` can call these directly (they refcount, so a
-shared instance stays active until the last holder deactivates).
+New refcounted lifecycle API mirroring `thread.activate()`. `activate()` **returns its release
+function** — there is no `deactivate()` on a channel or a thread. `<Channel>` activates on mount and
+releases on unmount for you; `channel.active` is a reactive boolean. While active, the channel
+auto-marks messages read on focus and the channel-list hydration does not destructively re-seed the
+open channel's message list on reconnect. Custom navigation that mounts a channel outside `<Channel>`
+can do the same (it refcounts, so a shared instance stays active until the last holder releases):
+
+```tsx
+useEffect(() => channel.activate(), [channel]); // the returned release runs on unmount
+```
 
 ## K.5 In-place mutation of `channel.data.member_count` / `own_capabilities` no longer syncs (behavioral)
 
@@ -1670,10 +1752,10 @@ if you need subscribers to update.)
 
 ## K.8 `channel.disconnected` → `channel.pendingDisposal` (breaking)
 
-The flag is one-way and terminal: `Channel._disconnect()` disposes the paginators, unregisters the
-subscriptions, and the client drops the channel from `activeChannels` right after — the instance is
-never reconnected. `disconnected` read like something that could come back, so the state key and the
-getter/setter are now `pendingDisposal`.
+The flag is one-way and terminal: `channel.disconnect()` (v9's `_disconnect()`) disposes the paginators
+and unregisters the subscriptions, and the instance is never reconnected —
+`client.channelManager.ensure(...)` gives a fresh instance for the cid. `disconnected` read like something
+that could come back, so the state key and the getter/setter are now `pendingDisposal`.
 
 ```tsx
 // Before
@@ -1750,25 +1832,29 @@ favour of it.
 2. **Every `active` channel reloads itself** — `channel.reload()`. A list page carries far fewer
    messages per channel than an open channel's loaded window, so the open channel cannot be served by
    the list query. `<Channel>` marks its channel `active` on mount (§K.4).
-3. **Every active thread reloads its replies** — `thread.reload()`, for threads in
-   `client.threads.threadsById` whose `state.active` is set. Nothing else covers them: a channel
-   reload refreshes the main message list, and `ThreadManager`'s own recovery refreshes the thread
-   *list*, reusing thread instances without rehydrating them unless something separately marked them
-   stale — which only `user.watching.stop` does, never a reconnect. Note the current limitation: a
-   thread opened from a message list only enters `threadsById` once `<Thread>` adopts it (after its
-   replies load), so a reconnect before that — or after `ThreadManager.reload()` evicts it — skips it.
+3. **Every active thread reloads its replies** — `thread.reload()`, for threads registered in
+   `client.threads` (the ones `client.threads.get(id)` resolves) whose `state.active` is set. Nothing
+   else covers them: a channel reload refreshes the main message list, and `ThreadManager`'s own
+   recovery refreshes the thread *list*, reusing thread instances without rehydrating them unless
+   something separately marked them stale. A thread is registered as soon as `thread.activate()` or
+   `client.threads.ensure(...)` runs, so a thread opened from a message list is covered from the
+   moment `<Thread>` mounts. Registered threads that are not active are only flagged stale, and reload
+   on their next `activate()`.
 4. **Every other previously-watched channel self-heals on demand** — §L.3.
 
-It is deliberately **not** a sweep over `client.activeChannels`: watches are a bounded server
-resource, and after any scrolling that cache holds far more channels than a query page.
+It is deliberately **not** a sweep over the channel store (`client.channelManager.values()`; v9's
+`client.activeChannels`): watches are a bounded server resource, and after any scrolling that store
+holds far more channels than a query page.
 
 With offline support enabled, active-channel recovery is triggered off the offline DB's sync-status
 edge, so the ordering `executePendingTasks()` → `sync()` → reload holds on every reconnect path —
 including mobile backgrounding (`closeConnection()` → `openConnection()`), which v9's client-side
 recovery never covered at all.
 
-**No app code is required for any of this.** Do not add a `connection.changed` listener that
-re-queries a list or re-watches a channel — that now duplicates the client.
+**No app code is required for any of this.** Do not add a listener that re-queries a list or
+re-watches a channel on reconnect — that now duplicates the client. Note that `connection.changed` is
+**no longer dispatched** at all: `client.on('connection.changed', …)` compiles and never fires. Connection
+status lives on `client.wsConnection.state` and `client.networkConnection.state` (§R.2).
 
 ## L.1 `recoverStateOnReconnect` removed — configure recovery instead (breaking — `stream-chat`)
 
@@ -1848,13 +1934,15 @@ thread's replies. **Both are gone**; the component's only remaining part is decl
 screen:
 
 ```tsx
-// what <Channel> does now — the rest is client.connectionRecovery's job
-useEffect(() => { channel?.activate?.(); return () => channel?.deactivate?.(); }, [channel]);
+// what <Channel> does now — the rest is client.connectionRecovery's job.
+// activate() returns its release function, which runs on unmount.
+useEffect(() => channel?.activate(), [channel]);
 ```
 
 The open thread is declared the same way, but by **`<Thread>`**, which already did this before v10 —
-`thread.activate()` on mount, `deactivate()` on unmount. `<Thread>` renders on its own, next to
-`<Channel>`, so the channel and the thread are each activated by their own component.
+`useEffect(() => thread?.activate(), [thread])` (`activate()` returns its release function; there is no
+`deactivate()`). `<Thread>` renders on its own, next to `<Channel>`, so the channel and the thread are each
+activated by their own component.
 
 Neither reconnect handler was ever exported, so there is no symbol to migrate — this is here because
 the behaviour relocated, and because the *capability* is unchanged: an integrator who relied on
@@ -1862,8 +1950,9 @@ the behaviour relocated, and because the *capability* is unchanged: an integrato
 and on more reconnect paths than before.
 
 **If you render `<Channel>` and `<Thread>` you get this for free.** If you built your own views on the
-contexts, call `channel.activate()` / `thread.activate()` (each balanced with `deactivate()`) or those
-surfaces will not be recovered — being active is the one thing recovery cannot infer.
+contexts, call `channel.activate()` / `thread.activate()` and call the release function each returns
+when the view goes away (there is no `deactivate()`), or those surfaces will not be recovered — being
+active is the one thing recovery cannot infer.
 
 One thing stays deliberately UI-side: **mark-read after the reload**, on `connection.recovered`. It
 has to be post-reload so the "is the window at the newest?" check reflects the refreshed window. Read
@@ -1892,10 +1981,11 @@ reconnect, or until a query the consumer itself issues records its own error.
   replacement for the removed `recoverStateOnReconnect` option (§L.1).
 - **`client.channelManager.recover()`** — re-runs every initialized list's first-page query,
   non-destructively. Sibling of the destructive `reload()`, which is unchanged.
-- **`thread.activate()` / `deactivate()` are now refcounted**, matching `channel.activate()`, so a
-  thread held by more than one mount stays active until the last holder releases it. `active` is what
-  recovery filters on, so an unbalanced `deactivate()` now costs a missed reload as well as a missed
-  auto-read.
+- **`thread.activate()` is now refcounted and returns its release function**, matching
+  `channel.activate()` (neither has a `deactivate()`), so a thread held by more than one mount stays
+  active until the last holder releases it. `active` is what recovery filters on, so a release that
+  never runs keeps the thread in every reconnect reload, and one that runs too early costs a missed
+  reload as well as a missed auto-read.
 
 There is deliberately **no** channel-level or thread-level error field. Read the paginator backing
 whatever you are rendering — the thread's replies when one is open, the channel's messages otherwise:
@@ -1955,8 +2045,11 @@ The built-in `NetworkDownIndicator` and `<Channel>`'s own error screen both do e
 that never read `error` itself needs no change.
 
 **`NetworkDownIndicator` no longer reports load errors at all** — it reports the connection, and
-nothing else. It renders "Reconnecting…" while offline and nothing while online. In v9 it also showed
-"Error loading messages for this channel…", driven by a failed `watch()`/resync and by a failed thread
+nothing else. It renders "Waiting for network..." (`common.waitingForNetwork.text`, a new key) when the
+device network is known to be offline, "Reconnecting..." (`common.reconnecting.text`) when the socket is
+unhealthy for longer than `offlineNotificationDisplayDelayMs` (default 5000 ms, §R.2), and nothing
+otherwise. In v9 it also showed "Error loading messages for this channel…", driven by a failed
+`watch()`/resync and by a failed thread
 reply pagination; that full-width, channel-wide message overstated what is usually one failed page of
 history, with the messages you already have rendered fine underneath it.
 
@@ -1980,9 +2073,10 @@ yourself after a reconnect, that workaround is now redundant.
 
 For threads there was a second hole: the preservation relied on `Thread`'s `failedRepliesMap`, which
 is only written by `upsertReplyLocally` — whose callers are the thread's own subscriptions and the
-offline-DB path keyed on `ThreadManager.threadsById`. Neither covers a thread constructed directly and
-never registered, which is the common path. `thread.reload()` now reads the failed replies out of the
-reply paginator instead, so it holds for managed and unmanaged threads alike.
+offline-DB path that looks threads up in `client.threads`. Neither covers a thread constructed directly
+with `new Thread()` and never registered (`thread.activate()` and `client.threads.ensure()` register one
+immediately; `client.threads.get(id)` resolves it). `thread.reload()` now reads the failed replies out of
+the reply paginator instead, so it holds for managed and unmanaged threads alike.
 
 ## L.9 The reconnect refresh now finds messages you never had (bug fix)
 
@@ -2077,7 +2171,7 @@ Every send now writes the message to the offline DB **before** the request, pess
 `failed`, and overwrites it with `received` on success. A process death anywhere between composing and
 the server's ack therefore leaves a message that hydrates as failed and retryable, instead of one that
 silently disappears. This is v9's write-ahead (`Channel.tsx`), which v10 dropped when `sendMessage`
-collapsed into `sendMessageWithLocalUpdate`.
+moved into `stream-chat`'s message operations (`channel.messageOperations.send`).
 
 No schema change and no `dbVersion` bump: `status` already round-trips through the storable's
 `extraData` blob.
@@ -2188,11 +2282,17 @@ and restored together, in one read, because they are one cache row.
 it, and return it from `getChannelsForQuery`. If you persist nothing for it, the list still works — it
 falls back to exactly the pre-v10 behaviour.
 
-## N.2 `SqliteClient.dbVersion` 17 → 18 (not breaking; one-time cache loss)
+## N.2 `SqliteClient.dbVersion` 16 → 18 (not breaking; one-time cache loss)
 
-The RN `channelQueries` table gained a `predefinedFilter TEXT` column for §N.1. Schema versioning uses
-`PRAGMA user_version` and there are **no incremental migrations**, so the first launch after upgrading
-reinitializes the database.
+v9 ships `dbVersion` 16; v10 ships 18 (17 was a v10 pre-release). Two schema changes are behind it:
+
+- every date column that holds server data (channels, messages, members, reads, reactions, polls,
+  drafts, reminders, locations, users) changed `TEXT` (ISO string) → `INTEGER` (unix nanoseconds, §17.5).
+  `pendingTasks.createdAt` and `userSyncStatus.lastSyncedAt` stay `TEXT`;
+- the RN `channelQueries` table gained a `predefinedFilter TEXT` column for §N.1.
+
+Schema versioning uses `PRAGMA user_version` and there are **no incremental migrations**, so the first
+launch after upgrading reinitializes the database.
 
 That is a one-time loss of the **offline cache**, not of user data: channels, messages and reads are
 re-fetched from the server on the next query. Queued offline writes (pending tasks) are in the same
@@ -2379,10 +2479,12 @@ value.
 
 ### The default
 
-`<Chat>` writes `pendingUploadsEnabled: enableOfflineSupport` into `client.config`, **only if
-nothing is registered there yet**. That's the same default the prop had. If `enableOfflineSupport`
-changes later, the SDK-written value follows it. A value anyone else registered is never
-overwritten.
+With `enableOfflineSupport` on, `<Chat>` writes `pendingUploadsEnabled: true` into `client.config`,
+**only if nothing is registered there yet**. With it off, nothing is written and `stream-chat`'s own
+default (`false`) applies. That's the same default the prop had. The write happens once and is
+**never taken back**: if `enableOfflineSupport` later turns off, pending uploads stay on, because the
+SDK cannot tell its own write from yours. If you toggle offline support at runtime, set
+`pendingUploadsEnabled` yourself. A value anyone else registered is never overwritten.
 
 ### Turning it on or off for every channel
 
@@ -2567,6 +2669,8 @@ The context value now only changes with the `client` or `isMessageAIGenerated` p
 | `useChatContext().channel`, `.setActiveChannel` | Keep the open channel in your own navigation state and render `<Channel channel={…}>`. Inside a `<Channel>`, `useChannelContext().channel`. |
 | `useChatContext().mutedUsers` | `useMutedUsers()` |
 | `useChatContext().enableOfflineSupport` | `client.offlineDb !== undefined` |
+| `useChatContext().isOnline` | `useNetworkConnectionState()?.isOnline === false` for the device, `useSettledWSConnectionHealth()` for the socket (§R.2) |
+| `useChatContext().connectionRecovering` | `useSettledWSConnectionHealth()` / `useWSConnectionState()` (§R.2) |
 
 `getAppSettings()` works like the one in `stream-chat-react`: the first call fetches the app settings
 and later calls reuse them. `<Chat>` already calls it once the user is connected, so it usually
@@ -2689,7 +2793,8 @@ Moderation commands (`/mute`, `/unmute`, `/ban`, `/unban`) are sent as typed. Th
 the mentioned name into the user id (`/mute @Jane Doe` → `/mute @jane-id`) to work around a backend bug
 with names containing spaces. The backend now takes the target from the message's mentioned users, so the
 rewrite is gone, and so is the `patchMessageTextCommand` export (breaking). To keep rewriting command
-text, add a composition middleware through `client.setMessageComposerSetupFunction`.
+text, add a composition middleware through `client.config.setSetupFunction('messageComposer', fn)`
+(§13.1; `client.setMessageComposerSetupFunction` is deprecated).
 
 ## P.18 Editing a message
 
@@ -2835,6 +2940,371 @@ the message contexts.
 
 ---
 
+# Part R — Gaps found in the v10 breaking-change audit
+
+A v9 → v10 audit of the public surface, the PRs and the sample apps (the v9 SampleApp and ExpoMessaging compiled
+against v10) found the changes below that the parts above did not cover. Each one is checked against the v10 source.
+Detection greps are in §1; the quick-reference table has rows for the common ones.
+
+## R.1 Platform floors and packaging (breaking)
+
+- **`react-native` peer `>=0.76` → `>=0.79`** in `stream-chat-react-native-core`, `stream-chat-react-native` and
+  `stream-chat-expo`; **`expo` peer `>=52` → `>=53`** in `stream-chat-expo`. `@stream-io/i18n` and `stream-chat`
+  resolve through package `exports` subpaths, which Metro enables by default only from metro-config 0.82, the version
+  RN 0.79 pins. Upgrade React Native / Expo first.
+- **`stream-chat` declares `engines.node >=22.18.0`** (v9: `>=18`). Yarn 1 enforces `engines` and fails the install
+  on an older Node; npm and pnpm only warn. Node is not your app's runtime, but it is your install and CI runtime.
+- **`StateStore` and `Unsubscribe` are no longer exported from `stream-chat`.** They come from
+  `@stream-io/state-store`, which the SDK already depends on. Add it to the app if you build your own stores, and make
+  sure **one copy** resolves: `StateStore` is compared nominally, so a second copy makes your stores unassignable to
+  `useStateStore`.
+
+  ```diff
+  - import { StateStore, type Unsubscribe } from 'stream-chat';
+  + import { StateStore, type Unsubscribe } from '@stream-io/state-store';
+  ```
+
+- **`dayjs` is `^1.11.23`** (v9 pinned `1.11.13` exactly) and must resolve to a single copy — see §19.
+
+## R.2 Connection status: `ChatContext.isOnline` / `connectionRecovering` removed (breaking)
+
+`useChatContext()` no longer returns `isOnline` or `connectionRecovering` (P.11). Status lives in two `stream-chat`
+stores, and the SDK exports hooks over them:
+
+- `useNetworkConnectionState()` — the **device** network (`client.networkConnection.state`). `isOnline` is
+  **tri-state**: `undefined` means nobody has reported yet, so test `isOnline === false`, never `!isOnline`.
+- `useWSConnectionState()` — the raw **socket** state (`client.wsConnection.state`: `isHealthy`, `lastHealthyAt`,
+  …).
+- `useSettledWSConnectionHealth()` — socket health for UI: a drop counts only once it outlasts
+  `offlineNotificationDisplayDelayMs` (default 5000 ms; `0` disables the wait) or the device is known offline, a
+  socket that has not connected yet counts as healthy until that delay runs out, and recovery counts at once.
+- `netInfoStatusReporter` — the NetInfo reporter `<Chat>` installs. Building the client yourself, pass it at
+  construction to skip the window before `<Chat>` mounts:
+  `new StreamChat(apiKey, { client: { networkConnection: { statusReporter: netInfoStatusReporter } } })`.
+
+```diff
+- const { isOnline, connectionRecovering } = useChatContext();
+- if (!isOnline) showBanner();
++ const isDeviceOffline = useNetworkConnectionState()?.isOnline === false;
++ const isSocketHealthy = useSettledWSConnectionHealth();
++ if (isDeviceOffline || !isSocketHealthy) showBanner();
+```
+
+Related changes:
+
+- **`connection.changed` is no longer dispatched.** `client.on('connection.changed', …)` compiles and never fires.
+  Subscribe to the stores above (`client.wsConnection.state.subscribe(…)` outside React). For "recovery finished" use
+  `connection.recovered` (§L.2).
+- **The banner delay is configuration**, not a fixed 5 s inside the client:
+  `client.config.set({ client: { wsConnection: { offlineNotificationDisplayDelayMs: 3000 } } })`.
+- **`<Chat>` registers `netInfoStatusReporter` on every mount** through
+  `client.config.set({ client: { networkConnection: { statusReporter } } })`, with no teardown. A custom
+  `statusReporter` you registered is replaced; register it again after `<Chat>` mounts.
+- **`OutputButtons` / `MessageComposer` `isOnline` prop** is `boolean` (settled socket health), not `boolean | null`
+  from `ChatContext`.
+- **`ChannelListHeaderNetworkDownIndicator`** shows when the device is offline or the settled socket health is false;
+  **`NotificationAnnouncer`** follows settled socket health and announces "Offline" only when the device is known
+  offline, "Reconnecting" otherwise; **`NetworkDownIndicator`** — see §L.7.
+- **`useLoadingImage`** retries a failed image when the **device** network comes back (it followed `ChatContext`).
+
+## R.3 Delivery receipts: `readBy` / `deliveredToCount` removed (breaking)
+
+Removed from `MessageContextValue`, the `<Message>` props and `MessageStatus`'s props. `MessageStatus` now takes
+booleans and works them out itself when you pass nothing:
+
+```diff
+- <MessageStatus message={message} readBy={readBy} deliveredToCount={deliveredToCount} />
++ <MessageStatus message={message} read={read} delivered={delivered} />
+```
+
+```diff
+- const { readBy, deliveredToCount } = useMessageContext();
+- const isRead = readBy === true || readBy > 1;
++ const { message } = useMessageContext();
++ const isRead = useIsMessageReadByOthers({ message });
++ const isDelivered = useIsMessageDeliveredToOthers({ message });
+```
+
+`useIsMessageReadByOthers` and `useIsMessageDeliveredToOthers` are new. For the counts, use the user lists v9 counted:
+`useMessageReadData({ message }).length` / `useMessageDeliveredData({ message }).length`. All four need a channel in
+context.
+
+## R.4 More context fields and props removed or retyped (breaking, type-level)
+
+Removed:
+
+- `ChannelContextValue.maximumMessageLimit` — paginator configuration now, §O.1.
+- `ChannelContextValue.uploadAbortControllerRef` — uploads belong to the composer's attachment manager; cancel by
+  removing the attachment.
+- `InputMessageInputContextValue.doFileUploadRequest` (a custom `MessageInputProvider` value) →
+  `client.config.set({ messageComposer: { attachments: { doUploadRequest } } })`, §13.1.
+- `ThreadContextValue.threadInstance` and `ThreadProps.threadInstance` — `thread` is the instance, §10.
+- `ChannelPreviewProps.forceUpdate` and `useChannelPreviewData`'s third argument (`forceUpdateOverride`); preview data
+  is reactive.
+- `ChannelListViewProps.forceUpdate` (and `ChannelsContextValue.forceUpdate`, P.20).
+- `useCreateMessageContext` params `members`, `readBy`, `deliveredToCount`, `isMessageAIGenerated` (§4, R.3, Q.3).
+
+Retyped:
+
+- `LoadingErrorProps.error` (`LoadingErrorIndicator`): `boolean | Error` → `Error`. `error={true}` no longer compiles.
+- `InlineLoadingMoreIndicator` / `InlineLoadingMoreRecentIndicator` take `loadingMore` / `loadingMoreRecent` as
+  props; they read context in v9. Rendered without the prop, they render nothing.
+- `ChannelListViewProps`: `channels`, `channelListInitialized`, `hasNextPage`, `loadingChannels`, `loadingNextPage`
+  and `refreshing` are required (`error` stays optional); new optional `paginator`.
+- `CommandSuggestionItem` (`stream-chat`'s `CommandSuggestion`): `args`, `description`, `name` and `set` are required
+  `string`s; `created_at` / `updated_at` are `TimestampNS`.
+- `giphyVersion` (`Giphy`, `GiphyImage`, `OverlayProvider`, …) is typed `keyof Images`. `stream-chat`'s
+  `GiphyVersions` is now an alias of it, with the same seven values.
+- `URLPreview` / `URLPreviewCompact` / `Giphy` / `GiphyImage` `attachment` is `stream-chat` v10's `Attachment`
+  (metadata under `custom`, §17.1).
+- `TypingIndicatorContainer`: `thread` → `threadId` (§2.1).
+- `AIStates` is a `const` object with literal values, so `[AIStates.Thinking, AIStates.Generating].includes(aiState)`
+  no longer compiles. Compare with `===`:
+
+  ```diff
+  - const busy = [AIStates.Thinking, AIStates.Generating].includes(aiState);
+  + const busy = aiState === AIStates.Thinking || aiState === AIStates.Generating;
+  ```
+
+- `ImageGalleryStateStore` `assets[]`: `created_at` is `Date | undefined` (converted from nanoseconds), `channelId`
+  is `string`, `user` is `UserResponse`. Guard `created_at` in a custom gallery header or footer.
+
+## R.5 `<Channel>` and `<Thread>` behaviour changes (behavioural)
+
+`<Channel>`:
+
+- **`initializeOnMount={false}` still queries** when the channel's paginator is empty: it skips `watch()` but runs
+  `channel.messagePaginator.reload()`, a non-watching channel query. Seed the paginator yourself before mounting if no
+  request may go out.
+- **A provisional channel is not queried on mount.** A members-only channel with no id that is already initialized
+  is created on its first send, not when `<Channel>` opens it. Call `channel.watch()` yourself if you relied on the
+  open creating it.
+- **`<Channel>` may render a different instance than you passed.** When `channel.supersededBy` is set (a
+  members-only channel whose real cid another instance already holds), `<Channel>` renders the successor, unless the
+  successor is open elsewhere and this composer has content. Inside `<Channel>`, read the channel from
+  `useChannelContext()`, not from your own prop.
+- **Sending no longer removes `type: 'error'` messages.** v9 ran `channel.state.filterErrorMessages()` on every send;
+  remove an error message you want gone with `useMessageOperations().removeMessage(message)`.
+- **`client.options.isLocalUnreadCountEnabled` is not read.** The local unread count with read events off is
+  `client.config.set({ channel: { readEvents: { localUnreadCountEnabled: true } } })`.
+- **`UnreadMessagesNotification` dismisses through its `markRead` prop.** A custom override that wraps the built-in
+  must forward `markRead`, or dismissing stops marking the channel read.
+- **The poll button can show before the server's `polls` flag arrives.** It follows
+  `messageComposer.config.polls.enabled`, which defaults to `true` and turns off once the server config says no.
+  Hide it with `client.config.set({ messageComposer: { polls: { enabled: false } } })`.
+- **The input's `maxLength` follows `messageComposer.config.text.maxLengthOnSend`**, so a smaller registered value
+  caps the input too (the channel type's `max_message_length` stays the upper bound).
+- **Deleting a failed *edit* deletes the message on the server.** v9 removed every `failed` message locally only; v10
+  does that only for a failed *send* (a failed message with no `message_text_updated_at`).
+- **Initial page size is 25 unless you register one** through `client.config`: §16.1.
+
+Message rows and previews:
+
+- **`MessageFooter` shows the sender name when `memberCount !== 2`** (v9: more than two *loaded* members), so it now
+  also shows when the count is 0 or 1.
+- **The channel preview's typing indicator ignores typing in threads** (events with a `parent_id`).
+
+`<Thread>`:
+
+- **A failed first page replaces the thread UI.** When the reply paginator has a `lastQueryError` and no items,
+  `<Thread>` renders `LoadingErrorIndicator` (with a retry) instead of the list and composer. Override
+  `LoadingErrorIndicator` through `WithComponents` to change it.
+
+## R.6 Channel list (breaking/behavioural)
+
+- **`options.offset` is ignored and `options.limit` is the page size.** The paginator owns the offset; the rest of
+  `options` becomes the request options.
+- **`filters` are `stream-chat` v10's generated filter types**: custom fields are `'custom.<field>'` keys, and each
+  key takes one operator.
+
+  ```diff
+  - <ChannelList filters={{ type: 'messaging', members: { $in: [userId] }, myField: 'x' }} />
+  + <ChannelList filters={{ type: 'messaging', members: { $in: [userId] }, 'custom.myField': 'x' }} />
+  ```
+
+- **Channels can leave a list on events.** Every routed event (`message.new`, `member.updated`,
+  `channel.updated`, …) re-checks the list's filters, so a channel that stops matching drops out until the next query.
+- **`loadNextPage()` is a no-op before the first page has loaded** (§18.3).
+- Sort is `SortParamRequest[]`, and an empty sort means the backend default (§17.5, §N.4).
+
+## R.7 `stream-chat` state you may read directly (breaking — `stream-chat`)
+
+v9 → v10:
+
+- `channel.state.messages` → `useStateStore(channel.messagePaginator.state, (s) => ({ items: s.items }))`.
+- `channel.state.latestMessages` / `channel.lastMessage()` → `channel.messagePaginator.lastMessage` (reactive through
+  `messagePaginator.aggregateState`).
+- `channel.state.threads[id]` → `client.threads.get(id)?.messagePaginator`.
+- `channel.state.findMessage(id)` → `channel.messagePaginator.getItem(id)`, or `client.messageStore` for any loaded
+  message.
+- `channel.state.loadMessageIntoState(id)` → `channel.messagePaginator.jumpToMessage(id)`.
+- `channel.state.isUpToDate` → `channel.messagePaginator.isActiveIntervalAtHead`.
+- `channel.state.pinnedMessages` → `channel.pinnedMessagesPaginator`.
+- `channel.state.mutedUsers` → `client.mutedUsersStore` (`useMutedUsers()`).
+- `client.activeChannels` → `client.channelManager.get(cid)` / `client.channelManager.values()`. Channels are not
+  evicted automatically; `client.channelManager.releaseUnusedChannels()` releases the ones nothing uses.
+- `client.hydrateActiveChannels(…)` → `client.hydrateChannels(…)`.
+- `client.threads.state` `threads` / `pagination` / `ready` and `client.threads.loadNextPage()` →
+  `client.threads.paginator` (`state.items`, `isLoading`, `lastQueryError`; `toTail()`). `client.threads.threadsById`
+  → `client.threads.get(id)`.
+- `thread.state.replies` / `pagination`, `thread.loadNextPage()` / `loadPrevPage()` / `queryReplies()` →
+  `thread.messagePaginator` (`state.items`, `toTail()` for older, `toHead()` for newer).
+
+```diff
+- const { replies } = useStateStore(thread.state, (s) => ({ replies: s.replies }));
++ const { replies } = useStateStore(thread.messagePaginator.state, (s) => ({ replies: s.items }));
+```
+
+Two request behaviours:
+
+- **`channel.query(…)` no longer updates the message list.** It returns the page; only the latest-page paths
+  (`watch()`, `create()`) seed the list. Page with `channel.messagePaginator.toTail()` / `toHead()` instead of
+  `channel.query({ messages: { id_lt } })`.
+- **A request with `watch` or `presence` waits for a WebSocket connection id** — `channel.watch()`, `queryChannels*`,
+  `queryUsers({ payload: { presence } })`. v9 silently downgraded it to a non-watching request. With no socket open
+  or opening it throws `No connection id is available…`, so call `connectUser()` (or `openConnection()` after a
+  `closeConnection()`) first.
+
+## R.8 `stream-chat` client calls RN apps make (breaking — `stream-chat`)
+
+The ones the v9 sample apps hit. The full list is `stream-chat`'s own (§17.5).
+
+- **Push devices** — the device is no longer sent on connect, and the user comes from the connection:
+
+  ```diff
+  - await client.addDevice(token, 'firebase', userId, 'my-provider');
+  + await client.createDevice({ id: token, push_provider: 'firebase', push_provider_name: 'my-provider' });
+  - const { devices } = await client.getDevices(userId);
+  + const { devices } = await client.listDevices();
+  - await client.removeDevice(token, userId);
+  + await client.deleteDevice({ id: token });
+  ```
+
+  `client.setLocalDevice` and the `device` client option are removed.
+
+- **`client.queryChannels(request)` is the raw call**: it returns the response, creates no `Channel` instances and
+  stores nothing. v9's behaviour is `client.queryChannelsAndHydrate({ filter_conditions, sort, ...options })`, which
+  returns `Channel[]`.
+- **Creating and updating channels** — custom fields under `custom`, members as objects:
+
+  ```diff
+  - client.channel('messaging', id, { name, members: [userA, userB] });
+  + client.channel('messaging', id, { custom: { name }, members: [{ user_id: userA }, { user_id: userB }] });
+  - await channel.update({ name });
+  + await channel.updatePartial({ set: { name } }); // or channel.update({ data: { custom: { name } } })
+  ```
+
+- **Request objects** — `channel.sendMessage({ message, ...options })`, `client.search({ payload })`,
+  `client.queryUsers({ payload })`, `channel.queryMembers({ payload })`. The `payload` carries `filter_conditions`,
+  `sort` (an array), `limit`, `offset`, …
+- **Moderation moved to `client.moderation`** — `client.muteUser(id)` →
+  `client.moderation.mute({ target_ids: [id] })`, `client.banUser(id)` →
+  `client.moderation.ban({ target_user_id: id })`, `flagMessage` / `flagUser` → `client.moderation.flagMessage` /
+  `flagUser`.
+- **Reminders** — `client.reminders.upsertReminder({ message_id }, { remind_at: date })` (`remind_at` is a `Date`;
+  omit it to clear), sort as `[{ field: 'remind_at', direction: 1 }]`, `ReminderResponse` → `ReminderResponseData`.
+- **Live location** — `channel.stopLiveLocationSharing({ message_id })` (it took the location object),
+  `SharedLocationResponse` → `SharedLocationResponseData`. Call `LiveLocationManager.dispose()` when you are done with
+  a manager you created.
+- **Custom events** — `channel.sendEvent({ type, ...fields })` →
+  `channel.sendEvent({ event: { type, custom: {…} } })`.
+- **`connectUser` takes a `ClientUser`**: your own user fields go under `custom`. A `UserResponse` fixture no longer
+  type-checks (it requires server-owned fields such as `created_at`); type it as `ClientUser`.
+- **Type renames the sample apps hit**: `MessageResponseBase` → `MessageResponse`; search results are
+  `SearchResultMessage` and `result.message` is optional; `DeliveredMessageConfirmation` → `DeliveredMessagePayload`;
+  `DraftFilters` / `DraftSort` / `Pager` → `QueryDraftsRequest`.
+- **Same name, different meaning** — some names still compile but mean something else now, e.g. `User`, `Reaction`,
+  `PollResponse` and `ChannelConfig`. Check what an annotation resolves to before keeping it.
+- **Errors** — `ErrorFromResponse` → `StreamAPIError`. A request answered with HTTP 429 or `TOKEN_EXPIRED` is
+  retried up to 10 times with backoff, then throws `RetryError`.
+- **Logging** — the `logger` option and `client.logger` are replaced by the process-wide `chatLoggerSystem`, and it
+  is **on by default**: a console sink at `info`. Quiet it with `chatLoggerSystem.configureLoggers({ default: { level:
+  'warn' } })`.
+- **`message.ai_generated` → `message.custom?.ai_generated`** — the usual body of `isMessageAIGenerated` (Q.3):
+
+  ```diff
+  - <Chat client={client} isMessageAIGenerated={(message) => !!message.ai_generated}>
+  + <Chat client={client} isMessageAIGenerated={(message) => !!message.custom?.ai_generated}>
+  ```
+
+## R.9 Offline DB contract (breaking for custom offline code)
+
+Only for a custom `AbstractOfflineDB`, a subclass of `OfflineDB`, or direct `OfflineStoreApis` / SQLite access.
+
+- **`getChannelsForQuery` input** (`DBGetChannelsForQueryType`): `{ userId, filters, options, sort }` →
+  `{ userId, options }`, with the filters in `options.filter_conditions` and the sort in `options.sort`. The return
+  type changed too (§N.1).
+- **`OfflineDB` lost `handleOfflineFailedUpdateMessagePendingTask` and
+  `mergeFailedMessageUpdateIntoPendingSendMessage`.** New: `handleUpdateMessagePendingTask`, `hardDeleteMessages`,
+  `queriesBehindChannelGuard`, `upsertMessageBehindChannelGuard`, plus the concrete helpers in §M.6. Port overrides
+  of the removed hooks to the new pending-task handler.
+- **`deleteMessagesForChannel({ truncated_at })`** takes a `TimestampNS` (v9: an ISO string), defaulting to `nowNs()`.
+- **`insertReaction` / `updateReaction` skip a reaction whose message is not cached** (v9's write failed on the
+  foreign key and aborted the batch).
+- **`OfflineStoreApis` retyped** to `stream-chat` v10 types: sort is `SortParamRequest[]`, channel rows are
+  `ChannelStateResponseFields` (was `ChannelAPIResponse`), polls `PollResponseData`, locations
+  `SharedLocationResponseData`, app settings `GetApplicationResponse`. `currentUserId` → `userId` is P.6.
+- **`SqliteClient.logger`** is a `stream-chat` `Sink` (was `Logger`); the call shape `(level, message, extra)` is
+  unchanged.
+- **v9's queued pending tasks are dropped** by the reinit that `dbVersion` 16 → 18 forces (§N.2).
+
+## R.10 i18n gaps
+
+Not covered by §19 or `i18n-v10-migration.md`:
+
+- **`Streami18n.geti18Instance()` is removed** → the `i18n.i18nInstance` property. `getAvailableLanguages()` and
+  `getTranslations()` (see the i18n guide) and `addOnTFunctionOverrideListener` are removed too; subscribe to
+  `i18n.state` instead of the listener.
+- **`TranslationContextValue.userLanguage` is `string`** (v9: `stream-chat`'s `TranslationLanguages`), and
+  `DEFAULT_USER_LANGUAGE` is `'en'`. Narrow it before passing it to `stream-chat`'s translation API, whose `language`
+  is a closed union: `client.translateMessage({ id }, { language })`.
+- **`isDayOrMoment`** is re-exported from `@stream-io/i18n`: `(value) => value is DateTimeLike` (v9:
+  `output is Dayjs | Moment`).
+- **Four app-callable formatter keys left the catalog** and are not in the key map: `duration/Location end at`,
+  `duration/Remind Me`, `timestamp/ReminderNotification`, `timestamp/MessageEditedTimestamp`. The SDK never rendered
+  them, but v9 shipped them in `en.json`, so apps called them. Register the expression yourself, for every language
+  you register (English included):
+
+  ```ts
+  import type { LooseTranslationDictionary } from 'stream-chat-react-native';
+
+  const appFormatterExpressions: LooseTranslationDictionary = {
+    'duration.locationEndAt': '{{ milliseconds | durationFormatter(withSuffix: false) }}',
+    'duration.remindMe': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
+    'timestamp.reminderNotification': '{{ timestamp | timestampFormatter(calendar: true) }}',
+  };
+  streami18n.registerTranslation('en', appFormatterExpressions);
+  ```
+
+  `examples/SampleApp/src/i18n/appKeys.ts` does this. `duration/Message reminder` is still bundled, as
+  `duration.messageReminder`.
+- **`t()` only accepts catalog keys.** `TranslationContextValue.t` is `StreamTFunction`, so an app key needs
+  `asDynamicKey('…')` (`timestamp.*` / `duration.*` keys are accepted as they are). See the i18n guide's "Custom keys
+  of your own".
+- **`SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY` / `SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY` hold the dotted
+  keys** (`messageList.scrollToBottom.accessibilityLabel`, `messageList.scrollToBottom.withCount.accessibilityLabel`),
+  not `a11y/…`.
+
+## R.11 Deep imports (low)
+
+Only affects imports from `stream-chat-react-native-core/src/…` or `…/lib/…`. None of these was exported from the
+package root in v9. Deleted, with no public replacement:
+
+- `ChannelsStateProvider`, `useChannelsStateContext`, `useChannelState` (`contexts/channelsStateContext`)
+- `ActiveChannelsRefContext` (`contexts/activeChannelsRefContext`)
+- `useChannelDataState` (`components/Channel/hooks/useChannelDataState`)
+- `ChannelUnreadStateStore` (`state-store/channel-unread-state`) — §7
+- `MessagePreviousAndNextMessageStore` (`state-store/message-list-prev-next-state`)
+- `ChannelList/hooks/utils` — the pin / archive sort helpers (`isChannelPinned`, `isChannelArchived`, …)
+- `useCreateMessageComposer` (`contexts/messageInputContext/hooks`)
+- the `utils/i18n/*` modules (`getDateString`, `predefinedFormatters`, `calendarFormats`, `types`) — their functions
+  are root exports now (§19)
+
+Still there but still deep-only, with changed signatures: `filterTypingUsers` (§2.1) and `MessageComposerContext` /
+`useMessageComposerContext` (§10.2).
+
+---
+
 # Part I — i18n
 
 ## 19. English-only bundle, dotted keys, shared runtime
@@ -2849,11 +3319,12 @@ agent grepping this file finds i18n at all, and knows the three shapes of change
    error.
 2. **English is the only bundled language.** The 12 non-English dictionaries and the `*Translations` exports
    are gone. An integrator supplies their own, additively; a key they omit still renders English.
-3. **The runtime moved to `@stream-io/i18n`**, shared with the React SDK. Imports are unchanged — everything
-   is still exported from `stream-chat-react-native` / `stream-chat-expo`, and `Streami18n` keeps its name
-   — but reactivity is a `StateStore` rather than listeners, `setLanguage` returns `void`,
-   `getTranslators()` is now `init()`, and a few date-helper parameters were renamed to the one name both
-   SDKs use. Nothing is kept as a deprecated alias. See the quick-reference rows above.
+3. **The runtime moved to `@stream-io/i18n`**, shared with the React SDK. `Streami18n` is still exported from
+   `stream-chat-react-native` / `stream-chat-expo` and keeps its name; the date helpers (`getDateString`,
+   `predefinedFormatters`, …), deep imports in v9, are root exports now — but reactivity is a `StateStore`
+   rather than listeners, `setLanguage` returns `void`, `getTranslators()` is now `init()`, and a few
+   date-helper parameters were renamed to the one name both SDKs use. Nothing is kept as a deprecated alias.
+   See the quick-reference rows above.
 
 Two dependency rules that produce silent breakage rather than errors:
 
