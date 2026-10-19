@@ -77,7 +77,7 @@ rg 'useMessagesContext\(\)' -A10 src/ | rg '\b(sendReaction|deleteReaction|delet
 rg '\buseMessageActions\b' src/
 
 # §10 — thread API (instance + standalone <Thread>)
-rg '\b(useThreadContext|openThread|closeThread|reloadThread|loadMoreThread|threadMessages|closeThreadOnDismount|ThreadFooterComponent|threadList|ThreadMessageComposer|additionalMessageListProps|additionalMessageInputProps|shouldUseFlashList)\b' src/
+rg '\b(useThreadContext|openThread|closeThread|reloadThread|loadMoreThread|threadMessages|closeThreadOnDismount|ThreadFooterComponent|threadList|ThreadMessageComposer|additionalMessageListProps|additionalMessageFlashListProps|additionalMessageComposerProps|shouldUseFlashList|shouldSyncChannel)\b' src/
 rg '<Channel\b' -A20 src/ | rg '\bthread\b'
 
 # §11 — editMessage return type
@@ -146,7 +146,7 @@ rg '\bAIStates\.\w+\s*\]\.includes\b' src/
 rg '\b(initializeOnMount|isLocalUnreadCountEnabled|supersededBy|UnreadMessagesNotification)\b' src/
 
 # §R.6 — channel list query
-rg '<ChannelList\b' -A12 src/ | rg '\b(filters|options|offset)\b'
+rg 'new ChannelPaginator\b' -A12 src/ | rg '\b(filters|offset|limit)\b'
 
 # §R.7 — stream-chat state read directly
 rg 'channel\.state\.(messages|latestMessages|messageSets|threads|pinnedMessages|isUpToDate|findMessage|loadMessageIntoState|addMessageSorted|mutedUsers)\b' src/
@@ -210,10 +210,10 @@ means changed. Details in the linked section.
 | `useThreadContext().threadHasMore` / `threadLoadingMore` | `thread.messagePaginator.state.hasMoreTail` / `.isLoading` | §10 |
 | `useThreadContext().reloadThread()` | `thread.reload()` | §10 |
 | `openThread(msg)` / `closeThread()` | lift `onThreadSelect` into app state, render `<Thread thread={thread}>` | §10.1 |
-| `ThreadType` / `<Channel thread={message}>` | a `Thread` instance; `client.threads.ensure({ channel, parentMessage })` builds one from a message | §10.1 |
+| `ThreadType` / `<Channel thread={message}>` | `<Thread thread={thread}>` with a `Thread` instance; `client.threads.ensure({ channel, parentMessage })` builds one from a message | §10.1 |
 | `<Channel thread={thread} threadList><Thread /></Channel>` | `<Thread thread={thread}><MessageList /><MessageComposer /></Thread>`, no `<Channel>` around it | §10.1 |
 | `threadList` (prop or context field) | `useThreadContext().thread` | §10.2 |
-| `ThreadMessageComposer` slot / `additionalMessageInputProps` | a `MessageComposer` child of `<Thread>` with its own props | §10.2 |
+| `ThreadMessageComposer` slot / `additionalMessageComposerProps` | a `MessageComposer` child of `<Thread>` with its own props | §10.2 |
 | `useMessageComposerContext().thread` (parent message; deep import only) | `thread` is now the `Thread`; parent on `thread.state` | §10.2 |
 | `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
 | `<MessageList targetedMessage / loadMoreThread / threadInstance …>` props | removed — list reads the `Thread` from `ThreadContext` + paginator internally; `thread` stays, retyped to `Thread \| null` | §12 |
@@ -261,8 +261,8 @@ means changed. Details in the linked section.
 | `useMessageContext().readBy` / `.deliveredToCount` | `useIsMessageReadByOthers({ message })` / `useIsMessageDeliveredToOthers({ message })` | §R.3 |
 | `<MessageStatus readBy={n} deliveredToCount={n} />` | `<MessageStatus read={bool} delivered={bool} />` | §R.3 |
 | `useMessageContext().members` | `useStateStore(channel.state, (s) => ({ members: s.members }))` | §4 |
-| `<ChannelList options={{ offset }}>` | ignored — the list pages itself; `options.limit` is the page size | §R.6 |
-| `<ChannelList filters={{ myField: x }}>` | `filters={{ 'custom.myField': x }}` | §R.6 |
+| `<ChannelList options={{ offset, limit }}>` | the `ChannelPaginator` owns paging: `requestOptions` takes neither; page size is `paginatorOptions.pageSize` | §R.6 |
+| `<ChannelList filters={{ myField: x }}>` | `new ChannelPaginator({ client, filters: { 'custom.myField': x } })` | §R.6 |
 | `channel.state.messages` / `channel.lastMessage()` | `channel.messagePaginator.state` (`items`) / `channel.messagePaginator.lastMessage` | §R.7 |
 | `client.activeChannels[cid]` | `client.channelManager.get(cid)` | §R.7 |
 | `client.threads.state` `threads` / `client.threads.loadNextPage()` | `client.threads.paginator.state` `items` / `client.threads.paginator.toTail()` | §R.7 |
@@ -806,10 +806,13 @@ registers a new one.
 
 ### 10.2 Removed thread-related props / context fields
 
-- **`<Channel>`**: `thread` and `threadList` removed. A `<Channel>` only ever renders its channel's
-  main list; render a `<Thread>` for replies.
+- **`<Channel>`**: `thread`, `threadList`, `allowThreadMessagesInChannel` (now a `<Thread>` prop) and
+  `shouldSyncChannel` removed. A `<Channel>` only ever renders its channel's main list and always runs its own
+  lifecycle (v9 apps passed `shouldSyncChannel={false}` to a `<Channel>` that only hosted a thread); render a
+  `<Thread>` for replies.
 - **`ThreadProps`**: removed `closeThread`, `loadMoreThread`, `reloadThread`, `threadInstance`,
-  `additionalMessageListProps`, `additionalMessageInputProps`, `shouldUseFlashList`, `autoFocus`,
+  `additionalMessageListProps`, `additionalMessageFlashListProps`, `additionalMessageComposerProps`,
+  `shouldUseFlashList`, `autoFocus`,
   `disabled`, `closeThreadOnDismount` and `parentMessagePreventPress`. `thread` is required and is
   the `Thread` instance (it was the parent message). Configure the list and composer through their
   own props (they are your children now), use `onThreadDismount` for cleanup on unmount, and pass
@@ -864,8 +867,8 @@ thread state from the `Thread` in `ThreadContext`, unread from the paginator sna
 targeting from the focus signal (§6) — all internally. `allowSendBeforeAttachmentsUpload` became
 `pendingUploadsEnabled` (O.3).
 
-`thread` is **not** removed: it is retyped `LocalMessage | null` → `Thread | null`. Pass the instance,
-or leave it out and the list reads the one in `ThreadContext`.
+`thread` is **not** removed: it is retyped `LocalMessage | null` → `Thread | undefined`. Leave it out inside a
+`<Thread>` (the list reads the one in `ThreadContext`); `threadList` is gone (§10.2).
 
 The paging props `loadMore`, `loadMoreRecent`, `hasMore`, `loadingMore` and `loadingMoreRecent` are
 removed too: the list pages its own paginator (P.7). `markRead` is still passed.
@@ -3112,14 +3115,17 @@ Message rows and previews:
 
 ## R.6 Channel list (breaking/behavioural)
 
-- **`options.offset` is ignored and `options.limit` is the page size.** The paginator owns the offset; the rest of
-  `options` becomes the request options.
+The list's query now lives on the app-owned `ChannelPaginator` (§18.6); these are the ways its inputs differ from
+v9's `<ChannelList>` props.
+
+- **The paginator owns paging.** `requestOptions` (`ChannelPaginatorRequestOptions`) takes neither `offset` nor
+  `limit`; set the page size with `paginatorOptions.pageSize`. v9's `options={{ offset }}` has no equivalent.
 - **`filters` are `stream-chat` v10's generated filter types**: custom fields are `'custom.<field>'` keys, and each
   key takes one operator.
 
   ```diff
   - <ChannelList filters={{ type: 'messaging', members: { $in: [userId] }, myField: 'x' }} />
-  + <ChannelList filters={{ type: 'messaging', members: { $in: [userId] }, 'custom.myField': 'x' }} />
+  + new ChannelPaginator({ client, filters: { type: 'messaging', members: { $in: [userId] }, 'custom.myField': 'x' } })
   ```
 
 - **Channels can leave a list on events.** Every routed event (`message.new`, `member.updated`,

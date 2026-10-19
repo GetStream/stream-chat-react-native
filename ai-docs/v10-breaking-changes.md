@@ -16,7 +16,9 @@ Docs impact (which getstream.io pages change) is in [`v10-docs-impact.md`](./v10
 ## Scope and method
 
 - **Baseline:** `develop` @ `42662cdb1` (v9.10.x, `stream-chat` 9.54.0). **Target:** `V10` @ `c994ffd00`
-  (`stream-chat` 10.0.0-rc.22). The two trees were compared tip to tip; `V10` squash-merges `develop`, so ancestry
+  (`stream-chat` 10.0.0-rc.22) plus the stacked PRs #3866–#3869 (`refactor/stop-creating-sdk-paginator` @
+  `251a76dfe`: message actions built on demand, a standalone `<Thread>`, the `<Channel>` lifecycle refactor and an
+  app-owned `<ChannelList paginator>`). The trees were compared tip to tip; `V10` squash-merges `develop`, so ancestry
   diffs are not reliable. The three `develop` commits not yet on `V10` (#3862, #3863, #3864) change no public API.
 - **Public API** = everything reachable from `package/src/index.ts`, the `ai-components` entry, the wrappers'
   `src/index.js`, `DEFAULT_COMPONENTS`, the theme, translations and `package.json` peer/dependency ranges.
@@ -28,8 +30,9 @@ Docs impact (which getstream.io pages change) is in [`v10-docs-impact.md`](./v10
   3. a review of all 40 PRs merged into `V10` for behaviour that types cannot show;
   4. the `examples/` diff (the migration the team already did on its own apps), the deleted/rewritten tests, and a
      cross-check against the `stream-chat` and `stream-chat-react` v10 breaking-change lists.
-- Not breaking (checked): theme shape (`Theme` is identical), `DEFAULT_COMPONENTS` slot names and the `icons` map,
-  native modules, podspecs, the Expo config plugin, `registerNativeHandlers` and the native handler interfaces.
+- Not breaking (checked): theme shape (`Theme` is identical), the `icons` map, `DEFAULT_COMPONENTS` slot names except
+  the removed `ThreadMessageComposer`, native modules, podspecs, the Expo config plugin, `registerNativeHandlers` and
+  the native handler interfaces.
 
 ---
 
@@ -88,6 +91,7 @@ Everything below was exported from the package root in v9 and is gone in v10.
 
 - `ThreadType` → a `Thread` instance (`client.threads.ensure({ channel, parentMessage })` builds one). — §10.1 · #3861
 - `ChannelUnreadState` → `channel.messagePaginator.unreadStateSnapshot` (`UnreadSnapshotState`). — §7 · P.9
+- `MessageActionsHookProps` → nothing; `useMessageActions()` reads the message's contexts. — §15.1 · #3866
 
 **Translations**
 
@@ -131,26 +135,34 @@ Removed props:
   `<Chat>`. — §O.3 · #3821
 - `isMessageAIGenerated` → `<Chat isMessageAIGenerated>` only. — Q.3 · #3852
 - `isOnline` → nothing (was ignored). — P.5
+- `thread`, `threadList` → render `<Thread thread={thread}>` next to `<Channel>`, not inside it. — §10.1 · #3867
+- `allowThreadMessagesInChannel` → a `<Thread>` prop. — §10.2 · #3867
+- `shouldSyncChannel` → nothing; `<Channel>` always runs its lifecycle (a thread no longer needs a non-syncing
+  `<Channel>` around it). — §10.2 · #3867
 
 Retyped props:
 
-- `thread`: `LocalMessage | ThreadType | null` → `Thread | null`. — §10.1 · #3861
 - `channel`, `customMessageSwipeAction`: the `Channel` type is `stream-chat` v10's. — §17.5
 - `t`: i18next `TFunction` → `StreamTFunction`. — §R.10
 
 ### `<ChannelList>`
 
+- New required `paginator` prop: the app creates a `ChannelPaginator`, registers it with
+  `client.channelManager.insertPaginator({ paginator })` and removes and disposes it on logout. The list never
+  disposes it and does not query again when it remounts. — §18.6 · #3869
+- Removed `filters`, `sort`, `options`, `lockChannelOrder`, `queryChannelsOverride` (and the
+  `ChannelListQueryChannelsOverride` type) → set them on the `ChannelPaginator`: `filters` / `sort` /
+  `requestOptions` in its constructor, `paginatorOptions.lockItemOrder`, `paginatorOptions.doRequest`. To change the
+  query, update the paginator's filters / sort and `reload()`, or pass a new paginator. — §18.1 · §18.6 · #3869
+- What moved onto the paginator also changed shape since v9: `sort` is `SortParamRequest[]`
+  (`[{ field: 'last_message_at', direction: -1 }]`) and an empty `sort` means the backend default; filters use
+  `'custom.<field>'` keys with one operator per key; `doRequest` returns `{ items }` — call
+  `client.queryChannelsAndHydrate(request, stateOptions)` inside; `options.offset` is ignored and `options.limit` is
+  the page size. — §17.5 · §N.4 · §R.6
 - Removed `onAddedToChannel`, `onRemovedFromChannel`, `onChannelDeleted`, `onChannelHidden`, `onChannelVisible`,
   `onChannelUpdated`, `onChannelTruncated`, `onChannelMemberUpdated`, `onNewMessage`, `onNewMessageNotification` →
   membership and order follow `filters` / `sort`; global behaviour via `client.channelManager.addEventHandler(...)` /
   `client.on(...)`. — §18 · #3770
-- `sort`: `ChannelSort` object → `SortParamRequest[]` (`[{ field: 'last_message_at', direction: -1 }]`); an empty
-  `sort` now means the backend default. — §17.5 · §N.4 · #3749 #3783
-- `filters`: generated filter type; custom fields are `'custom.<field>'` keys, one operator per key. — §R.6 · LLC
-- `queryChannelsOverride`: `(filters, sort, options, stateOptions) => Promise<Channel[]>` →
-  `(queryShape) => Promise<{ items: Channel[] }>`; use `client.queryChannelsAndHydrate(request, stateOptions)` inside.
-  — §18.1 · #3770
-- `options.offset` is ignored; `options.limit` becomes the page size. — §R.6
 
 ### `<ChannelListView>`, `<ChannelPreview>`
 
@@ -165,6 +177,14 @@ Retyped props:
   §R.3 · §R.4 · Q.3 · P.13 · §10.1
 - `Message`: `onThreadSelect` `(message, targetedMessageId?)` → `(thread: Thread)`; `updateMessage` takes one argument.
   — §10.1 · §9
+- `Message`: removed `handleBan`, `handleBlockUser`, `handleCopy`, `handleDelete`, `handleDeleteForMe`, `handleEdit`,
+  `handleFlag`, `handleMarkUnread`, `handleMute`, `handlePinMessage`, `handleQuotedReply`, `handleRetry`,
+  `messageActions`, `supportedReactions` — set on a `<Message>` (e.g. from a custom `Message`), they no longer reached
+  the action menu. Set them on `<Channel>`; customise per message through the `messageActions` function. — §15.1 ·
+  #3866
+- `threadList` removed from `Message`, `MessageContent`, `MessageReplies` and `MessageComposer`; `MessageItemView`,
+  `SentToChannelHeader` and `ShowThreadMessageInChannelButton` take `thread` instead. Inside a thread,
+  `useThreadContext().thread` is set. — §10.2 · #3867
 - `MessageStatus`: `readBy` / `deliveredToCount` (counts) → `read` / `delivered` (booleans, self-derived by default). —
   §R.3 · #3823
 - `MessageFooter`, `MessageItemView`: `members` removed. — §4 · §R.4 · #3779
@@ -179,7 +199,8 @@ Retyped props:
   `loadMoreThread`, `loadMoreRecentThread`, `loadChannelAroundMessage`, `loading`, `reloadChannel`, `threadInstance`,
   `maximumMessageLimit`, `allowSendBeforeAttachmentsUpload`, `scrollToFirstUnreadThreshold`,
   `shouldShowUnreadUnderlay`, `FlatList` (FlashList). The lists read their own paginator. — §12 · P.5 · P.7 · §O.1
-- `thread`: kept, retyped `LocalMessage | null` → `Thread | null`. — §12
+- `thread`: kept, retyped `LocalMessage | null` → `Thread | undefined`. — §12
+- `threadList` removed; a list inside `<Thread>` renders the thread's replies. — §10.2 · #3867
 - `onThreadSelect`: `(message) => void` → `(thread: Thread) => void`. — §10.1
 - Older-end loading component (`FooterComponent` on `MessageList`, `HeaderComponent` on `MessageFlashList`) now
   receives `{ loadingMore?: boolean }`. The newer-end one gets no props and has no SDK source for `loadingMoreRecent`.
@@ -194,9 +215,16 @@ Retyped props:
 
 ### `<Thread>` and thread components
 
-- `Thread`: removed `closeThread`, `loadMoreThread`, `reloadThread`, `threadInstance`; `thread` is `Thread | null`;
-  `closeThreadOnDismount` is still typed but no longer read. — §10.2 · §R.4
-- `ThreadFooterComponent`: `thread` prop removed (reads the thread from context). — §10.2
+- `<Thread thread={thread}>` renders next to `<Channel>`, not inside it, and renders its children
+  (`<Thread thread={thread}><MessageList /><MessageComposer /></Thread>`). — §10.1 · #3867
+- `Thread`: `thread` is required and is the `Thread` instance (it was the parent message). Removed `client`,
+  `closeThread`, `loadMoreThread`, `reloadThread`, `threadInstance`, `additionalMessageListProps`,
+  `additionalMessageFlashListProps`, `additionalMessageComposerProps`, `shouldUseFlashList`, `autoFocus`, `disabled`,
+  `closeThreadOnDismount` (use `onThreadDismount`) and `parentMessagePreventPress` (a `ThreadFooterComponent` prop).
+  Configure the list and composer through their own props; `<Thread>` accepts the same config props as `<Channel>`. —
+  §10.2 · #3736 #3861 #3867
+- `ThreadFooterComponent`: `thread` prop removed (reads the thread from context); props are
+  `{ parentMessagePreventPress?: boolean }`, default `true`. — §10.2
 - `ThreadList`: `onThreadSelect(thread: ThreadType, channel)` → `onThreadSelect(thread: Thread)` (`thread.channel`). —
   §10.1
 
@@ -226,6 +254,7 @@ message input).
 
 ### `ChannelContext` (`useChannelContext()`)
 
+- Removed `threadList` → `useThreadContext().thread`. — §10.2 · #3867
 - Removed `members`, `read`, `watchers`, `watcherCount` → `useStateStore(channel.state, selector)`. — §4
 - Removed `markRead` → `useMarkRead(channel)`. — §5
 - Removed `targetedMessage`, `setTargetedMessage`, `highlightedMessageId` → `messagePaginator.messageFocusSignal`,
@@ -259,20 +288,25 @@ message input).
 - Removed `targetedMessage` → `useIsTargetedMessage(id)`. — §6
 - Removed `initialScrollToFirstUnreadMessage`, `quotedMessage`. — P.4
 - Removed `isMessageAIGenerated` → `useChatContext()`. — Q.3
+- New `onAlsoSentToChannelHeaderPress` (moved from `ThreadContext`). — §10.2 · #3867
 
 ### `MessageContext` (`useMessageContext()`)
 
-- Removed `members`, `readBy`, `deliveredToCount`, `isMessageAIGenerated`. — §4 · §R.3 · Q.3
+- Removed `members`, `readBy`, `deliveredToCount`, `isMessageAIGenerated`, `threadList`. — §4 · §R.3 · Q.3 · §10.2
 - `onThreadSelect`: `(message, targetedMessageId?)` → `(thread: Thread)`. — §10.1
+- New `messageActionHandlers` (`MessageActionHandlerCallbacks`, stable for the row's lifetime) and
+  `isVeryLastMessage`. — §15.1 · #3866
 
 ### `ThreadContext` (`useThreadContext()`)
 
-- Now `{ allowThreadMessagesInChannel, thread?: Thread | null, onAlsoSentToChannelHeaderPress? }`. `thread` was the
-  parent `LocalMessage`; it is now the `Thread` (parent via `thread.state`).
+- Now `{ thread?: Thread, allowThreadMessagesInChannel }`. `thread` was the parent `LocalMessage`; it is now the
+  `Thread` (parent via `thread.state`), and `null` is no longer part of the type — use `undefined` for "no thread". Only `<Thread>` provides it, and `useThreadContext()` no longer throws: outside
+  a thread it returns `{ thread: undefined, allowThreadMessagesInChannel: false }`. — §10 · #3867
+- `onAlsoSentToChannelHeaderPress` moved to `MessagesContext`. — §10.2 · #3867
 - Removed `threadMessages`, `threadHasMore`, `threadLoadingMore`, `threadLoadingMoreRecent`, `loadMoreThread`,
   `loadMoreRecentThread`, `reloadThread`, `setThreadLoadingMore`, `openThread`, `closeThread`, `threadInstance`,
-  `parentMessagePreventPress` → `thread.messagePaginator`, `thread.reload()`, prop-driven open/close. — §10 · §10.1 ·
-  §R.4
+  `parentMessagePreventPress` → `thread.messagePaginator`, `thread.reload()`, render `<Thread>` to open. — §10 ·
+  §10.1 · §R.4
 - `onAlsoSentToChannelHeaderPress` payload: `{ parentMessage }` → `{ thread }`. — §10.1
 
 ### `ThreadsContext`
@@ -300,13 +334,16 @@ message input).
   §17.5
 - `useChannelMembersState(channel)` → `(channel, pick?)` (additive). — #3854
 - `useCreateChatClient({ options })`: `StreamChatOptions` → `DeepPartial<InstanceConfigTree>` (former options go under
-  `client`). — §17.7 · #3855
+  `client`); `userData` is typed `ClientUser`, what `connectUser` accepts. — §17.7 · #3855 #3871
 - `useQueryReminders()`: data typed `ReminderResponseData[]` (was `ReminderResponse[]`), timestamps in ns. — §R.8
 - `useMessageList(params)`: `{ threadList }` → `{ paginator }` (no longer reads context); also returns
   `maxLoadedItems`. — P.8
-- `useMessageActions(params)` (`MessageActionsHookProps` / `MessageActionsParams`): `openThread` removed,
-  `onThreadSelect` takes a `Thread`, `updateMessage` takes one argument. — §9 · §10.1
-- `useMessageActionHandlers(params)`: message ops come from `MessageOperations`, not `MessagesContextValue`. — §9
+- `useMessageActions(params)` → `useMessageActions()` and `useMessageActionHandlers(params)` →
+  `useMessageActionHandlers()` (returns `MessageActionHandlerCallbacks`): no arguments; both read the contexts of the
+  message they are called in, so they must run inside a message (a custom `Message` or `MessageActionList`). The
+  `messageActions` function's `MessageActionsParams` lost `openThread`; its `onThreadSelect` takes a `Thread` and
+  `updateMessage` one argument. — §15.1 · §9 · §10.1 · #3866
+- `useMessagePaginator()`: returns `MessagePaginator` (no longer `| undefined`). — #3867
 - `useCreateMessagesContext`, `useCreateThreadContext`, `useCreateMessageInputContext`, `useCreateMessageContext`:
   inputs narrowed to the new context shapes. — §15 · §R.4
 - `useChannelOwnCapabilities(channel)`: one overload `(channel?)`. — K.6
@@ -380,9 +417,13 @@ message input).
 
 ## 9. Component slots, icons and theme
 
-- No `DEFAULT_COMPONENTS` slot or icon was added, removed or renamed, and the `Theme` type is identical. What changed is
-  the **props and context** those slots receive (sections 3–4) — a custom slot written against v9 contexts must be
-  re-checked.
+- One slot was removed: `ThreadMessageComposer`. Render the composer you want as a child of `<Thread>`. — §10.2 ·
+  #3867
+- No other `DEFAULT_COMPONENTS` slot or icon was added, removed or renamed, and the `Theme` type is identical. What
+  changed is the **props and context** those slots receive (sections 3–4) — a custom slot written against v9 contexts
+  must be re-checked.
+- `MessageActionList` receives the same props as before, but its list is now built only while a message's menu is
+  open. — §15.1 · #3866
 - Behaviour of default slots: `NetworkDownIndicator` shows "Waiting for network..." (device offline, new key
   `common.waitingForNetwork.text`) or "Reconnecting..." (socket down after the settle delay) and no longer shows a
   load error. `ChannelListHeaderNetworkDownIndicator` and `NotificationAnnouncer` follow the same signals. — §L.7 ·
@@ -503,6 +544,7 @@ apps' own code.
 - `sendMessage` errors reject instead of being swallowed. — §16.2
 - Sending no longer clears `type: 'error'` messages from the list.
 - Initial page size is 25 (v9 ≈100). — §16.1
+- The `messageActions` function runs when a message's menu opens, not on every render of every row. — §15.1 · #3866
 
 **`<Channel>`** — §L.4 · §R.5
 
@@ -516,15 +558,20 @@ apps' own code.
 - Poll creation button shows before the server `polls` flag arrives.
 - Composer `maxLength` follows `messageComposer.config.text.maxLengthOnSend`.
 
-**`<Thread>`** — §L.10 · §R.5
+**`<Thread>`** — §10.3 · §L.10 · §R.5
 
+- Renders on its own next to `<Channel>`; opening a thread, or pressing scroll-to-bottom in one, no longer marks the
+  channel read. — #3867
 - Shows `LoadingErrorIndicator` instead of the list and composer when the first reply page fails.
 - Does not mark a thread with no replies as read.
 
 **Channel list** — §18.5 · §N.4 · §R.6
 
-- One shared `client.channelManager`; lists are a projection of `filters` / `sort` (no promote-to-top, channels can
-  leave a list when they stop matching).
+- One shared `client.channelManager`; each list is a projection of its paginator's `filters` / `sort` (no
+  promote-to-top, channels can leave a list when they stop matching).
+- The app owns the list's `ChannelPaginator`: the list loads a first page only when the paginator has none (first
+  mount, after `disconnectUser` empties it, or a new paginator), never re-queries on prop changes and never disposes
+  it. `disconnectUser` empties registered paginators but keeps them registered. — §18.6 · #3869
 - Recovery re-runs each list's first page; `<ChannelList>` has no reconnect listener.
 - An empty `sort` means the backend default.
 - Channel preview typing indicator ignores typing inside threads; `MessageFooter` shows the sender name when
@@ -547,6 +594,7 @@ Only affects imports from `stream-chat-react-native-core/src/…` or `lib/…`. 
 
 These replace removed APIs and need documentation:
 
+- Components: `<Thread>` as a standalone, sibling-of-`<Channel>` component that renders its children.
 - Hooks: `useMessagePaginator`, `useMessageOperations` (+ `MessageOperations` type), `useMarkRead`,
   `useIsTargetedMessage`, `useChannel`, `useIsMessageReadByOthers`, `useIsMessageDeliveredToOthers`,
   `usePendingUploadsEnabled`, `useConnectionLifecycle`, `useNetworkConnectionState(Selector)`,
@@ -558,8 +606,11 @@ These replace removed APIs and need documentation:
   `TranslationKey`, `TranslationCatalog`, `TranslationDictionary`, `LooseTranslationDictionary`, `StreamTFunction`,
   `DynamicTranslationKey`, `Streami18nOptions`, `CustomFormatters`, `FormatterFactory`, `PredefinedFormatters`,
   `DayjsLocaleConfig`, `DateTimeParserModule`, `DurationFormatterOptions`, `TimestampFormatterOptions`.
-- Context fields / props: `ChannelsContext.paginator`, `ChatContext.getAppSettings`, `ChannelListView.paginator`,
-  `MessageStatus.read` / `delivered`, `MessageList.pendingUploadsEnabled`, `TypingIndicatorContainer.threadId`.
+- Context fields / props: `<ChannelList paginator>` (required), `ChannelsContext.paginator`,
+  `ChatContext.getAppSettings`, `ChannelListView.paginator`, `MessageContext.messageActionHandlers` (type
+  `MessageActionHandlerCallbacks`), `MessageContext.isVeryLastMessage`, `MessagesContext.onAlsoSentToChannelHeaderPress`,
+  `Thread.allowThreadMessagesInChannel` and the `<Channel>` config props on `<Thread>`, `MessageStatus.read` /
+  `delivered`, `MessageList.pendingUploadsEnabled`, `TypingIndicatorContainer.threadId`.
 
 ## 16. Known issues found by the audit
 
