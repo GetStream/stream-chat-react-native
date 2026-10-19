@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Drawer } from 'expo-router/drawer';
 
-import type { LocalMessage, OperationRequestFn, StreamChat, UserResponse } from 'stream-chat';
+import type { LocalMessage, OperationRequestFn, StreamChat } from 'stream-chat';
 import { Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-expo';
 
 import { StreamTheme } from 'stream-chat-expo/ai-components';
@@ -54,7 +54,7 @@ export default function Layout() {
   const chatClient = useCreateChatClient({
     apiKey: chatApiKey,
     tokenOrProvider: chatUserToken,
-    userData: { id: chatUserId, name: chatUserName } as UserResponse,
+    userData: { id: chatUserId, name: chatUserName },
   });
 
   useEffect(() => {
