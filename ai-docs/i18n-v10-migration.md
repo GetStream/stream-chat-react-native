@@ -373,6 +373,10 @@ timestampFormatter(...) }}` breaks date rendering outright. Pass `--all` for the
 
 Every old key maps to exactly one new key. The full table (389 rows) is
 [`i18n-v10-key-map.json`](./i18n-v10-key-map.json). Keys absent from it were dead in v9 and have been removed.
+The exception is four formatter expressions the SDK never rendered but shipped in `en.json`, so apps called them
+directly: `duration/Location end at`, `duration/Remind Me`, `timestamp/ReminderNotification` and
+`timestamp/MessageEditedTimestamp`. They are gone with no replacement key; register the expressions yourself (see
+§R.10 of [`ai-migration-v9-to-v10.md`](./ai-migration-v9-to-v10.md)).
 
 Shape — `key` is the replacement, `prose` is `false` for the formatter expressions, and `plural` marks the keys that
 live in the catalog as `_one` / `_other`:
@@ -422,9 +426,11 @@ the `timestamp/<Component>` keys it replaces.
 
 `Streami18n` is no longer implemented here. The class, the formatters and the whole date layer live in
 `@stream-io/i18n`, shared with the React SDK, and this package exports a thin subclass that injects its own
-bundled copy. **Your imports do not change** — `Streami18n`, `getDateString`, `predefinedFormatters` and every
-type are still exported from `stream-chat-react-native` / `stream-chat-expo`, and the class keeps its name.
-What changes is behaviour and a handful of signatures.
+bundled copy. **`Streami18n`'s import does not change** — it and every type are still exported from
+`stream-chat-react-native` / `stream-chat-expo`, and the class keeps its name. `getDateString`,
+`getCalendarDateStringForA11y` (v9's `getDateStringForA11y`) and `predefinedFormatters` were never root exports in
+v9 — only deep imports from `utils/i18n/*`, which are deleted. v10 exports them from the package root, so import
+them from there. What changes is behaviour and a handful of signatures.
 
 Why: both UI SDKs carried ~1,300 lines of near-duplicate runtime that had drifted, each reverse-mapping
 `stream-chat`'s English notification prose against its own hand-maintained table. A fix landed in one SDK and
