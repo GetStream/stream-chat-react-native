@@ -137,7 +137,6 @@ import { InputButtons } from '../../components/MessageInput/components/InputButt
 import { AttachButton } from '../../components/MessageInput/components/InputButtons/AttachButton';
 import { CooldownTimer } from '../../components/MessageInput/components/OutputButtons/CooldownTimer';
 import { SendButton } from '../../components/MessageInput/components/OutputButtons/SendButton';
-import { MessageComposer } from '../../components/MessageInput/MessageComposer';
 import { MessageComposerLeadingView } from '../../components/MessageInput/MessageComposerLeadingView';
 import { MessageComposerTrailingView } from '../../components/MessageInput/MessageComposerTrailingView';
 import { MessageInputFooterView } from '../../components/MessageInput/MessageInputFooterView';
@@ -549,7 +548,6 @@ const components = {
   PinnedMessageList,
 
   // Thread
-  ThreadMessageComposer: MessageComposer,
   ThreadListComponent,
   ThreadListEmptyPlaceholder: DefaultThreadListEmptyPlaceholder,
   ThreadListItem,

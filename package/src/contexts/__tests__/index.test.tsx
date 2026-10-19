@@ -59,10 +59,6 @@ describe('contexts hooks in a component throws an error with message when not wr
       'The useMessagesContext hook was called outside of the MessagesContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list',
     ],
     [
-      useThreadContext,
-      'The useThreadContext hook was called outside of the ThreadContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
-    ],
-    [
       useAttachmentPickerContext,
       'The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
     ],
@@ -74,5 +70,21 @@ describe('contexts hooks in a component throws an error with message when not wr
     expect(() => render(<TestComponent useContextHook={useContextHook} />)).toThrow(
       expectedErrorMessage,
     );
+  });
+});
+
+// Only `<Thread>` provides the thread context, so outside one a component reads "no thread" rather
+// than a missing provider.
+describe('useThreadContext', () => {
+  it('returns no thread outside a thread', () => {
+    let thread: unknown = 'unset';
+    const TestComponent = () => {
+      thread = useThreadContext().thread;
+      return <View />;
+    };
+
+    render(<TestComponent />);
+
+    expect(thread).toBeUndefined();
   });
 });

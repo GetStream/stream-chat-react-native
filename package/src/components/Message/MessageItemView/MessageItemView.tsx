@@ -16,6 +16,10 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../../hooks/useStableCallback';
 
@@ -115,8 +119,8 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'setQuotedMessage'
   | 'lastGroupMessage'
   | 'contextMenuAnchorRef'
-  | 'threadList'
 > &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<
     MessagesContextValue,
     | 'customMessageSwipeAction'
@@ -146,7 +150,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     reactionListPosition,
     reactionListType,
     setQuotedMessage,
-    threadList,
+    thread,
   } = props;
   const {
     MessageAuthor,
@@ -254,7 +258,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
             </View>
           </View>
 
-          {!threadList && !!message.reply_count ? (
+          {!thread && !!message.reply_count ? (
             <View style={styles.repliesContainer}>
               <MessageReplies />
             </View>
@@ -329,10 +333,7 @@ const areEqual = (
     return false;
   }
 
-  const channelEqual =
-    prevChannel?.messagePaginator.state.getLatestValue().items?.length ===
-    nextChannel?.messagePaginator.state.getLatestValue().items?.length;
-  if (!channelEqual) {
+  if (prevChannel !== nextChannel) {
     return false;
   }
 
@@ -419,8 +420,8 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     otherAttachments,
     setQuotedMessage,
     lastGroupMessage,
-    threadList,
   } = useMessageContext();
+  const { thread } = useThreadContext();
 
   const {
     customMessageSwipeAction,
@@ -453,7 +454,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         reactionListType,
         setQuotedMessage,
         lastGroupMessage,
-        threadList,
+        thread,
       }}
       {...props}
     />

@@ -1,65 +1,32 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 
-import type { LocalMessage } from 'stream-chat';
+import type { LocalMessage, Thread as ThreadInstance } from 'stream-chat';
 
-import {
-  ThreadFooterComponent,
-  ThreadFooterComponentProps,
-} from './components/ThreadFooterComponent';
-
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
-
+import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
+import { useStableCallback } from '../../hooks';
 import { useStateStore } from '../../hooks/useStateStore';
-
-import type { MessageComposerProps } from '../MessageInput/MessageComposer';
-import { MessageFlashList, MessageFlashListProps } from '../MessageList/MessageFlashList';
-import { MessageListProps } from '../MessageList/MessageList';
+import { ChannelConfigProps, ChannelShell } from '../Channel/ChannelShell';
+import { useCreateThreadContext } from '../Channel/hooks/useCreateThreadContext';
 import { getThreadNotificationHostId } from '../Notifications/notificationTarget';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
-let FlashList;
-
-try {
-  FlashList = require('@shopify/flash-list').FlashList;
-} catch {
-  FlashList = undefined;
-}
-
-type ThreadPropsWithContext = Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'thread'> &
-  Pick<ThreadFooterComponentProps, 'parentMessagePreventPress'> & {
+export type ThreadProps = ChannelConfigProps &
+  Partial<Pick<ThreadContextValue, 'allowThreadMessagesInChannel'>> & {
     /**
-     * Additional props for underlying MessageComposer component.
-     * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-input/#props
-     * */
-    additionalMessageComposerProps?: Partial<MessageComposerProps>;
-    /**
-     * Additional props for underlying MessageList component.
-     * Available props - https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-list/#props
-     * */
-    additionalMessageListProps?: Partial<MessageListProps>;
-    /**
-     * @experimental This prop is experimental and is subject to change.
-     *
-     * Additional props for underlying MessageListFlashList component.
-     * Available props - https://shopify.github.io/flash-list/docs/usage
+     * The thread to render. Pass the instance a thread was opened with (`onThreadSelect` on the
+     * message and thread lists), or one from `client.threads.ensure({ channel, parentMessage })`.
      */
-    additionalMessageFlashListProps?: Partial<MessageFlashListProps>;
-    /** Make input focus on mounting thread */
-    autoFocus?: boolean;
-    /** Closes thread on dismount, defaults to true */
-    closeThreadOnDismount?: boolean;
-    /** Disables the thread UI. So MessageComposer and MessageList will be disabled. */
-    disabled?: boolean;
+    thread: ThreadInstance;
     /**
-     * Call custom function on closing thread if handling thread state elsewhere
+     * The notification host this thread's notifications are routed to. Defaults to the thread's
+     * own host, derived from its id.
+     */
+    notificationHostId?: string;
+    /**
+     * Called when the thread unmounts, e.g. to clear the app's record of the open thread.
      */
     onThreadDismount?: () => void;
-    notificationHostId?: string;
-    shouldUseFlashList?: boolean;
   };
 
 type ThreadReplyPaginatorState = {
@@ -81,50 +48,67 @@ const threadStaleSelector = (state: { isLoading: boolean; isStateStale: boolean 
   isThreadReloading: state.isLoading,
 });
 
-const ThreadWithContext = (props: ThreadPropsWithContext) => {
+/**
+ * Thread - binds its children to a thread's replies. Render it next to `<Channel>`, not inside it,
+ * and compose the thread UI as children:
+ *
+ * ```tsx
+ * <Thread thread={thread}>
+ *   <MessageList />
+ *   <MessageComposer />
+ * </Thread>
+ * ```
+ *
+ * It takes the same configuration props as `<Channel>`. The message list renders the parent message
+ * above the replies.
+ */
+export const Thread = (props: PropsWithChildren<ThreadProps>) => {
   const {
-    additionalMessageComposerProps,
-    additionalMessageListProps,
-    additionalMessageFlashListProps,
-    autoFocus = false,
-    disabled,
-    onThreadDismount,
+    allowThreadMessagesInChannel = true,
+    children,
     notificationHostId: notificationHostIdProp,
-    parentMessagePreventPress = true,
+    onThreadDismount,
     thread,
-    shouldUseFlashList = false,
+    ...shellProps
   } = props;
-  const {
-    LoadingErrorIndicator,
-    MessageList,
-    ThreadMessageComposer: MessageComposer,
-  } = useComponentsContext();
+  const { LoadingErrorIndicator } = useComponentsContext();
+  const threadContext = useCreateThreadContext({ allowThreadMessagesInChannel, thread });
 
   const { hasItems, isLoading, lastQueryError } =
-    useStateStore(thread?.messagePaginator?.state, paginatorSelector) ?? {};
+    useStateStore(thread.messagePaginator.state, paginatorSelector) ?? {};
   const { isStateStale, isThreadReloading } =
-    useStateStore(thread?.state, threadStaleSelector) ?? {};
-  const threadId = thread?.id;
+    useStateStore(thread.state, threadStaleSelector) ?? {};
 
   useEffect(() => {
-    if (thread && isStateStale) {
+    if (isStateStale) {
       void thread.reload().catch((err) => console.warn('Thread reload failed', err));
     }
   }, [isStateStale, thread]);
 
+  // A thread opened from the thread list can belong to a channel nothing has queried yet. `queryThreads`
+  // watches that channel but returns no `own_capabilities` for it, so the menu, the reactions and the
+  // composer would act as if the user could do nothing. Querying the channel once fills them in; its
+  // messages and read state are left alone.
+  useEffect(() => {
+    const { channel } = thread;
+    if (channel.initialized || channel.isProvisional) {
+      return;
+    }
+    channel.watch().catch((err: unknown) => console.warn('Thread channel watch failed', err));
+  }, [thread]);
+
   // Activating registers the thread with `client.threads` for the session, which keeps it subscribed
-  // (incoming replies, read state, thread.updated) whether or not the thread list holds it. Keyed on
-  // the instance, which can arrive after mount; `activate()` returns the release of this activation.
-  useEffect(() => thread?.activate(), [thread]);
+  // (incoming replies, read state, thread.updated) whether or not the thread list holds it. While
+  // active, the thread marks itself read. `activate()` returns the release of this activation.
+  useEffect(() => thread.activate(), [thread]);
 
   // Load the first reply page, but only when the paginator hasn't already been seeded from the
   // thread's `latest_replies` (managed/queried threads seed on construction) or loaded/loading. A
   // seeded paginator already holds its first page, so we skip the fetch and let scroll-up load older
-  // replies — mirroring stream-chat-react, whose thread list has no mount-time fetch. Reactive on
-  // `thread`/`hasItems` because the instance can arrive after mount; the `hasItems`
+  // replies — mirroring stream-chat-react, whose thread list has no mount-time fetch. The `hasItems`
   // guard makes this fire at most once (an unseeded thread fetches, and the fetch defines `items`).
   useEffect(() => {
-    if (!thread || isLoading || hasItems || lastQueryError) {
+    if (isLoading || hasItems || lastQueryError) {
       return;
     }
     // A reload in flight (a stale thread's, started by the effect above in this same commit) seeds the
@@ -149,27 +133,14 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
     [],
   );
 
-  const MemoizedThreadFooterComponent = useCallback(
-    () => <ThreadFooterComponent parentMessagePreventPress={parentMessagePreventPress} />,
-    [parentMessagePreventPress],
+  // A jump into the replies (e.g. to a targeted reply) leaves a focus signal behind; the list reads
+  // this to keep its initial anchor from overriding the jump.
+  const hasPendingInitialTargetLoad = useStableCallback(
+    () => !!thread.messagePaginator.messageFocusSignal.getLatestValue().signal,
   );
 
-  const additionalTextInputProps = useMemo(
-    () => ({
-      editable: !disabled,
-      autoFocus,
-    }),
-    [disabled, autoFocus],
-  );
-
-  if (!threadId) {
-    return null;
-  }
-
-  const notificationHostId = notificationHostIdProp ?? getThreadNotificationHostId(threadId);
-
-  // The thread's own query error, rendered here rather than by `<Channel>`: the failure belongs to
-  // the reply paginator, and only this component knows how to retry it (a first-page `toTail`).
+  // The thread's own query error: the failure belongs to the reply paginator, and the retry is a
+  // first-page `toTail`.
   if (lastQueryError && !hasItems) {
     const retry = () =>
       thread.messagePaginator
@@ -180,60 +151,21 @@ const ThreadWithContext = (props: ThreadPropsWithContext) => {
   }
 
   return (
-    <React.Fragment key={`thread-${threadId}`}>
-      <NotificationTargetProvider hostId={notificationHostId} panel='thread'>
-        {FlashList && shouldUseFlashList ? (
-          <MessageFlashList
-            HeaderComponent={MemoizedThreadFooterComponent}
-            threadList
-            {...additionalMessageFlashListProps}
-          />
-        ) : (
-          <MessageList
-            FooterComponent={MemoizedThreadFooterComponent}
-            threadList
-            {...additionalMessageListProps}
-          />
-        )}
-        <MessageComposer
-          additionalTextInputProps={additionalTextInputProps}
-          threadList
-          {...additionalMessageComposerProps}
-        />
-      </NotificationTargetProvider>
-    </React.Fragment>
-  );
-};
-
-export type ThreadProps = Partial<ThreadPropsWithContext>;
-
-/**
- * Thread - The Thread renders a parent message with a list of replies. Use the standard message list of the main channel's messages.
- * The thread is only used for the list of replies to a message.
- *
- * Thread is a consumer of [channel context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/)
- * Underlying MessageList, MessageComposer and Message components can be customized using props:
- * - additionalMessageListProps
- * - additionalMessageComposerProps
- */
-export const Thread = (props: ThreadProps) => {
-  const { client } = useChatContext();
-  const { threadList } = useChannelContext();
-  const { thread } = useThreadContext();
-
-  if (thread?.id && !threadList) {
-    throw new Error(
-      'Please add a threadList prop to your Channel component when rendering a thread list. Check our Channel documentation for more info: https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#threadlist',
-    );
-  }
-
-  return (
-    <ThreadWithContext
-      {...{
-        client,
-        thread,
-      }}
-      {...props}
-    />
+    <NotificationTargetProvider
+      hostId={notificationHostIdProp ?? getThreadNotificationHostId(thread.id)}
+      key={`thread-${thread.id}`}
+      panel='thread'
+    >
+      <ThreadProvider value={threadContext}>
+        <ChannelShell
+          {...shellProps}
+          channel={thread.channel}
+          hasPendingInitialTargetLoad={hasPendingInitialTargetLoad}
+          thread={thread}
+        >
+          {children}
+        </ChannelShell>
+      </ThreadProvider>
+    </NotificationTargetProvider>
   );
 };

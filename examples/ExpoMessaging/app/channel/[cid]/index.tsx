@@ -41,7 +41,7 @@ export default function ChannelScreen() {
     initChannel();
   }, [navigateThroughPushNotification, channelId, client]);
 
-  const { setThread, channel: channelContext, thread } = useContext(AppContext);
+  const { setThread, channel: channelContext } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   const channel = channelFromParams || channelContext;
@@ -123,7 +123,6 @@ export default function ChannelScreen() {
         onPressMessage={onPressMessage}
         keyboardVerticalOffset={headerHeight}
         topInset={headerHeight}
-        thread={thread}
       >
         <MessageList
           onThreadSelect={(thread) => {

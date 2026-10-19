@@ -32,10 +32,10 @@ const getSenderName = (
 ) => message.user?.name?.trim() || message.user?.id || t('common.anonymousUser.label', 'Anonymous');
 
 export type UseIncomingMessageAnnouncementsParams = {
+  /** Set when the list is a thread's reply list: only that thread's replies are announced. */
   activeThreadId?: string;
   channel?: Channel;
   ownUserId?: string;
-  threadList?: boolean;
 };
 
 /**
@@ -53,7 +53,6 @@ export const useIncomingMessageAnnouncements = ({
   activeThreadId,
   channel,
   ownUserId,
-  threadList = false,
 }: UseIncomingMessageAnnouncementsParams) => {
   const { announceNewMessages, enabled } = useAccessibilityContext();
   const announce = useAccessibilityAnnouncer();
@@ -125,8 +124,8 @@ export const useIncomingMessageAnnouncements = ({
 
       const isReply = !!message.parent_id;
       const belongsToActiveThread = !!activeThreadId && message.parent_id === activeThreadId;
-      const shouldAnnounceInThreadList = threadList && belongsToActiveThread;
-      const shouldAnnounceInMainList = !threadList && !isReply;
+      const shouldAnnounceInThreadList = belongsToActiveThread;
+      const shouldAnnounceInMainList = !activeThreadId && !isReply;
       if (!shouldAnnounceInThreadList && !shouldAnnounceInMainList) return;
 
       if (announcedMessageIdsRef.current.has(message.id || '')) return;
@@ -153,14 +152,5 @@ export const useIncomingMessageAnnouncements = ({
         flushTimeoutRef.current = undefined;
       }
     };
-  }, [
-    activeThreadId,
-    announceNewMessages,
-    channel,
-    enabled,
-    ownUserId,
-    scheduleFlush,
-    t,
-    threadList,
-  ]);
+  }, [activeThreadId, announceNewMessages, channel, enabled, ownUserId, scheduleFlush, t]);
 };

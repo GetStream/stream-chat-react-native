@@ -3,34 +3,31 @@ import { Platform } from 'react-native';
 
 import { Stack } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { Channel, Thread } from 'stream-chat-expo';
+import { MessageComposer, MessageList, Thread } from 'stream-chat-expo';
 
 import { AppContext } from '../../../../../context/AppContext';
 
 export default function ThreadScreen() {
-  const { channel, thread, setThread } = useContext(AppContext);
+  const { thread, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
-  if (!channel) {
+  if (!thread) {
     return null;
   }
 
   return (
-    <Channel
+    <Thread
       audioRecordingEnabled={true}
-      channel={channel}
       keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : undefined}
-      topInset={headerHeight}
+      onThreadDismount={() => {
+        setThread(undefined);
+      }}
       thread={thread}
-      threadList
+      topInset={headerHeight}
     >
       <Stack.Screen options={{ title: 'Thread Screen' }} />
-
-      <Thread
-        onThreadDismount={() => {
-          setThread(undefined);
-        }}
-      />
-    </Channel>
+      <MessageList />
+      <MessageComposer />
+    </Thread>
   );
 }

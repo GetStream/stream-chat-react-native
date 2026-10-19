@@ -101,8 +101,8 @@ Importable from `stream-chat-react-native`:
 - `useA11yLabel(key, params)` — translated label or `undefined` when disabled.
 - `useAnnounceOnStateChange(message, options)` — debounced live-region helper that announces on message **change** and dedupes consecutive identical strings (good for state-driven labels like loading/error transitions).
 - `useAnnounceOnShow(visible, message, { delayMs?, priority? })` — announces on each `visible: false → true` transition and resets on hide, so re-shows re-announce. Pair with `useA11yLabel(...)` for the message. Used by `BottomSheetModal` and `AutoCompleteSuggestionList`.
-- `useIncomingMessageAnnouncements({ channel, ownUserId, activeThreadId, threadList })` — throttled, batched announcement of new messages.
-- `<NotificationAnnouncer />` — connection-state announcer (mounted by `<Channel>`).
+- `useIncomingMessageAnnouncements({ channel, ownUserId, activeThreadId })` — throttled, batched announcement of new messages. Pass `activeThreadId` in a thread's list: it then announces that thread's replies only, and a channel list (no `activeThreadId`) announces top-level messages only.
+- `<NotificationAnnouncer />` — connection-state announcer (mounted by `<Channel>` and `<Thread>`).
 
 ## Cross-SDK parity
 

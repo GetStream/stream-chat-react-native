@@ -66,11 +66,10 @@ describe('ChannelContext public surface', () => {
       'hideDateSeparators',
       'hideStickyDateHeader',
       'maxTimeBetweenGroupedMessages',
-      'threadList',
     ];
     // An assertion by construction: a removed member fails to compile in the array above.
-    // 9 since the state cleanup removed the never-read `isChannelActive` and
-    // `scrollToFirstUnreadThreshold`.
-    expect(expected).toHaveLength(9);
+    // 8 since the state cleanup removed the never-read `isChannelActive` and
+    // `scrollToFirstUnreadThreshold`, and `threadList` gave way to `useThreadContext().thread`.
+    expect(expected).toHaveLength(8);
   });
 });

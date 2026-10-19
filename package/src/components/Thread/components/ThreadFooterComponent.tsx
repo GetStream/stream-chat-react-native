@@ -15,7 +15,7 @@ import { primitives } from '../../../theme';
 
 type ThreadFooterComponentPropsWithContext = Pick<ThreadContextValue, 'thread'> & {
   /**
-   * Boolean to enable/disable parent message press
+   * Boolean to enable/disable parent message press. Defaults to `true`.
    */
   parentMessagePreventPress?: boolean;
 };
@@ -48,7 +48,7 @@ const selector = (nextValue: ThreadState) =>
   }) as const;
 
 const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
-  const { parentMessagePreventPress, thread } = props;
+  const { parentMessagePreventPress = true, thread } = props;
   const { Message } = useComponentsContext();
   const { t } = useTranslationContext();
 
@@ -70,7 +70,6 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
         message={parentMessage}
         preventPress={parentMessagePreventPress}
         showMessageStatus={false}
-        threadList
       />
       <View style={styles.newThread}>
         <Text style={styles.text}>

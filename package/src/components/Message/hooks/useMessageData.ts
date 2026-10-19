@@ -6,30 +6,27 @@ import {
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export type UseMessageDataProps = Partial<
-  Pick<MessageContextValue, 'channel' | 'groupStyles' | 'isMyMessage' | 'message'>
+  Pick<MessageContextValue, 'groupStyles' | 'isMyMessage' | 'isVeryLastMessage' | 'message'>
 >;
 
 export const useMessageData = ({
-  channel: propChannel,
   groupStyles: propGroupStyles,
   isMyMessage: propIsMyMessage,
+  isVeryLastMessage: propIsVeryLastMessage,
   message: propMessage,
 }: UseMessageDataProps) => {
   const {
-    channel: contextChannel,
     groupStyles: contextGroupStyles,
     isMyMessage: contextIsMyMessage,
+    isVeryLastMessage: contextIsVeryLastMessage,
     message: contextMessage,
   } = useMessageContext();
 
-  const channel = propChannel || contextChannel;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const isMyMessage = propIsMyMessage || contextIsMyMessage;
   const message = propMessage || contextMessage;
 
-  const paginatorItems = channel?.messagePaginator?.state.getLatestValue().items;
-  const isVeryLastMessage =
-    !!paginatorItems?.length && paginatorItems[paginatorItems.length - 1]?.id === message.id;
+  const isVeryLastMessage = propIsVeryLastMessage ?? contextIsVeryLastMessage ?? false;
 
   const messageGroupedSingle = groupStyles.includes('single');
   const messageGroupedBottom = groupStyles.includes('bottom');

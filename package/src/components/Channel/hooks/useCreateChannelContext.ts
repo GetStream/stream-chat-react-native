@@ -12,7 +12,6 @@ export const useCreateChannelContext = ({
   hideStickyDateHeader,
   maxTimeBetweenGroupedMessages,
   hasPendingInitialTargetLoad,
-  threadList,
 }: ChannelContextValue) => {
   const channelContext: ChannelContextValue = useMemo(
     () => ({
@@ -25,11 +24,10 @@ export const useCreateChannelContext = ({
       hideStickyDateHeader,
       maxTimeBetweenGroupedMessages,
       hasPendingInitialTargetLoad,
-      threadList,
     }),
     // Keyed on the instance as well, since a superseded instance shares its id with its successor
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [channel, disabled, threadList],
+    [channel, disabled],
   );
 
   return channelContext;

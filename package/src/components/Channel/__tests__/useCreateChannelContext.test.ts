@@ -18,7 +18,6 @@ const baseInput = (overrides: Partial<ChannelContextValue> = {}) =>
     hideDateSeparators: false,
     hideStickyDateHeader: false,
     maxTimeBetweenGroupedMessages: 1000,
-    threadList: false,
     ...overrides,
   }) as ChannelContextValue;
 
@@ -43,7 +42,6 @@ describe('useCreateChannelContext', () => {
     // a superseded instance shares its id with the instance that replaced it
     ['channel instance', { channel: { id: 'channel-1' } as unknown as Channel }],
     ['disabled', { disabled: true }],
-    ['threadList', { threadList: true }],
   ])('builds a new object when %s changes', (_label, overrides) => {
     const { rerender, result } = renderHook(
       (props: ChannelContextValue) => useCreateChannelContext(props),

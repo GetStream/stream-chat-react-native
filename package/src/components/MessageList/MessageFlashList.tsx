@@ -64,6 +64,7 @@ import { transitions } from '../../utils/animations/transitions';
 import { MarkReadFunctionOptions } from '../Channel/Channel';
 import { MessageWrapper } from '../Message/MessageItemView/MessageWrapper';
 import { excludeCanceledUploadNotifications } from '../Notifications/notificationFilters';
+import { ThreadFooterComponent } from '../Thread/components/ThreadFooterComponent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
 
 type FlashListContextApi = { getRef?: () => FlashListRef<LocalMessage> | null } | undefined;
@@ -97,7 +98,7 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<OwnCapabilitiesContextValue, 'readEvents'> &
   Pick<
     ChannelContextValue,
-    'channel' | 'disabled' | 'hideStickyDateHeader' | 'hasPendingInitialTargetLoad' | 'threadList'
+    'channel' | 'disabled' | 'hideStickyDateHeader' | 'hasPendingInitialTargetLoad'
   > &
   Pick<ChatContextValue, 'client'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> & {
@@ -150,7 +151,7 @@ type MessageFlashListPropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
+     * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
     onThreadSelect?: (thread: Thread) => void;
     /**
@@ -275,7 +276,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     disabled,
     disableTypingIndicator,
     FooterComponent,
-    HeaderComponent = InlineLoadingMoreIndicator,
+    HeaderComponent: HeaderComponentProp,
     hideStickyDateHeader,
     isLiveStreaming = false,
     markRead,
@@ -290,8 +291,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     setFlatListRef,
     hasPendingInitialTargetLoad,
     thread,
-    threadList = false,
   } = props;
+
+  // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
+  const HeaderComponent =
+    HeaderComponentProp ?? (thread ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
     AutoCompleteSuggestionList,
     EmptyStateIndicator,
@@ -310,7 +314,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     messageInputHeightStore.store,
     messageInputHeightStoreSelector,
   );
-  const paginator = threadList ? thread?.messagePaginator : channel.messagePaginator;
+  const paginator = thread ? thread.messagePaginator : channel.messagePaginator;
 
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
@@ -344,7 +348,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     channel,
     markRead,
     paginator,
-    threadList,
+    thread,
     userId: client.user?.id,
   });
   const { stickyHeaderDate, updateStickyHeaderDate } = useStickyHeaderDate();
@@ -531,7 +535,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (!hideStickyDateHeader && topVisibleMessage) {
       updateStickyHeaderDate({ isAtOldestMessage, topVisibleMessage });
     }
-    if (!threadList) {
+    if (!thread) {
       updateUnreadNotification({ isAtOldestMessage, topVisibleMessage, viewableMessages });
     }
     // Viewability reflects the real layout, so this is right even at mount: a channel opened at its
@@ -622,6 +626,11 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
 
     setScrollToBottomButtonVisible(false);
+    // A thread marks itself read while it is open, and the channel underneath keeps its own unread
+    // state, so only a channel list marks read here.
+    if (thread) {
+      return;
+    }
     /**
      *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
      We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
@@ -632,7 +641,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   });
 
   const scrollToBottomUnreadCount = useOwnUnreadCount(
-    scrollToBottomButtonVisible && !threadList ? channel : undefined,
+    scrollToBottomButtonVisible && !thread ? channel : undefined,
   );
   const {
     accessibilityActions: messageListAccessibilityActions,
@@ -763,7 +772,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   return (
     <View onLayout={onLayout} style={styles.container} testID='message-flat-list-wrapper'>
-      {processedMessageList.length === 0 && !threadList ? (
+      {processedMessageList.length === 0 && !thread ? (
         <View style={styles.flex} testID='empty-state'>
           {EmptyStateIndicator ? <EmptyStateIndicator listType='message' /> : null}
         </View>
@@ -826,7 +835,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         />
       </Animated.View>
       <NetworkDownIndicator />
-      {isUnreadNotificationOpen && !threadList ? (
+      {isUnreadNotificationOpen && !thread ? (
         <View style={styles.unreadMessagesNotificationContainer}>
           <UnreadMessagesNotification
             markRead={markRead}
@@ -917,7 +926,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
     enableMessageGroupingByUser,
     hideStickyDateHeader,
     hasPendingInitialTargetLoad,
-    threadList,
   } = useChannelContext();
   const markRead = useMarkRead(channel);
   const { client } = useChatContext();
@@ -945,7 +953,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         readEvents,
         hasPendingInitialTargetLoad,
         thread,
-        threadList,
       }}
       {...props}
       noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}

@@ -247,7 +247,7 @@ export type MessagePropsWithContext = Pick<
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
-     * @param thread The thread of the message, to render in a `<Channel thread={thread}>`.
+     * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
     onThreadSelect?: (thread: Thread) => void;
     showUnreadUnderlay?: boolean;
@@ -277,6 +277,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleReaction: handleReactionProp,
     handleThreadReply,
     isTargetedMessage,
+    isVeryLastMessage = false,
     message,
     messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     messageContentOrder: messageContentOrderProp,
@@ -294,7 +295,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showAvatar,
     showMessageStatus,
     style,
-    threadList = false,
     updateMessage,
     setQuotedMessage,
   } = props;
@@ -631,6 +631,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     hasReactions,
     images: attachments.images,
     isMyMessage,
+    isVeryLastMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     message: overlayActive ? frozenMessage.current : message,
     messageActionHandlers,
@@ -717,7 +718,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showMessageOverlay,
     showReactionsOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
-    threadList,
     videos: attachments.videos,
   });
   const messageOverlayRuntimeContext = useMemo(
@@ -752,11 +752,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       ? groupStyles[0]
       : undefined;
 
-  const lastPaginatorMessageId = channel?.messagePaginator?.state
-    .getLatestValue()
-    .items?.slice(-1)[0]?.id;
-  const isVeryLastBubble =
-    messagesContext.enableMessageGroupingByUser && lastPaginatorMessageId === message.id;
+  const isVeryLastBubble = messagesContext.enableMessageGroupingByUser && isVeryLastMessage;
   const styles = useStyles({
     groupKey,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
@@ -854,6 +850,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
+    isVeryLastMessage: prevIsVeryLastMessage,
     messageOverlayTargetId: prevMessageOverlayTargetId,
     message: prevMessage,
     messagesContext: prevMessagesContext,
@@ -864,6 +861,7 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
+    isVeryLastMessage: nextIsVeryLastMessage,
     messageOverlayTargetId: nextMessageOverlayTargetId,
     message: nextMessage,
     messagesContext: nextMessagesContext,
@@ -885,6 +883,10 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
+    return false;
+  }
+
+  if (prevIsVeryLastMessage !== nextIsVeryLastMessage) {
     return false;
   }
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
-import type { Channel, EventPayload, LocalMessage, MessagePaginator } from 'stream-chat';
+import type { Channel, EventPayload, LocalMessage, MessagePaginator, Thread } from 'stream-chat';
 
 import { useStableCallback } from '../../../hooks';
 import type { MarkReadFunctionOptions } from '../../Channel/Channel';
@@ -19,7 +19,8 @@ type UseMessageListLiveStateParams = {
   markRead: (options?: MarkReadFunctionOptions) => void;
   /** The list's paginator: the channel's, or the open thread's in a thread list. */
   paginator: MessagePaginator | undefined;
-  threadList: boolean;
+  /** The thread this list renders, if it is a thread's reply list. */
+  thread: Thread | undefined;
   userId: string | undefined;
 };
 
@@ -37,7 +38,7 @@ export const useMessageListLiveState = ({
   channel,
   markRead,
   paginator,
-  threadList,
+  thread,
   userId,
 }: UseMessageListLiveStateParams) => {
   const [isAppActive, setIsAppActive] = useState(() => AppState.currentState === 'active');
@@ -61,7 +62,7 @@ export const useMessageListLiveState = ({
   }, [isAppActive, paginator]);
 
   useEffect(() => {
-    if (threadList) {
+    if (thread) {
       return;
     }
 
@@ -83,7 +84,7 @@ export const useMessageListLiveState = ({
 
     const listener = channel.on('message.new', handleEvent);
     return () => listener.unsubscribe();
-  }, [channel, markRead, threadList, userId]);
+  }, [channel, markRead, thread, userId]);
 
   return useStableCallback((viewableMessages: LocalMessage[]) => {
     if (!paginator) {

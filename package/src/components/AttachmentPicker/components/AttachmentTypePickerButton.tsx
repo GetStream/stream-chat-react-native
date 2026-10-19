@@ -8,10 +8,10 @@ import { AttachmentCommandPicker } from './AttachmentPickerContent';
 
 import {
   useAttachmentPickerContext,
-  useChannelContext,
   useMessageInputContext,
   useMessagesContext,
   useOwnCapabilitiesContext,
+  useThreadContext,
 } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useStableCallback } from '../../../hooks';
@@ -159,7 +159,7 @@ export const PollPickerButton = () => {
   const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
-  const { threadList } = useChannelContext();
+  const { thread } = useThreadContext();
   const { icons } = useComponentsContext();
   const { hasCreatePoll } = useMessagesContext();
   const ownCapabilities = useOwnCapabilitiesContext();
@@ -173,7 +173,7 @@ export const PollPickerButton = () => {
     openPollCreationDialog?.({ sendMessage });
   });
 
-  return !threadList && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
+  return !thread && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
     <AttachmentTypePickerButton
       accessibilityLabelKey='attachmentPicker.typeButton.poll.accessibilityLabel'
       testID='create-poll-touchable'

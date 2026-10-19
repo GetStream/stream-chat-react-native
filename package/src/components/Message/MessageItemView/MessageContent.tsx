@@ -64,7 +64,6 @@ export type MessageContentPropsWithContext = Pick<
   | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
-  | 'threadList'
 > &
   Pick<
     MessagesContextValue,
@@ -621,7 +620,6 @@ export const MessageContent = (props: MessageContentProps) => {
     onPressIn,
     otherAttachments,
     preventPress,
-    threadList,
     videos,
   } = useMessageContext();
   const {
@@ -688,7 +686,6 @@ export const MessageContent = (props: MessageContentProps) => {
         otherAttachments,
         preventPress,
         t,
-        threadList,
         hidePaddingTop,
         hidePaddingHorizontal,
         hidePaddingBottom,

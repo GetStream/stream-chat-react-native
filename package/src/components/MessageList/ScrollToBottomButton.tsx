@@ -8,6 +8,7 @@ import { useOwnUnreadCount } from './hooks/useOwnUnreadCount';
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
@@ -26,12 +27,13 @@ export type ScrollToBottomButtonProps = {
 
 export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
   const { onPress, showNotification = true } = props;
-  const { channel, threadList } = useChannelContext();
+  const { channel } = useChannelContext();
+  const { thread } = useThreadContext();
   const {
     theme: { semantics },
   } = useTheme();
   const { icons } = useComponentsContext();
-  const unreadCount = useOwnUnreadCount(threadList ? undefined : channel);
+  const unreadCount = useOwnUnreadCount(thread ? undefined : channel);
   const accessibilityLabelParams = useMemo(
     () => (unreadCount ? { count: unreadCount } : undefined),
     [unreadCount],

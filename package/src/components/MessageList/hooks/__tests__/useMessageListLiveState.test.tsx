@@ -1,7 +1,7 @@
 import { AppState } from 'react-native';
 
 import { act, cleanup, renderHook } from '@testing-library/react-native';
-import type { Channel, LocalMessage, MessagePaginator, StreamChat } from 'stream-chat';
+import type { Channel, LocalMessage, MessagePaginator, StreamChat, Thread } from 'stream-chat';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
@@ -15,6 +15,9 @@ import { useMessageListLiveState } from '../useMessageListLiveState';
 const asMessages = (ids: string[]) => ids.map((id) => ({ id })) as LocalMessage[];
 
 // A thread's reply paginator, reduced to what the hook touches.
+// The hook only asks whether the list is a thread's; it never reads the thread itself.
+const openThread = { id: 'thread-id' } as unknown as Thread;
+
 const makeThreadPaginator = () => ({
   setViewingLive: jest.fn(),
   state: { getLatestValue: () => ({ hasMoreHead: false, items: asMessages(['r1', 'r2']) }) },
@@ -50,7 +53,7 @@ describe('useMessageListLiveState', () => {
         channel,
         markRead: jest.fn(),
         paginator: channel.messagePaginator,
-        threadList: false,
+        thread: undefined,
         userId: 'me',
       }),
     );
@@ -69,7 +72,7 @@ describe('useMessageListLiveState', () => {
         channel,
         markRead: jest.fn(),
         paginator: channel.messagePaginator,
-        threadList: false,
+        thread: undefined,
         userId: 'me',
       }),
     );
@@ -93,7 +96,7 @@ describe('useMessageListLiveState', () => {
         channel,
         markRead: jest.fn(),
         paginator: threadPaginator as unknown as MessagePaginator,
-        threadList: true,
+        thread: openThread,
         userId: 'me',
       }),
     );
@@ -114,7 +117,7 @@ describe('useMessageListLiveState', () => {
         channel,
         markRead,
         paginator: channel.messagePaginator,
-        threadList: false,
+        thread: undefined,
         userId: 'me',
       }),
     );
@@ -138,7 +141,7 @@ describe('useMessageListLiveState', () => {
         channel,
         markRead,
         paginator: makeThreadPaginator() as unknown as MessagePaginator,
-        threadList: true,
+        thread: openThread,
         userId: 'me',
       }),
     );
