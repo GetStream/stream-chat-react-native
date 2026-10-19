@@ -757,6 +757,45 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 
+  describe('message page size', () => {
+    const mountChannel = async () => {
+      const mockedChannel = generateChannelResponse({ messages: [] });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      // Force the mount watch, so waiting for it proves the effect got past the page-size write.
+      channel.initialized = false;
+      const watchSpy = jest.fn();
+      channel.watch = watchSpy;
+
+      renderComponent({ channel, markReadOnMount: false });
+      await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
+
+      return channel;
+    };
+
+    it('applies the SDK default when nothing was registered through client.config', async () => {
+      const channel = await mountChannel();
+
+      expect(channel.messagePaginator.pageSize).toBe(25);
+    });
+
+    it('keeps a page size registered under channel.messagePaginator', async () => {
+      chatClient.config.set({ channel: { messagePaginator: { pageSize: 40 } } });
+
+      const channel = await mountChannel();
+
+      expect(channel.messagePaginator.pageSize).toBe(40);
+    });
+
+    it('keeps a page size registered under the general messagePaginator key', async () => {
+      chatClient.config.set({ messagePaginator: { pageSize: 15 } });
+
+      const channel = await mountChannel();
+
+      expect(channel.messagePaginator.pageSize).toBe(15);
+    });
+  });
+
   it('leaves targeting to the caller — <Channel> no longer jumps on its own', async () => {
     // The `messageId` prop is gone. Jumping is the paginator's job, so nothing here should issue a
     // jump: the integrator calls `paginator.jumpToMessage(...)` themselves, from a `useLayoutEffect`

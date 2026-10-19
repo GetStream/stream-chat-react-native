@@ -10,6 +10,16 @@ import { useNotificationApi } from '../../Notifications';
 
 const DEFAULT_MESSAGE_LIST_PAGE_SIZE = 25;
 
+/**
+ * Whether the integrator registered a message page size through `client.config` — under
+ * `channel.messagePaginator` or the general `messagePaginator` key, the two the paginator resolves its
+ * own `pageSize` from. The default is applied only when neither did: the `pageSize` setter is a runtime
+ * patch, which outranks every declarative layer and would silently discard the registration.
+ */
+const hasRegisteredMessagePageSize = (client: StreamChat) =>
+  client.config.getConfig('channel')?.messagePaginator?.pageSize !== undefined ||
+  client.config.getConfig('messagePaginator')?.pageSize !== undefined;
+
 export type UseChannelLifecycleParams = Pick<TranslationContextValue, 't'> & {
   channel: Channel;
   client: StreamChat;
@@ -92,7 +102,10 @@ export const useChannelLifecycle = ({
         return;
       }
 
-      channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
+      // Keep the message-list page light; a page size registered through `client.config` wins.
+      if (!hasRegisteredMessagePageSize(client)) {
+        channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
+      }
 
       if (
         (!channel.initialized || !channel.messagePaginator.isActiveIntervalAtHead) &&

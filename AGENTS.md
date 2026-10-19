@@ -211,9 +211,9 @@ Native code shared by both wrappers lives in `package/shared-native/{ios,android
 
 ### AI components entry point
 
-`package/src/ai-components/` (ported 1:1 from the deprecated `@stream-io/chat-react-native-ai`) is reachable only through the `ai-components` subpath, implemented as physical folders (`package/ai-components/package.json`, `package/{native,expo}-package/ai-components/`) rather than an `exports` map, which would break deep imports. Metro does not tree-shake, so `bin/validate-entry-isolation.js` (run by `yarn lint`) enforces both directions:
+`package/src/ai-components/` (ported 1:1 from the deprecated `@stream-io/chat-react-native-ai`) is reachable only through the `ai-components` subpath, implemented as physical folders (`package/ai-components/package.json`, `package/{native,expo}-package/ai-components/`) rather than an `exports` map, which would break deep imports. Metro does not tree-shake, so `package/bin/validate-entry-isolation.js` (run by `yarn lint`) enforces both directions:
 
-- the main entry points must never reach `src/ai-components` or its dependencies (`react-syntax-highlighter`, `@khanacademy/simple-markdown`, `@stream-io/state-store`, `zod`, `victory-native`, Skia);
+- the main entry points must never reach `src/ai-components` or the AI-only packages (`react-syntax-highlighter`, `@khanacademy/simple-markdown`, `zod`, `victory-native`, Skia). `@stream-io/state-store` and `lodash` are shared: the main entry imports them too (the stores in `state-store/`, the Poll contexts);
 - the AI entry points may only reach `src/ai-components` plus an explicit allowlist (`src/native.ts`, the native shimmer). The wrappers' `ai-components/index.js` registers the native pieces the AI code needs itself and must never import the wrappers' `src/index.js`.
 
 Do not add AI slots to `DEFAULT_COMPONENTS`; core `require`s the defaults, which would break isolation. Skia and `victory-native` are optional peers (native libraries must be owned by the app); the JS-only AI dependencies are regular dependencies.

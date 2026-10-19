@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { StreamChat } from 'stream-chat';
 
-import type {
-  DeepPartial,
-  InstanceConfigTree,
-  OwnUserResponse,
-  TokenOrProvider,
-  UserResponse,
-} from 'stream-chat';
+import type { ClientUser, DeepPartial, InstanceConfigTree, TokenOrProvider } from 'stream-chat';
 
 import { netInfoStatusReporter } from './useConnectionLifecycle';
 
@@ -49,7 +43,11 @@ export const useCreateChatClient = ({
 }: {
   apiKey: string;
   tokenOrProvider: TokenOrProvider;
-  userData: OwnUserResponse | UserResponse;
+  /**
+   * The user to connect, as `client.connectUser` accepts it: only `id` is required, so
+   * `{ id, name, image }` is enough. Server-owned fields (`role`, `created_at`, …) need not be set.
+   */
+  userData: ClientUser;
   options?: DeepPartial<InstanceConfigTree>;
 }) => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);

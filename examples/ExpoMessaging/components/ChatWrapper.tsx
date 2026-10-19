@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 
-import { UserResponse } from 'stream-chat';
+import type { ClientUser } from 'stream-chat';
 import {
   Chat,
   type LooseTranslationDictionary,
@@ -49,7 +49,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useUserContext();
   const chatClient = useCreateChatClient({
     apiKey: STREAM_API_KEY,
-    userData: user as UserResponse,
+    userData: user as ClientUser,
     tokenOrProvider: USER_TOKENS[user?.id as string],
   });
 
