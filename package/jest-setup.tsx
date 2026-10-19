@@ -48,6 +48,10 @@ jest.mock('react-native-gesture-handler/lib/module/GestureHandlerRootViewContext
 });
 jest.mock('react-native-reanimated', () => {
   const RNReanimatedmock = require('react-native-reanimated/mock');
+  // RNGH (>= 3.3) subscribes to SharedValue-backed gesture config on the UI runtime via
+  // addListener/removeListener, which the mock's shared values do not implement. There is no
+  // UI runtime under Jest, so the listeners can safely be no-ops.
+  const noop = () => {};
   return {
     ...RNReanimatedmock,
     // RNGH v3 hooks introspect Reanimated's exports; the v4 mock omits several
@@ -58,7 +62,12 @@ jest.mock('react-native-reanimated', () => {
     // Reanimated's official mock implements makeMutable as an identity function
     // (returns the raw init value instead of a { value } wrapper), which breaks
     // any test that reads `.value` on a SharedValue. Replace with a real wrapper.
-    makeMutable: <T,>(init: T) => ({ value: init }),
+    makeMutable: <T,>(init: T) => ({ addListener: noop, removeListener: noop, value: init }),
+    useSharedValue: <T,>(init: T) =>
+      new Proxy(RNReanimatedmock.useSharedValue(init), {
+        get: (target, prop) =>
+          prop === 'addListener' || prop === 'removeListener' ? noop : Reflect.get(target, prop),
+      }),
     NativeEventsManager: class {
       attachEvents() {}
       detachEvents() {}

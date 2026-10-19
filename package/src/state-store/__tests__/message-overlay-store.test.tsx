@@ -9,10 +9,15 @@ import {
   finalizeCloseOverlay,
   openOverlay,
   overlayStore,
+  registerOverlayHostLayer,
+  registerOverlaySharedValueController,
   scheduleActionOnClose,
   setClosingPortalLayout,
+  setOverlayBottomH,
+  setOverlayMessageH,
   useClosingPortalHostBlacklist,
   useClosingPortalHostBlacklistState,
+  useIsTopOverlayHostLayer,
   useShouldTeleportToClosingPortal,
 } from '../message-overlay-store';
 
@@ -306,5 +311,97 @@ describe('message overlay store portal hooks', () => {
 
     blocked.unmount();
     allowed.unmount();
+  });
+});
+
+describe('message overlay host layer stack', () => {
+  const createController = () => ({
+    incrementCloseCorrectionY: jest.fn(),
+    reset: jest.fn(),
+    resetCloseCorrectionY: jest.fn(),
+    setBottomH: jest.fn(),
+    setMessageH: jest.fn(),
+    setTopH: jest.fn(),
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('routes the overlay geometry to the most recently registered controller and hands it back once that one unregisters', () => {
+    const rootController = createController();
+    const nestedController = createController();
+    const unregisterRoot = registerOverlaySharedValueController(rootController);
+    const unregisterNested = registerOverlaySharedValueController(nestedController);
+
+    setOverlayMessageH(BASE_RECT);
+
+    expect(nestedController.setMessageH).toHaveBeenCalledWith(BASE_RECT);
+    expect(rootController.setMessageH).not.toHaveBeenCalled();
+
+    unregisterNested();
+    setOverlayMessageH(BASE_RECT);
+
+    expect(rootController.setMessageH).toHaveBeenCalledWith(BASE_RECT);
+    expect(nestedController.setMessageH).toHaveBeenCalledTimes(1);
+
+    unregisterRoot();
+  });
+
+  it('keeps routing to the top controller when a controller below it unregisters', () => {
+    const rootController = createController();
+    const nestedController = createController();
+    const unregisterRoot = registerOverlaySharedValueController(rootController);
+    const unregisterNested = registerOverlaySharedValueController(nestedController);
+
+    unregisterRoot();
+    setOverlayBottomH(BASE_RECT);
+
+    expect(nestedController.setBottomH).toHaveBeenCalledWith(BASE_RECT);
+    expect(rootController.setBottomH).not.toHaveBeenCalled();
+
+    unregisterNested();
+  });
+
+  it('reports only the most recently registered host layer as the top one', () => {
+    const root = renderHook(() => useIsTopOverlayHostLayer('root-layer'));
+    const nested = renderHook(() => useIsTopOverlayHostLayer('nested-layer'));
+    const withoutLayer = renderHook(() => useIsTopOverlayHostLayer(undefined));
+
+    expect(root.result.current).toBe(true);
+    expect(nested.result.current).toBe(true);
+
+    let unregisterRoot = () => {};
+    let unregisterNested = () => {};
+
+    act(() => {
+      unregisterRoot = registerOverlayHostLayer('root-layer');
+    });
+
+    expect(root.result.current).toBe(true);
+    expect(nested.result.current).toBe(false);
+
+    act(() => {
+      unregisterNested = registerOverlayHostLayer('nested-layer');
+    });
+
+    expect(root.result.current).toBe(false);
+    expect(nested.result.current).toBe(true);
+    expect(withoutLayer.result.current).toBe(true);
+
+    act(() => {
+      unregisterNested();
+    });
+
+    expect(root.result.current).toBe(true);
+    expect(nested.result.current).toBe(false);
+
+    act(() => {
+      unregisterRoot();
+    });
+
+    root.unmount();
+    nested.unmount();
+    withoutLayer.unmount();
   });
 });

@@ -115,4 +115,31 @@ describe('ClosingPortalHostsLayer', () => {
     expect(screen.getAllByTestId('closing-portal-host-slot-overlay-header')).toHaveLength(1);
     expect(screen.getAllByTestId('closing-portal-host-slot-overlay-composer')).toHaveLength(1);
   });
+
+  it('parks its hosts under names unique to its host layer while that layer is not the top one', () => {
+    const renderLayer = (isTopHostLayer: boolean) => (
+      <ClosingPortalHostsLayer
+        closeCoverOpacity={{ value: 0 } as SharedValue<number>}
+        hostLayerId='root-layer'
+        isTopHostLayer={isTopHostLayer}
+      />
+    );
+    const getHostsNamed = (name: string) =>
+      screen.UNSAFE_root.findAll(
+        (node) => typeof node.type === 'string' && node.props.name === name,
+      );
+    const { rerender } = render(renderLayer(false));
+
+    act(() => {
+      setClosingPortalLayout('overlay-composer', 'composer-entry', FIRST_RECT);
+    });
+
+    expect(getHostsNamed('overlay-composer')).toHaveLength(0);
+    expect(getHostsNamed('overlay-composer:root-layer')).toHaveLength(1);
+
+    rerender(renderLayer(true));
+
+    expect(getHostsNamed('overlay-composer')).toHaveLength(1);
+    expect(getHostsNamed('overlay-composer:root-layer')).toHaveLength(0);
+  });
 });

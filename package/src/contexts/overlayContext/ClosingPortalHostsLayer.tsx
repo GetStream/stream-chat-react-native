@@ -9,12 +9,14 @@ type ClosingPortalHostSlotProps = {
   closeCoverOpacity: SharedValue<number>;
   hostName: string;
   layout: ClosingPortalLayoutEntry['layout'];
+  portalHostName: string;
 };
 
 const ClosingPortalHostSlot = ({
   closeCoverOpacity,
   hostName,
   layout,
+  portalHostName,
 }: ClosingPortalHostSlotProps) => {
   const style = useAnimatedStyle(() => {
     const value = layout.value;
@@ -36,16 +38,29 @@ const ClosingPortalHostSlot = ({
       style={style}
       testID={`closing-portal-host-slot-${hostName}`}
     >
-      <PortalHost name={hostName} style={styles.absoluteFill} />
+      <PortalHost name={portalHostName} style={styles.absoluteFill} />
     </Animated.View>
   );
 };
 
 type ClosingPortalHostsLayerProps = {
   closeCoverOpacity: SharedValue<number>;
+  /**
+   * Id of the owning host layer, used to park the slot hosts while that layer is not the top one.
+   */
+  hostLayerId?: string;
+  /**
+   * Whether the owning host layer is the top one. Slots of any other layer park their hosts under
+   * names unique to that layer, so they never take the shared names from the top layer.
+   */
+  isTopHostLayer?: boolean;
 };
 
-export const ClosingPortalHostsLayer = ({ closeCoverOpacity }: ClosingPortalHostsLayerProps) => {
+export const ClosingPortalHostsLayer = ({
+  closeCoverOpacity,
+  hostLayerId,
+  isTopHostLayer = true,
+}: ClosingPortalHostsLayerProps) => {
   const closingPortalLayoutStacks = useClosingPortalLayouts();
   const closingPortalHosts = useMemo(() => {
     const topHosts: Array<{
@@ -71,6 +86,7 @@ export const ClosingPortalHostsLayer = ({ closeCoverOpacity }: ClosingPortalHost
           hostName={hostName}
           key={hostName}
           layout={layout}
+          portalHostName={isTopHostLayer ? hostName : `${hostName}:${hostLayerId}`}
         />
       ))}
     </>
