@@ -121,7 +121,9 @@ export const CreatePollContent = () => {
     async (value: boolean) => {
       setIsAnonymousPoll(value);
       await pollComposer.updateFields({
-        voting_visibility: value ? 'anonymous' : 'public',
+        data: {
+          voting_visibility: value ? 'anonymous' : 'public',
+        },
       });
     },
     [pollComposer],
@@ -130,7 +132,7 @@ export const CreatePollContent = () => {
   const onAllowUserSuggestedOptionsChangeHandler = useCallback(
     async (value: boolean) => {
       setAllowUserSuggestedOptions(value);
-      await pollComposer.updateFields({ allow_user_suggested_options: value });
+      await pollComposer.updateFields({ data: { allow_user_suggested_options: value } });
     },
     [pollComposer],
   );
@@ -138,7 +140,7 @@ export const CreatePollContent = () => {
   const onAllowAnswersChangeHandler = useCallback(
     async (value: boolean) => {
       setAllowAnswers(value);
-      await pollComposer.updateFields({ allow_answers: value });
+      await pollComposer.updateFields({ data: { allow_answers: value } });
     },
     [pollComposer],
   );

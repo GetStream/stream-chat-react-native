@@ -42,7 +42,7 @@ const MaxVotesTextInput = () => {
 
   const onChangeTextHandler = useCallback(
     async (newText: string) => {
-      await updateFields({ max_votes_allowed: newText });
+      await updateFields({ data: { max_votes_allowed: newText } });
     },
     [updateFields],
   );
@@ -119,14 +119,14 @@ export const MultipleVotesSettings = () => {
   const decrementMaxVotes = useStableCallback(async () => {
     const numericValue = Number(pollComposer.state.getLatestValue().data.max_votes_allowed.trim());
     if (Number.isInteger(numericValue)) {
-      await updateFields({ max_votes_allowed: String(numericValue - 1) });
+      await updateFields({ data: { max_votes_allowed: String(numericValue - 1) } });
     }
   });
 
   const incrementMaxVotes = useStableCallback(async () => {
     const numericValue = Number(pollComposer.state.getLatestValue().data.max_votes_allowed.trim());
     if (Number.isInteger(numericValue)) {
-      await updateFields({ max_votes_allowed: String(numericValue + 1) });
+      await updateFields({ data: { max_votes_allowed: String(numericValue + 1) } });
     }
   });
 
@@ -134,7 +134,9 @@ export const MultipleVotesSettings = () => {
     const currentValue = pollComposer.state.getLatestValue().data.max_votes_allowed;
     setAllowMaxVotesPerPerson(value);
     await updateFields({
-      max_votes_allowed: value ? (currentValue === '' ? '2' : currentValue) : '',
+      data: {
+        max_votes_allowed: value ? (currentValue === '' ? '2' : currentValue) : '',
+      },
     });
   });
 
