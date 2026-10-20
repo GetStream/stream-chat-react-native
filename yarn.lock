@@ -6971,7 +6971,7 @@ __metadata:
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
     react-native: "npm:0.88.0"
-    react-native-gesture-handler: "npm:~3.3.0"
+    react-native-gesture-handler: "npm:~3.4.0"
     react-native-keyboard-controller: "npm:1.22.7"
     react-native-maps: "npm:1.29.11"
     react-native-reanimated: "npm:4.7.1"
@@ -10749,7 +10749,7 @@ __metadata:
     expo-router: "npm:~58.0.18"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
-    react-native-gesture-handler: "npm:~3.3.0"
+    react-native-gesture-handler: "npm:~3.4.0"
     react-native-reanimated: "npm:4.7.1"
     react-native-safe-area-context: "npm:~5.10.1"
     react-native-screens: "npm:~4.29.0"
@@ -17258,16 +17258,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:^3.3.0, react-native-gesture-handler@npm:~3.3.0":
-  version: 3.3.0
-  resolution: "react-native-gesture-handler@npm:3.3.0"
+"react-native-gesture-handler@npm:^3.4.0, react-native-gesture-handler@npm:~3.4.0":
+  version: 3.4.0
+  resolution: "react-native-gesture-handler@npm:3.4.0"
   dependencies:
     "@types/react-test-renderer": "npm:^19.1.0"
     invariant: "npm:^2.2.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/6a710722f59eca293e2ff30852cbaf8fb4705712068c9ebb4d1d9d737cda61f175b2b0b452c9fab322d9e14efae3b6d0ab7c884439125b7f5cfb57934f7a65f8
+  checksum: 10c0/49fac726e4716347dcbefa7573272d2ec75f8a48eb0721f4fbd71386c10b3f630c339c664a521684425cf03c1b96b7245dd3df93f5262e426bb7a3517e58e8ee
   languageName: node
   linkType: hard
 
@@ -18248,7 +18248,7 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-blob-util: "npm:^0.24.12"
-    react-native-gesture-handler: "npm:^3.3.0"
+    react-native-gesture-handler: "npm:^3.4.0"
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
     react-native-maps: "npm:^1.29.11"
@@ -19024,7 +19024,7 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-builder-bob: "npm:0.40.11"
-    react-native-gesture-handler: "npm:^3.3.0"
+    react-native-gesture-handler: "npm:^3.4.0"
     react-native-markdown-package: "npm:1.8.2"
     react-native-reanimated: "npm:^4.7.1"
     react-native-safe-area-context: "npm:^5.10.1"
