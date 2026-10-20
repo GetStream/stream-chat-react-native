@@ -41,6 +41,6 @@ export const mapStorableToMember = (
     shadow_banned: Boolean(shadowBanned),
     updated_at: mapStorableToRequiredTimestamp(updatedAt),
     user: mapStorableToUser(user),
-    user_id: userId,
+    user_id: userId ?? user.id,
   };
 };
