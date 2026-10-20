@@ -194,7 +194,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      ANDROID_API_LEVEL: "34"
+      # Same as the native Android SDK e2e jobs, which run stably on these runners
+      ANDROID_API_LEVEL: "36"
       ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
       DETOX_ADB_NAME: "emulator-5554"
       APK_PATHS: |
@@ -303,6 +304,7 @@ jobs:
           path: |
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
+            /tmp/android-runner
 
   result:
     name: Test E2E Result
