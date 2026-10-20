@@ -101,6 +101,9 @@ android {
         vectorDrawables.useSupportLibrary = true
         versionCode 1
         versionName "0.0.22"
+        // Detox (e2e): builds the instrumentation APK against the variant under test.
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     signingConfigs {

@@ -1,0 +1,168 @@
+name: E2E Tests
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: "Run iOS e2e tests"
+        type: boolean
+        default: false
+      android:
+        description: "Run Android e2e tests"
+        type: boolean
+        default: true
+      mock_server_branch:
+        description: "stream-chat-test-mock-server branch"
+        type: string
+        default: "main"
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MOCK_SERVER_BRANCH: ${{ inputs.mock_server_branch || 'main' }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
+  GITHUB_EVENT_ACTION: ${{ github.event.action }}
+  GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+  GITHUB_EVENT_AFTER: ${{ github.event.after }}
+
+jobs:
+  check:
+    name: Check E2E Required
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      required: ${{ steps.check.outputs.required }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/ruby-cache
+      - name: Check if e2e tests are required
+        id: check
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane e2e_check_required
+
+  ios:
+    needs: check
+    # UNCOMMENT (replaces the `if` below): if: needs.check.outputs.required == 'true' && github.event_name == 'workflow_dispatch' && inputs.ios
+    if: needs.check.outputs.required == 'true'
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      DETOX_IOS_DEVICE: "iPhone 17 Pro"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.2"
+      - uses: ./.github/actions/ruby-cache
+      - name: Install dependencies
+        uses: ./.github/actions/install-and-build-sdk
+      - name: Install applesimutils
+        run: brew tap wix/brew && brew install applesimutils
+      - name: Cache iOS pods
+        uses: actions/cache@v5
+        with:
+          path: examples/SampleApp/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      - name: Install pods
+        working-directory: examples/SampleApp/ios
+        run: bundle exec pod install
+      # Yarn's `enableScripts: false` skips Detox's postinstall, which would build this.
+      - name: Build Detox framework cache
+        working-directory: examples/SampleApp
+        run: npx detox build-framework-cache
+      - name: Build app
+        working-directory: examples/SampleApp
+        run: npx detox build -c ios.sim.release
+      - name: Run e2e tests
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: e2e-ios-logs
+          path: |
+            examples/SampleApp/stream-chat-test-mock-server/logs
+            examples/SampleApp/artifacts
+
+  android:
+    needs: check
+    if: needs.check.outputs.required == 'true' && (github.event_name != 'workflow_dispatch' || inputs.android)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ANDROID_API_LEVEL: "34"
+      DETOX_ADB_NAME: "emulator-5554"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "zulu"
+          java-version: "21"
+          cache: "gradle"
+      - uses: ./.github/actions/ruby-cache
+      - name: Install dependencies
+        uses: ./.github/actions/install-and-build-sdk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
+      - name: Build app
+        working-directory: examples/SampleApp
+        run: npx detox build -c android.att.release
+      - name: Run e2e tests (Android emulator)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          working-directory: examples/SampleApp
+          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: e2e-android-logs
+          path: |
+            examples/SampleApp/stream-chat-test-mock-server/logs
+            examples/SampleApp/artifacts
+
+  result:
+    name: Test E2E Result
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - check
+      - android
+    steps:
+      - name: Check E2E results
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "$NEEDS"
+          exit 1
+        env:
+          NEEDS: ${{ toJson(needs) }}

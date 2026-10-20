@@ -61,6 +61,16 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     return null;
   }
 
+  const testID = read
+    ? 'message-status-read'
+    : delivered
+      ? 'message-status-delivered'
+      : sending
+        ? 'message-status-sending'
+        : sent
+          ? 'message-status-sent'
+          : undefined;
+
   return (
     <>
       <HiddenA11yText label={accessibilityLabel} />
@@ -68,6 +78,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
         accessibilityElementsHidden={!!accessibilityLabel}
         importantForAccessibility={accessibilityLabel ? 'no-hide-descendants' : undefined}
         style={[styles.container, container]}
+        testID={testID}
       >
         {read ? (
           <icons.CheckAll

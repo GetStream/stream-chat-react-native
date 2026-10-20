@@ -1,0 +1,76 @@
+# SampleApp E2E tests (Detox)
+
+End-to-end tests for `examples/SampleApp`, run with [Detox](https://wix.github.io/Detox/) against the shared
+[`stream-chat-test-mock-server`](https://github.com/GetStream/stream-chat-test-mock-server). The layout mirrors the
+native iOS/Android (and Flutter) suites, so tests can be ported almost line by line:
+
+| Path                                        | What                                                                               | Native counterpart                           |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------- |
+| `mock-server/`                              | `MockServer` (driver `/start/:test` → per-test server), `DataTypes`                | `MockServer.kt`, `StreamMockServer.swift`    |
+| `robots/BackendRobot.ts`                    | server-side state via test-control endpoints (`/mock`, `/add_member`, `/jwt/*`, …) | `BackendRobot`                               |
+| `robots/ParticipantRobot.ts`                | the other user, `count_dooku` (`/participant/*`)                                   | `ParticipantRobot`                           |
+| `robots/UserRobot.ts` + `UserRobot*Asserts` | UI actions as the app user + assert extensions                                     | `UserRobot` + `UserRobot*Asserts.kt`         |
+| `pages/`                                    | page objects: `LoginPage`, `ChannelListPage`, `MessageListPage`                    | `pages/*Page.kt`, `Pages/*Page.swift`        |
+| `support/`                                  | `setUpStreamTestCase()`, `step()`, uiautomator-like `Element` helpers              | `StreamTestCase`, `step {}`, `uiautomator/*` |
+| `tests/*.e2e.ts`                            | the tests                                                                          | `*Tests.kt`, `*_Tests.swift`                 |
+
+Robots are fluent like the native ones; every call is queued and the chain runs when awaited:
+
+```ts
+await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
+await step('WHEN participant sends a message', () => participantRobot.sendMessage('Hi'));
+await step('THEN user receives it', () => userRobot.assertMessage('Hi').assertMessageAuthor(false));
+```
+
+## How the app is pointed at the mock server
+
+`setUpStreamTestCase()` starts a mock server per test and relaunches the app with the launch argument
+`MOCK_SERVER_URL` (`localhost` on iOS, `10.0.2.2` on the Android emulator), read in `src/utils/e2e.ts` via
+`react-native-launch-arguments`. In that mode the app lists only the mock user (`luke_skywalker`), never restores a
+stored login, skips push registration and permission prompts, and runs without offline storage, so every test starts
+clean.
+
+## Running
+
+```bash
+# Everything: clones + starts the mock server, builds, tests, stops the mock server
+bundle exec fastlane test_e2e platform:ios
+bundle exec fastlane test_e2e platform:android          # AVD from DETOX_AVD_NAME (default Pixel_API_37)
+# Options: configuration:debug, skip_build:true, local_server:<path to a mock server checkout>,
+#          mock_server_branch:<branch>, test:e2e/tests/MessageListTests.e2e.ts
+
+# Or by hand
+bundle exec fastlane start_mock_server                   # driver on MOCK_DRIVER_PORT (default 4569)
+yarn e2e:build -c ios.sim.release                        # or android.emu.release
+MOCK_DRIVER_PORT=4569 yarn e2e:test -c ios.sim.release
+bundle exec fastlane stop_mock_server
+```
+
+Release configurations bundle the JS, so no Metro is needed. Debug configurations need `yarn start`. Android builds need
+JDK 17 or 21 (`JAVA_HOME`).
+
+## CI
+
+`.github/workflows/e2e-test.yml` runs on pull requests and on demand (`workflow_dispatch`, with iOS/Android toggles and
+a mock server branch). Like the iOS SDK, a cheap `Check E2E Required` job first runs `fastlane e2e_check_required`
+(`is_check_required` over the `e2e` sources in the Fastfile's `impact_analysis`). The simulator/emulator jobs run
+only when the PR touches those sources, or when the last change to them hasn't passed yet. `Test E2E Result` is the
+job to require in branch protection: it passes when the e2e jobs pass or are skipped as not required.
+
+iOS runs on `macos-15` (Xcode 26.2, iPhone 17 Pro, `ios.sim.release`). Android runs on `ubuntu-latest` with KVM and an
+API 34 x86_64 emulator (`android.att.release`). Both call `fastlane test_e2e skip_build:true`, which on CI adds
+`--retries 2 --headless` and keeps failure logs and screenshots in `artifacts/`. Those and the mock server logs are
+uploaded when a job fails.
+
+## Gotchas
+
+- `detox test --reuse` does not reinstall the app. After rebuilding, run without it, or you test the old binary.
+- Yarn's `enableScripts: false` skips Detox's postinstall; run `npx detox build-framework-cache` once on a new machine.
+- Detox replaces Jest's global `expect`. Use it for element expectations and `expect as jestExpect` from
+  `@jest/globals` for values.
+- Fabric mounts some views that carry a `testID` (`message-list-item-*`, `message-text-container`) empty, with their
+  content as siblings. They are not usable as `withAncestor` scopes or visibility targets; the page objects scope message
+  elements to `message-content-wrapper` or the message list instead.
+- Detox iOS never reports avatars as visible (their remote image renders transparent until loaded), so avatar asserts
+  check existence.
+- A ported test keeps the native expectation. If the SDK disagrees, fix the SDK or skip the test against a ticket.

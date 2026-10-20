@@ -59,6 +59,7 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 import type { StackNavigatorParamList, UserSelectorParamList } from './src/types';
 
 import AsyncStore from './src/utils/AsyncStore.ts';
+import { isE2eTestRun } from './src/utils/e2e';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 import { watchLocation } from './src/utils/watchLocation';
 
@@ -352,7 +353,7 @@ const DrawerNavigatorWrapper: React.FC<{
     >
       <Chat
         client={chatClient}
-        enableOfflineSupport={offlineSupport}
+        enableOfflineSupport={offlineSupport && !isE2eTestRun}
         i18nInstance={i18nInstance}
         isMessageAIGenerated={isMessageAIGenerated}
         useNativeMultipartUpload

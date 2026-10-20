@@ -15,7 +15,9 @@
     "bootstrap": "yarn install",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
     "release-next": "echo \"Skipping next release for SampleApp\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e",
+    "e2e:build": "detox build",
+    "e2e:test": "detox test",
     "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
     "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -",
     "fastlane:android-build": "bundle exec fastlane android firebase_build_and_upload deploy:false",
@@ -53,6 +55,7 @@
     "react-native-gesture-handler": "^3.4.0",
     "react-native-haptic-feedback": "^3.0.0",
     "react-native-image-picker": "^8.2.1",
+    "react-native-launch-arguments": "^4.1.1",
     "react-native-maps": "^1.29.11",
     "react-native-nitro-modules": "0.36.5",
     "react-native-nitro-sound": "0.2.17",
@@ -76,6 +79,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/runtime": "^7.29.2",
+    "@jest/globals": "^30.4.1",
     "@react-native-community/cli": "20.2.0",
     "@react-native-community/cli-platform-android": "20.2.0",
     "@react-native-community/cli-platform-ios": "20.2.0",
@@ -86,7 +90,10 @@
     "@stream-io/typescript-config": "workspace:^",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/react": "^19.3.0",
+    "babel-jest": "30.0.0",
     "babel-plugin-react-compiler": "^1.0.0",
+    "detox": "^20.51.4",
+    "jest": "^30.4.2",
     "typescript": "6.0.3"
   },
   "engines": {

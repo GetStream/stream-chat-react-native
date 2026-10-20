@@ -87,6 +87,7 @@ export const BackButton: React.FC<{
         }
       }}
       style={styles.backButton}
+      testID='back-button'
     >
       <ChevronLeft height={20} stroke={semantics.textSecondary} width={20} />
       {!!showUnreadCountBadge && (

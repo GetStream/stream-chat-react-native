@@ -125,4 +125,25 @@ describe('MessageStatus', () => {
       });
     },
   );
+
+  it.each([
+    [1, 1, 'sending', 'message-status-sending'],
+    [2, 2, 'received', 'message-status-read'],
+    [1, 1, 'received', 'message-status-sent'],
+    [2, 1, 'received', 'message-status-delivered'],
+  ] as [number, number, string, string][])(
+    'should expose a status testID when deliveredToCount is %s, readBy is %s and status is %s',
+    async (deliveredToCount, readBy, status, testID) => {
+      const message = generateMessage({ user: generateUser() });
+      const { getByTestId } = renderMessageStatus({
+        deliveredToCount,
+        message: { ...message, status },
+        readBy,
+      });
+      // The icon row is hidden from screen readers in favour of the hidden text label.
+      await waitFor(() => {
+        expect(getByTestId(testID, { includeHiddenElements: true })).toBeTruthy();
+      });
+    },
+  );
 });

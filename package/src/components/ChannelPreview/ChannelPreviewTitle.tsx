@@ -21,7 +21,7 @@ export const ChannelPreviewTitle = ({ channel, title }: ChannelPreviewTitleProps
   const displayName = useChannelPreviewDisplayName(channel);
 
   return (
-    <Text numberOfLines={1} style={styles.title}>
+    <Text numberOfLines={1} style={styles.title} testID='channel-preview-title'>
       {title ?? displayName}
     </Text>
   );

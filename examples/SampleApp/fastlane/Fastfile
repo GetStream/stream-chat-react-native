@@ -5,6 +5,7 @@ github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
 root_path = File.absolute_path('../../../')
 sdk_size_ext = 'KB'
 @force_check = false
+@impact = nil
 build_output_directory = "./app-build"
 
 # iOS Platform Configuration
@@ -20,6 +21,7 @@ apk_path = "#{build_output_directory}/#{output_apk_name}"
 
 
 before_all do
+  @impact = impact_analysis
   if is_ci
     setup_ci
     setup_git_config
@@ -183,9 +185,87 @@ platform :android do
   end
 end
 
-##########################
-###### Common lanes ######
-##########################
+#######################
+###### E2E lanes ######
+#######################
+
+sample_app_path = File.absolute_path('../')
+mock_server_repo_name = 'stream-chat-test-mock-server'
+mock_server_driver_port = ENV['MOCK_DRIVER_PORT'] || '4569'
+
+desc 'Starts the stream-chat-test-mock-server driver. Options: local_server (path to a checkout), branch'
+lane :start_mock_server do |options|
+  Dir.chdir(sample_app_path) do
+    mock_server_repo = options[:local_server] || mock_server_repo_name
+    stop_mock_server unless is_ci
+
+    unless options[:local_server]
+      branch = options[:branch].to_s.empty? ? 'main' : options[:branch]
+      sh("rm -rf #{mock_server_repo}") if File.directory?(mock_server_repo)
+      sh("git clone --depth 1 -b #{branch} https://github.com/#{github_repo.split('/').first}/#{mock_server_repo}.git")
+    end
+
+    Dir.chdir(mock_server_repo) do
+      FileUtils.mkdir_p('logs')
+      # The mock server has its own Gemfile; don't let the SampleApp bundle leak into it.
+      Bundler.with_unbundled_env do
+        sh('bundle install')
+        sh("bundle exec ruby driver.rb #{mock_server_driver_port} > logs/driver.log 2>&1 &")
+      end
+    end
+
+    wait_for_mock_server_driver(port: mock_server_driver_port)
+  end
+end
+
+lane :stop_mock_server do
+  Net::HTTP.get_response(URI("http://localhost:#{mock_server_driver_port}/stop")) rescue nil
+end
+
+private_lane :wait_for_mock_server_driver do |options|
+  require 'socket'
+  ready = false
+  60.times do
+    begin
+      TCPSocket.new('localhost', options[:port].to_i).close
+      ready = true
+      break
+    rescue Errno::ECONNREFUSED
+      sleep(1)
+    end
+  end
+  UI.user_error!("Mock server driver did not start on port #{options[:port]}") unless ready
+end
+
+desc 'Writes `required=true|false` to $GITHUB_OUTPUT, so CI can skip the e2e jobs before building anything'
+lane :e2e_check_required do
+  required = is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
+  File.write(ENV['GITHUB_OUTPUT'], "required=#{required}\n", mode: 'a') if ENV['GITHUB_OUTPUT']
+  required
+end
+
+desc 'Runs the Detox e2e tests. Options: platform (ios|android), configuration (release|debug), ' \
+     'device (android: emu|att), skip_build, test (a test file or -t filter), local_server, mock_server_branch'
+lane :test_e2e do |options|
+  next unless is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
+
+  platform = options[:platform] || 'ios'
+  device = platform == 'ios' ? 'sim' : (options[:device] || 'emu')
+  detox_config = "#{platform}.#{device}.#{options[:configuration] || 'release'}"
+
+  start_mock_server(local_server: options[:local_server], branch: options[:mock_server_branch])
+
+  begin
+    Dir.chdir(sample_app_path) do
+      sh("npx detox build -c #{detox_config}") unless options[:skip_build]
+      # On CI: retry flaky tests, run the simulator headless, and keep logs + screenshots of failures in ./artifacts.
+      ci_flags = is_ci ? '--retries 2 --headless --record-logs failing --take-screenshots failing' : ''
+      sh("MOCK_DRIVER_PORT=#{mock_server_driver_port} npx detox test -c #{detox_config} --cleanup #{ci_flags} #{options[:test]}")
+    end
+  ensure
+    stop_mock_server
+  end
+end
 
 lane :file_size do |options|
   File.size(options[:path]) / 1024.0
@@ -213,11 +293,6 @@ lane :frameworks_sizes do
 end
 
 lane :show_frameworks_sizes do |options|
-  # Besides the SDK itself, changes to how the size is measured (this lane, its plugin, the root
-  # `minify-*` scripts) re-run the check too.
-  sources = ['package/', 'package.json', 'examples/SampleApp/fastlane/', 'examples/SampleApp/Gemfile.lock']
-  next unless is_check_required(sources: sources, force_check: @force_check)
-
   sizes = options[:sizes] || frameworks_sizes
   show_sdk_size(branch_sizes: sizes, github_repo: github_repo, size_ext: sdk_size_ext)
   update_img_shields_sdk_sizes(sizes: sizes, open_pr: options[:open_pr]) if options[:update_readme]
@@ -231,4 +306,13 @@ lane :update_img_shields_sdk_sizes do |options|
     sizes: options[:sizes] || frameworks_sizes,
     size_ext: sdk_size_ext
   )
+end
+
+lane :impact_analysis do
+  {
+    e2e: {
+      sources: ['package/', 'examples/SampleApp/', 'package.json'],
+      checks: ['Test E2E Result']
+    }
+  }
 end
