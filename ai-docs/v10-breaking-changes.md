@@ -38,7 +38,7 @@ Docs impact (which getstream.io pages change) is in [`v10-docs-impact.md`](./v10
 
 ## 1. Dependencies and platform
 
-- **`stream-chat` ^9 → ^10** (currently `^10.0.0-rc.22`). Every `stream-chat` change in [§12](#12-stream-chat-v10-changes-an-rn-integrator-hits)
+- **`stream-chat` ^9 → ^10** (currently `^10.0.0-rc.23`). Every `stream-chat` change in [§12](#12-stream-chat-v10-changes-an-rn-integrator-hits)
   applies. Apps that depend on `stream-chat` directly must move to the same major. — §17
 - **`react-native` peer `>=0.76` → `>=0.79`** (core, native and expo packages). `@stream-io/i18n` and `stream-chat`
   resolve through package `exports`, which needs Metro ≥0.82. — §R.1 · #3777

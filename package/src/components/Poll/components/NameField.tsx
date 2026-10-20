@@ -12,7 +12,7 @@ export const NameField = () => {
 
   const onChangeText = useCallback(
     async (newText: string) => {
-      await updateFields({ name: newText });
+      await updateFields({ data: { name: newText } });
     },
     [updateFields],
   );

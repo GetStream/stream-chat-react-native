@@ -29,7 +29,7 @@ export const MultipleAnswersField = () => {
   const onEnforceUniqueVoteHandler = useCallback(
     async (value: boolean) => {
       setAllowMultipleVotes(value);
-      await updateFields({ enforce_unique_vote: !value });
+      await updateFields({ data: { enforce_unique_vote: !value } });
     },
     [updateFields],
   );

@@ -585,7 +585,9 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const updateOption = useCallback(
     (newText: string, index: number) => {
       pollComposer.updateFields({
-        options: { index, text: newText },
+        data: {
+          options: { index, text: newText },
+        },
       });
     },
     [pollComposer],
@@ -651,7 +653,9 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       }
 
       await pollComposer.updateFields({
-        options: reorderedPollOptions,
+        data: {
+          options: reorderedPollOptions,
+        },
       });
     },
     [pollComposer],
@@ -664,7 +668,9 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
       pollComposer.updateFields({
-        options: latestOptions.filter((option) => option.id !== optionId),
+        data: {
+          options: latestOptions.filter((option) => option.id !== optionId),
+        },
       });
     },
     [pollComposer],

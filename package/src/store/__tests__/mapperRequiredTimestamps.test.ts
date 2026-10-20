@@ -1,4 +1,5 @@
 import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
+import { mapStorableToMember } from '../mappers/mapStorableToMember';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
 import { mapStorableToReaction } from '../mappers/mapStorableToReaction';
 import { mapStorableToUser } from '../mappers/mapStorableToUser';
@@ -60,5 +61,15 @@ describe('row -> model mappers keep required timestamps numeric', () => {
 
     expect(typeof result.channel?.created_at).toBe('number');
     expect(typeof result.channel?.updated_at).toBe('number');
+  });
+
+  it('mapStorableToMember', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const member = mapStorableToMember({ ...nullDates, user: userRow, userId: null } as any);
+
+    expect(typeof member.created_at).toBe('number');
+    expect(typeof member.updated_at).toBe('number');
+    // `user_id` is required on `ChannelMemberResponse` but nullable in the column.
+    expect(member.user_id).toBe('u1');
   });
 });

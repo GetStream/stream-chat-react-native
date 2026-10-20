@@ -174,7 +174,7 @@ export const useChannelActions = (channel: Channel) => {
     }
     if (ownUserId) {
       try {
-        await channel.removeMembers([ownUserId]);
+        await channel.removeMembers({ members: [ownUserId] });
         addNotification({
           message: t('channel.left.text', 'Left channel'),
           options: { severity: 'success', type: 'api:channel:leave:success' },
@@ -202,7 +202,7 @@ export const useChannelActions = (channel: Channel) => {
         return;
       }
       try {
-        await channel.removeMembers(memberIds);
+        await channel.removeMembers({ members: memberIds });
         addNotification({
           message: t('channel.membersRemoved.text', {
             count: memberIds.length,
@@ -234,7 +234,7 @@ export const useChannelActions = (channel: Channel) => {
         return;
       }
       try {
-        await channel.addMembers(memberIds);
+        await channel.addMembers({ members: memberIds });
         addNotification({
           message: t('channel.membersAdded.text', {
             count: memberIds.length,

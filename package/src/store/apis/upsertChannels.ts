@@ -42,7 +42,7 @@ export const upsertChannels = async ({
       membership &&
       !members.some((m: ChannelMemberResponse) => m.user?.id === membership.user?.id)
     ) {
-      members.push({ ...membership, user_id: membership.user?.id });
+      members.push({ ...membership, user_id: membership.user?.id ?? membership.user_id });
     }
 
     if (active_live_locations && active_live_locations.length > 0) {

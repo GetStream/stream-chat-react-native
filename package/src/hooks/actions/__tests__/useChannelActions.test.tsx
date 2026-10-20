@@ -273,7 +273,7 @@ describe('useChannelActions', () => {
       await result.current.addMembers(['u-1', 'u-2']);
     });
 
-    expect(channel.addMembers).toHaveBeenCalledWith(['u-1', 'u-2']);
+    expect(channel.addMembers).toHaveBeenCalledWith({ members: ['u-1', 'u-2'] });
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: '{{count}} members added',
       options: {
@@ -326,7 +326,7 @@ describe('useChannelActions', () => {
       await result.current.addMembers(['u-1'], { onSuccess });
     });
 
-    expect(channel.addMembers).toHaveBeenCalledWith(['u-1']);
+    expect(channel.addMembers).toHaveBeenCalledWith({ members: ['u-1'] });
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });
 
@@ -357,7 +357,7 @@ describe('useChannelActions', () => {
       await result.current.removeMembers(['u-1', 'u-2']);
     });
 
-    expect(channel.removeMembers).toHaveBeenCalledWith(['u-1', 'u-2']);
+    expect(channel.removeMembers).toHaveBeenCalledWith({ members: ['u-1', 'u-2'] });
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: '{{count}} members removed',
       options: {
