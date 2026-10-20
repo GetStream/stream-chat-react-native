@@ -67,7 +67,7 @@ jobs:
 
   ios:
     needs: check
-    if: needs.check.outputs.required == 'true' && github.event_name == 'workflow_dispatch' && inputs.ios
+    # if: needs.check.outputs.required == 'true' && github.event_name == 'workflow_dispatch' && inputs.ios
     runs-on: macos-15
     timeout-minutes: 60
     env:
