@@ -334,7 +334,7 @@ Prettier: single quotes, trailing commas, 100-char width (120 for Markdown) — 
 ### Git hooks
 
 - `.husky/commit-msg` → `commitlint --edit` (Conventional Commits enforced)
-- `.husky/pre-commit` → `dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py`
+- `.husky/pre-commit` → `dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py` (the format hook checks only the staged files with Prettier and ESLint, plus the SDK validators when `package/` is staged; CI runs the full `yarn lint`)
 - Root `postinstall` runs `husky`
 
 ### Commits
