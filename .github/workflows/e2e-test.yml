@@ -123,7 +123,7 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.APP_PATH }}
-          key: e2e-ios-app-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/ios/**', 'package/native-package/*.podspec', 'examples/SampleApp/Gemfile.lock', 'examples/E2ETestApp/*.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/ios/**', '!examples/E2ETestApp/ios/build/**', '!examples/E2ETestApp/ios/Pods/**') }}
+          key: e2e-ios-app-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/ios/**', 'package/native-package/*.podspec', 'examples/SampleApp/Gemfile.lock', 'examples/E2ETestApp/*.js', '!examples/E2ETestApp/.detoxrc.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/ios/**', '!examples/E2ETestApp/ios/build/**', '!examples/E2ETestApp/ios/Pods/**') }}
       - name: Set up ccache
         if: steps.app.outputs.cache-hit != 'true'
         uses: hendrikmuhs/ccache-action@v1.2
@@ -261,7 +261,7 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.APK_PATHS }}
-          key: e2e-android-apk-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/android/**', '!package/native-package/android/build/**', 'examples/E2ETestApp/*.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/android/**', '!examples/E2ETestApp/android/**/build/**', '!examples/E2ETestApp/android/.gradle/**') }}
+          key: e2e-android-apk-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/android/**', '!package/native-package/android/build/**', 'examples/E2ETestApp/*.js', '!examples/E2ETestApp/.detoxrc.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/android/**', '!examples/E2ETestApp/android/**/build/**', '!examples/E2ETestApp/android/.gradle/**') }}
       # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
       - name: Build app
         if: steps.apk.outputs.cache-hit != 'true'
