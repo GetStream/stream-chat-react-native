@@ -92,6 +92,11 @@ What CI caches (restored on PRs, filled by the runs on `develop`):
   on RN's UIManager shadow queue, whose pending-work counter underflows to 2^64-1, so the app looks busy until the test
   times out. Robots wait explicitly instead, and taps retry while the target is not hittable yet (e.g. under the
   keyboard as it animates in). Android keeps Espresso's synchronization.
+- Don't pass `permissions` to `device.launchApp` unless a test needs one: on iOS Detox applies each with
+  `applesimutils --restartSB`, which restarts SpringBoard on every launch. That cost 1.5–3 min per test on CI (hitting the
+  hook timeout) and ~15s locally.
+- CI boots the simulator at the start of the job and pins it with `DETOX_IOS_UDID` (`.detoxrc.js`), so the boot
+  overlaps with setup instead of delaying the first test by ~7 min.
 - `detox test --reuse` does not reinstall the app. After rebuilding, run without it, or you test the old binary.
 - Yarn's `enableScripts: false` skips Detox's postinstall; run `yarn detox build-framework-cache` once on a new machine.
 - The SDK's shared native sources are synced into `stream-chat-react-native` and gitignored; `yarn e2e:build` and

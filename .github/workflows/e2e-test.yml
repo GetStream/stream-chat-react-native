@@ -72,6 +72,7 @@ jobs:
     timeout-minutes: 60
     env:
       DETOX_IOS_DEVICE: "iPhone 17 Pro"
+      IOS_VERSION: "26.2"
       XCODE_VERSION: "26.2"
       APP_PATH: examples/E2ETestApp/ios/build/detox/Build/Products/Release-iphonesimulator/E2ETestApp.app
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
@@ -85,6 +86,18 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
+      # A fresh simulator takes minutes to boot on CI; boot it now so that overlaps with setup.
+      - name: Boot simulator
+        run: |
+          runtime="com.apple.CoreSimulator.SimRuntime.iOS-${IOS_VERSION//./-}"
+          udid=$(xcrun simctl list devices available -j |
+            jq -r --arg rt "$runtime" --arg name "$DETOX_IOS_DEVICE" '.devices[$rt][]? | select(.name == $name) | .udid' | head -1)
+          if [ -z "$udid" ]; then
+            echo "::warning::No $DETOX_IOS_DEVICE on iOS $IOS_VERSION; Detox will pick and boot a simulator itself"
+            exit 0
+          fi
+          echo "DETOX_IOS_UDID=$udid" >> "$GITHUB_ENV"
+          nohup xcrun simctl boot "$udid" > /dev/null 2>&1 &
       - uses: ./.github/actions/ruby-cache
 
       # --- JS dependencies ---
@@ -177,6 +190,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mock-server-gems-
 
+      - name: Wait for the simulator
+        if: env.DETOX_IOS_UDID != ''
+        timeout-minutes: 15
+        # `-b` boots it if the background boot never started; it errors (405) when the device is
+        # already booted, and then the plain call returns at once.
+        run: xcrun simctl bootstatus "$DETOX_IOS_UDID" -b || xcrun simctl bootstatus "$DETOX_IOS_UDID"
       - name: Run e2e tests
         working-directory: examples/SampleApp
         run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"

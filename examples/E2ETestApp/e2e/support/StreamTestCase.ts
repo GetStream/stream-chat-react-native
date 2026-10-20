@@ -42,7 +42,9 @@ export const setUpStreamTestCase = (): StreamTestCase => {
         detoxEnableSynchronization: device.getPlatform() === 'ios' ? 0 : 1,
       },
       newInstance: true,
-      permissions: { notifications: 'YES', photos: 'YES' },
+      // No `permissions`: the app asks for none, and on iOS Detox applies each one with
+      // `applesimutils --restartSB`, restarting SpringBoard per permission on every launch
+      // (minutes per test on CI).
     });
   });
 

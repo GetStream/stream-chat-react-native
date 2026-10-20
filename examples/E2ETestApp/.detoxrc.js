@@ -42,7 +42,10 @@ module.exports = {
   devices: {
     simulator: {
       type: 'ios.simulator',
-      device: { type: process.env.DETOX_IOS_DEVICE || 'iPhone 16 Pro' },
+      // CI pins the simulator it boots early (DETOX_IOS_UDID), so Detox reuses it.
+      device: process.env.DETOX_IOS_UDID
+        ? { id: process.env.DETOX_IOS_UDID }
+        : { type: process.env.DETOX_IOS_DEVICE || 'iPhone 16 Pro' },
     },
     emulator: {
       type: 'android.emulator',
