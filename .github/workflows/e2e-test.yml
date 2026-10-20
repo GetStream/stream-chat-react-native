@@ -3,12 +3,6 @@ name: E2E Tests
 on:
   pull_request:
 
-  # Runs on develop too: GitHub only shares caches from the base branch, so these runs fill the
-  # caches every PR restores from.
-  push:
-    branches:
-      - develop
-
   workflow_dispatch:
     inputs:
       ios:
@@ -234,8 +228,11 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "21"
-      # Caches Gradle's dependencies, wrapper and build cache; written on develop, read on PRs.
+      # Caches Gradle's dependencies, wrapper and build cache. It only writes on the default branch by
+      # default, and this workflow doesn't run there, so let PR runs write: their reruns reuse it.
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
       - uses: ./.github/actions/ruby-cache
 
       # --- JS dependencies ---

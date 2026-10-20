@@ -74,16 +74,17 @@ API 34 x86_64 emulator (`android.att.release`). Both call `fastlane test_e2e ski
 `--retries 2 --headless` and keeps failure logs and screenshots in `artifacts/`. Those and the mock server logs are
 uploaded when a job fails.
 
-What CI caches (restored on PRs, filled by the runs on `develop`):
+What CI caches. The workflow doesn't run on `develop`, and GitHub only lets a PR restore caches from its own branch or
+the base branch, so each PR fills its own: its first run builds cold, and later pushes to it reuse the caches.
 
 - **The built app** (`.app`; release + test `.apk`), keyed on the app and SDK sources. A change that only touches
   `e2e/` reuses the binary and skips pods, Gradle and Xcode entirely.
 - `node_modules` of `yarn workspaces focus e2etestapp`, so only the e2e app's dependency tree is installed.
 - iOS: CocoaPods, ccache (the RN ccache wrappers need `CCACHE_BINARY` in the environment, which the workflow sets), the
   Detox framework.
-- Android: Gradle (`gradle/actions/setup-gradle`, `org.gradle.caching`), a single ABI (`x86_64`). The emulator matches the
-  native Android SDK's e2e jobs (API 34 AOSP image, `pixel` profile, no snapshot): the Google APIs image plus a cached
-  snapshot froze the emulator on the 5th app launch, two runs in a row.
+- Android: Gradle (`gradle/actions/setup-gradle` with `cache-read-only: false`, `org.gradle.caching`), a single ABI
+  (`x86_64`). The emulator matches the native Android SDK's e2e jobs (API 36 AOSP image, `pixel` profile, no snapshot);
+  on API 34 (Google APIs image, then AOSP) it died mid-run with no crash output.
 - The mock server's gems, keyed on the mock server revision.
 
 ## Gotchas
