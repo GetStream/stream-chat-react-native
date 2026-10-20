@@ -72,7 +72,8 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install-and-build-sdk
       - name: Install applesimutils
-        run: brew tap wix/brew && brew install applesimutils
+        # Homebrew refuses formulae from non-official taps until they are trusted.
+        run: brew tap wix/brew && brew trust --formula wix/brew/applesimutils && brew install wix/brew/applesimutils
       - name: Cache iOS pods
         uses: actions/cache@v5
         with:
