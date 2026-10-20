@@ -43,10 +43,19 @@ export class UserRobot extends Robot {
     return this.perform(() => waitToAppearAndLongPress(MessageList.Message.text(messageText)));
   }
 
+  /**
+   * iOS types key by key, like XCUITest. Android sets the text, like the native suite's
+   * `typeText` (UiAutomator `setText`): typing through the soft keyboard leaves the text in the
+   * IME's composing state, which the composer doesn't pick up, so the send button never shows.
+   */
   typeText(text: string): this {
     return this.perform(async () => {
       const inputField = await waitToAppear(Composer.inputField);
-      await inputField.typeText(text);
+      if (device.getPlatform() === 'android') {
+        await inputField.replaceText(text);
+      } else {
+        await inputField.typeText(text);
+      }
     });
   }
 

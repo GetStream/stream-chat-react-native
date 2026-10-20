@@ -254,6 +254,11 @@ jobs:
         with:
           path: ${{ env.APK_PATHS }}
           key: ${{ steps.apk.outputs.cache-primary-key }}
+      # Frees the daemons' memory for the emulator, which otherwise can get killed mid-run.
+      - name: Stop Gradle daemons
+        if: steps.apk.outputs.cache-hit != 'true'
+        working-directory: examples/E2ETestApp/android
+        run: ./gradlew --stop
 
       # --- Emulator: boots from a cached snapshot ---
       - name: Enable KVM
@@ -268,7 +273,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ env.ANDROID_API_LEVEL }}-x86_64-google_apis-pixel_6
+          key: avd-${{ env.ANDROID_API_LEVEL }}-x86_64-google_apis-pixel_6-ram4096
       - name: Create AVD snapshot
         if: steps.avd.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
@@ -277,6 +282,7 @@ jobs:
           arch: x86_64
           target: google_apis
           profile: pixel_6
+          ram-size: 4096M
           force-avd-creation: false
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: false
@@ -309,6 +315,7 @@ jobs:
           arch: x86_64
           target: google_apis
           profile: pixel_6
+          ram-size: 4096M
           force-avd-creation: false
           emulator-options: -no-snapshot-save ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
