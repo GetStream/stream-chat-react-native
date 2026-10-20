@@ -1,4 +1,4 @@
-/** The mock server's app user (`E2E_USER` in `src/utils/e2e.ts`), the only one listed in e2e mode. */
+/** The mock server's app user (`appUser` in `src/config.ts`), the only one listed in e2e mode. */
 export const appUserId = 'luke_skywalker';
 
 export const LoginPage = {

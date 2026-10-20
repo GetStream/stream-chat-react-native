@@ -33,7 +33,7 @@ ext.REACT_NATIVE_WORKLETS_NODE_MODULES_DIR =
 allprojects {
     repositories {
         maven {
-            url "$rootDir/../node_modules/detox/Detox-android"
+            url "$rootDir/../../../node_modules/detox/Detox-android"
         }
         // this is how Notifee finds it's Android library:
         maven {

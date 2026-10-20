@@ -189,13 +189,14 @@ end
 ###### E2E lanes ######
 #######################
 
-sample_app_path = File.absolute_path('../')
+# The e2e suite drives the dedicated examples/E2ETestApp; its lanes live here with the repo's other lanes.
+e2e_app_path = File.absolute_path('../../E2ETestApp')
 mock_server_repo_name = 'stream-chat-test-mock-server'
 mock_server_driver_port = ENV['MOCK_DRIVER_PORT'] || '4569'
 
 desc 'Starts the stream-chat-test-mock-server driver. Options: local_server (path to a checkout), branch'
 lane :start_mock_server do |options|
-  Dir.chdir(sample_app_path) do
+  Dir.chdir(e2e_app_path) do
     mock_server_repo = options[:local_server] || mock_server_repo_name
     stop_mock_server unless is_ci
 
@@ -209,6 +210,8 @@ lane :start_mock_server do |options|
       FileUtils.mkdir_p('logs')
       # The mock server has its own Gemfile; don't let the SampleApp bundle leak into it.
       Bundler.with_unbundled_env do
+        # CI caches the mock server's gems in MOCK_SERVER_BUNDLE_PATH.
+        sh("bundle config set --local path '#{ENV['MOCK_SERVER_BUNDLE_PATH']}'") if ENV['MOCK_SERVER_BUNDLE_PATH']
         sh('bundle install')
         sh("bundle exec ruby driver.rb #{mock_server_driver_port} > logs/driver.log 2>&1 &")
       end
@@ -244,6 +247,14 @@ lane :e2e_check_required do
   required
 end
 
+desc 'Installs the E2ETestApp pods with this bundle (the e2e app has no Gemfile of its own)'
+lane :e2e_pod_install do
+  Dir.chdir(e2e_app_path) do
+    sh('yarn sync-native')
+    sh('bundle exec pod install --project-directory=ios')
+  end
+end
+
 desc 'Runs the Detox e2e tests. Options: platform (ios|android), configuration (release|debug), ' \
      'device (android: emu|att), skip_build, test (a test file or -t filter), local_server, mock_server_branch'
 lane :test_e2e do |options|
@@ -256,11 +267,11 @@ lane :test_e2e do |options|
   start_mock_server(local_server: options[:local_server], branch: options[:mock_server_branch])
 
   begin
-    Dir.chdir(sample_app_path) do
-      sh("npx detox build -c #{detox_config}") unless options[:skip_build]
+    Dir.chdir(e2e_app_path) do
+      sh("yarn e2e:build -c #{detox_config}") unless options[:skip_build]
       # On CI: retry flaky tests, run the simulator headless, and keep logs + screenshots of failures in ./artifacts.
       ci_flags = is_ci ? '--retries 2 --headless --record-logs failing --take-screenshots failing' : ''
-      sh("MOCK_DRIVER_PORT=#{mock_server_driver_port} npx detox test -c #{detox_config} --cleanup #{ci_flags} #{options[:test]}")
+      sh("MOCK_DRIVER_PORT=#{mock_server_driver_port} yarn detox test -c #{detox_config} --cleanup #{ci_flags} #{options[:test]}")
     end
   ensure
     stop_mock_server
@@ -311,7 +322,7 @@ end
 lane :impact_analysis do
   {
     e2e: {
-      sources: ['package/', 'examples/SampleApp/', 'package.json'],
+      sources: ['package/', 'examples/E2ETestApp/', 'examples/SampleApp/fastlane/', 'package.json'],
       checks: ['Test E2E Result']
     }
   }

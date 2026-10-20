@@ -77,7 +77,3 @@ yarn-error.log
 # Credentials
 credentials/
 app-build/
-
-# Detox e2e
-/stream-chat-test-mock-server/
-/artifacts/

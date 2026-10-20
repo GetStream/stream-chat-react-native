@@ -1,0 +1,50 @@
+{
+  "name": "e2etestapp",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Minimal app driven by the Detox e2e suite (e2e/). Only the SDK and its required peer dependencies.",
+  "scripts": {
+    "sync-native": "bash ../../package/scripts/reconcile-shared-native.sh native-package && bash ../../package/scripts/sync-shared-native.sh native-package",
+    "android": "yarn sync-native && react-native run-android",
+    "ios": "yarn sync-native && react-native run-ios",
+    "start": "yarn sync-native && react-native start",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e",
+    "e2e:build": "yarn sync-native && detox build",
+    "e2e:test": "detox test"
+  },
+  "dependencies": {
+    "@react-native-community/netinfo": "^12.0.1",
+    "react": "19.3.0",
+    "react-native": "0.88.0",
+    "react-native-gesture-handler": "^3.4.0",
+    "react-native-launch-arguments": "^4.1.1",
+    "react-native-reanimated": "4.7.1",
+    "react-native-safe-area-context": "^5.10.1",
+    "react-native-svg": "^15.15.5",
+    "react-native-teleport": "^1.2.2",
+    "react-native-worklets": "^0.13.0",
+    "stream-chat": "^9.54.0",
+    "stream-chat-react-native": "workspace:^"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/runtime": "^7.29.2",
+    "@jest/globals": "^30.4.1",
+    "@react-native-community/cli": "20.2.0",
+    "@react-native-community/cli-platform-android": "20.2.0",
+    "@react-native-community/cli-platform-ios": "20.2.0",
+    "@react-native/babel-preset": "0.88.0",
+    "@react-native/metro-config": "0.88.0",
+    "@react-native/typescript-config": "0.88.0",
+    "@rnx-kit/metro-config": "^2.2.6",
+    "@stream-io/typescript-config": "workspace:^",
+    "@types/react": "^19.3.0",
+    "babel-jest": "30.0.0",
+    "detox": "^20.51.4",
+    "jest": "^30.4.2",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">= 22.11.0"
+  }
+}

@@ -12,15 +12,15 @@ module.exports = {
   apps: {
     'ios.debug': {
       type: 'ios.app',
-      binaryPath: 'ios/build/detox/Build/Products/Debug-iphonesimulator/SampleApp.app',
+      binaryPath: 'ios/build/detox/Build/Products/Debug-iphonesimulator/E2ETestApp.app',
       build:
-        'xcodebuild -workspace ios/SampleApp.xcworkspace -scheme SampleApp -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build/detox',
+        'xcodebuild -workspace ios/E2ETestApp.xcworkspace -scheme E2ETestApp -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build/detox',
     },
     'ios.release': {
       type: 'ios.app',
-      binaryPath: 'ios/build/detox/Build/Products/Release-iphonesimulator/SampleApp.app',
+      binaryPath: 'ios/build/detox/Build/Products/Release-iphonesimulator/E2ETestApp.app',
       build:
-        'xcodebuild -workspace ios/SampleApp.xcworkspace -scheme SampleApp -configuration Release -sdk iphonesimulator -derivedDataPath ios/build/detox',
+        'xcodebuild -workspace ios/E2ETestApp.xcworkspace -scheme E2ETestApp -configuration Release -sdk iphonesimulator -derivedDataPath ios/build/detox',
     },
     'android.debug': {
       type: 'android.apk',

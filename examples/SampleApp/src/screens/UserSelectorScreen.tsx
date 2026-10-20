@@ -22,7 +22,6 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 
 import type { UserSelectorParamList } from '../types';
 import AsyncStore from '../utils/AsyncStore';
-import { E2E_USER, isE2eTestRun } from '../utils/e2e';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -120,7 +119,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         </View>
 
-        {(isE2eTestRun ? [E2E_USER] : Object.values(USERS)).map((u, index) => (
+        {Object.values(USERS).map((u, index) => (
           <TouchableOpacity
             key={index}
             onPress={() => {

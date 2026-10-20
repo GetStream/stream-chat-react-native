@@ -1744,8 +1744,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-launch-arguments (4.1.1):
-    - React
   - react-native-maps (1.29.11):
     - react-native-maps/Maps (= 1.29.11)
   - react-native-maps/Generated (1.29.11):
@@ -2455,7 +2453,7 @@ PODS:
     - ReactNativeDependencies
     - RNFBApp
     - Yoga
-  - RNGestureHandler (3.4.0):
+  - RNGestureHandler (3.3.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2817,7 +2815,7 @@ PODS:
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1):
     - ReactNativeDependencies
-  - stream-chat-react-native (9.10.1):
+  - stream-chat-react-native (9.10.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2953,7 +2951,6 @@ DEPENDENCIES:
   - "react-native-document-picker (from `../node_modules/@react-native-documents/picker`)"
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
-  - react-native-launch-arguments (from `../node_modules/react-native-launch-arguments`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -3156,8 +3153,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/geolocation"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
-  react-native-launch-arguments:
-    :path: "../node_modules/react-native-launch-arguments"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-netinfo:
@@ -3352,7 +3347,6 @@ SPEC CHECKSUMS:
   react-native-document-picker: ca21279b19ad48ebc107c2ffca904c7aee99e40b
   react-native-geolocation: 2c5f29e0098223d8fa2c18813f6acbf882563424
   react-native-image-picker: 7cdf342c3b12b1e4f50f6098c5feaf058ea8d350
-  react-native-launch-arguments: eab68037b01ea7c78a0b3b55da3a5e967e9aaf92
   react-native-maps: b39b5d5ee5ac885f2822bb124105af4042768d4b
   react-native-netinfo: 41575e101c171319fbcf82dfa5fa5df852d6b40d
   react-native-safe-area-context: 7b143af09becaf26ba247b9a82d355f91b77b9b0
@@ -3398,7 +3392,7 @@ SPEC CHECKSUMS:
   RNFastImage: 25f87dde869e11156daeef98b4cee2371023407e
   RNFBApp: 21e4d8c20656c236a818ee2eff3f859557ceff33
   RNFBMessaging: e3e31aec89cd0eb986c87ec8247f598190b61c36
-  RNGestureHandler: abdc2d49ac3970908acd127980b429d377927ee1
+  RNGestureHandler: ddbdf3f293a498368803f8181ff157271ac05c48
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNReactNativeHapticFeedback: a1bba076645e8fedcb65c8e70461b77cd5d6dd32
   RNReanimated: 5c641cc430b7255eae87c8039204eb0f816ea1b8
@@ -3411,10 +3405,10 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
-  stream-chat-react-native: 291a3f91fef6922e89ed97bf7a790bf4a786bab9
+  stream-chat-react-native: dc4a04f6903f9616ed0d58757e813e96bda1972f
   Teleport: 8a97ac5c0d76c04e20c36843d4d8f8fe5aa1aa73
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
 PODFILE CHECKSUM: ac9682db83e42d63d399a8de4586161e86b3e751
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

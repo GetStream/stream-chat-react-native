@@ -10011,6 +10011,41 @@ __metadata:
   languageName: node
   linkType: hard
 
+"e2etestapp@workspace:examples/E2ETestApp":
+  version: 0.0.0-use.local
+  resolution: "e2etestapp@workspace:examples/E2ETestApp"
+  dependencies:
+    "@babel/core": "npm:^7.29.0"
+    "@babel/runtime": "npm:^7.29.2"
+    "@jest/globals": "npm:^30.4.1"
+    "@react-native-community/cli": "npm:20.2.0"
+    "@react-native-community/cli-platform-android": "npm:20.2.0"
+    "@react-native-community/cli-platform-ios": "npm:20.2.0"
+    "@react-native-community/netinfo": "npm:^12.0.1"
+    "@react-native/babel-preset": "npm:0.88.0"
+    "@react-native/metro-config": "npm:0.88.0"
+    "@react-native/typescript-config": "npm:0.88.0"
+    "@rnx-kit/metro-config": "npm:^2.2.6"
+    "@stream-io/typescript-config": "workspace:^"
+    "@types/react": "npm:^19.3.0"
+    babel-jest: "npm:30.0.0"
+    detox: "npm:^20.51.4"
+    jest: "npm:^30.4.2"
+    react: "npm:19.3.0"
+    react-native: "npm:0.88.0"
+    react-native-gesture-handler: "npm:^3.4.0"
+    react-native-launch-arguments: "npm:^4.1.1"
+    react-native-reanimated: "npm:4.7.1"
+    react-native-safe-area-context: "npm:^5.10.1"
+    react-native-svg: "npm:^15.15.5"
+    react-native-teleport: "npm:^1.2.2"
+    react-native-worklets: "npm:^0.13.0"
+    stream-chat: "npm:^9.54.0"
+    stream-chat-react-native: "workspace:^"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
 "eastasianwidth@npm:^0.2.0":
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
@@ -19259,7 +19294,6 @@ __metadata:
     "@d11/react-native-fast-image": "npm:^8.13.0"
     "@emoji-mart/data": "npm:^1.2.1"
     "@gorhom/bottom-sheet": "npm:^5.2.14"
-    "@jest/globals": "npm:^30.4.1"
     "@notifee/react-native": "npm:^9.1.8"
     "@op-engineering/op-sqlite": "npm:^18.2.5"
     "@react-native-async-storage/async-storage": "npm:^3.1.1"
@@ -19287,12 +19321,9 @@ __metadata:
     "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
     "@types/react": "npm:^19.3.0"
-    babel-jest: "npm:30.0.0"
     babel-plugin-react-compiler: "npm:^1.0.0"
     dayjs: "npm:1.11.13"
-    detox: "npm:^20.51.4"
     emoji-mart: "npm:^5.6.0"
-    jest: "npm:^30.4.2"
     lodash.mergewith: "npm:^4.6.2"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
@@ -19300,7 +19331,6 @@ __metadata:
     react-native-gesture-handler: "npm:^3.4.0"
     react-native-haptic-feedback: "npm:^3.0.0"
     react-native-image-picker: "npm:^8.2.1"
-    react-native-launch-arguments: "npm:^4.1.1"
     react-native-maps: "npm:^1.29.11"
     react-native-nitro-modules: "npm:0.36.5"
     react-native-nitro-sound: "npm:0.2.17"

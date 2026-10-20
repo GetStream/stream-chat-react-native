@@ -14,7 +14,6 @@ import { SqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
 import AsyncStore from '../utils/AsyncStore';
-import { E2E_LOGIN_CONFIG, isE2eTestRun, mockServerUrl } from '../utils/e2e';
 
 const messaging = getMessaging();
 
@@ -74,7 +73,6 @@ export const useChatClient = () => {
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance(config.apiKey, {
-      baseURL: mockServerUrl,
       timeout: 6000,
       // logger: (type, msg) => console.log(type, msg)
     });
@@ -87,12 +85,6 @@ export const useChatClient = () => {
     };
     await client.connectUser(user, config.userToken);
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
-
-    // The mock server has no push endpoints, and a permission prompt would cover the app.
-    if (isE2eTestRun) {
-      setChatClient(client);
-      return;
-    }
 
     const permissionAuthStatus = await messaging.hasPermission();
     let isEnabled =
@@ -156,12 +148,7 @@ export const useChatClient = () => {
     setIsConnecting(true);
 
     try {
-      if (isE2eTestRun) {
-        // e2e tests always log in through the user selector, so a stored login is never restored.
-        if (userId) {
-          await loginUser(E2E_LOGIN_CONFIG);
-        }
-      } else if (userId) {
+      if (userId) {
         await loginUser({
           apiKey: 'yjrt5yxw77ev',
           userId: USERS[userId].id,
@@ -194,9 +181,7 @@ export const useChatClient = () => {
 
   useEffect(() => {
     const run = async () => {
-      if (!isE2eTestRun) {
-        await requestNotificationPermission();
-      }
+      await requestNotificationPermission();
       await switchUser();
     };
     run();

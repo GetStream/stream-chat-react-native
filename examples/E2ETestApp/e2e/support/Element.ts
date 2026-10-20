@@ -26,15 +26,33 @@ export const waitToAppear = async (
   return target;
 };
 
+/**
+ * Retries `action` while Detox reports the element as not hittable (e.g. covered by the keyboard
+ * while it animates in). iOS runs without Detox's idle synchronization, which used to absorb that.
+ */
+const retryWhileNotHittable = async (action: () => Promise<void>, timeout = defaultTimeout) => {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    try {
+      return await action();
+    } catch (error) {
+      if (Date.now() > deadline || !/not hittable/i.test(String(error))) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+  }
+};
+
 export const waitToAppearAndClick = async (selector: Selector, options?: WaitOptions) => {
   const target = await waitToAppear(selector, options);
-  await target.tap();
+  await retryWhileNotHittable(() => target.tap(), options?.timeout);
   return target;
 };
 
 export const waitToAppearAndLongPress = async (selector: Selector, options?: WaitOptions) => {
   const target = await waitToAppear(selector, options);
-  await target.longPress();
+  await retryWhileNotHittable(() => target.longPress(), options?.timeout);
   return target;
 };
 

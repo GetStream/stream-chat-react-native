@@ -33,7 +33,14 @@ export const setUpStreamTestCase = (): StreamTestCase => {
   beforeEach(async () => {
     await testCase.mockServer.start(currentTestName());
     await device.launchApp({
-      launchArgs: { MOCK_SERVER_URL: testCase.mockServer.appUrl },
+      launchArgs: {
+        MOCK_SERVER_URL: testCase.mockServer.appUrl,
+        // iOS: Detox's idle tracking can wedge on RN's UIManager shadow queue (its pending-work
+        // counter underflows to 2^64-1), leaving the app "busy" until the test times out. Every
+        // robot action and assert waits explicitly, like the native XCUITest suites, so it runs
+        // without that synchronization. Android's Espresso synchronization stays on.
+        detoxEnableSynchronization: device.getPlatform() === 'ios' ? 0 : 1,
+      },
       newInstance: true,
       permissions: { notifications: 'YES', photos: 'YES' },
     });
