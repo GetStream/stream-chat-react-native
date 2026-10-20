@@ -285,11 +285,18 @@ jobs:
           api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
           profile: pixel
-          ram-size: 4096M
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
           script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
+      # The emulator has vanished mid-run without any output; this shows whether the kernel killed it.
+      - name: Diagnose emulator
+        if: failure()
+        run: |
+          sudo dmesg -T | grep -i -E 'out of memory|oom-kill|killed process' || echo "No OOM kills in dmesg"
+          free -m
+          df -h
+          ls -la /tmp/android-runner 2>/dev/null || true
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
