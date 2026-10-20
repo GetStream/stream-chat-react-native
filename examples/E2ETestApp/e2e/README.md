@@ -81,7 +81,9 @@ What CI caches (restored on PRs, filled by the runs on `develop`):
 - `node_modules` of `yarn workspaces focus e2etestapp`, so only the e2e app's dependency tree is installed.
 - iOS: CocoaPods, ccache (the RN ccache wrappers need `CCACHE_BINARY` in the environment, which the workflow sets), the
   Detox framework.
-- Android: Gradle (`gradle/actions/setup-gradle`, `org.gradle.caching`), a single ABI (`x86_64`), an AVD snapshot.
+- Android: Gradle (`gradle/actions/setup-gradle`, `org.gradle.caching`), a single ABI (`x86_64`). The emulator matches the
+  native Android SDK's e2e jobs (API 34 AOSP image, `pixel` profile, no snapshot): the Google APIs image plus a cached
+  snapshot froze the emulator on the 5th app launch, two runs in a row.
 - The mock server's gems, keyed on the mock server revision.
 
 ## Gotchas

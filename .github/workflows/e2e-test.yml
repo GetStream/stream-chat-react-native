@@ -196,7 +196,7 @@ jobs:
     timeout-minutes: 60
     env:
       ANDROID_API_LEVEL: "34"
-      ANDROID_EMULATOR_OPTIONS: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
       DETOX_ADB_NAME: "emulator-5554"
       APK_PATHS: |
         examples/E2ETestApp/android/app/build/outputs/apk/release/app-release.apk
@@ -260,41 +260,12 @@ jobs:
         working-directory: examples/E2ETestApp/android
         run: ./gradlew --stop
 
-      # --- Emulator: boots from a cached snapshot ---
+      # --- Emulator: same setup as the native Android SDK's e2e jobs (AOSP image, no Play services) ---
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Restore AVD
-        id: avd
-        uses: actions/cache/restore@v5
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ env.ANDROID_API_LEVEL }}-x86_64-google_apis-pixel_6-ram4096
-      - name: Create AVD snapshot
-        if: steps.avd.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          arch: x86_64
-          target: google_apis
-          profile: pixel_6
-          ram-size: 4096M
-          force-avd-creation: false
-          emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-      - name: Save AVD
-        if: steps.avd.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: ${{ steps.avd.outputs.cache-primary-key }}
 
       # --- Test tooling ---
       - name: Resolve mock server revision
@@ -313,11 +284,9 @@ jobs:
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
           arch: x86_64
-          target: google_apis
-          profile: pixel_6
+          profile: pixel
           ram-size: 4096M
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save ${{ env.ANDROID_EMULATOR_OPTIONS }}
+          emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
           script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
