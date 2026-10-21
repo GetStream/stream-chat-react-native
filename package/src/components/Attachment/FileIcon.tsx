@@ -191,14 +191,6 @@ const docMimeTypes = [
   'application/vnd.ms-word.document.macroEnabled.12',
   // .dotm (no test)
   'application/vnd.ms-word.template.macroEnabled.12',
-
-  // LibreOffice/OpenOffice Writer
-  // .odt
-  'application/vnd.oasis.opendocument.text',
-  // .ott
-  'application/vnd.oasis.opendocument.text-template',
-  // .fodt
-  'application/vnd.oasis.opendocument.text-flat-xml',
 ];
 
 const excelMimeTypes = [
@@ -225,7 +217,7 @@ const excelMimeTypes = [
   // .xlam (no test)
   'application/vnd.ms-excel.addin.macroEnabled.12',
   // .xlsb (no test)
-  'application/vnd.ms-excel.addin.macroEnabled.12',
+  'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
 ];
 
 const powerpointMimeTypes = [
@@ -259,7 +251,7 @@ const powerpointMimeTypes = [
 ];
 
 const zipFileTypes = [
-  // .gzip
+  // .gzip .tar.gz
   'application/gzip',
   // .zip
   'application/zip',
@@ -268,8 +260,6 @@ const zipFileTypes = [
   'application/x-archive',
   // .tar
   'application/x-tar',
-  // .tar.gz
-  'application/gzip',
   // .tar.Z
   'application/x-compress',
   // .tar.bz2
@@ -324,7 +314,6 @@ const videoFileTypes = [
   'video/wmv',
   'video/yuv',
   'video/quicktime',
-  'video/webm',
   'video/x-flv',
 ];
 

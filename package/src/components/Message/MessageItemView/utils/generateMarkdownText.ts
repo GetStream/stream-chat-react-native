@@ -13,23 +13,36 @@ export const generateMarkdownText = (text?: string) => {
 
   let resultText = normalizedText.trim();
 
-  const linkInfos = parseLinksFromText(resultText);
-
-  for (const linkInfo of linkInfos) {
-    const displayLink = truncate(linkInfo.raw, {
+  const links = parseLinksFromText(resultText).map((linkInfo) => ({
+    ...linkInfo,
+    displayLink: truncate(linkInfo.raw, {
       length: 200,
       omission: '...',
-    });
-    // Convert raw links and emails to markdown links.
-    // Eg: `getstream.io` -> `[getstream.io](http://getstream.io)`.
-    const normalRegEx = new RegExp(escapeRegExp(linkInfo.raw), 'g');
-    const markdown = `[${displayLink}](${linkInfo.url})`;
-    resultText = normalizedText.replace(normalRegEx, markdown);
+    }),
+  }));
 
+  if (links.length > 0) {
+    // Convert raw links and emails to markdown links in one pass, longest first, so a link that
+    // contains another one (`getstream.io/chat` and `getstream.io`) is converted only once.
+    // Eg: `getstream.io` -> `[getstream.io](http://getstream.io)`.
+    const markdownByRaw = new Map(
+      links.map(({ displayLink, raw, url }) => [raw, `[${displayLink}](${url})`]),
+    );
+    const linksRegEx = new RegExp(
+      [...markdownByRaw.keys()]
+        .sort((a, b) => b.length - a.length)
+        .map(escapeRegExp)
+        .join('|'),
+      'g',
+    );
+    resultText = resultText.replace(linksRegEx, (raw) => markdownByRaw.get(raw) ?? raw);
+  }
+
+  for (const { displayLink, url } of links) {
     // A mention whose name looks like a link or email is converted back to raw text.
     // Eg: `@[test.user@gmail.com](mailto:test.user@gmail.com)` -> `@test.user@gmail.com`.
     const mentionsRegex = new RegExp(
-      `@\\[${escapeRegExp(displayLink)}\\]\\(${escapeRegExp(linkInfo.url)}\\)`,
+      `@\\[${escapeRegExp(displayLink)}\\]\\(${escapeRegExp(url)}\\)`,
       'g',
     );
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);

@@ -46,7 +46,7 @@ export function buildGalleryOfTwoImages({
 
   return buildThumbnailGrid({
     grid: [[1, 1]],
-    images: isLandscape1 ? images : images.reverse(),
+    images: isLandscape1 ? images : [...images].reverse(),
     invertedDirections: true,
     resizableCDNHosts,
     sizeConfig,

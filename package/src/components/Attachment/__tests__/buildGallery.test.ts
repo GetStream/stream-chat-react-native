@@ -81,6 +81,32 @@ describe('buildGallery', () => {
     });
   });
 
+  it('clamps a height-limited landscape image width with the width limits', () => {
+    // 500x400 fills maxWidth (256), so its height (204.8) is clamped to maxHeight (192). The width
+    // follows from that height (192 * 1.25 = 240), which is within the width limits.
+    const image = generateImageAttachment({ original_height: 400, original_width: 500 });
+
+    const { height, width } = buildGallery({
+      images: [image],
+      sizeConfig: defaultSizeConfig,
+    });
+
+    expect(height).toBe(192);
+    expect(width).toBe(240);
+  });
+
+  it('does not reorder the images passed in', () => {
+    const portrait = generateImageAttachment({ original_height: 400, original_width: 200 });
+    const landscape = generateImageAttachment({ original_height: 200, original_width: 400 });
+    const images = [portrait, landscape];
+
+    const { thumbnailGrid } = buildGallery({ images, sizeConfig: defaultSizeConfig });
+
+    expect(images).toEqual([portrait, landscape]);
+    // The landscape image still comes first in the grid.
+    expect(thumbnailGrid[0][0].url).toBe(landscape.image_url);
+  });
+
   it('gallery size should default to gridHeight and gridWidth if original image size is unavailable', () => {
     const attachments: Attachment[] = [];
     for (let numOfImages = 0; numOfImages < 4; numOfImages++) {

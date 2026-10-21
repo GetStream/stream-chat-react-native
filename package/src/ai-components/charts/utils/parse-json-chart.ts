@@ -2,13 +2,11 @@ import type { ChartSpec } from '../types';
 import { parseVegalite, VegaLiteSchema } from '../vega-lite';
 
 export const parseJsonChart = (code: string): ChartSpec => {
-  const json = JSON.parse(code);
-
   try {
-    const parsedVegaLite = VegaLiteSchema.parse(json);
+    const parsedVegaLite = VegaLiteSchema.parse(JSON.parse(code));
     return parseVegalite(parsedVegaLite);
   } catch (_error) {
-    // Not a supported chart spec: fall through to the error below.
+    // Invalid JSON or not a supported chart spec: fall through to the error below.
   }
 
   throw new Error('Unknown type of JSON formatted chart.');

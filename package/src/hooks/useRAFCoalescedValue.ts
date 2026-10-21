@@ -20,7 +20,9 @@ export const useRAFCoalescedValue = <S>(value: S, isEnabled: boolean | undefined
   const pendingRef = useRef<S>(value);
   const rafIdRef = useRef<number | null>(null);
 
-  // If `value` changes, schedule a single RAF to publish the latest one.
+  // If `value` changes, schedule a single RAF to publish the latest one. While disabled,
+  // `pendingRef` keeps the last published value, so a value that changed meanwhile is published
+  // once re-enabled.
   useEffect(() => {
     if (value === pendingRef.current || !isEnabled) return;
     pendingRef.current = value;
