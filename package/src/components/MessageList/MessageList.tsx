@@ -82,7 +82,7 @@ import { excludeCanceledUploadNotifications } from '../Notifications/notificatio
 import { ThreadFooterComponent } from '../Thread/components/ThreadFooterComponent';
 import { PortalWhileClosingView } from '../UIComponents';
 
-// This is just to make sure that the scrolling happens in a different task queue.
+// Zero-delay timeout that moves scrolling to a later task.
 // TODO: Think if we really need this and strive to remove it if we can.
 const WAIT_FOR_SCROLL_TIMEOUT = 0;
 const MAX_RETRIES_AFTER_SCROLL_FAILURE = 10;
@@ -123,12 +123,7 @@ const useStyles = () => {
           ...container,
         },
         contentContainer: {
-          /**
-           * paddingBottom is set to 4 to account for the default date
-           * header and inline indicator alignment. The top margin is 8
-           * on the header but 4 on the inline date, this adjusts the spacing
-           * to allow the "first" inline date to align with the date header.
-           */
+          // 4 aligns the first inline date (top margin 4) with the date header (top margin 8).
           paddingBottom: 4,
           ...contentContainer,
         },
@@ -192,71 +187,42 @@ type MessageListPropsWithContext = Pick<
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> &
   Pick<ThreadContextValue, 'thread'> & {
     /**
-     * Whether the composer lets a message be sent while its attachments are still uploading
-     * (`messageComposer.attachments.pendingUploadsEnabled`). Read from the composer by default.
+     * Whether a message can be sent while its attachments are still uploading. Read from
+     * `messageComposer.attachments.pendingUploadsEnabled` by default.
      */
     pendingUploadsEnabled: boolean;
     /**
-     * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
-     * to attach some additional props to underlying FlatList, you can add it to following prop.
-     *
-     * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-     *
-     * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
-     *
-     * e.g.
-     * ```js
-     * <MessageList
-     *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
-     * ```
+     * Extra props for the underlying FlatList, applied over the defaults. To get the list ref, use
+     * `setFlatListRef`.
      */
     additionalFlatListProps?: Partial<FlatListProps<MessageListItemWithNeighbours>>;
     /**
-     * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
-     * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
-     * from props.
-     *
-     * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-     * used in MessageList. Should be used for header by default if inverted is true or defaulted
+     * Rendered as the list footer, which is the older-message end when inverted. Receives
+     * `loadingMore`. Defaults to `ThreadFooterComponent` in a thread, `InlineLoadingMoreIndicator`
+     * otherwise.
      */
     FooterComponent?: React.ComponentType<{ loadingMore?: boolean }>;
     /**
-     * UI component for header of message list. By default message list will use `InlineLoadingMoreRecentIndicator`
-     * as HeaderComponent. If you want to implement your own inline loading indicator, you can access `loadingMoreRecent`
-     * from context.
-     *
-     * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-     * used in MessageList. Should be used for header if inverted is false
+     * Rendered as the list header, which is the newest-message end when inverted. Defaults to the
+     * loading-more-recent indicator followed by the typing indicator.
      */
     HeaderComponent?: React.ComponentType;
-    /** Whether or not the FlatList is inverted. Defaults to true */
+    /** Whether the FlatList is inverted. Defaults to true. */
     inverted?: boolean;
-    /** Turn off grouping of messages by user */
+    /** Turns off grouping of messages by user. */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
     /**
-     * Handler to open the thread on message. This is callback for touch event for replies button.
+     * Called when the replies button of a message is pressed.
      *
      * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
     onThreadSelect?: (thread: Thread) => void;
-    /**
-     * Use `setFlatListRef` to get access to ref to inner FlatList.
-     *
-     * e.g.
-     * ```js
-     * <MessageList
-     *  setFlatListRef={(ref) => {
-     *    // Use ref for your own good
-     *  }}
-     * ```
-     */
+    /** Receives the ref of the inner FlatList. */
     setFlatListRef?: (ref: FlatListType<MessageListItemWithNeighbours> | null) => void;
     /**
-     * If true, the message list will be used in a live-streaming scenario.
-     * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
-     *
-     * This flag is experimental and is subject to change. Please test thoroughly before using it.
+     * Tunes autoscroll for live-streaming scenarios, where many messages arrive in a short time.
+     * Defaults to false.
      *
      * @experimental
      */
@@ -268,15 +234,7 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
 
-/**
- * The message list component renders a list of messages. It consumes the following contexts:
- *
- * [ChannelContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/)
- * [ChatContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/)
- * [MessagesContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/)
- * [ThreadContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/thread-context/)
- * [TranslationContext](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
- */
+/** Renders the list of messages in a FlatList. */
 const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const {
     animateLayout = true,
@@ -306,7 +264,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     thread,
   } = props;
 
-  // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
+  // Inside a thread the parent message and the older-replies indicator sit above the replies.
   const FooterComponent =
     FooterComponentProp ?? (thread ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
@@ -404,9 +362,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const minIndexForVisible = Math.min(1, processedMessageList.length);
 
-  // While the message overlay is open we suppress autoscroll-to-recent so that
-  // incoming messages do not shift visible content and invalidate the overlay's
-  // anchored geometry. Content anchoring (minIndexForVisible) stays on.
+  // Autoscroll-to-recent is suppressed while the message overlay is open, so incoming messages do
+  // not shift content under the overlay's anchored geometry. `minIndexForVisible` stays on.
   const isOverlayOpen = useHasActiveId();
 
   const autoscrollToTopThreshold =
@@ -422,17 +379,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const flatListRef = useRef<FlatListType<MessageListItemWithNeighbours> | null>(null);
 
-  /**
-   * The timeout id used to debounce our scrollToIndex calls on messageList updates
-   */
   const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
-  /**
-   * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
-   * Thus useRef.
-   */
+  // FlatList does not accept a changing `onViewableItemsChanged`, hence the ref below.
   const unstableOnViewableItemsChanged = ({
     viewableItems,
   }: {
@@ -508,23 +459,22 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const shouldForceScrollToRecent =
       latestNonCurrentMessageBeforeUpdate?.id !== latestCurrentMessageAfterUpdate.id;
 
-    // we don't want this behaviour while pruning, as it may scroll unnecessarily in
-    // certain scenarios
+    // While pruning (`maxLoadedItems`), only follow new messages: anything else may scroll
+    // unnecessarily.
     if ((maxLoadedItems && shouldForceScrollToRecent) || !maxLoadedItems) {
       setAutoscrollToRecent(shouldForceScrollToRecent);
     }
 
     if (shouldForceScrollToRecent) {
       const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
-      // we should scroll to bottom where ever we are now
-      // as we have sent a new own message
+      // A new own message scrolls to the latest wherever the list currently is.
       if (shouldScrollToRecentOnNewOwnMessage) {
         setTimeout(() => {
           flatListRef.current?.scrollToOffset({
             animated: true,
             offset: 0,
           });
-        }, WAIT_FOR_SCROLL_TIMEOUT); // flatlist might take a bit to update, so a small delay is needed
+        }, WAIT_FOR_SCROLL_TIMEOUT); // FlatList may need a moment to update
       }
     }
   }, [
@@ -537,12 +487,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
 
-  /**
-   * Scrolls to the focused message (messageFocusSignal) once it's rendered. Keyed on the focus
-   * token so it re-fires on every jump (even to the same id); also re-attempts when the list
-   * updates while a focus is pending, and marks each token handled so unrelated list changes during
-   * the highlight window don't re-scroll.
-   */
+  // Scrolls to the focused message (`messageFocusSignal`) once it is rendered. Keyed on the focus
+  // token, so every jump re-fires, even to the same ID, and list changes during the highlight do
+  // not re-scroll.
   useEffect(() => {
     if (!focusedMessageId || focusToken === lastFocusScrollTokenRef.current) {
       return;
@@ -551,8 +498,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       const indexOfParentInMessageList = processedMessageList.findIndex(
         (message) => message?.id === focusedMessageId,
       );
-      // Not in the rendered window yet (jumpToMessage already loaded-around it, so a later
-      // processedMessageList change re-runs this) — bail rather than re-jump (no jump↔effect loop).
+      // Not in the rendered window yet: a later `processedMessageList` change re-runs this effect.
       if (indexOfParentInMessageList === -1 || !flatListRef.current) {
         return;
       }
@@ -563,11 +509,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       flatListRef.current.scrollToIndex({
         animated: true,
         index: indexOfParentInMessageList,
-        viewPosition: 0.5, // try to place message in the center of the screen
+        viewPosition: 0.5, // center the message
       });
-      // Start the highlight's auto-dismiss countdown now that the message is scrolled into view.
-      // The LLC deliberately does NOT start it on emit (the message may not be visible yet), so
-      // without this the highlight would persist forever.
+      // The client does not start the highlight's auto-dismiss countdown on emit, as the message
+      // may not be visible yet. Start it now that the message is scrolled into view.
       paginator?.scheduleMessageFocusSignalClear({ token: focusToken });
     }, WAIT_FOR_SCROLL_TIMEOUT);
   }, [paginator, focusToken, focusedMessageId, processedMessageList]);
@@ -589,11 +534,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect, setNativeScrollability],
   );
 
-  /**
-   * Pagination is driven from the scroll position rather than FlatList's `onEndReached`: FlatList
-   * has no `onStartReached`, and `onEndReachedThreshold` is a fraction of the content length, which
-   * fires far too early in a long list. A fixed distance from either edge is used instead.
-   */
+  // Paginates within 100 points of either edge: FlatList has no `onStartReached`, and
+  // `onEndReachedThreshold` is a fraction of the content length, which fires too early in a long
+  // list.
   const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = useStableCallback((event) => {
     const nativeEvent = event.nativeEvent;
     const offset = nativeEvent.contentOffset.y;
@@ -618,12 +561,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     const offset = event.nativeEvent.contentOffset.y;
     const isScrollAtBottom = offset <= messageInputHeight;
 
-    /**
-     * 1. If I scroll up -> show scrollToBottom button.
-     * 2. If I scroll to bottom of screen
-     *    |-> hide scrollToBottom button.
-     *    |-> if channel is unread, call markRead().
-     */
+    // The scroll-to-bottom button shows unless the list is at the bottom with no newer messages.
     setScrollToBottomButtonVisible(
       messageListHasMessages && (paginator?.hasMoreHead || !isScrollAtBottom),
     );
@@ -649,10 +587,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     if (thread) {
       return;
     }
-    /**
-     *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
-     We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
-     */
+    // `updateChannelUnreadState: false` keeps the unread label on the first unread message.
     await markRead({
       updateChannelUnreadState: false,
     });
@@ -677,22 +612,20 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const onScrollToIndexFailedRef = useRef<
     FlatListProps<MessageListItemWithNeighbours>['onScrollToIndexFailed']
   >((info) => {
-    // We got a failure as we tried to scroll to an item that was outside the render length
+    // The target item is outside the rendered range.
     if (!flatListRef.current) {
       return;
     }
-    // we don't know the actual size of all items but we can see the average, so scroll to the closest offset
-    // since we used only an average offset... we won't go to the center of the item yet
-    // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
+    // Only the average item size is known, so the list gets a moment to scroll near the target
+    // before the index is scrolled to.
     failScrollTimeoutId.current = setTimeout(() => {
       try {
         flatListRef.current?.scrollToIndex({
           animated: true,
           index: info.index,
-          viewPosition: 0.5, // try to place message in the center of the screen
+          viewPosition: 0.5, // center the message
         });
-        // The highlight is driven by the live messageFocusSignal (persists for its TTL), so there's
-        // no targeted-message state to re-set across scroll-fail retries.
+        // The highlight follows `messageFocusSignal` for its TTL, so retries need no state reset.
         scrollToIndexFailedRetryCountRef.current = 0;
       } catch (e) {
         if (
@@ -702,17 +635,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           scrollToIndexFailedRetryCountRef.current = 0;
           return;
         }
-        // At some cases the index we're trying to scroll to, doesn't exist yet in the messageList
-        // Scrolling to an index not in range of the Flatlist's data will result in a crash that
-        // won't call onScrollToIndexFailed.
-        // By catching this error we retry scrolling by calling onScrollToIndexFailedRef
+        // The index may not exist in the list data yet. Scrolling to an out-of-range index throws
+        // without calling `onScrollToIndexFailed`, so the error is caught and the scroll retried.
         scrollToIndexFailedRetryCountRef.current += 1;
         onScrollToIndexFailedRef.current(info);
       }
     }, WAIT_FOR_SCROLL_TIMEOUT);
 
-    // Only when index is greater than 0 and in range of items in FlatList
-    // this onScrollToIndexFailed will be called again
+    // FlatList calls `onScrollToIndexFailed` again only when the index is above 0 and within the
+    // data range.
   });
 
   const dismissImagePicker = useStableCallback(() => {
@@ -730,7 +661,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
   });
 
-  // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
+  // `style` and `contentContainerStyle` are merged with the SDK styles below, not spread.
   let additionalFlatListPropsExcludingStyle:
     | Omit<NonNullable<typeof additionalFlatListProps>, 'style' | 'contentContainerStyle'>
     | undefined;
@@ -746,12 +677,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     [additionalFlatListProps?.style, styles.listContainer],
   );
 
-  /**
-   * `strictMode` only became a `FlatList` prop in React Native 0.87, and this SDK supports `>=0.79`.
-   * Passed via spread rather than as a literal attribute because JSX excess-property checking does
-   * not apply to spreads, so this compiles on every supported version. A `@ts-expect-error` cannot
-   * work here: it is required below 0.87 and reported as unused from 0.87 onwards.
-   */
+  // `strictMode` is a `FlatList` prop only from React Native 0.87, and the SDK supports `>=0.79`.
+  // It is passed by spread because JSX excess-property checks skip spreads, so this compiles on
+  // every supported version. A `@ts-expect-error` would be reported as unused from 0.87.
   const liveStreamingListProps = useMemo(
     () => ({ strictMode: isLiveStreaming }),
     [isLiveStreaming],
@@ -775,10 +703,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const viewportHeightRef = useRef<number>(undefined);
 
-  /**
-   * This debounced callback makes sure that if the current number of messages do not
-   * fill our screen, we load more messages continuously until we cover enough ground.
-   */
+  // Keeps loading more while the content does not fill the viewport.
   const debouncedPrefillMessages = useMemo(
     () =>
       debounce(
@@ -871,19 +796,15 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
             // TODO: Consider hiding this behind a feature flag.
             layout={transitions.layout200}
             contentContainerStyle={flatListContentContainerStyle}
-            /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
             data={processedMessageListWithNeighbors}
             inverted={inverted}
             keyboardShouldPersistTaps='handled'
             keyExtractor={keyExtractor}
             ListFooterComponent={ListFooterComponent}
             ListHeaderComponent={ListHeaderComponent}
-            /**
-            If autoscrollToTopThreshold is 10, we scroll to recent only if before the update, the list was already at the
-            bottom (10 offset or below).
-            minIndexForVisible = 1 means that beyond the item at index 1 we will not change the position on list updates,
-            however it is not used when autoscrollToTopThreshold = 10.
-          */
+            // With `autoscrollToTopThreshold` set, the list scrolls to recent only if it was within
+            // that offset of the bottom before the update. `minIndexForVisible` is the first item
+            // index whose position is kept on list updates.
             maintainVisibleContentPosition={maintainVisibleContentPosition}
             maxToRenderPerBatch={30}
             onContentSizeChange={onContentSizeChange}
@@ -1010,17 +931,12 @@ export const MessageList = (props: MessageListProps) => {
   );
 };
 
-// SOme notes about why we're relying on `createAnimatedComponent` instead of `Animated.FlatList`:
-// 1. `Animated.FlatList` is much less performant for what we need. We essentially need simple
-//    `layout` animations to account for the list's outer container switching layout. What we're
-//    getting however, is an animated `CellRenderer` component as well as scroll event throttling
-//    reduced to 1. Since we don't really want any of this, we stick to doing it ourselves.
-// 2. We need to memoize the output because of the fact that `createAnimatedComponent` changes the
-//    identity of the `style` prop on every render. It also seems to be an intended thing too,
-//    so not something that's going to change soon. This means that whenever our `MessageList`
-//    rerenders (but the list's props remain stable), it anyway rerenders internally as well (for
-//    about half of the milliseconds it takes for a full `data` rerender !). This affects performance
-//    significantly, especially in high ingress scenarios (i.e a livestream).
+// `createAnimatedComponent` rather than `Animated.FlatList`: only simple `layout` animations are
+// needed, and `Animated.FlatList` also animates every `CellRenderer` and reduces scroll event
+// throttling to 1.
+// Memoized because `createAnimatedComponent` changes the identity of `style` on every render, which
+// would re-render the list internally even when its props are stable (costly in high-ingress cases
+// such as a livestream).
 const AnimatedList = React.memo(
   Animated.createAnimatedComponent(FlatList<MessageListItemWithNeighbours>),
 );

@@ -26,7 +26,7 @@ export const useChannelPreviewDisplayName = (channel?: Channel) => {
     if (channelName) {
       return channelName;
     }
-    // Get first name of the members without the current user.
+    // Without a channel name, the other members' names are used.
     const membersWithoutSelf = Object.values(members || {}).filter(
       (member) => member.user?.id !== currentUserId,
     );
@@ -38,7 +38,7 @@ export const useChannelPreviewDisplayName = (channel?: Channel) => {
         .map((member) => getMemberName(member))
         .map((name) => name.split(' ')[0]);
       const sortedMembers = names.sort((a, b) => a.localeCompare(b));
-      // Now show the first 2 members and the rest as +N. Don't show the +N if the remaining members are 0.
+      // The first two names, followed by a count of the others when more remain.
       const firstTwoMembers = sortedMembers.slice(0, 2);
       const remainingMembers = sortedMembers.slice(2);
       return `${firstTwoMembers.join(', ').concat(' ')}${remainingMembers.length > 0 ? t('channelPreview.displayName.others.label', 'and {{ count }} others', { count: remainingMembers.length }) : ''}`;

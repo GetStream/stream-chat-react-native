@@ -11,14 +11,12 @@ const NUMBER_OF_ROWS = 6;
 const GRID_GAP = primitives.spacingXxxs;
 const ANIMATION_TIME = 1000;
 
-/**
- * Grid of shimmering placeholder tiles shown while the media list is loading.
- */
+/** Grid of shimmering placeholder tiles shown while the media list loads. */
 export const MediaListLoadingSkeleton = () => {
   const {
     theme: { semantics },
   } = useTheme();
-  // Same derivation as `MediaList`, so the skeleton's tiles match the grid that replaces it.
+  // Derived like in `MediaList`, so the tiles match the loaded grid.
   const width = useWindowContentWidth();
   const styles = useStyles();
 

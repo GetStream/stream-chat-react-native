@@ -14,13 +14,13 @@ export type ChatContextValue = {
    */
   getAppSettings: () => Promise<GetApplicationResponse>;
   /**
-   * The StreamChat client object
+   * The `StreamChat` client.
    *
    * ```
    * import { StreamChat } from 'stream-chat';
    * import { Chat } from 'stream-chat-react-native';
    *
-   * const client = StreamChat.getInstance('api_key);
+   * const client = StreamChat.getInstance('api_key');
    * await client.connectUser('user_id', 'userToken');
    *
    * <Chat client={client}>
@@ -52,7 +52,7 @@ export const useChatContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useChatContext hook was called outside the ChatContext Provider. Make sure you have configured Chat component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#chat',
+      'The useChatContext hook was called outside the ChatContext Provider. Make sure you have configured Chat component correctly - https://getstream.io/chat/docs/sdk/react-native/core-components/chat/',
     );
   }
 

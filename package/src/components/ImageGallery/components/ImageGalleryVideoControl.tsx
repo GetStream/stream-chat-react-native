@@ -71,12 +71,10 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
     await videoPlayer.changePlaybackRate();
   };
 
-  // Remember whether playback was ongoing so it can be resumed once the user
-  // finishes scrubbing.
+  // Whether playback was ongoing, so it resumes when scrubbing ends.
   const wasPlayingBeforeSeek = useRef(false);
 
-  // Pause while scrubbing so the incoming progress updates don't fight the
-  // user's finger on the seek bar.
+  // Pauses while scrubbing so progress updates do not fight the seek bar.
   const handleStartDrag = useStableCallback(() => {
     wasPlayingBeforeSeek.current = videoPlayer.isPlaying;
     videoPlayer.pause();

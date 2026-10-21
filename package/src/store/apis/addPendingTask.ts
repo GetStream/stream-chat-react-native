@@ -6,21 +6,19 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 import type { PreparedQueries } from '../types';
 
-/*
- * addPendingTask - Adds a pending task to the database
+/**
+ * Adds a pending task to the database.
  *
- * @param {PendingTask} task - The task to add
- *
- * @return {() => void} - A function that can be called to remove the task from the database
+ * @param task The task to add.
+ * @returns A function that removes the task from the database.
  */
 export const addPendingTask = async (task: PendingTask) => {
   const storable = mapTaskToStorable(task);
   const { channelId, channelType, threadId, payload, type } = storable;
   const queries: PreparedQueries[] = [];
   if (type === 'create-draft' || type === 'delete-draft') {
-    // Only one draft pending task is allowed per entity (i.e thread, channel etc).
-    // If multiple arrive, we'll simply take the last one (since deleteDraft does not
-    // fail as an API if a draft doesn't exist).
+    // One draft task is kept per entity (thread, channel, ...): the last one wins, since deleting a
+    // draft that does not exist does not fail.
     queries.push(
       createDeleteQuery('pendingTasks', {
         channelId,

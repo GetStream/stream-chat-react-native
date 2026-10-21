@@ -2,11 +2,11 @@ import { useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
 
 /**
- * A custom hook that provides functions to calculate dimensions based on
- * a percentage of the viewport height (vh) and viewport width (vw). It
- * dynamically updates dimensions on changes in device orientation.
+ * Returns `vh` and `vw` helpers that convert a percentage of the window height or width to points,
+ * updating when the window dimensions change.
  *
- * @returns {Object} An object containing functions vh and vw.
+ * @param rounded Rounds the results to whole points. Defaults to false.
+ * @returns An object with the `vh` and `vw` functions.
  */
 export const useViewport = (rounded?: boolean) => {
   const viewportDimensions = useWindowDimensions();

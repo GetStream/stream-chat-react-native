@@ -22,7 +22,7 @@ export const filterTypingUsers = ({ client, threadId, typing }: FilterTypingUser
       return;
     }
 
-    /** removes own typing events */
+    // Skip own typing events.
     if (client.user?.id === typingEvent.user?.id) {
       return;
     }
@@ -30,7 +30,7 @@ export const filterTypingUsers = ({ client, threadId, typing }: FilterTypingUser
     const isRegularEvent = !typingEvent.parent_id && !threadId;
     const isCurrentThreadEvent = typingEvent.parent_id === threadId;
 
-    /** filters different threads events */
+    // Skip events of other threads.
     if (!isRegularEvent && !isCurrentThreadEvent) {
       return;
     }

@@ -15,7 +15,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { primitives } from '../../theme';
 
 export type UnsupportedAttachmentProps = Partial<Pick<MessageContextValue, 'isMyMessage'>> & {
-  /** The attachment to render */
+  /** The attachment to render. */
   attachment: Attachment;
   attachmentIconSize?: FileIconProps['size'];
 };

@@ -164,8 +164,7 @@ const audioFileTypes = [
   'audio/vorbis-config',
 ];
 
-// Partially based on:
-// https://stackoverflow.com/a/4212908/2570866
+// Partially based on https://stackoverflow.com/a/4212908/2570866
 
 const docMimeTypes = [
   // Microsoft Word
@@ -181,8 +180,7 @@ const docMimeTypes = [
   'application/vnd.oasis.opendocument.text-template',
   // .fodt
   'application/vnd.oasis.opendocument.text-flat-xml',
-  // .uot
-  // NOTE: firefox doesn't know mimetype so maybe ignore
+  // .uot has no entry: Firefox does not know its MIME type.
 
   // Microsoft Word
   // .docx
@@ -231,19 +229,18 @@ const excelMimeTypes = [
 ];
 
 const powerpointMimeTypes = [
-  // Microsoft Word
+  // Microsoft PowerPoint
   // .ppt .pot .pps .ppa (no test for .ppa)
   'application/vnd.ms-powerpoint',
 
-  // LibreOffice/OpenOffice Writer
+  // LibreOffice/OpenOffice Impress
   // .odp
   'application/vnd.oasis.opendocument.presentation',
   // .otp
   'application/vnd.oasis.opendocument.presentation-template',
   // .fodp
   'application/vnd.oasis.opendocument.presentation-flat-xml',
-  // .uop
-  // NOTE: firefox doesn't know mimetype so maybe ignore
+  // .uop has no entry: Firefox does not know its MIME type.
 
   // .pptx
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',

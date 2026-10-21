@@ -128,15 +128,11 @@ const translateCommandDisabled = ({
 /**
  * A translator for every notification `stream-chat` itself emits.
  *
- * `Record<CoreNotificationType, …>` is the point: a new identifier in core fails to compile here until
- * it is mapped, and an entry for one that no longer exists is rejected. Before core exported the union,
- * this table and the React SDK's equivalent were hand-maintained copies of each other, and both had
- * drifted — carrying entries nothing emits while missing identifiers that fell through to untranslated
- * English.
+ * `Record<CoreNotificationType, ...>` makes a new core identifier fail to compile until it is
+ * mapped, and rejects an entry for one that does not exist.
  *
- * The key *names* stay this SDK's own. They have shipped, integrators' dictionaries are keyed on them,
- * and `build-translations` reads the literal string at the call site — a key resolved from a map would
- * be invisible to the generator and so would never reach the catalog.
+ * The translation keys are literal strings at the call site: integrators' dictionaries use them,
+ * and `build-translations` cannot see a key resolved from a map.
  */
 const coreNotificationTranslators: Record<CoreNotificationType, NotificationTranslator> = {
   [CORE_NOTIFICATION_TYPE.attachmentFileMissing]: ({ t }) =>
@@ -148,7 +144,6 @@ const coreNotificationTranslators: Record<CoreNotificationType, NotificationTran
   [CORE_NOTIFICATION_TYPE.attachmentUploadInProgress]: ({ t }) =>
     t('notifications.attachmentUploadInProgress.error', 'Wait until all attachments have uploaded'),
   [CORE_NOTIFICATION_TYPE.commandDisabled]: translateCommandDisabled,
-  // The three below were unmapped, so they rendered untranslated English from `notification.message`.
   [CORE_NOTIFICATION_TYPE.commandNotReady]: ({ t }) =>
     t('notifications.commandNotReady.error', 'Command not ready to be sent'),
   [CORE_NOTIFICATION_TYPE.locationCreateFailed]: ({ t }) =>
@@ -157,7 +152,7 @@ const coreNotificationTranslators: Record<CoreNotificationType, NotificationTran
     t('notifications.messageJumpFailed.error', 'Failed to jump to the message'),
   [CORE_NOTIFICATION_TYPE.messageJumpToLatestFailed]: ({ t }) =>
     t('notifications.messageJumpToLatestFailed.error', 'Failed to jump to the latest message'),
-  // The composer's send and update failures, which the SDK used to report itself with this copy.
+  // The composer's send and update failures.
   [CORE_NOTIFICATION_TYPE.messageSendFailed]: ({ t }) =>
     t('common.sendMessageFailed.error', 'Send message request failed'),
   [CORE_NOTIFICATION_TYPE.messageUpdateFailed]: ({ t }) =>
@@ -171,12 +166,10 @@ const coreNotificationTranslators: Record<CoreNotificationType, NotificationTran
 };
 
 /**
- * Translators for notifications this SDK emits itself, which core knows nothing about.
+ * Translators for notifications this SDK emits itself, which core does not know about.
  *
- * Deliberately not exhaustiveness-checked — there is no union to check against — so keep it to
- * identifiers that are actually emitted. `api:reply:search:failed`, `api:location:share:failed` and
- * `browser:location:get:failed` were removed: all three were copied over from the React SDK and none is
- * emitted here.
+ * Not exhaustiveness-checked, as there is no union to check against, so keep it to identifiers that
+ * are actually emitted.
  */
 const sdkNotificationTranslators: Record<string, NotificationTranslator> = {
   'api:poll:end:failed': translatePollEndFailed,
@@ -205,8 +198,6 @@ export const getNotificationDisplayMessage = ({
     : undefined;
 
   // An unrecognized identifier renders `message` verbatim. It is untranslated English, but a newer
-  // core — or an integrator emitting its own identifier — must not produce an empty toast. This used
-  // to run the message through a table of English sentences, which is the mechanism core's `type`
-  // replaced: matching on prose went stale silently on every core upgrade.
+  // core or an integrator's own identifier must not produce an empty toast.
   return translator ? translator({ notification, t }) : notification.message;
 };

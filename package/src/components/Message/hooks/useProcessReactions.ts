@@ -23,11 +23,11 @@ export type ReactionSummary = {
 export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => number;
 
 export type MessageReactionsData = {
-  /** An array of the reaction objects to display in the list */
+  /** Reactions to display in the list. */
   latest_reactions?: ReactionResponse[];
-  /** An array of the own reaction objects to distinguish own reactions visually */
+  /** Own reactions, to tell them apart visually. */
   own_reactions?: ReactionResponse[] | null;
-  /** An object containing summary for each reaction type on a message */
+  /** Summary of each reaction type on the message. */
   reaction_groups?: Record<string, ReactionGroupResponse> | null;
 };
 
@@ -77,7 +77,11 @@ const getLatestReactedUserNames = (reactionType: string, latestReactions?: React
     : [];
 
 /**
- * Custom hook to process reactions data from message and return a list of reactions with additional info.
+ * Turns the reaction data of a message into a sorted list of reactions with extra info.
+ *
+ * @param props The reaction data of the message, plus optional `sortReactions` and
+ * `supportedReactions` overrides.
+ * @returns `existingReactions` (sorted), `hasReactions` and `totalReactionCount`.
  */
 export const useProcessReactions = (props: UseProcessReactionsParams) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();

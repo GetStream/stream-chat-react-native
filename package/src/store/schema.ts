@@ -348,10 +348,7 @@ export type Schema = {
   channelQueries: {
     cids: string;
     id: string;
-    /**
-     * The backend-resolved `predefined_filter` metadata this cid order was produced by, as JSON.
-     * Null for a plain `filter_conditions` query.
-     */
+    /** JSON of the server-resolved `predefined_filter` this CID order came from; null otherwise. */
     predefinedFilter?: string | null;
   };
   channels: {

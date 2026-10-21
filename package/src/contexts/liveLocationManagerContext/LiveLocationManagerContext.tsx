@@ -33,7 +33,6 @@ export const LiveLocationManagerProvider = (
     if (!client) {
       return null;
     }
-    // Create a new instance of LiveLocationManager with the client and utility functions
     return new LiveLocationManager({
       client,
       getDeviceId: getDeviceId ?? (() => `react-native-${Platform.OS}-${client.userID}`),
@@ -45,7 +44,6 @@ export const LiveLocationManagerProvider = (
     if (!liveLocationManager) {
       return;
     }
-    // Initialize the live location manager
     liveLocationManager
       .init()
       .catch((error) => console.warn('Initializing the live location manager failed:', error));

@@ -83,10 +83,6 @@ const getIsAudioAttachmentPreview =
     isLocalVoiceRecordingAttachment(attachment) ||
     (soundPackageAvailable && isLocalAudioAttachment(attachment));
 
-/**
- * AttachmentUploadPreviewList
- * UI Component to preview the files set for upload
- */
 const UnMemoizedAttachmentUploadPreviewList = () => {
   const {
     AudioAttachmentUploadPreview,
@@ -562,10 +558,7 @@ const MemoizedAttachmentUploadPreviewListWithContext = React.memo(
   UnMemoizedAttachmentUploadPreviewList,
 );
 
-/**
- * AttachmentUploadPreviewList
- * UI Component to preview the files set for upload
- */
+/** Previews the attachments set for upload. */
 export const AttachmentUploadPreviewList = () => <MemoizedAttachmentUploadPreviewListWithContext />;
 
 const styles = StyleSheet.create({

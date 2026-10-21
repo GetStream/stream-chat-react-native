@@ -8,7 +8,7 @@ export const parseJsonChart = (code: string): ChartSpec => {
     const parsedVegaLite = VegaLiteSchema.parse(json);
     return parseVegalite(parsedVegaLite);
   } catch (_error) {
-    /* do nothing */
+    // Not a supported chart spec: fall through to the error below.
   }
 
   throw new Error('Unknown type of JSON formatted chart.');

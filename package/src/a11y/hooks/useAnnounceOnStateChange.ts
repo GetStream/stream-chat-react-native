@@ -11,11 +11,12 @@ type UseAnnounceOnStateChangeOptions = {
 };
 
 /**
- * Announces `message` whenever it changes (and is non-empty), with a debounce
- * to avoid spamming the screen reader on rapid transitions.
+ * Announces `message` whenever it changes to a new non-empty value, debounced so rapid transitions
+ * do not flood the screen reader. Repeating the last announced message is skipped.
  *
- * Used by `AITypingIndicatorView` ("Thinking…" → "Generating…" → idle) and
- * the `Indicators` family (loading → loaded → error).
+ * @param message Text to announce.
+ * @param options.debounceMs Debounce before announcing. Defaults to 250.
+ * @param options.priority Announcement priority. Defaults to `polite`.
  */
 export const useAnnounceOnStateChange = (
   message: string | null | undefined,

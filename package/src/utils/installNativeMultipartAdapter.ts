@@ -260,9 +260,8 @@ const nativeMultipartAxiosAdapter = async (
 const createNativeMultipartAdapter =
   (client: StreamChat): AxiosAdapter =>
   (config) => {
-    // Built from the config the adapter receives, so it reflects everything that ran after routing:
-    // request interceptors registered before this one (axios runs them after it) and
-    // `transformRequest`.
+    // Built from the config the adapter receives, so it includes the changes made by request
+    // interceptors registered before this one (axios runs them after it) and `transformRequest`.
     const nativeMultipartRequest = createNativeMultipartRequest(
       client,
       config as NativeMultipartAxiosRequestConfig,
@@ -280,13 +279,14 @@ const createNativeMultipartAdapter =
   };
 
 /**
- * Routes file uploads through the native uploader by setting `adapter` on those requests only.
+ * Routes multipart file uploads through the native uploader by setting `adapter` on those requests
+ * only. Does nothing when native multipart upload is unavailable or the client is already set up.
  *
- * The client's default adapter is deliberately left alone. Replacing it would mean resolving the
- * fallback (`['xhr', 'http', 'fetch']`) with `axios.getAdapter`, i.e. importing axios here — and
- * wherever that import resolves to a different copy than `stream-chat`'s, every request would fail
- * with that copy's `AxiosError`, which `stream-chat` does not recognise. Untouched, every other
- * request is resolved by `stream-chat`'s own axios.
+ * The client's default adapter is left alone: replacing it would require importing axios here to
+ * resolve the fallback, and a copy different from `stream-chat`'s would fail every request with an
+ * `AxiosError` that `stream-chat` does not recognize.
+ *
+ * @param client The client to install the adapter on.
  */
 export const installNativeMultipartAdapter = (client: StreamChat) => {
   if (!isNativeMultipartUploadAvailable()) {

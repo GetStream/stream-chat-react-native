@@ -5,9 +5,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
 
-/**
- * This UI component displays a pinned indicator for a particular channel.
- */
+/** The pinned indicator of a channel preview. */
 export const ChannelPreviewPinnedStatus = () => {
   const {
     theme: {

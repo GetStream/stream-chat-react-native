@@ -24,19 +24,10 @@ import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput, SearchInputProps } from '../../../UIComponents/SearchInput';
 
 export type PinnedMessageListProps = {
-  /**
-   * Besides the existing default behavior of the pinned message list, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * See https://reactnative.dev/docs/flatlist#props for the full list.
-   */
+  /** Additional props passed to the underlying `FlatList`. */
   additionalFlatListProps?: Partial<FlatListProps<MessageResponse>>;
   searchInputProps?: SearchInputProps;
-  /**
-   * A custom `MessageSearchSource` used to query and paginate the pinned
-   * messages. Overrides the source the provider creates by default
-   * (pre-configured to fetch pinned messages and search by `text`).
-   */
+  /** Overrides the default `MessageSearchSource` (pinned messages, searched by `text`). */
   searchSource?: MessageSearchSource;
 };
 
@@ -109,7 +100,7 @@ const PinnedMessageListContent = ({
   );
 
   const loadMore = useCallback(() => {
-    // hasNext is true by default, !!messages prevents calling search on initial load
+    // `hasNext` starts true, so `messages` is checked to avoid searching on the initial load.
     if (hasNext && !!messages) {
       searchSource.search();
     }

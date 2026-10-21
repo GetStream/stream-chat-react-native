@@ -42,9 +42,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
   recording: state.recording,
 });
 
-/**
- * Component displayed when the audio is recorded and can be previewed.
- */
+/** Displayed after a recording stops, to preview it before sending. */
 export const AudioRecordingPreview = () => {
   const { audioRecorderManager } = useMessageInputContext();
   const { icons } = useComponentsContext();
@@ -62,7 +60,7 @@ export const AudioRecordingPreview = () => {
   const audioPlayer = useAudioPlayer({
     duration: recordingDuration / ONE_SECOND_IN_MILLISECONDS,
     mimeType: 'audio/aac',
-    // The preview still uses the recorder-backed player until both playback paths are unified.
+    // The preview uses the regular sound player, not the recorder-backed one.
     previewVoiceRecording: false,
     type: 'voiceRecording',
     uri,
@@ -73,7 +71,7 @@ export const AudioRecordingPreview = () => {
     audioPlayerSelector,
   );
 
-  // When a audio attachment in preview is removed, we need to remove the player from the pool
+  // Removes the player from the pool on unmount.
   useEffect(
     () => () => {
       audioPlayer.onRemove();
@@ -127,7 +125,7 @@ export const AudioRecordingPreview = () => {
             <icons.Pause fill={semantics.textPrimary} height={20} width={20} {...pauseIcon} />
           )}
         </Pressable>
-        {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
+        {/* Elapsed playback time. */}
         <StableDurationLabel
           accessibilityLabel='Progress Duration'
           reserveLabel={maxDurationLabel}
@@ -139,7 +137,7 @@ export const AudioRecordingPreview = () => {
         />
       </View>
       <View style={[styles.progressBar, progressBar]}>
-        {/* Since the progress is in range 0-1 we convert it in terms of 100% */}
+        {/* `progress` is a fraction from 0 to 1. */}
         <WaveProgressBar
           isPlaying={isPlaying}
           progress={progress}

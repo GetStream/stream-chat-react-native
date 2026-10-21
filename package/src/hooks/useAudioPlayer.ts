@@ -8,16 +8,9 @@ import { AudioPlayerErrorCode, AudioPlayerOptions } from '../state-store/audio-p
 
 export type UseAudioPlayerProps = {
   /**
-   * Identifier of the entity that requested the audio playback, e.g. message ID.
-   * Asset to specific audio player is a many-to-many relationship
-   * - one URL can be associated with multiple UI elements,
-   * - one UI element can display multiple audio sources.
-   * Therefore, the AudioPlayer ID is a combination of request:src.
-   *
-   * The requester string can take into consideration whether there are multiple instances of
-   * the same URL requested by the same requester (message has multiple attachments with the same asset URL).
-   * In reality the fact that one message has multiple attachments with the same asset URL
-   * could be considered a bad practice or a bug.
+   * Identifier of the entity that requested the playback, such as a message ID. It scopes the
+   * audio player ID (`requester:src:id`), as one URL can back several UI elements and one UI
+   * element can show several sources.
    */
   requester?: string;
 } & Partial<AudioPlayerOptions>;

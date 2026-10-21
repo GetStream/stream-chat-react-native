@@ -39,15 +39,16 @@ export type UseIncomingMessageAnnouncementsParams = {
 };
 
 /**
- * Mirrors stream-chat-react's `useIncomingMessageAnnouncements`:
- *  - 1 message → "New message from {{user}}"
- *  - >1 messages within throttle window → "{{count}} new messages"
- *  - Throttled to one announcement per second
- *  - Bounded `announcedMessageIds` set so a long-running session does not leak.
+ * Announces new messages from other users to screen readers: "New message from {{user}}" for one,
+ * "{{count}} new messages" for several within the one second throttle window.
  *
- * Subscribes to `channel.on('message.new')`. When AccessibilityContext.enabled
- * is false OR `announceNewMessages` is false, the hook is a no-op (no
- * subscription is opened, no listener cost is paid).
+ * Does nothing, and opens no subscription, unless accessibility and `announceNewMessages` are
+ * enabled. Announced message IDs are tracked to skip duplicates and cleared past 500 entries.
+ *
+ * @param params.activeThreadId The open thread, if any. Only its replies are announced; without
+ * it only non-reply messages are.
+ * @param params.channel The channel whose `message.new` events are observed.
+ * @param params.ownUserId The current user's ID. Their own messages are not announced.
  */
 export const useIncomingMessageAnnouncements = ({
   activeThreadId,

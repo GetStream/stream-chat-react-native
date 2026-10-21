@@ -60,9 +60,9 @@ export type CreatePollOptionType = {
   optionId: string;
   onOptionLayout: (optionId: string, height: number) => void;
   /**
+   * Called after a reorder.
    *
-   * @param newOrder The inverse index object of the new options position after re-ordering.
-   * @returns
+   * @param newOrder The new inverse index cache (position to option ID).
    */
   onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
   onRemoveOption: (optionId: string) => void;
@@ -290,9 +290,8 @@ export const CreatePollOption = ({
   const { icons } = useComponentsContext();
   const { createPollOptionGap = 8 } = useCreatePollContentContext();
 
-  // Keyed on `stream-chat`'s stable validation code. This used to match on the English sentence the
-  // composer returned, which meant a reworded message in a `stream-chat` patch silently stopped
-  // translating. `error.message` remains the fallback so an unrecognized code renders readable text.
+  // Keyed on `stream-chat`'s stable validation code; `error.message` is the fallback for an
+  // unrecognized code.
   const knownValidationErrors = useMemo<Partial<Record<PollComposerValidationCode, string>>>(
     () => ({
       [POLL_COMPOSER_VALIDATION_CODE.optionDuplicate]: t(
@@ -340,13 +339,10 @@ export const CreatePollOption = ({
     () => currentOptionPositions.value,
   );
 
-  // Target index computed during drag.
   const newIndex = useSharedValue<number | null>(null);
 
-  // Current dragged item's index in the live reorder cache.
   const currentIndex = useSharedValue<number | null>(null);
 
-  // Keep drag translation anchored to drag-start top.
   const dragStartTop = useSharedValue(0);
   const previousDragTop = useSharedValue(0);
 
@@ -366,13 +362,10 @@ export const CreatePollOption = ({
         return;
       }
 
-      // start dragging
       isDragging.value = withSpring(1);
 
-      // keep track of dragged item
       draggedItemId.value = optionId;
 
-      // capture drag start position/index
       currentIndex.value = currentPosition.updatedIndex;
       dragStartTop.value = currentPosition.updatedTop;
       previousDragTop.value = currentPosition.updatedTop;
@@ -393,14 +386,12 @@ export const CreatePollOption = ({
       const frameDeltaY = newTop - previousDragTop.value;
       previousDragTop.value = newTop;
 
-      // we add a small leeway to account for sharp animations which tend to bug out otherwise
+      // A small leeway past the bounds avoids glitches in sharp animations.
       if (newTop < -10 || newTop > maxBound + 10) {
-        // out of bounds, exit out of the animation early
         return;
       }
       top.value = newTop;
 
-      // calculate the new index where drag is headed to
       const draggedTop = newTop;
       const draggedBottom = newTop + draggedItemPosition.updatedHeight;
       newIndex.value = findTargetIndex(
@@ -449,7 +440,6 @@ export const CreatePollOption = ({
           : undefined;
       top.value = withSpring(currentDragTop ?? top.value);
 
-      // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
       draggedItemId.value = null;
       currentIndex.value = null;
@@ -597,13 +587,12 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
     pollComposer.handleFieldBlur('options');
   }, [pollComposer]);
 
-  // used to know if drag is happening or not
+  // 1 while an option is being dragged.
   const isDragging = useSharedValue<0 | 1>(0);
 
-  // this will hold id for item which user started dragging
+  // ID of the option being dragged.
   const draggedItemId = useSharedValue<string | null>(null);
 
-  // holds the animated height of the option container
   const animatedOptionsContainerHeight = useSharedValue(currentOptionPositions.value.totalHeight);
 
   useAnimatedReaction(

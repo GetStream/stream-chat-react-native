@@ -4,12 +4,11 @@ import { useChannelContext } from '../contexts/channelContext/ChannelContext';
 import { useThreadContext } from '../contexts/threadContext/ThreadContext';
 
 /**
- * Resolves the active `Channel` instance: the thread's channel when rendered inside a
- * thread, otherwise the `ChannelContext` channel.
+ * Resolves the active channel: the thread's channel inside a `<Thread>`, otherwise the
+ * `ChannelContext` channel. Prefer it over `useChannelContext()` in code shared between the main
+ * list and a thread.
  *
- * Thread-aware analogue of stream-chat-react's `useChannel()`. Prefer this over reading
- * `channel` from `useChannelContext()` directly in message/thread interaction code, so the
- * same code path targets the correct channel in both the main list and a thread.
+ * @returns The active channel.
  */
 export const useChannel = (): Channel => {
   const { channel } = useChannelContext();

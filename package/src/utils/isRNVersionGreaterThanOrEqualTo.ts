@@ -1,11 +1,13 @@
 import { Platform } from 'react-native';
 
 /**
- * Returns `true` when the running React Native version is greater than or equal to `version`
- * (a `'major.minor.patch'` string, e.g. `'0.86.0'`), comparing major, then minor, then patch.
+ * Whether the running React Native version is greater than or equal to `version`.
  *
- * Falls back to `false` when the version is unavailable (e.g. react-native-web) — callers should
- * treat that as "assume an older React Native".
+ * Returns `false` when the version is unavailable (such as react-native-web), so callers treat it
+ * as an older React Native.
+ *
+ * @param version A `'major.minor.patch'` string, such as `'0.86.0'`.
+ * @returns Whether the running version is at least `version`.
  */
 export const isRNVersionGreaterThanOrEqualTo = (version: string): boolean => {
   const runtime = Platform.constants?.reactNativeVersion;

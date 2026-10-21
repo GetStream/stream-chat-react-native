@@ -1,45 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * A utility hook that coalesces a fast changing value to the display’s frame rate.
- * It accepts any “noisy” input (arrays, objects, numbers, etc.) and exposes a value
- * that React consumers will see at most once per animation frame (via
- * `requestAnimationFrame`). This is useful when upstream sources (selectors, sockets,
- * DB listeners) can fire multiple times within a single paint and you want to avoid
- * extra renders and layout churn.
+ * Coalesces a fast-changing value to at most one update per animation frame, so sources that fire
+ * several times within a paint (selectors, sockets, DB listeners) cause one render, not many.
  *
- * How it works:
- * - Keeps track of the latest incoming value
- * - Ensures there is **at most one** pending RAF at a time
- * - When the RAF fires, commits the **latest** value to state (`emitted`)
- * - If additional changes arrive before the RAF runs, they are merged (the last write
- *   operation wins) and no new RAF is scheduled
+ * Intermediate values within a frame are skipped, so it suits visual coalescing, not logic that
+ * must observe every transition. Equality is referential: a producer that recreates arrays or
+ * objects still publishes once per frame, so stabilize them upstream. It follows the frame cadence
+ * and is not a throttle or debounce. A pending frame is cancelled only on unmount, not on value
+ * changes.
  *
- * With this hook you can:
- * - Feed a `FlatList`/`SectionList` from fast changing sources without spamming re-renders
- * - Align React updates to the paint cadence (one publish per frame)
- * - Help preserve item anchoring logic (e.g., MVCP) by reducing in-frame updates
- *
- * **Caveats:**
- * - This hook intentionally skips intermediate states that occur within the same
- *   frame. If you must observe every transition (e.g., for analytics/reducers), do that
- *   upstream; this hook is for visual coalescing
- * - Equality checks are simple referential equalities. If your producer recreates arrays
- *   or objects each time, you’ll still publish once per frame. To avoid even those
- *   emissions, stabilize upstream
- * - This is not a silver bullet for throttle/debounce; it uses the screen’s refresh cycle;
- *   If you need “no more than once per X ms”, layer that upstream
- *
- * Usage tips:
- * - Prefer passing already-memoized values when possible (e.g., stable arrays by ID).
- * - Pair with a stable `keyExtractor` in lists so coalesced updates map cleanly to rows.
- * - Do not cancel/reschedule on prop changes; cancellation is handled on unmount only.
- *
- * @param value The upstream value that may change multiple times within a single frame.
- * @param isEnabled Determines whether the hook should be run or not (useful for cases where
- * we want to conditionally use RAF when certain feature feature flags are enabled). If `false`,
- * it will simply pass the data through (maintaining the reference as well).
- * @returns A value that updates **at most once per frame** with the latest input.
+ * @param value The upstream value that may change several times within a frame.
+ * @param isEnabled When false, `value` is returned as is with the same reference, to gate the RAF
+ * behind a feature flag.
+ * @returns The latest value, updated at most once per frame.
  */
 export const useRAFCoalescedValue = <S>(value: S, isEnabled: boolean | undefined): S => {
   const [emitted, setEmitted] = useState<S>(value);
@@ -51,7 +25,7 @@ export const useRAFCoalescedValue = <S>(value: S, isEnabled: boolean | undefined
     if (value === pendingRef.current || !isEnabled) return;
     pendingRef.current = value;
 
-    // already scheduled the next frame, skip
+    // A frame is already scheduled.
     if (rafIdRef.current) return;
 
     const run = () => {
@@ -64,7 +38,7 @@ export const useRAFCoalescedValue = <S>(value: S, isEnabled: boolean | undefined
 
   useEffect(() => {
     return () => {
-      // cancel the frame if it exists only on unmount
+      // Cancel a pending frame on unmount.
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;

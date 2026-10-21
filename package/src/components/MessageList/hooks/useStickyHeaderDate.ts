@@ -6,8 +6,10 @@ import { convertTimestampToDate } from 'stream-chat';
 import { useStableCallback } from '../../../hooks';
 
 /**
- * The date the list's sticky header shows: the day of the topmost message on screen. Hidden once the
- * oldest message of the whole list is on screen, where the inline date separator says the same.
+ * The date the list's sticky header shows: the day of the topmost message on screen. Hidden once
+ * the oldest message of the whole list is on screen, where the inline date separator says the same.
+ *
+ * @returns `stickyHeaderDate` and `updateStickyHeaderDate`, which takes the topmost message.
  */
 export const useStickyHeaderDate = () => {
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();

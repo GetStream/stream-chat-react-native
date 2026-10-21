@@ -97,8 +97,8 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
   const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
   const { t } = useTranslationContext();
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
-  // `forceIncoming` is set on the full-options surface, which is a neutral card
-  // rather than a bubble - so it wins over poll ownership.
+  // `forceIncoming` marks the full-options surface, a neutral card rather than a bubble, so it wins
+  // over poll ownership.
   const isIncoming = !isPollCreatedByClient || !!forceIncoming;
   const styles = useStyles({ isIncoming });
 

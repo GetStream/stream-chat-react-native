@@ -13,8 +13,10 @@ const selector = (state: { muteStatus: ChannelMuteStatus }) => ({
 });
 
 /**
- * Returns this channel's mute status, sourced reactively from `channel.state.muteStatus` (kept in
- * sync with `client.mutedChannels` on `notification.channel_mutes_updated` / `health.check`).
+ * The channel's mute status, read reactively from `channel.state.muteStatus`.
+ *
+ * @param channel The channel to read.
+ * @returns The mute status, which reads as unmuted until the state reports otherwise.
  */
 export const useIsChannelMuted = (channel: Channel) =>
   useStateStore(channel?.state, selector)?.muteStatus ?? defaultMuteStatus;

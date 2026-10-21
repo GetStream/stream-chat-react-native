@@ -6,18 +6,16 @@ import { useStateStore } from '../../../hooks/useStateStore';
 const identity = (state: NetworkConnectionState) => state;
 
 /**
- * The **device's** network status, as reported by the NetInfo listener `<Chat>` registers on
- * `client.networkConnection`.
+ * The device's network status, as reported by the NetInfo listener `<Chat>` registers on
+ * `client.networkConnection`. Unlike {@link useWSConnectionState}, it is not affected by the socket
+ * dying on a working network.
  *
- * Not the same fact as {@link useWSConnectionState}: a socket dies on a working network, and a device
- * drops while the socket has not noticed yet. Use this for "you're offline"; use the WebSocket hook
- * for "Reconnecting…".
- *
- * `isOnline` has **three** states. `undefined` means *unknown* — nobody has reported yet. A guard must
- * therefore test `isOnline === false`; `!isOnline` is also true when the answer is unknown, which
- * would claim "offline" on the very first render and on any host where no listener is installed.
+ * `isOnline` is `undefined` until a status is reported, so test `isOnline === false`: `!isOnline`
+ * would also read as offline on the first render and where no listener is installed.
  *
  * Must be used under `<Chat>`.
+ *
+ * @returns The network connection state, or `undefined` when the client has no network store.
  */
 export const useNetworkConnectionState = () => {
   const { client } = useChatContext();
@@ -25,9 +23,12 @@ export const useNetworkConnectionState = () => {
 };
 
 /**
- * {@link useNetworkConnectionState} narrowed to what a component actually reads, so it re-renders only
- * when that changes. The selector must return a flat object or tuple — it is shallow-compared on its
- * own keys, and must be declared at module scope to stay referentially stable.
+ * {@link useNetworkConnectionState} narrowed by `selector`, so the component re-renders only when
+ * the selected values change. The selector must return a flat object or tuple (shallow-compared)
+ * and be declared at module scope to stay referentially stable.
+ *
+ * @param selector Picks the values to subscribe to.
+ * @returns The selected values, or `undefined` when the client has no network store.
  */
 export const useNetworkConnectionStateSelector = <
   O extends Readonly<Record<string, unknown> | Readonly<unknown[]>>,

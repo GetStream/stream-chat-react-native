@@ -52,13 +52,13 @@ export const useLoadingImage = () => {
   );
   const isNetworkOnline = useNetworkConnectionState()?.isOnline;
 
-  // storing the value of isLoadingImageError in a ref to avoid passing as a dep to useEffect
+  // A ref keeps `isLoadingImageError` out of the effect's dependencies.
   const hasImageLoadedErroredRef = useRef(isLoadingImageError);
   hasImageLoadedErroredRef.current = isLoadingImageError;
 
   useEffect(() => {
     if (isNetworkOnline && hasImageLoadedErroredRef.current) {
-      // if there was an error previously, reload the image automatically when user comes back online
+      // Retry a failed image automatically when the network comes back.
       onReloadImageRef.current();
     }
   }, [isNetworkOnline]);

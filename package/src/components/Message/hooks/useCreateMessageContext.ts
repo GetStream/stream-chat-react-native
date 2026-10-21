@@ -67,10 +67,8 @@ export const useCreateMessageContext = ({
     ? stringifyMessage({ includeReactions: false, message: message.quoted_message })
     : '';
 
-  // Resolved here (not at each consumer) so the boolean lives on MessageContext
-  // and downstream components (MessageContent, MessageTextContainer) read it
-  // directly. The predicate's identity is stable in the default case; an
-  // integrator override is expected to be stable too (documented on the config).
+  // Resolved here so downstream components read the boolean from MessageContext. The predicate
+  // is expected to be stable, including an integrator override.
   const { hasInteractiveAccessibilityContent: hasInteractiveAccessibilityContentPredicate } =
     useAccessibilityContext();
   const hasInteractiveAccessibilityContent = hasInteractiveAccessibilityContentPredicate(message);

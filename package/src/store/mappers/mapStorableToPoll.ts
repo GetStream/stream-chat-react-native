@@ -49,9 +49,8 @@ export const mapStorableToPoll = (pollRow: TableRow<'poll'>): PollResponseData =
     updated_at: mapStorableToRequiredTimestamp(updated_at),
     vote_count,
     vote_counts_by_option: JSON.parse(vote_counts_by_option),
-    // `voting_visibility` is `'anonymous' | 'public'` on the response, and the column is TEXT.
-    // The `?? ''` fallback was never a valid value — it only compiled because the date fields on
-    // this same object literal were already failing and masking it. Default to the API's default.
+    // The column is TEXT, while the response type is `'anonymous' | 'public'`. A missing value
+    // falls back to the API default.
     voting_visibility: (voting_visibility as PollResponseData['voting_visibility']) ?? 'public',
   };
 };

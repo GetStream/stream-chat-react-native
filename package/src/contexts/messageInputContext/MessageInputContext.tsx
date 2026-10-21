@@ -37,19 +37,13 @@ export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
   inputBoxRef: React.RefObject<InputBoxRef | null>;
   openAttachmentPicker: () => void;
-  /**
-   * Function for picking a photo from native image picker and uploading it.
-   */
+  /** Picks images with the native image picker and uploads them. */
   pickAndUploadImageFromNativePicker: () => Promise<void>;
   pickFile: () => Promise<void>;
   sendMessage: () => Promise<void>;
-  /**
-   * Ref callback to set reference on input box
-   */
+  /** Ref callback for the input box. Also forwards the ref to `setInputRef`. */
   setInputBoxRef: Ref<InputBoxRef> | undefined;
-  /**
-   * Function for taking a photo and uploading it
-   */
+  /** Takes a photo or video with the camera and uploads it. */
   takeAndUploadImage: (
     mediaType?: MediaTypes,
   ) => Promise<{ askToOpenSettings?: boolean; canceled?: boolean } | undefined>;
@@ -68,32 +62,23 @@ export type InputBoxRef = TextInputRef & {
 
 export type InputMessageInputContextValue = {
   /**
-   * Controls how many pixels to the top side the user has to scroll in order to lock the recording view and allow the
-   * user to lift their finger from the screen without stopping the recording.
+   * Distance in pixels the user slides up to lock the recording, so that lifting the finger does
+   * not stop it. Defaults to 50.
    */
   asyncMessagesLockDistance: number;
-  /**
-   * Controls the minimum duration that the user has to press on the record button in the composer, in order to start
-   * recording a new voice message.
-   */
+  /** Minimum press duration on the record button to start a voice recording. Defaults to 500. */
   asyncMessagesMinimumPressDuration: number;
   /**
-   * Controls whether a completed voice recording is sent immediately or added to the composer first.
-   * When true, the recording is sent immediately on completion.
-   * When false, the recording is added to the composer and only sent if the user decides to.
+   * Whether a completed voice recording is sent immediately (true) or added to the composer for the
+   * user to send (false). Defaults to false.
    */
   audioRecordingSendOnComplete: boolean;
-  /**
-   * Controls how many pixels to the leading side the user has to scroll in order to cancel the recording of a voice
-   * message.
-   */
+  /** Distance in pixels the user slides to the leading side to cancel recording. Defaults to 75. */
   asyncMessagesSlideToCancelDistance: number;
-  /**
-   * Controls whether the async audio feature is enabled.
-   */
+  /** Whether voice message recording is enabled. Defaults to false. */
   audioRecordingEnabled: boolean;
   /**
-   * Height of the image picker bottom sheet when opened.
+   * Height of the attachment picker bottom sheet when open.
    * @type number
    * @default 40% of window height
    */
@@ -107,51 +92,41 @@ export type InputMessageInputContextValue = {
   attachmentSelectionBarHeight: number;
 
   /**
-   * Controls what happens when the attach button is pressed while the attachment picker is open.
-   * When true (default), the message input is focused, toggling from the picker to the keyboard.
-   * When false, the attachment picker is closed without focusing the input.
+   * Whether pressing the attach button while the attachment picker is open focuses the input,
+   * switching from the picker to the keyboard. When false, the picker closes without focusing it.
    * @type boolean
    * @default true
    */
   focusInputOnPickerClose: boolean;
 
-  /** When false, CameraSelectorIcon will be hidden */
+  /** Whether the camera picker button shows. */
   hasCameraPicker: boolean;
 
-  /** When false, CommandsButton will be hidden */
+  /** Whether the commands button shows. */
   hasCommands: boolean;
-  /** When false, FileSelectorIcon will be hidden */
+  /** Whether the file picker button shows. */
   hasFilePicker: boolean;
-  /** When false, ImageSelectorIcon will be hidden */
+  /** Whether the image picker button shows. */
   hasImagePicker: boolean;
 
-  /**
-   * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
-   *
-   * @see See https://reactnative.dev/docs/textinput#reference
-   */
+  /** Props forwarded as is to the underlying `TextInput`. */
   additionalTextInputProps?: TextInputProps;
   closePollCreationDialog?: () => void;
   /**
-   * Compress image with quality (from 0 to 1, where 1 is best quality).
-   * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
-   * while a value of 0.8 will reduce the file size by about half or less compared to a value of 1.
-   * Image picker defaults to 0.8 for iOS and 1 for Android
+   * Image compression quality from 0 to 1, where 1 is best. On iOS, values above 0.8 rarely improve
+   * quality, while 0.8 roughly halves the file size. The image picker defaults to 0.8 on iOS and 1
+   * on Android.
    */
   compressImageQuality?: number;
 
-  /**
-   * Vertical gap between poll options in poll creation dialog.
-   */
+  /** Vertical gap between poll options in the poll creation dialog. */
   createPollOptionGap?: number;
 
-  /**
-   * Handler for when the attach button is pressed.
-   */
+  /** Called when the attach button is pressed. */
   handleAttachButtonPress?: () => void;
 
   /**
-   * Whether the message input is floating or not.
+   * Whether the message input floats over the content.
    * @type boolean
    * @default false
    */
@@ -159,9 +134,9 @@ export type InputMessageInputContextValue = {
 
   openPollCreationDialog?: ({ sendMessage }: Pick<LocalMessageInputContext, 'sendMessage'>) => void;
   /**
-   * ref for input setter function
+   * Receives the ref of the underlying `TextInput`, and `null` on unmount.
    *
-   * @param ref [Ref object](https://reactjs.org/docs/refs-and-the-dom.html) for underling `TextInput` component.
+   * @param ref The `TextInput` ref.
    *
    * @overrideType Function
    */
@@ -205,24 +180,13 @@ export const MessageInputProvider = ({
   const messageComposer = useMessageComposer();
   const { attachmentManager } = messageComposer;
 
-  /**
-   * Composer middleware this SDK owns.
-   *
-   * Sending before uploads finish is deliberately not configured here: it is the composer's own
-   * `attachments.pendingUploadsEnabled`, defaulted by `<Chat>` through `client.config` (see
-   * `usePendingUploadsDefault`). An imperative `updateConfig` here would outrank the integrator's
-   * `client.config` and setup function, leaving them no way to change it.
-   *
-   * The draft composition is deliberately left alone: it keeps successful uploads only, and a
-   * draft is sent to the server, where a local file URI no other device can read has no business.
-   */
+  // Composer middleware this SDK owns. Sending before uploads finish is not configured here:
+  // `attachments.pendingUploadsEnabled` is composer config that `<Chat>` defaults through
+  // `client.config`, and an imperative update here would outrank the integrator's own config.
   useEffect(() => {
     setupVideoAttachmentPreviewMiddleware(messageComposer);
   }, [messageComposer]);
 
-  /**
-   * Function for capturing a photo and uploading it
-   */
   const takeAndUploadImage = useStableCallback(async (mediaType?: MediaTypes) => {
     if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
@@ -258,9 +222,6 @@ export const MessageInputProvider = ({
     return file;
   });
 
-  /**
-   * Function for picking a photo from native image picker and uploading it
-   */
   const pickAndUploadImageFromNativePicker = useStableCallback(async () => {
     if (!attachmentManager.availableUploadSlots) {
       Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
@@ -323,12 +284,9 @@ export const MessageInputProvider = ({
     });
   });
 
-  /**
-   * Function to open the attachment picker if the MediaLibary is installed.
-   */
   const openAttachmentPicker = useCallback(() => {
     if (!shouldRenderAttachmentPicker) {
-      // There is no picker to open, and a selected picker would leave space reserved for it.
+      // No picker to open, and selecting one would reserve space for it.
       return;
     }
     dismissKeyboard();
@@ -336,9 +294,6 @@ export const MessageInputProvider = ({
     openPicker();
   }, [attachmentPickerStore, openPicker, shouldRenderAttachmentPicker]);
 
-  /**
-   * Function to close the attachment picker if the MediaLibrary is installed.
-   */
   const closeAttachmentPicker = useCallback(() => {
     attachmentPickerStore.setSelectedPicker(undefined);
     closePicker();
@@ -358,7 +313,7 @@ export const MessageInputProvider = ({
     inputBoxRef.current?.clearState();
 
     try {
-      // A bounced message (type 'error') is never updated: editing it sends it again as a new message.
+      // Editing a bounced message (type 'error') sends it again as a new message.
       const { editedMessage } = messageComposer;
       const result =
         editedMessage && editedMessage.type !== 'error'
@@ -402,11 +357,8 @@ export const MessageInputProvider = ({
         : normalizedFile.uri;
       const updatedFile = { ...normalizedFile, uri: fileURI };
       const uploadedFiles = await attachmentManager.uploadFiles([updatedFile]);
-      // A blocked upload (i.e the file exceeds the size limit or has a
-      // disallowed type) is a permanent validation failure that the server
-      // will always reject, so remove it from the composer instead of leaving
-      // an unsendable preview behind. The blocked notification has already been
-      // surfaced to the user by the attachment manager at this point.
+      // A blocked upload (over the size limit or of a disallowed type) is rejected for good, so it
+      // is removed from the composer. The attachment manager has already notified the user.
       const blockedAttachmentIds = (uploadedFiles ?? [])
         .filter((attachment) => attachment?.localMetadata?.uploadState === 'blocked')
         .map((attachment) => attachment?.localMetadata.id)
@@ -469,7 +421,7 @@ export const useMessageInputContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
+      'The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/react-native/core-components/channel/',
     );
   }
 

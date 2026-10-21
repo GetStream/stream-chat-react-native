@@ -15,11 +15,8 @@ import { useStateStore } from '../../../hooks';
 
 export type LastMessageType = LocalMessage | MessageResponse;
 
-// The last message is sourced reactively from the paginator's `aggregateState` — a store kept
-// separate from pagination `state` precisely so it stays reactive when a new message lands in the
-// head interval while an older window is active (a `state`-derived latest would go stale off-window).
-// The preview re-renders whenever the newest message changes (new/edited/deleted) with no manual
-// event plumbing.
+// The latest message comes from the paginator's `aggregateState`, which stays current when a new
+// message lands in the head interval while an older window is active.
 const lastMessageSelector = (state: MessagePaginatorAggregateState) => ({
   lastMessage: state.lastMessage ?? undefined,
 });
@@ -29,11 +26,8 @@ export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
   const { lastMessage } =
     useStateStore(channel.messagePaginator.aggregateState, lastMessageSelector) ?? {};
 
-  // One `channel.state` subscription for the whole preview row — mute status, membership (for pin)
-  // and own unread — instead of one subscription per concern. Fewer subscribers means the
-  // `channel.state` notify fan-out runs fewer selectors per publish, and fewer `useSyncExternalStore`
-  // instances per mounted row. The public `useIsChannelMuted` / `useIsChannelPinned` hooks are
-  // unchanged for every other caller; this aggregator just reads the combined slice directly.
+  // One `channel.state` subscription per row covers mute status, membership (pin) and own unread,
+  // rather than one subscription per concern.
   const previewStateSelector = useCallback(
     (state: MembershipState & MuteStatusState & ReadState) => ({
       membership: state.membership,
@@ -50,10 +44,9 @@ export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
 
   const muted = muteStatus?.muted ?? false;
   const pinned = membership?.pinned_at != null;
-  // muted channels always render a zeroed unread count
+  // Muted channels show no unread count.
   const unread = muted ? 0 : (reactiveUnread ?? 0);
 
-  // drafts
   useEffect(() => {
     const unsubscribe = channel.messageComposer.registerDraftEventSubscriptions();
     return () => unsubscribe();

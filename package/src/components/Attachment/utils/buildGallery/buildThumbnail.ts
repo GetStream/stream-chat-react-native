@@ -27,12 +27,12 @@ export function buildThumbnail({
 }: BuildThumbnailProps): Thumbnail {
   const { original_height: originalImageHeight, original_width: originalImageWidth } = image;
 
-  // Only resize if the original image is larger than the thumbnail container size.
+  // Resizes only when the original image is larger than the thumbnail container.
   const shouldResize =
     originalImageHeight && originalImageWidth
       ? originalImageHeight + originalImageWidth > height + width
       : true;
-  // Falls back to the local preview while the upload is in flight — see `getUrlOfImageAttachment`.
+  // Falls back to the local preview while the upload is in flight (see `getUrlOfImageAttachment`).
   const imageUrl = getUrlOfImageAttachment(image) as string;
   const localId = isLocalUploadAttachment(image) ? image.localMetadata.id : undefined;
 

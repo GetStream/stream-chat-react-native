@@ -7,10 +7,11 @@ type UseChannelTypingStateProps = {
 };
 
 /**
- * Typing users for a channel-preview row. A thin wrapper over the shared `useChannelTypingUsers`
- * core (the same reactive `channel.state.typing` source the in-channel indicator uses). The preview
- * row isn't inside a `<Channel>` provider, so the channel is passed as a prop rather than read from
- * context.
+ * The users typing in a channel preview row. The channel is a parameter because the row renders
+ * outside a `<Channel>` provider.
+ *
+ * @param params.channel The channel being previewed.
+ * @returns The typing users as `usersTyping`.
  */
 export const useChannelTypingState = ({ channel }: UseChannelTypingStateProps) => {
   const usersTyping = useChannelTypingUsers(channel);

@@ -26,12 +26,11 @@ export const OverlayContext = React.createContext(
 
 export type OverlayProviderProps = ImageGalleryProviderProps & {
   /**
-   * Opt-in accessibility configuration. A11y is OFF by default — pass
-   * `accessibility={{ enabled: true }}` to enable screen-reader announcements,
-   * gesture alternatives, and semantic a11y attributes across the SDK.
+   * Opt-in accessibility configuration. Disabled by default; `accessibility={{ enabled: true }}`
+   * turns on screen-reader announcements, gesture alternatives and semantic a11y attributes.
    */
   accessibility?: AccessibilityConfig;
-  /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
+  /** The `Streami18n` instance that enables internationalization. */
   i18nInstance?: Streami18n;
   value?: Partial<OverlayContextValue>;
 };
@@ -41,7 +40,7 @@ export const useOverlayContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useOverlayContext hook was called outside the OverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
+      'The useOverlayContext hook was called outside the OverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/react-native/core-components/overlay-provider/',
     );
   }
 

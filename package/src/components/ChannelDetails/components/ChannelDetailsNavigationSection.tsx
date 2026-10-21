@@ -18,12 +18,9 @@ import {
 
 export type ChannelDetailsNavigationSectionProps = {
   /**
-   * Customize the navigation rows rendered in the channel details navigation section.
-   *
-   * Receives the built-in `defaultItems` (and a `context`) and returns the rows to render.
-   * Map over `defaultItems` to override a row's `onPress` (e.g. to push your own screen) or
-   * to add/remove rows. Any row whose `onPress` you leave untouched keeps its built-in
-   * behavior (opening the built-in modal), including sections added in future SDK versions.
+   * Receives the built-in `defaultItems` (and a `context`) and returns the rows to render. Override
+   * a row's `onPress` to push your own screen, or add and remove rows. A row whose `onPress` is
+   * untouched keeps opening the built-in modal.
    */
   getNavigationItems?: GetChannelDetailsNavigationItems;
 };

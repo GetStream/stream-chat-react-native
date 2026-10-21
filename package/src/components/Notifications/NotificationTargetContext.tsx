@@ -22,10 +22,20 @@ export const NotificationTargetProvider = ({
   );
 };
 
-/** Returns the nearest notification target, if the caller is rendered inside a target provider. */
+/**
+ * Returns the nearest notification target, if the caller is rendered inside a target provider.
+ *
+ * @returns The target, or `undefined` outside a provider.
+ */
 export const useNotificationTargetContext = () => useContext(NotificationTargetContext);
 
-/** Resolves an explicit target or falls back to the nearest compatible target provider. */
+/**
+ * Resolves an explicit target or falls back to the nearest compatible target provider.
+ *
+ * @param params.hostId Exact host ID. Resolves only together with `panel`.
+ * @param params.panel Target panel. Without `hostId`, resolves only to the context target of it.
+ * @returns The resolved target, or `undefined` when none matches.
+ */
 export const useResolvedNotificationTarget = ({
   hostId,
   panel,

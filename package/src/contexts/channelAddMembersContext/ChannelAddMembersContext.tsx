@@ -14,23 +14,15 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type ChannelAddMembersContextValue = {
   selectionStore: SelectionStore;
   searchSource: UserSearchSource;
-  /**
-   * Adds the currently selected members to the channel. Resolves on success and
-   * rejects if the request fails.
-   */
+  /** Adds the selected members to the channel. Rejects if the request fails. */
   submit: () => Promise<void>;
 };
 
-/**
- * Props for the {@link ChannelAddMembersProvider} that seed the add-members
- * configuration into the context.
- */
+/** Props of the {@link ChannelAddMembersProvider}. */
 export type ChannelAddMembersProviderProps = PropsWithChildren<{
   /**
-   * A custom `UserSearchSource` used to query and paginate the users to add.
-   * Overrides the source the provider creates by default (pre-configured to
-   * autocomplete by `name`). The provider uses it as-is, so the consumer owns
-   * its activation/sorting.
+   * Custom `UserSearchSource` (the default autocompletes by `name`) that queries and paginates the
+   * users to add. It is used as-is, so the consumer owns its activation and sorting.
    */
   searchSource?: UserSearchSource;
 }>;
@@ -41,8 +33,8 @@ export const ChannelAddMembersContext = React.createContext(
 
 /**
  * Builds the {@link ChannelAddMembersContextValue}. Rendered inside the
- * {@link NotificationTargetProvider} so that notifications emitted by `submit`
- * (via {@link useChannelActions}) resolve to the add-members host.
+ * {@link NotificationTargetProvider} so notifications from `submit` resolve to the add-members
+ * host.
  */
 const ChannelAddMembersContextProviderInner = ({
   children,
@@ -53,7 +45,6 @@ const ChannelAddMembersContextProviderInner = ({
   const { addMembers } = useChannelActions(channel);
   const [selectionStore] = useState(() => new SelectionStore());
   const [searchSource] = useState(() => {
-    // A custom source is used as-is; the consumer owns its activation/sorting.
     if (searchSourceProp) {
       return searchSourceProp;
     }

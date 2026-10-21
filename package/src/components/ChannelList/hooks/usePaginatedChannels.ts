@@ -49,10 +49,10 @@ export const usePaginatedChannels = ({ paginator }: { paginator: ChannelPaginato
 
       try {
         if (queryType === 'loadChannels') {
-          // Next page — append toward the tail, keeping the current list.
+          // Next page, appended toward the tail.
           await paginator.toTail();
         } else if (queryType === 'reload') {
-          // First page from scratch (blanks to the skeleton).
+          // First page from scratch, which blanks the list to the skeleton.
           await paginator.reload();
         } else {
           await paginator.toTail({ keepPreviousItems: true, reset: 'yes' });
@@ -70,10 +70,9 @@ export const usePaginatedChannels = ({ paginator }: { paginator: ChannelPaginato
   const refreshList = useStableCallback(
     async ({ isBackground = false }: { isBackground?: boolean } = {}) => {
       const now = Date.now();
-      // Only allow pull-to-refresh 5 seconds after the last successful refresh. This throttle is now
-      // purely about the user pulling repeatedly: reconnect refreshes no longer come through here at
-      // all — `client.connectionRecovery` owns them and re-runs each list's own query directly on the
-      // paginator, so they can never be swallowed by this window.
+      // Throttles repeated pull-to-refresh to one per interval, unless the last query failed.
+      // Reconnect refreshes do not pass through here: `client.connectionRecovery` re-runs the
+      // paginator's query itself.
       if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
         return;
       }
@@ -92,9 +91,9 @@ export const usePaginatedChannels = ({ paginator }: { paginator: ChannelPaginato
     await queryChannels('loadChannels');
   });
 
-  // Load the first page whenever the paginator has none: on the first mount, after the app swaps in a
-  // new paginator, and after `client.disconnectUser` resets it. A paginator that already has channels
-  // is shown as is, and a load already in flight is left alone.
+  // Loads the first page whenever the paginator has none: on first mount, when the app swaps in a
+  // new paginator, and after `client.disconnectUser` resets it. A paginator that already has
+  // channels is shown as is, and a load in flight is left alone.
   const userId = useClientUserId(client);
   const isUnloaded = channels === undefined;
   useEffect(() => {

@@ -29,7 +29,7 @@ export type FileAttachmentPropsWithContext = Pick<
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<MessagesContextValue, 'additionalPressableProps'> & {
-    /** The attachment to render */
+    /** The attachment to render. */
     attachment: Attachment;
     attachmentIconSize?: FileIconProps['size'];
     // TODO: Think we really need a way to style the file preview using props if we have theme.

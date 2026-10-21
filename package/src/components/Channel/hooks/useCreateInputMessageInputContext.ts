@@ -26,9 +26,7 @@ export const useCreateInputMessageInputContext = ({
   setInputRef,
   showPollCreationDialog,
 }: InputMessageInputContextValue & {
-  /**
-   * To ensure we allow re-render, when channel is changed
-   */
+  /** Re-creates the context when the channel changes. */
   channelId?: string;
 }) => {
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(

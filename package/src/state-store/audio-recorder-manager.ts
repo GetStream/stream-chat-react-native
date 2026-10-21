@@ -32,20 +32,9 @@ const INITIAL_STATE: AudioRecorderManagerState = {
 
 export class AudioRecorderManager {
   state: StateStore<AudioRecorderManagerState>;
-  /**
-   * A Set signifying whether we've tried to stop a recording session while the
-   * startRecording method is still executing. It is useful to identify race
-   * conditions where we try to cancel the recording altogether while setting
-   * up the recording session finishes (which can take up to 700ms on some
-   * slower devices).
-   * @private
-   */
+  /** Request IDs whose recording was stopped while `startRecording` was still setting it up. */
   private pendingStopRequestIds = new Set<number>();
-  /**
-   * A request ID for this recording session. Used to identify stale recording
-   * sessions and respond adequately, avoiding race conditions.
-   * @private
-   */
+  /** ID of the latest `startRecording` call, so stale start completions can be ignored. */
   private startRequestId = 0;
 
   constructor() {
@@ -61,7 +50,8 @@ export class AudioRecorderManager {
       return;
     }
     this.state.partialNext({ duration: status?.currentPosition || status.durationMillis });
-    // For expo android the lower bound is -120 so we need to normalize according to it. The `status.currentMetering` is undefined for Expo CLI apps, so we can use it.
+    // Expo Android meters down to -120. `status.currentMetering` is undefined in Expo apps, which
+    // tells them apart from native CLI apps.
     const lowerBound = Platform.OS === 'ios' || status.currentMetering ? -60 : -120;
     const normalizedAudioLevel = normalizeAudioLevel(
       status.currentMetering || status.metering,
@@ -111,8 +101,7 @@ export class AudioRecorderManager {
         try {
           await NativeHandlers.Audio.stopRecording();
         } catch {
-          // If stopRecording fails, the native implementation has already stopped the
-          // recorder and so we do nothing.
+          // A failed stop means the native recorder has already stopped, so there is nothing to do.
         }
       }
       this.pendingStopRequestIds.delete(requestId);
@@ -123,7 +112,7 @@ export class AudioRecorderManager {
     }
 
     if (requestId !== this.startRequestId) {
-      // Stale start completion, ignore to avoid affecting newer attempts
+      // Ignore a stale start completion so it cannot affect a newer attempt.
       return accessGranted;
     }
 
@@ -158,7 +147,7 @@ export class AudioRecorderManager {
     try {
       await NativeHandlers.Audio.stopRecording();
     } catch {
-      // Best effort cleanup, native implementation may already be stopped.
+      // Best effort: the native recorder may already be stopped.
     }
 
     if (withDelete) {

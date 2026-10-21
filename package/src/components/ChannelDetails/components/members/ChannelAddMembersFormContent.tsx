@@ -18,12 +18,7 @@ import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../../UIComponents/SearchInput';
 
 export type ChannelAddMembersFormContentProps = {
-  /**
-   * Besides the existing default behavior of the user list, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * See https://reactnative.dev/docs/flatlist#props for the full list.
-   */
+  /** Additional props passed to the underlying `FlatList`. */
   additionalFlatListProps?: Partial<FlatListProps<UserResponse>>;
 };
 
@@ -93,7 +88,7 @@ export const ChannelAddMembersFormContent = ({
   );
 
   const loadMore = useCallback(() => {
-    // hasNext true by default, !!users prevents calling search on initial load
+    // `hasNext` starts true, so `users` is checked to avoid searching on the initial load.
     if (hasNext && !!users) {
       searchSource.search();
     }

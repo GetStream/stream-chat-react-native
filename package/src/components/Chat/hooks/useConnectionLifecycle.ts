@@ -9,16 +9,15 @@ import type { NetworkStatusReporter, StreamChat } from 'stream-chat';
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 
 /**
- * Reports the device's network status to the client, and owns the socket's app-state lifecycle.
+ * Installs the NetInfo network status reporter on the client and closes the WebSocket while the app
+ * is in the background, reopening it in the foreground (push notifications are only delivered while
+ * no socket is active).
  *
- * Two jobs, both side effects — this hook returns nothing. Read status with
- * `useNetworkConnectionState()` (the device) or `useWSConnectionState()` (our socket); both read the
- * client's own stores, so they are correct on mount rather than only after a transition.
+ * Read the results with `useNetworkConnectionState()` and `useWSConnectionState()`.
  *
- * 1. **The network reporter.** The client cannot detect device network status itself — every
- *    platform reports it differently — so it has to be told. On React Native that means NetInfo.
- * 2. **Background/foreground.** Close the socket when the app backgrounds and reopen it on
- *    foreground, because push notifications are only delivered while no socket is active.
+ * @param client The client to manage.
+ * @param closeConnectionOnBackground Whether to close the socket while in the background.
+ * Defaults to true.
  */
 export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBackground = true) => {
   const clientExists = !!client;
@@ -32,7 +31,7 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
   }, [closeConnectionOnBackground, client, clientExists]);
 
   const onForeground = useCallback(() => {
-    // If the user id is not set, we should not open the connection, as it will raise an unneeded error
+    // Without a user ID, opening the connection would raise an unneeded error.
     if (!clientExists || !client.userID) {
       return;
     }
@@ -42,8 +41,8 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
 
   useAppStateListener(onForeground, onBackground);
 
-  // A <Chat> mounted while the app is already active (Android recreating the activity in the same JS
-  // runtime) never sees the background→active change that reopens a socket its predecessor closed.
+  // A `<Chat>` mounted while the app is already active (Android recreating the activity) never sees
+  // the background-to-foreground change that reopens a socket its predecessor closed.
   useEffect(() => {
     if (!closeConnectionOnBackground || !clientExists || !client.userID) return;
     if (AppState.currentState === 'active' && client.wsConnection.connection?.isDisconnected) {
@@ -56,14 +55,9 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
       return;
     }
 
-    // Declarative config rather than `client.networkConnection.setStatusReporter(...)`. Both survive
-    // a configuration derivation now, but this one states the reporter as part of the client's
-    // configuration rather than as an edit applied to it, so a `client.config.get('client')` shows
-    // what is actually installed.
-    //
-    // Installing one at all is not optional on React Native. Left alone the client falls back to a
-    // reporter that mirrors its own WebSocket, which cannot report that the network came back before
-    // the socket noticed — the entire reason the network signal is worth having.
+    // Set through the client config so `client.config.get('client')` shows the installed reporter.
+    // Required on React Native: the client's fallback mirrors its own WebSocket and cannot report
+    // the network returning before the socket notices.
     client.config.set({
       client: {
         networkConnection: {
@@ -72,25 +66,17 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
       },
     });
 
-    // Deliberately no teardown. The reporter's lifetime is the CLIENT's, not this component's: the
-    // client outlives `<Chat>` (push handling, background work), and `isOnline` is supposed to stay
-    // true about the device for as long as the client exists. Tearing it down here would also leave a
-    // stale value rather than a cleared one — `setStatusReporter(null)` keeps the last known status by
-    // design — so consumers would read an authoritative-looking `isOnline` that nothing is updating
-    // any more.
-    //
-    // Re-running this is safe and cannot stack listeners: `netInfoStatusReporter` is a stable
-    // module-scope reference, so `ConfigController`'s no-op write check and the observer's own
-    // installed-reporter identity guard both short-circuit. A *different* client re-runs the effect
-    // through the dependency array and installs a fresh reporter for it.
+    // No teardown: the reporter lives as long as the client, which outlives `<Chat>`, and removing
+    // it would leave a stale `isOnline` because `setStatusReporter(null)` keeps the last known
+    // status. Re-running does not stack listeners: `netInfoStatusReporter` is a stable reference,
+    // so a repeated write is a no-op.
   }, [client, clientExists]);
 };
 
 /**
- * Subscribes to NetInfo and reports every change to the client. What `<Chat>` installs.
+ * Subscribes to NetInfo and reports every change to the client. `<Chat>` installs it in an effect.
  *
- * Exported so it can be installed **at client construction** instead, which is strictly better if
- * you build the client yourself:
+ * When you build the client yourself, install it at construction instead:
  *
  * ```ts
  * new StreamChat(apiKey, {
@@ -98,24 +84,16 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
  * });
  * ```
  *
- * `<Chat>` can only install it from an effect, so between the client being constructed and that
- * effect running, the client falls back to a reporter that mirrors its own WebSocket. In that window
- * a socket-only failure — an expired token, a server close — is recorded as the *device* having no
- * network, and the UI blames the network for it. Installing here closes the window; the fallback is
- * never reached.
+ * Until the effect runs, the client falls back to a reporter that mirrors its own WebSocket, which
+ * records a socket-only failure (expired token, server close) as the device being offline.
  *
- * Module scope, so the same reference is handed to the client on every derivation — re-installing an
- * identical reporter is a no-op there, and rebuilding it per render would tear the native listener
- * down and recreate it for nothing.
- *
- * `NetInfo.addEventListener` fires once with the current state on subscribe, which satisfies the
- * reporter contract's "report the current status as soon as it is known" requirement — so no
- * separate `NetInfo.fetch()` is needed.
+ * Defined at module scope so every install passes the same reference, which the client treats as a
+ * no-op. NetInfo reports the current state on subscribe, so no `NetInfo.fetch()` is needed.
  */
 export const netInfoStatusReporter: NetworkStatusReporter = (onStatusChange) =>
   NetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
-    // `isInternetReachable` is the stronger signal but is `null` until NetInfo has probed, so fall
-    // back to `isConnected` until it resolves. Coerced because both are `boolean | null`.
+    // `isInternetReachable` is `null` until NetInfo has probed, so `isConnected` is used until
+    // then.
     onStatusChange(
       isInternetReachable !== null ? isInternetReachable && isConnected : !!isConnected,
     );

@@ -11,12 +11,13 @@ const DEFAULT_LETTER_INTERVAL = 0;
 const DEFAULT_RENDERING_LETTER_COUNT = 2;
 
 /**
- * A hook that returns text in a streamed, typewriter fashion. The speed of streaming is
- * configurable.
- * @param {number} [letterInterval=0] - The timeout between each typing animation in milliseconds.
- * @param {number} [renderingLetterCount=2] - The number of letters to be rendered each time we update.
- * @param {string} text - The text that we want to render in a typewriter fashion.
- * @returns {{ streamedMessageText: string }} - A substring of the text property, up until we've finished rendering the typewriter animation.
+ * Reveals `text` in a typewriter fashion. It starts from the full initial text, so only text added
+ * later is animated. An unclosed code fence is closed while streaming.
+ *
+ * @param params.letterInterval Delay between typing steps in milliseconds. Defaults to 0.
+ * @param params.renderingLetterCount Number of letters revealed per step. Defaults to 2.
+ * @param params.text The text to reveal.
+ * @returns `streamedMessageText`, the part of `text` revealed so far.
  */
 export const useStreamingMessage = ({
   letterInterval = DEFAULT_LETTER_INTERVAL,

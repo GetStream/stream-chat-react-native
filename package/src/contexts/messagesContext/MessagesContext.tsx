@@ -38,43 +38,37 @@ export type MessageLocationProps = {
 };
 
 export type MessagesContextValue = {
-  /** Should keyboard be dismissed when messaged is touched */
+  /** Whether touching a message dismisses the keyboard. */
   dismissKeyboardOnMessageTouch: boolean;
 
   enableMessageGroupingByUser: boolean;
 
-  /**
-   * The type of URL preview to render.
-   * Defaults to: 'full'
-   */
+  /** The type of URL preview to render. Defaults to 'full'. */
   urlPreviewType: 'compact' | 'full';
 
   FlatList: typeof NativeHandlers.FlatList | undefined;
   /**
-   * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
-   * */
+   * The Giphy image version to render, one of the keys of the Giphy
+   * [Image Object](https://developers.giphy.com/docs/api/schema#image-object).
+   * Defaults to 'fixed_height'.
+   */
   giphyVersion: keyof NonNullable<Attachment['giphy']>;
 
-  /** Order to render the message content */
+  /** Order in which the message content types are rendered. */
   messageContentOrder: MessageContentType[];
   /**
-   * Overlay target id that should be teleported when a message overlay opens.
-   * Custom `MessageOverlayWrapper` usages should pass a matching `targetId`.
+   * Overlay target ID to teleport when a message overlay opens. A custom `MessageOverlayWrapper`
+   * needs a matching `targetId`.
    */
   messageOverlayTargetId?: string;
   /**
-   * Provide any additional props for `Pressable` which wraps inner MessageContent component here.
-   * Please check docs for Pressable for supported props - https://reactnative.dev/docs/pressable#props
+   * Extra props for the `Pressable` that wraps the inner `MessageContent`, except `style`.
    *
    * @overrideType Object
    */
   additionalPressableProps?: Omit<PressableProps, 'style'>;
 
-  /**
-   * Custom handler to handle message swipe action.
-   *
-   * The default behaviour is swipe to reply for this.
-   */
+  /** Overrides the swipe action on a message, which quotes the message by default. */
   customMessageSwipeAction?: ({
     channel,
     message,
@@ -84,204 +78,85 @@ export type MessagesContextValue = {
   }) => void;
 
   disableTypingIndicator?: boolean;
-  /**
-   * Enable swipe to reply on messages.
-   */
+  /** Whether swiping a message replies to it. Defaults to true. */
   enableSwipeToReply?: boolean;
   /**
-   * Whether messages should be aligned to right or left part of screen.
-   * By default, messages will be received messages will be aligned to left and
-   * sent messages will be aligned to right.
+   * Forces every message to the 'left' or 'right' side of the screen. By default, received messages
+   * are on the left and sent messages on the right.
    */
   forceAlignMessages?: Alignment | boolean;
 
   getMessageGroupStyle?: (params: MessageGroupStylesParams) => GroupStyle[];
   /**
-   * Handler to access when a ban user action is invoked.
+   * Called when the ban user action runs, before the default action.
    * @param message
    */
   handleBan?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a copy message action is invoked */
+  /** Called when the copy message action runs, before the default action. */
   handleCopy?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a delete for me message action is invoked */
+  /** Called when the delete for me action runs, before the default action. */
   handleDeleteForMe?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a delete message action is invoked */
+  /** Called when the delete message action runs, before the default action. */
   handleDelete?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when an edit message action is invoked */
+  /** Called when the edit message action runs, before the default action. */
   handleEdit?: (message: LocalMessage) => void;
-  /** Handler to access when a flag message action is invoked */
+  /** Called when the flag message action runs, before the default action. */
   handleFlag?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a mark unread action is invoked */
+  /** Called when the mark unread action runs, before the default action. */
   handleMarkUnread?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a mute user action is invoked */
+  /** Called when the mute user action runs, before the default action. */
   handleMute?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a pin/unpin user action is invoked*/
+  /** Called when the pin/unpin action runs, before the default action. */
   handlePinMessage?: ((message: LocalMessage) => MessageActionType) | null;
-  /** Handler to access when a quoted reply action is invoked */
+  /** Called when the quoted reply action runs, before the default action. */
   handleQuotedReply?: (message: LocalMessage) => Promise<void>;
-  /** Handler to process a reaction */
+  /** Called when a reaction is toggled, before the default action. */
   handleReaction?: (message: LocalMessage, reactionType: string) => Promise<void>;
-  /** Handler to access when a retry action is invoked */
+  /** Called when the retry action runs, with the message stripped of reserved fields. */
   handleRetry?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a thread reply action is invoked */
+  /** Called when the thread reply action runs, before the default action. */
   handleThreadReply?: (message: LocalMessage) => Promise<void>;
-  /** Handler to access when a blocking user action is invoked */
+  /** Called when the block user action runs, before the default action. */
   handleBlockUser?: (user: LocalMessage['user']) => Promise<void>;
-  /** A flag specifying whether the poll creation button is available or not. */
+  /** Whether the poll creation button is available. Also requires polls enabled on the channel. */
   hasCreatePoll?: boolean;
-  /** Handler to deal with custom memoization logic of Attachment */
+  /** Custom memoization check for an attachment: returns whether the two are equal. */
   isAttachmentEqual?: (prevAttachment: Attachment, nextAttachment: Attachment) => boolean;
-  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
+  /**
+   * Custom rules for the markdown renderer, as defined by simple-markdown:
+   * https://github.com/Khan/simple-markdown#adding-a-simple-extension
+   */
   markdownRules?: MarkdownRules;
   /**
-   * Use this prop to override message actions (which pop-up in message overlay).
-   *
-   * You can either completely override the default messageActions object.
-   *
-   * ```
-   * <Channel
-   *   messageActions=[
-   *     {
-   *       action: () => { someAction() };
-   *       title: "Pin Message";
-   *       icon: PinIcon;
-   *       titleStyle: {};
-   *     },
-   *     {
-   *       action: () => { someAction() };
-   *       title: "Delete Message";
-   *       icon: PinIcon;
-   *       titleStyle: {};
-   *     }
-   *   ]
-   * >
-   * </Channel>
-   * ```
-   *
-   * Or you can selectly keep certain action and remove some:
-   *
-   * e.g. Lets say you only want to keep threadReply and copyMessage actions
+   * Overrides the message actions shown in the message overlay. Receives the default actions and
+   * returns the ones to show, in order. For example, to keep only two of them:
    *
    * ```
-   * <Channel
-   *   messageActions={({
-   *     banUser,
-   *     blockUser,
-   *     copyMessage,
-   *     deleteMessage,
-   *     editMessage,
-   *     flagMessage,
-   *     markUnread,
-   *     muteUser,
-   *     quotedReply,
-   *     retry,
-   *     threadReply,
-   *   }) => ([
-   *     threadReply, copyMessage
-   *   ])}
-   * >
-   *  </Channel>
-   *  ```
+   * <Channel messageActions={({ copyMessage, threadReply }) => [threadReply, copyMessage]} />
+   * ```
    *
    * @overrideType Function | Array<Objects>
    */
   messageActions?: (param: MessageActionsParams) => MessageActionType[];
 
-  /**
-   * HitSlop for the message swipe to reply gesture
-   */
+  /** Hit slop of the swipe to reply gesture. */
   messageSwipeToReplyHitSlop?: ViewProps['hitSlop'];
-  /**
-   * The number of lines of the message text to be displayed
-   */
+  /** Maximum number of lines of message text to display. Only the first paragraph is rendered. */
   messageTextNumberOfLines?: number;
-  /**
-   * Theme provided only to messages that are the current users
-   */
+  /** Theme applied only to the messages of the current user. */
   myMessageTheme?: DeepPartial<Theme>;
   /**
-   * Override default handler for onLongPress on message. You have access to payload of that handler as param:
-   *
-   * ```
-   * <Channel
-   *  onLongPressMessage={({
-   *    actionHandlers: {
-   *        deleteMessage, // () => Promise<void>;
-   *        editMessage, // () => void;
-   *        quotedReply, // () => void;
-   *        resendMessage, // () => Promise<void>;
-   *        showMessageOverlay, // () => void;
-   *        toggleBanUser, // () => Promise<void>;
-   *        toggleMuteUser, // () => Promise<void>;
-   *        toggleReaction, // (reactionType: string) => Promise<void>;
-   *    },
-   *    defaultHandler, // () => void
-   *    event, // any event object corresponding to touchable feedback
-   *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
-   *    message // message object on which longPress occured
-   *  }) => {
-   *    // Your custom action
-   *  }}
-   * />
-   * ```
+   * Overrides the long press handler of a message, which opens the message overlay by default. The
+   * payload carries `actionHandlers`, `defaultHandler`, `emitter`, `event` and `message`.
    */
   onLongPressMessage?: (payload: MessagePressableHandlerPayload) => void;
-  /**
-   * Add onPressIn handler for attachments. You have access to payload of that handler as param:
-   *
-   * ```
-   * <Channel
-   *  onPressInMessage={({
-   *    actionHandlers: {
-   *        deleteMessage, // () => Promise<void>;
-   *        editMessage, // () => void;
-   *        quotedReply, // () => void;
-   *        resendMessage, // () => Promise<void>;
-   *        showMessageOverlay, // () => void;
-   *        toggleBanUser, // () => Promise<void>;
-   *        toggleMuteUser, // () => Promise<void>;
-   *        toggleReaction, // (reactionType: string) => Promise<void>;
-   *    },
-   *    defaultHandler, // () => void
-   *    event, // any event object corresponding to touchable feedback
-   *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
-   *    message // message object on which longPress occured
-   *  }) => {
-   *    // Your custom action
-   *  }}
-   * />
-   * ```
-   */
+  /** Called when a press on a message or its content starts. Takes the same payload. */
   onPressInMessage?: (payload: MessagePressableHandlerPayload) => void;
   /**
-   * Override onPress handler for message. You have access to payload of that handler as param:
+   * Overrides the press handler of a message. Takes the same payload as `onLongPressMessage`.
    *
-   * ```
-   * <Channel
-   *  onPressMessage={({
-   *    actionHandlers: {
-   *        deleteMessage, // () => Promise<void>;
-   *        editMessage, // () => void;
-   *        quotedReply, // () => void;
-   *        resendMessage, // () => Promise<void>;
-   *        showMessageOverlay, // () => void;
-   *        toggleBanUser, // () => Promise<void>;
-   *        toggleMuteUser, // () => Promise<void>;
-   *        toggleReaction, // (reactionType: string) => Promise<void>;
-   *    },
-   *    additionalInfo, // emitter-specific info, e.g. `{ reactionType }` when emitter === 'reactionList'
-   *    defaultHandler, // () => void
-   *    event, // any event object corresponding to touchable feedback
-   *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
-   *    message // message object on which longPress occurred
-   *  }) => {
-   *    // Your custom action
-   *  }}
-   * />
-   * ```
-   *
-   * By default, pressing a reaction opens the reactions bottom sheet. To instead toggle
-   * the reaction (add/remove the current user's reaction), intercept the `reactionList` emitter:
+   * Pressing a reaction opens the reactions bottom sheet by default. To toggle the reaction
+   * instead, intercept the `reactionList` emitter:
    *
    * ```
    * <Channel
@@ -297,35 +172,26 @@ export type MessagesContextValue = {
    */
   onPressMessage?: (payload: MessagePressableHandlerPayload) => void;
   /**
-   * Handles a press on the "Also sent in channel" / "Replied to a thread" header's "View" action.
-   * Inside a thread the payload carries the targeted message id; in a channel it also carries the
-   * reply's thread.
+   * Handles a press on the "View" action of the "Also sent in channel" / "Replied to a thread"
+   * header. The action is only shown when this is set. The payload carries the targeted message ID,
+   * and in a channel also the reply's thread.
    */
   onAlsoSentToChannelHeaderPress?: (payload: AlsoSentToChannelHeaderPressPayload) => void;
-  /**
-   * The position of the reaction list in the message
-   */
+  /** Where the reaction list renders in the message. Defaults to 'top'. */
   reactionListPosition?: 'top' | 'bottom';
 
-  /**
-   * The alignment of the reaction list
-   */
+  /** The layout of the reaction list. Defaults to 'clustered'. */
   reactionListType?: 'clustered' | 'segmented';
 
   /**
-   * Full override of the reaction function on Message and Message Overlay
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   * */
+   * Overrides the reaction handler of the message and the message overlay: takes the message and
+   * returns the function that receives the reaction type.
+   */
   selectReaction?: (message: LocalMessage) => (reactionType: string) => Promise<void>;
 
-  /**
-   * Boolean to enable/disable the message underlay background when there are unread messages in the Message List.
-   */
+  /** Whether messages get an underlay when the list has unread ones. Defaults to true. */
   shouldShowUnreadUnderlay?: boolean;
-  /**
-   * The supported reactions that the user can use to react to messages.
-   */
+  /** The reactions users can react to messages with. */
   supportedReactions?: ReactionData[];
 };
 
@@ -349,7 +215,7 @@ export const useMessagesContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useMessagesContext hook was called outside of the MessagesContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list',
+      'The useMessagesContext hook was called outside of the MessagesContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/react-native/core-components/channel/',
     );
   }
 

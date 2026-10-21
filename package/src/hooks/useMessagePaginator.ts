@@ -2,8 +2,10 @@ import { useChannelContext } from '../contexts/channelContext/ChannelContext';
 import { useThreadContext } from '../contexts/threadContext/ThreadContext';
 
 /**
- * The message paginator this subtree is rendering: the thread's reply list inside a `<Thread>`, the
- * channel's main list otherwise.
+ * The message paginator this subtree renders: the thread's inside a `<Thread>`, otherwise the
+ * channel's.
+ *
+ * @returns The active message paginator.
  */
 export const useMessagePaginator = () => {
   const { channel } = useChannelContext();

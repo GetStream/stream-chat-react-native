@@ -42,13 +42,11 @@ export type UploadAttachmentPreviewProps<A extends LocalUploadAttachment> = {
 };
 
 /**
- * This SDK adds nothing of its own to an attachment's custom data.
+ * The SDK adds nothing of its own to an attachment's custom data.
  *
  * An attachment whose upload has not resolved keeps `localMetadata` (`id`, `file`, `previewUri`)
- * from `stream-chat`'s own composition, which is what the message list joins to the live
- * `uploadManager` record and what the send path needs to upload or retry. The SDK used to smuggle
- * that through `custom.localId` / `custom.originalFile` instead, squatting in data that belongs to
- * the integrator. `mime_type` and `file_size` come from `stream-chat` itself.
+ * from `stream-chat`. The message list joins it to the live `uploadManager` record, and the send
+ * path uses it to upload or retry.
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DefaultAttachmentData {}
@@ -99,7 +97,6 @@ export type UnknownType = Record<string, unknown>;
 
 export type ValueOf<T> = T[keyof T];
 
-// ASYNC AUDIO EXPO:
 export enum AndroidOutputFormat {
   DEFAULT = 0,
   THREE_GPP = 1,
@@ -169,53 +166,39 @@ export enum IOSAudioQuality {
 }
 
 export type RecordingOptionsAndroid = {
-  /**
-   * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) enum for all valid values.
-   */
+  /** The desired audio encoder. See the `AndroidAudioEncoder` enum for valid values. */
   audioEncoder: AndroidAudioEncoder | number;
   /**
-   * The desired file extension. Example valid values are `.3gp` and `.m4a`.
-   * For more information, see the [Android docs](https://developer.android.com/guide/topics/media/media-formats)
-   * for supported output formats.
+   * The desired file extension, such as `.3gp` or `.m4a`. See the
+   * [Android docs](https://developer.android.com/guide/topics/media/media-formats) for supported
+   * output formats.
    */
   extension: string;
-  /**
-   * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) enum for all valid values.
-   */
+  /** The desired file format. See the `AndroidOutputFormat` enum for valid values. */
   outputFormat: AndroidOutputFormat | number;
   /**
-   * The desired bit rate.
-   *
-   * Note that `prepareToRecordAsync()` may perform additional checks on the parameter to make sure whether the specified
-   * bit rate is applicable, and sometimes the passed bitRate will be clipped internally to ensure the audio recording
-   * can proceed smoothly based on the capabilities of the platform.
+   * The desired bit rate. `prepareToRecordAsync()` may clip it to what the platform supports.
    *
    * @example `128000`
    */
   bitRate?: number;
   /**
-   * The desired maximum file size in bytes, after which the recording will stop (but `stopAndUnloadAsync()` must still
-   * be called after this point).
+   * The maximum file size in bytes, after which the recording stops. `stopAndUnloadAsync()` must
+   * still be called.
    *
    * @example `65536`
    */
   maxFileSize?: number;
   /**
-   * The desired number of channels.
-   *
-   * Note that `prepareToRecordAsync()` may perform additional checks on the parameter to make sure whether the specified
-   * number of audio channels are applicable.
+   * The desired number of channels. `prepareToRecordAsync()` may check that the platform supports
+   * it.
    *
    * @example `1`, `2`
    */
   numberOfChannels?: number;
   /**
-   * The desired sample rate.
-   *
-   * Note that the sampling rate depends on the format for the audio recording, as well as the capabilities of the platform.
-   * For instance, the sampling rate supported by AAC audio coding standard ranges from 8 to 96 kHz,
-   * the sampling rate supported by AMRNB is 8kHz, and the sampling rate supported by AMRWB is 16kHz.
-   * Please consult with the related audio coding standard for the supported audio sampling rate.
+   * The desired sample rate. The supported rates depend on the output format and the platform: AAC
+   * supports 8 to 96 kHz, AMR-NB 8 kHz and AMR-WB 16 kHz.
    *
    * @example 44100
    */
@@ -223,9 +206,7 @@ export type RecordingOptionsAndroid = {
 };
 
 export type RecordingOptionsIOS = {
-  /**
-   * The desired audio quality. See the [`IOSAudioQuality`](#iosaudioquality) enum for all valid values.
-   */
+  /** The desired audio quality. See the `IOSAudioQuality` enum for valid values. */
   audioQuality: IOSAudioQuality | number;
   /**
    * The desired bit rate.
@@ -257,9 +238,7 @@ export type RecordingOptionsIOS = {
    * @example `16`
    */
   bitDepthHint?: number;
-  /**
-   * The desired bit rate strategy. See the next section for an enumeration of all valid values of `bitRateStrategy`.
-   */
+  /** The desired bit rate strategy. */
   bitRateStrategy?: number;
   /**
    * The desired PCM bit depth.
@@ -267,17 +246,11 @@ export type RecordingOptionsIOS = {
    * @example `16`
    */
   linearPCMBitDepth?: number;
-  /**
-   * A boolean describing if the PCM data should be formatted in big endian.
-   */
+  /** Whether the PCM data is formatted in big endian. */
   linearPCMIsBigEndian?: boolean;
-  /**
-   * A boolean describing if the PCM data should be encoded in floating point or integral values.
-   */
+  /** Whether the PCM data is encoded as floating point (true) or integral (false) values. */
   linearPCMIsFloat?: boolean;
-  /**
-   * The desired file format. See the [`IOSOutputFormat`](#iosoutputformat) enum for all valid values.
-   */
+  /** The desired file format. See the `IOSOutputFormat` enum for valid values. */
   outputFormat?: string | IOSOutputFormat | number;
 };
 
@@ -288,66 +261,53 @@ export type RecordingOptionsWeb = {
 };
 
 export type ExpoRecordingOptions = {
-  /**
-   * Recording options for the Android platform.
-   */
+  /** Recording options for Android. */
   android: RecordingOptionsAndroid;
-  /**
-   * Recording options for the iOS platform.
-   */
+  /** Recording options for iOS. */
   ios: RecordingOptionsIOS;
-  /**
-   * Recording options for the Web platform.
-   */
+  /** Recording options for the web. */
   web: RecordingOptionsWeb;
-  /**
-   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
-   */
+  /** Whether audio level information is included in the status object under the `metering` key. */
   isMeteringEnabled?: boolean;
   /**
-   * A boolean that hints to keep the audio active after `prepareToRecordAsync` completes.
-   * Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync`
-   * immediately after `prepareToRecordAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
+   * Keeps the audio active after `prepareToRecordAsync` completes, which can speed up the start of
+   * the recording. Set it to `true` only when `startAsync` is called immediately afterwards. Set
+   * automatically by `Audio.recording.createAsync()`.
    */
   keepAudioActiveHint?: boolean;
 };
 
 export type AudioMode = {
   /**
-   * A boolean selecting if recording is enabled on iOS.
-   * > When this flag is set to `true`, playback may be routed to the phone earpiece instead of to the speaker. Set it back to `false` after stopping recording to reenable playback through the speaker.
+   * Whether recording is enabled on iOS. While `true`, playback may be routed to the earpiece
+   * instead of the speaker; set it back to `false` after recording to restore speaker playback.
    * @default false
    */
   allowsRecordingIOS: boolean;
-  /**
-   * An enum selecting how your experience's audio should interact with the audio from other apps on Android.
-   */
+  /** How the app's audio interacts with audio from other apps on Android. */
   interruptionModeAndroid: InterruptionModeAndroid;
-  /**
-   * An enum selecting how your experience's audio should interact with the audio from other apps on iOS.
-   */
+  /** How the app's audio interacts with audio from other apps on iOS. */
   interruptionModeIOS: InterruptionModeIOS;
   /**
-   * A boolean selecting if your experience's audio should play in silent mode on iOS.
+   * Whether the app's audio plays in silent mode on iOS.
    * @default false
    */
   playsInSilentModeIOS: boolean;
   /**
-   * A boolean selecting if the audio is routed to earpiece on Android.
+   * Whether the audio is routed to the earpiece on Android.
    * @default false
    */
   playThroughEarpieceAndroid: boolean;
   /**
-   * A boolean selecting if your experience's audio should automatically be lowered in volume ("duck") if audio from another
-   * app interrupts your experience. If `false`, audio from other apps will pause your audio.
+   * Whether the app's audio is lowered in volume ("ducked") when another app plays audio. When
+   * `false`, audio from other apps pauses the app's audio.
    * @default true
    */
   shouldDuckAndroid: boolean;
   /**
-   * A boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background.
-   * > This is not available in Expo Go for iOS, it will only work in standalone apps.
-   * > To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background)
-   * > to add `UIBackgroundModes` to your app configuration.
+   * Whether the audio session (playback or recording) stays active while the app is in the
+   * background. Not available in Expo Go for iOS; standalone apps also need `UIBackgroundModes` in
+   * the app configuration.
    * @default false
    */
   staysActiveInBackground: boolean;
@@ -355,28 +315,18 @@ export type AudioMode = {
 
 // @needsAudit
 export enum InterruptionModeIOS {
-  /**
-   * **This is the default option.** If this option is set, your experience's audio is mixed with audio playing in background apps.
-   */
+  /** The app's audio mixes with audio playing in background apps. This is the default. */
   MixWithOthers = 0,
-  /**
-   * If this option is set, your experience's audio interrupts audio from other apps.
-   */
+  /** The app's audio interrupts audio from other apps. */
   DoNotMix = 1,
-  /**
-   * If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
-   */
+  /** The app's audio lowers the volume ("ducks") of other apps' audio while it plays. */
   DuckOthers = 2,
 }
 
 export enum InterruptionModeAndroid {
-  /**
-   * If this option is set, your experience's audio interrupts audio from other apps.
-   */
+  /** The app's audio interrupts audio from other apps. */
   DoNotMix = 1,
-  /**
-   * **This is the default option.** If this option is set, your experience's audio lowers the volume ("ducks") of audio from other apps while your audio plays.
-   */
+  /** The app's audio ducks other apps' audio while it plays. This is the default. */
   DuckOthers = 2,
 }
 
@@ -384,8 +334,6 @@ export type ExpoAudioRecordingConfiguration = {
   mode?: Partial<AudioMode>;
   options?: Partial<ExpoRecordingOptions>;
 };
-
-// ASYNC AUDIO RN CLI
 
 export enum AudioSourceAndroidType {
   DEFAULT = 0,
@@ -522,9 +470,7 @@ export interface AudioSet {
 
 export type RNCLIRecordingOptions = {
   audioSet?: AudioSet;
-  /**
-   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
-   */
+  /** Whether audio level information is included in the status object under the `metering` key. */
   isMeteringEnabled?: boolean;
 };
 
@@ -546,8 +492,8 @@ export type EmojiSearchIndex = {
 };
 
 /**
- * Override the file upload request used to upload the channel image.
- * By default the SDK uploads to Stream's CDN via `client.uploadImage`.
+ * Overrides the request that uploads the channel image. Defaults to `client.uploadImage`, which
+ * uploads to Stream's CDN.
  * @param file File object to upload
  */
 export type GlobalFileUploadRequest = (file: File) => Promise<MinimumUploadRequestResult>;

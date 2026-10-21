@@ -52,8 +52,8 @@ export type InputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-// Explicitly annotated: the inferred type of a `forwardRef` component inlines React Native's
-// internal style/instance helper types, which cannot be named in the emitted declarations (TS2883).
+// Annotated because the inferred `forwardRef` type inlines React Native internal types that the
+// emitted declarations cannot name (TS2883).
 export const Input: React.ForwardRefExoticComponent<
   InputProps & React.RefAttributes<TextInputRef>
 > = React.forwardRef<TextInputRef, InputProps>(function Input(

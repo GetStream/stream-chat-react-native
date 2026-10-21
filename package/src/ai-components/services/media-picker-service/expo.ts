@@ -13,7 +13,7 @@ let internalService = undefined;
 try {
   internalService = require('expo-image-picker');
 } catch (_error) {
-  /* do nothing */
+  // `expo-image-picker` is not installed.
 }
 
 type Size = {
@@ -91,7 +91,7 @@ class ExpoMediaPickerService extends AbstractMediaPickerService {
         if (!result || !result.assets || !result.assets.length || result.canceled) {
           return { cancelled: true };
         }
-        // since we only support single photo upload for now we will only be focusing on 0'th element.
+        // Only a single photo is supported, so only the first asset is read.
         const photo = result.assets[0];
         if (!photo) {
           return { cancelled: true };

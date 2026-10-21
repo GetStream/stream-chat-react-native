@@ -13,20 +13,19 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { getDateString } from '../../../i18n/utils';
 
 /**
- * A single file/audio attachment paired with the message it belongs to. The file attachment list
- * renders one row per attachment, so a message with multiple file attachments yields multiple rows.
+ * A file or audio attachment with its message. A message with several file attachments yields one
+ * tile per attachment.
  */
 export type FileAttachmentTile = { attachment: Attachment; message: MessageResponse };
 
 export type FileAttachmentSection = { data: FileAttachmentTile[]; title: string };
 
-/**
- * Gathers the file/audio attachments from a message, excluding scraped/OG link-preview content.
- */
+// File and audio attachments of a message, excluding scraped link previews.
 const getFileAttachments = (message: MessageResponse): Attachment[] =>
   (message.attachments ?? []).filter(
     (attachment) =>
-      // We provide mime_type here to avoid attachments with mime_type being categorized as file
+      // The attachment's own `mime_type` is passed as a supported video format so that attachments
+      // carrying one are not classified as files.
       (isFileAttachment(
         attachment,
         attachment?.custom?.mime_type ? [attachment.custom.mime_type] : [],
@@ -36,14 +35,12 @@ const getFileAttachments = (message: MessageResponse): Attachment[] =>
   );
 
 /**
- * Gathers and filters the file/audio attachments from a list of messages, then groups them into
- * newest-first month sections for the file attachment list. Each section's `data` is a flat list
- * of `{ attachment, message }` tiles; messages without renderable file attachments are skipped.
+ * Groups the file and audio attachments of the messages into month sections, in message order.
+ * Messages without file attachments are skipped. The month title follows the configured locale and
+ * can be customized through the `timestamp.FileAttachmentListSection` translation key.
  *
- * The month label is produced through the shared `getDateString` + translation-key
- * pipeline used by message timestamps (see `useUserActivityStatus`), so the format
- * follows the configured locale and can be customized via the
- * `timestamp/FileAttachmentListSection` translation key.
+ * @param messages The messages to gather attachments from.
+ * @returns The sections, each with a title and its `{ attachment, message }` tiles.
  */
 export const useFileAttachmentListSections = (
   messages?: MessageResponse[],

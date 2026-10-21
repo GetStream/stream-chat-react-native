@@ -65,7 +65,8 @@ export const ChannelEditDetailsFormContent = () => {
     })();
   }, [pendingAction, pickImageFromNativePicker, sheetVisible, store, takePhoto]);
 
-  // `undefined` = untouched (show live channel image), `File` = picked uri, `null` = reset.
+  // `undefined` is untouched (shows the live channel image), a `File` is the picked image and
+  // `null` is a reset.
   const isPreview = updatedImage !== undefined;
   const previewUri = updatedImage ? updatedImage.uri : null;
 

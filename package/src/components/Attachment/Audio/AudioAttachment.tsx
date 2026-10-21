@@ -61,14 +61,10 @@ export type AudioAttachmentProps = {
   message?: LocalMessage;
   hideProgressBar?: boolean;
   showTitle?: boolean;
-  /**
-   * If true, the speed settings button will be shown.
-   */
+  /** Shows the speed settings button. Defaults to false. */
   showSpeedSettings?: boolean;
   testID?: string;
-  /**
-   * If true, the audio attachment is in preview mode in the message input.
-   */
+  /** Whether the attachment is shown as a preview in the message input. Defaults to false. */
   isPreview?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   indicator?: React.ReactNode;
@@ -89,10 +85,7 @@ const audioPlayerSelector = (state: AudioPlayerState) => ({
   progress: state.progress,
 });
 
-/**
- * AudioAttachment
- * UI Component to preview the audio files
- */
+/** Previews and plays audio and voice recording attachments. */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const styles = useStyles();
@@ -125,14 +118,14 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     audioPlayerSelector,
   );
 
-  // Initialize the player for native cli apps
+  // Initializes the player for native CLI apps.
   useEffect(() => {
     if (soundRef.current) {
       audioPlayer.initPlayer({ playerRef: soundRef.current });
     }
   }, [audioPlayer]);
 
-  // When a audio attachment in preview is removed, we need to remove the player from the pool
+  // A removed preview releases its player from the pool.
   useEffect(
     () => () => {
       if (isPreview) {
@@ -142,22 +135,22 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     [audioPlayer, isPreview],
   );
 
-  /** This is for Native CLI Apps */
+  /** Player callback for native CLI apps. */
   const handleLoad = (payload: VideoPayloadData) => {
-    // Voice recordings already carry the canonical duration in the attachment payload.
+    // Voice recordings carry the canonical duration in the attachment payload.
     if (isVoiceRecording) {
       return;
     }
     audioPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
   };
 
-  /** This is for Native CLI Apps */
+  /** Player callback for native CLI apps. */
   const handleProgress = (data: VideoProgressData) => {
     const { currentTime } = data;
     audioPlayer.position = currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
 
-  /** This is for Native CLI Apps */
+  /** Player callback for native CLI apps. */
   const onSeek = (seekResponse: VideoSeekResponse) => {
     audioPlayer.position = seekResponse.currentTime * ONE_SECOND_IN_MILLISECONDS;
   };

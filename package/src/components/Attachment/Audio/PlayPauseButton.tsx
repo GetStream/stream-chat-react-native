@@ -7,17 +7,11 @@ import { primitives } from '../../../theme';
 import { buttonSizes } from '../../ui/Button/constants';
 
 export type PlayPauseButtonProps = PressableProps & {
-  /**
-   * If true, the button will be playing.
-   */
+  /** Whether the button shows the playing state. */
   isPlaying: boolean;
-  /**
-   * The function to be called when the button is pressed.
-   */
+  /** Called when the button is pressed. */
   onPress: () => void;
-  /**
-   * The style of the container.
-   */
+  /** Style of the container. */
   containerStyle?: StyleProp<ViewStyle>;
 };
 

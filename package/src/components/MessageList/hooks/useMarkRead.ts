@@ -7,27 +7,23 @@ import { useStableCallback } from '../../../hooks';
 import { MarkReadFunctionOptions } from '../../Channel/Channel';
 
 /**
- * Returns a `markRead` callback for the active channel.
+ * Returns a stable `markRead` callback for the channel.
  *
- * Marks the channel read through the client's `messageDeliveryReporter.throttledMarkRead` — the
- * canonical v10 read-reporting path, which the reporter throttles + coordinates — rather than calling
- * `channel.markRead()` behind our own throttle. It is a no-op when the channel is missing or
- * pending disposal; when read events are disabled it resets the local unread count via `markReadLocally()`
- * (dispatches `message.read_locally`) if the client opted into a local count; otherwise it reports the
- * read and resets the paginator's unread snapshot (unless `updateChannelUnreadState` is `false`) so the
- * "N new messages" banner + unread separator clear once caught up. The returned function is stabilized
- * so it can be used as a dependency without triggering rerenders.
+ * The callback reports the read through `client.messageDeliveryReporter.throttledMarkRead`, then
+ * resets the paginator's unread snapshot unless `updateChannelUnreadState` is `false`. It does
+ * nothing when the channel is missing or pending disposal. When read events are disabled it only
+ * calls `channel.markReadLocally()`, and only if `localUnreadCountEnabled` is set.
+ *
+ * @param channel The channel to mark as read.
+ * @returns The `markRead` callback. `options.updateChannelUnreadState` defaults to true.
  */
 export const useMarkRead = (channel: Channel) => {
   const { client } = useChatContext();
 
-  // The channel's *resolved* configuration, not the raw server flag: `readEvents.enabled` is the
-  // channel type's `read_events` already ANDed with anything registered through
-  // `client.config.set({ channel: { readEvents } })`, so a client-side opt-out is honoured too.
-  //
-  // Read at call time rather than through `useStateStore`: `markRead` is an imperative callback, so it
-  // needs the current value, not a re-render when the value moves. Still wrapped, because a channel
-  // pending disposal makes the underlying client throw.
+  // The resolved config, not the raw server flag: `readEvents.enabled` is the channel type's
+  // `read_events` ANDed with `client.config.set({ channel: { readEvents } })`. Read at call time
+  // because `markRead` is imperative; the try/catch covers a channel pending disposal, which makes
+  // the client throw.
   const getReadEventsEnabledSafely = () => {
     try {
       return channel?.config.readEvents.enabled;
@@ -41,9 +37,8 @@ export const useMarkRead = (channel: Channel) => {
       return;
     }
 
-    // Read events disabled (e.g. livestreams): if the channel opted into a local unread count, reset
-    // it locally (dispatches message.read_locally) — no backend round trip. The paginator's unread
-    // snapshot updates from that.
+    // Read events disabled (such as livestreams): reset a local unread count, if enabled, without a
+    // backend call. This dispatches `message.read_locally`, which updates the paginator's snapshot.
     if (!getReadEventsEnabledSafely()) {
       if (channel.config.readEvents.localUnreadCountEnabled) {
         channel.markReadLocally();
@@ -51,20 +46,17 @@ export const useMarkRead = (channel: Channel) => {
       return;
     }
 
-    // Canonical v10 read reporting: the reporter throttles + coordinates the `/read` calls and honors
-    // any custom markReadRequest handler registered through
-    // `client.config.set({ channel: { requestHandlers } })`.
+    // The reporter throttles and coordinates `/read` calls and honors a custom `markReadRequest`
+    // handler registered through `client.config.set({ channel: { requestHandlers } })`.
     client.messageDeliveryReporter.throttledMarkRead(channel);
 
     // Reset the paginator's unread snapshot so the "N new messages" banner and the unread separator
-    // clear once the channel is caught up. The LLC bumps `unreadCount` on every incoming
-    // `message.new` but never clears it on `message.read`, so without this the banner latches on and
-    // can't be dismissed. `throttledMarkRead` is fire-and-forget (no response to read), so advance
-    // the boundary to the latest message.
+    // clear once caught up. The client bumps `unreadCount` on every `message.new` but never clears
+    // it on `message.read`, and `throttledMarkRead` returns no response, so the boundary advances
+    // to the latest message.
     //
-    // Gated on `updateChannelUnreadState` (default true): the mark-read-on-mount call passes `false`
-    // so opening a channel with unreads keeps its original unread UI (separator frozen at the
-    // boundary) until the user actually catches up.
+    // The mark-read-on-mount call passes `updateChannelUnreadState: false`, so a channel opened
+    // with unreads keeps its unread separator until the user catches up.
     const { updateChannelUnreadState = true } = options ?? {};
     if (updateChannelUnreadState) {
       const { lastMessage, lastMessageAt, unreadStateSnapshot } = channel.messagePaginator;

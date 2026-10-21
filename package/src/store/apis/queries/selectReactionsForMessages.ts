@@ -5,11 +5,14 @@ import { SqliteClient } from '../../SqliteClient';
 import type { Scalar, TableRowJoinedUser } from '../../types';
 
 /**
- * Fetches reactions for a message from the database for messageIds.
- * @param messageIds The message IDs for which reactions are to be fetched.
- * @param limit The limit of how many reactions should be returned.
- * @param filters A ReactionFilter for the reactions we want to fetch. Only type is currently supported.
- * @param sort A sort for reactions to be used when querying. Custom data is currently not supported for sorting.
+ * Fetches the reactions of the given messages. Only the `type` filter and sorting by `created_at`
+ * are supported.
+ *
+ * @param messageIds The IDs of the messages to fetch reactions for.
+ * @param limit Maximum number of reactions to return, or `null` for no limit. Defaults to 25.
+ * @param filters Reaction filters. Only `type` is supported.
+ * @param sort Reaction sort. Only `created_at` is supported.
+ * @returns The reactions joined with their users.
  */
 export const selectReactionsForMessages = async (
   messageIds: string[],

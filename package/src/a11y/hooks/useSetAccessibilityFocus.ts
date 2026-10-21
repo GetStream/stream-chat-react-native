@@ -5,10 +5,7 @@ import { useScreenReaderEnabled } from './useScreenReaderEnabled';
 
 type FindNodeHandleArg = Parameters<typeof findNodeHandle>[0];
 
-/**
- * Something the screen reader cursor can be moved onto: a ref (whose `.current` is
- * read at call time), a raw native node handle, or nothing.
- */
+/** A ref (its `.current` is read at call time), a native node handle, or nothing. */
 export type AccessibilityFocusTarget = RefObject<unknown> | number | null | undefined;
 
 const resolveNode = (target: AccessibilityFocusTarget): number | null => {
@@ -23,29 +20,19 @@ const resolveNode = (target: AccessibilityFocusTarget): number | null => {
 };
 
 /**
- * Returns a stable callback that moves the screen reader cursor onto a given
- * target (a ref or a raw node handle). It ONLY moves accessibility focus and it
- * does not activate the target: i.e no keyboard opens and no field becomes first
- * responder. The user still double taps to act on whatever is focused.
+ * Returns a stable callback that moves the screen reader cursor onto a target on the next frame.
+ * It only moves accessibility focus: it opens no keyboard and does not activate the target.
+ * Does nothing unless a screen reader is running (see {@link useScreenReaderEnabled}).
  *
- * The target's `.current` is read at call time, so this is safe to wire into a
- * deferred/event callback.
+ * Focus set on mount only sticks on Android forward navigation. On iOS forward navigation and on
+ * back navigation, set it after the screen transition completes (React Navigation's
+ * `transitionEnd`); {@link useScreenReaderMountFocus} covers the mount case.
  *
- * Noop unless a screen reader is running. {@link useScreenReaderEnabled} returns
- * false whenever the SDK's accessibility config is disabled, so this costs nothing
- * for the default (a11y opted out) configuration.
- *
- * Note: Navigation timing is platform nuanced: Android forward navigation lands a focus
- * set on mount, whereas iOS forward navigation and back navigation on both
- * platforms need it set after the screen transition completes (React Navigation's
- * `transitionEnd`). {@link useScreenReaderMountFocus} covers the mount case; wire
- * `transitionEnd` yourself for the rest (the SampleApp's
- * `useScreenReaderComposerFocusEffect` is a reference implementation).
+ * @returns A callback taking the {@link AccessibilityFocusTarget} to focus.
  */
 export const useSetAccessibilityFocus = () => {
   const screenReaderEnabled = useScreenReaderEnabled();
-  // Track the latest value so the returned callback can stay referentially stable
-  // (it's typically wired into a focus effect and read much later).
+  // A ref keeps the returned callback referentially stable while reading the latest value.
   const screenReaderEnabledRef = useRef(screenReaderEnabled);
   screenReaderEnabledRef.current = screenReaderEnabled;
 
@@ -71,7 +58,7 @@ export const useSetAccessibilityFocus = () => {
     if (rafRef.current != null) {
       cancelAnimationFrame(rafRef.current);
     }
-    // Defer a frame so the target has laid out before we move the cursor onto it.
+    // Defer a frame so the target has laid out before the cursor moves onto it.
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
       AccessibilityInfo.setAccessibilityFocus(node);

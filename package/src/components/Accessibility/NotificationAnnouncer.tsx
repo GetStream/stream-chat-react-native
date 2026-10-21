@@ -8,21 +8,14 @@ import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionSta
 import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 /**
- * Mirrors stream-chat-react's `<NotificationAnnouncer />`. RN does not yet have a
- * unified Notification queue, so this component currently announces only
- * connection-state transitions (offline → online and back) gated on
- * `accessibility.announceConnectionState`. Per-channel error announcements can
- * be wired in by a future PR via `useChannelContext().error`.
- *
- * Renders nothing. Mount once inside `<Channel>` (or wherever the active chat
- * surface lives).
+ * Announces connection state transitions (connected, offline, reconnecting) to screen readers when
+ * `accessibility.announceConnectionState` is on. Renders nothing; mount once inside `<Channel>`.
  */
 export const NotificationAnnouncer = () => {
   const { announceConnectionState, enabled } = useAccessibilityContext();
   const isNetworkOnline = useNetworkConnectionState()?.isOnline;
   const isWSOnline = useSettledWSConnectionHealth();
-  // The socket is what 'connected' means to a chat user; the device network only decides which
-  // of the two offline messages is truthful.
+  // Online means the WebSocket is healthy; the network state only picks the offline message.
   const isOnline = !!isWSOnline;
   const announce = useAccessibilityAnnouncer();
   const { t } = useTranslationContext();

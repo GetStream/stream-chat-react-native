@@ -10,7 +10,7 @@ import { primitives } from '../../theme';
 import { getDurationLabelFromDuration, getFileSizeDisplayText } from '../../utils/utils';
 
 export type FilePreviewProps = {
-  /** The attachment to render */
+  /** The attachment to render. */
   attachment: Attachment;
   attachmentIconSize?: FileIconProps['size'];
   // TODO: Think we really need a way to style the file preview using props if we have theme.
@@ -44,8 +44,7 @@ export const FilePreview = (props: FilePreviewProps) => {
     },
   } = useTheme();
 
-  // `duration` is only populated for audio / voice-recording attachments, where it lives under
-  // `custom` (untyped on the base `Attachment`, hence the narrow field read).
+  // `duration` only exists on audio and voice recording attachments, under the untyped `custom`.
   const duration = (attachment.custom as { duration?: number } | undefined)?.duration;
 
   return (

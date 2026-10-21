@@ -3,21 +3,19 @@ import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-cont
 /**
  * Width available to a surface that spans the window, minus the horizontal safe area.
  *
- * Deliberately *not* measured. `onLayout` reports a frame after the window has already resized, so
- * anything sized from it - tile sizes in a grid, for instance - visibly resizes a frame late on a
- * rotation or a fold.
+ * The width is computed rather than measured: `onLayout` reports a frame after the window resizes,
+ * so anything sized from it (such as grid tiles) resizes a frame late on rotation or fold.
  *
- * The frame comes from `useSafeAreaFrame`, not `useWindowDimensions`: the frame and the insets are
- * delivered by the *same* native event and set in the same handler, so they update together in one
- * render. Mixing `Dimensions` with the insets desyncs them - the window width lands first and the
- * insets a render later, producing an extra intermediate size (and, for anything deriving an image
- * URL from it, an extra fetch).
+ * The frame comes from `useSafeAreaFrame`, not `useWindowDimensions`: the frame and the insets
+ * arrive in the same native event and update in one render. Mixing `Dimensions` with the insets
+ * lands the width a render before the insets, giving an extra intermediate size (and an extra fetch
+ * for anything that derives an image URL from it).
  *
- * Assumes the caller fills the window. A component rendered inside a narrower container must pass
- * that container's width via `containerWidth`, or measure it itself and accept the frame of lag
- * that comes with measuring.
+ * Assumes the caller fills the window. A component inside a narrower container passes that
+ * container's width via `containerWidth`.
  *
  * @param containerWidth Width of the surface, when it is known and narrower than the window.
+ * @returns The available width.
  *
  * @example
  * const contentWidth = useWindowContentWidth();

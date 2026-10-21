@@ -10,22 +10,13 @@ import { getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
 
 export type MessageSystemProps = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  /** The system message to render. */
   message: LocalMessage;
-  /**
-   * Additional styles for the system message container.
-   */
+  /** Additional styles for the system message container. */
   style?: StyleProp<ViewStyle>;
-  /*
-   * Lookup key in the language corresponding translations sheet to perform date formatting
-   */
 };
 
-/**
- * A component to display system message. e.g, when someone updates the channel,
- * they can attach a message with that update. That message will be available
- * in message list as (type) system message.
- */
+/** Renders a message of type `system`, such as the one attached to a channel update. */
 export const MessageSystem = (props: MessageSystemProps) => {
   const { message, style } = props;
 

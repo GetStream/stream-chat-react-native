@@ -16,8 +16,7 @@ export const getDateSeparatorValue = ({
     return undefined;
   }
 
-  // Nullish rather than truthy: `0` is a legitimate wire timestamp (the epoch), and treating it as
-  // "no date" would collapse the grouping key and suppress the separator.
+  // Nullish check, as `0` is a valid timestamp (the epoch) and must not suppress the separator.
   const previousMessageDate =
     previousMessage?.created_at != null
       ? nsToDate(previousMessage.created_at).toDateString()
@@ -26,8 +25,7 @@ export const getDateSeparatorValue = ({
     message?.created_at != null ? nsToDate(message.created_at).toDateString() : undefined;
 
   if (previousMessageDate !== messageDate) {
-    // A `Date`, because the separator components that render this are presentational and keep their
-    // `date?: Date` props. Converted once, here, where core data leaves the message.
+    // A `Date`, as the presentational separator components take `date?: Date`.
     return message?.created_at != null ? nsToDate(message.created_at) : undefined;
   }
 
@@ -35,7 +33,12 @@ export const getDateSeparatorValue = ({
 };
 
 /**
- * Hook to get whether a message should have a date separator above it
+ * Returns the date for a separator above the message, or `undefined` when none is needed.
+ *
+ * @param params.hideDateSeparators Suppresses every separator.
+ * @param params.message The message the separator sits above.
+ * @param params.previousMessage The message rendered before it.
+ * @returns The message's creation date when it falls on a different day than the previous message.
  */
 export const useMessageDateSeparator = ({
   hideDateSeparators,

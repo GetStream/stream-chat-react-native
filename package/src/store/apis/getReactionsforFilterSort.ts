@@ -6,11 +6,13 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 import { SqliteClient } from '../SqliteClient';
 
 /**
- * Fetches reactions for a message from the database based on the provided filters and sort.
- * @param currentMessageId The message ID for which reactions are to be fetched.
- * @param filters The filters to be applied while fetching reactions.
- * @param sort The sort to be applied while fetching reactions.
- * @param limit The limit of how many reactions should be returned.
+ * Fetches a message's reactions from the database, filtered and sorted.
+ *
+ * @param params.messageId The ID of the message to fetch reactions for.
+ * @param params.filters Filters to apply. Only `type` is supported.
+ * @param params.sort Sort to apply.
+ * @param params.limit Maximum number of reactions to return. Defaults to 25.
+ * @returns The reactions, or null when neither filters nor sort are given.
  */
 export const getReactionsForFilterSort = async ({
   messageId,

@@ -40,10 +40,7 @@ export const useMessageList = (params: UseMessageListParams) => {
 
   return useMemo(
     () => ({
-      /**
-       * The paginator's configured window cap, or `undefined` when the list is unbounded. Read from
-       * the paginator rather than a prop — it is state-layer configuration.
-       */
+      /** The paginator's configured window cap, or `undefined` when the list is unbounded. */
       maxLoadedItems,
       /** Render order: newest first for the inverted FlatList, oldest first for FlashList. */
       processedMessageList: data,

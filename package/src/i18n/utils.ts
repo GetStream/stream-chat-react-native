@@ -8,24 +8,16 @@ import {
 import type { StreamTFunction } from './types';
 
 /**
- * The `t` in force before i18next has initialized, and the default value of the translation context.
+ * The `t` used before i18next has initialized, and the default value of the translation context.
  *
- * Core's factory, instantiated against this SDK's catalog so it is typed the same as the real `t`. It
- * honours the inline `defaultValue` at each call site, which is what stops raw dotted keys flashing on
- * the first frame — or rendering permanently for a component used outside `<OverlayProvider>`.
+ * The default translator from `@stream-io/i18n`, typed against this SDK's catalog. It honors the
+ * inline `defaultValue` at each call site, so raw dotted keys neither flash on the first frame nor
+ * render permanently in a component used outside `<OverlayProvider>`.
  */
 export const defaultTranslatorFunction: StreamTFunction =
   createDefaultTranslatorFunction() as StreamTFunction;
 
-/**
- * The date/time and key helpers now live in `@stream-io/i18n`, shared with the React SDK.
- *
- * Re-exported from here rather than rewritten at ~15 call sites, so the internal module path stays
- * stable. `getDateString` and the type guards behave identically; `predefinedFormatters` gains
- * `fromNowFormatter` and loses `relativeCompactDateFormatter` — that behaviour is
- * `timestampFormatter` with `relativeCompact: true`, whose wording goes through `t()` rather than being
- * hardcoded English as it was here.
- */
+/** The date/time and key helpers come from `@stream-io/i18n`, shared with the React SDK. */
 export {
   asDynamicKey,
   defaultDateTimeParser,
@@ -36,21 +28,21 @@ export {
 } from '@stream-io/i18n';
 
 /**
- * `null` means "nothing renderable", which every caller already handles by omitting the element.
- * `"Invalid Date"` is what Day.js formats an unparseable instance into, and it reaches the screen as
- * copy. Whatever shape produced it, showing nothing is the better failure.
+ * `null` means nothing renderable, which every caller handles by omitting the element. Day.js
+ * formats an unparseable instance as "Invalid Date", which must not reach the screen as copy.
  */
 const withoutInvalidDate = <T>(result: T) =>
   typeof result === 'string' && result.includes('Invalid Date') ? null : result;
 
 /**
- * This SDK's date formatters: core's, with an invalid result suppressed on the way out.
+ * This SDK's date formatters: the `@stream-io/i18n` ones, with an invalid result suppressed.
  *
- * These used to also rescale a nanosecond timestamp on the way in, because `latest_votes_by_option`
- * reached the UI as a raw integer core's decoders did not convert. That rescale is gone: every
- * server-sent timestamp is now a nanosecond number by contract, and each call site converts with
- * `convertTimestampToDate` where core data enters the tree. Guessing from the magnitude here would
- * hide a missed conversion instead of surfacing it.
+ * Timestamps are not rescaled: server timestamps are nanosecond numbers converted with
+ * `convertTimestampToDate` where server data enters the tree, so a missed conversion surfaces
+ * instead of being masked.
+ *
+ * @param params Same options as `getDateString` from `@stream-io/i18n`.
+ * @returns The formatted date, or `null` when there is nothing renderable.
  */
 export const getDateString: typeof coreGetDateString = ({ messageCreatedAt, ...rest }) =>
   withoutInvalidDate(coreGetDateString({ ...rest, messageCreatedAt }));

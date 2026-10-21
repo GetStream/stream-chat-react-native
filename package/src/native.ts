@@ -95,8 +95,7 @@ type SetClipboardStringOptions = {
   onSuccess?: () => void;
 };
 // TODO(next-major): make this handler async and return the write outcome directly.
-// It's kept synchronous (void) for backwards compatibility, so success/failure are
-// reported via the `onSuccess`/`onFailure` callbacks instead of a Promise.
+// The handler is synchronous (void), so the outcome is reported via `onSuccess`/`onFailure`.
 type SetClipboardString = (text: string, options?: SetClipboardStringOptions) => void;
 
 type ShareOptions = {
@@ -243,9 +242,7 @@ export type AudioReturnType = {
 };
 
 export type RecordingOptions = {
-  /**
-   * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
-   */
+  /** Whether the status object includes audio level information under the `metering` key. */
   isMeteringEnabled?: boolean;
 };
 
@@ -313,8 +310,8 @@ export type VideoType = {
   replayAsync?: () => void;
   resizeMode?: string;
   /**
-   * Absolute playback position in seconds. Assigning to it performs an absolute
-   * seek (expo-video's `VideoPlayer.currentTime`).
+   * Absolute playback position in seconds. Assigning to it seeks to that position (expo-video's
+   * `VideoPlayer.currentTime`).
    */
   currentTime?: number;
   seek?: (seconds: number) => void;
@@ -335,8 +332,8 @@ export type NativeShimmerViewProps = ViewProps & {
 };
 
 /**
- * Props of the Android-only native `PerfText` component used by `stream-chat-react-native/ai-components`
- * to render syntax highlighted code as a single native text view with colour spans.
+ * Props of the Android-only native `PerfText` view, which the `ai-components` entry point uses to
+ * render syntax-highlighted code as a single native text view with color spans.
  */
 export type NativePerfTextProps = ViewProps & {
   text: string;

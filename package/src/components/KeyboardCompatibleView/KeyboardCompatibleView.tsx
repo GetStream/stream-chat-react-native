@@ -29,14 +29,12 @@ export const dismissKeyboard = () => {
 };
 
 /**
- * Whether the app runs edge-to-edge on Android (drawing behind the system bars). React Native
- * exposes this as a `DeviceInfo` native constant. It's a static, app-level value, so we read it
- * once and cache it. Defaults to `false` if the constant is unavailable (older RN / iOS).
+ * Whether the app runs edge-to-edge on Android, read once from the `DeviceInfo` native constant and
+ * cached. `false` on iOS or when the constant is unavailable.
  *
- * We need it to decide whether the OS resizes the window when the soft keyboard opens:
- * edge-to-edge apps do NOT resize (RN dispatches insets instead), non edge-to-edge apps use
- * `adjustResize` and the window shrinks. `Dimensions.screen - Dimensions.window` alone cannot
- * tell them apart, because on API < 35 the bars are reported as an inset in BOTH cases.
+ * Edge-to-edge apps do not resize the window when the keyboard opens, others do (`adjustResize`).
+ * `Dimensions.screen - Dimensions.window` cannot tell them apart: below API 35 the bars are an
+ * inset in both cases.
  */
 let cachedIsEdgeToEdge: boolean | undefined;
 const getIsEdgeToEdge = (): boolean => {
@@ -61,10 +59,8 @@ type State = {
 };
 
 /**
- * View that moves out of the way when the keyboard appears by automatically
- * adjusting its height, position, or bottom padding.
- *
- * Following piece of code has been mostly copied from KeyboardAvoidingView component, with few additional tweaks.
+ * View that moves out of the way when the keyboard appears by adjusting its height, position, or
+ * bottom padding. Adapted from React Native's `KeyboardAvoidingView`.
  */
 export class KeyboardCompatibleView extends React.Component<
   KeyboardAvoidingViewProps,
@@ -76,7 +72,7 @@ export class KeyboardCompatibleView extends React.Component<
   > = {
     behavior: 'padding',
     enabled: true,
-    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // default MessageComposer height
+    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // Default MessageComposer height.
   };
 
   _frame: LayoutRectangle | null = null;
@@ -114,25 +110,15 @@ export class KeyboardCompatibleView extends React.Component<
     const keyboardY = keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
 
     if (Platform.OS === 'android') {
-      // On Android, whether we need a JS offset depends on whether the OS resizes the
-      // window when the soft keyboard opens:
-      //
-      // - Non edge-to-edge apps use `adjustResize`: the OS shrinks the window and already
-      //   keeps the composer above the keyboard, so no JS offset is needed. Applying one
-      //   anyway double offsets the view and because our layout `frame` only reflects the
-      //   resize a render AFTER `keyboardDidShow` fires, that offset is briefly computed
-      //   from the stale, full height frame and stacked on top of the native resize. That
-      //   manifests as a transient jump to a very high point that then settles, more commonly
-      //   seen on devices such as Samsung on Android 13. So here we skip the JS offset entirely.
-      //
-      // - Edge-to-edge apps (the platform default on Android 15/API 35+ and optin below
-      //   that) do NOT resize the window for the keyboard, so the JS offset below is the only
-      //   thing keeping the composer visible and must be applied.
-      //
-      // `screen - window` reflects the system bar inset, which is present on non edge-to-edge
-      // AND on edge-to-edge below API 35, so it can't distinguish the two on its own. We pair
-      // it with the `isEdgeToEdge` native flag: only skip the offset when the bars are inset
-      // (there is room for `adjustResize` to shrink into) AND the app is not edge-to-edge.
+      // Without edge-to-edge the OS resizes the window (`adjustResize`) and already keeps the
+      // composer above the keyboard, so no JS offset is applied. The layout `frame` only reflects
+      // the resize a render after `keyboardDidShow`, so an offset would be computed from the stale
+      // full-height frame and stack on the native resize, causing a transient jump (seen on
+      // Samsung, Android 13). Edge-to-edge apps (the default from API 35) do not resize, so the JS
+      // offset is required.
+      // `screen - window` is the system bar inset, present in both modes below API 35, so it is
+      // paired with `isEdgeToEdge`: the offset is skipped only when the bars are inset and the app
+      // is not edge-to-edge.
       const systemBarsInset = Dimensions.get('screen').height - Dimensions.get('window').height;
       if (systemBarsInset > 0 && !getIsEdgeToEdge()) {
         return 0;
@@ -143,13 +129,11 @@ export class KeyboardCompatibleView extends React.Component<
       return Math.max(this.state.bottom + frame.y + frame.height - keyboardY, 0);
     }
 
-    // Calculate the displacement needed for the view such that it
-    // no longer overlaps with the keyboard
+    // Displacement needed to keep the view clear of the keyboard.
     const relativeHeight = Math.max(frame.y + frame.height - keyboardY, 0);
 
     if (Platform.OS === 'android') {
-      // Edge-to-edge only reaches here (systemBarsInset === 0 above): guard against
-      // sub status bar noise so we don't apply a tiny bogus offset.
+      // Offsets at or below the status bar height are noise, not a keyboard overlap.
       const systemInsetFloor = StatusBar.currentHeight ?? 0;
       if (relativeHeight <= systemInsetFloor) {
         return 0;
@@ -175,11 +159,11 @@ export class KeyboardCompatibleView extends React.Component<
     const oldFrame = this._frame;
     this._frame = event.nativeEvent.layout;
     if (!this._initialFrameHeight) {
-      // save the initial frame height, before the keyboard is visible
+      // Initial frame height, captured before the keyboard is visible.
       this._initialFrameHeight = this._frame.height;
     }
 
-    // update bottom height for the first time or when the height is changed
+    // Recompute on the first layout and whenever the height changes.
     if (!oldFrame || oldFrame.height !== this._frame.height) {
       await this._updateBottomIfNecessary();
     }
@@ -189,7 +173,7 @@ export class KeyboardCompatibleView extends React.Component<
     }
   };
 
-  // Avoid unnecessary renders if the KeyboardAvoidingView is disabled.
+  // No state update when disabled, to avoid unnecessary renders.
   _setBottom = (value: number) => {
     const enabled = this.props.enabled ?? true;
     this._bottom = value;
@@ -291,7 +275,7 @@ export class KeyboardCompatibleView extends React.Component<
   }
 
   componentWillUnmount() {
-    // Following if-else condition to avoid deprecated warning coming RN 0.65
+    // `removeEventListener` fallback for RN versions whose subscription has no `remove()`.
     if (this._appStateSubscription?.remove) {
       this._appStateSubscription?.remove();
     }
@@ -313,10 +297,9 @@ export class KeyboardCompatibleView extends React.Component<
         // eslint-disable-next-line no-case-declarations
         let heightStyle;
         if (this._frame !== null && this.state.bottom > 0) {
-          // Note that we only apply a height change when there is keyboard present,
-          // i.e. this.state.bottom is greater than 0. If we remove that condition,
-          // this.frame.height will never go back to its original value.
-          // When height changes, we need to disable flex.
+          // Applied only while the keyboard is present (`state.bottom > 0`), otherwise
+          // `frame.height` never returns to its original value. Flex is disabled so the height
+          // wins.
           heightStyle = {
             flex: 0,
             height: this._initialFrameHeight - bottomHeight,

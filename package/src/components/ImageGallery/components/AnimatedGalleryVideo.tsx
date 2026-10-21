@@ -125,27 +125,22 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
 
   const onPlayBackStatusUpdate = (playbackStatus: PlaybackStatus) => {
     if (!playbackStatus.isLoaded) {
-      // Update your UI for the unloaded state
       setOpacity(1);
       if (playbackStatus.error) {
         console.error(`Encountered a fatal error during playback: ${playbackStatus.error}`);
       }
     } else {
-      // Update your UI for the loaded state
       setOpacity(0);
       videoPlayer.duration = playbackStatus.durationMillis;
       if (playbackStatus.isPlaying) {
-        // Update your UI for the playing state
         videoPlayer.progress = playbackStatus.positionMillis / playbackStatus.durationMillis;
       }
 
       if (playbackStatus.isBuffering) {
-        // Update your UI for the buffering state
         setOpacity(1);
       }
 
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
-        // The player has just finished playing and will stop. Maybe you want to play something else?
         videoPlayer.stop();
       }
     }
@@ -161,11 +156,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
     translateY,
   });
 
-  /**
-   * An empty view is rendered for images not close to the currently
-   * selected in order to maintain spacing while reducing the image
-   * load on memory.
-   */
+  // Slides far from the current one render an empty view that keeps the spacing and holds no video.
   if (!shouldRender) {
     return (
       <View

@@ -4,15 +4,14 @@ import type { StreamChat } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 /**
- * The id of the user connected to `client`, kept current as users connect and disconnect.
+ * The ID of the user connected to `client`, kept current as users connect and disconnect.
  *
- * This hook is TEMPORARY. It goes away once the client keeps its state (the connected user and the
- * app settings) in a store of its own, which components can subscribe to directly.
+ * The client has no store for its own user, so this re-reads it whenever the WebSocket or network
+ * store publishes, which `connectUser()` and `disconnectUser()` cause. Re-renders only when the ID
+ * changes.
  *
- * The client has no store for its own user. `connectUser()` sets it right before opening the
- * socket and `disconnectUser()` clears it while closing it, so the socket and network stores
- * publishing around those calls are the signal to read it again. Re-renders only when the id
- * itself changes.
+ * @param client The client to read the user from.
+ * @returns The connected user's ID, or `undefined` when no user is connected.
  */
 export const useClientUserId = (client: StreamChat) => {
   const subscribe = useCallback(

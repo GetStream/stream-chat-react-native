@@ -53,33 +53,27 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
     noGroupByUser,
   });
 
-  // Wire timestamps throughout, directly comparable. `new Date(ns)` yielded NaN, so the unread
-  // separator never rendered.
+  // `created_at` is a numeric wire timestamp, directly comparable (`new Date(ns)` yields NaN).
   const createdAtTimestamp = message.created_at;
   const messageId = message.id;
   const nextMessageId = nextMessage?.id;
   const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
   const nextMessageCreatedAt = nextMessage?.created_at ?? undefined;
 
-  // The unread separator belongs above the first UNREAD message from another user — i.e. on the row
-  // whose newer neighbour is that first unread. We locate it per-message inside the selector so
-  // `useStateStore`'s per-key comparison keeps the flag referentially stable (`false === false`) for
-  // every non-boundary row: a mark-read changes the channel-wide unread fields but only re-renders
-  // the one or two boundary rows whose flag actually flips, not the whole list.
+  // The unread separator goes on the row above the first unread message from another user. It is
+  // located per message inside the selector, so the flag stays `false` for every other row and a
+  // mark-read only re-renders the boundary rows whose flag flips, not the whole list.
   const showUnreadSeparatorSelector = useCallback(
     (snapshot: UnreadSnapshotState) => {
       let showUnreadSeparator: boolean;
       if (snapshot.firstUnreadMessageId) {
-        // Frozen boundary (channel open / mark-unread): anchor directly to the known first-unread id.
+        // Frozen boundary (channel open or mark-unread): anchor to the known first unread ID.
         showUnreadSeparator = nextMessageId === snapshot.firstUnreadMessageId;
       } else if (snapshot.unreadCount) {
-        // Live boundary: the separator sits above the FIRST unread-from-another message — i.e. on
-        // the last genuinely-read row (created at/before the read boundary) whose newer neighbour is
-        // that first unread. Gating on "this row is read" (rather than "this row isn't itself an
-        // unread-from-another") keeps it to a SINGLE separator even when our own messages are
-        // interleaved among the unreads: an own message sent after the boundary is not "read" by
-        // this test, so `own → unread-from-another` transitions further down never start a second
-        // separator. Chronological ordering guarantees exactly one read→unread transition.
+        // Live boundary: the separator goes on the last read row (created at or before
+        // `lastReadAt`) whose newer neighbor is the first unread from another user. Requiring this
+        // row to be read keeps it to one separator when own messages are interleaved among the
+        // unreads, as an own message sent after the boundary is not read.
         const lastReadAt = snapshot.lastReadAt ?? 0;
         const nextIsUnreadFromOther =
           !!nextMessageId &&
@@ -89,7 +83,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
         const thisIsRead =
           typeof createdAtTimestamp === 'number' && createdAtTimestamp <= lastReadAt;
         // Own messages sent elsewhere after the boundary leave no read row above the first unread,
-        // so the rule above never fires. Anchor on the last read message in those cases.
+        // so the rule above never fires. Anchor on the last read message then.
         const isLastReadBeforeOwnUnread =
           thisIsRead &&
           messageId === snapshot.lastReadMessageId &&
@@ -104,8 +98,8 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
       return {
         showUnreadSeparator,
         // Only the boundary row needs the unread count (for its inline indicator). Gating it on
-        // `showUnreadSeparator` keeps this `undefined` for every other row, so the channel-wide
-        // count changing on each mark-read doesn't re-render the whole list.
+        // `showUnreadSeparator` keeps it `undefined` elsewhere, so a changing channel-wide count
+        // does not re-render the whole list.
         unreadCount: showUnreadSeparator ? snapshot.unreadCount : undefined,
       };
     },

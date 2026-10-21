@@ -20,12 +20,12 @@ export type MessageOperations = {
 };
 
 /**
- * Message operations (delete/remove/retry/react/update) resolved from the channel and — when a
- * thread is open — the thread instance. These are thin wrappers over the stream-chat message
- * operations engine (`messageOperations.*`, `messagePaginator.ingestItem/removeItem`), which owns the
- * optimistic lifecycle, offline-DB persistence and paginator ingest. Previously these lived on the
- * MessagesContext; they now resolve per-message (mirroring stream-chat-react, which has no shared
- * action context) so the operations stay co-located with the LLC state they drive.
+ * Message operations (delete, remove, retry, react, update) routed to the channel and, when a
+ * thread is open, to the thread. They are thin wrappers over the `stream-chat` `messageOperations`
+ * and message paginators, which own the optimistic lifecycle, offline DB persistence and paginator
+ * ingest.
+ *
+ * @returns The message operations.
  */
 export const useMessageOperations = (): MessageOperations => {
   const { client } = useChatContext();
@@ -46,15 +46,11 @@ export const useMessageOperations = (): MessageOperations => {
     }
   });
 
-  /**
-   * Removes the message from local state
-   */
   const removeMessage: MessageOperations['removeMessage'] = useStableCallback(async (message) => {
     if (channel) {
-      // removeItem is a no-op when the item isn't in that paginator, so removing from the channel
-      // unconditionally is safe (a hidden reply simply isn't there) and covers replies shown in
-      // the channel; replies additionally live in the open thread's paginator. No channel.state
-      // write (that store is being removed).
+      // `removeItem` is a no-op for an item the paginator does not hold, so removing from the
+      // channel unconditionally is safe and covers replies shown in the channel. Replies also
+      // live in the open thread's paginator.
       channel.messagePaginator.removeItem({ id: message.id });
       if (message.parent_id) {
         thread?.messagePaginator?.removeItem({ id: message.id });
@@ -78,11 +74,10 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized');
       }
 
-      // Route the optimistic update to the paginator that actually holds the message: the open
-      // thread when the message is a reply loaded there (giving pure replies optimism the channel
-      // paginator can't), otherwise the channel. Both instances forward the request through
-      // `channel.sendReaction`, so this only decides the optimistic ingest target — never sending a
-      // channel message's reaction into the thread paginator while a (channel-wide) thread is open.
+      // The optimistic update goes to the paginator that holds the message: the open thread for a
+      // reply loaded there (the channel paginator cannot hold pure replies), otherwise the channel.
+      // Both forward the request through `channel.sendReaction`, so this only picks the ingest
+      // target and keeps a channel message's reaction out of the thread paginator.
       const target = thread?.messagePaginator.getItem(messageId) ? thread : channel;
 
       await target.messageOperations.addReaction({
@@ -111,8 +106,8 @@ export const useMessageOperations = (): MessageOperations => {
         throw new Error('Channel has not been initialized yet');
       }
 
-      // A failed send exists only locally, so it is removed without a server delete. A failed edit has
-      // the same status but the server has the message; it is the one carrying `message_text_updated_at`.
+      // A failed send exists only locally, so it is removed without a server delete. A failed edit
+      // has the same status but the server has the message, and carries `message_text_updated_at`.
       if (message.status === MessageStatusTypes.FAILED && !message.message_text_updated_at) {
         await removeMessage(message);
         return;
@@ -127,13 +122,11 @@ export const useMessageOperations = (): MessageOperations => {
         options = { hard: true };
       }
 
-      // The LLC owns the whole delete lifecycle: the optimistic `deleted` marking (or removal, for a
-      // hard delete), the request (honoring any configState delete handler), the offline-DB write, and
-      // the revert if the delete is definitively rejected.
-      //
-      // Routed by MEMBERSHIP, like `sendReaction` above: a reply loaded in the open thread goes through
-      // the thread instance, everything else — including the thread's own parent message, which the
-      // reply paginator cannot hold — through the channel.
+      // The LLC owns the delete lifecycle: the optimistic `deleted` marking (or removal for a hard
+      // delete), the request, the offline DB write, and the revert if the delete is rejected.
+      // Routed like `sendReaction`: a reply loaded in the open thread goes through the thread, all
+      // else (including the thread's parent message, which its paginator cannot hold) through the
+      // channel.
       const target = thread?.messagePaginator.getItem(message.id) ? thread : channel;
       await target.messageOperations.delete({
         localMessage: message,

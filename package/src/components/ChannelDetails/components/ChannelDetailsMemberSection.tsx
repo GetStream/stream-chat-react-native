@@ -14,9 +14,7 @@ import { primitives } from '../../../theme';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 export type ChannelDetailsMemberSectionProps = {
-  /**
-   * Fired when the user taps the "view all members" button. By default it opens the members bottom sheet.
-   */
+  /** Fired when the "view all members" button is pressed. Opens the built-in modal when unset. */
   onViewAllMembersPress?: () => void;
 };
 

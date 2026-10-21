@@ -6,17 +6,13 @@ import { AudioRecorderManagerState } from '../../../../state-store/audio-recorde
 import { primitives } from '../../../../theme';
 
 export type AudioRecordingWaveformProps = Pick<AudioRecorderManagerState, 'waveformData'> & {
-  /**
-   * Maximum number of waveform lines that should be rendered in the UI.
-   */
+  /** Maximum number of waveform lines rendered. */
   maxDataPointsDrawn: number;
 };
 
 const WAVEFORM_MAX_HEIGHT = 20;
 
-/**
- * Waveform Component displayed when the audio is in the recording state.
- */
+/** Waveform displayed while audio is being recorded. */
 export const AudioRecordingWaveform = (props: AudioRecordingWaveformProps) => {
   const { maxDataPointsDrawn, waveformData } = props;
   const styles = useStyles();

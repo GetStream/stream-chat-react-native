@@ -5,17 +5,10 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 
 import { getDateString } from '../../i18n/utils';
 
-/**
- * Props for the StickyHeader component.
- */
 export type StickyHeaderProps = {
-  /**
-   * Date to be displayed in the sticky header.
-   */
+  /** Date shown in the header. Nothing renders without it. */
   date?: Date;
-  /**
-   * The formatted date string to be displayed in the sticky header.
-   */
+  /** Text shown in place of the string formatted from `date`. */
   dateString?: string | number;
 };
 

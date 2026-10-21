@@ -6,7 +6,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type StopMessageStreamingButtonProps = {
-  /** Function that opens attachment options bottom sheet */
+  /** Called when the button is pressed. */
   onPress?: () => void;
 };
 

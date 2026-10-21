@@ -3,7 +3,7 @@ let Clipboard: { setString: (string: string) => void } | undefined;
 try {
   Clipboard = require('@react-native-clipboard/clipboard').default;
 } catch (_) {
-  // do nothing
+  // `@react-native-clipboard/clipboard` is not installed.
 }
 
 export const setClipboardString = Clipboard

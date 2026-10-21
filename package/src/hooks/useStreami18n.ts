@@ -10,11 +10,9 @@ import type { TranslationCatalog } from '../i18n/types';
 import { Streami18n } from '../utils/i18n/Streami18n';
 
 /**
- * This SDK's instantiation of core's state shape.
- *
- * Spelled out rather than left to `Streami18nState`'s defaults: those default the catalog to
- * `AnyTranslationCatalog`, and `t` is contravariant in its options, so the concrete store is not
- * assignable to the default-parameterized one.
+ * This SDK's instantiation of the `@stream-io/i18n` state shape. `Streami18nState` defaults its
+ * catalog to `AnyTranslationCatalog`, and `t` is contravariant in its options, so the concrete
+ * store is not assignable to the default-parameterized type.
  */
 type SDKStreami18nState = Streami18nState<TranslationCatalog, BundledTranslationKey>;
 

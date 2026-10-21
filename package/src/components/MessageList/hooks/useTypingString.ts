@@ -21,10 +21,7 @@ export const useTypingString = () => {
   }
 
   if (typingUsernames.length > 1) {
-    /**
-     * Joins the multiple names with number after first name
-     * example: "Dan and Neil"
-     */
+    // The first name followed by the number of other typing users.
     return t(
       'messageList.typing.withMoreUsers.label',
       '{{ firstUser }} and {{ nonSelfUserLength }} more are typing',

@@ -4,16 +4,13 @@ let sqlite: OPSQLiteProxy;
 try {
   sqlite = require('@op-engineering/op-sqlite');
 } catch (e) {
-  // We want to throw the original error when remote debugger (e.g. Chrome) is enabled.
-  // SQLite can only be used when synchronous method invocations (JSI) are possible.
-  // e.g on-device debugger (e.g. Flipper).
+  // Rethrow when a remote debugger (e.g. Chrome) is attached: SQLite needs synchronous JSI calls.
   const isRemoteDebuggerError = e instanceof Error && e.message.includes('Failed to install');
   if (isRemoteDebuggerError) {
     throw e;
   }
-  // Reaching here will mean that QuickSQLite is not installed for one of the reasons
-  // 1. Running on regular expo, where we don't support offline storage yet.
-  // 2. Offline support is disabled, in which case this library is not installed.
+  // op-sqlite is not installed (regular Expo, which has no offline storage, or offline support is
+  // disabled), so `sqlite` stays undefined.
 }
 
 import type { Sink } from 'stream-chat';
@@ -24,9 +21,9 @@ import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
 import type { PreparedBatchQueries, PreparedQueries, Scalar, Table } from './types';
 
 /**
- * Why the offline database could not be opened. The first two only arise when
- * {@link SqliteClient.getEncryptionKey} is set; `OFFLINE_DB_UNREADABLE` can also mean
- * plain corruption, or a database left behind from the other encryption mode.
+ * Why the offline database could not be opened. The first two only occur when
+ * {@link SqliteClient.getEncryptionKey} is set; `OFFLINE_DB_UNREADABLE` can also mean corruption or
+ * a database left over from the other encryption mode.
  */
 export type SqliteClientErrorCode =
   | 'SQLCIPHER_BUILD_MISSING'
@@ -40,16 +37,12 @@ export class SqliteClientError extends Error {
     super(message);
     this.name = 'SqliteClientError';
     this.code = code;
-    // Assigned here rather than passed through `super(message, { cause })` because
-    // Hermes does not reliably honour the ErrorOptions overload.
+    // Assigned directly because Hermes does not reliably honor the `ErrorOptions` overload.
     this.cause = options?.cause;
   }
 }
 
-/**
- * SqliteClient takes care of any direct interaction with sqlite.
- * This way usage @op-engineering/op-sqlite package is scoped to a single class/file.
- */
+/** Wraps all direct use of `@op-engineering/op-sqlite`. */
 export class SqliteClient {
   static dbVersion = 18;
 
@@ -59,39 +52,33 @@ export class SqliteClient {
   static db: _InternalDB | undefined;
 
   /**
-   * Supplies the SQLCipher key the offline database is opened with; `undefined`
-   * opens it unencrypted, which is the default. The key must be stable for the
-   * lifetime of the database file - there is no rekey path, so a database this key
-   * cannot read raises `OFFLINE_DB_UNREADABLE` on the first page read. The file is
-   * left untouched; recovery is `SqliteClient.deleteDatabase()` and a re-mount.
+   * Supplies the SQLCipher key the offline database opens with. Defaults to `undefined`, which
+   * opens it unencrypted. The key must stay the same for the life of the database file (there is no
+   * rekey): a database this key cannot read raises `OFFLINE_DB_UNREADABLE` and is left untouched.
+   * Recover with `SqliteClient.deleteDatabase()` and a re-mount.
    */
   static getEncryptionKey: (() => Promise<string | undefined>) | undefined;
 
   /** Key resolved by {@link preflightEncryption}, consumed by the next {@link openDB}. */
   private static preflightedKey: string | undefined;
 
-  /** Busy/disk/memory failures. Checked first: wiping over these destroys a good db. */
+  /** Transient failures (busy, disk, memory). Checked first so they never read as unreadable. */
   private static TRANSIENT_ERROR =
     /database is locked|SQLITE_BUSY|SQLITE_LOCKED|disk i\/o|SQLITE_IOERR|unable to open|SQLITE_CANTOPEN|out of memory|readonly/i;
 
   /**
-   * The bytes on disk cannot be read with the key we have: wrong/rotated key,
-   * plaintext-encrypted mismatch or corruption. SQLCipher has no decrypt specific
-   * code and overloads NOTADB (26), occasionally CORRUPT (11).
+   * The file cannot be read with the current key: wrong or rotated key, an encrypted/plaintext
+   * mismatch, or corruption. SQLCipher has no decrypt-specific code, so it overloads NOTADB (26)
+   * and occasionally CORRUPT (11).
    */
   private static UNREADABLE_ERROR =
     /not a database|file is encrypted|malformed|disk image is malformed|SQLite (?:error )?code:?\s*(?:26|11)\b|NOTADB|SQLITE_CORRUPT/i;
 
   static getDbVersion = () => SqliteClient.dbVersion;
-  // Force a specific db version. This is mainly useful for testsuit.
+  // Overrides the DB version, mainly for tests.
   static setDbVersion = (version: number) => (SqliteClient.dbVersion = version);
 
-  /**
-   * Records and re-throws. Deliberately does not write to the console: the error is
-   * thrown, so logging it here would duplicate whatever the caller's error boundary
-   * reports - and in dev React already logs every boundary-caught error, which is what
-   * LogBox turns red.
-   */
+  /** Logs the error to the logger and re-throws it, without writing to the console. */
   private static recordError = (e: SqliteClientError) => {
     SqliteClient.logger?.('error', e.message, { tag: e.code });
 
@@ -99,13 +86,12 @@ export class SqliteClient {
   };
 
   /**
-   * Resolves the encryption key without opening the database, so callers can decide
-   * whether to attach an `OfflineDB` at all. Parts of the client write through
-   * `client.offlineDb` without checking that it initialized (`queryChannels` upserts
-   * into it), so attaching one we cannot open turns those writes into rejections.
+   * Resolves the encryption key without opening the database, so callers can decide whether to
+   * attach an `OfflineDB` at all: the client writes through `client.offlineDb` (for example in
+   * `queryChannels`) without checking it initialized, so one that cannot open rejects those writes.
+   * The next {@link openDB} reuses the key and does not call `getEncryptionKey` again.
    *
-   * Throws {@link SqliteClientError}. The key is handed to the next
-   * {@link openDB} rather than read from `getEncryptionKey` twice.
+   * @throws {SqliteClientError} When the key cannot be resolved.
    */
   static preflightEncryption = async () => {
     try {
@@ -119,10 +105,8 @@ export class SqliteClient {
   };
 
   /**
-   * The key to open with, or `undefined` when the database is meant to be
-   * unencrypted. Throws rather than silently falling back to an unencrypted
-   * database, which would hand an integration that asked for encryption a plaintext
-   * cache of its users' messages.
+   * The key to open with, or `undefined` when the database is meant to be unencrypted. Throws when
+   * encryption was requested but is unavailable, and never falls back to an unencrypted database.
    */
   private static resolveEncryptionKey = async () => {
     const { getEncryptionKey } = SqliteClient;
@@ -131,11 +115,8 @@ export class SqliteClient {
       return undefined;
     }
 
-    // A non-SQLCipher build accepts `encryptionKey` at the JSI boundary and then
-    // drops it - plaintext database, no error anywhere. `isSQLCipher` has existed
-    // since op-sqlite 9, well below the peer floor, so the typeof check is not really
-    // necessary but we'll keep it in case something changes in the future so that
-    // we at least have a clearer error.
+    // A non-SQLCipher build accepts `encryptionKey` and silently drops it, writing a plaintext
+    // database. The `typeof` check is defensive, for a clearer error if `isSQLCipher` is missing.
     if (sqlite === undefined) {
       throw new SqliteClientError(
         'SQLCIPHER_BUILD_MISSING',
@@ -165,8 +146,8 @@ export class SqliteClient {
       );
     }
 
-    // Not being handed a key is not the same as being handed the wrong one, so a locked
-    // keychain must not cost us a database we can still read later.
+    // A missing key is not a wrong key: throwing leaves the database untouched, so a locked
+    // keychain does not cost a database that is readable later.
     if (!encryptionKey) {
       throw new SqliteClientError(
         'ENCRYPTION_KEY_UNAVAILABLE',
@@ -195,10 +176,8 @@ export class SqliteClient {
         ...(encryptionKey ? { encryptionKey } : {}),
       });
 
-      // Note: this will not fail on an encryption key mismatch, as we do not read
-      // any pages, but rather look at a connection level flag. The first failure
-      // is going to be whatever actually reads something, which is going to be
-      // the user_version read in initializeDatabase.
+      // Does not fail on an encryption key mismatch because no pages are read here. The first
+      // failure comes from the first real read: the `user_version` read in `initializeDatabase`.
       await SqliteClient.db?.execute('PRAGMA foreign_keys = ON', []);
     } catch (e) {
       if (e instanceof SqliteClientError) {
@@ -235,8 +214,7 @@ export class SqliteClient {
       if (!SqliteClient.db) {
         throw new Error('DB is not open or initialized.');
       }
-      // This is a workaround to make the executeBatch method work.
-      // It expects an empty array as the second argument in the individual queries if nothing present.
+      // `executeBatch` expects an empty params array in queries that have none.
       // Discussion - https://discord.com/channels/1301463257722126357/1324262993780932688/1330846910596251711
       const finalQueries = queries.map((query) => {
         if (query.length === 1) {
@@ -306,10 +284,13 @@ export class SqliteClient {
   };
 
   /**
-   * Whether the file cannot be read with the key we have, as opposed to being
-   * temporarily unavailable (busy, locked, disk). Works off message text because
-   * op-sqlite rejects with a plain Error and this class re-wraps those messages, so
-   * no numeric code survives. Drives `OFFLINE_DB_UNREADABLE`.
+   * Whether the file cannot be read with the current key, as opposed to being temporarily
+   * unavailable (busy, locked, disk). Matches on the message text because op-sqlite rejects with a
+   * plain `Error` and this class re-wraps it, so no numeric code survives. Drives
+   * `OFFLINE_DB_UNREADABLE`.
+   *
+   * @param e The error thrown while opening or reading the database.
+   * @returns True when the database is unreadable rather than temporarily unavailable.
    */
   static isUnreadableDbError = (e: unknown) => {
     const message = String((e as Error)?.message ?? e);

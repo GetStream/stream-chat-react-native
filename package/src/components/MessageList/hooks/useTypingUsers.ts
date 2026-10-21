@@ -9,11 +9,15 @@ import { filterTypingUsers } from '../utils/filterTypingUsers';
 const selector = (state: TypingUsersState) => ({ typing: state.typing });
 
 /**
- * Shared typing-users core. Takes `channel` (and an optional `threadId`) EXPLICITLY so it works both
- * inside a `<Channel>` provider (the message list) and outside one (channel-list preview rows, which
- * receive `channel` as a prop) — it deliberately never reads the channel/thread from context itself.
- * `client` comes from the always-present root `ChatContext`. Sourced reactively from the
- * `channel.state.typing` slice; own typing and other-thread typing are filtered out.
+ * The users typing in `channel`, without the current user, from `channel.state.typing`.
+ * With `threadId` only that thread's typing counts; without it, only the channel's own.
+ *
+ * The channel is a parameter rather than read from context, so this works outside a `<Channel>`
+ * provider, such as in channel preview rows.
+ *
+ * @param channel The channel to watch.
+ * @param threadId The thread to watch instead of the channel's main list.
+ * @returns The typing users.
  */
 export const useChannelTypingUsers = (channel: Channel, threadId?: string) => {
   const { client } = useChatContext();
@@ -23,8 +27,9 @@ export const useChannelTypingUsers = (channel: Channel, threadId?: string) => {
 };
 
 /**
- * In-channel typing users — reads the channel/thread from context (message-list usage). Thin wrapper
- * over {@link useChannelTypingUsers}.
+ * {@link useChannelTypingUsers} for the channel, and open thread if any, from context.
+ *
+ * @returns The typing users.
  */
 export const useTypingUsers = () => {
   const { channel } = useChannelContext();

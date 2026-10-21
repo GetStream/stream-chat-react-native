@@ -17,17 +17,15 @@ import { FileTypes } from '../../../types/types';
 import { Button } from '../../ui/Button/Button';
 import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 
-// Never called - it exists only so `ReturnType` below can name the animated component's type.
-// Spelling it as `ReturnType<typeof Animated.createAnimatedComponent<typeof SafeAreaView>>`
-// directly resolves against the wrong overload (the `FlatList` one).
+// Never called: it only lets `ReturnType` below name the animated component's type, because
+// spelling out `Animated.createAnimatedComponent<typeof SafeAreaView>` picks the wrong overload.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in type position only
 const createAnimatedSafeAreaViewType = () => Animated.createAnimatedComponent(SafeAreaView);
 
 /**
  * `createAnimatedComponent` is guarded because a stripped-down Reanimated mock may not provide it.
- * The result is asserted back to the animated component type on purpose: written as a bare ternary
- * this types as the *union* of the animated and the plain component, so its `style` prop becomes
- * their intersection - which from React Native 0.87 no longer accepts an animated style.
+ * The cast keeps the animated component type: a bare ternary types as the union with the plain
+ * component, whose `style` prop then rejects animated styles (React Native 0.87 and later).
  */
 const ReanimatedSafeAreaView = (
   Animated.createAnimatedComponent ? Animated.createAnimatedComponent(SafeAreaView) : SafeAreaView
@@ -88,8 +86,7 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
       const extension = asset.mime_type?.split('/')[1] || 'jpg';
       const shouldDownload = asset.uri && asset.uri.includes('http');
       let localFile;
-      // If the file is already uploaded to a CDN, create a local reference to
-      // it first; otherwise just use the local file
+      // Remote files are saved locally first; local files are shared as they are.
       if (shouldDownload) {
         setSavingInProgress(true);
         localFile = await NativeHandlers.saveFile({
@@ -103,9 +100,9 @@ export const ImageGalleryFooterWithContext = (props: ImageGalleryFooterProps) =>
         localFile = asset.uri;
       }
 
-      // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
+      // Falls back to `image/jpeg` when the asset has no `mime_type`.
       await NativeHandlers.shareImage({ type: asset.mime_type || 'image/jpeg', url: localFile });
-      // Only delete the file if a local reference has been created beforehand
+      // Only the downloaded copy is deleted.
       if (shouldDownload) {
         await NativeHandlers.deleteFile({ uri: localFile });
       }
@@ -169,7 +166,7 @@ type ShareButtonProps = {
 const ShareButton = ({ share, savingInProgress }: ShareButtonProps) => {
   const styles = useStyles();
   const { icons } = useComponentsContext();
-  // If the shareImage, saveFile or deleteFile is null, we don't want to render the share button
+  // Hidden when the native share or file system handlers are not registered.
   if (!isShareImageAvailable() || !isFileSystemAvailable()) {
     return null;
   }

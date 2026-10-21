@@ -43,13 +43,9 @@ const getItemLayout = (_, index: number) => ({
 
 export type MessageUserReactionsProps = Partial<Pick<MessagesContextValue, 'supportedReactions'>> &
   Partial<Pick<MessageContextValue, 'message'>> & {
-    /**
-     * An array of reactions
-     */
+    /** Reactions to list, used instead of the fetched ones. */
     reactions?: Reaction[];
-    /**
-     * The selected reaction
-     */
+    /** The reaction type selected initially. */
     selectedReaction?: string;
   };
 

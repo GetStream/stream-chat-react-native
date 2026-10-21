@@ -13,7 +13,7 @@ export type ViewabilityChangedCallbackInput = {
   inverted: boolean;
 };
 
-// The number of messages from an edge we want to be viewing before we stop pruning
+// Distance in messages from an edge within which pruning is suspended: 20% of the cap.
 const calculateSafeGap = (maximumMessages: number) => 0.2 * maximumMessages;
 
 const isNearEnd = ({
@@ -37,20 +37,19 @@ const maxLoadedItemsSelector = (state: { maxLoadedItems?: number }) => ({
 });
 
 /**
- * Drives the message list's window cap.
+ * Tells the paginator when the message list may prune its oldest messages.
  *
- * The cap itself lives in `stream-chat` — configure it with
- * `channel.messagePaginator.updateConfig({ maxLoadedItems })`, or declaratively via
- * `client.config.set({ channel: { messagePaginator: { maxLoadedItems } } })`. The paginator drops the
- * oldest messages as new ones arrive and re-opens its "load older" edge, so scrolling back re-fetches.
+ * The cap (`maxLoadedItems`) lives in `stream-chat`: set it with
+ * `channel.messagePaginator.updateConfig({ maxLoadedItems })` or
+ * `client.config.set({ channel: { messagePaginator: { maxLoadedItems } } })`. This hook owns
+ * whether pruning is safe: it tracks the visible range and suspends pruning while the user is near
+ * the pruned edge. The paginator reads that boolean on ingest and nothing subscribes to it, so
+ * scrolling costs no render.
  *
- * What this hook owns is the one part the state layer cannot know: **whether pruning is safe right
- * now**. Dropping the oldest messages while the user is reading near them would pull content out from
- * under them, so viewability is tracked here and pushed down as a single boolean. The paginator reads
- * it on ingest; nothing subscribes to it, so scrolling can never cost a render.
+ * @param params.paginator The message paginator of the list.
+ * @returns The `maxLoadedItems` cap and the `viewabilityChangedCallback` to wire to the list.
  */
 export function usePrunableMessageList({ paginator }: { paginator?: MessagePaginator }) {
-  // Track visible index range (index in the rendered list)
   const visibleRangeConfigRef = useRef<VisibleRangeConfig>({ first: 0, inverted: true, last: -1 });
 
   const { maxLoadedItems } = useStateStore(paginator?.configState, maxLoadedItemsSelector) ?? {};
@@ -74,10 +73,8 @@ export function usePrunableMessageList({ paginator }: { paginator?: MessagePagin
     },
   );
 
-  /**
-   * The paginator outlives this list, so a suspension must not outlive it either — leaving it set
-   * would keep the window growing unbounded long after the user navigated away.
-   */
+  // The paginator outlives this list, so a suspension must not: left set, the window would grow
+  // unbounded after the user navigated away.
   useEffect(() => () => paginator?.setPruningSuspended(false), [paginator]);
 
   return { maxLoadedItems, viewabilityChangedCallback };

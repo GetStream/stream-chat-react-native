@@ -81,10 +81,8 @@ type ImageGalleryWithContextProps = Pick<
   };
 
 /**
- * Number of slides mounted on each side of the current one. Kept one wider
- * than AnimatedGalleryImage's +-3 load window so an edge slide is already
- * mounted (as the empty placeholder) before it ever needs to load its
- * image - paging never reveals an unmounted slot.
+ * Number of slides mounted on each side of the current one. One more than the image load window in
+ * `AnimatedGalleryImage`, so an edge slide is already mounted as a placeholder before it loads.
  */
 const PAGER_WINDOW_RADIUS = 4;
 
@@ -104,18 +102,12 @@ type GalleryPagerProps = {
 };
 
 /**
- * Windowed pager body. Subscribes to `currentIndex` itself (rather than the
- * parent doing so) so a page change rerenders only this small slide list and
- * never the parent - keeping the gesture objects/`GestureDetector` stable.
+ * The windowed slide list. It subscribes to `currentIndex` itself, so a page change re-renders only
+ * this list and not the parent, which keeps the gesture objects stable.
  *
- * Only the slides within +-{@link PAGER_WINDOW_RADIUS} of the current index are
- * mounted; a single leading spacer occupies the flex width of all preceding
- * slides so the rendered ones keep their exact natural positions. The slide
- * transforms in `useAnimatedGalleryStyle` are a pure function of each slide's
- * `index` and that natural flex position, so windowing the mount leaves every
- * slide pixelidentical while dropping the mounted component/view count to O(window)
- * instead of it being O(N). This way, less React fibers are reconciled and less
- * shadow nodes are rendered as well.
+ * Only slides within {@link PAGER_WINDOW_RADIUS} of the current index are mounted. A leading spacer
+ * takes the width of the skipped slides, so the mounted ones keep the natural positions that the
+ * transforms in `useAnimatedGalleryStyle` depend on.
  */
 const GalleryPager = (props: GalleryPagerProps) => {
   const { fullWindowHeight, fullWindowWidth, offsetScale, scale, slide, translateX, translateY } =
@@ -209,10 +201,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   const halfScreenHeight = fullWindowHeight / 2;
   const quarterScreenHeight = fullWindowHeight / 4;
 
-  /**
-   * Fade animation for screen, it is always rendered with pointerEvents
-   * set to none for fast opening
-   */
+  // Vertical offset of the whole screen: starts below the viewport and animates to 0.
   const screenTranslateY = useSharedValue(fullWindowHeight);
   const showScreen = useCallback(() => {
     'worklet';
@@ -222,20 +211,13 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     });
   }, [screenTranslateY]);
 
-  /**
-   * Run the fade animation on visible change
-   */
   useEffect(() => {
     dismissKeyboard();
     showScreen();
   }, [showScreen]);
 
-  /**
-   * Image height for the currently selected asset. SharedValue so worklet
-   * consumers (gesture math, header/footer opacity) read it directly on the
-   * UI thread so updating it doesn't trigger a parent rerender. The hook
-   * owns the value and updates it via a store subscription.
-   */
+  // Height of the current image. A SharedValue so worklets read it on the UI thread and updating
+  // it does not re-render this component.
   const currentImageHeight = useCurrentImageHeight({
     assets,
     fullWindowHeight,
@@ -243,14 +225,9 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     imageGalleryStateStore,
   });
 
-  /**
-   * Header visible value for animating in out
-   */
+  // Header and footer visibility: 1 shown, 0 hidden, animated between.
   const headerFooterVisible = useSharedValue(1);
 
-  /**
-   * Shared values for movement
-   */
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const offsetScale = useSharedValue(1);
@@ -284,12 +261,8 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     translationX,
   });
 
-  /**
-   * If the header is visible we scale down the opacity of it as the
-   * image is swiped downward. Reads currentImageHeight from a SharedValue so
-   * the worklet doesn't need to be re-registered when the image dimensions
-   * change between slides.
-   */
+  // Fades the header and footer as the image is dragged down. The height is read from a SharedValue
+  // so the worklet is not re-registered when the image dimensions change between slides.
   const headerFooterOpacity = useDerivedValue(() => {
     const imageHeight = currentImageHeight.value;
     return imageHeight * scale.value < fullWindowHeight && translateY.value > 0
@@ -302,9 +275,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
         : 1;
   }, []);
 
-  /**
-   * This transition and scaleX reverse lets use scroll right
-   */
+  // Offsets the pager horizontally to the current slide.
   const pagerStyle = useAnimatedStyle<ImageStyle>(
     () => ({
       transform: [
@@ -317,9 +288,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     [],
   );
 
-  /**
-   * Simple background color animation on Y movement
-   */
+  // Background that fades as the image is dragged down.
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
       backgroundColor: backgroundColor || semantics.backgroundCoreApp,
@@ -328,10 +297,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     [headerFooterOpacity],
   );
 
-  /**
-   * Show screen style as component is always rendered we hide it
-   * down and up and set opacity to 0 for good measure
-   */
+  // Slides the screen in from below the viewport.
   const showScreenStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       transform: [
@@ -343,16 +309,10 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
     [],
   );
 
-  /**
-   * Functions toclose BottomSheetModal with image grid
-   */
   const closeGridView = () => {
     setIsGridViewVisible(false);
   };
 
-  /**
-   * Function to open BottomSheetModal with image grid
-   */
   const openGridView = () => {
     setIsGridViewVisible(true);
   };
@@ -364,11 +324,8 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
       const handle = imageGalleryStateStore.requesterNode;
       if (handle == null) return;
       imageGalleryStateStore.requesterNode = null;
-      // Because of the fact that iOS and Android handle supressing
-      // the content underneath differently, we have to wait a frame
-      // before iOS is allowed to attempt to refocus (it takes a frame
-      // for the native a11y tree to become aware that it no longer has
-      // an accessibilityViewIsModal sibling).
+      // iOS must wait a frame before refocusing: the native a11y tree takes a frame to notice that
+      // the `accessibilityViewIsModal` sibling is gone. Android refocuses immediately.
       if (Platform.OS === 'android') {
         AccessibilityInfo.setAccessibilityFocus(handle);
       } else {
@@ -458,7 +415,12 @@ export const ImageGallery = (props: ImageGalleryProps) => {
 };
 
 /**
- * Clamping worklet to clamp the scaling
+ * Clamps a value between two bounds. Runs as a worklet.
+ *
+ * @param value The value to clamp.
+ * @param lowerBound The minimum result.
+ * @param upperBound The maximum result.
+ * @returns The clamped value.
  */
 export const clamp = (value: number, lowerBound: number, upperBound: number) => {
   'worklet';

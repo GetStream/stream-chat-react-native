@@ -4,8 +4,9 @@ import { AccessibilityInfo } from 'react-native';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 
 /**
- * Subscribes to AccessibilityInfo reduce-motion changes and returns the live state.
- * Returns false when the AccessibilityContext is disabled.
+ * Tracks the OS reduce-motion setting.
+ *
+ * @returns Whether reduce motion is on. Always false when accessibility is disabled.
  */
 export const useReducedMotionPreference = (): boolean => {
   const { enabled } = useAccessibilityContext();
@@ -23,7 +24,7 @@ export const useReducedMotionPreference = (): boolean => {
         if (!cancelled) setReduceMotion(value);
       })
       .catch(() => {
-        // Older RN or platforms without the API.
+        // The API may be unavailable on some platforms; stay false.
       });
 
     const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);

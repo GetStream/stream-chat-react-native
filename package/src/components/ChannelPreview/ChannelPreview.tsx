@@ -11,9 +11,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 
 export type ChannelPreviewProps = Partial<Pick<ChatContextValue, 'client'>> & {
-  /**
-   * Instance of Channel from stream-chat package.
-   */
+  /** The channel to preview. */
   channel: Channel;
 };
 

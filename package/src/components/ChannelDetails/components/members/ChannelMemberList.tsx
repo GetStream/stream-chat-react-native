@@ -38,19 +38,10 @@ const listStateSelector = (state: SearchSourceState<ChannelMemberResponse>) => (
 });
 
 export type ChannelMemberListProps = {
-  /**
-   * Besides the existing default behavior of the members list, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * See https://reactnative.dev/docs/flatlist#props for the full list.
-   */
+  /** Additional props passed to the underlying `FlatList`. */
   additionalFlatListProps?: Partial<FlatListProps<ChannelMemberResponse>>;
   searchInputProps?: SearchInputProps;
-  /**
-   * A custom `ChannelMemberSearchSource` used to query and paginate the member
-   * list. Overrides the source the provider creates by default (pre-configured
-   * to autocomplete by `name`).
-   */
+  /** Overrides the default `ChannelMemberSearchSource`, which autocompletes by `name`. */
   searchSource?: ChannelMemberSearchSource;
 };
 
@@ -78,8 +69,7 @@ const ChannelMemberListContent = ({
 
   const memberCount = useChannelMemberCount(channel);
 
-  // Fetch members on mount and when the member count changes
-  // Member count changes used when add member modal is opened above member list modal
+  // Refetches when the member count changes, as when the add-members modal opens over this list.
   useEffect(() => {
     if (!searchSource.state.getLatestValue().searchQuery) {
       searchSource.resetStateAndActivate();
@@ -117,7 +107,7 @@ const ChannelMemberListContent = ({
   );
 
   const loadMore = useCallback(() => {
-    // hasNext is true by default, !!members prevents calling search on initial load
+    // `hasNext` starts true, so `members` is checked to avoid searching on the initial load.
     if (hasNext && !!members) {
       searchSource.search();
     }
@@ -175,9 +165,7 @@ const ChannelMemberListContent = ({
   );
 };
 
-/**
- * Lists all channel members with the ability to search them.
- */
+/** Searchable list of the channel's members. */
 export const ChannelMemberList = ({ searchSource, ...props }: ChannelMemberListProps = {}) => {
   const { channel } = useChannelDetailsContext();
   const notificationHostId = channel?.cid ? `channel-member-list:${channel.cid}` : undefined;

@@ -19,7 +19,8 @@ export type AttachmentUploadIndicatorProps = {
 };
 
 /**
- * Upload state for attachment previews: determinate ring when progress is known, otherwise `ActivityIndicator`.
+ * Upload state for attachment previews: a determinate ring when progress is known, otherwise an
+ * `ActivityIndicator`.
  */
 export const AttachmentUploadIndicatorUI = ({
   containerStyle,

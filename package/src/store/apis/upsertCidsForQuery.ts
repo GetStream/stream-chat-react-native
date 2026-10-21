@@ -25,7 +25,6 @@ export const upsertCidsForQuery = async ({
   predefinedFilter?: ParsedPredefinedFilterResponse;
   sort?: SortParamRequest[];
 }) => {
-  // Update the database only if the query is provided.
   const cidsString = JSON.stringify(cids);
   const id = convertFilterSortToQuery({ filters, options, sort });
   const predefinedFilterString = predefinedFilter ? JSON.stringify(predefinedFilter) : null;

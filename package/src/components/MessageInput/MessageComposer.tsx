@@ -243,7 +243,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     },
   } = useTheme();
 
-  // Close the attachment picker state when the component unmounts
+  // Closes the attachment picker on unmount.
   useEffect(
     () => () => {
       closeAttachmentPicker();
@@ -252,7 +252,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   );
 
   /**
-   * Effect to get the draft data for legacy thread composer and set it to message composer.
+   * Loads the draft of the legacy thread composer into the message composer.
    * TODO: This can be removed once we remove legacy thread composer.
    */
   useEffect(() => {
@@ -279,7 +279,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const getUsers = () => {
     const users = [...getMembers(), ...getWatchers()];
 
-    // make sure we don't list users twice
+    // Deduplicate by user ID.
     const uniqueUsers: { [key: string]: UserResponse } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
@@ -301,7 +301,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     return result;
   };
 
-  // immediately focus the screen reader to the input on mount if a11y is enabled.
+  // Moves screen reader focus to the input on mount when a screen reader is enabled.
   useScreenReaderMountFocus(inputBoxRef);
 
   const isFocused = inputBoxRef.current?.isFocused();
@@ -386,7 +386,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                       borderTopWidth: 1,
                       backgroundColor: semantics.backgroundCoreElevation1,
                       borderTopColor: semantics.borderCoreSubtle,
-                      // paddingBottom: BOTTOM_OFFSET,
                       paddingBottom:
                         selectedPicker && !isKeyboardVisible
                           ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
@@ -611,15 +610,7 @@ const MemoizedMessageComposer = React.memo(
 
 export type MessageComposerProps = Partial<MessageComposerPropsWithContext>;
 
-/**
- * UI Component for message composer
- * It's a consumer of
- * [Channel Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/),
- * [Chat Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/),
- * [MessageInput Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/message-input-context/),
- * [Suggestions Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/suggestions-context/), and
- * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
- */
+/** Message composer UI. */
 export const MessageComposer = (props: MessageComposerProps) => {
   const isOnline = useSettledWSConnectionHealth();
   const ownCapabilities = useOwnCapabilitiesContext();
@@ -659,11 +650,8 @@ export const MessageComposer = (props: MessageComposerProps) => {
 
   const { t } = useTranslationContext();
 
-  /**
-   * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
-   * Enable it in frozen mode, if it the input has editing state.
-   *
-   */
+  // Without the `sendMessage` capability (such as in a frozen channel) only the disallowed
+  // indicator is rendered, unless a message is being edited.
   if (
     capabilitiesKnown &&
     !ownCapabilities.sendMessage &&

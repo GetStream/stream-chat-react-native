@@ -30,9 +30,7 @@ type AudioRecorderPropsWithContext = Pick<
   | 'uploadVoiceRecording'
 > &
   Pick<AudioRecorderManagerState, 'duration' | 'micLocked' | 'status'> & {
-    /**
-     * Style used in slide to cancel container.
-     */
+    /** Style of the slide to cancel container. */
     slideToCancelStyle?: StyleProp<AnimatedStyle<ViewStyle>>;
   };
 
@@ -211,9 +209,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
   status: state.status,
 });
 
-/**
- * Component to display the Recording UI in the Message Input.
- */
+/** Recording UI of the message input. */
 export const AudioRecorder = (props: AudioRecorderProps) => {
   const {
     audioRecorderManager,

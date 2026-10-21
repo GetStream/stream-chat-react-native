@@ -8,14 +8,6 @@ import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/C
 
 import { getAspectRatio } from '../getAspectRatio';
 
-/**
- * Bound a number to a range.
- * @param number The number to bound.
- * @param min The minimum value.
- * @param max The maximum value.
- *
- * @returns The bounded number.
- */
 function clamp(number: number, min: number, max: number) {
   return Math.min(Math.max(number, min), max);
 }

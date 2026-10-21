@@ -11,7 +11,12 @@ import { generateRandomId } from '../../../utils/utils';
 import { resampleWaveformData } from '../utils/audioSampling';
 
 /**
- * The hook that controls all the async audio core features including start/stop or recording, player, upload/delete of the recorded audio.
+ * Controls voice recording: start, stop, delete, and upload or send of the recorded audio.
+ *
+ * @param params.audioRecorderManager Manager that owns the recording state.
+ * @param params.sendMessage Sends the message when a recording is sent on completion.
+ * @returns `deleteVoiceRecording`, `startVoiceRecording`, `stopVoiceRecording` and
+ * `uploadVoiceRecording`.
  */
 export const useAudioRecorder = ({
   audioRecorderManager,
@@ -19,11 +24,7 @@ export const useAudioRecorder = ({
 }: Pick<MessageInputContextValue, 'audioRecorderManager' | 'sendMessage'>) => {
   const { attachmentManager } = useMessageComposer();
 
-  /**
-   * A function that takes care of stopping the voice recording from the library's
-   * side only. Meant to be used as a pure function (during unmounting for instance)
-   * hence this approach.
-   */
+  // Stops the recording on the library side only, so it is safe to call on unmount.
   const stopVoiceRecording = useCallback(
     async (withDelete?: boolean) => {
       await audioRecorderManager.stopRecording(withDelete);
@@ -31,8 +32,7 @@ export const useAudioRecorder = ({
     [audioRecorderManager],
   );
 
-  // This effect stop the player from playing and stops audio recording on
-  // the audio SDK side on unmount.
+  // Stops the recording on the audio SDK side on unmount.
   useEffect(
     () => () => {
       stopVoiceRecording();
@@ -40,26 +40,16 @@ export const useAudioRecorder = ({
     [stopVoiceRecording],
   );
 
-  /**
-   * Function to start voice recording. Will return whether access is granted
-   * with regards to the microphone permission as that's how the underlying
-   * library works on iOS.
-   */
+  // Resolves to whether microphone access is granted, as the underlying library reports on iOS.
   const startVoiceRecording = useCallback(async () => {
     return await audioRecorderManager.startRecording();
   }, [audioRecorderManager]);
 
-  /**
-   * Function to delete voice recording.
-   */
   const deleteVoiceRecording = useCallback(async () => {
     await stopVoiceRecording(true);
   }, [stopVoiceRecording]);
 
-  /**
-   * Function to upload or send voice recording.
-   * @param sendOnComplete boolean
-   */
+  // Sends the message with the recording when `sendOnComplete` is true, otherwise only uploads it.
   const uploadVoiceRecording = useCallback(
     async (sendOnComplete: boolean) => {
       try {

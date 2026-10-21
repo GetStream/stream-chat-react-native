@@ -9,29 +9,23 @@ import { compressedImageURI } from '../../../utils/compressImage';
 
 export type UseEditChannelImageResult = {
   /**
-   * Open the device's native image picker and return a single picked image
-   * with the compression configured on `ChannelDetails` already applied
-   * to its `uri`. Returns `undefined` if the user cancels or denies access.
+   * Opens the native image picker and resolves to the picked image, with `compressImageQuality`
+   * applied to its `uri`, or `undefined` when the user cancels or denies access.
    */
   pickImageFromNativePicker: () => Promise<File | undefined>;
   /**
-   * Launch the device's camera and return the captured image. Returns
-   * `undefined` if the user cancels or denies access. The native camera
-   * handler already honors `compressImageQuality`, so no extra compression
-   * pass is needed for camera files.
+   * Opens the camera and resolves to the captured image, or `undefined` when the user cancels or
+   * denies access. The native camera handler applies `compressImageQuality` itself.
    */
   takePhoto: () => Promise<File | undefined>;
 };
 
 /**
- * Hook that exposes the two image-acquisition flows used by the channel edit
- * screen — camera capture and native gallery pick — using the same control
- * flow and compression behavior as the message composer (`takeAndUploadImage`
- * and `pickAndUploadImageFromNativePicker` in `MessageInputContext`). The
- * hook intentionally does NOT upload the picked file; the consumer receives a
- * `File` and decides what to do with it.
+ * The image acquisition flows of the channel edit screen: camera capture and native gallery pick.
+ * Neither uploads the file; the caller receives it. Reads `compressImageQuality` from
+ * `ChannelEditDetailsContext`.
  *
- * Reads `compressImageQuality` from `ChannelEditDetailsContext`.
+ * @returns The `takePhoto` and `pickImageFromNativePicker` functions.
  */
 export const useEditChannelImage = (): UseEditChannelImageResult => {
   const { compressImageQuality } = useChannelEditDetailsContext();

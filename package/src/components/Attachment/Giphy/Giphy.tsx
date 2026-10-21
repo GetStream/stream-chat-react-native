@@ -185,9 +185,7 @@ export type GiphyProps = Partial<GiphyPropsWithContext> & {
   attachment: Attachment;
 };
 
-/**
- * UI component for card in attachments.
- */
+/** Renders a Giphy attachment. */
 export const Giphy = (props: GiphyProps) => {
   const { handleAction, isMyMessage, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext();

@@ -21,11 +21,8 @@ export type AttachmentPickerContextValue = Pick<
   'attachmentSelectionBarHeight' | 'attachmentPickerBottomSheetHeight'
 > & {
   /**
-   * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
-   * This can be set via the `bottomInset` prop on the `Channel` component.
-   *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
-   * for more details.
+   * Determines the height of the `AttachmentPicker` and how far the `MessageList` shifts when it
+   * opens. Set via the `bottomInset` prop on `Channel`.
    */
   bottomInset: number;
   bottomSheetRef: React.RefObject<BottomSheet | null>;
@@ -34,17 +31,15 @@ export type AttachmentPickerContextValue = Pick<
   topInset: number;
 
   /**
-   * When `true`, the native image picker is used instead of the in-app image gallery.
-   * The attachment picker itself (with its attachment type selection bar) is still rendered.
-   * To not render the attachment picker at all, set `shouldRenderAttachmentPicker` to `false`.
+   * Uses the native image picker in place of the in-app image gallery. The attachment picker and
+   * its selection bar still render; set `shouldRenderAttachmentPicker` to false to hide them.
    */
   disableAttachmentPicker?: boolean;
   /**
-   * Whether the attachment picker should be rendered at all. Defaults to `true`.
+   * Whether the attachment picker renders at all. Defaults to true.
    *
-   * Can be set to `false` if attachment picker is not used. `openAttachmentPicker` then
-   * does nothing. The attach button is still shown, so it needs to either be hidden it or set
-   * `handleAttachButtonPress` to override what it does.
+   * When false, `openAttachmentPicker` does nothing and the attach button is still shown, so hide
+   * it or override its action with `handleAttachButtonPress`.
    */
   shouldRenderAttachmentPicker?: boolean;
   attachmentPickerStore: AttachmentPickerStore;
@@ -92,7 +87,7 @@ export const useAttachmentPickerContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
+      'The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/react-native/core-components/channel/',
     );
   }
 

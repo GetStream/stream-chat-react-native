@@ -72,10 +72,7 @@ export type MessageActionsProps = {
 };
 
 type MessageOverlayHostLayerProps = {
-  /**
-   * Id under which this layer registers on the host layer stack. `OverlayProvider` passes its own
-   * so that views inside the provider can tell whether this layer is the top one.
-   */
+  /** ID under which this layer registers on the host layer stack. */
   hostLayerId: string;
 };
 
@@ -94,10 +91,8 @@ export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayer
   const closeCorrectionY = useSharedValue(0);
 
   const topInset = insets.top;
-  // Due to edge-to-edge in combination with various libraries, Android sometimes reports
-  // the insets to be 0. If that's the case, we use this as an escape hatch to offset the bottom
-  // of the overlay so that it doesn't collide with the navigation bar. Worst case scenario,
-  // if the navigation bar is actually 0 - we end up animating a little bit further.
+  // With edge-to-edge, Android sometimes reports a bottom inset of 0. The fallback offset keeps the
+  // overlay clear of the navigation bar; if the bar really is 0, it animates slightly further.
   const bottomInset = insets.bottom === 0 && Platform.OS === 'android' ? 60 : insets.bottom;
 
   const isActive = !!id && isTop;
@@ -129,11 +124,8 @@ export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayer
     return () => subscription.remove();
   }, [isActive]);
 
-  // When orientation changes, we dismiss the overlay. While it is possible
-  // (and I have a working PoC of) a repositioning solution, it is pretty
-  // complex and probably bug prone. This is anyway how the iOS native contextual
-  // menu works (as seen on iMessage and Twitch for example, which support landscape
-  // mode).
+  // The overlay is dismissed on orientation change: repositioning is complex and error prone, and
+  // the iOS native context menu behaves the same way.
   const orientation = useScreenOrientation();
   const prevOrientationRef = useRef(orientation);
   useEffect(() => {
@@ -175,8 +167,8 @@ export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayer
     return Math.max(0, contentH - available);
   });
 
-  // On close, freeze any inflight fling (the message closes from where it was scrolled - see
-  // `hostStyle`) and only reset the offset once fully closed, ready for the next open.
+  // On close, freeze any in-flight fling (the message closes from where it was scrolled, see
+  // `hostStyle`); the offset resets only once fully closed.
   useEffect(() => {
     if (closing) {
       cancelAnimation(scrollY);
@@ -316,9 +308,9 @@ export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayer
     };
   });
 
-  // Two composed `translateY`: first is the springed open/close position, second is the raw
-  // scroll offset. On close we fold the scroll into the first (springed) target so the message
-  // animates back from where it was scrolled, while the latter stays put.
+  // Two composed `translateY`: the first is the springed open/close position, the second the raw
+  // scroll offset. On close the scroll folds into the springed target so the message animates back
+  // from where it was scrolled, while the raw offset stays put.
   const hostStyle = useAnimatedStyle(() => {
     if (!messageH.value) return { height: 0 };
     const scroll = scrollGeom.value.needsScroll ? scrollY.value : 0;
@@ -341,7 +333,7 @@ export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayer
   });
 
   // Drag scrolls the message (clamped to `[0, maxScroll]`); release flings with decay. When the
-  // content fits, `maxScroll` is 0 so this is a noop.
+  // content fits, `maxScroll` is 0 and this does nothing.
   const pan = useMemo(
     () =>
       Gesture.Pan()
@@ -434,8 +426,8 @@ export const MessageOverlayHostLayer = ({ hostLayerId }: MessageOverlayHostLayer
           ) : (
             <>
               {/*
-                Message renders first (lowest z) so it sits behind the opaque top/bottom items;
-                a scrolled/overflowing message passes behind them instead of being clipped.
+                The message renders first (lowest z) so an overflowing message scrolls behind the
+                opaque top and bottom items rather than being clipped.
               */}
               <GestureDetector gesture={pan}>
                 <Animated.View style={hostStyle} testID='message-overlay-message'>

@@ -20,9 +20,7 @@ export enum MessageDeliveryStatus {
 
 type MessageDeliveryStatusProps = {
   channel: Channel;
-  // Only `created_at`/`id`/`user` are read here (never the LocalMessage-only `status`), so a
-  // plain `MessageResponse` is accepted too — lets callers pass the channel's last message
-  // without asserting it is a `LocalMessage`.
+  // Only `created_at`, `id` and `user` are read, so a plain `MessageResponse` is accepted too.
   lastMessage: LocalMessage | MessageResponse;
   isReadEventsEnabled: boolean;
 };
@@ -31,11 +29,14 @@ const hasOtherUser = (users: UserResponse[] | undefined, currentUserId: string |
   !!users && (users.length > 1 || (users.length === 1 && users[0].id !== currentUserId));
 
 /**
- * Delivery/read status of the last own message, sourced reactively from the channel's
- * `messageReceiptsTracker.snapshotStore` (`readersByMessageId` / `deliveredByMessageId`) — the same
- * store the in-list read/delivered receipt hooks use. Replaces the previous manual
- * `channel.on('message.new'/'message.delivered'/'message.read')` + `useState` machinery so there is
- * a single reactive source of truth for receipts.
+ * Delivery and read status of the last message when it is the current user's, derived from the
+ * channel's `messageReceiptsTracker.snapshotStore`, the same store the in-list receipt hooks use.
+ *
+ * @param params.channel The channel the message belongs to.
+ * @param params.lastMessage The channel's last message.
+ * @param params.isReadEventsEnabled When false, the status is `NOT_SENT_BY_CURRENT_USER`. Defaults
+ * to true.
+ * @returns An object with the `status`, `undefined` when the message is not the current user's.
  */
 export const useMessageDeliveryStatus = ({
   channel,

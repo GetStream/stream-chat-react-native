@@ -3,11 +3,9 @@ import { useWindowDimensions } from 'react-native';
 export type ScreenOrientation = 'landscape' | 'portrait';
 
 /**
- * A custom hook that derives the current screen orientation from the window
- * dimensions. It updates automatically on device rotation via
- * `useWindowDimensions`.
+ * Derives the orientation from the window dimensions, updating on rotation.
  *
- * @returns {ScreenOrientation} Either `'landscape'` or `'portrait'`.
+ * @returns `'landscape'` when the window is wider than tall, otherwise `'portrait'`.
  */
 export const useScreenOrientation = (): ScreenOrientation => {
   const { height, width } = useWindowDimensions();

@@ -11,7 +11,6 @@ export const getReactions = ({
 }): ReactionResponse[] => {
   SqliteClient.logger?.('info', 'getReactions', { reactions });
 
-  // Enrich the channels with state
   return reactions.map((reaction) => ({
     ...mapStorableToReaction(reaction),
   }));

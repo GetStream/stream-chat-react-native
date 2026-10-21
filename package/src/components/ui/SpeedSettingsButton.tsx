@@ -6,17 +6,11 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type SpeedSettingsButtonProps = {
-  /**
-   * The current playback rate.
-   */
+  /** Current playback rate. */
   currentPlaybackRate: number;
-  /**
-   * The function to be called when the button is pressed.
-   */
+  /** Called when the button is pressed. */
   onPress: () => void;
-  /**
-   * The style of the container.
-   */
+  /** Style of the container. */
   containerStyle?: StyleProp<ViewStyle>;
 };
 

@@ -8,23 +8,20 @@ import { SqliteClient, SqliteClientError } from '../../../store/SqliteClient';
 
 export type InitializeOfflineDbOptions = {
   /**
-   * Encrypts the offline database at rest with SQLCipher, using the key this resolves
-   * to. Leaving it unset opens the database unencrypted, which is the default. See
-   * `ChatProps.getOfflineDbEncryptionKey` for the build flag it requires, the stability
-   * requirement, and how failures are surfaced.
+   * Resolves the key that encrypts the offline database at rest with SQLCipher; when unset the
+   * database is unencrypted. See `ChatProps.getOfflineDbEncryptionKey` for the requirements.
    */
   getEncryptionKey?: () => Promise<string | undefined>;
   /**
-   * Optional positive cap on the number of events a single `/sync` response may
-   * contain before the offline sync manager skips replaying those events into local
-   * storage. `false` opts out entirely.
+   * Positive cap on the events of a single `/sync` response that the offline sync manager replays
+   * into local storage; above it the replay is skipped. `false` removes the cap.
    */
   maxSyncEventsLimit?: number | false;
 };
 
 export type UseInitializeOfflineDbParams = {
   client: StreamChat;
-  /** Whether offline support is enabled at all. */
+  /** Whether offline support is enabled. */
   enabled: boolean;
   options?: InitializeOfflineDbOptions;
   userID?: string;
@@ -32,12 +29,17 @@ export type UseInitializeOfflineDbParams = {
 
 /**
  * Attaches an offline database to the client and initializes it for a user. Returns the attached
- * database, so the caller can subscribe to its state: it is attached after the first render.
+ * database, which is set after the first render.
  *
- * **Raises** whatever prevented the database from opening, from render, so an error
- * boundary above the caller can decide what to do. The offline database is never
- * silently downgraded, because an integration that asked for encryption must not end
- * up with an unencrypted cache.
+ * Throws from render whatever prevented the database from opening, so an error boundary above the
+ * caller can handle it. The database is never silently downgraded to an unencrypted one.
+ *
+ * @param params.client The client to attach the database to.
+ * @param params.enabled Whether offline support is enabled.
+ * @param params.options Encryption key getter and sync event cap.
+ * @param params.userID The user to initialize the database for.
+ * @returns The attached database, or `undefined` when none is attached.
+ * @throws The error that prevented the database from opening.
  */
 export const useInitializeOfflineDb = ({
   client,
@@ -45,22 +47,16 @@ export const useInitializeOfflineDb = ({
   options,
   userID,
 }: UseInitializeOfflineDbParams) => {
-  /**
-   * Why this attempt could not open the offline database.
-   *
-   * Held per attempt rather than read from a longer-lived source: a value that outlived
-   * the attempt would be seen during the first render after a re-mount and raised
-   * before that mount's own attempt could run, so an error boundary that re-mounts to
-   * retry would loop forever.
-   */
+  // Why this attempt could not open the offline database. Held per attempt: a longer-lived error
+  // would be raised on the next mount before its own attempt runs, so an error boundary that
+  // re-mounts to retry would loop forever.
   const [initializationError, setInitializationError] = useState<SqliteClientError>();
   const [offlineDb, setOfflineDb] = useState(() => client.offlineDb);
 
   const { getEncryptionKey, maxSyncEventsLimit } = options ?? {};
 
-  // `getEncryptionKey` is overwhelmingly likely to be an inline arrow. Stabilising it
-  // keeps a new identity per render out of the dependencies below, while still calling
-  // whatever the latest prop is.
+  // Keeps an inline `getEncryptionKey` from changing the dependencies below every render, while
+  // still calling the latest prop.
   const resolveEncryptionKey = useStableCallback(
     () => getEncryptionKey?.() ?? Promise.resolve(undefined),
   );
@@ -75,9 +71,9 @@ export const useInitializeOfflineDb = ({
     if (!client.offlineDb) {
       const keyGetter = isEncryptionEnabled ? resolveEncryptionKey : undefined;
 
-      // Confirm the database can be opened before attaching it: the client writes
-      // through `client.offlineDb` without checking that it initialized, so one we
-      // cannot open turns those writes into rejections (and UI is affected directly).
+      // Confirm the database opens before attaching it: the client writes through
+      // `client.offlineDb` without checking it initialized, so an unopenable one rejects those
+      // writes.
       if (keyGetter) {
         SqliteClient.getEncryptionKey = keyGetter;
         try {
@@ -100,9 +96,7 @@ export const useInitializeOfflineDb = ({
     setOfflineDb(attachedOfflineDb);
     if (attachedOfflineDb) {
       await attachedOfflineDb.init(userID);
-      // Note: Since `init()` currently swallows errors by design, we have to rely
-      // on consuming the error later in order to be able to still rethrow without
-      // introducing a breaking change.
+      // `init()` swallows errors by design, so the failure is read back from `initializationError`.
       // TODO: The DB API should be changed in the next major to always throw upwards
       //       and let integrators handle it if necessary.
       setInitializationError(

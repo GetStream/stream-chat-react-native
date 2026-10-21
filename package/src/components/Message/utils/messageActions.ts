@@ -24,7 +24,6 @@ export type MessageActionsParams = {
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
   blockUser: MessageActionType;
-  // Optional Actions
   deleteForMeMessage?: MessageActionType;
 } & Pick<MessageContextValue, 'message' | 'isMyMessage'> &
   Pick<MessageOperations, 'updateMessage'>;

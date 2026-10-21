@@ -6,13 +6,8 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { getCalendarDateStringForA11y, getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
 
-/**
- * Props for the `InlineDateSeparator` component.
- */
 export type InlineDateSeparatorProps = {
-  /**
-   * Date to be displayed.
-   */
+  /** Date to display. */
   date?: Date;
 };
 

@@ -28,34 +28,21 @@ export type ActionType =
   | 'unpinMessage';
 
 export type MessageActionType = {
-  /**
-   * Callback when user presses the action button.
-   */
+  /** Called when the action button is pressed. */
   action: () => void;
-  /**
-   * Type of the action performed.
-   * Eg: 'banUser', 'blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'markUnread , 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage'
-   */
+  /** The type of the action: an `ActionType`, or a custom string. */
   actionType: ActionType | string;
-  /**
-   * Title for action button.
-   */
+  /** Title of the action button. */
   title: string;
-  /**
-   * Element to render as icon for action button.
-   */
+  /** Icon of the action button. */
   icon?: React.ReactElement;
-  /**
-   * Styles for underlying Text component of action title.
-   */
+  /** Styles for the `Text` of the action title. */
   titleStyle?: StyleProp<TextStyle>;
 
   type: 'standard' | 'destructive';
 };
 
-/**
- * MessageActionListItem - A high-level component that implements all the logic required for a `MessageAction` in a `MessageActionList`
- */
+/** Props of the item that renders a `MessageActionType` in a `MessageActionList`. */
 export type MessageActionListItemProps = MessageActionType;
 
 export const MessageActionListItem = (props: MessageActionListItemProps) => {

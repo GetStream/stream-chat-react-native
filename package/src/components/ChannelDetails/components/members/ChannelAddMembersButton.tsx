@@ -8,9 +8,9 @@ import { Button, ButtonProps } from '../../../ui/Button/Button';
 import { ChannelDetailsModal } from '../modal/Modal';
 
 export type ChannelAddMembersButtonProps = {
-  /** Override the default behavior, which opens the Add-members modal. */
+  /** Overrides the default behavior, which opens the add-members modal. */
   onPress?: () => void;
-  /** Style forwarded to the underlying Button. */
+  /** Style forwarded to the underlying `Button`. */
   style?: ButtonProps['style'];
   testID?: string;
   variant?: 'icon' | 'text';
@@ -28,8 +28,7 @@ export const ChannelAddMembersButton = ({
   const isVisible = useCanAddMembersToChannel(channel);
   const [isAddMembersVisible, setAddMembersVisible] = useState(false);
 
-  // The built-in modal is only used by the default press behavior. When a custom handler
-  // (onPress prop) is provided, the consumer owns the modal, so we must not render the built-in one.
+  // With a custom `onPress` the consumer owns the modal, so the built-in one is not rendered.
   const usesDefaultModal = !onPress;
 
   const handlePress = useCallback(() => {

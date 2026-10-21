@@ -24,7 +24,7 @@ export const mapReadToStorable = ({
     cid,
     lastDeliveredAt: mapTimestampToStorable(last_delivered_at),
     lastDeliveredMessageId: last_delivered_message_id,
-    // `0` is the LLC's epoch sentinel; the column is `INTEGER NOT NULL`.
+    // `0` is the epoch sentinel of `stream-chat`; the column is `INTEGER NOT NULL`.
     lastRead: last_read ?? 0,
     lastReadMessageId: last_read_message_id,
     unreadMessages: unread_messages,

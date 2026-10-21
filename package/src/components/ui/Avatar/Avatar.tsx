@@ -10,18 +10,11 @@ import { primitives } from '../../../theme';
 
 export type AvatarProps = {
   size: '2xl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
-  /**
-   * Override for the auto-generated accessibility label. When omitted and a
-   * `name` is provided, the SDK uses `a11y/Avatar of {{name}}`.
-   */
+  /** Overrides the generated accessibility label, which is built from `name` when it is set. */
   accessibilityLabel?: string;
   backgroundColor?: ColorValue;
   imageUrl?: string;
-  /**
-   * Display name of the entity this avatar represents (user, channel). Used to
-   * compose the default `accessibilityLabel`. Optional — when neither this nor
-   * `accessibilityLabel` is provided, the avatar is left unlabeled.
-   */
+  /** Display name of the user or channel for the label. Without it the avatar is unlabeled. */
   name?: string;
   placeholder?: React.ReactNode;
   showBorder?: boolean;

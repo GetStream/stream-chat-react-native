@@ -8,6 +8,9 @@ import { useStateStore } from '../../../hooks/useStateStore';
 /**
  * The current user's unread message count in `channel`, kept current as reads arrive. `undefined`
  * when no channel is given, which also leaves the channel's state unsubscribed.
+ *
+ * @param channel The channel to count unread messages in.
+ * @returns The unread count, or `undefined` without a channel.
  */
 export const useOwnUnreadCount = (channel: Channel | undefined) => {
   const { client } = useChatContext();

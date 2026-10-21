@@ -36,13 +36,14 @@ export type ChannelListProps = Partial<
     | 'pinnedStatusPosition'
   >
 > & {
-  /** Optional function to filter channels prior to rendering the list. Do not use any complex logic that would delay the loading of the ChannelList. We recommend using a pure function with array methods like filter/sort/reduce. */
+  /**
+   * Filters the channels before they render. It runs on every render, so use a cheap pure function.
+   */
   channelRenderFilterFn?: (channels: Array<Channel>) => Array<Channel>;
   /**
-   * The `ChannelPaginator` this list renders. The app creates it with the list's filters, sort and
-   * request options, and registers it on `client.channelManager` with `insertPaginator` so it receives
-   * events. The list loads its first page when it has none and never disposes it, so a list that
-   * mounts again shows the channels it already has.
+   * The `ChannelPaginator` this list renders. The app creates it with the filters, sort and request
+   * options, and registers it with `client.channelManager.insertPaginator` so it receives events.
+   * The list loads the first page when there is none and never disposes the paginator.
    */
   paginator: ChannelPaginator;
   notificationHostId?: string;
@@ -51,8 +52,8 @@ export type ChannelListProps = Partial<
 const DEFAULT_ADDITIONAL_FLAT_LIST_PROPS: Partial<FlatListProps<Channel>> = {};
 
 /**
- * Renders the channels of an app-owned `ChannelPaginator` and lets the user select one to open.
- * The ChannelList renders a ChannelListView which provides the UI for the underlying React Native FlatList.
+ * Renders the channels of an app-owned `ChannelPaginator` and lets the user select one to open,
+ * through a `ChannelListView`.
  *
  * @example ./ChannelList.md
  */
@@ -80,7 +81,7 @@ export const ChannelList = (props: ChannelListProps) => {
   const channelManager = client.channelManager;
   const { NotificationList } = useComponentsContext();
 
-  // Ref-counted on the shared manager: subscriptions live only while at least one ChannelList is mounted.
+  // Ref-counted on the shared manager: subscriptions live while at least one list is mounted.
   useEffect(() => channelManager.registerSubscriptions(), [channelManager]);
 
   const {

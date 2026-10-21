@@ -7,17 +7,10 @@ import type { ClientUser, DeepPartial, InstanceConfigTree, TokenOrProvider } fro
 import { netInfoStatusReporter } from './useConnectionLifecycle';
 
 /**
- * Names the NetInfo reporter in the client's own options, so the device's network status is reported
- * from the moment the client exists.
- *
- * `<Chat>` also installs it, but only from an effect — and until something reports, the client falls
- * back to a reporter that mirrors its own WebSocket. That fallback cannot distinguish "this device
- * has no network" from "this socket died", so a socket-only failure in that window (an expired
- * token, a server close, the `closeConnection()` that backgrounding uses) is recorded as the device
- * being offline, and the UI blames the network for it. Installing here means the fallback is never
- * reached.
- *
- * A `statusReporter` the caller passed themselves wins — it is spread last.
+ * Names the NetInfo reporter in the client options, so network status is reported from
+ * construction. `<Chat>` installs it only from an effect, and until then the client mirrors its own
+ * WebSocket, which records a socket-only failure (expired token, server close) as the device being
+ * offline. A `statusReporter` in `options` wins.
  */
 const withNetInfoReporter = (
   options?: DeepPartial<InstanceConfigTree>,
@@ -33,7 +26,14 @@ const withNetInfoReporter = (
 });
 
 /**
- * React hook to create, connect and return `StreamChat` client.
+ * Creates a `StreamChat` client and connects the user. Disconnects the user when the inputs change
+ * or the component unmounts.
+ *
+ * @param params.apiKey The Stream API key.
+ * @param params.options Client configuration. Only the first value is used.
+ * @param params.tokenOrProvider The user token or a function that provides it.
+ * @param params.userData The user to connect. A new connection is made only when its `id` changes.
+ * @returns The client once the user is connected, otherwise `null`.
  */
 export const useCreateChatClient = ({
   apiKey,
@@ -43,10 +43,7 @@ export const useCreateChatClient = ({
 }: {
   apiKey: string;
   tokenOrProvider: TokenOrProvider;
-  /**
-   * The user to connect, as `client.connectUser` accepts it: only `id` is required, so
-   * `{ id, name, image }` is enough. Server-owned fields (`role`, `created_at`, …) need not be set.
-   */
+  /** The user to connect, as `client.connectUser` accepts it. Only `id` is required. */
   userData: ClientUser;
   options?: DeepPartial<InstanceConfigTree>;
 }) => {

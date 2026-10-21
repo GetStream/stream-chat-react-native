@@ -8,9 +8,7 @@ import { BadgeNotification } from '../ui/Badge';
 
 export type ChannelPreviewUnreadCountProps = Pick<ChannelsContextValue, 'maxUnreadCount'> &
   Pick<ChannelPreviewProps, 'channel'> & {
-    /**
-     * Number of unread messages on the channel
-     */
+    /** Number of unread messages on the channel. */
     unread?: number;
   };
 

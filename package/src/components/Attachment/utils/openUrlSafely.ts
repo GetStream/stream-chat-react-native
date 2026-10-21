@@ -1,8 +1,8 @@
 import { Linking } from 'react-native';
 
 export const openUrlSafely = async (url?: string) => {
-  // An attachment whose upload hasn't settled yet has no remote URL. Without this guard the
-  // scheme fallback below would turn it into `http://undefined`, which `canOpenURL` accepts.
+  // An attachment still uploading has no remote URL, and the scheme fallback below would turn
+  // it into `http://undefined`.
   if (!url) {
     return;
   }

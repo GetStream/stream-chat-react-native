@@ -173,7 +173,7 @@ export const PollPickerButton = () => {
     openPollCreationDialog?.({ sendMessage });
   });
 
-  return !thread && hasCreatePoll && ownCapabilities.sendPoll ? ( // do not allow poll creation in threads
+  return !thread && hasCreatePoll && ownCapabilities.sendPoll ? ( // No polls in threads.
     <AttachmentTypePickerButton
       accessibilityLabelKey='attachmentPicker.typeButton.poll.accessibilityLabel'
       testID='create-poll-touchable'

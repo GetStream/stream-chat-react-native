@@ -18,10 +18,7 @@ export class OfflineDB extends AbstractOfflineDB {
     maxSyncEventsLimit,
   }: {
     client: StreamChat;
-    /**
-     * Supplies the SQLCipher key the offline database is opened with. See
-     * {@link SqliteClient.getEncryptionKey} for the stability requirement.
-     */
+    /** Supplies the SQLCipher key. See {@link SqliteClient.getEncryptionKey}. */
     getEncryptionKey?: () => Promise<string | undefined>;
     maxSyncEventsLimit?: number | false;
   }) {
@@ -29,9 +26,8 @@ export class OfflineDB extends AbstractOfflineDB {
       client,
       syncMaxEventCount: maxSyncEventsLimit === false ? undefined : maxSyncEventsLimit,
     });
-    // Assigned unconditionally: SqliteClient holds this statically, so leaving a
-    // previous instance's getter in place would keep encrypting after the caller
-    // stopped asking for it.
+    // Assigned even when undefined: `SqliteClient` holds it statically, so an earlier instance's
+    // getter would otherwise keep encrypting.
     SqliteClient.getEncryptionKey = getEncryptionKey;
   }
 
@@ -115,12 +111,8 @@ export class OfflineDB extends AbstractOfflineDB {
   executeSqlBatch = SqliteClient.executeSqlBatch;
 
   /**
-   * Why the most recent {@link initializeDB} failed, if it did.
-   *
-   * `AbstractOfflineDB.init` catches whatever `initializeDB` throws and does not
-   * re-throw it, so a caller has no way to see the reason. Recording it here on the
-   * way out gives the caller something to read back once `init` has settled. Kept on
-   * the instance rather than a static so two clients cannot overwrite each other.
+   * Why the most recent {@link initializeDB} failed, if it did. `AbstractOfflineDB.init` swallows
+   * the error, so this is how a caller reads it back once `init` has settled.
    */
   initializationError: SqliteClientError | undefined;
 

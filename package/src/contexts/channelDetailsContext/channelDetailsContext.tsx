@@ -8,9 +8,7 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelDetailsContextValue = {
   channel: Channel;
-  /**
-   * Signals all ChannelDetails modals to close themselves.
-   */
+  /** Signals all channel details modals to close. */
   closeModals: () => void;
   signalStore: SignalStore;
 };

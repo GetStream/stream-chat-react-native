@@ -15,36 +15,19 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type ProgressControlProps = {
-  /**
-   * If true, the underlying attachment is playing.
-   */
+  /** Whether the underlying attachment is playing. */
   isPlaying: boolean;
-  /**
-   * The progress of the progress bar in percentage
-   */
+  /** Playback progress as a fraction from 0 to 1. */
   progress: number;
-  /**
-   * The test ID of the progress control
-   */
+  /** Test ID of the pan gesture. */
   testID: string;
-  /**
-   * The function to be called when the user ends dragging the progress bar
-   */
+  /** Called with the progress when a drag ends. The control is only seekable when this is set. */
   onEndDrag?: (progress: number) => void;
-  /**
-   * The function to be called when the user starts dragging the progress bar
-   */
+  /** Called with the progress when a drag starts. */
   onStartDrag?: (progress: number) => void;
-  /**
-   * Expands the draggable/touchable area vertically around the thin visual
-   * track via `hitSlop`. The 3px track is easy to miss, so set this when the
-   * control is the primary seek surface (e.g. the image gallery video controls)
-   * to make it comfortably grabbable. The visual track height is unchanged.
-   */
+  /** Expands the touch area vertically by 12px on each side of the 3px track. */
   expandedTouchArea?: boolean;
-  /**
-   * The width of the progress control
-   */
+  /** Not read; the control measures its own width. */
   width?: number;
 };
 

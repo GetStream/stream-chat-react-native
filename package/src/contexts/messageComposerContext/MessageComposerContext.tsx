@@ -23,9 +23,7 @@ export type MessageComposerContextValue = {
    * or the channel's own.
    */
   messageComposer: MessageComposer;
-  /**
-   * The message being edited, if any.
-   */
+  /** The message being edited, if any. */
   editing?: LocalMessage;
 };
 

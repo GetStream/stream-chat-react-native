@@ -28,7 +28,7 @@ export type NotificationListProps = {
   enterFrom?: NotificationListEnterFrom;
   /** Additional per-list filter applied after target filtering. */
   filter?: NotificationListFilter;
-  /** Exact notification host id. Use together with `panel` when rendering outside a target provider. */
+  /** Exact notification host ID. Use together with `panel` outside a target provider. */
   hostId?: string;
   /** Target panel consumed by this list. Defaults to the nearest `NotificationTargetProvider`. */
   panel?: NotificationTargetPanel;

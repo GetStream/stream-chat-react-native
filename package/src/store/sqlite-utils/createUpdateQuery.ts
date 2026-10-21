@@ -4,14 +4,14 @@ import type { Schema } from '../schema';
 import type { PreparedQueries, TableColumnNames, TableColumnValue, TableRow } from '../types';
 
 /**
- * Creates a simple update query for sqlite.
+ * Creates a prepared `UPDATE OR IGNORE` query that sets the columns in `set`. In `whereCondition`
+ * an array value matches with `IN`, a key with an `undefined` value is skipped, and the conditions
+ * are joined with AND.
  *
- * @param {string} table Table name
- * @param {Object} set Set conditions for update query.
- * @param {Object} whereCondition Where condition for select query.
- *  e.g., { id: 'vishal', cid: ['messaging:id1', 'messaging:id2'] }.
- *  All the conditions will be joined with AND in final query.
- * @returns {string} Final update query for sqlite
+ * @param table The table name.
+ * @param set The column values to write.
+ * @param whereCondition Column values to match, for example `{ id: 'a', cid: ['b', 'c'] }`.
+ * @returns The prepared query as `[sql, params]`.
  */
 export const createUpdateQuery = <T extends keyof Schema>(
   table: T,

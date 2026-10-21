@@ -32,7 +32,12 @@ type UseMessageListLiveStateParams = {
  * A channel list also marks the channel read when a message arrives in that state. A thread list
  * leaves the channel's flags alone: the channel list underneath it keeps reporting its own.
  *
- * Returns the callback the list calls with the messages currently on screen.
+ * @param params.channel The channel the list belongs to.
+ * @param params.markRead Marks the channel read.
+ * @param params.paginator The list's paginator.
+ * @param params.thread The thread this list renders, if any.
+ * @param params.userId The current user's ID.
+ * @returns A callback the list calls with the messages currently on screen.
  */
 export const useMessageListLiveState = ({
   channel,

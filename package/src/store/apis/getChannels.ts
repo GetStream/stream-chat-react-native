@@ -11,13 +11,12 @@ import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
 import { SqliteClient } from '../SqliteClient';
 
 /**
- * Returns the list of channels with state enriched for given channel ids.
+ * Returns the channels with the given IDs, including their members, reads, messages, draft and
+ * active live locations.
  *
- * @param {Object} param
- * @param {Array} param.channelIds List of channel ids to fetch.
- * @param {Array} param.userId Id of the current logged in user.
- *
- * @returns {Array} Channels with enriched state.
+ * @param params.channelIds The channel IDs to fetch.
+ * @param params.userId The ID of the current user.
+ * @returns The channels with their state.
  */
 export const getChannels = async ({
   channelIds,
@@ -41,7 +40,6 @@ export const getChannels = async ({
       getChannelActiveLocations({ channelIds }),
     ]);
 
-  // Enrich the channels with state
   return channels.map((c) => ({
     ...mapStorableToChannel(c),
     active_live_locations: cidVsActiveLocations[c.cid] || [],

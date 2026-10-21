@@ -21,13 +21,9 @@ export type UnreadMessagesNotificationProps = {
    * list's throttled `markRead` instance.
    */
   markRead?: (options?: MarkReadFunctionOptions) => void;
-  /**
-   * Callback to handle the close event
-   */
+  /** Called when the dismiss button is pressed. Defaults to calling `markRead`. */
   onCloseHandler?: () => void;
-  /**
-   * Callback to handle the press event
-   */
+  /** Called when the notification is pressed. Defaults to jumping to the first unread message. */
   onPressHandler?: () => Promise<void>;
 };
 

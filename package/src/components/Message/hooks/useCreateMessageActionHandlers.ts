@@ -75,6 +75,17 @@ export type CreateMessageActionHandlersParams = Pick<
 /**
  * Builds the handlers behind the message actions. Holds no subscriptions: anything the handlers
  * branch on (mute, ban and block state, the translated text) is read when the handler runs.
+ *
+ * @param params.channel The channel of the message.
+ * @param params.client The chat client.
+ * @param params.deleteMessage Deletes a message.
+ * @param params.deleteReaction Removes a reaction from a message.
+ * @param params.message The message the handlers act on.
+ * @param params.retrySendMessage Retries sending a failed message.
+ * @param params.sendReaction Adds a reaction to a message.
+ * @param params.setEditingState Puts the composer into editing state.
+ * @param params.setQuotedMessage Sets the message the composer quotes.
+ * @returns The handlers of the message actions.
  */
 export const useCreateMessageActionHandlers = ({
   channel,
@@ -358,8 +369,8 @@ export const useCreateMessageActionHandlers = ({
     const messageId = message.id;
     const own_reactions = message.own_reactions ?? [];
     const userExistingReaction = own_reactions.find((reaction) => {
-      // own user should only ever contain the current user id
-      // just in case we check to prevent bugs with message updates from breaking reactions
+      // `own_reactions` should only hold the current user's reactions; checked anyway so a bad
+      // message update cannot break toggling.
       if (reaction.user && client.userID === reaction.user.id && reaction.type === reactionType) {
         return true;
       } else if (reaction.user && client.userID !== reaction.user.id) {
@@ -369,7 +380,7 @@ export const useCreateMessageActionHandlers = ({
       }
       return false;
     });
-    // Change reaction in local state, make API call in background, revert to old message if fails
+    // The operation applies the change locally at once, sends the request and rolls back on error.
     try {
       if (channel && messageId) {
         if (userExistingReaction) {

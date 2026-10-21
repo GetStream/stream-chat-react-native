@@ -18,13 +18,10 @@ import { primitives } from '../../../../theme';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 
 type SentToChannelHeaderPropsWithContext = Pick<ThreadContextValue, 'thread'> & {
-  /**
-   * Function to handle press on the sent to channel header
-   * @returns void
-   */
+  /** Called when the header is pressed. */
   onPress: () => void;
   /**
-   * Boolean to show the view text
+   * Whether to show the "view" text.
    * @default false
    */
   showViewText?: boolean;
