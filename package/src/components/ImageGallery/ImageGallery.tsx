@@ -279,6 +279,7 @@ export const ImageGalleryWithContext = (props: ImageGalleryWithContextProps) => 
   const pagerStyle = useAnimatedStyle<ImageStyle>(
     () => ({
       transform: [
+        { scaleX: 1 },
         {
           translateX: translationX.value,
         },

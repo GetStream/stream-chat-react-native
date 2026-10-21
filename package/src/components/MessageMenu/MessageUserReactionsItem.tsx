@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useMessageContext } from '../../contexts';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -42,15 +41,6 @@ export const MessageUserReactionsItem = ({
 
   const { handleReaction } = useMessageContext();
 
-  // Separate keys for the own reaction, so languages that conjugate "you reacted" can.
-  const a11yLabel = useA11yLabel(
-    isOwnReaction
-      ? 'messageMenu.userReactions.ownItem.accessibilityLabel'
-      : 'messageMenu.userReactions.item.accessibilityLabel',
-    { reaction: type, user: name || id },
-  );
-  const removeHint = useA11yLabel('messageMenu.userReactions.removeHint.accessibilityLabel');
-
   const onPress = useStableCallback(() => {
     if (isOwnReaction && handleReaction) {
       handleReaction(type);
@@ -61,8 +51,7 @@ export const MessageUserReactionsItem = ({
 
   return (
     <Pressable
-      accessibilityHint={isOwnReaction ? removeHint : undefined}
-      accessibilityLabel={a11yLabel ?? 'Individual User Reaction on long press message'}
+      accessibilityLabel='Individual User Reaction on long press message'
       accessibilityRole='button'
       style={[styles.avatarContainer, avatarContainer]}
       onPress={onPress}

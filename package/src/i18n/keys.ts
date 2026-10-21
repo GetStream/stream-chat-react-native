@@ -313,12 +313,8 @@ export type TranslationCatalog = {
   'messageList.unreadMessages.label': 'Unread Messages';
   'messageList.unreadMessages.withCount.label': '{{count}} unread';
   'messageMenu.actionList.accessibilityLabel': 'Message actions';
-  'messageMenu.reactionPicker.accessibilityLabel': 'Reaction picker';
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Open more reactions';
   'messageMenu.userReactions.fetchFailed.error': 'Error fetching reactions';
-  'messageMenu.userReactions.item.accessibilityLabel': '{{user}} reacted with {{reaction}}';
-  'messageMenu.userReactions.ownItem.accessibilityLabel': 'You reacted with {{reaction}}';
-  'messageMenu.userReactions.removeHint.accessibilityLabel': 'Double tap to remove';
   'messageMenu.userReactions.tapToRemove.description': 'Tap to remove';
   'messageMenu.userReactions.title_one': '{{count}} Reaction';
   'messageMenu.userReactions.title_other': '{{count}} Reactions';
@@ -504,11 +500,7 @@ export type BundledTranslationKey =
   | 'messageList.dismissUnread.accessibilityLabel'
   | 'messageList.scrollToBottom.accessibilityLabel'
   | 'messageMenu.actionList.accessibilityLabel'
-  | 'messageMenu.reactionPicker.accessibilityLabel'
   | 'messageMenu.reactionPicker.moreReactions.accessibilityLabel'
-  | 'messageMenu.userReactions.item.accessibilityLabel'
-  | 'messageMenu.userReactions.ownItem.accessibilityLabel'
-  | 'messageMenu.userReactions.removeHint.accessibilityLabel'
   | 'notifications.attachmentUploadFailed.error'
   | 'notifications.attachmentUploadFailed.withReason.error'
   | 'notifications.pollCreateFailed.error'

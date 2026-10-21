@@ -375,12 +375,8 @@ export const it: TranslationDictionary = {
 
   // Message action menu
   'messageMenu.actionList.accessibilityLabel': 'Azioni del messaggio',
-  'messageMenu.reactionPicker.accessibilityLabel': 'Selettore di reazioni',
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Apri altre reazioni',
   'messageMenu.userReactions.fetchFailed.error': 'Errore durante il recupero delle reazioni',
-  'messageMenu.userReactions.item.accessibilityLabel': '{{user}} ha reagito con {{reaction}}',
-  'messageMenu.userReactions.ownItem.accessibilityLabel': 'Hai reagito con {{reaction}}',
-  'messageMenu.userReactions.removeHint.accessibilityLabel': 'Tocca due volte per rimuovere',
   'messageMenu.userReactions.tapToRemove.description': 'Tocca per rimuovere',
   'messageMenu.userReactions.title_one': '{{count}} reazione',
   'messageMenu.userReactions.title_other': '{{count}} reazioni',

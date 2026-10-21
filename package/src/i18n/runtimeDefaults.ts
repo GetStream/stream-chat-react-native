@@ -123,11 +123,7 @@ export const runtimeDefaults = {
   'messageList.scrollToBottom.withCount.accessibilityLabel_other':
     'Scroll to bottom, {{count}} new messages',
   'messageMenu.actionList.accessibilityLabel': 'Message actions',
-  'messageMenu.reactionPicker.accessibilityLabel': 'Reaction picker',
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Open more reactions',
-  'messageMenu.userReactions.item.accessibilityLabel': '{{user}} reacted with {{reaction}}',
-  'messageMenu.userReactions.ownItem.accessibilityLabel': 'You reacted with {{reaction}}',
-  'messageMenu.userReactions.removeHint.accessibilityLabel': 'Double tap to remove',
   'notifications.attachmentUploadFailed.error': 'Error uploading attachment',
   'notifications.attachmentUploadFailed.withReason.error':
     'Attachment upload failed due to {{reason}}',

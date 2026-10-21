@@ -61,6 +61,7 @@ export const useAnimatedGalleryStyle = ({
         {
           scale: selected ? scale.value / 8 : oneEighth,
         },
+        { scaleX: 1 },
       ],
     };
   }, []);
@@ -70,6 +71,7 @@ export const useAnimatedGalleryStyle = ({
     const yScaleOffset = -screenHeight * 3.5;
     return {
       transform: [
+        { scaleX: 1 },
         { translateY: yScaleOffset },
         {
           translateX: -xScaleOffset,

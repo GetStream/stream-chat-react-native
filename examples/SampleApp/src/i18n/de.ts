@@ -379,12 +379,8 @@ export const de: TranslationDictionary = {
 
   // Message action menu
   'messageMenu.actionList.accessibilityLabel': 'Nachrichtenaktionen',
-  'messageMenu.reactionPicker.accessibilityLabel': 'Reaktionsauswahl',
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Weitere Reaktionen öffnen',
   'messageMenu.userReactions.fetchFailed.error': 'Fehler beim Laden der Reaktionen',
-  'messageMenu.userReactions.item.accessibilityLabel': '{{user}} hat mit {{reaction}} reagiert',
-  'messageMenu.userReactions.ownItem.accessibilityLabel': 'Du hast mit {{reaction}} reagiert',
-  'messageMenu.userReactions.removeHint.accessibilityLabel': 'Zum Entfernen doppeltippen',
   'messageMenu.userReactions.tapToRemove.description': 'Zum Entfernen tippen',
   'messageMenu.userReactions.title_one': '{{count}} Reaktion',
   'messageMenu.userReactions.title_other': '{{count}} Reaktionen',
