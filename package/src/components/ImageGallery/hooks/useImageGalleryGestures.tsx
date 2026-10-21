@@ -544,7 +544,9 @@ export const useImageGalleryGestures = ({
             duration: 200,
             easing: Easing.out(Easing.ease),
           });
-          translateX.value = withTiming(event.absoluteX - halfScreenWidth, {
+          // Keeps the tapped point under the finger: at 2x it would move from `d` to `2d` from the
+          // center, so the image shifts by `-d`.
+          translateX.value = withTiming(halfScreenWidth - event.absoluteX, {
             duration: 200,
             easing: Easing.out(Easing.ease),
           });
