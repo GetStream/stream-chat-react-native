@@ -17,15 +17,12 @@ type Props = {
 };
 
 /**
- * Accessibility-enabled variant of the gallery's background fade view. Wires
- * the "X of N" announcement and the VoiceOver/TalkBack increment/decrement
- * actions. Subscribes locally to currentIndex + assets so the parent
- * ImageGallery doesn't need that subscription itself — only this small sibling
- * re-renders to refresh the accessibilityValue text on each swipe.
+ * Accessible variant of the gallery's background view. It announces "X of N" and handles the
+ * VoiceOver/TalkBack increment and decrement actions. It subscribes to `currentIndex` and `assets`
+ * itself, so a swipe re-renders only this view and not `ImageGallery`.
  *
- * Caller is responsible for gating this on whether accessibility is enabled.
- * When disabled, the parent renders a plain Animated.View with the same
- * background style and no a11y attributes.
+ * The caller renders it only when accessibility is enabled; otherwise the parent renders a plain
+ * `Animated.View` with the same background style.
  */
 export const ImageGalleryA11yProbe = ({ containerBackground }: Props) => {
   const { imageGalleryStateStore } = useImageGalleryContext();

@@ -15,9 +15,8 @@ import { getDurationLabelFromDuration } from '../../../../utils/utils';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 
 /**
- * The shape passed to `MediaItem`'s `onPress` callback, identifying the rendered attachment, the
- * message it belongs to, and the tile's native node handle (used as the open-animation origin when
- * launching the fullscreen image gallery).
+ * Passed to the `onPress` callback of `MediaItem`: the attachment, its message, and the tile's
+ * native node handle, which is the open-animation origin of the image gallery.
  */
 export type MediaItemPressParams = {
   attachment: Attachment;
@@ -26,16 +25,13 @@ export type MediaItemPressParams = {
 };
 
 export type MediaItemProps = {
-  /** The image/video attachment rendered by this tile. */
+  /** The image or video attachment rendered by this tile. */
   attachment: Attachment;
   /** The message the attachment belongs to. */
   message: MessageResponse;
   /** Side length of the square tile, in points. */
   size: number;
-  /**
-   * Fired with the tile's attachment and message when the tile is pressed. The media list passes
-   * its gallery-opening handler here via `renderItem`.
-   */
+  /** Fired when the tile is pressed. */
   onPress?: (params: MediaItemPressParams) => void;
 };
 

@@ -11,8 +11,7 @@ export type EnhancedMentionContentProps = {
 };
 
 /**
- * Title + optional subtitle pair used by every non-user mention row
- * (channel / here / role / user_group). Override styling via
+ * Title and optional subtitle of a non-user mention row. Styled through
  * `theme.messageComposer.suggestions.mention.enhancedMention{Container,Title,Subtitle}`.
  */
 export const EnhancedMentionContent = ({

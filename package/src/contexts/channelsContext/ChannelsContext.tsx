@@ -12,39 +12,22 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelsContextValue = {
   /**
-   * Besides the existing default behavior of the ChannelListView component, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-   *
-   * **EXAMPLE:**
+   * Extra props for the underlying FlatList. Use `setFlatListRef` rather than these to get the ref.
    *
    * ```
-   * <ChannelListView
-   *  channels={channels}
-   *  additionalFlatListProps={{ bounces: true }}
-   * />
+   * <ChannelList additionalFlatListProps={{ bounces: true }} />
    * ```
-   *
-   * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
   additionalFlatListProps: Partial<FlatListProps<Channel>>;
   /**
-   * The React Native FlatList threshold to fetch more data
-   * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
-   * */
+   * The FlatList `onEndReachedThreshold`, in multiples of the visible list length. Defaults to 0.1.
+   */
   loadMoreThreshold: number;
-  /**
-   * Loads the next page of `channels`, which is present as a required prop
-   */
+  /** Loads the next page of channels. */
   loadNextPage: () => Promise<void>;
-  /**
-   * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
-   */
+  /** Highest unread count shown in the badge, which caps larger counts. Defaults to 255. */
   maxUnreadCount: number;
-  /**
-   * Number of skeletons that should show when loading. Default: 8
-   */
+  /** Number of skeleton rows shown while loading. Defaults to 8. */
   numberOfSkeletons: number;
   /**
    * The list's `ChannelPaginator`. Read the loaded channels and the query state from
@@ -52,31 +35,24 @@ export type ChannelsContextValue = {
    */
   paginator: ChannelPaginator;
   /**
-   * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
-   * from UI before loading the new ones
+   * Re-queries the first page while keeping the current channels on screen, unlike `reloadList`.
+   * Ignored within 5 seconds of the previous refresh unless the list is in an error state.
    */
   refreshList: () => void | Promise<void>;
-  /**
-   * Removes all the existing channels from UI and loads fresh channels
-   * */
+  /** Clears the channels from the UI and loads the first page again. */
   reloadList: () => Promise<void>;
   /**
-   * Function to gain access to the inner FlatList ref
-   *
-   * **Example:**
+   * Receives the inner FlatList ref, and `null` on unmount.
    *
    * ```
-   * <ChannelListView
-   *  setFlatListRef={(ref) => {
-   *    // Use ref for your own good
-   *  }}
+   * <ChannelList setFlatListRef={(ref) => { listRef.current = ref; }} />
    * ```
    */
   setFlatListRef: (ref: FlatList<Channel> | null) => void;
   /**
-   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
+   * Called when a channel is tapped. Bridges `ChannelList` and `Channel`.
    *
-   * @param channel A channel object
+   * @param channel The tapped channel.
    */
   onSelect?: (channel: Channel) => void;
   getChannelActionItems?: GetChannelActionItems;

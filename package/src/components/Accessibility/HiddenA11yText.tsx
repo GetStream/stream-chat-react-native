@@ -3,34 +3,24 @@ import { StyleSheet, Text } from 'react-native';
 
 export type HiddenA11yTextProps = {
   /**
-   * The text to inject into the accessibility tree. Rendered as actual Text
-   * content (not as `accessibilityLabel`) so the parent's compose loop on
-   * Android picks it up — Text without its own label isn't
-   * `isAccessibilityFocusable`, so it gets concatenated into the parent's
-   * announcement rather than being skipped as a drill-in target.
-   *
-   * Pass the result of `useA11yLabel(...)` directly: when SDK a11y is
-   * opt-out the value is `undefined` and the component renders nothing.
+   * Text added to the accessibility tree. It is rendered as `Text` content so that the parent's
+   * label composition on Android includes it. `undefined` (such as the result of `useA11yLabel`
+   * while accessibility is disabled) renders nothing.
    */
   label: string | undefined;
 };
 
 /**
- * A visually invisible Text that exists only to contribute extra information
- * to a screen reader's announcement. Use it inside a parent that auto-composes
- * descendant labels (Pressable, or any View with `accessible` + `accessibilityRole`)
- * to splice in supplementary state like "you reacted", "and N more", etc.
- *
- * Not for "this whole element should be one focus stop with a curated label" -
- * use `CompositeAccessibilityProbe` for that.
+ * Visually hidden text that adds information, such as "you reacted", to a screen reader
+ * announcement. Use it inside a parent that composes its descendants' labels (a `Pressable`, or a
+ * `View` with `accessible` and `accessibilityRole`). For one focus stop with a curated label, use
+ * `CompositeAccessibilityProbe`.
  */
 export const HiddenA11yText = ({ label }: HiddenA11yTextProps) => {
   if (!label) return null;
-  // Both content and accessibilityLabel are set to the same string. Content
-  // keeps the Text on the parent's compose loop (label-only would make it
-  // `isAccessibilityFocusable` and potentially skipped on Android — though
-  // the opacity:0 hidden style usually saves it). accessibilityLabel keeps
-  // testing-library `getByLabelText(...)` queries working.
+  // The label is both content and `accessibilityLabel`. Content keeps the Text in the parent's
+  // label composition on Android (a label-only Text is focusable and may be skipped); the label
+  // keeps testing-library `getByLabelText` queries working.
   return (
     <Text accessibilityLabel={label} style={styles.hidden}>
       {label}

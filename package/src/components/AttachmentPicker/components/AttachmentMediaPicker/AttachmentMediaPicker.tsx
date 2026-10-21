@@ -83,8 +83,6 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
         });
 
         endCursorRef.current = results.endCursor;
-        // skip updating if the sheet closed in the meantime, to avoid
-        // confusing the bottom sheet internals
         setPhotos((prevPhotos) => {
           if (endCursor) {
             return [...prevPhotos, ...results.assets];
@@ -116,13 +114,11 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
     if (!NativeHandlers.oniOS14GalleryLibrarySelectionChange) {
       return;
     }
-    // ios 14 library selection change event is fired when user reselects the images that are permitted to be
-    // readable by the app
+    // iOS 14 fires this when the user changes which photos the app is permitted to read.
     const { unsubscribe } = NativeHandlers.oniOS14GalleryLibrarySelectionChange(() => {
-      // we reset the cursor and has next page to true to facilitate fetching of the first page of photos again
+      // Restart pagination from the first page.
       hasNextPageRef.current = true;
       endCursorRef.current = undefined;
-      // fetch the first page of photos again
       getMorePhotos();
     });
     return unsubscribe;
@@ -144,8 +140,7 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       !loadingPhotosRef.current
     ) {
       getMorePhotos();
-      // we do this only once on open for avoiding to request permissions in rationale dialog again and again on
-      // Android
+      // Once per open, so Android does not show the permission rationale dialog repeatedly.
       attemptedToLoadPhotosOnOpenRef.current = true;
     }
   }, [getMorePhotos]);

@@ -129,7 +129,7 @@ export const ReactionListBottom = (props: ReactionListBottomProps) => {
         columnWrapperStyle={styles.columnWrapper}
         data={reactionListBottomItemData}
         keyExtractor={(item) => item.reaction.type}
-        ItemSeparatorComponent={ItemSeparatorComponent} // This is for the gap between the rows of reactions
+        ItemSeparatorComponent={ItemSeparatorComponent} // Gap between the rows of reactions
         renderItem={renderItem}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}

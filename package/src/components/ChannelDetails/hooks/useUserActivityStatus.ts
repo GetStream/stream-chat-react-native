@@ -8,14 +8,12 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { getDateString } from '../../../i18n/utils';
 
 /**
- * Returns the localized presence status string for a user:
- *   - `t('Online')` when `user.online === true`
- *   - `t('timestamp/UserActivityStatus')` (e.g. "Last seen 10 minutes ago") when offline
- *     with a valid `last_active`
- *   - `t('Offline')` otherwise (including `user === undefined` or an unparseable date)
+ * Returns the localized presence status of a user: "Online", a last-seen time such as "Last seen
+ * 10 minutes ago" (the `timestamp.UserActivityStatus` translation key) when offline with a known
+ * `last_active`, and "Offline" otherwise.
  *
- * The relative time is produced through the shared `getDateString` + translation-key
- * pipeline used by message timestamps, so the format follows the configured locale.
+ * @param user The user.
+ * @returns The translated status text.
  */
 export const useUserActivityStatus = (user?: UserResponse): string => {
   const { t, tDateTimeParser } = useTranslationContext();

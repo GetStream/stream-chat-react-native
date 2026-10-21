@@ -72,21 +72,12 @@ export type EmojiMiddleware<T extends Emoji = Emoji> = Middleware<
 >;
 
 /**
- * TextComposer middleware for mentions
- * Usage:
+ * Creates the TextComposer middleware that suggests emoji after the trigger character.
  *
- *  const textComposer = new TextComposer(options);
- *
- *  textComposer.use(new createTextComposerEmojiMiddleware(emojiSearchIndex, {
- *   minChars: 2
- *  }));
- *
- * @param emojiSearchIndex
- * @param {{
- *     minChars: number;
- *     trigger: string;
- *   }} options
- * @returns
+ * @param params.emojiSearchIndex Index searched for emoji matching the typed token.
+ * @param params.options Overrides for `minChars` and `trigger`. Defaults to
+ * `{ minChars: 1, trigger: ':' }`.
+ * @returns The emoji middleware.
  */
 export const createTextComposerEmojiMiddleware = ({
   emojiSearchIndex,
@@ -154,7 +145,7 @@ export const createTextComposerEmojiMiddleware = ({
         if (textWithReplacedWord !== state.text) {
           return complete({
             ...state,
-            suggestions: undefined, // to prevent the TextComposerMiddlewareExecutor to run the first page query
+            suggestions: undefined, // Prevents the executor from running the first page query
             text: textWithReplacedWord,
           });
         }
@@ -183,7 +174,7 @@ export const createTextComposerEmojiMiddleware = ({
             text: state.text,
             trigger: finalOptions.trigger,
           }),
-          suggestions: undefined, // Clear suggestions after selection
+          suggestions: undefined,
         });
       },
     },

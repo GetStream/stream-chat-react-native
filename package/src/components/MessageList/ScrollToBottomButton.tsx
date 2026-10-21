@@ -19,9 +19,9 @@ export const SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY =
   'messageList.scrollToBottom.withCount.accessibilityLabel';
 
 export type ScrollToBottomButtonProps = {
-  /** onPress handler */
+  /** Called when the button is pressed. */
   onPress: () => void;
-  /** If we should show the notification or not */
+  /** Whether the button is rendered. Defaults to true. */
   showNotification?: boolean;
 };
 

@@ -14,9 +14,7 @@ import { useStateStore } from '../../../hooks';
 import { primitives } from '../../../theme';
 
 type ThreadFooterComponentPropsWithContext = Pick<ThreadContextValue, 'thread'> & {
-  /**
-   * Boolean to enable/disable parent message press. Defaults to `true`.
-   */
+  /** Whether pressing the parent message is disabled. Defaults to true. */
   parentMessagePreventPress?: boolean;
 };
 
@@ -54,8 +52,8 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
 
   const styles = useStyles();
 
-  // The parent message is read reactively from the thread instance so the header updates live when
-  // it is edited / reacted to / its reply_count changes.
+  // Read from the thread state so the header updates when the parent message or its reply count
+  // changes.
   const { parentMessage, replyCount = parentMessage?.reply_count } =
     useStateStore(thread?.state, selector) ?? {};
 
@@ -89,9 +87,8 @@ const areEqual = (
   prevProps: ThreadFooterComponentPropsWithContext,
   nextProps: ThreadFooterComponentPropsWithContext,
 ) => {
-  // The parent message + reply count are read reactively from `thread.state` inside the
-  // component (via useStateStore), so this memo only needs to gate parent-driven re-renders on the
-  // remaining props: the prevent-press flag and the thread instance identity.
+  // The parent message and reply count come from `thread.state`, so only the prevent-press flag
+  // and the thread identity gate re-renders.
   const { parentMessagePreventPress: prevParentMessagePreventPress, thread: prevThread } =
     prevProps;
   const { parentMessagePreventPress: nextParentMessagePreventPress, thread: nextThread } =

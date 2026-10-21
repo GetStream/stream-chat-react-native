@@ -8,24 +8,19 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageListItemContextValue = {
   /**
-   * Handler to go to a particular message when its quoted.
+   * Goes to a message, used when a quoted message is pressed.
    *
-   * @param messageId The id of the message to go to.
-   * @returns void
+   * @param messageId The ID of the message to go to.
    */
   goToMessage: (messageId: string) => void;
-  /**
-   * Theme to use for the message list item
-   */
+  /** The theme of the list items, with `myMessageTheme` merged in. */
   modifiedTheme: Theme;
-  /**
-   * Whether to group messages by user
-   */
+  /** Turns off grouping of consecutive messages by user. */
   noGroupByUser?: boolean;
   /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
+   * Called when the replies button is pressed.
    *
-   * @param message A message object to open the thread upon.
+   * @param thread The thread to open.
    */
   onThreadSelect: MessageListProps['onThreadSelect'];
   setNativeScrollability: (value: boolean) => void;

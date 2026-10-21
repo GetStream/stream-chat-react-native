@@ -13,12 +13,17 @@ type AppSettingsRequest = {
 
 /**
  * A stable `getAppSettings()` for the chat context. The first call for a user fetches the app
- * settings and later calls reuse them. With offline support, a successful fetch is copied to the offline
- * database and a failed one falls back to that copy. A failed fetch is not kept, so the next call
- * fetches again.
+ * settings and later calls reuse them. With offline support, a successful fetch is copied to the
+ * offline database and a failed one falls back to that copy. A failed fetch is not kept, so the
+ * next call fetches again.
  *
- * The settings are requested once `ready` and a user is connected, so they are usually loaded by
- * the time anything asks for them.
+ * The settings are requested once `ready` and a user is connected, so they are usually loaded when
+ * something asks for them.
+ *
+ * @param params.client The client to fetch the settings from.
+ * @param params.ready Whether the client is ready to be queried.
+ * @param params.userId The connected user's ID; no request is made without one.
+ * @returns A function that resolves to the app settings.
  */
 export const useAppSettingsGetter = ({
   client,

@@ -24,26 +24,22 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 export type Alignment = 'right' | 'left';
 
 export type MessageContextValue = {
-  /** Whether or not actions can be performed on message */
+  /** True for a received regular message, the only kind that can be acted on. */
   actionsEnabled: boolean;
-  /** Position of the message, either 'right' or 'left' */
+  /** Side of the list the message is aligned to. */
   alignment: Alignment;
-  /**
-   * Function to dismiss the overlay
-   */
+  /** Closes the message overlay. */
   dismissOverlay: () => void;
-  /** The files attached to a message */
+  /** The file attachments of the message. */
   files: Attachment[];
   /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   * Position of the message in its group of consecutive messages from the same user: `top`,
+   * `bottom`, `middle` or `single`. For example, the avatar shows on the bottom message only.
    */
   groupStyles: GroupType[];
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+  /** Handler for attachment actions, such as those of command responses. */
   handleAction: ActionHandler;
-  /** Whether or not any message attachment exposes actions. */
+  /** Whether any attachment of the message exposes actions. */
   hasAttachmentActions: boolean;
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /**
@@ -53,104 +49,87 @@ export type MessageContextValue = {
    */
   messageActionHandlers: MessageActionHandlerCallbacks;
   /**
-   * Whether the message renders interactive children (poll options, attachment
-   * cells, the quoted-reply navigator, shared location) and the row should
-   * therefore drop its single focusstop so VO/TalkBack can drill into them.
-   * Resolved from `AccessibilityContext.hasInteractiveAccessibilityContent` -
-   * integrators override there to include their own custom content.
+   * Whether the message renders interactive children (poll options, attachments, the quoted-reply
+   * navigator, shared location), so the row drops its single focus stop and VoiceOver/TalkBack can
+   * reach them. Resolved from `AccessibilityContext.hasInteractiveAccessibilityContent`.
    */
   hasInteractiveAccessibilityContent: boolean;
-  /** Whether or not message has reactions */
+  /** Whether the message has reactions. */
   hasReactions: boolean;
-  /** Whether or not message has only a single attachment */
+  /** Whether the message has no text, no quoted message and exactly one attachment. */
   messageHasOnlySingleAttachment: boolean;
-  /** The images attached to a message */
+  /** The image attachments of the message. */
   images: Attachment[];
-  /** Whether or not this is the active user's message */
+  /** Whether the message was sent by the current user. */
   isMyMessage: boolean;
-  /** Whether this is the newest message in its list, with nothing newer loaded below it */
+  /** Whether this is the newest message in its list, with nothing newer loaded below it. */
   isVeryLastMessage?: boolean;
-  /** Whether or not this is the last message in a group of messages */
+  /** Whether this is the last message of its group (`bottom` or `single`). */
   lastGroupMessage: boolean;
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: LocalMessage;
   /**
-   * Ref to the view that the message context menu should align with.
-   * Custom message renderers can attach this to a different subview if needed.
+   * Ref to the view the message context menu aligns with. Custom message renderers can attach it
+   * to a different subview.
    */
   contextMenuAnchorRef: React.RefObject<ViewRef | null>;
   /**
-   * Stable UI-instance identifier for the rendered message.
-   * Used for overlay state so two rendered instances of the same message do not collide.
+   * Stable ID of this rendered message instance, so two renderings of the same message do not
+   * collide in the overlay state.
    */
   messageOverlayId: string;
-  /** Order to render the message content */
+  /** Order in which the message content is rendered. */
   messageContentOrder: MessageContentType[];
   /**
-   * You can call methods available on the Message
-   * component such as handleEdit, handleDelete, handleAction etc.
+   * Long-press handler. Defaults to opening the message overlay, except for blocked messages,
+   * messages with attachment actions, or when `enableLongPress` is false.
    *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
-   *
-   * By default, we show the overlay with all the message actions on long press.
-   *
-   * @param payload   Payload object for onLongPress event
+   * @param payload Payload of the long-press event.
    */
   onLongPress: (payload: PressableHandlerPayload) => void;
-  /** Whether the message is only text and the text is only emojis */
+  /** Whether the message is only text and the text is only emojis. */
   onlyEmojis: boolean;
-  /** Handler to open a thread on a message */
+  /** Opens the thread of the message. */
   onOpenThread: () => void;
   /**
-   * You can call methods available on the Message
-   * component such as handleEdit, handleDelete, handleAction etc.
+   * Press handler. Defaults to dismissing the keyboard when `dismissKeyboardOnMessageTouch` is on,
+   * and to opening the message overlay or bounce dialog for a failed or errored message.
    *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
-   *
-   * By default, we will dismiss the keyboard on press.
-   *
-   * @param payload   Payload object for onPress event
+   * @param payload Payload of the press event.
    */
   onPress: (payload: MessagePressableHandlerPayload) => void;
   onPressIn: ((payload: PressableHandlerPayload) => void) | null;
-  /** The images attached to a message */
+  /** The attachments that are not files, images or videos. */
   otherAttachments: Attachment[];
   /**
-   * Registers the subtree that should be measured and portaled into the message overlay.
-   * Custom message renderers typically interact with this via `MessageOverlayWrapper`.
+   * Registers the view to measure and portal into the message overlay. Custom message renderers
+   * use it through `MessageOverlayWrapper`.
    */
   registerMessageOverlayTarget: (params: { id: string; view: ViewRef | null }) => void;
   unregisterMessageOverlayTarget: (id: string) => void;
   reactions: ReactionSummary[];
-  /**
-   * Function to show the menu with all the message actions.
-   * @param showMessageReactions
-   * @returns void
-   */
+  /** Opens the message overlay with all the message actions. */
   showMessageOverlay: () => void;
   showReactionsOverlay: (selectedReaction?: string) => void;
   showMessageStatus: boolean;
-  /** The videos attached to a message */
+  /** The video attachments of the message. */
   videos: Attachment[];
   goToMessage?: (messageId: string) => void;
   /**
-   * Function to handle reaction on message
-   * @param reactionType
-   * @returns
+   * Handles a reaction on the message.
+   *
+   * @param reactionType The type of the reaction.
    */
   handleReaction?: (reactionType: string) => Promise<void>;
-  /**
-   * Theme provided only to messages that are the current users
-   */
+  /** Theme applied only to messages of the current user. */
   myMessageTheme?: DeepPartial<Theme>;
-  /** Prevent message being pressed for image viewer view */
+  /** Disables pressing the message attachments. Always true while the message overlay is active. */
   preventPress?: boolean;
-  /** Whether or not the avatar show show next to Message */
+  /** Whether the avatar shows next to the message. */
   showAvatar?: boolean;
   /**
-   * Function to handle thread select
-   * @param thread - The thread of the message
-   * @returns void
+   * Selects the thread of the message.
+   *
+   * @param thread The thread of the message.
    */
   onThreadSelect?: (thread: Thread) => void;
 } & Pick<ChannelContextValue, 'channel'> &

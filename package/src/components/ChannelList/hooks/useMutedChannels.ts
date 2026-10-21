@@ -7,7 +7,10 @@ const selector = (client: StreamChat) => client.mutedChannels;
 const keys: EventType[] = ['health.check', 'notification.channel_mutes_updated'];
 
 /**
- * Returns the current user's muted channels.
+ * Returns the current user's muted channels, updating on `health.check` and
+ * `notification.channel_mutes_updated`.
+ *
+ * @returns The channel mutes.
  */
 export const useMutedChannels = (): Array<ChannelMute> => {
   const { client } = useChatContext();

@@ -19,10 +19,9 @@ export const insertReaction = async ({
 
   const storableReaction = mapReactionToStorable(reaction);
 
-  // Only a channel's cached window of messages is stored, so a reaction can arrive for a message
-  // this database has never held - an old one someone reacts to, or a `/sync` replay after a cold
-  // start. Writing it anyway violates the `reactions.messageId` foreign key and aborts the whole
-  // batch it travels in.
+  // A reaction can arrive for a message this database never held (only a channel's recent window
+  // is cached). Writing it would violate the `reactions.messageId` foreign key and abort the whole
+  // batch.
   queries.push(
     createUpsertQueryIfParentExists('reactions', storableReaction, {
       column: 'id',

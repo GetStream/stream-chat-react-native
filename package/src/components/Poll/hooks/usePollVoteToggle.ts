@@ -11,10 +11,11 @@ const ownVotesSelector = (state: PollState) => ({
 });
 
 /**
- * Returns a stable callback that toggles the current user's vote on a poll option
- * by id: casts a vote if none exists, removes it if one does. Shared by the
- * visible vote button and the rotor accessibility action so both paths use
- * identical logic.
+ * Returns a stable callback that toggles the current user's vote on an option, by option ID: it
+ * removes the vote if one exists and casts it otherwise. Shared by the vote button and its
+ * accessibility action.
+ *
+ * @returns An async callback taking the option ID.
  */
 export const usePollVoteToggle = () => {
   const { message, poll } = usePollContext();

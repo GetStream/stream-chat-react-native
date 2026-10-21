@@ -20,15 +20,14 @@ import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 
-// Never called - it exists only so `ReturnType` below can name the animated component's type.
+// Never called: it only lets `ReturnType` below name the animated component's type.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in type position only
 const createAnimatedSafeAreaViewType = () => Animated.createAnimatedComponent(SafeAreaView);
 
 /**
- * A frame-aware wrapper, matching `ImageGalleryFooter`. `SafeAreaView` compares the window inset
- * against its own measured frame, so a nested instance contributes nothing once an ancestor has
- * already narrowed the subtree - unlike `useSafeAreaInsets`, which is window-global and would
- * double-pad this header inside `ChannelDetailsModal`, which insets its own root.
+ * Animated `SafeAreaView`, as in `ImageGalleryFooter`. It compares the window inset against its own
+ * frame, so a nested instance adds no padding when an ancestor has already inset the subtree.
+ * `useSafeAreaInsets` is window-global and would double-pad inside `ChannelDetailsModal`.
  *
  * `createAnimatedComponent` is guarded because a stripped-down Reanimated mock may not provide it.
  */

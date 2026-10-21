@@ -33,94 +33,52 @@ init();
 export type ChatProps = Pick<ChatContextValue, 'client'> &
   Partial<Pick<ChatContextValue, 'isMessageAIGenerated'>> & {
     /**
-     * When false, ws connection won't be disconnection upon backgrounding the app.
-     * To receive push notifications, its necessary that user doesn't have active
-     * websocket connection. So by default, we disconnect websocket connection when
-     * app goes to background, and reconnect when app comes to foreground.
+     * Whether to close the WebSocket connection while the app is in the background and reopen it in
+     * the foreground. Push notifications are only delivered while no connection is active. Defaults
+     * to true.
      */
     closeConnectionOnBackground?: boolean;
-    /**
-     * Enables offline storage and loading for chat data.
-     */
+    /** Enables offline storage and loading for chat data. Defaults to false. */
     enableOfflineSupport?: boolean;
     /**
-     * Encrypts the offline database at rest with SQLCipher, using the key this
-     * resolves to. Only relevant when `enableOfflineSupport` is enabled. Leaving it
-     * unset keeps the offline database unencrypted, which is the default.
+     * Resolves the key that encrypts the offline database at rest with SQLCipher. Only applies with
+     * `enableOfflineSupport`; when unset the database is unencrypted.
      *
-     * Requires a native build of `@op-engineering/op-sqlite` that includes SQLCipher.
-     * Add the following to your application's `package.json` and rebuild the native
-     * app - without the flag the key is accepted and then silently ignored:
+     * Needs a native `@op-engineering/op-sqlite` build with SQLCipher
+     * (`{ "op-sqlite": { "sqlcipher": true } }` in the app's `package.json`).
      *
-     * ```json
-     * { "op-sqlite": { "sqlcipher": true } }
-     * ```
+     * When the database cannot be opened with the requested encryption, `<Chat>` throws a
+     * {@link SqliteClientError} from render, so wrap it in an error boundary. The SDK never deletes
+     * data or falls back to an unencrypted cache. Branch on `code`:
+     * - `OFFLINE_DB_UNREADABLE`: the existing file cannot be read with this key. Call
+     *   `SqliteClient.deleteDatabase()` and re-mount; actions queued while offline are lost.
+     * - `ENCRYPTION_KEY_UNAVAILABLE`: the key could not be read (such as a locked keychain). The
+     *   database is untouched; re-mount to retry.
+     * - `SQLCIPHER_BUILD_MISSING`: the native build lacks SQLCipher. Re-mount with
+     *   `enableOfflineSupport={false}` so nothing is persisted unencrypted.
      *
-     * **Wrap `<Chat>` in an error boundary.** If the database cannot be opened with
-     * the encryption you asked for, `<Chat>` throws a {@link SqliteClientError}
-     * from render instead of continuing without it. The SDK deliberately takes no
-     * recovery action of its own - it never deletes data, and never silently falls
-     * back to an unencrypted or absent cache. Discriminate on `code`:
-     *
-     * - `OFFLINE_DB_UNREADABLE` - the file exists but this key cannot read it (the
-     *   key changed, or the database predates encryption). **Recommended recovery:
-     *   `SqliteClient.deleteDatabase()`, then re-mount `<Chat>`.** The contents are a
-     *   cache and are refetched from the server; the exception is actions queued while
-     *   offline, which are lost - prompt the user first if that matters to you.
-     * - `ENCRYPTION_KEY_UNAVAILABLE` - the key could not be read (a locked keychain, a
-     *   launch before first unlock). The database is untouched. **Recommended
-     *   recovery: re-mount to retry** once the key is readable - for example when the
-     *   app next returns to the foreground.
-     * - `SQLCIPHER_BUILD_MISSING` - the native build has no SQLCipher, so the key
-     *   would be ignored and the database written in plaintext. Not recoverable at
-     *   runtime; it needs the build flag above and a new binary. **Recommended
-     *   recovery: re-mount with `enableOfflineSupport={false}`** so nothing is
-     *   persisted unencrypted.
-     *
-     * The key must be **stable for the lifetime of the database file**. There is no
-     * rekey path, so a key that changes costs one `OFFLINE_DB_UNREADABLE` and a
-     * rebuild. To rotate without paying that, rotate a key-encryption key and keep the
-     * database key it protects unchanged (envelope encryption).
-     *
-     * Switching encryption on, or back off, leaves a database from the other mode on
-     * disk and so raises `OFFLINE_DB_UNREADABLE` once in each direction. Deleting it
-     * from your boundary is all that is needed.
+     * The key must stay the same for the life of the database file, as there is no rekey. Switching
+     * encryption on or off raises `OFFLINE_DB_UNREADABLE` once, until the old database is deleted.
      */
     getOfflineDbEncryptionKey?: () => Promise<string | undefined>;
     /**
-     * Optional positive cap on the number of events a single `/sync` response may
-     * contain before the offline sync manager skips replaying those events into
-     * local storage.
-     *
-     * On reconnect the SDK downloads the events missed while offline and writes
-     * them to the offline DB. For a very large payload this replay is both costly
-     * on-device and unnecessary for what the user is looking at — the active
-     * channel list and any open channel are refreshed independently on reconnect
-     * (by `client.connectionRecovery`). When the payload exceeds this
-     * limit the replay is skipped and that reconnect refresh covers the visible
-     * channels; inactive channels are hydrated on their next explicit query. The
-     * last-sync timestamp is still advanced so the same payload is not retried.
-     *
-     * Defaults to {@link DEFAULT_MAX_SYNC_EVENTS_LIMIT} (250). Pass `false` to
-     * disable the limit entirely (replay every event — the historical behavior).
-     *
-     * Only relevant when `enableOfflineSupport` is enabled.
+     * Positive cap on how many events of a single `/sync` response the offline sync manager replays
+     * into local storage on reconnect. Above the cap the replay is skipped, the reconnect refresh
+     * covers the visible channels, and the last-sync timestamp still advances. `false` disables the
+     * cap. Only applies with `enableOfflineSupport`.
      *
      * @default 250
      */
     maxSyncEventsLimit?: number | false;
     /**
-     * When true, multipart uploads use the SDK's native upload adapter when available.
-     * When false, uploads stay on the default axios adapter.
-     *
-     * This only controls whether the native adapter gets installed by this Chat instance.
-     * It does not uninstall an adapter that was already installed on the client.
+     * Installs the SDK's native multipart upload adapter on the client when true and available;
+     * otherwise uploads use the default axios adapter. An adapter already installed stays in place.
      *
      * @default false
      */
     useNativeMultipartUpload?: boolean;
     /**
-     * Instance of Streami18n class should be provided to Chat component to enable internationalization.
+     * The `Streami18n` instance that enables internationalization.
      *
      * The SDK ships English only. Add a language by registering a dictionary keyed by the SDK's
      * dotted translation keys, then switching to it:
@@ -140,9 +98,8 @@ export type ChatProps = Pick<ChatContextValue, 'client'> &
      */
     i18nInstance?: Streami18n;
     /**
-     * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts)
-     *
-     * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for details.
+     * Theme overrides, merged over the default theme in
+     * [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts).
      *
      * ```
      * import type { DeepPartial, Theme } from 'stream-chat-react-native';
@@ -193,14 +150,10 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   } = props;
   const { ChatLoadingIndicator } = useComponentsContext();
 
-  // Setup translators
   const translators = useStreami18n(i18nInstance);
 
-  /**
-   * Tracked rather than read inline: `client.user` is a plain field, so a `useMemo` over it only
-   * re-evaluates when something else re-renders `Chat`. A language changed server-side would
-   * otherwise never reach the components that read it.
-   */
+  // State rather than a memo: `client.user` is a plain field, so a memo would miss a language
+  // changed server-side until something else re-rendered `Chat`.
   const [userLanguage, setUserLanguage] = useState(
     () => client.user?.language || DEFAULT_USER_LANGUAGE,
   );
@@ -284,7 +237,7 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
   const chatContext = useCreateChatContext({ client, getAppSettings, isMessageAIGenerated });
 
   if (userId && enableOfflineSupport && !initialisedDatabase) {
-    // if user id has been set and offline support is enabled, we need to wait for database to be initialised
+    // Hold rendering until the offline database is initialized for this user.
     return ChatLoadingIndicator ? <ChatLoadingIndicator /> : null;
   }
 
@@ -298,17 +251,10 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
 };
 
 /**
- * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
- * This Chat component provides the ChatContext to all other components.
+ * Root component that provides the chat, translation and theme contexts to the components below it.
  *
- * The ChatContext provides the following props:
- *
- * - client - client connection
- * - getAppSettings - resolves the app's settings
- * - isMessageAIGenerated - decides whether a message renders as AI generated
- *
- * Connection status is NOT on this context. Read it with `useWSConnectionState()` (our socket)
- * or `useNetworkConnectionState()` (the device's network) — they are separate facts.
+ * Connection status is not on the chat context: read it with `useWSConnectionState()` (the socket)
+ * or `useNetworkConnectionState()` (the device network).
  */
 export const Chat = (props: PropsWithChildren<ChatProps>) => {
   const { theme } = useTheme();

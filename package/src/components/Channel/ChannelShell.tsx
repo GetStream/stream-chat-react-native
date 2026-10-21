@@ -91,8 +91,8 @@ export const reactionData: ReactionData[] = [
 ];
 
 /**
- * The configuration `<Channel>` and `<Thread>` share: everything that shapes how the message list,
- * the messages and the composer below them behave, as opposed to which conversation they show.
+ * Configuration shared by `<Channel>` and `<Thread>` for the message list, messages and composer
+ * below them.
  */
 export type ChannelConfigProps = Partial<
   Pick<
@@ -187,22 +187,17 @@ export type ChannelConfigProps = Partial<
       | 'hasCreatePoll'
     >
   > & {
-    /**
-     * Additional props passed to keyboard avoiding view
-     */
+    /** Additional props passed to the keyboard avoiding view. */
     additionalKeyboardAvoidingViewProps?: Partial<KeyboardCompatibleViewProps>;
     /**
-     * If true, multiple audio players will be allowed to play simultaneously
+     * If true, multiple audio players can play simultaneously.
      * @default true
      */
     allowConcurrentAudioPlayback?: boolean;
     /**
-     * When true, disables the KeyboardCompatibleView wrapper
-     *
-     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
-     * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
-     * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
-     * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
+     * Disables the `KeyboardCompatibleView` that resizes the channel when the keyboard opens or
+     * closes, for apps that use React Native's `KeyboardAvoidingView` or handle it themselves.
+     * Defaults to false.
      */
     disableKeyboardCompatibleView?: boolean;
     keyboardBehavior?: KeyboardCompatibleViewProps['behavior'];
@@ -213,24 +208,17 @@ export type ChannelConfigProps = Partial<
 type ChannelShellProps = ChannelConfigProps & {
   channel: Channel;
   hasPendingInitialTargetLoad: () => boolean;
-  /**
-   * Set by `<Thread>`: the list and the composer below show this thread's replies.
-   */
+  /** Set by `<Thread>`: the list and composer below show this thread's replies. */
   thread?: Thread;
 };
 
-/**
- * Poll composition, resolved: the channel type's `polls` flag already ANDed with anything registered
- * through `client.config.set({ messageComposer: { polls } })`. Module scope keeps the reference stable.
- */
+// Resolved poll composition: the channel type's `polls` flag combined with anything registered
+// through `client.config.set({ messageComposer: { polls } })`.
 const composerPollsSelector = (state: MessageComposerConfig) => ({
   pollsEnabled: state.polls.enabled,
 });
 
-/**
- * The slash commands this channel type offers, as the server reports them. Lives on resolved channel
- * configuration so there is one place to read from — see `ChannelConfig.availableCommands`.
- */
+// The slash commands the channel type offers, as the server reports them.
 const availableCommandsSelector = (state: ChannelConfig) => ({
   availableCommands: state.availableCommands,
 });
@@ -241,8 +229,8 @@ const channelStatusSelector = (state: ChannelDataState & ChannelLifecycleState) 
 });
 
 /**
- * The providers a message list and a composer need, shared by `<Channel>` and `<Thread>`. Each of
- * those owns its own lifecycle (watching, loading, marking read) and renders this around its children.
+ * The providers a message list and composer need, shared by `<Channel>` and `<Thread>`, which each
+ * own their lifecycle (watching, loading, marking read) and render this around their children.
  */
 export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
   const {
@@ -296,7 +284,7 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     hasCameraPicker = isImagePickerAvailable(),
     hasCommands,
     hasCreatePoll,
-    // If pickDocument isn't available, default to hiding the file picker
+    // The file picker is hidden when no document picker is available.
     hasFilePicker = isDocumentPickerAvailable(),
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
     hasPendingInitialTargetLoad,
@@ -355,8 +343,8 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
   ) ?? { pollsEnabled: false };
   const pollCreationEnabled = !pendingDisposal && !!channel?.id && pollsEnabled;
 
-  // Sent directly rather than through `channel.stopTyping()`, which does nothing once the socket is
-  // closed, and `<Chat>` usually closes it on background before this runs.
+  // Sent as an event because `channel.stopTyping()` does nothing once the socket is closed, which
+  // `<Chat>` usually does on background before this runs.
   const handleAppBackground = useCallback(() => {
     if (!channel.isTyping || !channel.data?.own_capabilities?.includes('send-typing-events')) {
       return;
@@ -371,16 +359,8 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
 
   useAppStateListener(undefined, handleAppBackground);
 
-  /**
-   * Channel configs for use in disabling local functionality.
-   * Nullish coalescing is used to give first priority to props to override
-   * the server settings. Then priority to server settings to override defaults.
-   *
-   * Read from the channel's *resolved* configuration, which carries the server's command list as
-   * `availableCommands`. That is reactive, so the list no longer has to be re-read imperatively on
-   * every render — and it no longer throws for a channel pending disposal, which is why the previous
-   * try/catch wrapper is gone.
-   */
+  // Read from the channel's resolved configuration. The `hasCommands` prop, when set, takes
+  // priority over the server's command list.
   const { availableCommands } = useStateStore(channel?.configState, availableCommandsSelector) ?? {
     availableCommands: [],
   };

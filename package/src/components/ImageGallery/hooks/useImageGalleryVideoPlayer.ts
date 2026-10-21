@@ -6,8 +6,10 @@ import { VideoPlayerOptions } from '../../../state-store/video-player';
 export type UseImageGalleryVideoPlayerProps = VideoPlayerOptions;
 
 /**
- * Hook to get the video player instance.
- * @param options - The options for the video player.
+ * Gets the video player from the gallery's pool, creating it when missing. `autoPlay` comes from
+ * the gallery context.
+ *
+ * @param options Video player options. `options.id` identifies the player in the pool.
  * @returns The video player instance.
  */
 export const useImageGalleryVideoPlayer = (options: UseImageGalleryVideoPlayerProps) => {

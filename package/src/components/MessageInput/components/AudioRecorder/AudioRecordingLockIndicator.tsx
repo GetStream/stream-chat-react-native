@@ -9,19 +9,13 @@ import { AudioRecorderManagerState } from '../../../../state-store/audio-recorde
 import { primitives } from '../../../../theme';
 
 export type AudioRecordingLockIndicatorProps = Pick<AudioRecorderManagerState, 'micLocked'> & {
-  /**
-   * Height of the message input, to apply necessary position adjustments to this component.
-   */
+  /** Height of the message input, for positioning this component. */
   messageInputHeight?: number;
-  /**
-   * Styles of the lock indicator.
-   */
+  /** Styles of the lock indicator. */
   style?: StyleProp<AnimatedStyle<ViewStyle>>;
 };
 
-/**
- * Component displayed to show the lock state of the recording when the button is slided up.
- */
+/** Shows the lock state of the recording while the mic button is slid up. */
 export const AudioRecordingLockIndicator = ({
   messageInputHeight,
   micLocked,

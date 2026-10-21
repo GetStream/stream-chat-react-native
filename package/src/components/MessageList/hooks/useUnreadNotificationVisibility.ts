@@ -15,8 +15,16 @@ type UseUnreadNotificationVisibilityParams = {
 };
 
 /**
- * Whether the "N new messages" notification is shown at the top of a channel list: the user has
- * scrolled up past the last message they read, and that message is no longer on screen.
+ * Tracks whether the unread notification is shown at the top of a channel's message list: the user
+ * has scrolled up past the last message they read, and that message is no longer on screen.
+ *
+ * @param params.attachmentPickerStore Hides the notification while the images picker is open.
+ * @param params.channel The channel the list belongs to.
+ * @param params.markRead Marks the channel read when the notification is closed.
+ * @param params.readEvents Whether the channel has read events enabled.
+ * @param params.userId The current user's ID.
+ * @returns `isUnreadNotificationOpen`, `onUnreadNotificationClose` (marks the channel read and
+ * hides the notification) and `updateUnreadNotification` (call it with the messages on screen).
  */
 export const useUnreadNotificationVisibility = ({
   attachmentPickerStore,

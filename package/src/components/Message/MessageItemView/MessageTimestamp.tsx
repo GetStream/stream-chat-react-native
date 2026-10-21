@@ -11,17 +11,11 @@ import { primitives } from '../../../theme';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDateTimeParser'>> & {
-  /**
-   * Already Formatted date
-   */
+  /** The already formatted date. */
   formattedDate?: string | Date;
-  /**
-   * The timestamp of the message.
-   */
+  /** The timestamp of the message. */
   timestamp?: string | Date;
-  /*
-   * Lookup key in the language corresponding translations sheet to perform date formatting
-   */
+  /** Translation key of the date format. */
   timestampTranslationKey?: string;
 };
 

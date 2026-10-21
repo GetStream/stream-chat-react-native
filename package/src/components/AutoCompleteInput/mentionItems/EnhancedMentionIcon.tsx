@@ -6,26 +6,16 @@ import type { IconProps } from '../../../icons/utils/base';
 import { primitives } from '../../../theme';
 
 export type EnhancedMentionIconProps = {
-  /**
-   * Any icon component from `package/src/icons` (or a custom one matching the
-   * same `IconProps` shape). The wrapper standardizes size + color and wraps
-   * the icon in a circular chip — per-type mention items don't have to know
-   * about any of that.
-   */
+  /** Icon component, rendered at half the chip size inside a circular chip. */
   Icon: React.ComponentType<IconProps>;
-  /**
-   * Icon size in px. Defaults to 16. The surrounding chip scales with this.
-   */
+  /** Chip diameter in px. Defaults to 32. */
   size?: IconProps['size'];
-  /**
-   * Stroke / fill color. Defaults to `semantics.textSecondary`.
-   */
+  /** Icon fill color. Defaults to `semantics.textPrimary`. */
   color?: IconProps['pathFill'];
 };
 
 /**
- * Universal wrapper for non-user mention-row icons. Renders the supplied
- * `Icon` inside a circular chip. Override chip styling via
+ * Circular chip around the icon of a non-user mention row. Styled through
  * `theme.messageComposer.suggestions.mention.enhancedMentionIcon`.
  */
 export const EnhancedMentionIcon = ({ color, Icon, size = 32 }: EnhancedMentionIconProps) => {

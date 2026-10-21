@@ -48,9 +48,7 @@ export const useCreateMessagesContext = ({
   supportedReactions,
   urlPreviewType,
 }: MessagesContextValue & {
-  /**
-   * To ensure we allow re-render, when channel is changed
-   */
+  /** Re-creates the context when the channel changes. */
   channelId?: string;
 }) => {
   const additionalTouchablePropsLength = Object.keys(additionalPressableProps || {}).length;

@@ -6,14 +6,14 @@ import { useStateStore } from './useStateStore';
 type MessageFocusSignalState = { signal: { messageId?: string } | null };
 
 /**
- * Whether this message is the one the list is currently focused on — the target of a
- * `jumpToMessage` / `jumpToTheFirstUnreadMessage`, for the lifetime of the signal's TTL.
+ * Whether the message is the target of the active paginator's `messageFocusSignal` (set by
+ * `jumpToMessage` and `jumpToTheFirstUnreadMessage`, for the signal's TTL).
  *
- * Read per row, off the active paginator's `messageFocusSignal`, rather than from a
- * `highlightedMessageId` on the channel context. Both cost one subscription per row in practice
- * (every row already consumes that context), but a context value that changes on every jump
- * re-renders every row; a boolean scoped to one id re-renders only the row losing the highlight
- * and the row gaining it.
+ * Each row selects its own boolean, so a jump re-renders only the row losing the highlight and the
+ * row gaining it, not every row as a shared context value would.
+ *
+ * @param messageId The ID of the message.
+ * @returns True when the message is the focus target.
  */
 export const useIsTargetedMessage = (messageId: string) => {
   const paginator = useMessagePaginator();

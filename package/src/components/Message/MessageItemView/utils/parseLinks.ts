@@ -5,15 +5,10 @@ interface LinkInfo {
   url: string;
 }
 
-/**
- * This is done to remove all markdown formatted links.
- * eg: [google.com](https://www.google.com), [Google](https://www.google.com), [https://www.google.com](https://www.google.com)
- * */
+/** Strips markdown links such as `[Google](https://www.google.com)`, so they are not linkified again. */
 const removeMarkdownLinksFromText = (input: string) => input.replace(/\[.*\]\(.*\)/g, '');
 
-/**
- * This is done to avoid parsing usernames with dot as well as an email address in it.
- */
+/** Strips `@user.name@domain.tld` mentions, so a username with a dot is not parsed as a link. */
 const removeUserNamesWithEmailFromText = (input: string) =>
   input.replace(/@(\w+(\.\w+)?)(@\w+\.\w+)/g, '');
 
@@ -31,7 +26,7 @@ export const parseLinksFromText = (input?: string): LinkInfo[] => {
 
   const result: LinkInfo[] = [...links, ...emails].map(({ href, value }) => {
     let hrefWithProtocol = href;
-    // Matching these: https://reactnative.dev/docs/0.73/linking?syntax=ios#built-in-url-schemes
+    // Values that already carry a scheme (`mailto:`, `tel:`, `sms:` or `scheme://`) are kept as is.
     const pattern = new RegExp(/^(mailto:|tel:|sms:|\S+:\/\/)/);
     if (!pattern.test(hrefWithProtocol)) {
       hrefWithProtocol = 'http://' + hrefWithProtocol;

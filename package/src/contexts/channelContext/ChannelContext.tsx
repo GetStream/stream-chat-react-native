@@ -8,58 +8,30 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelContextValue = {
   /**
-   * Instance of channel object from stream-chat package.
-   *
-   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
-   *
-   * ```
-   * import { StreamChat, Channel } from 'stream-chat';
-   * import { Chat, Channel} from 'stream-chat-react-native';
-   *
-   * const client = StreamChat.getInstance('api_key');
-   * await client.connectUser('user_id', 'user_token');
-   * const channel = client.channel('messaging', 'channel_id');
-   * await channel.watch();
-   *
-   * <Chat client={client}>
-   *  <Channel channel={channel}>
-   *  </Channel>
-   * </Chat>
-   * ```
+   * The `stream-chat` channel instance.
    *
    * @overrideType Channel
    */
   channel: Channel;
-  /**
-   * When set to true, reactions will be limited to 1 per user. If user selects another reaction
-   * then his previous reaction will be removed and replaced with new one.
-   *
-   * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
-   */
+  /** Limits users to one reaction; picking another replaces the previous. Defaults to false. */
   enforceUniqueReaction: boolean;
   /**
-   * Render the inline date separator above a system message when that message is the first of
-   * its day. Off by default: without it a system message on a day boundary consumes the boundary
-   * and renders nothing, so that day gets no separator at all.
+   * Renders the inline date separator above a system message that is the first of its day.
+   * Defaults to false: a system message on a day boundary then renders no separator for that day.
    */
   allowDateSeparatorForSystemMessages: boolean;
-  /**
-   * Hide inline date separators on channel
-   */
+  /** Hides the inline date separators. Defaults to false. */
   hideDateSeparators: boolean;
   hideStickyDateHeader: boolean;
   /**
-   * Returns true when Channel is about to load an initial targeted message.
+   * Returns true when `Channel` is about to load an initial targeted message.
    *
    * @internal
    */
   hasPendingInitialTargetLoad?: () => boolean;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
-  /**
-   * Maximum time in milliseconds that should occur between messages
-   * to still consider them grouped together
-   */
+  /** Maximum time in milliseconds between messages that are still grouped together. */
   maxTimeBetweenGroupedMessages?: number;
 };
 

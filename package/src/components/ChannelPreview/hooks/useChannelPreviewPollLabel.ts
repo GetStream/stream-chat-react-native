@@ -16,9 +16,10 @@ const selector = (nextValue: PollState) => ({
 });
 
 /**
- * Hook to get the label of the poll
- * @param pollId - The id of the poll
- * @returns The label of the poll
+ * The preview label for the latest vote on a poll, such as "You voted: Option".
+ *
+ * @param params.pollId ID of the poll.
+ * @returns The label, or `undefined` when the poll has no votes.
  */
 export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabelProps) => {
   const { client } = useChatContext();

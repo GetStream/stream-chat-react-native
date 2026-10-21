@@ -10,9 +10,7 @@ import { NotificationList } from '../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
 
 export type ChannelDetailsProps = {
-  /**
-   * Fired when the back button is pressed on the channel details header.
-   */
+  /** Fired when the back button in the header is pressed. */
   onBack?: () => void;
 };
 

@@ -15,31 +15,19 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelEditDetailsContextValue = {
   store: EditChannelDetailsStore;
-  /**
-   * Saves the edited channel details (name and/or image). Resolves once every
-   * update succeeds and rejects if any of them fail.
-   */
+  /** Saves the edited name and/or image. Rejects with an `AggregateError` if any update fails. */
   submit: () => Promise<void>;
-  /**
-   * Compress image with quality (from 0 to 1, where 1 is best quality) applied
-   * to the channel image picked during editing.
-   */
+  /** Compression quality from 0 to 1 (1 is best) for the channel image picked while editing. */
   compressImageQuality?: number;
-  /** Override the upload request used to upload the channel image. */
+  /** Overrides the request that uploads the channel image. */
   doFileUploadRequest?: GlobalFileUploadRequest;
 };
 
-/**
- * Props for the {@link ChannelEditDetailsProvider} that seed the edit flow
- * configuration into the context.
- */
+/** Props of the {@link ChannelEditDetailsProvider}. */
 export type ChannelEditDetailsProviderProps = PropsWithChildren<{
-  /**
-   * Compress image with quality (from 0 to 1, where 1 is best quality) applied
-   * to the channel image picked during editing.
-   */
+  /** Compression quality from 0 to 1 (1 is best) for the channel image picked while editing. */
   compressImageQuality?: number;
-  /** Override the upload request used to upload the channel image. */
+  /** Overrides the request that uploads the channel image. */
   doFileUploadRequest?: GlobalFileUploadRequest;
 }>;
 
@@ -49,8 +37,8 @@ export const ChannelEditDetailsContext = React.createContext(
 
 /**
  * Builds the {@link ChannelEditDetailsContextValue}. Rendered inside the
- * {@link NotificationTargetProvider} so that notifications emitted by `submit`
- * (via {@link useChannelActions}) resolve to the channel edit details host.
+ * {@link NotificationTargetProvider} so notifications from `submit` resolve to the edit details
+ * host.
  */
 const ChannelEditDetailsContextProviderInner = ({
   children,
@@ -97,10 +85,9 @@ const ChannelEditDetailsContextProviderInner = ({
 };
 
 /**
- * Creates and provides an {@link EditChannelDetailsStore} snapshotted from the
- * channel in the {@link ChannelDetailsContext}. Mount this once per edit session — the store captures the
- * channel's name/image at construction and does not track later WebSocket
- * updates, so an inbound `channel.updated` does not clobber in-progress edits.
+ * Provides an {@link EditChannelDetailsStore} snapshotted from the channel in the
+ * {@link ChannelDetailsContext}. Mount it once per edit session: the store does not track later
+ * `channel.updated` events, so they cannot overwrite in-progress edits.
  */
 export const ChannelEditDetailsProvider = ({
   children,

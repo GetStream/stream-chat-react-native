@@ -22,10 +22,8 @@ import { useChannelMembershipState } from '../useChannelMembershipState';
 import { useIsDirectChat } from '../useIsDirectChat';
 import { useStateStore } from '../useStateStore';
 
-// Lazily resolved to avoid a static import cycle with defaultComponents.ts
-// (defaultComponents → ChannelDetails*/ChannelPreview* → this file). Statically
-// importing defaultIcons corrupts module-init order; require it at call time
-// instead. Same pattern as ComponentsContext's getDefaults().
+// Required lazily: a static import of defaultComponents.ts would form a cycle
+// (defaultComponents -> ChannelDetails*/ChannelPreview* -> this file) and corrupt init order.
 let cachedDefaultIcons: IconsMap | undefined;
 const getDefaultIcons = (): IconsMap => {
   if (!cachedDefaultIcons) {
@@ -40,37 +38,22 @@ export type ChannelActionItem = ActionItem<
   'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | 'pin' | string
 > & {
   /**
-   * Per item routing **within a channel preview interaction** (swipe row vs
-   * the sheet that opens from it). Only meaningful when the items are consumed
-   * from `<ChannelSwipableWrapper>`:
-   *
-   * - `'swipe'`: shown only in the swipe-row chips.
-   * - `'sheet'`: shown only in the swipe-triggered options sheet.
-   * - `'both'`: shown in both swipe row and sheet.
-   *
-   * The standalone Channel Details screen does **not** filter by `placement` -
-   * use {@link ChannelActionSurface} (`surface`) instead to vary items between
-   * the channel list and the Channel Details screen.
+   * Where the item shows in a channel preview: `'swipe'` (swipe-row chips only), `'sheet'` (the
+   * options sheet opened from the swipe row only) or `'both'`. Only `<ChannelSwipableWrapper>`
+   * reads it; the Channel Details screen does not, so use `surface` to vary items there.
    */
   placement: 'both' | 'sheet' | 'swipe';
 };
 
 /**
- * Identifies which top level UI surface is requesting channel action items.
- * Passed verbatim into {@link ChannelActionItemsParams} so the default builder
- * and any integrator supplied `getChannelActionItems` can branch on it - i.e.
- * to drop or relabel an item on a specific surface or to provide an entirely
- * different builder per surface.
+ * The UI surface requesting channel action items, passed through to `getChannelActionItems` so it
+ * can drop or relabel items per surface.
  *
- * - `'list'`: anything driven by a ChannelList interaction, the swipe row
- *   chips on a channel preview and the bottom sheet that opens from them.
- *   Subrouting between the swipe row and the sheet is handled by the per item
- *   {@link ChannelActionItem.placement} field.
- * - `'details'`: items for the standalone Channel Details screen.
+ * - `'list'`: ChannelList interactions, the swipe row of a channel preview and its options sheet
+ *   (routed between the two by {@link ChannelActionItem.placement}).
+ * - `'details'`: the standalone Channel Details screen.
  *
- * `surface` operates at the call site level (which UI is asking). It is
- * optional and when omitted, the default builder applies no surface specific
- * filtering and returns every item it would otherwise produce.
+ * When omitted, the default builder applies no surface filtering.
  */
 export type ChannelActionSurface = 'list' | 'details';
 

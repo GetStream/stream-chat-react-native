@@ -206,7 +206,7 @@ const useStyles = () => {
         flexDirection: 'row',
         alignItems: 'center',
         gap: primitives.spacingXs,
-        marginTop: -primitives.spacingMd, // Pulling the replies container up to hide the stick in the message content
+        marginTop: -primitives.spacingMd, // Pulls up to hide the stick in the message content
       },
       content: {
         alignSelf: 'flex-end',

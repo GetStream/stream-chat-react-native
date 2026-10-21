@@ -14,18 +14,15 @@ const selector = (nextValue: PaginatorState<ReminderResponseData>) =>
     items: nextValue.items,
   }) as const;
 
-// Utility to sort reminders by remind_at date in ascending order
 const sortRemindersByDate = (reminders: ReminderResponseData[]) => {
   return reminders.sort((a, b) => {
     if (a.remind_at == null || b.remind_at == null) {
-      return 0; // If either remind_at is missing, keep original order
+      return 0; // Keep the original order when either remind_at is missing
     }
-    // Sort by remind_at date
     return a.remind_at - b.remind_at;
   });
 };
 
-// Utility functions to check reminder status
 const isReminderOverdue = (reminder?: ReminderResponseData) => {
   return reminder?.remind_at != null && reminder.remind_at < nowNs();
 };
@@ -34,24 +31,21 @@ const isReminderUpcoming = (reminder?: ReminderResponseData) => {
   return reminder?.remind_at != null && reminder.remind_at > nowNs();
 };
 
-// Utility to check if all reminders should be shown based on filters
 const showAllReminders = (filters?: ReminderFilters) => {
   return filters && Object.keys(filters).length === 0;
 };
 
 /**
- * Custom hook to query reminders from the Stream Chat client.
- * It handles fetching, updating, and deleting reminders, and provides
- * a way to refresh the list and load more reminders.
+ * Queries reminders from the client and keeps the list in sync with reminder events.
  *
- * @returns {Object} - Contains data, isLoading, onEndReached, onRefresh, and setData.
+ * @returns The reminders as `data`, `isLoading`, `loadNext` to fetch the next page and `setData`.
  */
 export const useQueryReminders = () => {
   const { client } = useChatContext();
   const { isLoading, items } = useStateStore(client.reminders.paginator.state, selector);
   const [data, setData] = useState<ReminderResponseData[]>(items ?? []);
-  // The deletion and updates are not handled by the paginator, so we need to cache them
-  // to avoid showing deleted or updated reminders in the list.
+  // The paginator does not handle deletions and updates, so they are cached to keep stale
+  // reminders out of the list.
   const deletedOrUpdatedRemindersCache = useRef<Record<string, ReminderResponseData>>({});
 
   useEffect(() => {
@@ -97,13 +91,13 @@ export const useQueryReminders = () => {
     const handleReminderUpdated = (event: EventPayload<'reminder.updated'>) => {
       const { reminder } = event;
       if (!reminder || showAllReminders(client.reminders.paginator.filters)) {
-        return; // No update needed if reminder is undefined or filters is empty
+        return; // Nothing to update without a reminder, or when the filters match everything
       }
       deletedOrUpdatedRemindersCache.current[reminder.message_id] = reminder;
       setData((prevData) => {
         const existingReminder = prevData.find((item) => item.message_id === reminder?.message_id);
         if (!existingReminder) {
-          return prevData; // No update needed if reminder not found
+          return prevData;
         }
 
         if (existingReminder.remind_at != null && event.reminder?.remind_at == null) {

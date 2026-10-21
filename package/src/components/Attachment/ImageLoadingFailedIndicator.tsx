@@ -7,10 +7,7 @@ import { useStableCallback } from '../../hooks';
 import { RetryBadge } from '../ui/Badge/RetryBadge';
 
 export type ImageLoadingFailedIndicatorProps = ViewProps & {
-  /**
-   * Callback to reload the image
-   * @returns Callback to reload the image
-   */
+  /** Called to reload the image. */
   onReloadImage: () => void;
 };
 

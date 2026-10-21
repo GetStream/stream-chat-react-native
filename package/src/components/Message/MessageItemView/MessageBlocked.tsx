@@ -9,15 +9,11 @@ import { primitives } from '../../../theme';
 export type MessageBlockedProps = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: LocalMessage;
-  /**
-   * Additional styles for the system message container.
-   */
+  /** Additional styles for the container. */
   style?: StyleProp<ViewStyle>;
 };
 
-/**
- * A component to display blocked message. e.g, when a message is blocked by moderation policies.
- */
+/** Displays a message that was blocked, such as by moderation policies. */
 export const MessageBlocked = (props: MessageBlockedProps) => {
   const { message, style } = props;
 

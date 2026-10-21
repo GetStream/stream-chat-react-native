@@ -9,9 +9,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type ChannelPreviewTitleProps = Pick<ChannelPreviewProps, 'channel'> & {
-  /**
-   * Formatted name for the previewed channel.
-   */
+  /** Overrides the channel's display name. */
   title?: string;
 };
 

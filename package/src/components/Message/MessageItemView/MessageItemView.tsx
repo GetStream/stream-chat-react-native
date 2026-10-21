@@ -78,7 +78,7 @@ const useStyles = ({ alignment }: { alignment: Alignment }) => {
           ...bubbleWrapper,
         },
         repliesContainer: {
-          marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
+          marginTop: -primitives.spacingXxs, // Offsets the gap added by the content container
           zIndex: 0,
           ...repliesContainer,
         },
@@ -403,10 +403,7 @@ const MemoizedMessageItemView = React.memo(
 
 export type MessageItemViewProps = Partial<MessageItemViewPropsWithContext>;
 
-/**
- *
- * Message UI component
- */
+/** Renders the UI of a message. */
 export const MessageItemView = (props: MessageItemViewProps) => {
   const {
     alignment,

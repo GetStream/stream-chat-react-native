@@ -27,10 +27,11 @@ export type ButtonStyle = {
 export type ButtonStylesConfig = Pick<ButtonProps, 'variant' | 'type'>;
 
 /**
- * Returns the styles for the button based on the button style and type.
- * @param buttonStyle - The style of the button.
- * @param type - The type of the button.
- * @returns The styles for the button.
+ * Returns the colors for a button variant and type.
+ *
+ * @param params.variant The button variant.
+ * @param params.type The button type.
+ * @returns The button style for that combination.
  */
 export const useButtonStyles = ({ variant, type }: ButtonStylesConfig) => {
   const {

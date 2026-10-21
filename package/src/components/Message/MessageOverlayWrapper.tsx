@@ -12,13 +12,11 @@ import type { ViewRef } from '../../types/react-native-compat';
 
 export type MessageOverlayWrapperProps = PropsWithChildren<{
   /**
-   * Stable identifier for this overlay target. Must match `messageOverlayTargetId`
-   * when this subtree should be teleported into the overlay.
+   * Identifier of this overlay target. The subtree is teleported into the overlay when it equals
+   * `messageOverlayTargetId`.
    */
   targetId: string;
-  /**
-   * Optional test id attached to the wrapped target container.
-   */
+  /** Test ID of the wrapped target container. */
   testID?: string;
 }>;
 

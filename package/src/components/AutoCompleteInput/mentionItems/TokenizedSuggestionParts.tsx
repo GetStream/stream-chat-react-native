@@ -5,15 +5,11 @@ import type { TokenizationPayload } from 'stream-chat';
 
 export type TokenizedSuggestionPartsProps = {
   /**
-   * Token + parts payload produced by the stream-chat-js text composer search
-   * source. When the consumer matches against a display name the source splits
-   * the name into substrings around the matched token; we render each part and
-   * bold whichever part case-insensitively equals the token.
+   * Display name split into parts around the matched token. Parts equal to the token, ignoring
+   * case, are rendered with `matchStyle`.
    */
   tokenizedDisplayName?: TokenizationPayload['tokenizedDisplayName'];
-  /**
-   * Fallback string rendered when the tokenized payload is absent (or empty).
-   */
+  /** Rendered when `tokenizedDisplayName` is absent or has no parts. */
   fallback?: string;
   style?: StyleProp<TextStyle>;
   matchStyle?: StyleProp<TextStyle>;

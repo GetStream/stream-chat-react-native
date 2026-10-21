@@ -16,11 +16,7 @@ export type CreatePollContentContextValue = {
   sendMessage: MessageInputContextValue['sendMessage'];
   closePollCreationDialog?: () => void;
   modalStateStore?: StateStore<CreatePollModalState>;
-  /**
-   * Vertical gap between poll options in the poll creation screen.
-   *
-   * **Default: ** 8
-   */
+  /** Vertical gap between poll options in the poll creation screen. Defaults to 8. */
   createPollOptionGap?: number;
 };
 

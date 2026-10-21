@@ -16,7 +16,12 @@ import { useNotificationTargetContext } from '../NotificationTargetContext';
 
 export const SYSTEM_NOTIFICATION_TAG = 'system' as const;
 
-/** Returns whether a notification is reserved for system-level consumers instead of snackbars. */
+/**
+ * Returns whether a notification is reserved for system-level consumers instead of snackbars.
+ *
+ * @param notification The notification to test.
+ * @returns True when it carries the system tag.
+ */
 export const hasSystemNotificationTag = (notification: Notification) =>
   notification.tags?.includes(SYSTEM_NOTIFICATION_TAG) ?? false;
 
@@ -35,7 +40,7 @@ export type NotificationIncidentDescriptor = {
 export type AddNotificationOptions = {
   /** Incident metadata used to derive `options.type` when the payload does not provide one. */
   incident?: NotificationIncidentDescriptor;
-  /** Exact host target for this notification. Defaults to the nearest notification target provider. */
+  /** Exact host target for this notification. Defaults to the nearest target provider. */
   target?: NotificationTarget;
   /** Broad panel targets. Use for notifications that should appear in every host of a panel. */
   targetPanels?: NotificationTargetPanel[];
@@ -53,7 +58,7 @@ export type AddSystemNotification = (
   payload: AddNotificationPayload,
   options?: AddSystemNotificationOptions,
 ) => string;
-/** Removes a notification by id. */
+/** Removes a notification by ID. */
 export type RemoveNotification = (id: string) => void;
 /** Removes non-system notifications that belong to the current target provider. */
 export type RemoveNotificationsForCurrentPanel = () => void;
@@ -129,7 +134,11 @@ const mergeNotificationOptions = (
   };
 };
 
-/** Returns imperative helpers for dispatching, targeting and dismissing client notifications. */
+/**
+ * Returns imperative helpers for dispatching, targeting and dismissing client notifications.
+ *
+ * @returns The notification helpers.
+ */
 export const useNotificationApi = (): NotificationApi => {
   const { client } = useChatContext();
   const contextTarget = useNotificationTargetContext();

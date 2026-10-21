@@ -19,9 +19,8 @@ export const getDraftForChannels = async ({
 
   const draftRowsWithMessage = await selectDraftMessageFromDraftForChannels(channelIds);
 
-  /**
-   * Filter out drafts without a parent ID, as we will not show them in the channel.
-   * The above `createSelectQuery` was not able to filter out drafts without a parent ID.
+  /*
+   * Keeps only drafts without a parent ID: thread drafts are not shown in the channel.
    * TODO: Fix the query to filter out drafts without a parent ID. This can be a bit faster.
    */
   const rowsWithoutParentID = draftRowsWithMessage.filter((row) => row.parentId === null);

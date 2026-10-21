@@ -151,12 +151,14 @@ export const createOverlayHostLayerId = () =>
   `overlay-host-layer-${overlayHostLayerRegistrationCounter++}`;
 
 /**
- * Registers a `MessageOverlayHostLayer` (one per `OverlayProvider`) using stack semantics.
+ * Registers a `MessageOverlayHostLayer` (one per `OverlayProvider`) on a stack.
  *
- * Only the most recently registered layer drives the overlay and owns the shared portal host names.
- * Portal hosts are looked up by name in a single native registry, so two layers using the same
- * names would take them over from each other. The other layers park their hosts under names unique
- * to them, and when the top layer unregisters the previous one takes the shared names back.
+ * Only the top layer drives the overlay and owns the shared portal host names, because portal hosts
+ * live in a single native registry by name. Other layers park their hosts under unique names, and
+ * the previous layer takes the shared names back when the top one unregisters.
+ *
+ * @param id The layer ID, from `createOverlayHostLayerId`.
+ * @returns A function that unregisters the layer.
  */
 export const registerOverlayHostLayer = (id: string) => {
   overlayHostLayersStore.partialNext({
@@ -176,9 +178,11 @@ const topOverlayHostLayer = { isTop: true };
 const notTopOverlayHostLayer = { isTop: false };
 
 /**
- * Whether the host layer with the given id is the one that currently owns the overlay. A missing
- * id (used outside of an `OverlayProvider`) or an empty stack counts as the top, which keeps the
- * single provider setup identical to before the stack existed.
+ * Whether the host layer with the given ID currently owns the overlay. A missing ID (outside an
+ * `OverlayProvider`) or an empty stack counts as the top.
+ *
+ * @param id The layer ID.
+ * @returns True when the layer is the top one.
  */
 export const useIsTopOverlayHostLayer = (id: string | undefined) => {
   const isTopOverlayHostLayerSelector = useCallback(
@@ -278,7 +282,6 @@ overlayStore.subscribeWithSelector(actionQueueSelector, async ({ active }) => {
     const actions = actionQueue;
     actionQueue = [];
 
-    // flush the queue
     for (const action of actions) {
       try {
         await action();
@@ -330,14 +333,14 @@ export const useShouldTeleportToClosingPortal = (hostName: string, id: string) =
 };
 
 /**
- * Registers a screen-level blacklist of closing portal hosts that should not render while this hook is active.
+ * Registers a screen-level blacklist of closing portal hosts that must not render while this hook
+ * is active.
  *
- * The blacklist uses stack semantics:
- * - mounting/enabling a new instance makes its blacklist active
- * - unmounting/disabling restores the previous active blacklist automatically
+ * Blacklists form a stack: the most recently mounted or enabled one is active, and unmounting or
+ * disabling it restores the previous one without the earlier screens re-running effects.
  *
- * This keeps stacked screens predictable without requiring previous screens to rerun effects when the top screen
- * disappears.
+ * @param hostNames Names of the portal hosts to blacklist.
+ * @param enabled Whether the blacklist is registered. Defaults to true.
  */
 export const useClosingPortalHostBlacklist = (hostNames: string[], enabled = true) => {
   const registrationIdRef = useRef<string | null>(null);
@@ -367,23 +370,14 @@ export const useClosingPortalHostBlacklist = (hostNames: string[], enabled = tru
 };
 
 /**
- * NOTE:
- * Do not swap this back to `useStateStore(closingPortalLayoutsStore, selector)`.
+ * Subscribes to the closing portal layouts, keyed by host name.
  *
- * Why this is special:
- * - `layouts` is a dynamic-key map (hosts are added/removed at runtime)
- * - each host key maintains a stack of registrations
- * - We only need React updates when the key set changes (add/remove/reset)
- * - Per-layout movement is already on UI thread via the top `entry.layout.value`
+ * Do not replace the raw-store `useSyncExternalStore` with `useStateStore`: its selector comparison
+ * only iterates the previous keys, so `{}` -> `{ newHost: entry }` reads as unchanged and overlay
+ * slots never mount. Only adding or removing hosts needs a React update, since layout movement runs
+ * on the UI thread through `entry.layout.value`.
  *
- * Why `useStateStore` is unsafe here:
- * - Both `stream-chat`'s `subscribeWithSelector` and our `useStateStore` snapshot
- *   comparator use an asymmetric key comparison (they iterate previous keys only)
- * - That means `{}` -> `{ newHost: entry }` can be treated as "no change"
- * - When that happens, overlay slots never mount even though registration has run
- *
- * `useSyncExternalStore` with raw store subscription avoids that selector compare path,
- * so add/remove of hosts is always treated as observable.
+ * @returns The layout entries per host name.
  */
 export const useClosingPortalLayouts = () => {
   const subscribe = useCallback(

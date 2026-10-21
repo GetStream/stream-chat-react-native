@@ -9,9 +9,11 @@ import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMember
 import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
 
 /**
- * Resolves the subtitle status line shown under the channel title.
- *   - Direct chats: `t('Online')` when the other member is online, otherwise an empty string.
- *   - Group chats: `t('{{memberCount}} members, {{onlineCount}} online')`.
+ * Resolves the status line shown under the channel title: "Online" for a direct chat whose other
+ * member is online, an empty string when offline, and the member and online counts for a group.
+ *
+ * @param channel The channel.
+ * @returns The translated status text.
  */
 export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
   const { t } = useTranslationContext();

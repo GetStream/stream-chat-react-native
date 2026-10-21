@@ -14,17 +14,13 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { BadgeCount, BadgeCountProps, OnlineIndicator, OnlineIndicatorProps } from '../Badge';
 
 export type AvatarGroupProps = {
-  /**
-   * The size of the avatar group.
-   */
+  /** Size of the avatar group. */
   size: 'lg' | 'xl' | '2xl';
-  /**
-   * The items to display in the avatar group.
-   */
+  /** Avatars to display. */
   items: React.ReactNode[];
 };
 
-// Sizes accounts for the border width as well
+// Sizes include the border width.
 const sizes = {
   '2xl': {
     width: 80,
@@ -154,13 +150,9 @@ export const AvatarGroup = (props: AvatarGroupProps) => {
 };
 
 export type UserAvatarGroupProps = Pick<AvatarGroupProps, 'size'> & {
-  /**
-   * The users to display in the avatar group.
-   */
+  /** Users to display. */
   users: UserResponse[];
-  /**
-   * Whether to show the online indicator.
-   */
+  /** Whether to show the online indicator. */
   showOnlineIndicator?: boolean;
 };
 

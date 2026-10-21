@@ -7,16 +7,19 @@ const activeSelector = ({ active }: ChannelStateData) => ({ active });
 const editingAuditStateSelector = (state: EditingAuditState) => state;
 
 /**
- * The instance `<Channel>` renders: the one that superseded `channel` (it gets the events from then
- * on), as stream-chat-react's `SupersededChannelSwap` does. It waits while the successor is open
- * elsewhere and this composer isn't empty, as stream-chat only moves a composer into an unused one.
+ * The instance `<Channel>` renders: the one that superseded `channel`, which receives the events
+ * from then on. The swap waits while the successor is open elsewhere and this composer is not
+ * empty, as stream-chat only moves a composer into an unused instance.
+ *
+ * @param channel The channel, or `undefined` without one.
+ * @returns The successor when it supersedes `channel` and the swap is not waiting, else `channel`.
  */
 export const useSupersededChannelSwap = <T extends Channel | undefined>(
   channel: T,
 ): T | Channel => {
   const { supersededBy } = useStateStore(channel?.state, supersededBySelector) ?? {};
   const successorActive = useStateStore(supersededBy?.state, activeSelector)?.active ?? false;
-  // re-rendered on every composer change, so the emptiness read below stays current
+  // Re-renders on every composer change so the emptiness read below stays current.
   useStateStore(channel?.messageComposer.editingAuditState, editingAuditStateSelector);
   const composerIsEmpty = channel?.messageComposer.compositionIsEmpty ?? true;
 

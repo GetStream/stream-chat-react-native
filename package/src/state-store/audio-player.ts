@@ -63,10 +63,7 @@ export class AudioPlayer {
   private lastPlaybackStatusError?: string;
   private lastSeekNotSupportedNotificationAt?: number;
 
-  /**
-   * This keeps the composer preview on the recorder-backed player until preview
-   * and attachment playback are fully unified under the same sound service.
-   */
+  /** Keeps the composer preview on the recorder-backed player. */
   private previewVoiceRecording?: boolean;
 
   constructor(options: AudioPlayerOptions) {
@@ -199,10 +196,9 @@ export class AudioPlayer {
     }
   };
 
-  // This should be a arrow function to avoid binding the function to the instance
+  // An arrow function so `this` stays bound when it is passed as a callback.
   private onPlaybackStatusUpdate = async (playbackStatus: PlaybackStatus) => {
     if (!playbackStatus.isLoaded) {
-      // Update your UI for the unloaded state
       if (playbackStatus.error) {
         if (this.lastPlaybackStatusError !== playbackStatus.error) {
           this.lastPlaybackStatusError = playbackStatus.error;
@@ -211,30 +207,26 @@ export class AudioPlayer {
       }
     } else {
       const { durationMillis, positionMillis } = playbackStatus;
-      // Update your UI for the loaded state
-      // This is done for Expo CLI where we don't get file duration from file picker
+      // Expo CLI file pickers give no duration, so non-recording audio takes it from the player.
 
       if (this.type !== 'voiceRecording') {
         this.duration = durationMillis;
       }
 
-      // Update the position of the audio player when it is playing
       if (playbackStatus.isPlaying) {
-        // The duration given by the expo-av is not same as the one of the voice recording, so we take the actual duration for voice recording.
+        // expo-av reports a different duration than the recording, so voice recordings keep theirs.
         const duration = this.type === 'voiceRecording' ? this.duration : durationMillis;
         if (positionMillis <= duration) {
           this.position = positionMillis;
         }
       }
 
-      // Update the UI when the audio is finished playing
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
         await this.stop();
       }
     }
   };
 
-  // Getters
   get isPlaying() {
     return this.state.getLatestValue().isPlaying;
   }
@@ -263,7 +255,6 @@ export class AudioPlayer {
     return this._id;
   }
 
-  // Setters
   set pool(pool: AudioPlayerPool) {
     this._pool = pool;
   }
@@ -294,7 +285,6 @@ export class AudioPlayer {
     });
   }
 
-  // Methods
   async changePlaybackRate() {
     let currentPlaybackRateIndex = this.state
       .getLatestValue()
@@ -440,7 +430,7 @@ export class AudioPlayer {
   }
 
   async stop() {
-    // First seek to 0 to stop the audio and then pause it
+    // Seek to 0 to stop the audio, then pause it.
     await this.seek(0);
     this.pause();
   }

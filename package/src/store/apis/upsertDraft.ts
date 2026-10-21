@@ -19,7 +19,7 @@ export const upsertDraft = async ({
   const queries: PreparedQueries[] = [];
   const { channel_cid, parent_id, message } = draft;
 
-  // Delete existing draft message if it exists.
+  // Deletes any existing draft of the same channel and parent first.
   const deleteQuery = createDeleteQuery('draft', {
     cid: channel_cid,
     parentId: parent_id,
@@ -27,7 +27,7 @@ export const upsertDraft = async ({
 
   queries.push(deleteQuery);
 
-  // Important: Make sure you create a draft only after a draft message is created.
+  // The draft row references the draft message, so the message is queued first.
   const storableDraftMessage = mapDraftMessageToStorable({ draftMessage: message });
 
   queries.push(createUpsertQuery('draftMessage', storableDraftMessage));

@@ -25,10 +25,8 @@ type MessageFooterComponentProps = {
   formattedDate?: string | Date;
 };
 
-// The sender name is shown only in group channels (not 1:1 DMs). We derive that from `memberCount`
-// reactively off `channel.state` rather than threading `members` through the message context — the
-// footer is the only consumer of channel membership, and it only needs this one boolean. `memberCount`
-// changes far less often than the `members` map (which churns on presence, watchers, adds/removes).
+// The sender name is shown only in group channels, so a channel of 2 members counts as a DM.
+// `memberCount` changes far less often than the `members` map (presence, watchers, adds/removes).
 const isDirectChannelSelector = (state: { memberCount: number }) => ({
   isDirectChannel: state.memberCount === 2,
 });

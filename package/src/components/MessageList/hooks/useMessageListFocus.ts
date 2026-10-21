@@ -15,13 +15,15 @@ const messageFocusSelector = (state: {
 });
 
 /**
- * The message `paginator` wants the list to scroll to and highlight, and `goToMessage` to request
- * one. A jump (`jumpToMessage`, `jumpToTheFirstUnreadMessage`, …) emits the paginator's
- * `messageFocusSignal`; the list scrolls when it sees a new `focusToken`, which changes on every jump
- * even to the same message.
+ * Tracks the message the list should scroll to and highlight, from the paginator's
+ * `messageFocusSignal`. A jump (`jumpToMessage`, `jumpToTheFirstUnreadMessage`, ...) emits the
+ * signal, and `focusToken` changes on every jump, even to the same message.
  *
- * The signal lives on the paginator, which outlives the list, so it is cleared on unmount. Otherwise a
- * highlight still running when the user navigates away would scroll and highlight again on return.
+ * The paginator outlives the list, so the signal is cleared on unmount. Otherwise a highlight
+ * still running when the user navigates away would scroll and highlight again on return.
+ *
+ * @param paginator The channel's or the open thread's paginator.
+ * @returns `focusedMessageId`, `focusToken` and `goToMessage`, which jumps to a message by ID.
  */
 export const useMessageListFocus = (paginator?: MessagePaginator) => {
   const { focusedMessageId, focusToken } =

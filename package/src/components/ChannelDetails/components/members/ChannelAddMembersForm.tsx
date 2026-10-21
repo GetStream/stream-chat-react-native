@@ -8,20 +8,15 @@ import { useComponentsContext } from '../../../../contexts/componentsContext/Com
 import { NotificationList } from '../../../Notifications/NotificationList';
 
 export type ChannelAddMembersFormProps = {
-  /** Called when the form is dismissed via the close button or after members are added. */
+  /** Called when the form is dismissed with the close button or after members are added. */
   onClose: () => void;
-  /**
-   * A custom `UserSearchSource` used to query and paginate the users to add.
-   * Overrides the source the provider creates by default (pre-configured to
-   * autocomplete by `name`).
-   */
+  /** Overrides the default `UserSearchSource`, which autocompletes users by `name`. */
   searchSource?: UserSearchSource;
 };
 
 /**
- * Renders the add-members form: a header with a confirm action, the user search
- * list, and the notification list. Mount it wherever the add-members UI should
- * appear (e.g. inside a modal or a navigation screen).
+ * The add-members form: a header with a confirm action, the user search list and the notification
+ * list. Mount it wherever the add-members UI should appear, such as a modal or a screen.
  */
 export const ChannelAddMembersForm = ({ onClose, searchSource }: ChannelAddMembersFormProps) => {
   const { channel } = useChannelDetailsContext();

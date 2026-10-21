@@ -23,9 +23,11 @@ const getEventEmitter = () => {
 const noop = () => {};
 
 /**
- * Whether the native dictation module is part of this build. It is always compiled in on Android,
- * while on iOS it is opt-in: add `$StreamChatEnableDictation = true` to your
- * `Podfile` (or use the `stream-chat-expo` config plugin) and run `pod install`.
+ * Whether the native dictation module is part of this build. It is always compiled in on Android;
+ * on iOS add `$StreamChatEnableDictation = true` to the `Podfile` (or use the `stream-chat-expo`
+ * config plugin) and run `pod install`.
+ *
+ * @returns True when the native module is present.
  */
 export const isDictationAvailable = () => NativeAIDictation != null;
 
@@ -42,7 +44,6 @@ export const warnIfDictationUnavailable = () => {
   );
 };
 
-// Low-level API
 export const AIDictation = {
   start(options?: DictationStartOptions) {
     NativeAIDictation?.start(options);

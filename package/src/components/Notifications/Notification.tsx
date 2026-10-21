@@ -24,10 +24,15 @@ export type NotificationIconProps = {
   notification: NotificationType;
 };
 
-/** Visual variant resolved from notification severity. Notifications without severity use `default`. */
+/** Visual variant resolved from severity. Notifications without severity use `default`. */
 export type NotificationVariant = 'default' | NotificationSeverity;
 
-/** Resolves the visual variant used by the default notification renderer. */
+/**
+ * Resolves the visual variant used by the default notification renderer.
+ *
+ * @param notification The notification to render.
+ * @returns The variant of its severity, or `default` without one.
+ */
 export const getNotificationVariant = (notification: NotificationType): NotificationVariant =>
   notification.severity ?? 'default';
 
@@ -71,7 +76,7 @@ export type NotificationProps = {
   Icon?: React.ComponentType<NotificationIconProps>;
   /** Called instead of the default notification removal behavior. */
   onDismiss?: () => void;
-  /** Forces a dismiss button for transient notifications. Persistent notifications always show one. */
+  /** Forces a dismiss button on transient notifications. Persistent ones always show one. */
   showClose?: boolean;
   /** Reserved for custom animated notification implementations. */
   transitionState?: NotificationTransitionState;

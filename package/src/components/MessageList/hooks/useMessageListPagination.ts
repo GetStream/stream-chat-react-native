@@ -12,10 +12,13 @@ const loadingSelector = (state: { isLoading: boolean; items?: unknown[] }) => ({
 /**
  * Paging for a message list over `paginator`, the channel's or the open thread's.
  *
- * `loadMore` fetches older messages and `loadMoreRecent` newer ones. The paginator ignores a request
- * while it is already loading or when that end has nothing more, so the list can call these on every
- * scroll event that reaches an edge. A request first waits for one in flight in the other direction,
- * so the two never shift the scroll position under each other.
+ * `loadMore` fetches older messages and `loadMoreRecent` newer ones. A request is ignored while the
+ * paginator is loading or has nothing more at that end, so the list can call these on every scroll
+ * event that reaches an edge. A request first waits for one in flight in the other direction, so
+ * the two never shift the scroll position under each other.
+ *
+ * @param paginator The channel's or the open thread's paginator.
+ * @returns The loading flags and the `loadMore` and `loadMoreRecent` callbacks.
  */
 export const useMessageListPagination = (paginator?: MessagePaginator) => {
   const { hasMessages, isLoading } = useStateStore(paginator?.state, loadingSelector) ?? {};

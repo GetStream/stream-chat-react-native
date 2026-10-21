@@ -62,10 +62,7 @@ type AutoCompleteInputPropsWithContext = TextInputProps &
   Pick<ChannelContextValue, 'channel'> &
   Pick<MessageInputContextValue, 'setInputBoxRef'> &
   Pick<TranslationContextValue, 't'> & {
-    /**
-     * This is currently passed in from MessageComposer to avoid rerenders
-     * that would happen if we put this in the MessageInputContext
-     */
+    /** Passed in by `MessageComposer` rather than read from context, to avoid extra re-renders. */
     cooldownRemainingSeconds?: number;
     TextInputComponent?: TextInputOverrideComponent;
   };
@@ -97,9 +94,8 @@ const commandPlaceHolders: Record<string, string> = {
 const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) => {
   const styles = useStyles();
   const {
-    // Destructured purely to keep it out of `...rest`, which is spread onto the TextInput below. It is
-    // no longer read here — the message length limit now comes from resolved composer configuration —
-    // but leaking a whole Channel into native props would be a large, pointless serialization.
+    // Unused: destructured only to keep the channel out of `...rest`, which is spread onto the
+    // TextInput, so it is not serialized into native props.
     channel: _channel,
     cooldownRemainingSeconds,
     setInputBoxRef,
@@ -117,11 +113,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     configStateSelector,
   );
 
-  // RN's onChangeText doesn't carry cursor info, and iOS / Android fire
-  // onChangeText vs onSelectionChange in different orders. Rather than derive
-  // the caret from a text-length delta (fragile — gets clobbered by re-renders
-  // and varies across platforms), we hold the latest values reported by native
-  // and call into the LLC once both have settled.
+  // `onChangeText` carries no cursor info and iOS and Android fire it and `onSelectionChange` in
+  // different orders, so the latest text and selection are held in refs and forwarded together.
   const latestTextRef = useRef('');
   const latestSelectionRef = useRef<{ end: number; start: number }>({
     end: 0,
@@ -137,8 +130,7 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     });
   }, [textComposer]);
 
-  // Defer to the next task so onChangeText and onSelectionChange both land
-  // before we forward to the LLC, regardless of platform ordering.
+  // Deferred a task so both `onChangeText` and `onSelectionChange` land first, whatever the order.
   const scheduleChange = useCallback(() => {
     if (flushHandleRef.current !== null) return;
     flushHandleRef.current = setTimeout(flushChange, 0);
@@ -153,9 +145,8 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
     };
   }, []);
 
-  // The composer's resolved limit, not the raw `max_message_length` server flag. The LLC treats the
-  // channel type's value as an *upper bound* on `text.maxLengthOnSend`, so this is the tighter of the
-  // server's cap and anything registered through `client.config`, and it is reactive.
+  // The composer's resolved limit rather than the raw `max_message_length` channel flag: the flag
+  // is an upper bound on `text.maxLengthOnSend`, which also reflects `client.config`.
   const maxMessageLength = maxLengthOnSend;
 
   const numberOfLines = useMemo(() => {
@@ -164,10 +155,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   useEffect(() => {
     setLocalText(text);
-    // Only resync the refs when the text change came from outside (clear after
-    // send, draft restore, programmatic setText). For changes we triggered
-    // ourselves, latestTextRef is already up to date and overwriting the
-    // selection would clobber what onSelectionChange just told us.
+    // Resync the refs only for changes from outside (clear after send, draft restore, `setText`).
+    // Our own changes already updated `latestTextRef`, and resetting the selection would discard
+    // what `onSelectionChange` just reported.
     if (text !== latestTextRef.current) {
       latestTextRef.current = text;
       latestSelectionRef.current = { end: text.length, start: text.length };
@@ -178,13 +168,9 @@ const AutoCompleteInputWithContext = (props: AutoCompleteInputPropsWithContext) 
 
   const clearState = useCallback(() => {
     setLocalText('');
-    // iOS UITextView caches its intrinsicContentSize while focused, so a
-    // controlled `value` change to '' after a multiline send doesn't shrink
-    // the input back to single line height and UIKit keeps rendering at the
-    // previously cached focused size until blur. Not particularly sure which
-    // RN version regressed this, but 0.85.3 for sure has the bug. Forcebly
-    // setting its native prop forces UITextView to reconcile its content size
-    // and update accordingly.
+    // iOS `UITextView` caches its intrinsic content size while focused, so clearing `value` after a
+    // multiline send keeps the tall size until blur (seen on RN 0.85.3). Setting the native prop
+    // forces it to recompute.
     if (Platform.OS === 'ios') {
       nativeInputRef.current?.setNativeProps({ text: '' });
     }
@@ -347,11 +333,11 @@ const useStyles = () => {
         color: semantics.inputTextDefault,
         flex: 1,
         fontSize: 16,
-        includeFontPadding: false, // for android vertical text centering
+        includeFontPadding: false, // Android vertical text centering
         lineHeight: 20,
         paddingLeft: 16,
         paddingVertical: 12,
-        textAlignVertical: 'center', // for android vertical text centering
+        textAlignVertical: 'center', // Android vertical text centering
         alignSelf: 'center',
       },
     });

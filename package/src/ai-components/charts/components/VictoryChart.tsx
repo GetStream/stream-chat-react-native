@@ -2,16 +2,7 @@ import React from 'react';
 import { Platform, View } from 'react-native';
 
 import { LinearGradient, matchFont, vec } from '@shopify/react-native-skia';
-import {
-  Area,
-  Bar,
-  CartesianChart,
-  Line,
-  Pie,
-  PolarChart,
-  Scatter,
-  // useChartTransformState,
-} from 'victory-native';
+import { Area, Bar, CartesianChart, Line, Pie, PolarChart, Scatter } from 'victory-native';
 
 import { PieLegend } from './PieLegend';
 
@@ -39,11 +30,6 @@ const DEFAULT_WIDTH = 225;
 
 export const VictoryChart = (props: VictoryChartProps) => {
   const { spec, height = DEFAULT_HEIGHT, width = DEFAULT_WIDTH } = props;
-
-  // const { state: transformState } = useChartTransformState({
-  //   scaleX: 1.5,
-  //   scaleY: 1.0,
-  // });
 
   if (spec.type === 'pie') {
     if (!spec?.data.length) return null;
@@ -128,11 +114,6 @@ export const VictoryChart = (props: VictoryChartProps) => {
         }}
         yAxis={[{ font }]}
         padding={{ bottom: hasLongLabels ? 2 * maxTickCharCount + 12 : 0 }}
-        // transformState={transformState}
-        // transformConfig={{
-        //   pinch: { enabled: false },
-        //   pan: { enabled: true, dimensions: 'x', activateAfterLongPress: 10 },
-        // }}
       >
         {({ points, chartBounds }) => (
           <>

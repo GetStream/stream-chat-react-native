@@ -6,9 +6,7 @@ import { useStateStore } from '../../../hooks/useStateStore';
 
 type MembersState = { members: Record<string, ChannelMemberResponse> };
 
-/**
- * The fields of a member a caller reads. Define it at module scope, so it stays the same function.
- */
+/** Picks the member fields a caller reads. Define it at module scope to keep it stable. */
 export type ChannelMemberPick = (member: ChannelMemberResponse) => Record<string, unknown>;
 
 const selector = (state: MembersState) => ({
@@ -20,7 +18,7 @@ const isShallowEqual = (a: Record<string, unknown>, b: Record<string, unknown>) 
   return keys.length === Object.keys(b).length && keys.every((key) => Object.is(a[key], b[key]));
 };
 
-// keeps the previous members while every member's picked fields are unchanged
+// Keeps the previous members while every member's picked fields are unchanged.
 const createPickedMembersSelector = (pick: ChannelMemberPick) => {
   let previous: { members: MembersState['members']; picked: Record<string, unknown>[] } | undefined;
   return (state: MembersState) => {
@@ -39,16 +37,27 @@ const createPickedMembersSelector = (pick: ChannelMemberPick) => {
 };
 
 /**
- * Returns the channel's members, sourced reactively from `channel.state`.
+ * Returns the channel's members from `channel.state`, updating reactively.
  *
- * With `pick`, the members update only when one of the picked fields changes for some member, or
- * when members join or leave. A presence change replaces every member object of that user, so a caller
- * that does not read `online` should pick what it reads to skip those re-renders.
+ * With `pick`, the members update only when a picked field changes for some member, or when members
+ * join or leave. A presence change swaps in new member objects for that user, so a caller that does
+ * not read `online` should pick what it reads to skip those re-renders.
+ *
+ * @param channel The channel.
+ * @param pick Picks the member fields the caller reads.
+ * @returns The members by user ID.
  */
 export function useChannelMembersState(
   channel: Channel,
   pick?: ChannelMemberPick,
 ): Record<string, ChannelMemberResponse>;
+/**
+ * Same as above for an optional channel, returning `undefined` without one.
+ *
+ * @param channel The channel.
+ * @param pick Picks the member fields the caller reads.
+ * @returns The members by user ID, or `undefined` without a channel.
+ */
 export function useChannelMembersState(
   channel?: Channel,
   pick?: ChannelMemberPick,

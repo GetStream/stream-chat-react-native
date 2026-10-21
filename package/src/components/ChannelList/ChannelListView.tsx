@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-// RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
-// See https://github.com/software-mansion/react-native-gesture-handler/issues/598
+// The gesture handler's FlatList breaks pull-to-refresh on Android.
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import type { Channel } from 'stream-chat';
@@ -17,38 +16,21 @@ import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
 import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
-/**
- * The list's query state, passed down by `ChannelList`.
- */
+/** The list's query state, passed down by `ChannelList`. */
 export type ChannelListState = {
-  /**
-   * A control prop used to determine whether the first query of the channel list has succeeded.
-   */
+  /** Whether the first page of channels has loaded. */
   channelListInitialized: boolean;
-  /**
-   * The channels to render.
-   */
+  /** The channels to render. */
   channels: Channel[] | null;
-  /**
-   * Whether or not the FlatList has another page to render
-   */
+  /** Whether another page of channels can be loaded. */
   hasNextPage: boolean;
-  /**
-   * Initial channels query loading state, triggers the LoadingIndicator
-   */
+  /** Whether the initial channels query is loading, which shows the loading indicator. */
   loadingChannels: boolean;
-  /**
-   * Whether or not additional channels are being loaded, triggers the
-   * ChannelListFooterLoadingIndicator
-   */
+  /** Whether the next page is loading, which shows `ChannelListFooterLoadingIndicator`. */
   loadingNextPage: boolean;
-  /**
-   * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
-   */
+  /** Whether a pull-to-refresh is in progress, shown as a spinner at the top of the list. */
   refreshing: boolean;
-  /**
-   * Error in channels query, if any
-   */
+  /** Error of the channels query, if any. */
   error?: Error;
 };
 
@@ -73,8 +55,8 @@ const StatusIndicator = ({
     return null;
   }
 
-  // `=== false` for the network (unknown must not read as offline), plain falsy for the socket
-  // (always a boolean).
+  // `=== false` for the network, as an unknown status must not read as offline. The socket status
+  // is always a boolean.
   if (isNetworkOnline === false || !isWSOnline) {
     return (
       <View style={styles.statusIndicator}>
@@ -155,7 +137,7 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={renderItem}
-        // Rows subscribe to their own channel, so a list update re-renders only the cells it changed.
+        // Rows subscribe to their own channel, so a list update re-renders only the changed cells.
         strictMode
         style={styles.flatList}
         testID='channel-list-view'
@@ -172,8 +154,7 @@ export type ChannelListViewProps = Partial<
   ChannelListState;
 
 /**
- * This UI component displays the preview list of channels and handles Channel navigation. It
- * receives all props from the ChannelList component.
+ * The preview list of channels, rendered by `ChannelList` with its state.
  *
  * @example ./ChannelListView.md
  */

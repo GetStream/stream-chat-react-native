@@ -23,9 +23,7 @@ export type ThreadProps = ChannelConfigProps &
      * own host, derived from its id.
      */
     notificationHostId?: string;
-    /**
-     * Called when the thread unmounts, e.g. to clear the app's record of the open thread.
-     */
+    /** Called when the thread unmounts, e.g. to clear the app's record of the open thread. */
     onThreadDismount?: () => void;
   };
 
@@ -36,8 +34,7 @@ type ThreadReplyPaginatorState = {
 };
 
 const paginatorSelector = (state: ThreadReplyPaginatorState) => ({
-  // `hasItems`, not the array: every use below is an `items === undefined` test ("has the reply
-  // paginator loaded yet"), so selecting the array re-renders this component on every reply.
+  // `hasItems` rather than the array: the array would re-render this component on every reply.
   hasItems: state.items !== undefined,
   isLoading: state.isLoading,
   lastQueryError: state.lastQueryError,
@@ -49,8 +46,8 @@ const threadStaleSelector = (state: { isLoading: boolean; isStateStale: boolean 
 });
 
 /**
- * Thread - binds its children to a thread's replies. Render it next to `<Channel>`, not inside it,
- * and compose the thread UI as children:
+ * Binds its children to a thread's replies. Render it next to `<Channel>`, not inside it, and
+ * compose the thread UI as children:
  *
  * ```tsx
  * <Thread thread={thread}>
@@ -85,10 +82,9 @@ export const Thread = (props: PropsWithChildren<ThreadProps>) => {
     }
   }, [isStateStale, thread]);
 
-  // A thread opened from the thread list can belong to a channel nothing has queried yet. `queryThreads`
-  // watches that channel but returns no `own_capabilities` for it, so the menu, the reactions and the
-  // composer would act as if the user could do nothing. Querying the channel once fills them in; its
-  // messages and read state are left alone.
+  // A thread opened from the thread list can belong to a channel nobody has queried. `queryThreads`
+  // returns no `own_capabilities` for it, so the menu, reactions and composer would treat the user
+  // as having none; watching the channel once fills them in.
   useEffect(() => {
     const { channel } = thread;
     if (channel.initialized || channel.isProvisional) {
@@ -97,32 +93,28 @@ export const Thread = (props: PropsWithChildren<ThreadProps>) => {
     channel.watch().catch((err: unknown) => console.warn('Thread channel watch failed', err));
   }, [thread]);
 
-  // Activating registers the thread with `client.threads` for the session, which keeps it subscribed
-  // (incoming replies, read state, thread.updated) whether or not the thread list holds it. While
-  // active, the thread marks itself read. `activate()` returns the release of this activation.
+  // Activating keeps the thread subscribed (new replies, read state, `thread.updated`) even when
+  // the thread list does not hold it, and marks it read while active. `activate()` returns the
+  // release.
   useEffect(() => thread.activate(), [thread]);
 
-  // Load the first reply page, but only when the paginator hasn't already been seeded from the
-  // thread's `latest_replies` (managed/queried threads seed on construction) or loaded/loading. A
-  // seeded paginator already holds its first page, so we skip the fetch and let scroll-up load older
-  // replies — mirroring stream-chat-react, whose thread list has no mount-time fetch. The `hasItems`
-  // guard makes this fire at most once (an unseeded thread fetches, and the fetch defines `items`).
+  // Load the first reply page unless the paginator is loading or already holds items (threads seed
+  // from `latest_replies` on construction). `hasItems` makes this fire at most once.
   useEffect(() => {
     if (isLoading || hasItems || lastQueryError) {
       return;
     }
-    // A reload in flight (a stale thread's, started by the effect above in this same commit) seeds the
-    // replies itself; read live, as this commit's render predates it. If it fails, this runs again.
+    // A reload in flight (started by the stale-state effect above in this commit) seeds the replies
+    // itself. Read live, because this render predates it. If it fails, this runs again.
     if (isThreadReloading || thread.state.getLatestValue().isLoading) {
       return;
     }
     void thread.messagePaginator.toTail();
-    // `lastQueryError` is load-bearing here, not decorative: a failed query flips `isLoading` back to
-    // false with `hasItems` still false, which would re-run this effect and refetch forever. The
-    // retry is the user's to make, through the error indicator below.
+    // `lastQueryError` must stay a dependency: a failed query sets `isLoading` back to false with
+    // `hasItems` still false, which would otherwise refetch forever. The error indicator retries.
   }, [thread, hasItems, isLoading, lastQueryError, isThreadReloading]);
 
-  // Deactivation is the activation effect's cleanup; this only notifies the integrator.
+  // Deactivation is the activation effect's cleanup; this only calls the callback.
   useEffect(
     () => () => {
       if (onThreadDismount) {
@@ -133,14 +125,13 @@ export const Thread = (props: PropsWithChildren<ThreadProps>) => {
     [],
   );
 
-  // A jump into the replies (e.g. to a targeted reply) leaves a focus signal behind; the list reads
-  // this to keep its initial anchor from overriding the jump.
+  // A jump to a targeted reply leaves a focus signal that stops the list's initial anchor from
+  // overriding the jump.
   const hasPendingInitialTargetLoad = useStableCallback(
     () => !!thread.messagePaginator.messageFocusSignal.getLatestValue().signal,
   );
 
-  // The thread's own query error: the failure belongs to the reply paginator, and the retry is a
-  // first-page `toTail`.
+  // The error belongs to the reply paginator; retrying reloads the first page with `toTail`.
   if (lastQueryError && !hasItems) {
     const retry = () =>
       thread.messagePaginator

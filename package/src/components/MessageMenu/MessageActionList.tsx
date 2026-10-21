@@ -11,14 +11,9 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type MessageActionListProps = {
-  /**
-   * Function to close the message actions bottom sheet
-   * @returns void
-   */
+  /** Closes the message actions overlay. */
   dismissOverlay?: () => void;
-  /**
-   * An array of message actions to render
-   */
+  /** The actions to render. */
   messageActions?: MessageActionType[];
 };
 

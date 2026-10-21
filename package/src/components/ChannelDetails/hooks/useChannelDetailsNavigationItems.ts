@@ -7,9 +7,8 @@ import { asDynamicKey } from '../../../i18n/utils';
 import type { IconProps } from '../../../icons/utils/base';
 
 /**
- * Identifies a navigation row. The literals are the built-in sections rendered by default;
- * consumers can also add their own rows with arbitrary section identifiers via `getNavigationItems`,
- * so any string is allowed.
+ * Identifies a navigation row: one of the built-in sections or, for rows added through
+ * `getNavigationItems`, any string.
  */
 export type ChannelDetailsNavigationSectionType =
   | 'pinned-messages'
@@ -17,27 +16,21 @@ export type ChannelDetailsNavigationSectionType =
   | 'files'
   | string;
 
-/**
- * A single row in the channel details navigation section.
- */
+/** A row in the channel details navigation section. */
 export type ChannelDetailsNavigationItem = {
-  /** Icon rendered at the start of the row and reused in the built-in modal header. */
+  /** Icon at the start of the row, reused in the built-in modal header. */
   Icon: React.ComponentType<IconProps>;
-  /** Already-translated label rendered for the row and its built-in modal header. */
+  /** Translated label of the row, reused in the built-in modal header. */
   label: string;
-  /** Identifies which built-in section this row represents. */
+  /** The section this row represents. */
   section: ChannelDetailsNavigationSectionType;
-  /**
-   * Fired when the user taps the row. Leave unset to keep the built-in behavior (opening the
-   * built-in modal for the section); set it to route the row somewhere else (e.g. your own screen).
-   */
+  /** Fired when the row is tapped. When unset, the row opens the built-in modal for its section. */
   onPress?: () => void;
 };
 
 /**
- * Maps each navigation section to the icon (by its key in the components-context icons map) and
- * (translatable) label rendered for its row and, when opened, its modal header. The declaration
- * order also drives the order of the rendered rows.
+ * Maps each built-in section to its icon (a key of the components-context icons map) and label key.
+ * The declaration order is the order of the rows.
  */
 const SECTION_CONFIG: Record<
   'pinned-messages' | 'photos-and-videos' | 'files',
@@ -58,11 +51,9 @@ export type ChannelDetailsNavigationItemsContext = {
 };
 
 /**
- * Customizes the navigation rows rendered by `ChannelDetailsNavigationSection`. Receives the
- * built-in `defaultItems` (and a `context`) and returns the items to render. Map over
- * `defaultItems` to set a row's `onPress` (e.g. to push your own screen), or add/remove rows. Any
- * row whose `onPress` you leave unset keeps its built-in behavior (opening the built-in modal) —
- * including sections added in future SDK versions.
+ * Customizes the rows rendered by `ChannelDetailsNavigationSection`. Receives the built-in
+ * `defaultItems` (and a `context`) and returns the rows to render. Set a row's `onPress` to route
+ * it elsewhere, or add and remove rows. A row without `onPress` opens the built-in modal.
  */
 export type GetChannelDetailsNavigationItems = (params: {
   context: ChannelDetailsNavigationItemsContext;
@@ -74,10 +65,11 @@ export const getChannelDetailsNavigationItems: GetChannelDetailsNavigationItems 
 }) => defaultItems;
 
 /**
- * Builds the navigation rows rendered by `ChannelDetailsNavigationSection`. Returns the items as a
- * plain array — the section component owns the built-in modal and supplies the default open-modal
- * behavior for any row without a custom `onPress`. Customize the rows by passing `getNavigationItems`
- * to `ChannelDetails` (see {@link GetChannelDetailsNavigationItems}).
+ * Builds the rows rendered by `ChannelDetailsNavigationSection`, customized by
+ * {@link GetChannelDetailsNavigationItems}.
+ *
+ * @param params.getNavigationItems Customizes the default rows.
+ * @returns The navigation rows.
  */
 export const useChannelDetailsNavigationItems = ({
   getNavigationItems = getChannelDetailsNavigationItems,
@@ -93,7 +85,7 @@ export const useChannelDetailsNavigationItems = ({
     () =>
       SECTIONS.map((section) => {
         const { icon, label } = SECTION_CONFIG[section];
-        // `label` comes from SECTION_CONFIG, so the key is a runtime value here.
+        // The label key comes from `SECTION_CONFIG`, so it is only known at runtime.
         return { Icon: icons[icon], label: t(asDynamicKey(label)), section };
       }),
     [icons, t],

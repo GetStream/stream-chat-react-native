@@ -11,17 +11,16 @@ import { SqliteClient } from '../../SqliteClient';
 import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
 
 export type CachedChannelQuery = {
-  /** Channel ids in the order the cached query produced them. */
+  /** Channel IDs in the order the cached query produced them. */
   cids: string[];
-  /** The backend-resolved predefined filter that order was produced by, when there was one. */
+  /** The server-resolved predefined filter that produced the order, if any. */
   predefinedFilter?: ParsedPredefinedFilterResponse;
 };
 
 /**
- * A stored `predefined_filter` response is only useful if it still describes a filter and,
- * optionally, a sort. Anything else in the column — a truncated write, a row left by an older
- * shape — is discarded rather than handed to the paginator, which would otherwise match and order
- * the whole list by a malformed rule.
+ * Whether a stored `predefined_filter` value still describes a filter and, optionally, a sort.
+ * Anything else (such as a truncated write) is discarded, so the paginator never matches and
+ * orders the list by a malformed rule.
  */
 const isPredefinedFilterResponse = (value: unknown): value is ParsedPredefinedFilterResponse => {
   if (typeof value !== 'object' || value === null) return false;
@@ -47,15 +46,14 @@ const parsePredefinedFilter = (
 };
 
 /**
- * Gets the cached result of a channel query from the database — the channel ids it produced and the
- * backend-resolved predefined filter that produced them.
+ * Gets the cached result of a channel query: the channel IDs it produced and the server-resolved
+ * predefined filter behind them, or null when the query is not in the `channelQueries` table. The
+ * full `options` are part of the query key, as they tell two predefined-filter queries apart.
  *
- * @param {Object} param
- * @param {Object} param.filters Filters for channels https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=su#query-parameters
- * @param {Object} param.options Full query options, which is what tells two predefined-filter queries apart
- * @param {Object} param.sort Sort for channels https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=su#query-parameters
- *
- * @returns The cached query, or null if it doesn't exist in the "channelQueries" table.
+ * @param params.filters Channel filters: https://getstream.io/chat/docs/javascript/query_channels/
+ * @param params.options Query options, including `predefined_filter`.
+ * @param params.sort Channel sort: https://getstream.io/chat/docs/javascript/query_channels/
+ * @returns The cached query, or null when it is not cached.
  */
 
 export const selectChannelQueryForFilterSort = async ({

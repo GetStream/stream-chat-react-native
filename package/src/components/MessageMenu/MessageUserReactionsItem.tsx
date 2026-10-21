@@ -14,13 +14,9 @@ import type { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
 export type MessageUserReactionsItemProps = {
-  /**
-   * The reaction object
-   */
+  /** The reaction to show. */
   reaction: Reaction;
-  /**
-   * An array of supported reactions
-   */
+  /** Supported reactions, used to look up the icon of the reaction type. */
   supportedReactions: ReactionData[];
 };
 

@@ -101,16 +101,9 @@ export type TouchableEmitter =
   | 'reactionList';
 
 export type TextMentionTouchableHandlerAdditionalInfo = {
-  /**
-   * The typed mention entity for the pressed mention (user / channel / here /
-   * role / user_group). Always populated by the default renderText pipeline;
-   * undefined only when a custom renderer doesn't resolve a match.
-   */
+  /** The pressed mention entity. Undefined when the pressed text matches no known mention. */
   mentionedEntity?: MentionEntity;
-  /**
-   * Back-compat: still populated when the mention is a user, so existing
-   * integrators reading `additionalInfo.user` keep working.
-   */
+  /** The pressed user, set only when the mention is a user. */
   user?: UserResponse;
 };
 
@@ -143,11 +136,7 @@ export type GalleryThumbnailTouchableHandlerPayload = {
 };
 
 export type ReactionListTouchableHandlerAdditionalInfo = {
-  /**
-   * The reaction type of the pressed reaction. Populated for presses that
-   * originate from a single reaction (segmented list item/clustered pill),
-   * undefined for the "+N more" overflow item.
-   */
+  /** Type of the pressed reaction. Undefined for the clustered list and the "+N more" item. */
   reactionType?: string;
 };
 
@@ -175,17 +164,11 @@ export type PressableHandlerPayload = {
 );
 
 export type MessagePressableHandlerPayload = PressableHandlerPayload & {
-  /**
-   * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
-   */
+  /** Handlers of the message actions, to run an action from a custom handler. */
   actionHandlers?: MessageActionHandlers;
-  /**
-   * Additional message touchable handler info.
-   */
+  /** Extra info about the interaction. */
   additionalInfo?: Record<string, unknown>;
-  /**
-   * Message object, on which interaction occurred.
-   */
+  /** Message the interaction occurred on. */
   message?: LocalMessage;
 };
 
@@ -238,14 +221,12 @@ export type MessagePropsWithContext = Pick<
   > &
   Pick<TranslationContextValue, 't'> & {
     messagesContext: MessagesContextValue;
-    /**
-     * Whether or not users are able to long press messages.
-     */
+    /** Whether long pressing a message is enabled. Defaults to true. */
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
     isTargetedMessage?: boolean;
     /**
-     * Handler to open the thread on message. This is callback for touch event for replies button.
+     * Called with the message's thread when its replies button is pressed.
      *
      * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
@@ -255,9 +236,7 @@ export type MessagePropsWithContext = Pick<
   } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
 
 /**
- * Since this component doesn't consume `messages` from `MessagesContext`,
- * we memoized and broke it up to prevent new messages from re-rendering
- * each individual Message component.
+ * Does not read `messages` from `MessagesContext`, so new messages do not re-render every Message.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
@@ -387,15 +366,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       dismissKeyboard();
     }
     if (error) {
-      /**
-       * If its a Blocked message, we don't do anything as per specs.
-       */
+      // Blocked messages do nothing on press.
       if (isBlockedMessage(message)) {
         return;
       }
-      /**
-       * If its a Bounced message, we open the message bounced options modal.
-       */
+      // Bounced messages open the bounce options dialog.
       if (isBouncedMessage(message)) {
         setIsBounceDialogOpen(true);
         return;
@@ -416,20 +391,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       : 'right'
     : alignment;
 
-  /**
-   * attachments contain files/images or other attachments
-   *
-   * if a URL attachment is present with a file/image then we
-   * show just the text and markdown should make the link
-   * clickable
-   */
+  // Groups attachments by kind. A file, playable video or image clears `other` (such as URL
+  // previews), so only the text remains and its markdown makes the link clickable.
   const attachments =
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
             if (cur.type === FileTypes.File) {
               acc.files.push(cur);
-              acc.other = []; // remove other attachments if a file exists
+              acc.other = [];
             } else if (
               cur.type === FileTypes.Video &&
               !cur.og_scrape_url &&
@@ -444,22 +414,19 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
               acc.other = [];
             } else if (cur.type === FileTypes.Video && !cur.og_scrape_url) {
               acc.files.push(cur);
-              acc.other = []; // remove other attachments if a file exists
+              acc.other = [];
             } else if (cur.type === FileTypes.Audio || cur.type === FileTypes.VoiceRecording) {
               acc.files.push(cur);
             } else if (cur.type === FileTypes.Image && !cur.title_link && !cur.og_scrape_url) {
-              /**
-               * this next if is not combined with the above one for cases where we have
-               * an image with no url links at all falling back to being an attachment
-               */
+              // An image without a preview URL is neither collected nor added to `other`.
               if (getAttachmentPreviewUrl(cur, cur.image_url, cur.thumb_url)) {
                 acc.images.push(cur);
-                acc.other = []; // remove other attachments if an image exists
+                acc.other = [];
               }
-              // only add other attachments if there are no files/images
             } else if (cur.type === FileTypes.Image && (cur.og_scrape_url || cur.title_link)) {
               acc.files.push(cur);
             } else if (!acc.files.length && !acc.images.length && !acc.videos.length) {
+              // Other attachments are kept only while there are no files, images or videos.
               acc.other.push(cur);
             }
 
@@ -478,9 +445,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           other: [] as Attachment[],
           videos: [] as Attachment[],
         };
-  /**
-   * Check if any actions to prevent long press
-   */
+  // Attachment actions disable long press and the quoted reply content.
   const hasAttachmentActions =
     !isMessageTypeDeleted &&
     Array.isArray(message.attachments) &&
@@ -600,7 +565,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
       return;
     }
-    // If a message is bounced, on long press the message bounce options modal should open.
+    // Bounced messages open the bounce options dialog on long press.
     if (isBouncedMessage(message)) {
       setIsBounceDialogOpen(true);
       return;
@@ -1005,8 +970,7 @@ export type MessageProps = Partial<
   Pick<MessagePropsWithContext, 'groupStyles' | 'message'>;
 
 /**
- * Message - A high level component which implements all the logic required for a message.
- * The actual rendering of the message is delegated via the "Message" property
+ * Implements the logic of a message and renders it through the `MessageItemView` component slot.
  *
  * @example ./Message.md
  */

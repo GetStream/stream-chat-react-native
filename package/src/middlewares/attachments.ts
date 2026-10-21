@@ -5,11 +5,8 @@ import {
 } from 'stream-chat';
 
 /**
- * Supplies a local video's preview URI.
- *
- * Every other attachment type gets `localMetadata.previewUri` from `toLocalUploadAttachment`,
- * which points it at the picked file itself. A video file is not renderable, so the preview has
- * to be the thumbnail the native picker extracted (`thumb_url`) instead.
+ * Sets a local video's `localMetadata.previewUri` to its `thumb_url`, because the picked video
+ * file itself cannot be rendered as a preview (other attachments preview the file URI).
  */
 const createVideoAttachmentPreviewMiddleware = (): AttachmentPreUploadMiddleware => ({
   id: 'stream-io/message-composer-ui-middleware/video-attachment-preview',

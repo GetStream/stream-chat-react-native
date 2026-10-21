@@ -9,9 +9,9 @@ import { useCanEditChannel } from '../../../hooks/useCanEditChannel';
 import { Button, ButtonProps } from '../../ui/Button/Button';
 
 export type ChannelDetailsEditButtonProps = {
-  /** Override the default behavior, which opens the Edit modal. */
+  /** Overrides the default behavior, which opens the edit modal. */
   onPress?: () => void;
-  /** Style forwarded to the underlying Button. */
+  /** Style forwarded to the underlying `Button`. */
   style?: ButtonProps['style'];
 };
 
@@ -25,9 +25,8 @@ export const ChannelDetailsEditButton = ({
   const isVisible = useCanEditChannel(channel);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
-  // The built-in modal is only used by the default press behavior. When a custom handler
-  // (onPress prop) is provided, the consumer owns the navigation/modal, so we must not render
-  // the built-in one.
+  // With a custom `onPress` the consumer owns the navigation or modal, so the built-in modal is
+  // not rendered.
   const usesDefaultModal = !onPress;
 
   const handleEditPress = useCallback(() => {

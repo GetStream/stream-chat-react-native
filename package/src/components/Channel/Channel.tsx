@@ -24,9 +24,8 @@ export { reactionData } from './ChannelShell';
 
 export type MarkReadFunctionOptions = {
   /**
-   * Signal, whether the message paginator's unread snapshot should be updated.
-   * By default, the local state update is prevented when the Channel component is mounted.
-   * This is in order to keep the UI indicating the original unread state, when the user opens a channel.
+   * Whether the paginator's unread snapshot is reset to the latest message. Defaults to true.
+   * Marking read on mount passes false so the channel keeps showing its original unread state.
    */
   updateChannelUnreadState?: boolean;
 };
@@ -35,23 +34,14 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
   Pick<ChatContextValue, 'client'> &
   Pick<TranslationContextValue, 't'> &
   ChannelConfigProps & {
-    /**
-     * When true, messageList will be scrolled at first unread message, when opened.
-     */
+    /** Scrolls the message list to the first unread message on open. Defaults to false. */
     initialScrollToFirstUnreadMessage?: boolean;
-    /**
-     * Boolean flag to enable/disable marking the channel as read on mount
-     */
+    /** Marks the channel as read on mount. Defaults to true. */
     markReadOnMount?: boolean;
     /**
-     * A boolean signifying whether the Channel component should run channel.watch()
-     * whenever it mounts up a new channel. If set to `false`, it is the integrator's
-     * responsibility to run channel.watch() if they wish to receive WebSocket events
-     * for that channel.
-     *
-     * Can be particularly useful whenever we are viewing channels in a read-only mode
-     * or perhaps want them in an ephemeral state (i.e not created until the first message
-     * is sent).
+     * Whether to call `channel.watch()` when a channel mounts. Defaults to true. When false, call
+     * it yourself to receive WebSocket events, such as for a read-only or ephemeral channel that is
+     * not created until its first message.
      */
     initializeOnMount?: boolean;
   };
@@ -89,8 +79,8 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   });
 
   if (!channel || blockingError) {
-    // Retry re-runs the query that failed. A new failure lands in the paginator's `lastQueryError`,
-    // which is the `error` this indicator renders off — so the warn is all the handling needed.
+    // A failed retry lands in the paginator's `lastQueryError`, which the indicator renders, so
+    // the warning is all the handling needed.
     const retry = () =>
       channel?.messagePaginator
         ?.jumpToTheLatestMessage()
@@ -124,17 +114,15 @@ export type ChannelProps = Partial<Omit<ChannelPropsWithContext, 'channel'>> &
   Pick<ChannelPropsWithContext, 'channel'> & {
     /**
      * The notification host this channel's notifications are routed to. Defaults to the channel's
-     * own host, derived from its cid.
+     * own host, derived from its `cid`.
      */
     notificationHostId?: string;
   };
 
 /**
- *
- * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
- * to receive the StreamChat client instance. MessageList and MessageComposer must be children of
- * the Channel component to receive the ChannelContext. A thread is rendered by `<Thread>`, next to
- * the channel rather than inside it.
+ * Wrapper component for a chat channel. It must be inside `<Chat>`, and `MessageList` and
+ * `MessageInput` must be its children to receive the channel context. A thread is rendered by
+ * `<Thread>` next to the channel, not inside it.
  *
  * @example ./Channel.md
  */

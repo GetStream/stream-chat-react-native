@@ -103,74 +103,44 @@ type MessageFlashListPropsWithContext = Pick<
   Pick<ChatContextValue, 'client'> &
   Pick<MessageInputContextValue, 'messageInputFloating' | 'messageInputHeightStore'> & {
     /**
-     * Whether the composer lets a message be sent while its attachments are still uploading
-     * (`messageComposer.attachments.pendingUploadsEnabled`). Read from the composer by default.
+     * Whether a message can be sent while its attachments are still uploading. Read from
+     * `messageComposer.attachments.pendingUploadsEnabled` by default.
      */
     pendingUploadsEnabled: boolean;
     markRead: (options?: MarkReadFunctionOptions) => void;
   } & Pick<MessagesContextValue, 'disableTypingIndicator' | 'myMessageTheme'> &
   Pick<ThreadContextValue, 'thread'> & {
     /**
-     * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
-     * to attach some additional props to underlying FlatList, you can add it to following prop.
-     *
-     * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-     *
-     * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
-     *
-     * e.g.
-     * ```js
-     * <MessageList
-     *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
-     * ```
+     * Extra props for the underlying FlashList, applied over the defaults. To get the list ref, use
+     * `setFlatListRef`.
      */
     additionalFlashListProps?: Partial<FlashListProps<LocalMessage>>;
     /**
-     * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
-     * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
-     * from context.
-     *
-     * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-     * used in MessageList. Should be used for header by default if inverted is true or defaulted
+     * Rendered as the list footer, which is the newest-message end. Defaults to the
+     * loading-more-recent indicator followed by the typing indicator.
      */
     FooterComponent?: React.ComponentType;
     /**
-     * UI component for header of message list. By default message list will use `InlineLoadingMoreRecentIndicator`
-     * as HeaderComponent. If you want to implement your own inline loading indicator, you can access `loadingMoreRecent`
-     * from context.
-     *
-     * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-     * used in MessageList. Should be used for header if inverted is false
+     * Rendered as the list header, which is the older-message end. Receives `loadingMore`. Defaults
+     * to `ThreadFooterComponent` in a thread, `InlineLoadingMoreIndicator` otherwise.
      */
     HeaderComponent?: React.ComponentType<{ loadingMore?: boolean }>;
-    /** Whether or not the FlatList is inverted. Defaults to true */
+    /** Ignored: the FlashList is never inverted. */
     inverted?: boolean;
-    /** Turn off grouping of messages by user */
+    /** Turns off grouping of messages by user. */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
     /**
-     * Handler to open the thread on message. This is callback for touch event for replies button.
+     * Called when the replies button of a message is pressed.
      *
      * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
     onThreadSelect?: (thread: Thread) => void;
-    /**
-     * Use `setFlatListRef` to get access to ref to inner FlatList.
-     *
-     * e.g.
-     * ```js
-     * <MessageList
-     *  setFlatListRef={(ref) => {
-     *    // Use ref for your own good
-     *  }}
-     * ```
-     */
+    /** Receives the ref of the inner FlashList. */
     setFlatListRef?: (ref: FlashListRef<LocalMessage> | null) => void;
     /**
-     * If true, the message list will be used in a live-streaming scenario.
-     * This flag is used to make sure that the auto scroll behaves well, if multiple messages are received.
-     *
-     * This flag is experimental and is subject to change. Please test thoroughly before using it.
+     * Tunes autoscroll for live-streaming scenarios, where many messages arrive in a short time.
+     * Defaults to false.
      *
      * @experimental
      */
@@ -179,12 +149,10 @@ type MessageFlashListPropsWithContext = Pick<
 
 const WAIT_FOR_SCROLL_TIMEOUT = 0;
 
-// Classify an attachment bearing message by its primary shape so FlashList only
-// recycles same shaped cells (means less work to rerender). Gallery/media is the
-// heaviest subtree to mount, so we short circuit to it as soon as we see one gallery
-// image/video nad this keeps gallery cells recycling only with other gallery cells,
-// so the Gallery subtree reconciles on rebind instead of unmount & remount. Mirrors
-// the attachment categorization in Message.
+// Classifies a message with attachments by its primary shape, so FlashList recycles only
+// same-shaped cells. The gallery is the heaviest subtree to mount, so one gallery image or video
+// returns at once: gallery cells then recycle only with each other and reconcile on rebind instead
+// of remounting. Mirrors the attachment categorization in Message.
 const getAttachmentItemType = (message: LocalMessage) => {
   const attachments = message.attachments ?? [];
   let hasGiphy = false;
@@ -293,7 +261,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     thread,
   } = props;
 
-  // Inside a thread the parent message sits above the replies, along with the older-replies indicator.
+  // Inside a thread the parent message and the older-replies indicator sit above the replies.
   const HeaderComponent =
     HeaderComponentProp ?? (thread ? ThreadFooterComponent : InlineLoadingMoreIndicator);
   const {
@@ -319,9 +287,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState<boolean>(true);
 
-  /**
-   * The timeout id used to debounce our scrollToIndex calls on messageList updates
-   */
   const scrollToDebounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { theme } = useTheme();
@@ -397,9 +362,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [autoscrollToRecent, hasPendingInitialTargetLoad]);
 
-  // While the message overlay is open we suppress autoscroll-to-recent so that
-  // incoming messages do not shift visible content and invalidate the overlay's
-  // anchored geometry. Content anchoring (startRenderingFromBottom) stays on.
+  // Autoscroll-to-recent is suppressed while the message overlay is open, so incoming messages do
+  // not shift content under the overlay's anchored geometry. `startRenderingFromBottom` stays on.
   const isOverlayOpen = useHasActiveId();
 
   const maintainVisibleContentPosition = useMemo(() => {
@@ -418,11 +382,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
 
-  /**
-   * Scrolls to the focused message (messageFocusSignal) once it's rendered. Re-attempts when the
-   * list updates while a focus is pending, and marks each focus token handled so unrelated list
-   * changes during the highlight window don't re-scroll.
-   */
+  // Scrolls to the focused message (`messageFocusSignal`) once it is rendered. Each focus token is
+  // handled once, so list changes during the highlight do not re-scroll.
   useEffect(() => {
     if (!focusedMessageId || focusToken === lastFocusScrollTokenRef.current) {
       return;
@@ -432,8 +393,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       (message) => message?.id === focusedMessageId,
     );
 
-    // Not in the rendered window yet (jumpToMessage already loaded-around it, so a later
-    // processedMessageList change re-runs this) — bail rather than re-jump (no jump↔effect loop).
+    // Not in the rendered window yet: a later `processedMessageList` change re-runs this effect.
     if (indexOfParentInMessageList === -1) {
       return;
     }
@@ -462,9 +422,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       requestAnimationFrame(async () => {
         await scrollToIndex();
       });
-      // Start the highlight's auto-dismiss countdown now that the message is scrolled into view.
-      // The LLC deliberately does NOT start it on emit (the message may not be visible yet), so
-      // without this the highlight would persist forever.
+      // The client does not start the highlight's auto-dismiss countdown on emit, as the message
+      // may not be visible yet. Start it now that the message is scrolled into view.
       paginator?.scheduleMessageFocusSignalClear({ token: focusToken });
     }, WAIT_FOR_SCROLL_TIMEOUT);
   }, [paginator, focusToken, focusedMessageId, processedMessageList]);
@@ -494,8 +453,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     if (!didMergeMessageSetsWithNoUpdates) {
       const shouldScrollToRecentOnNewOwnMessage = shouldScrollToRecentOnNewOwnMessageRef.current();
-      // we should scroll to bottom where ever we are now
-      // as we have sent a new own message
+      // A new own message scrolls to the latest wherever the list currently is.
       if (shouldScrollToRecentOnNewOwnMessage) {
         flashListRef.current?.scrollToEnd({
           animated: true,
@@ -504,10 +462,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   }, [paginator, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef]);
 
-  /**
-   * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
-   * Thus useRef.
-   */
+  // The list does not accept a changing `onViewableItemsChanged`, hence the ref below.
   const unstableOnViewableItemsChanged = ({
     viewableItems,
   }: {
@@ -554,8 +509,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   );
 
   const setNativeScrollability = useStableCallback((value: boolean) => {
-    // FlashList does not have setNativeProps exposed, hence we cannot use that.
-    // Instead, we resort to state.
+    // FlashList does not expose `setNativeProps`, so scrollability is state.
     setScrollEnabled(value);
   });
 
@@ -570,10 +524,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     [goToMessage, modifiedTheme, noGroupByUser, onThreadSelect, setNativeScrollability],
   );
 
-  /**
-   * Pagination is driven from the scroll position rather than the list's `onEndReached`, from a
-   * fixed distance to either edge. Not inverted: the top is the oldest end.
-   */
+  // Paginates within 100 points of either edge. Not inverted: the top is the oldest end.
   const onUserScrollEvent: NonNullable<ScrollViewProps['onScroll']> = useStableCallback((event) => {
     const nativeEvent = event.nativeEvent;
     const offset = nativeEvent.contentOffset.y;
@@ -601,12 +552,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
     const isScrollAtBottom = contentLength - visibleLength - offset < messageInputHeight;
 
-    /**
-     * 1. If I scroll up -> show scrollToBottom button.
-     * 2. If I scroll to bottom of screen
-     *    |-> hide scrollToBottom button.
-     *    |-> if channel is unread, call markRead().
-     */
+    // The scroll-to-bottom button shows unless the list is at the bottom with no newer messages.
     setScrollToBottomButtonVisible(
       messageListHasMessages && (paginator?.hasMoreHead || !isScrollAtBottom),
     );
@@ -631,10 +577,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (thread) {
       return;
     }
-    /**
-     *  When we are not in the bottom of the list, and we receive new messages, we need to mark the channel as read.
-     We would still need to show the unread label, where the first unread message appeared so we don't update the channelUnreadState.
-     */
+    // `updateChannelUnreadState: false` keeps the unread label on the first unread message.
     await markRead({
       updateChannelUnreadState: false,
     });
@@ -669,7 +612,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     }
   });
 
-  // We need to omit the style related props from the additionalFlatListProps and add them directly instead of spreading
+  // `style` and `contentContainerStyle` are merged with the SDK styles below, not spread.
   let additionalFlashListPropsExcludingStyle:
     | Omit<NonNullable<typeof additionalFlashListProps>, 'style' | 'contentContainerStyle'>
     | undefined;
@@ -712,9 +655,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     bumpOverlayLayoutRevision(closeCorrectionDeltaY);
 
     const changedBy = currentListHeightRef.current - height;
-    // `getNativeScrollRef()` is typed as returning the `ScrollView` *component* by flash-list,
-    // which under React Native 0.87's Strict TypeScript API is a function type rather than the
-    // host instance it actually returns at runtime. Re-assert the instance type.
+    // flash-list types `getNativeScrollRef()` as the `ScrollView` component, a function type under
+    // React Native 0.87's Strict TypeScript API, but it returns the host instance at runtime.
     const nativeScrollRef = flashListRef.current?.getNativeScrollRef() as
       | ScrollViewRef
       | null
@@ -868,10 +810,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 };
 
 /**
- * Unfortunately, FlashList does not handle autoscrolling if the footer changes properly. Because
- * of that, we calculate this manually and autoscroll to the bottom if we're near the end. We only
- * do this if the typing indicator is about to be rendered for now. Later on we can rely on proper
- * layout calculations.
+ * Scrolls to the end when the typing indicator appears and the list is near the end, as FlashList
+ * does not autoscroll when its footer changes.
  */
 const FlashListFooterTypingAdapter = ({
   enabled,
@@ -913,10 +853,10 @@ const FlashListFooterTypingAdapter = ({
 export type MessageFlashListProps = Partial<MessageFlashListPropsWithContext>;
 
 /**
- * This is a @experimental component.
- * It is implemented using @shopify/flash-list package to optimize the performance of the MessageList component.
- * The implementation is experimental and is subject to change.
- * Please feel free to report any issues or suggestions.
+ * A `MessageList` built on `@shopify/flash-list` for performance. The implementation is subject to
+ * change.
+ *
+ * @experimental
  */
 export const MessageFlashList = (props: MessageFlashListProps) => {
   const { closePicker, attachmentPickerStore } = useAttachmentPickerContext();
@@ -996,12 +936,7 @@ const useStyles = () => {
           ...container,
         },
         contentContainer: {
-          /**
-           * paddingBottom is set to 4 to account for the default date
-           * header and inline indicator alignment. The top margin is 8
-           * on the header but 4 on the inline date, this adjusts the spacing
-           * to allow the "first" inline date to align with the date header.
-           */
+          // 4 aligns the first inline date (top margin 4) with the date header (top margin 8).
           paddingBottom: 4,
           ...contentContainer,
         },

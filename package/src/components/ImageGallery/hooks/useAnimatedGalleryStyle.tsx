@@ -16,9 +16,9 @@ type Props = {
 const oneEighth = 1 / 8;
 
 /**
- * Named via `ReturnType` because Reanimated does not export `AnimatedStyleHandle` from its root.
- * Without an explicit annotation the inferred return type inlines React Native's internal style
- * helper types, which cannot be written into the emitted declarations (TS2883).
+ * Named via `ReturnType` because Reanimated does not export `AnimatedStyleHandle` from its root. An
+ * inferred return type would inline React Native's internal style types, which cannot be written
+ * into the emitted declarations (TS2883).
  */
 type GalleryAnimatedStyle = ReturnType<typeof useAnimatedStyle<ImageStyle>>;
 
@@ -36,14 +36,9 @@ export const useAnimatedGalleryStyle = ({
   const screenWidth = vw(100);
   const halfScreenWidth = vw(50);
 
-  /**
-   * The current image, designated by selected is scaled and translated
-   * based on the gestures. The rendered images before and after the
-   * currently selected image also translated in X if the scale is
-   * greater than one so they keep the same distance from the selected
-   * image as it is scaled. If the scale is less than one they stay in
-   * place as to not come into the screen when the image shrinks.
-   */
+  // The selected image is scaled and translated by the gestures. Its neighbors shift in X when the
+  // scale is above 1 to keep their distance from it, and stay in place below 1 so they do not
+  // enter the screen as the image shrinks.
   const animatedGalleryStyle = useAnimatedStyle<ImageStyle>(() => {
     const selected = currentIndexShared.value === index;
     const previous = currentIndexShared.value > index;

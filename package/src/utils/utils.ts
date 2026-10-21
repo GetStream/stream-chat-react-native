@@ -11,9 +11,8 @@ export type ReactionData = {
   Icon: React.ComponentType<IconProps>;
   type: string;
   /**
-   * Whether the reaction should appear inside of the reaction picker in the
-   * context menu or not. If `true`, it will consequently not appear in the
-   * extra reactions bottom sheet.
+   * Whether the reaction appears in the context menu's reaction picker. When `true`, it does not
+   * appear in the extra reactions bottom sheet.
    */
   isMain?: boolean;
 };
@@ -70,26 +69,29 @@ export const getIndicatorTypeForFileState = (
 };
 
 /**
- * Utility to check if the message is a Blocked message.
- * @param message
- * @returns boolean
+ * Whether the message was blocked by moderation.
+ *
+ * @param message The message to check.
+ * @returns Whether the message is blocked.
  */
 export const isBlockedMessage = (message: LocalMessage) => {
   return message.type === 'error' && message.moderation?.action === 'remove';
 };
 
 /**
- *  Utility to check if the message is a Bounced message.
- * @param message
- * @returns boolean
+ * Whether the message was bounced by moderation.
+ *
+ * @param message The message to check.
+ * @returns Whether the message is bounced.
  */
 export const isBouncedMessage = (message: LocalMessage) =>
   message.type === 'error' && message?.moderation?.action === 'bounce';
 
 /**
- * Utility to check if the message is a edited message.
- * @param message
- * @returns boolean
+ * Whether the message text has been edited.
+ *
+ * @param message The message to check.
+ * @returns Whether the message is edited.
  */
 export const isEditedMessage = (message: LocalMessage) => message.message_text_updated_at != null;
 
@@ -110,11 +112,11 @@ export const getUrlWithoutParams = (url?: string) => {
 };
 
 /**
- * Whether this URL points at a file on the device rather than something fetchable.
+ * Whether the URL points at a file on the device rather than something fetchable over HTTP(S).
+ * An undefined URL is not local.
  *
- * Anchored on the scheme rather than searching for `http` anywhere in the string: a
- * `content://`/`ph://` URI is free to contain that substring, and an attachment mid-upload is
- * rendered from exactly such a URI. Undefined is "not local" — there is no local file to read.
+ * Matches on the scheme, not on `http` anywhere in the string, because a `content://` or `ph://`
+ * URI may contain that substring.
  */
 export const isLocalUrl = (url?: string) => !!url && !/^https?:\/\//i.test(url.trim());
 
@@ -124,16 +126,11 @@ export const generateRandomId = (a = ''): string =>
       ((Number(a) ^ (Math.random() * 16)) >> (Number(a) / 4)).toString(16)
     : `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, generateRandomId);
 
-/*
- * Returns true if the message text only contains emojis
- */
+/** Whether the text contains only emojis, ignoring whitespace. */
 export const hasOnlyEmojis = (text: string) => {
   try {
-    // get all emojis in the string
     const emojiOnlyString = [...text.matchAll(EmojiRegex())].join('');
-    // remove all spaces from original text
     const originalTextWithNoSpaces = text.replaceAll(/\s/g, '');
-    // check if both are the same
     return (
       emojiOnlyString.length !== 0 && emojiOnlyString.length === originalTextWithNoSpaces.length
     );
@@ -143,9 +140,11 @@ export const hasOnlyEmojis = (text: string) => {
 };
 
 /**
- * Stringifies a message object
- * @param {LocalMessage} message - the message object to be stringified
- * @returns {string} The stringified message
+ * Stringifies the fields of a message that affect how it renders, to compare messages cheaply.
+ *
+ * @param params.message The message to stringify.
+ * @param params.includeReactions Whether to include the reactions. Defaults to true.
+ * @returns The stringified message.
  */
 export const stringifyMessage = ({
   message,
@@ -186,12 +185,10 @@ export const stringifyMessage = ({
 };
 
 /**
- * Utility to get the file name from the path using regex.
- * `[^/]+` matches one or more characters that are not a slash (/), ensuring we capture the filename part.
- * `\.` matches the period before the file extension.
- * `[^/]+$` matches one or more characters that are not a slash (/) until the end of the string, capturing the file extension.
- * @param path string
- * @returns string
+ * Returns the file name, including its extension, from the last segment of a path.
+ *
+ * @param path The file path or URI.
+ * @returns The file name, or an empty string when the last segment has no extension.
  */
 export const getFileNameFromPath = (path: string) => {
   const pattern = /[^/]+\.[^/]+$/;
@@ -200,9 +197,10 @@ export const getFileNameFromPath = (path: string) => {
 };
 
 /**
- * Utility to get the duration label from the duration in seconds.
- * @param duration number
- * @returns string
+ * Formats a duration as `m:ss`, or `HH:mm:ss` from one hour.
+ *
+ * @param duration The duration in milliseconds.
+ * @returns The duration label, `00:00` for a zero or missing duration.
  */
 export const getDurationLabelFromDuration = (duration: number) => {
   if (!duration) {
@@ -239,20 +237,23 @@ export const formatMsToMinSec = (ms: number) => {
 };
 
 /**
- * Utility to escape special characters in a string.
- * @param text
- * @returns string
+ * Escapes the characters that have a special meaning in a regular expression.
+ *
+ * @param text The text to escape.
+ * @returns The escaped text.
  */
 export function escapeRegExp(text: string) {
   return text.replace(/[-[\]{}()*+?.,/\\^$|#]/g, '\\$&');
 }
 
 /**
- * The purpose of this function is to compare two messages and determine if they are equal.
- * It checks various properties of the messages, such as status, type, text, pinned state, updated_at timestamp, i18n data, and reply count.
- * If all these properties match, it returns true, indicating that the messages are considered equal.
- * If any of the properties differ, it returns false, indicating that the messages are not equal.
- * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
+ * Whether two messages are equal for rendering purposes, for use in `React.memo` comparators.
+ * Compares `status`, `type`, `text`, `pinned`, `i18n` (by reference), `reply_count`, `updated_at`
+ * and `deleted_at`. Two missing messages are equal.
+ *
+ * @param prevMessage The previous message.
+ * @param nextMessage The next message.
+ * @returns Whether the messages are equal.
  */
 export const checkMessageEquality = (
   prevMessage?: LocalMessage | MessageResponse | null,
@@ -266,8 +267,7 @@ export const checkMessageEquality = (
   if (prevMessageExists !== nextMessageExists) {
     return false;
   }
-  // `status` only exists on optimistic/local messages (`LocalMessage`); a quoted
-  // `MessageResponse` won't carry it, so read it through a guard instead of a cast.
+  // `status` exists only on `LocalMessage`, so it is read through an `in` guard.
   const prevStatus = prevMessage && 'status' in prevMessage ? prevMessage.status : undefined;
   const nextStatus = nextMessage && 'status' in nextMessage ? nextMessage.status : undefined;
   const messageEqual =
@@ -284,11 +284,13 @@ export const checkMessageEquality = (
 };
 
 /**
- * The purpose of this function is to compare two quoted messages and determine if they are equal.
- * It checks various properties of the messages, such as status, type, text, updated_at timestamp, and deleted_at.
- * If all these properties match, it returns true, indicating that the messages are considered equal.
- * If any of the properties differ, it returns false, indicating that the messages are not equal.
- * Useful for the `areEqual` logic in the React.memo of the Message component/sub-components.
+ * Whether two quoted messages are equal for rendering purposes, for use in `React.memo`
+ * comparators. Compares `type`, `text`, `updated_at` and `deleted_at`. Two missing messages are
+ * equal.
+ *
+ * @param prevQuotedMessage The previous quoted message.
+ * @param nextQuotedMessage The next quoted message.
+ * @returns Whether the quoted messages are equal.
  */
 export const checkQuotedMessageEquality = (
   prevQuotedMessage?: LocalMessage | MessageResponse | null,
@@ -312,10 +314,11 @@ export const checkQuotedMessageEquality = (
 };
 
 /**
- * Utility to get initials from name.
- * @param name string
- * @param numberOfInitials number - optional, default is 2
- * @returns string
+ * Returns the uppercase first letters of the first words of a name.
+ *
+ * @param name The full name.
+ * @param numberOfInitials How many initials to return. Defaults to 2.
+ * @returns The initials, or an empty string for a blank name.
  */
 export const getInitialsFromName = (name: string, numberOfInitials: number = 2) => {
   if (!name) return '';
@@ -329,7 +332,6 @@ export const getInitialsFromName = (name: string, numberOfInitials: number = 2) 
     .join('');
 };
 
-// Utility to hash a string to a number
 export const hashStringToNumber = (str: string) => {
   let hash = 0;
 

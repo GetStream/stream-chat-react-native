@@ -6,132 +6,18 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } fr
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 /**
- * Builds a grid of thumbnail images from image attachments.
- * This function take a object parameter with following properties:
+ * Builds the thumbnail grid for image attachments, sized to `gridWidth` x `gridHeight`.
  *
- * @params
+ * Each inner array of `grid` is a column of thumbnails stacked top to bottom, sized by flex weight:
+ * `[[2, 1]]` is one column whose first thumbnail is twice as tall as the second. With
+ * `invertedDirections` each inner array is a row, laid out left to right instead.
  *
- * - {number[][]} grid - Grid pattern of the gallery. Each numeric value in the array represents the flex value of corresponding image in grid.
- * - {Attachment[]} images - Array of image attachments.
- * - {GallerySizeConfig} sizeConfig - Theme config for the gallery.
- * - {boolean} invertedDirections - Whether to invert the direction of the grid. By default grid is rendered with column as primary direction and row as secondary direction.
- *
- * @usage
- *
- * ```
- * const { thumbnailGrid, invertedDirection } = buildThumbnailGrid({
- *  grid: [[1], [1]],
- *  images: [image1, image2],
- *  sizeConfig: {
- *    gridHeight: 200,
- *    gridWidth: 200,
- *    maxHeight: 200,
- *    maxWidth: 200,
- *    minHeight: 200,
- *    minWidth: 200,
- *  },
- * })
- *
- * Rendering logic on UI:
- *
- * ```
- * <View style={{ flexDirection: invertedDirection ? 'row' : 'column }}>
- * {
- *  thumbnailGrid.forEach(rows => {
- *    return (
- *      <View style={{ flexDirection: invertedDirection ? 'column' : 'row' }}>
- *       {
- *        rows.forEach(thumbnail => (
- *          <Image
- *            source={{ uri: thumbnail.url }}
- *            resizeMode={thumbnail.resizeMode}
- *            width={thumbnail.width}
- *            height={thumbnail.height}
- *          />
- *       ))}
- *      </View>
- *    )});
- * }
- * </View>
- * ```
- *
- * Lets look at different examples of grid and invertedDirections param:
- *
- * EXAMPLE 1:
- *
- * ```
- * {
- *  grid: [[2, 1], [2, 1]]
- *  invertedDirections: false
- * }
- * ```
- *
- * Resulting thumbnail grid on rendered UI:
- *
- *  __________________
- * |            |     |
- * |            |     |
- * |------------------|
- * |            |     |
- * |            |     |
- *  ------------------
- *
- * EXAMPLE 2:
- *
- * ```
- * {
- *  grid: [[2, 1], [2, 1]]
- *  invertedDirections: true
- * }
- * ```
- * Resulting thumbnail grid on rendered UI:
- *  __________________
- * |         |        |
- * |         |        |
- * |         |        |
- * |         |        |
- * |------------------|
- * |         |        |
- * |         |        |
- *  ------------------
- *
- * EXAMPLE 3:
- *
- * ```
- * {
- *  grid: [[2, 1]]
- *  invertedDirections: false
- * }
- * ```
- * Resulting thumbnail grid on rendered UI:
- *  __________________
- * |                  |
- * |                  |
- * |                  |
- * |                  |
- * |------------------|
- * |                  |
- * |                  |
- *  ------------------
- *
- * EXAMPLE 4:
- *
- * ```
- * {
- *  grid: [[2, 1]]
- *  invertedDirections: true
- * }
- * ```
- * Resulting thumbnail grid on rendered UI:
- *  __________________
- * |            |     |
- * |            |     |
- * |            |     |
- * |            |     |
- * |            |     |
- *  ------------------
- *
- * @return {GallerySizeAndThumbnailGrid}
+ * @param params.grid Flex weight of every thumbnail, per column (per row when inverted).
+ * @param params.images Image attachments, consumed in grid order.
+ * @param params.invertedDirections Swaps the roles of columns and rows. Defaults to false.
+ * @param params.resizableCDNHosts CDN hosts whose image URLs can be resized.
+ * @param params.sizeConfig Overall gallery size; only `gridHeight` and `gridWidth` are read here.
+ * @returns The grid size, its thumbnails and the `invertedDirections` it was built with.
  */
 export function buildThumbnailGrid({
   grid,

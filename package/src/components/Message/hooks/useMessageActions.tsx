@@ -19,9 +19,11 @@ import type { MessageActionType } from '../../MessageMenu/MessageActionListItem'
 
 /**
  * The default message actions (copy, edit, reply, pin, mute, delete, ...) for the message this
- * component renders, ready to pass to a `MessageActionList`. Call it inside a message, e.g. in a
- * custom message component or a custom `MessageActionList`. The SDK itself calls it only when a
- * message's action menu opens.
+ * component renders, keyed by action name. Call it inside a message, such as a custom message
+ * component or a custom `MessageActionList`. The SDK itself calls it only when a message's action
+ * menu opens.
+ *
+ * @returns The message actions, keyed by action name.
  */
 export const useMessageActions = () => {
   const { client } = useChatContext();

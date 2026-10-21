@@ -21,7 +21,6 @@ export const upsertChannels = async ({
   execute?: boolean;
   isLatestMessagesSet?: boolean;
 }) => {
-  // Update the database only if the query is provided.
   let queries: PreparedQueries[] = [];
 
   const channelIds = channels.map((channel) => channel.channel?.cid);

@@ -1,9 +1,7 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
 export type ChatConfigContextValue = {
-  /**
-   * This option allows you to specify a list of CDNs that offer image resizing.
-   */
+  /** CDN hosts whose image URLs can be resized. Defaults to `['.stream-io-cdn.com']`. */
   resizableCDNHosts?: string[];
 };
 

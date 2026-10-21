@@ -1,38 +1,33 @@
 /**
- * The only translation data bundled with the SDK. Hand-maintained.
+ * The only translation data bundled with the SDK, maintained by hand.
  *
- * Prose keys are not here — they pass their English copy inline at the call site
- * (`t('message.status.sent.text', 'Sent')`). These keys have no inline copy to fall back on:
- * they are formatter expressions, passed around as prop values and resolved by name at runtime
- * (`timestampTranslationKey`), so the extractor never sees a literal call site for them.
+ * Prose keys are not here: they pass their English copy inline at the call site. These keys have no
+ * inline copy because they are formatter expressions passed around as prop values and resolved by
+ * name at runtime (`timestampTranslationKey`), so the extractor never sees a literal call site.
  *
- * The leaf segment is the consuming component's name and stays PascalCase, matching the web SDK
- * and the `timestamp/<Component>` values these keys replace. Every other namespace is lower
- * camelCase.
+ * The leaf segment is the consuming component's name and stays PascalCase; every other namespace is
+ * lower camelCase.
  *
- * Two namespaces are typed into the catalog but supplied by `@stream-io/i18n` rather than declared
- * here. `language.*` (ISO language names, generated from core's `TranslationLanguage` union) is
- * merged in by the `Streami18n` subclass in `utils/i18n/Streami18n.ts`, underneath this file, so an
- * individual name stays overridable. `relativeTime.*` needs no data at all: core's
- * `timestampFormatter(relativeCompact: true)` passes its English inline the same way a call site
- * does. There is
- * no `translationBuilderTopic.*` — this SDK registers no i18next postProcessor; the formatter
- * registry in `@stream-io/i18n` is the whole extension surface.
+ * `language.*` and `relativeTime.*` are typed into the catalog but not declared here. `language.*`
+ * comes from `stream-chat` and is merged in by the `Streami18n` subclass in
+ * `utils/i18n/Streami18n.ts`, underneath this file, so individual names stay overridable.
+ * `relativeTime.*` needs no data: `@stream-io/i18n`'s `timestampFormatter(relativeCompact: true)`
+ * passes its English inline. The SDK registers no i18next postProcessor, so there is no
+ * `translationBuilderTopic.*`.
  *
  * `yarn build-translations` joins this file with the inline defaults to generate
  * `src/i18n/keys.ts`; `yarn i18n:export` writes the joined catalog as JSON.
  *
- * Three entries hide English inside a formatter expression, so `dayjsLocaleConfigForLanguage`
- * cannot reach them and an integrator has to override the key itself:
+ * Three entries hide English inside a formatter expression, out of reach of
+ * `dayjsLocaleConfigForLanguage`, so an integrator overrides the key itself:
  *
  * - `timestamp.ChannelPreviewStatus` and `timestamp.ThreadListItem` carry day words inside their
  *   own `calendarFormats` argument. A per-key `calendarFormats` replaces the locale's calendar
- *   wholesale — `getDateString` short-circuits to `t()` before the Day.js calendar path, and
- *   `timestampFormatter` then parses the calendar config out of the translation value itself.
+ *   wholesale: `getDateString` short-circuits to `t()` before the Day.js calendar path, and
+ *   `timestampFormatter` parses the calendar config out of the translation value itself.
  * - `timestamp.UserActivityStatus` puts prose (`Last seen`) beside the interpolation.
  *
- * Adding a fourth fails a guard in `src/utils/__tests__/Streami18n.test.ts` that keeps
- * `ai-docs/i18n-v10-migration.md` in sync.
+ * Adding a fourth fails a guard in `src/utils/__tests__/Streami18n.test.ts`.
  */
 export const runtimeDefaults = {
   'duration.messageReminder': '{{ milliseconds | durationFormatter(withSuffix: true) }}',
@@ -49,9 +44,9 @@ export const runtimeDefaults = {
     '{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {"lastDay":"[Yesterday]", "lastWeek":"dddd", "nextDay":"[Tomorrow]", "nextWeek":"dddd [at] LT", "sameDay":"LT", "sameElse":"L"}) }}',
   'timestamp.UserActivityStatus': 'Last seen {{ timestamp | fromNowFormatter }}',
 
-  // Screen-reader labels and lookup-table entries. These reach `t()` as runtime values — from a
-  // JSX prop, a ternary branch, or a table keyed by something other than the copy — so there is no
-  // call site at which an inline default could be written.
+  // Screen-reader labels and lookup-table entries. These reach `t()` as runtime values (from a JSX
+  // prop, a ternary branch, or a table keyed by something other than the copy), so no call site
+  // can carry an inline default.
   'attachment.gallery.doubleTapToOpen.accessibilityLabel': 'Double tap to open',
   'attachment.gallery.image.accessibilityLabel': 'Gallery image',
   'attachment.gallery.video.accessibilityLabel': 'Gallery video',

@@ -70,10 +70,8 @@ export class ImageGalleryStateStore {
   options: ImageGalleryOptions;
   videoPlayerPool: VideoPlayerPool;
   /**
-   * SharedValue mirror of `state.currentIndex` for worklet consumers (gesture
-   * handlers, animated styles). Maintained in lockstep with the setter and the
-   * reset path in `clear()`. Reads from worklets bypass the JS bridge entirely;
-   * any code path that updates `currentIndex` must keep this mirror in sync.
+   * Shared value mirroring `state.currentIndex` for worklets (gesture handlers, animated styles).
+   * Every path that updates `currentIndex` must keep it in sync.
    */
   currentIndexShared: SharedValue<number>;
 
@@ -84,7 +82,6 @@ export class ImageGalleryStateStore {
     this.currentIndexShared = makeMutable(INITIAL_STATE.currentIndex);
   }
 
-  // Getters
   get messages() {
     return this.state.getLatestValue().messages;
   }
@@ -155,7 +152,6 @@ export class ImageGalleryStateStore {
     });
   }
 
-  // Setters
   set messages(messages: LocalMessage[]) {
     this.state.partialNext({ messages });
   }
@@ -168,12 +164,8 @@ export class ImageGalleryStateStore {
     const previousIndex = this.state.getLatestValue().currentIndex;
     this.state.partialNext({ currentIndex });
     this.currentIndexShared.value = currentIndex;
-    // When the user moves off the current slide, pause whatever video was
-    // playing. Moved here from a useEffect in ImageGallery so the invariant
-    // lives next to the state it depends on — and the parent no longer needs
-    // to subscribe to currentIndex purely to drive this side effect.
-    // `clear()` is the other reset path; it bypasses this setter but already
-    // pauses everything through `videoPlayerPool.clear()`.
+    // Moving off the current slide pauses its video. `clear()` bypasses this setter but pauses
+    // everything through `videoPlayerPool.clear()`.
     if (previousIndex !== currentIndex) {
       const activePlayer = this.videoPlayerPool.getActivePlayer();
       if (activePlayer) {
@@ -186,7 +178,6 @@ export class ImageGalleryStateStore {
     this.state.partialNext({ requesterNode });
   }
 
-  // APIs for managing messages
   appendMessages = (messages: LocalMessage[]) => {
     this.state.partialNext({ messages: [...this.messages, ...messages] });
   };
@@ -237,7 +228,7 @@ export class ImageGalleryStateStore {
           (asset) =>
             stripQueryFromUrl(asset.uri) === stripQueryFromUrl(selectedAttachmentUrl ?? ''),
         );
-        // Route through the setter so currentIndexShared stays in sync.
+        // Goes through the setter so `currentIndexShared` stays in sync.
         this.currentIndex = index === -1 ? 0 : index;
       },
     );

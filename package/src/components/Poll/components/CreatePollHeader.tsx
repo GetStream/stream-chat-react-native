@@ -10,15 +10,9 @@ import { Button } from '../../ui';
 import { useCanCreatePoll } from '../hooks/useCanCreatePoll';
 
 export type CreatePollHeaderProps = {
-  /**
-   * Handler for back button press
-   * @returns void
-   */
+  /** Called when the back button is pressed. */
   onBackPressHandler: () => void;
-  /**
-   * Handler for create poll button press
-   * @returns void
-   */
+  /** Called when the create poll button is pressed. */
   onCreatePollPressHandler: () => void;
 };
 

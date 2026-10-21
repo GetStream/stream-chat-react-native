@@ -262,11 +262,11 @@ const GalleryThumbnail = ({
     setOverlay('gallery');
   };
   const defaultOnPress = () => {
-    // If the url is defined then only try to open the file.
+    // Only opens when the thumbnail has a URL.
     if (thumbnail.url) {
       if (thumbnail.type === FileTypes.Video && !isVideoPlayerAvailable()) {
-        // This condition is kinda unreachable, since we render videos as file attachment if the video
-        // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
+        // Normally unreachable, since videos render as file attachments without a video library;
+        // kept as a safeguard for customizations.
         openUrlSafely(thumbnail.url);
       } else {
         openImageViewer();
@@ -425,9 +425,7 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
 };
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 export type GalleryProps = Partial<GalleryPropsWithContext>;
-/**
- * UI component for card in attachments.
- */
+/** Renders image and video attachments as a grid of thumbnails. */
 export const Gallery = (props: GalleryProps) => {
   const {
     alignment: propAlignment,

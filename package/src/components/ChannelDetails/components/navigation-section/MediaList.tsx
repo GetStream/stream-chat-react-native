@@ -36,18 +36,9 @@ import { EmptyList } from '../../../UIComponents/EmptyList';
 import { type MediaTile, useMediaList } from '../../hooks/useMediaList';
 
 export type MediaListProps = {
-  /**
-   * Besides the existing default behavior of the media list, you can attach additional props to
-   * the underlying React Native FlatList.
-   *
-   * See https://reactnative.dev/docs/flatlist#props for the full list.
-   */
+  /** Additional props passed to the underlying `FlatList`. */
   additionalFlatListProps?: Partial<FlatListProps<MediaTile>>;
-  /**
-   * A custom `MessageSearchSource` used to query and paginate the media grid.
-   * Overrides the source the provider creates by default (pre-configured to
-   * fetch image/video attachments, newest first).
-   */
+  /** Overrides the default `MessageSearchSource` (image and video attachments, newest first). */
   searchSource?: MessageSearchSource;
 };
 
@@ -127,9 +118,8 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
     [width],
   );
 
-  // Opens the fullscreen gallery over the whole loaded collection, selecting the tapped attachment.
-  // Mirrors the in-message gallery (`components/Attachment/Gallery.tsx`), but passes every loaded
-  // message so the viewer can swipe across all media in the list rather than a single message.
+  // Opens the gallery over every loaded message, so the viewer can swipe across all the media in
+  // the list, with the tapped attachment selected.
   const handlePressItem = useCallback(
     ({ attachment, requesterNode }: MediaItemPressParams) => {
       const url = getUrlOfImageAttachment(attachment);
@@ -137,7 +127,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
         return;
       }
       if (attachment.type === FileTypes.Video && !isVideoPlayerAvailable()) {
-        // Safeguard for customizations that render videos without a player installed.
+        // Without a video player (possible with customizations), fall back to opening the URL.
         openUrlSafely(url);
         return;
       }
@@ -164,7 +154,7 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
   );
 
   const loadMore = useCallback(() => {
-    // hasNext is true by default, !!messages prevents calling search on initial load
+    // `hasNext` starts true, so `messages` is checked to avoid searching on the initial load.
     if (hasNext && !!messages) {
       searchSource.search();
     }

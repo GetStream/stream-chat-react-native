@@ -11,10 +11,9 @@ import { useNotificationApi } from '../../Notifications';
 const DEFAULT_MESSAGE_LIST_PAGE_SIZE = 25;
 
 /**
- * Whether the integrator registered a message page size through `client.config` — under
- * `channel.messagePaginator` or the general `messagePaginator` key, the two the paginator resolves its
- * own `pageSize` from. The default is applied only when neither did: the `pageSize` setter is a runtime
- * patch, which outranks every declarative layer and would silently discard the registration.
+ * Whether a message page size is registered through `client.config`, under
+ * `channel.messagePaginator` or `messagePaginator`. The default page size is applied only when none
+ * is, as the `pageSize` setter outranks every registered config.
  */
 const hasRegisteredMessagePageSize = (client: StreamChat) =>
   client.config.getConfig('channel')?.messagePaginator?.pageSize !== undefined ||
@@ -29,12 +28,18 @@ export type UseChannelLifecycleParams = Pick<TranslationContextValue, 't'> & {
 };
 
 /**
- * A hook encapsulating everything `<Channel>` does to a channel while it is mounted. The first load
- * (watch, a cold open's first page, the unread snapshot, the jump to the first unread, mark read on
- * open etc.), activation and mark read after a reconnect.
+ * Everything `<Channel>` does to its channel while mounted: the first load (watch, first page,
+ * unread snapshot, jump to the first unread, mark read), activation, and mark read after a
+ * reconnect.
  *
- * Returns whether the list is already aimed at a message, which the list reads to keep its initial
- * anchor from overriding that jump.
+ * @param params.channel The channel to manage.
+ * @param params.client The chat client.
+ * @param params.initialScrollToFirstUnreadMessage Jumps to the first unread message on open.
+ * @param params.initializeOnMount Calls `channel.watch()` on mount when the channel needs it.
+ * @param params.markReadOnMount Marks the channel as read on mount.
+ * @param params.t The translation function.
+ * @returns `hasPendingInitialTargetLoad`, which tells the list whether a jump to a message is
+ * pending so its initial anchor does not override it.
  */
 export const useChannelLifecycle = ({
   channel,
@@ -61,13 +66,9 @@ export const useChannelLifecycle = ({
     });
   });
 
-  /**
-   * Whether something already jumped the list to a message, i.e an integrator calling
-   * `channel.messagePaginator.jumpToMessage()` before or while the channel mounts. A jump leaves a
-   * focus signal on the paginator, and while it is set the channel does not jump to the first unread.
-   *
-   * Read on demand rather than subscribed to, since only effects ask.
-   */
+  // Whether something already jumped the list to a message, such as `jumpToMessage()` called
+  // before or while mounting. That leaves a focus signal on the paginator, which suppresses the
+  // jump to the first unread. Read on demand since only effects ask.
   const hasFocusTarget = useStableCallback(
     () => !!channel.messagePaginator.messageFocusSignal.getLatestValue().signal,
   );
@@ -84,9 +85,7 @@ export const useChannelLifecycle = ({
     return hasFocusTarget() || shouldLoadInitialChannelAtFirstUnreadMessage();
   });
 
-  // markRead is not placed on the ChannelContext; the message lists own their own throttled
-  // instance via useMarkRead(channel). The lifecycle needs its own for mark-read on open and after a
-  // reconnect.
+  // The message lists own their own throttled `markRead`, so the lifecycle needs its own.
   const markRead = useMarkRead(channel);
 
   useEffect(() => {
@@ -97,7 +96,7 @@ export const useChannelLifecycle = ({
         return;
       }
 
-      // a draft has no id and is marked initialized and querying it would create it on the server
+      // A draft has no ID and is marked initialized, and querying it would create it on the server.
       if (channel.isProvisional && channel.initialized) {
         return;
       }
@@ -119,14 +118,13 @@ export const useChannelLifecycle = ({
         }
       }
 
-      // we seed the paginator on cold open (push/deep link for example)
+      // Cold open (push or deep link): seed the paginator.
       if (!channel.messagePaginator.state.getLatestValue().items?.length) {
         await channel.messagePaginator.reload();
       }
 
-      // A reopened channel keeps its paginator and with it the unread snapshot from the first open.
-      // Seed it again from the current read state so the unread separator, the unread banner and
-      // the jump to the first unread match what is unread now.
+      // A reopened channel keeps its paginator and its first-open unread snapshot, so reseed it
+      // from the current read state.
       channel.messagePaginator.seedUnreadSnapshot();
 
       if (shouldLoadAtFirstUnread) {
@@ -140,7 +138,7 @@ export const useChannelLifecycle = ({
       }
 
       if (unreadCount > 0 && markReadOnMount) {
-        // needed to keep the unread banner stable
+        // Keeps the unread banner stable.
         await markRead({ updateChannelUnreadState: false });
       }
     };
@@ -152,10 +150,9 @@ export const useChannelLifecycle = ({
   useEffect(() => channel?.activate(), [channel]);
 
   useEffect(() => {
-    // Mark read has to wait for `connection.recovered`, as it is dispatched once the reloads have
-    // landed, so `hasMoreHead` read here reflects the refreshed window. Channel view only, and only
-    // when that window is at the newest, only if the user has paginated up into older history so leave
-    // their read state alone.
+    // Waits for `connection.recovered`, which fires after the reloads land, so `hasMoreHead`
+    // reflects the refreshed window. Marks read only when that window is at the newest message,
+    // leaving the read state alone when the user has paginated up into older history.
     const { unsubscribe } = client.on('connection.recovered', () => {
       if (channel.messagePaginator.hasMoreHead) {
         return;

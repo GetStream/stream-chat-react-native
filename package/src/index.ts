@@ -1,4 +1,4 @@
-/** i18next polyfill to handle intl format for pluralization. For more info see https://www.i18next.com/misc/json-format#i-18-next-json-v4 */
+// Polyfill for i18next pluralization: https://www.i18next.com/misc/json-format#i-18-next-json-v4
 import 'intl-pluralrules';
 import './polyfills';
 

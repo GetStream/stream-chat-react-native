@@ -6,14 +6,12 @@ const localFileUri = (attachment: Attachment | LocalAttachment) =>
     : undefined;
 
 /**
- * The URL to play a video from — `asset_url` / `image_url`, or the local file it has yet to be
+ * The URL to play a video from: `asset_url`, `image_url`, or the local file it is yet to be
  * uploaded from.
  *
- * Only videos need this. For them `setupVideoAttachmentPreviewMiddleware` replaces
- * `localMetadata.previewUri` with the thumbnail the picker extracted, so `stream-chat`'s
- * `getAttachmentPreviewUrl` would play the thumbnail. For every other type the LLC's
- * `toLocalUploadAttachment` sets `previewUri` to the picked file's own `uri`, so use
- * `getAttachmentPreviewUrl` there.
+ * Videos only; use `getAttachmentPreviewUrl` for other types. The
+ * `setupVideoAttachmentPreviewMiddleware` sets `localMetadata.previewUri` to the video's
+ * `thumb_url`, so `getAttachmentPreviewUrl` would return the thumbnail, not the video.
  */
 export const getPlayableVideoUrl = (attachment: Attachment | LocalAttachment) =>
   attachment.asset_url ?? attachment.image_url ?? localFileUri(attachment);

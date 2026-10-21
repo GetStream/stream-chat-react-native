@@ -25,7 +25,7 @@ export const useCreateChannelContext = ({
       maxTimeBetweenGroupedMessages,
       hasPendingInitialTargetLoad,
     }),
-    // Keyed on the instance as well, since a superseded instance shares its id with its successor
+    // Keyed on the instance too, as a superseded instance shares its ID with its successor.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [channel, disabled],
   );

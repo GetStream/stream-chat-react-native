@@ -40,10 +40,7 @@ import type {
 } from './types';
 
 const LINK_INSIDE = '(?:\\[(?:\\\\.|[^\\\\\\[\\]])*\\]|\\\\.|[^\\[\\]\\\\])*';
-/**
- * Href + optional title (escape-aware). Group 1 === href (angle or bare).
- * The title is in groups 2, 3 or 4.
- */
+/** Href (group 1, angle-bracketed or bare) and an optional escape-aware title (groups 2 to 4). */
 const LINK_HREF_AND_TITLE =
   '\\s*<?([^\\s>]*?)>?\\s*' + // 1: href
   '(?:' +
@@ -61,7 +58,7 @@ export const getLocalRules = (
   const { onLink, paragraphNumberOfLines } = opts;
   const openLinkHandler = (target: string) => {
     if (onLink) {
-      // user-supplied handler may be async; we keep the behavior
+      // `onLink` may be async: a rejection is logged and rethrown.
       Promise.resolve(onLink(target)).catch((error: unknown) => {
         const msg =
           error && typeof error === 'object' && 'toString' in error
@@ -98,9 +95,8 @@ export const getLocalRules = (
     let lang = (capture[2] || '').trim() || undefined;
     let content = capture[3] || '';
 
-    // If we've found no lang on the fence line (the opening fence) but the first code line
-    // is a lone token, treat it as lang and strip it from content. Helps with some specific
-    // use-cases such as "```<newline>sql<newline>...".
+    // Without a language on the opening fence line, a lone-token first code line is taken as the
+    // language and stripped from the content, as in "```<newline>sql<newline>...".
     if (!lang) {
       const nl = content.indexOf('\n');
       const firstLine = (nl === -1 ? content : content.slice(0, nl)).trim();
@@ -110,7 +106,7 @@ export const getLocalRules = (
       }
     }
 
-    // Mirror your trimming behavior
+    // Drop trailing newlines.
     content = content.replace(/\n+$/, '');
 
     return { type: 'codeBlock', lang, content };
@@ -139,7 +135,7 @@ export const getLocalRules = (
     fence: {
       match: SimpleMarkdown.blockRegex(
         // 1: fence (``` or ~~~)
-        // 2: info string (lang etc.) - SAME CAPTURE INDEX AS YOURS
+        // 2: info string (lang etc.)
         // 3: code content
         /^ {0,3}(`{3,}|~{3,})[ \t]*(\S+)?[ \t]*\r?\n([\s\S]*?)\r?\n?(?: {0,3})\1[ \t]*(?:\r?\n+|$)/,
       ),
@@ -159,7 +155,7 @@ export const getLocalRules = (
       react: enrichedRenderFunction(renderHorizontalRule),
     },
     image: {
-      // We intentionally disable parsing images; keep the shape
+      // Images are not parsed.
       match: () => null,
     },
     inlineCode: {
@@ -201,7 +197,7 @@ export const getLocalRules = (
       react: enrichedRenderFunction(renderText),
     },
     u: {
-      // no support for underlines yet
+      // Underlines are not supported.
       match: () => null,
     },
     url: {
@@ -209,7 +205,7 @@ export const getLocalRules = (
         onLink: openLinkHandler,
       }),
     },
-    // no support for reflinks
+    // Reference links and images are not supported.
     reflink: { match: () => null },
     refimage: { match: () => null },
   } as unknown as OutputRules<ReactOutputRule>;

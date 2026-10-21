@@ -59,28 +59,15 @@ const supportedOrientations: ModalProps['supportedOrientations'] = [
 const LANDSCAPE_MAX_HEIGHT_RATIO = 0.9;
 
 export type BottomSheetModalProps = {
-  /**
-   * Function to call when the modal is closed or dismissed.
-   * @returns void
-   */
+  /** Called when the modal is closed or dismissed. */
   onClose: () => void;
-  /**
-   * Whether the modal is visible.
-   */
+  /** Whether the modal is visible. */
   visible: boolean;
-  /**
-   * The height of the modal.
-   */
+  /** Height of the modal, capped to the available window height. Defaults to half the window. */
   height?: number;
-  /**
-   * Whether the sheet should wrap its content up to the provided `height`.
-   */
+  /** Whether the sheet wraps its content, up to `height`. Defaults to false. */
   enableDynamicSizing?: boolean;
-  /**
-   * Whether the sheet content should be lazy loaded or not. Particularly
-   * useful when the content is something heavy and we don't want to disrupt
-   * the animations while this is happening.
-   */
+  /** Renders the content only after the opening animation finishes. Defaults to false. */
   lazy?: boolean;
 };
 
@@ -146,12 +133,9 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
   const wasVisibleRef = useRef(false);
 
   const [renderContent, setRenderContent] = useState(!lazy);
-  // We keep the underlying RN `<Modal>` mounted while it dismisses so we can
-  // listen for its `onDismiss` (iOS) and only then run the consumer's
-  // close-finished callback. Without this, callbacks that present another
-  // native modal (e.g. `UIImagePickerController` for camera capture) can race
-  // the still-dismissing view controller and crash with "Application tried to
-  // present modal view controller on top of itself" on iOS.
+  // Keeps the RN `<Modal>` mounted while it dismisses so the close callback runs only after its
+  // `onDismiss` (iOS). Otherwise a callback that presents another native modal (such as the camera)
+  // races the dismissing view controller and crashes iOS.
   const [isDismissing, setIsDismissing] = useState(false);
   const pendingCloseCallbackRef = useRef<(() => void) | undefined>(undefined);
 
@@ -208,9 +192,8 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     }) => {
       pendingCloseCallbackRef.current = closeAnimationFinishedCallback;
       if (Platform.OS !== 'ios') {
-        // RN's `Modal.onDismiss` is iOS-only, so synthesize the same signal on
-        // other platforms after a short delay that gives the Dialog time to
-        // detach. Matches the previous Android behavior.
+        // `Modal.onDismiss` is iOS-only; elsewhere, signal it after a short delay that lets the
+        // Dialog detach.
         setTimeout(handleNativeModalDismiss, 100);
       } else {
         if (shouldDismiss) {
@@ -274,8 +257,7 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     closeInternal({ closeAnimationFinishedCallback: dismissFinishedCallback, shouldDismiss: true });
   });
 
-  // modal opening layout effect - we make sure to only show the content
-  // after the animation has finished if `lazy` has been set to true
+  // With `lazy`, the content is shown only after the opening animation finishes.
   useLayoutEffect(() => {
     const wasVisible = hasCommittedVisibilityRef.current ? wasVisibleRef.current : false;
     hasCommittedVisibilityRef.current = true;
@@ -350,7 +332,7 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
     ],
   );
 
-  // if `visible` gets hard changed, we force a cleanup
+  // Reset the animation state when the modal is hidden.
   useEffect(() => {
     if (visible) return;
 
@@ -520,12 +502,11 @@ const BottomSheetModalInner = (props: PropsWithChildren<BottomSheetModalProps>) 
               }
             }
 
-            // velocity-based snapping, fast upward swipe goes to top snap point
+            // A fast upward swipe goes to the top snap point.
             if (hasMultipleSnapPoints && event.velocityY < -800) {
               nearestIndex = topSnapIndex.value;
             }
-            // From top snap, a gentle downward flick should settle to snap 0
-            // without requiring a large drag distance.
+            // From the top snap, a gentle downward flick settles to snap 0.
             if (hasMultipleSnapPoints && isAtTopSnap && event.velocityY > 120) {
               nearestIndex = 0;
             }
@@ -671,9 +652,9 @@ const useStyles = () => {
         },
         contentContainer: {
           flex: 1,
-          // A RN `Modal` is its own native window, so a consumer's `SafeAreaView` never reaches
-          // this - it insets itself. Spread rather than assigned: a `paddingLeft: 0` longhand
-          // would override a themed `paddingHorizontal` for that side.
+          // A RN `Modal` is its own native window, so a consumer's `SafeAreaView` never reaches it.
+          // Spread rather than assigned: a `paddingLeft: 0` longhand would override a themed
+          // `paddingHorizontal` for that side.
           ...horizontalInsets,
         },
         handle: {

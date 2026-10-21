@@ -21,9 +21,7 @@ const styles = StyleSheet.create({
 
 export type VideoThumbnailProps = {
   imageStyle?: StyleProp<ImageStyle>;
-  /**
-   * When set, upload state is read from `client.uploadManager` for this pending attachment id.
-   */
+  /** ID of a pending attachment whose upload state is read from `client.uploadManager`. */
   localId?: string;
   style?: StyleProp<ViewStyle>;
   thumb_url?: string;

@@ -16,7 +16,15 @@ export type MessageGroupStylesParams = {
 export type GroupStyle = '' | 'middle' | 'top' | 'bottom' | 'single';
 
 /**
- * Get the group styles for a message
+ * Returns the group style of a message: `top`, `bottom`, `middle` or `single`.
+ *
+ * @param params.message The message to style.
+ * @param params.previousMessage The message rendered before it.
+ * @param params.nextMessage The message rendered after it.
+ * @param params.maxTimeBetweenGroupedMessages Longest gap, in milliseconds, within a group.
+ * @param params.nextMessageDateSeparatorDate Date of the separator above the next message, if any.
+ * @param params.dateSeparatorDate Date of the separator above the message, if any.
+ * @returns An array holding the message's group style.
  */
 export const getGroupStyle = ({
   message,
@@ -35,7 +43,7 @@ export const getGroupStyle = ({
     previousMessage.type === 'system' ||
     previousMessage.type === 'error' ||
     userId !== previousMessage?.user?.id ||
-    // NOTE: This is needed for the group styles to work after the message separated by date.
+    // A date separator above the message starts a new group.
     dateSeparatorDate ||
     isEditedMessage(previousMessage);
 
@@ -49,22 +57,12 @@ export const getGroupStyle = ({
       nsToMs(nextMessage.created_at - message.created_at) > maxTimeBetweenGroupedMessages) ||
     isEditedMessage(message);
 
-  /**
-   * Add group styles key for top message
-   */
   if (isTopMessage) {
     groupStyles.push('top');
   }
 
-  /**
-   * Add group styles key for bottom message
-   */
-
   if (isBottomMessage) {
-    /**
-     * If the bottom message is also the top, or deleted, or an error,
-     * add the key for single message instead of bottom
-     */
+    // A message that is also the top, or an error, is `single` instead of `bottom`.
     if (isTopMessage || message.type === 'error') {
       groupStyles.splice(0, groupStyles.length);
       groupStyles.push('single');
@@ -73,10 +71,7 @@ export const getGroupStyle = ({
     }
   }
 
-  /**
-   * Add the key for all non top or bottom messages, if the message is
-   * deleted or an error add the key for single otherwise middle
-   */
+  // Neither top nor bottom: `middle`, or `single` for an error.
   if (!isTopMessage && !isBottomMessage) {
     if (message.type === 'error') {
       groupStyles.splice(0, groupStyles.length);

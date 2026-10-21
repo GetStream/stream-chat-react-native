@@ -10,8 +10,7 @@ export const selectActiveLocationsForChannels = async (
   SqliteClient.logger?.('info', 'selectActiveLocationsForChannels', {
     cids,
   });
-  // Active means `endAt` is set and still in the future. `endAt` is unix nanoseconds, so the
-  // cutoff is `nowNs()` and the comparison is plain numeric.
+  // Active means `endAt` is set and in the future. Both `endAt` and `nowNs()` are unix nanoseconds.
   const locations = await SqliteClient.executeSql(
     `SELECT * FROM locations WHERE channelCid IN (${questionMarks}) AND endAt IS NOT NULL AND endAt > ?`,
     [...cids, nowNs()],

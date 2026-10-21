@@ -135,9 +135,7 @@ export const EmojiViewerButton = ({
   );
 };
 
-/**
- * MessageReactionPicker - A high level component which implements all the logic required for a message overlay reaction list
- */
+/** Renders the reaction picker of the message overlay. */
 export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const { dismissOverlay, handleReaction } = props;
   const {

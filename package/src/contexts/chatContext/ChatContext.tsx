@@ -14,13 +14,13 @@ export type ChatContextValue = {
    */
   getAppSettings: () => Promise<GetApplicationResponse>;
   /**
-   * The StreamChat client object
+   * The `StreamChat` client.
    *
    * ```
    * import { StreamChat } from 'stream-chat';
    * import { Chat } from 'stream-chat-react-native';
    *
-   * const client = StreamChat.getInstance('api_key);
+   * const client = StreamChat.getInstance('api_key');
    * await client.connectUser('user_id', 'userToken');
    *
    * <Chat client={client}>

@@ -11,10 +11,8 @@ export const generateMarkdownText = (text?: string) => {
 
   const normalizedText = text.replace(/\uFFFC/g, ' ');
 
-  // Trim the extra spaces from the text.
   let resultText = normalizedText.trim();
 
-  // List of all the links present in the text.
   const linkInfos = parseLinksFromText(resultText);
 
   for (const linkInfo of linkInfos) {
@@ -22,14 +20,14 @@ export const generateMarkdownText = (text?: string) => {
       length: 200,
       omission: '...',
     });
-    // Convert raw links/emails in the text to respective markdown syntax.
-    // Eg: Hi @getstream.io -> Hi @[getstream.io](getstream.io).
+    // Convert raw links and emails to markdown links.
+    // Eg: `getstream.io` -> `[getstream.io](http://getstream.io)`.
     const normalRegEx = new RegExp(escapeRegExp(linkInfo.raw), 'g');
     const markdown = `[${displayLink}](${linkInfo.url})`;
     resultText = normalizedText.replace(normalRegEx, markdown);
 
-    // After previous step, in some cases, the mentioned user after `@` might have a link/email so we convert it back to normal raw text.
-    // Eg: Hi, @[test.user@gmail.com](mailto:test.user@gmail.com) to @test.user@gmail.com.
+    // A mention whose name looks like a link or email is converted back to raw text.
+    // Eg: `@[test.user@gmail.com](mailto:test.user@gmail.com)` -> `@test.user@gmail.com`.
     const mentionsRegex = new RegExp(
       `@\\[${escapeRegExp(displayLink)}\\]\\(${escapeRegExp(linkInfo.url)}\\)`,
       'g',
@@ -37,7 +35,7 @@ export const generateMarkdownText = (text?: string) => {
     resultText = resultText.replace(mentionsRegex, `@${displayLink}`);
   }
 
-  // Escape the " and ' characters, except in code blocks where we deem this allowed.
+  // Escape `<`, `"` and `'` outside of code spans and code blocks.
   resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|[<"']/g, (match, code) => {
     if (code) {
       return code;
@@ -45,7 +43,7 @@ export const generateMarkdownText = (text?: string) => {
     return `\\${match}`;
   });
 
-  // Remove whitespaces that come directly after newlines except in code blocks where we deem this allowed.
+  // Remove 2 or more spaces right after a newline, except in code spans and code blocks.
   resultText = resultText.replace(/(```[\s\S]*?```|`.*?`)|\n[ ]{2,}/g, (_, code) => {
     if (code) {
       return code;
@@ -53,8 +51,8 @@ export const generateMarkdownText = (text?: string) => {
     return '\n';
   });
 
-  // Always replace \n``` with \n\n``` to force the markdown state machine to treat it as a separate block. Otherwise, code blocks inside of list
-  // items for example were broken. We clean up the code block closing state within the rendering itself.
+  // A blank line before a code fence makes the markdown parser treat it as a separate block, which
+  // keeps code blocks inside list items intact. The closing state is cleaned up in the rendering.
   resultText = resultText.replace(/\n```/g, '\n\n```');
 
   return resultText;

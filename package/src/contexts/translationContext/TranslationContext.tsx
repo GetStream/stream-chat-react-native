@@ -9,13 +9,9 @@ export const DEFAULT_USER_LANGUAGE = 'en';
 
 export type TranslationContextValue = TranslatorFunctions & {
   /**
-   * The language the SDK's own copy renders in.
-   *
-   * Plain `string`, not `stream-chat`'s `TranslationLanguage`. That union enumerates the languages
-   * the *message auto-translation* endpoint supports, which is a different question from which
-   * languages this SDK's UI can be translated into — any language an integrator registers a
-   * dictionary for is valid here. It also does not contain `pt-BR`, which this SDK itself shipped
-   * a locale for.
+   * The language the SDK's own copy renders in. A plain `string` rather than `stream-chat`'s
+   * `TranslationLanguage` (the message auto-translation languages): any language with a registered
+   * dictionary is valid.
    */
   userLanguage: string;
 };

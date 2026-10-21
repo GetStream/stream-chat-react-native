@@ -7,20 +7,13 @@ const CLIPPING_FADE_HEIGHT = 16;
 const CLIPPING_FADE_GRADIENT_ID = 'sdk-clipping-fade-bottom';
 
 export type ClippingFadeBottomProps = {
-  /**
-   * Color the fade ramps toward at the bottom edge. Typically the
-   * background color of the surface beneath the fade so the bottom edge of
-   * scrolling content visually melts into it.
-   */
+  /** Color the fade ramps toward at the bottom edge, usually the background beneath it. */
   backgroundColor: string;
 };
 
 /**
- * Bottom edge fade overlay. Draws a 16px tall SVG linear gradient that
- * ramps from the supplied background's transparent variant at the top to
- * fully opaque at the bottom - visually clipping any content that scrolls
- * past the lower edge of its parent. `pointerEvents='none'` so it doesn't
- * intercept taps/scrolls on the rows underneath.
+ * Bottom edge fade overlay: a 16px tall gradient from transparent to `backgroundColor` that hides
+ * content scrolling past the parent's lower edge. It ignores touches (`pointerEvents='none'`).
  */
 export const ClippingFadeBottom = ({ backgroundColor }: ClippingFadeBottomProps) => (
   <View pointerEvents='none' style={styles.fade}>

@@ -28,9 +28,7 @@ export type LoadingProps = {
   loadingText?: string;
 };
 
-/**
- * UI Component for LoadingIndicator
- */
+/** Spinner with a loading text chosen by `listType`; `loadingText` overrides it. */
 export const LoadingIndicator = (props: LoadingProps) => {
   const { listType, loadingText } = props;
 

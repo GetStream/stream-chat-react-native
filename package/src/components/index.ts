@@ -35,7 +35,6 @@ export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
 export * from './Channel/hooks/useCreateThreadContext';
 
-/** Channel List exports*/
 export * from './ChannelList/ChannelList';
 export * from './ChannelList/ChannelListFooterLoadingIndicator';
 export * from './ChannelList/ChannelListHeaderErrorIndicator';
@@ -45,7 +44,6 @@ export * from './ChannelList/ChannelListView';
 export * from './ChannelList/Skeleton';
 export * from './ChannelList/hooks';
 
-/** Channel Preview exports */
 export * from './ChannelPreview/ChannelDetailsBottomSheet';
 export * from './ChannelPreview/ChannelLastMessagePreview';
 export * from './ChannelPreview/ChannelMessagePreviewDeliveryStatus';
@@ -60,7 +58,6 @@ export * from './ChannelPreview/ChannelPreviewTypingIndicator';
 export * from './ChannelPreview/ChannelPreviewUnreadCount';
 export * from './ChannelPreview/hooks';
 
-/** Chat exports */
 export * from './Chat/Chat';
 export * from './Chat/hooks';
 
@@ -150,7 +147,7 @@ export * from './MessageInput/hooks/useCooldownRemaining';
 
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMarkRead';
-// Only the constant: integrators running their own `jumpToMessage` need the TTL the SDK's highlight uses.
+// Only the constant, for integrators running their own `jumpToMessage`.
 export { DEFAULT_HIGHLIGHT_DURATION } from './MessageList/hooks/useMessageListFocus';
 export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';

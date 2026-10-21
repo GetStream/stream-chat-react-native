@@ -5,7 +5,7 @@ import { StateStore } from '@stream-io/state-store';
 import { useStateStore } from '../hooks/useStateStore';
 
 export type SelectionState<T = string> = {
-  /** Ids of the currently selected items. */
+  /** IDs of the currently selected items. */
   selectedIds: Set<T>;
 };
 
@@ -13,12 +13,7 @@ const createInitialState = <T>(): SelectionState<T> => ({
   selectedIds: new Set<T>(),
 });
 
-/**
- * Holds a generic selection state (a set of selected ids). Leaf components can
- * subscribe to narrow slices via `useStateStore`. The id type defaults to
- * `string` (e.g. user ids in the "add members to channel" flow) but can be
- * specialised for any other selectable entity.
- */
+/** Holds a set of selected item IDs, of type `T` (defaults to `string`). */
 export class SelectionStore<T = string> {
   public state = new StateStore<SelectionState<T>>(createInitialState<T>());
 
@@ -66,15 +61,20 @@ const selectIsSelectionEmpty = <T>(state: SelectionState<T>) => ({
 });
 
 /**
- * Subscribes to a {@link SelectionStore} and returns whether the selection is
- * currently empty.
+ * Subscribes to the store and returns whether the selection is empty.
+ *
+ * @param store The store to subscribe to.
+ * @returns True when no item is selected.
  */
 export const useIsSelectionEmpty = <T>(store: SelectionStore<T>) =>
   useStateStore(store.state, selectIsSelectionEmpty).isSelectionEmpty;
 
 /**
- * Subscribes to a {@link SelectionStore} and returns whether the given id is
- * currently selected.
+ * Subscribes to the store and returns whether an item is selected.
+ *
+ * @param store The store to subscribe to.
+ * @param id The item ID.
+ * @returns True when the item is selected.
  */
 export const useIsSelected = <T>(store: SelectionStore<T>, id: T) => {
   const selector = useCallback(

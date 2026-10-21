@@ -26,12 +26,11 @@ export const OverlayContext = React.createContext(
 
 export type OverlayProviderProps = ImageGalleryProviderProps & {
   /**
-   * Opt-in accessibility configuration. A11y is OFF by default — pass
-   * `accessibility={{ enabled: true }}` to enable screen-reader announcements,
-   * gesture alternatives, and semantic a11y attributes across the SDK.
+   * Opt-in accessibility configuration. Disabled by default; `accessibility={{ enabled: true }}`
+   * turns on screen-reader announcements, gesture alternatives and semantic a11y attributes.
    */
   accessibility?: AccessibilityConfig;
-  /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
+  /** The `Streami18n` instance that enables internationalization. */
   i18nInstance?: Streami18n;
   value?: Partial<OverlayContextValue>;
 };

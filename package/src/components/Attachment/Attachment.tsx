@@ -43,13 +43,9 @@ export type AttachmentPropsWithContext = Pick<
   'isAttachmentEqual' | 'myMessageTheme' | 'urlPreviewType'
 > &
   Pick<MessageContextValue, 'message'> & {
-    /**
-     * The attachment to render
-     */
+    /** The attachment to render. */
     attachment: AttachmentType;
-    /**
-     * The index of the attachment in the message
-     */
+    /** The index of the attachment in the message. */
     index?: number;
   };
 
@@ -81,7 +77,7 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
     return <Gallery images={[attachment]} />;
   }
 
-  // The `!attachment.og_scrape_url` is added for cases, where the url preview is not an image but a video.
+  // URL previews (`og_scrape_url`) whose media is a video are excluded.
   if (isVideoAttachment(attachment) && !attachment.og_scrape_url) {
     return isVideoPlayerAvailable() ? (
       <Gallery videos={[attachment]} />
@@ -151,9 +147,7 @@ const MemoizedAttachment = React.memo(
 
 export type AttachmentProps = Partial<AttachmentPropsWithContext>;
 
-/**
- * Attachment - The message attachment
- */
+/** Renders a single message attachment according to its type. */
 export const Attachment = (props: AttachmentProps) => {
   const { attachment } = props;
 

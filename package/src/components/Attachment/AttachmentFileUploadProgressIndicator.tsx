@@ -36,9 +36,7 @@ const formatMegabytesOneDecimal = (bytes: number) => {
   return `${(bytes / (1000 * 1000)).toFixed(1)} MB`;
 };
 
-/**
- * Circular progress plus `uploaded / total` for file and audio attachments during upload.
- */
+/** Circular progress plus `uploaded / total` for file and audio attachments during upload. */
 export const AttachmentFileUploadProgressIndicatorUI = ({
   containerStyle,
   localId,

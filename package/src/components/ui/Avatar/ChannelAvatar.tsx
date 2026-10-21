@@ -26,16 +26,9 @@ const pickAvatarFields = (member: ChannelMemberResponse) => ({
 
 export type ChannelAvatarProps = {
   channel: Channel;
-  /**
-   * When true, the avatar renders based on `previewUri` instead of the
-   * channel's stored image. Useful for previewing a pending image change before
-   * it is saved. Defaults to false.
-   */
+  /** Renders `previewUri` in place of the channel's stored image. Defaults to false. */
   isPreview?: boolean;
-  /**
-   * Image to display while in preview mode (`isPreview` is true). A `string`
-   * shows that image; `null` shows the no-image fallback (member/user avatar).
-   */
+  /** Image shown when `isPreview` is true. `null` shows the fallback member or user avatar. */
   previewUri?: string | null;
   showOnlineIndicator?: boolean;
   size?: 'lg' | 'xl' | '2xl';

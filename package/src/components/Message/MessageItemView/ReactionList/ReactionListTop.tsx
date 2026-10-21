@@ -32,9 +32,7 @@ export type ReactionListTopProps = Partial<
   showCount?: boolean;
 };
 
-/**
- * ReactionListTop - A high level component which implements all the logic required for a message reaction list
- */
+/** Displays the reaction list of a message. */
 export const ReactionListTop = (props: ReactionListTopProps) => {
   const {
     alignment: propAlignment,

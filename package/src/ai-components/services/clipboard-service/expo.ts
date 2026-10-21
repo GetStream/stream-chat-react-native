@@ -3,7 +3,7 @@ let Clipboard: { setString: (string: string) => void } | undefined;
 try {
   Clipboard = require('expo-clipboard');
 } catch (_) {
-  // do nothing
+  // `expo-clipboard` is not installed.
 }
 
 export const setClipboardString = Clipboard

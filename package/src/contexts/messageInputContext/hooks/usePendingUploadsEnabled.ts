@@ -9,9 +9,11 @@ export const pendingUploadsEnabledSelector = (config: MessageComposerConfig) => 
 });
 
 /**
- * Whether the current composer lets a message be sent while its attachments are still uploading —
- * `messageComposer.attachments.pendingUploadsEnabled`, resolved per composer, so a thread composer
- * answers for itself.
+ * Whether the current composer lets a message be sent while its attachments are still uploading.
+ * Read from the composer's `attachments.pendingUploadsEnabled` config, so a thread composer answers
+ * for itself.
+ *
+ * @returns The composer's `attachments.pendingUploadsEnabled` setting.
  */
 export const usePendingUploadsEnabled = () => {
   const messageComposer = useMessageComposer();

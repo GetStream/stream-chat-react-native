@@ -7,8 +7,10 @@ const selector = (state: { ownCapabilities: string[] }) => ({
 });
 
 /**
- * Returns the current user's capabilities for the channel, sourced reactively from
- * `channel.state`.
+ * Returns the current user's capabilities for the channel, read reactively from `channel.state`.
+ *
+ * @param channel The channel to read from.
+ * @returns The own capabilities.
  */
 export function useChannelOwnCapabilities(channel?: Channel): string[] | undefined {
   return useStateStore(channel?.state, selector)?.ownCapabilities;

@@ -17,9 +17,10 @@ export type UseChannelPreviewDraftMessageProps = {
 };
 
 /**
- * Hook to get the draft message for a channel preview.
- * @param {UseChannelPreviewDraftMessageProps} param0
- * @returns {DraftMessage | undefined}
+ * The channel's message composer content as a draft message.
+ *
+ * @param params.channel The channel being previewed.
+ * @returns The draft, or `undefined` when the composer is empty or has no text and no attachments.
  */
 export const useChannelPreviewDraftMessage = ({ channel }: UseChannelPreviewDraftMessageProps) => {
   const { text: draftText } = useStateStore(

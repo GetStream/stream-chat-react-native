@@ -11,8 +11,8 @@ import { useMessageOperations } from '../Message/hooks/useMessageOperations';
 import { messageActions as defaultMessageActions } from '../Message/utils/messageActions';
 
 /**
- * The action menu's list. Lives inside the open overlay, so the actions are only built while a
- * menu is open rather than on every render of every message.
+ * Renders the action list of the open message menu. The actions are built only while a menu is
+ * open, not on every message render.
  */
 export const MessageActionListWithActions = () => {
   const { MessageActionList } = useComponentsContext();

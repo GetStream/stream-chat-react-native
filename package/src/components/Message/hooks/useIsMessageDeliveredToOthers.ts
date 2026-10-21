@@ -6,14 +6,15 @@ import { useChannelContext } from '../../../contexts/channelContext/ChannelConte
 import { useStateStore } from '../../../hooks/useStateStore';
 
 /**
- * Whether the given message has been delivered to at least one *other* member, sourced reactively
- * from the channel's `messageReceiptsTracker.snapshotStore`.
+ * Whether the message has been delivered to at least one other member, read from the channel's
+ * `messageReceiptsTracker.snapshotStore`.
  *
- * As {@link useIsMessageReadByOthers}, for delivery: compares against the single furthest point
- * anyone else has reached (`lastDeliveredRefByOthers`) rather than asking who is parked on this
- * message, so the answer is monotonic across the list.
+ * Like {@link useIsMessageReadByOthers}, it compares the message against the furthest point anyone
+ * else has reached (`lastDeliveredRefByOthers`), so the answer is monotonic across the list.
+ * Use `useMessageDeliveredData` to get who received the message.
  *
- * Use this for a delivery indicator; `useMessageDeliveredData` answers who has actually received it.
+ * @param params.message The message to check.
+ * @returns Whether another member has received the message.
  */
 export const useIsMessageDeliveredToOthers = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();

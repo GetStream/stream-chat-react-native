@@ -16,9 +16,6 @@ import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
 
-/**
- * Module scope so the reference stays stable — an inline selector re-subscribes on every render.
- */
 const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
   readEventsEnabled: readEvents.enabled,
 });
@@ -34,9 +31,8 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
-  // `configState` is absent on the partial channel mocks some tests pass in; a real channel always
-  // has one. Resolved configuration, so `read_events` is already ANDed with anything registered
-  // through `client.config.set({ channel: { readEvents } })`.
+  // The resolved configuration, which combines `read_events` with anything registered through
+  // `client.config.set({ channel: { readEvents } })`. Absent on partial channel mocks.
   const configState = channel?.configState;
   const { readEventsEnabled } = useStateStore(configState, readEventsSelector) ?? {};
   const styles = useStyles();
@@ -70,8 +66,7 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     return read_events;
   }, [configState, readEventsEnabled, channel]);
 
-  // `status` only exists on optimistic/local messages (`LocalMessage`); a delivered
-  // `MessageResponse` won't carry it. Read it through a guard instead of asserting the shape.
+  // `status` exists only on local messages (`LocalMessage`), so it is read through an `in` guard.
   const messageStatus = 'status' in message ? message.status : undefined;
 
   const { status } = useMessageDeliveryStatus({

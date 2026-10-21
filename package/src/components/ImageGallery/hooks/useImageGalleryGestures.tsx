@@ -59,9 +59,6 @@ export const useImageGalleryGestures = ({
   const { imageGalleryStateStore } = useImageGalleryContext();
   const currentIndexShared = imageGalleryStateStore.currentIndexShared;
 
-  /**
-   * Gesture handler refs
-   */
   const doubleTapRef = useRef<GestureType | undefined>(undefined);
   const panRef = useRef<GestureType | undefined>(undefined);
   const pinchRef = useRef<GestureType | undefined>(undefined);
@@ -69,15 +66,9 @@ export const useImageGalleryGestures = ({
   const { overlay, setOverlay } = useOverlayContext();
   const isAndroid = Platform.OS === 'android';
 
-  /**
-   * Values to track scale for haptic feedback firing
-   */
   const hasHitBottomScale = useSharedValue(1);
   const hasHitTopScale = useSharedValue(0);
 
-  /**
-   * Shared values for touch tracking
-   */
   const originX = useSharedValue(0);
   const originY = useSharedValue(0);
   const oldFocalX = useSharedValue(0);
@@ -85,15 +76,9 @@ export const useImageGalleryGestures = ({
   const focalX = useSharedValue(0);
   const focalY = useSharedValue(0);
 
-  /**
-   * Shared values for movement
-   */
   const offsetX = useSharedValue(0);
   const offsetY = useSharedValue(0);
 
-  /**
-   * Shared values for touch tracking
-   */
   const focalOffsetX = useSharedValue(0);
   const focalOffsetY = useSharedValue(0);
   const adjustedFocalX = useSharedValue(0);
@@ -101,17 +86,11 @@ export const useImageGalleryGestures = ({
   const tapX = useSharedValue(0);
   const tapY = useSharedValue(0);
 
-  /**
-   * Shared values for gesture tracking
-   */
   const numberOfPinchFingers = useSharedValue(0);
   const isSwiping = useSharedValue(0);
   const isPinch = useSharedValue(false);
   const hasPinched = useSharedValue(0);
 
-  /**
-   * Reset gesture values for use on touch release
-   */
   const resetTouchValues = () => {
     'worklet';
     focalX.value = 0;
@@ -127,9 +106,6 @@ export const useImageGalleryGestures = ({
     isSwiping.value = IsSwiping.UNDETERMINED;
   };
 
-  /**
-   * Reset movement values for use on selected photo change
-   */
   const resetMovementValues = () => {
     'worklet';
     translateX.value = 0;
@@ -145,9 +121,8 @@ export const useImageGalleryGestures = ({
   };
 
   const moveToNextImage = () => {
-    // Read fresh — both moveToNext/Previous are invoked via runOnJS from a
-    // worklet, so we'd otherwise be using a value captured at hook-creation
-    // time. The setter mirrors into currentIndexShared.
+    // Read fresh: this runs through `runOnJS` from a worklet, so a value captured when the hook
+    // ran would be stale. The setter also updates `currentIndexShared`.
     const currentIndex = imageGalleryStateStore.state.getLatestValue().currentIndex;
     imageGalleryStateStore.currentIndex = currentIndex + 1;
   };
@@ -158,10 +133,8 @@ export const useImageGalleryGestures = ({
   };
 
   /**
-   * We use simultaneousHandlers to allow pan and pinch gesture handlers
-   * depending on the gesture. The touch is fully handled by the pinch
-   * gesture handler once it has began so all interactions by the pan
-   * handler are blocked if isPinch.value is true
+   * Pan and pinch run simultaneously. Once the pinch starts, `isPinch` blocks every pan handler
+   * until the pinch ends.
    */
   const pan = Gesture.Pan()
     .enabled(overlay === 'gallery')
@@ -169,10 +142,7 @@ export const useImageGalleryGestures = ({
     .minDistance(10)
     .onStart(() => {
       if (!isPinch.value) {
-        /**
-         * Cancel any previous motion animation on translations when a touch
-         * begins to interrupt the animation and take over the position handling
-         */
+        // Interrupt running animations so the touch takes over the position.
         cancelAnimation(translateX);
         cancelAnimation(translateY);
         cancelAnimation(scale);
@@ -180,18 +150,14 @@ export const useImageGalleryGestures = ({
         offsetY.value = translateY.value;
       }
 
-      /**
-       * Reset hasPinched for Android single finger offset
-       */
+      // Android: clears the flag that makes pan rebase its offsets after a pinch drops to one
+      // finger.
       hasPinched.value = HasPinched.FALSE;
     })
     .onChange((event) => {
       if (event.numberOfPointers === 1 && !isPinch.value) {
-        /**
-         * If Android where a second finger cannot be added back and
-         * removing one finger returns to Pan Handler then adjust origin
-         * on finger remove and set swiping false
-         */
+        // Android: when a pinch drops to one finger, control returns to pan. Rebase the offsets and
+        // stop treating the touch as a swipe.
         if (isAndroid && hasPinched.value === HasPinched.TRUE) {
           hasPinched.value = HasPinched.FALSE;
           isSwiping.value = IsSwiping.FALSE;
@@ -199,12 +165,9 @@ export const useImageGalleryGestures = ({
           offsetY.value = translateY.value - event.translationY;
         }
 
-        /**
-         * isSwiping is used to prevent Y movement if a clear swipe to next
-         * or previous is begun when at the edge of a photo. The value is
-         * either 0, 1, or 2, via the IsSwiping enum designating undetermined,
-         * true, or false and is reset on releasing the touch
-         */
+        // `IsSwiping.TRUE` locks Y movement once a horizontal drag starts at the left or right edge
+        // of the photo. `IsSwiping.FALSE` is set when the vertical translation exceeds 25. Reset on
+        // touch release.
         if (isSwiping.value === IsSwiping.UNDETERMINED) {
           const maxXYRatio = 0.25;
           if (
@@ -219,18 +182,11 @@ export const useImageGalleryGestures = ({
           }
         }
 
-        /**
-         * localEvtScale is used for swipe away
-         */
+        // Scale relative to the scale when the gesture started. Also drives the overlay opacity.
         const localEvtScale = scale.value / offsetScale.value;
 
-        /**
-         * If not swiping translate the image in X and Y to the event
-         * translation plus offset. If swiping only translate X, if
-         * swiping down when at top of screen or centered balance scale
-         * using offset to a degree (this needs improvement the calculation
-         * is incorrect but likely needs origin use to be 100%)
-         */
+        // X always follows the touch. Y is frozen while swiping. The offsets are rescaled by
+        // `localEvtScale` while the swipe-away scaling is active (approximate).
         translateX.value =
           scale.value !== offsetScale.value
             ? offsetX.value * localEvtScale + event.translationX
@@ -242,10 +198,7 @@ export const useImageGalleryGestures = ({
               : offsetY.value + event.translationY
             : translateY.value;
 
-        /**
-         * If swiping down start scaling down the image for swipe
-         * away effect
-         */
+        // Swipe away: shrink the image as it is dragged down.
         const imageHeight = currentImageHeight.value;
         scale.value =
           imageHeight * offsetScale.value < screenHeight && translateY.value > 0
@@ -265,23 +218,14 @@ export const useImageGalleryGestures = ({
     })
     .onEnd((event) => {
       if (!isPinch.value && event.numberOfPointers < 2) {
-        /**
-         * To determine if the fling should page to the next image we
-         * calculate a final position based on the current position and
-         * event velocity
-         */
+        // Translation combined with weighted velocity: decides paging and dismissal.
         const finalXPosition = event.translationX - event.velocityX * 0.3;
         const finalYPosition = event.translationY + event.velocityY * 0.1;
 
         const currentIndex = currentIndexShared.value;
 
-        /**
-         * If there is a next photo, the image is lined up to the right
-         * edge, the swipe is to the left, and the final position is more
-         * than half the screen width, move to the next image
-         *
-         * As we move towards the left to move to next image, the translationX value will be negative on X axis.
-         */
+        // Page to the next image: a left swipe (`translateX` negative) at the photo's right edge
+        // with `finalXPosition` beyond half the screen width.
         if (
           currentIndex < assetsLength - 1 &&
           Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
@@ -301,14 +245,6 @@ export const useImageGalleryGestures = ({
               runOnJS(moveToNextImage)();
             },
           );
-
-          /**
-           * If there is a previous photo, the image is lined up to the left
-           * edge, the swipe is to the right, and the final position is more
-           * than half the screen width, move to the previous image.
-           *
-           * As we move towards the right to move to previous image, the translationX value will be positive on X axis.
-           */
         } else if (
           currentIndex > 0 &&
           Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
@@ -316,6 +252,8 @@ export const useImageGalleryGestures = ({
           finalXPosition < -halfScreenWidth &&
           isSwiping.value === IsSwiping.TRUE
         ) {
+          // Page to the previous image: a right swipe (`translateX` positive) at the photo's left
+          // edge with `finalXPosition` beyond half the screen width.
           cancelAnimation(translationX);
           translationX.value = withTiming(
             -(screenWidth + MARGIN) * (currentIndex - 1),
@@ -330,13 +268,8 @@ export const useImageGalleryGestures = ({
           );
         }
 
-        /**
-         * When the pan is finished if the scale is less than 1 return the
-         * photo to center, if the photo is inside the edges of the screen
-         * return the photo to line up with the edges, otherwise use decay
-         * with a clamping at the edges to give the effect the image is
-         * sliding along using velocity and friction
-         */
+        // Settle X: center when zoomed out, snap back inside the edges, otherwise decay clamped to
+        // the edges.
         translateX.value =
           scale.value < 1
             ? withTiming(0)
@@ -357,13 +290,7 @@ export const useImageGalleryGestures = ({
                     velocity: -event.velocityX,
                   });
 
-        /**
-         * When the pan is finished if the height is less than the screen
-         * height return the photo to center, if the photo is inside the
-         * edges of the screen return the photo to line up with the edges,
-         * otherwise use decay with a clamping at the edges to give the effect
-         * the image is sliding along using velocity and friction
-         */
+        // Settle Y: same as X, comparing the scaled image height with the screen height.
         const imageHeight = currentImageHeight.value;
         translateY.value =
           imageHeight * scale.value < screenHeight
@@ -385,19 +312,12 @@ export const useImageGalleryGestures = ({
 
         resetTouchValues();
 
-        /**
-         * If the scale has been reduced below one, i.e. zoomed out, translate
-         * the zoom back to one
-         */
+        // Restore the scale to `offsetScale`, undoing the swipe-away shrink.
         scale.value =
           scale.value !== offsetScale.value ? withTiming(offsetScale.value) : offsetScale.value;
 
-        /**
-         * If the photo is centered or at the top of the screen if scaled larger
-         * than the screen, and not paging left or right, and the final Y position
-         * is greater than half the screen using swipe velocity and position, close
-         * the overlay
-         */
+        // Dismiss on a downward swipe: `finalYPosition` beyond half the screen, photo centered or
+        // at its top edge, and not a horizontal page swipe.
         if (
           finalYPosition > halfScreenHeight &&
           offsetY.value + 8 >= (imageHeight / 2) * scale.value - halfScreenHeight &&
@@ -453,39 +373,22 @@ export const useImageGalleryGestures = ({
   const triggerHaptic = NativeHandlers.triggerHaptic;
 
   /**
-   * On pinch is run when two or more fingers touch the screen, it then takes over
-   * all touch handling even if the number of fingers is reduced to one until the
-   * touch is complete
+   * Takes over all touch handling once two fingers touch, even if the count drops to one, until
+   * the touch ends.
    */
   const pinch = Gesture.Pinch()
     .onStart((event) => {
-      /**
-       * Android starts with a zero event with 1 touch instead of two
-       * we therefore must wait to capture starting info until the double
-       * touch begins
-       */
+      // Android's first event has a single pointer, so the starting values are captured in
+      // `onChange`.
       if (!isAndroid) {
-        /**
-         * Cancel any previous motion animation on translations when a touch
-         * begins to interrupt the animation and take over the position handling
-         */
         cancelAnimation(translateX);
         cancelAnimation(translateY);
         cancelAnimation(scale);
 
-        /**
-         * Set pinch to true to stop all pan gesture interactions
-         */
         isPinch.value = true;
 
-        /**
-         * Reset isSwiping as now the pan gesture handler is no longer running
-         */
         isSwiping.value = IsSwiping.UNDETERMINED;
 
-        /**
-         * Set initial values for pinch gesture interaction handler
-         */
         numberOfPinchFingers.value = event.numberOfPointers;
         offsetX.value = translateX.value;
         offsetY.value = translateY.value;
@@ -496,40 +399,20 @@ export const useImageGalleryGestures = ({
         offsetScale.value = scale.value;
       }
 
-      /**
-       * Reset hasPinched for Android single finger offset
-       */
       hasPinched.value = HasPinched.FALSE;
     })
     .onChange((event) => {
-      /**
-       * Android starts with a zero event with 1 touch instead of two
-       * we therefore must wait to capture starting info until the double
-       * touch begins
-       */
+      // Android's first event has a single pointer, so the starting values are captured here.
       if (!isPinch.value && isAndroid) {
-        /**
-         * Set hasPinched to true so when removing one finger the pan active
-         * state adjusts the offset
-         */
+        // Lets pan rebase its offsets when a finger is removed.
         hasPinched.value = HasPinched.TRUE;
 
-        /**
-         * Cancel any previous motion animation on translations when a touch
-         * begins to interrupt the animation and take over the position handling
-         */
         cancelAnimation(translateX);
         cancelAnimation(translateY);
         cancelAnimation(scale);
 
-        /**
-         * Reset isSwiping as now the pan gesture handler is no longer running
-         */
         isSwiping.value = IsSwiping.UNDETERMINED;
 
-        /**
-         * Set initial values for pinch gesture interaction handler
-         */
         numberOfPinchFingers.value = event.numberOfPointers;
         offsetX.value = translateX.value;
         offsetY.value = translateY.value;
@@ -540,26 +423,15 @@ export const useImageGalleryGestures = ({
         offsetScale.value = scale.value;
       }
 
-      /**
-       * Set pinch to true to stop all pan gesture interactions, we do this
-       * again here for Android outside the check that creates type
-       */
+      // On Android this is the first place `isPinch` becomes true.
       isPinch.value = true;
 
-      /**
-       * The scale is clamped to a minimum of 1 and maximum of 8 for aesthetics.
-       * We use the clamped value to determine a local event scale so the focal
-       * point does not become out of sync with the actual photo scaling, e.g.
-       * evt.scale is 20 but scale is 8, using evt.scale for offset will put the
-       * photo and calculations out of sync
-       */
+      // Scale is clamped to 1..8. The clamped value, not `event.scale`, drives `localEvtScale` so
+      // the focal point stays in sync with the actual photo scale.
       scale.value = clamp(offsetScale.value * event.scale, 1, 8);
       const localEvtScale = scale.value / offsetScale.value;
 
-      /**
-       * When we hit the top or bottom of the scale clamping we run a haptic
-       * trigger, we track if it has been run to not spam the trigger
-       */
+      // Light haptic once each time the scale reaches a limit.
       if (scale.value !== 8 && scale.value !== 1) {
         hasHitTopScale.value = 0;
         hasHitBottomScale.value = 0;
@@ -571,24 +443,13 @@ export const useImageGalleryGestures = ({
         runOnJS(triggerHaptic)('impactLight');
       }
 
-      /**
-       * We calculate the adjusted focal point on the photo using the events
-       * focal position on the screen, screen size, and current photo offset
-       */
+      // Focal point adjusted for the screen size and photo offset.
       adjustedFocalX.value = event.focalX - (halfScreenWidth - offsetX.value);
       adjustedFocalY.value = event.focalY - (halfScreenHeight + offsetY.value);
 
-      /**
-       * If the number of fingers on the screen changes, the position of the
-       * focal point will change and this needs to be accounted for, e.g. if
-       * two fingers are on the screen the focal is between them, but if one is
-       * then removed the focal is now at the remaining fingers touch position.
-       * If this happens without accounting for the change the image will jump
-       * around, we keep track of the previous two finger focal to adjust for this
-       * change in a reduction from two fingers to one, then if another finger
-       * is added again we adjust the origin to account for the difference between
-       * the original two finger touch and the new two finger touch position.
-       */
+      // The focal point jumps when the finger count changes. Dropping to one finger stores the
+      // difference from the previous focal as `focalOffset`. Adding a finger shifts the origin by
+      // the difference.
       if (numberOfPinchFingers.value !== event.numberOfPointers) {
         numberOfPinchFingers.value = event.numberOfPointers;
         if (event.numberOfPointers === 1) {
@@ -604,24 +465,14 @@ export const useImageGalleryGestures = ({
         }
       }
 
-      /**
-       * If pinch handler has been activated via two fingers then the fingers
-       * reduced to one we keep track of the old focal using the focal offset
-       * from when the number of fingers was two. We then translate the photo
-       * taking into account the offset, focal, focal offset, origin, and scale.
-       */
+      // One finger left: apply the saved focal offset so the photo does not jump.
       if (numberOfPinchFingers.value === 1) {
         oldFocalX.value = adjustedFocalX.value + focalOffsetX.value;
         oldFocalY.value = adjustedFocalY.value + focalOffsetY.value;
         translateX.value = offsetX.value - oldFocalX.value + localEvtScale * originX.value;
         translateY.value = offsetY.value + oldFocalY.value - localEvtScale * originY.value;
-
-        /**
-         * If the number of fingers in the gesture is greater than one the
-         * adjusted focal point is saved as the old focal and the photo is
-         * translated taking into account the offset, focal, origin, and scale.
-         */
       } else if (numberOfPinchFingers.value > 1) {
+        // Two or more fingers: remember this focal for the next finger-count change.
         oldFocalX.value = adjustedFocalX.value;
         oldFocalY.value = adjustedFocalY.value;
         translateX.value = offsetX.value - adjustedFocalX.value + localEvtScale * originX.value;
@@ -630,12 +481,7 @@ export const useImageGalleryGestures = ({
     })
     .onEnd(() => {
       if (isPinch.value) {
-        /**
-         * When the pinch is finished if the scale is less than 1 return the
-         * photo to center, if the photo is inside the edges of the screen
-         * return the photo to line up with the edges, otherwise leave the
-         * photo in its current position
-         */
+        // Snap back inside the edges; otherwise keep the position.
         translateX.value =
           scale.value < 1
             ? withTiming(0)
@@ -645,12 +491,6 @@ export const useImageGalleryGestures = ({
                 ? withTiming(-halfScreenWidth * (scale.value - 1))
                 : translateX.value;
 
-        /**
-         * When the pinch is finished if the height is less than the screen
-         * height return the photo to center, if the photo is inside the
-         * edges of the screen return the photo to line up with the edges,
-         * otherwise leave the photo in its current position
-         */
         const imageHeight = currentImageHeight.value;
         translateY.value =
           imageHeight * scale.value < screenHeight
@@ -661,10 +501,7 @@ export const useImageGalleryGestures = ({
                 ? withTiming((-imageHeight / 2) * scale.value + screenHeight / 2)
                 : translateY.value;
 
-        /**
-         * If the scale has been reduced below one, i.e. zoomed out, translate
-         * the zoom back to one
-         */
+        // Commit the final scale as `offsetScale` for the next gesture, never below 1.
         offsetScale.value = scale.value < 1 ? 1 : scale.value;
         scale.value = scale.value < 1 ? withTiming(1) : scale.value;
         resetTouchValues();
@@ -673,9 +510,6 @@ export const useImageGalleryGestures = ({
     .withRef(pinchRef)
     .simultaneousWithExternalGesture(panRef);
 
-  /**
-   * Single tap handler for header hiding and showing
-   */
   const singleTap = Gesture.Tap()
     .minPointers(1)
     .numberOfTaps(1)
@@ -687,7 +521,7 @@ export const useImageGalleryGestures = ({
     .withRef(singleTapRef);
 
   /**
-   * Double tap handler to zoom back out and hide header and footer
+   * Toggles between 2x zoom and 1x. Zooming back to 1x also hides the header and footer.
    */
   const doubleTap = Gesture.Tap()
     .maxDeltaX(8)
@@ -759,7 +593,12 @@ export const useImageGalleryGestures = ({
 };
 
 /**
- * Clamping worklet to clamp the scaling
+ * Clamps `value` between `lowerBound` and `upperBound`.
+ *
+ * @param value The value to clamp.
+ * @param lowerBound The minimum result.
+ * @param upperBound The maximum result.
+ * @returns The clamped value.
  */
 export const clamp = (value: number, lowerBound: number, upperBound: number) => {
   'worklet';

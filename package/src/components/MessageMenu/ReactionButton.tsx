@@ -6,22 +6,16 @@ import { IconProps } from '../../icons';
 import { Button, ButtonProps } from '../ui';
 
 export type ReactionButtonProps = {
-  /**
-   * Icon to display for the reaction button
-   */
+  /** Icon of the reaction. */
   Icon: React.ComponentType<IconProps>;
-  /**
-   * Whether the reaction button is selected
-   */
+  /** Whether the button is selected. */
   selected: boolean;
-  /**
-   * The type of reaction
-   */
+  /** The reaction type, passed to `onPress`. */
   type: string;
   /**
-   * Function to call when the reaction button is pressed
-   * @param reactionType
-   * @returns
+   * Called when the button is pressed.
+   *
+   * @param reactionType The `type` of the pressed button.
    */
   onPress?: (reactionType: string) => void;
   count?: string;

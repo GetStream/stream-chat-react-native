@@ -6,17 +6,16 @@ import { useChannelContext } from '../../../contexts/channelContext/ChannelConte
 import { useStateStore } from '../../../hooks/useStateStore';
 
 /**
- * Whether at least one *other* member has read the given message, sourced reactively from the
- * channel's `messageReceiptsTracker.snapshotStore`.
+ * Whether at least one other member has read the message, read from the channel's
+ * `messageReceiptsTracker.snapshotStore`.
  *
- * Compares against `lastReadRefByOthers` — the single furthest point anyone else has reached —
- * rather than asking who is parked on this message. Read cursors only move forward, so one
- * comparison answers every message, and an older message can never report less than a newer one.
- * The per-message maps cannot express that: they mark only the message each cursor happens to land
- * on, so every message before it looks unread.
+ * It compares the message against `lastReadRefByOthers`, the furthest point anyone else has read.
+ * Read cursors only move forward, so an older message never reports less than a newer one, which
+ * the per-message maps cannot guarantee as they mark only the message each cursor lands on.
+ * Use `useMessageReadData` to get the users who read the message.
  *
- * Use this for a read indicator. `useMessageReadData` answers a different question — the users who
- * have read the message — and is what a message-info screen wants.
+ * @param params.message The message to check.
+ * @returns Whether another member has read the message.
  */
 export const useIsMessageReadByOthers = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();

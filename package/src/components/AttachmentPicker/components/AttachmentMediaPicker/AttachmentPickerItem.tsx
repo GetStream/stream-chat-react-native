@@ -32,8 +32,8 @@ type AttachmentPickerItemType = {
 };
 
 /**
- * Where this cell's asset sits among the composer's attachments, or -1. Selected per cell, so an
- * upload progressing re-renders no cell and a selection change only the cells whose index moved.
+ * Index of this cell's asset among the composer's attachments, or -1. Selected per cell, so upload
+ * progress re-renders no cell and a selection change only the cells whose index moved.
  */
 const useSelectedIndex = (isAsset: (attachment: LocalAttachment) => boolean) => {
   const { attachmentManager } = useMessageComposer();
@@ -220,12 +220,8 @@ export const renderAttachmentPickerItem = ({ item }: { item: PhotoContentItemTyp
   if (isIosLimited(item)) {
     return <AttachmentIosLimited />;
   }
-  /**
-   * Expo Media Library - Result of asset type
-   * Native Android - Gives mime type(Eg: image/jpeg, video/mp4, etc.)
-   * Native iOS - Gives `image` or `video`
-   * Expo Android/iOS - Gives `photo` or `video`
-   **/
+  // `type` is a MIME type on native Android (such as `video/mp4`), `image` or `video` on native
+  // iOS, and `photo` or `video` with Expo.
   const isVideoType = item.type?.includes('video');
 
   if (isVideoType) {

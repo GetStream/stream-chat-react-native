@@ -270,22 +270,14 @@ import { XCircle } from '../../icons/x-circle';
 import { NewClose } from '../../icons/xmark';
 import { Cross } from '../../icons/xmark-1';
 
-/**
- * Normalizes each component entry to React.ComponentType<P>, stripping
- * extra inferred properties (like `displayName: string` from runtime
- * assignments) that would otherwise leak into the override types and
- * force integrators to match them.
- */
+/** Reduces each component to `React.ComponentType<P>`, so inferred extras do not leak out. */
 type NormalizeComponents<T> = {
   [K in keyof T]: T[K] extends React.ComponentType<infer P> ? React.ComponentType<P> : T[K];
 };
 
 /**
- * All overridable icon components in the SDK, keyed by their exported name.
- * Exposed via `WithComponents` under the nested `icons` key so integrators can
- * swap any icon: `<WithComponents overrides={{ icons: { Mute: MyMute } }}>`.
- *
- * Only icons that are actually rendered by the SDK are registered here.
+ * The overridable icons, keyed by exported name. Overridden through the nested `icons` key:
+ * `<WithComponents overrides={{ icons: { Mute: MyMute } }}>`.
  */
 export const defaultIcons = {
   ArrowBoxLeft,
@@ -382,10 +374,7 @@ export const defaultIcons = {
   ZIP,
 } satisfies Record<string, React.ComponentType<IconProps>>;
 
-/**
- * Map of all overridable SDK icons. Used to type the `icons` override slot
- * and the resolved value returned by `useComponentsContext().icons`.
- */
+/** The type of `defaultIcons`, which types the `icons` override slot. */
 export type IconsMap = typeof defaultIcons;
 
 const components = {
@@ -514,10 +503,8 @@ const components = {
   VideoAttachmentUploadPreview,
   VideoThumbnail,
 
-  // Channel details
   ChannelDetailsHeader,
 
-  // Channel Details Screen
   ChannelAddMembersButton,
   ChannelAddMembersForm,
   ChannelAddMembersFormContent,
@@ -547,7 +534,6 @@ const components = {
   PinnedMessageItem,
   PinnedMessageList,
 
-  // Thread
   ThreadListComponent,
   ThreadListEmptyPlaceholder: DefaultThreadListEmptyPlaceholder,
   ThreadListItem,
@@ -557,7 +543,6 @@ const components = {
   ThreadListUnreadBanner,
   ThreadMessagePreviewDeliveryStatus,
 
-  // Poll
   PollButtons,
   PollHeader,
   PollAllOptionsContent,
@@ -565,23 +550,17 @@ const components = {
   PollResultsContent,
   PollOptionFullResultsContent,
 
-  // ImageGallery
   ImageGalleryFooter,
   ImageGalleryGrid,
   ImageGalleryHeader,
   ImageGalleryVideoControls: ImageGalleryVideoControl,
 
-  // Overlay
   MessageOverlayBackground: DefaultMessageOverlayBackground,
 
-  // Image
   ImageComponent: SvgAwareImage,
 };
 
-/**
- * Optional component slots that have no default implementation.
- * These are `undefined` unless the integrator provides them via WithComponents.
- */
+/** Component slots with no default, `undefined` unless provided via `WithComponents`. */
 export interface OptionalComponentOverrides {
   AttachmentPickerIOSSelectMorePhotos?: React.ComponentType;
   ChatLoadingIndicator?: React.ComponentType | null;
@@ -602,11 +581,5 @@ export interface OptionalComponentOverrides {
   PollContent?: React.ComponentType;
 }
 
-/**
- * All default component implementations used across the SDK.
- * These are the components used when no overrides are provided via WithComponents.
- *
- * The `NormalizeComponents` cast ensures that internal details like
- * `displayName: string` don't leak into the public override types.
- */
+/** The default component for every overridable slot, typed through `NormalizeComponents`. */
 export const DEFAULT_COMPONENTS: NormalizeComponents<typeof components> = components;

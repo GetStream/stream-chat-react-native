@@ -51,8 +51,7 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }, [channel.state.members, client.user?.id]);
 
-  // `status` only exists on optimistic/local messages (`LocalMessage`), so read it via a
-  // guard rather than asserting `lastMessage` (a `LocalMessage | MessageResponse`) is local.
+  // `status` exists only on local messages (`LocalMessage`), so it is read through an `in` guard.
   const lastMessageStatus = lastMessage && 'status' in lastMessage ? lastMessage.status : undefined;
   const isFailedMessage =
     lastMessageStatus === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
@@ -71,7 +70,6 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }
 
-  // If there are no messages yet, show a message saying "No messages yet"
   if (!lastMessage) {
     return (
       <Text style={[styles.subtitle, { color: semantics.textTertiary }]}>

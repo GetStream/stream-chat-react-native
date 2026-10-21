@@ -19,9 +19,7 @@ export type GiphyImagePropsWithContext = Pick<MessagesContextValue, 'giphyVersio
   ImageComponent?: React.ComponentType<ImageProps>;
 } & {
   attachment: Attachment;
-  /**
-   * Whether to render the preview image or the full image
-   */
+  /** Whether to render the preview image or the full image. Defaults to false. */
   preview?: boolean;
 };
 
@@ -156,9 +154,7 @@ export type GiphyImageProps = Partial<GiphyImagePropsWithContext> & {
   attachment: Attachment;
 };
 
-/**
- * UI component for card in attachments.
- */
+/** Renders a Giphy image, either the preview or the full image. */
 export const GiphyImage = (props: GiphyImageProps) => {
   const { ImageComponent } = useComponentsContext();
   const { giphyVersion } = useMessagesContext();

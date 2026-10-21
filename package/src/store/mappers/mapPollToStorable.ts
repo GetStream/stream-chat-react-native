@@ -33,7 +33,7 @@ export const mapPollToStorable = (poll: PollResponseData): TableRow<'poll'> => {
     allow_user_suggested_options,
     answers_count,
     created_at: mapTimestampToStorable(created_at),
-    created_by: JSON.stringify(created_by), // decouple the users from the actual poll
+    created_by: JSON.stringify(created_by), // stored as JSON to decouple the user from the poll
     created_by_id,
     description,
     enforce_unique_vote,

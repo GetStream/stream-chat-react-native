@@ -12,9 +12,7 @@ import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 
-/**
- * Module scope so the reference stays stable — an inline selector re-subscribes on every render.
- */
+// Module scope so the selector stays referentially stable.
 const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
   readEventsEnabled: readEvents.enabled,
 });
@@ -31,9 +29,9 @@ export const ThreadMessagePreviewDeliveryStatus = ({
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
-  // `configState` is absent on the partial channel mocks some tests pass in; a real channel always
-  // has one. Resolved configuration, so `read_events` is already ANDed with anything registered
-  // through `client.config.set({ channel: { readEvents } })`.
+  // `configState` is the resolved channel configuration, so `read_events` already accounts for
+  // `client.config.set({ channel: { readEvents } })`. Optional chaining covers partial channel
+  // mocks.
   const configState = channel?.configState;
   const { readEventsEnabled } = useStateStore(configState, readEventsSelector) ?? {};
   const styles = useStyles();

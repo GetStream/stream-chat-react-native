@@ -53,7 +53,7 @@ export const CreatePollContent = () => {
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
-  // positions and index lookup map
+  // Option positions and the index lookup map.
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
     inverseIndexCache: {},
@@ -81,8 +81,8 @@ export const CreatePollContent = () => {
           currentPositions.positionCache[option.id] !== undefined,
       );
 
-    // Avoid overwriting freshly measured heights/tops from CreatePollOptions onLayout.
-    // We only need this effect when options ids/order introduced missing cache entries.
+    // Skip when the cache matches the options, so heights and tops measured by the `onLayout` of
+    // `CreatePollOptions` are kept.
     if (isCacheAlignedWithOptions) {
       return;
     }
@@ -241,7 +241,7 @@ export const CreatePoll = ({
       return;
     }
 
-    // Let the modal render once with exit animations disabled before we dismiss it.
+    // Let the modal render once with exit animations disabled before it is dismissed.
     modalStateStore.partialNext({ isClosing: true });
     closeFrameRef.current = requestAnimationFrame(() => {
       closeFrameRef.current = null;

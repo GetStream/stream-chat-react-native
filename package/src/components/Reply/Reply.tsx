@@ -103,7 +103,7 @@ export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageP
     isParentMessageMine?: boolean;
     onDismiss?: () => void;
     mode: 'reply' | 'edit';
-    // This is temporary for the MessageContent Component to style the Reply component
+    // Style overrides passed by `MessageContent`.
     styles?: {
       container?: ViewStyle;
       leftContainer?: ViewStyle;
@@ -168,7 +168,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
             {title}
           </Text>
 
-          {/* `isMyMessage` here selects which side to paint, so it takes the surface. */}
+          {/* Paints for the surface it sits on, so it takes the parent message's ownership. */}
           <ReplyMessageView message={quotedMessage} isMyMessage={isParentMessageMine} />
         </View>
         <View style={[styles.rightContainer, rightContainer, stylesProp?.rightContainer]}>
@@ -254,9 +254,8 @@ export type ReplyProps = Partial<ReplyPropsWithContext> &
   Pick<ReplyPropsWithContext, 'mode' | 'onDismiss'>;
 
 /**
- * Mounted only when the Reply is rendered as the composer header preview
- * (edit/reply). Keeps the translation + announcer subscriptions off the
- * per-row in-message quoted-reply render path.
+ * Announces the edit/reply state to screen readers. Mounted only for the composer header preview,
+ * so in-message quoted replies skip the translation and announcer subscriptions.
  */
 const ReplyComposerAnnouncer = ({
   message,
@@ -310,20 +309,18 @@ export const Reply = (props: ReplyProps) => {
     ? (messageFromContext.quoted_message as ReplyPropsWithContext['quotedMessage'])
     : quotedMessageFromComposer;
 
-  // `mode='edit'` supplies the edited message via `props.quotedMessage` and leaves
-  // the composer's quoted message empty, so ownership must consider both.
+  // `mode='edit'` passes the edited message as `props.quotedMessage` and leaves the composer's
+  // quoted message empty, so ownership considers both.
   const isMyMessage = client.user?.id === (props.quotedMessage ?? quotedMessage)?.user?.id;
   const isParentMessageMine = messageFromContext ? !!isMyMessageFromContext : undefined;
 
-  // Composer header passes `onDismiss`; the in-message quoted-reply renderer
-  // does not. Only the composer-preview path pays for announcement work.
+  // Only the composer header passes `onDismiss`, which marks the composer preview.
   const isComposerPreview = !!props.onDismiss;
 
   return (
     <>
       {isComposerPreview ? (
-        // Edit passes the message via `quotedMessage` prop; reply uses the
-        // composer-state quoted message we computed locally.
+        // Edit passes the message as `quotedMessage`; reply uses the composer's quoted message.
         <ReplyComposerAnnouncer message={props.quotedMessage ?? quotedMessage} mode={props.mode} />
       ) : null}
       <MemoizedReply

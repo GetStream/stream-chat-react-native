@@ -45,14 +45,9 @@ const ClosingPortalHostSlot = ({
 
 type ClosingPortalHostsLayerProps = {
   closeCoverOpacity: SharedValue<number>;
-  /**
-   * Id of the owning host layer, used to park the slot hosts while that layer is not the top one.
-   */
+  /** ID of the owning host layer, which parks the slot hosts when it is not the top one. */
   hostLayerId?: string;
-  /**
-   * Whether the owning host layer is the top one. Slots of any other layer park their hosts under
-   * names unique to that layer, so they never take the shared names from the top layer.
-   */
+  /** Whether the owning host layer is the top one. Other layers park hosts under unique names. */
   isTopHostLayer?: boolean;
 };
 

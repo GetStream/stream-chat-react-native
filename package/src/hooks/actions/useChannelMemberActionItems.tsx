@@ -16,10 +16,8 @@ import { IconProps } from '../../icons';
 import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 import { useStateStore } from '../useStateStore';
 
-// Lazily resolved to avoid a static import cycle with defaultComponents.ts
-// (defaultComponents → ChannelDetails*/ChannelPreview* → this file). Statically
-// importing defaultIcons corrupts module-init order; require it at call time
-// instead. Same pattern as ComponentsContext's getDefaults().
+// Required lazily: a static import of defaultComponents.ts would form a cycle
+// (defaultComponents -> ChannelDetails*/ChannelPreview* -> this file) and corrupt init order.
 let cachedDefaultIcons: IconsMap | undefined;
 const getDefaultIcons = (): IconsMap => {
   if (!cachedDefaultIcons) {
@@ -81,8 +79,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
 
   const actionItems: ChannelMemberActionItem[] = [];
 
-  // Muting or blocking yourself is meaningless, so these actions are only
-  // added for other members.
+  // Muting or blocking yourself is meaningless, so these actions are only for other members.
   if (!isCurrentUser) {
     actionItems.push(
       {

@@ -11,7 +11,7 @@ export const useMessageComposerHasSendableData = () => {
   const messageComposer = useMessageComposer();
   useStateStore(messageComposer.editingAuditState, editingAuditStateStateSelector);
   // `hasSendableData` also depends on whether pending uploads may be sent, which is composer config
-  // rather than composer state — so toggling `attachments.pendingUploadsEnabled` re-renders too.
+  // rather than composer state, so toggling `attachments.pendingUploadsEnabled` re-renders too.
   useStateStore(messageComposer.configState, pendingUploadsEnabledSelector);
   return messageComposer.hasSendableData;
 };

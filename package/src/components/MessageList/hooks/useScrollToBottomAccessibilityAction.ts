@@ -17,10 +17,9 @@ type AccessibilityActions = ViewProps['accessibilityActions'];
 type OnAccessibilityAction = ViewProps['onAccessibilityAction'];
 
 /**
- * Declared explicitly rather than inferred. Left to inference, TypeScript expands
- * `AccessibilityActionEvent` into its structural shape when emitting the declaration, and that
- * shape names `HostInstance`. Naming the props here keeps the emitted `.d.ts` referring to
- * `ViewProps[...]`, which resolves against whichever React Native the consumer actually has.
+ * Spelled out so the emitted `.d.ts` refers to `ViewProps[...]`, which resolves against the
+ * consumer's React Native. An inferred type expands `AccessibilityActionEvent` into a shape that
+ * names `HostInstance`.
  */
 export type UseScrollToBottomAccessibilityActionResult = {
   accessibilityActions: AccessibilityActions;
