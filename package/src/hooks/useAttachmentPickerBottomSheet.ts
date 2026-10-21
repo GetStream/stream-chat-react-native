@@ -16,7 +16,9 @@ export const useAttachmentPickerBottomSheet = () => {
     if (ref.current?.snapToIndex) {
       ref.current.snapToIndex(0);
     } else {
-      console.warn('bottom and top insets must be set for the image picker to work correctly');
+      console.warn(
+        'The attachment picker cannot open: its bottom sheet ref has no snapToIndex. Make sure the attachment picker is mounted.',
+      );
     }
   }, []);
 

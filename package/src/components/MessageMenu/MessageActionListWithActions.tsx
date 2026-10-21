@@ -65,5 +65,5 @@ export const MessageActionListWithActions = () => {
           updateMessage,
         });
 
-  return <MessageActionList dismissOverlay={dismissOverlay} messageActions={messageActions} />;
+  return <MessageActionList messageActions={messageActions} />;
 };

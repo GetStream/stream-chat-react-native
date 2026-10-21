@@ -153,9 +153,13 @@ export const it: TranslationDictionary = {
   'channelDetails.editChannel.name.placeholder': 'Nome del canale',
   'channelDetails.editChannel.upload.accessibilityLabel': 'Carica immagine del canale',
   'channelDetails.editChannel.upload.label': 'Carica',
+  'channelDetails.editImageSheet.cameraPermission.text':
+    "La fotocamera viene utilizzata per scattare l'immagine del gruppo.",
   'channelDetails.editImageSheet.chooseImage.label': 'Scegli immagine',
   'channelDetails.editImageSheet.close.accessibilityLabel':
     'Chiudi il pannello di modifica immagine',
+  'channelDetails.editImageSheet.galleryPermission.text':
+    "L'accesso alla galleria viene utilizzato per scegliere l'immagine del gruppo.",
   'channelDetails.editImageSheet.resetPicture.label': 'Reimposta immagine',
   'channelDetails.editImageSheet.takePhoto.label': 'Scatta foto',
   'channelDetails.editImageSheet.title': 'Modifica immagine del gruppo',
@@ -216,8 +220,7 @@ export const it: TranslationDictionary = {
 
   // Shared labels reused across screens
   'common.anonymousUser.label': 'Anonimo',
-  'common.cameraPermission.text':
-    'La fotocamera del dispositivo viene utilizzata per scattare foto o video.',
+  'common.cameraPermission.text': 'La fotocamera viene utilizzata per scattare foto e video.',
   'common.cameraPermission.title':
     "Consenti l'accesso alla fotocamera nelle impostazioni del dispositivo",
   'common.cancel.label': 'Annulla',
@@ -225,7 +228,7 @@ export const it: TranslationDictionary = {
   'common.draft.label': 'Bozza',
   'common.editMessageFailed.error': 'Richiesta di modifica del messaggio non riuscita',
   'common.galleryPermission.text':
-    'Le autorizzazioni della galleria del dispositivo vengono utilizzate per scattare foto o video.',
+    "L'accesso alla galleria viene utilizzato per condividere foto e video.",
   'common.galleryPermission.title': "Consenti l'accesso alla tua galleria",
   'common.linksDisabled.text': "L'invio di link non è consentito in questa conversazione",
   'common.linksDisabled.title': 'I link sono disabilitati',

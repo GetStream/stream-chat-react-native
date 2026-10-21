@@ -34,21 +34,19 @@ class EmojiSearchSource<T extends TextComposerSuggestion<Emoji>> extends BaseSea
     }
     const emojis = (await this.emojiSearchIndex.search(searchQuery)) ?? [];
 
-    // emojiIndex.search sometimes returns undefined values, so filter those out first
+    // emojiIndex.search sometimes returns undefined values, so filter those out first. An emoji with
+    // no native glyph, on itself or its first skin, has nothing to insert and is skipped too.
     return {
       items: emojis
         .filter(Boolean)
-        .slice(0, 7)
-        .map(({ emoticons = [], id, name, native, skins = [] }) => {
-          const [firstSkin] = skins;
-
-          return {
-            emoticons,
-            id,
-            name,
-            native: native ?? firstSkin.native,
-          };
-        }) as T[],
+        .map(({ emoticons = [], id, name, native, skins = [] }) => ({
+          emoticons,
+          id,
+          name,
+          native: native ?? skins[0]?.native,
+        }))
+        .filter(({ native }) => !!native)
+        .slice(0, 7) as T[],
       next: null, // todo: generate cursor
     };
   }
@@ -135,9 +133,7 @@ export const createTextComposerEmojiMiddleware = ({
               return null;
             }
 
-            const [firstSkin] = emoji.skins ?? [];
-
-            return emoji.native ?? firstSkin.native;
+            return emoji.native ?? emoji.skins?.[0]?.native ?? null;
           },
           text: state.text,
         });

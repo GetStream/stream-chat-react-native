@@ -27,8 +27,6 @@ export type ProgressControlProps = {
   onStartDrag?: (progress: number) => void;
   /** Expands the touch area vertically by 12px on each side of the 3px track. */
   expandedTouchArea?: boolean;
-  /** Not read; the control measures its own width. */
-  width?: number;
 };
 
 const TRACK_HEIGHT = 3;

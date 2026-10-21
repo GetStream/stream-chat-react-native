@@ -132,7 +132,7 @@ const createCanceledError = (): NativeMultipartCanceledError => {
   const error = new Error('Request aborted') as NativeMultipartCanceledError;
   error.name = 'CanceledError';
   error.code = CANCELED_ERROR_CODE;
-  // eslint-disable-next-line no-underscore-dangle -- Axios marks cancellation with this legacy field, and callers still use axios.isCancel.
+  // eslint-disable-next-line no-underscore-dangle -- sets the `__CANCEL__` flag that `axios.isCancel` checks, so callers see a cancellation.
   error.__CANCEL__ = true;
   return error;
 };

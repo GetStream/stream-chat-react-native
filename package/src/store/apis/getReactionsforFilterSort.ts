@@ -34,10 +34,6 @@ export const getReactionsForFilterSort = async ({
 
   const reactions = await selectReactionsForMessages([messageId], limit, filters, sort);
 
-  if (!reactions) {
-    return null;
-  }
-
   if (reactions.length === 0) {
     return [];
   }

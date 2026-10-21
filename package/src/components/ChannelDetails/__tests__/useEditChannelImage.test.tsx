@@ -88,7 +88,7 @@ describe('useEditChannelImage', () => {
       expect(Alert.alert).toHaveBeenCalledTimes(1);
       expect(Alert.alert).toHaveBeenCalledWith(
         'Allow camera access in device settings',
-        'Device camera is used to take photos or videos.',
+        'The camera is used to take the channel image.',
         expect.any(Array),
       );
       expect(returned).toBeUndefined();
@@ -202,7 +202,7 @@ describe('useEditChannelImage', () => {
       expect(Alert.alert).toHaveBeenCalledTimes(1);
       expect(Alert.alert).toHaveBeenCalledWith(
         'Allow access to your Gallery',
-        'Device gallery permissions is used to take photos or videos.',
+        'Gallery access is used to choose the channel image.',
         expect.any(Array),
       );
       expect(returned).toBeUndefined();

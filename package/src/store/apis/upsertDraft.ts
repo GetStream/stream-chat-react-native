@@ -51,8 +51,7 @@ export const upsertDraft = async ({
   }
 
   if (messagesToUpsert.length > 0) {
-    const query = await upsertMessages({ execute: false, messages: messagesToUpsert });
-    queries.concat(query);
+    queries.push(...(await upsertMessages({ execute: false, messages: messagesToUpsert })));
   }
 
   if (execute) {

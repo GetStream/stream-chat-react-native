@@ -48,6 +48,10 @@ const INITIAL_STATE: AudioPlayerState = {
 export type AudioPlayerOptions = AudioDescriptor & {
   onError?: AudioPlayerErrorHandler;
   playbackRates?: number[];
+  /**
+   * Plays through the recorder's own player, `NativeHandlers.Audio`, instead of the regular
+   * `NativeHandlers.Sound` player. Defaults to false.
+   */
   previewVoiceRecording?: boolean;
 };
 
@@ -63,7 +67,7 @@ export class AudioPlayer {
   private lastPlaybackStatusError?: string;
   private lastSeekNotSupportedNotificationAt?: number;
 
-  /** Keeps the composer preview on the recorder-backed player. */
+  /** Plays through the recorder's own player, `NativeHandlers.Audio`, instead of `Sound`. */
   private previewVoiceRecording?: boolean;
 
   constructor(options: AudioPlayerOptions) {

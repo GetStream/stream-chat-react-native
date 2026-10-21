@@ -104,4 +104,13 @@ describe('ImageGalleryVideoControl', () => {
     expect(seekSpy).toHaveBeenCalledWith(0.5 * DURATION);
     expect(playSpy).not.toHaveBeenCalled();
   });
+
+  it('labels the progress from the duration in milliseconds', () => {
+    const { videoPlayer } = setup();
+    act(() => {
+      videoPlayer.progress = 0.5;
+    });
+
+    expect(screen.getByText('0:05')).toBeTruthy();
+  });
 });

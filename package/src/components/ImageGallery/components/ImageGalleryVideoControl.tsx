@@ -38,9 +38,9 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
 
   const videoDuration = getDurationLabelFromDuration(duration);
 
-  const progressValueInSeconds = progress * duration;
+  const progressValueInMilliseconds = progress * duration;
 
-  const progressDuration = getDurationLabelFromDuration(progressValueInSeconds);
+  const progressDuration = getDurationLabelFromDuration(progressValueInMilliseconds);
 
   const { icons } = useComponentsContext();
   const {
@@ -115,7 +115,6 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
           onStartDrag={handleStartDrag}
           progress={progress}
           testID={'progress-control'}
-          width={180}
         />
       </View>
 

@@ -340,7 +340,7 @@ export const hashStringToNumber = (str: string) => {
     hash |= 0; // Convert to 32bit integer
   }
 
-  return Math.abs(hash) ?? 0;
+  return Math.abs(hash);
 };
 
 export const getFileSizeDisplayText = (size?: number | string) => {

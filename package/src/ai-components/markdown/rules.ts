@@ -58,7 +58,7 @@ export const getLocalRules = (
   const { onLink, paragraphNumberOfLines } = opts;
   const openLinkHandler = (target: string) => {
     if (onLink) {
-      // `onLink` may be async: a rejection is logged and rethrown.
+      // `onLink` may be async: nothing awaits this press handler, so a rejection is only logged.
       Promise.resolve(onLink(target)).catch((error: unknown) => {
         const msg =
           error && typeof error === 'object' && 'toString' in error
@@ -66,7 +66,6 @@ export const getLocalRules = (
             : 'Unknown error';
 
         console.log('There has been a problem with this action. ' + msg);
-        throw error;
       });
     }
   };

@@ -201,7 +201,7 @@ export const MessageInputProvider = ({
     if (file.askToOpenSettings && disableAttachmentPicker) {
       Alert.alert(
         t('common.cameraPermission.title', 'Allow camera access in device settings'),
-        t('common.cameraPermission.text', 'Device camera is used to take photos or videos.'),
+        t('common.cameraPermission.text', 'The camera is used to take photos and videos.'),
         [
           { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
           {
@@ -234,10 +234,7 @@ export const MessageInputProvider = ({
     if (result.askToOpenSettings) {
       Alert.alert(
         t('common.galleryPermission.title', 'Allow access to your Gallery'),
-        t(
-          'common.galleryPermission.text',
-          'Device gallery permissions is used to take photos or videos.',
-        ),
+        t('common.galleryPermission.text', 'Gallery access is used to share photos and videos.'),
         [
           { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
           {
