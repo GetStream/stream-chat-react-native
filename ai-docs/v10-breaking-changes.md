@@ -191,6 +191,8 @@ Retyped props:
 - `MessageContent`: `isMessageAIGenerated` removed. — Q.3
 - `Giphy`, `GiphyImage`, `URLPreview`, `URLPreviewCompact`: `attachment` is `stream-chat`'s `Attachment` (custom
   metadata under `attachment.custom`). — §17.1 · §R.4
+- `MessageActionList`: `dismissOverlay` removed; it was never read (each `MessageActionListItem` closes the overlay
+  itself). A custom list that needs it reads `useMessageContext().dismissOverlay`.
 
 ### `<MessageList>` / `<MessageFlashList>`
 
@@ -205,6 +207,7 @@ Retyped props:
 - Older-end loading component (`FooterComponent` on `MessageList`, `HeaderComponent` on `MessageFlashList`) now
   receives `{ loadingMore?: boolean }`. The newer-end one gets no props and has no SDK source for `loadingMoreRecent`.
   — §12.1
+- `MessageFlashList`: `inverted` removed; it was never read (the FlashList is never inverted).
 - New: `pendingUploadsEnabled`. — §O.3
 - `ScrollToBottomButton`: `unreadCount` removed (self-derived from `channel.state`). — §7
 - `TypingIndicatorContainer`: `thread` → `threadId`. — §2.1
@@ -239,6 +242,7 @@ Retyped props:
 ### Indicators, polls, misc
 
 - `LoadingErrorIndicator`: `error` `boolean | Error` → `Error`. — §R.4 · #3785
+- `ProgressControl`: `width` removed; it was never read (the control measures its own width).
 - Poll components: `PollOption` → `PollOptionResponseData`, `PollAnswer` / `PollVote` → `PollVoteResponseData`
   (`ShowAllVotesButton`, `PollResultsItem`, `PollOptionFullResults(Content)`, `PollAnswerListItem`,
   `PollAnswersList(Content)`); `CreatePollOption.error` is a `PollComposerValidationError`. — §17.5 · §19

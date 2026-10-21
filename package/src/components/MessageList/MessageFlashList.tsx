@@ -125,8 +125,6 @@ type MessageFlashListPropsWithContext = Pick<
      * to `ThreadFooterComponent` in a thread, `InlineLoadingMoreIndicator` otherwise.
      */
     HeaderComponent?: React.ComponentType<{ loadingMore?: boolean }>;
-    /** Ignored: the FlashList is never inverted. */
-    inverted?: boolean;
     /** Turns off grouping of messages by user. */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];

@@ -11,8 +11,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type MessageActionListProps = {
-  /** Closes the message actions overlay. */
-  dismissOverlay?: () => void;
   /** The actions to render. */
   messageActions?: MessageActionType[];
 };
@@ -57,7 +55,7 @@ export const MessageActionList = (props: MessageActionListProps) => {
       {destructiveActions?.map((messageAction, index) => (
         <MessageActionListItem
           key={messageAction.title}
-          {...{ ...messageAction, index, length: standardActions.length }}
+          {...{ ...messageAction, index, length: destructiveActions.length }}
         />
       ))}
     </ScrollView>
