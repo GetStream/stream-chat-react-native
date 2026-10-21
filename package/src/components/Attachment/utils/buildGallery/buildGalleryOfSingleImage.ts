@@ -50,7 +50,7 @@ function getContainerSize({
   if (containerHeight === maxHeight) {
     return {
       height: containerHeight,
-      width: clamp(containerHeight * aspectRatio, minWidth, maxWidth),
+      width: clamp(containerHeight * aspectRatio, minHeight, maxHeight),
     };
   }
 
