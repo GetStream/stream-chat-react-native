@@ -4,12 +4,15 @@ import { Text } from 'react-native';
 
 import { render } from '@testing-library/react-native';
 
+import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { MessageUserReactionsItem } from '../MessageUserReactionsItem';
 
 jest.mock('../../../icons/Unknown', () => ({
@@ -82,5 +85,43 @@ describe('MessageUserReactionsItem', () => {
     const { getByTestId, queryByTestId } = await renderComponent();
     expect(getByTestId('like-icon')).toBeTruthy();
     expect(queryByTestId('unknown-icon')).toBeNull();
+  });
+
+  describe('with accessibility enabled', () => {
+    const renderAccessible = async (clientUserID: string) => {
+      const translators = await new Streami18n().init();
+      return render(
+        <AccessibilityProvider value={{ enabled: true }}>
+          <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
+            <ChatProvider
+              value={
+                {
+                  client: await getTestClientWithUser(generateUser({ id: clientUserID })),
+                } as ChatContextValue
+              }
+            >
+              <ThemeProvider theme={defaultTheme}>
+                <MessageUserReactionsItem
+                  reaction={mockReaction}
+                  supportedReactions={mockSupportedReactions}
+                />
+              </ThemeProvider>
+            </ChatProvider>
+          </TranslationProvider>
+        </AccessibilityProvider>,
+      );
+    };
+
+    it("names the user and the reaction of another user's reaction", async () => {
+      const { getByLabelText } = await renderAccessible('user2');
+      const item = getByLabelText('John Doe reacted with like');
+      expect(item.props.accessibilityHint).toBeUndefined();
+    });
+
+    it('hints that an own reaction can be removed', async () => {
+      const { getByLabelText } = await renderAccessible('user1');
+      const item = getByLabelText('You reacted with like');
+      expect(item.props.accessibilityHint).toBe('Double tap to remove');
+    });
   });
 });

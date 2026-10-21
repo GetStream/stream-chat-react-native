@@ -40,7 +40,10 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
     if (file.askToOpenSettings) {
       Alert.alert(
         t('common.cameraPermission.title', 'Allow camera access in device settings'),
-        t('common.cameraPermission.text', 'Device camera is used to take photos or videos.'),
+        t(
+          'channelDetails.editImageSheet.cameraPermission.text',
+          'The camera is used to take the channel image.',
+        ),
         [
           { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
           {
@@ -67,8 +70,8 @@ export const useEditChannelImage = (): UseEditChannelImageResult => {
       Alert.alert(
         t('common.galleryPermission.title', 'Allow access to your Gallery'),
         t(
-          'common.galleryPermission.text',
-          'Device gallery permissions is used to take photos or videos.',
+          'channelDetails.editImageSheet.galleryPermission.text',
+          'Gallery access is used to choose the channel image.',
         ),
         [
           { style: 'cancel', text: t('common.cancel.label', 'Cancel') },

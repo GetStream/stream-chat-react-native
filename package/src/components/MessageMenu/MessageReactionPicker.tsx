@@ -6,6 +6,7 @@ import { EmojiPickerList } from './EmojiPickerList';
 import { useMessageOwnReactions } from './hooks/useMessageOwnReactions';
 import { ReactionButton } from './ReactionButton';
 
+import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import {
@@ -147,6 +148,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   } = useTheme();
   const styles = useStyles();
   const own_capabilities = useOwnCapabilitiesContext();
+  const a11yLabel = useA11yLabel('messageMenu.reactionPicker.accessibilityLabel');
 
   const onSelectReaction = useStableCallback((type: string) => {
     NativeHandlers.triggerHaptic('impactLight');
@@ -162,7 +164,7 @@ export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
 
   return (
     <View
-      accessibilityLabel='Reaction Selector on long pressing message'
+      accessibilityLabel={a11yLabel ?? 'Reaction Selector on long pressing message'}
       accessibilityRole='menu'
       style={[styles.container, container]}
     >

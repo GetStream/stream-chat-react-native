@@ -158,9 +158,13 @@ export const de: TranslationDictionary = {
   'channelDetails.editChannel.name.placeholder': 'Kanalname',
   'channelDetails.editChannel.upload.accessibilityLabel': 'Kanalbild hochladen',
   'channelDetails.editChannel.upload.label': 'Hochladen',
+  'channelDetails.editImageSheet.cameraPermission.text':
+    'Die Kamera wird verwendet, um das Gruppenbild aufzunehmen.',
   'channelDetails.editImageSheet.chooseImage.label': 'Bild auswählen',
   'channelDetails.editImageSheet.close.accessibilityLabel':
     'Fenster zum Bearbeiten des Bildes schließen',
+  'channelDetails.editImageSheet.galleryPermission.text':
+    'Der Galeriezugriff wird verwendet, um das Gruppenbild auszuwählen.',
   'channelDetails.editImageSheet.resetPicture.label': 'Bild zurücksetzen',
   'channelDetails.editImageSheet.takePhoto.label': 'Foto aufnehmen',
   'channelDetails.editImageSheet.title': 'Gruppenbild bearbeiten',
@@ -222,15 +226,14 @@ export const de: TranslationDictionary = {
 
   // Shared labels reused across screens
   'common.anonymousUser.label': 'Anonym',
-  'common.cameraPermission.text':
-    'Die Kamera des Geräts wird verwendet, um Fotos oder Videos aufzunehmen.',
+  'common.cameraPermission.text': 'Die Kamera wird verwendet, um Fotos und Videos aufzunehmen.',
   'common.cameraPermission.title': 'Kamerazugriff in den Geräteeinstellungen erlauben',
   'common.cancel.label': 'Abbrechen',
   'common.close.accessibilityLabel': 'Schließen',
   'common.draft.label': 'Entwurf',
   'common.editMessageFailed.error': 'Anfrage zum Bearbeiten der Nachricht fehlgeschlagen',
   'common.galleryPermission.text':
-    'Die Galerie-Berechtigungen des Geräts werden verwendet, um Fotos oder Videos aufzunehmen.',
+    'Der Galeriezugriff wird verwendet, um Fotos und Videos zu teilen.',
   'common.galleryPermission.title': 'Zugriff auf deine Galerie erlauben',
   'common.linksDisabled.text': 'Das Senden von Links ist in dieser Unterhaltung nicht erlaubt',
   'common.linksDisabled.title': 'Links sind deaktiviert',
@@ -376,8 +379,12 @@ export const de: TranslationDictionary = {
 
   // Message action menu
   'messageMenu.actionList.accessibilityLabel': 'Nachrichtenaktionen',
+  'messageMenu.reactionPicker.accessibilityLabel': 'Reaktionsauswahl',
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Weitere Reaktionen öffnen',
   'messageMenu.userReactions.fetchFailed.error': 'Fehler beim Laden der Reaktionen',
+  'messageMenu.userReactions.item.accessibilityLabel': '{{user}} hat mit {{reaction}} reagiert',
+  'messageMenu.userReactions.ownItem.accessibilityLabel': 'Du hast mit {{reaction}} reagiert',
+  'messageMenu.userReactions.removeHint.accessibilityLabel': 'Zum Entfernen doppeltippen',
   'messageMenu.userReactions.tapToRemove.description': 'Zum Entfernen tippen',
   'messageMenu.userReactions.title_one': '{{count}} Reaktion',
   'messageMenu.userReactions.title_other': '{{count}} Reaktionen',

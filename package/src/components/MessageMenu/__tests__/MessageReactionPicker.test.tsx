@@ -3,6 +3,7 @@ import React from 'react';
 import { fireEvent, render, cleanup, waitFor } from '@testing-library/react-native';
 import type { StreamChat } from 'stream-chat';
 
+import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import {
   MessageContextValue,
   MessageProvider,
@@ -86,6 +87,39 @@ describe('MessageReactionPicker', () => {
       expect(getByLabelText('Reaction Selector on long pressing message')).toBeTruthy();
       expect(getAllByRole('button')).toHaveLength(mockSupportedReactions.length + 1);
     });
+  });
+
+  it('uses the translated label when accessibility is enabled', async () => {
+    const { getByLabelText, queryByLabelText } = render(
+      <Chat client={client}>
+        <AccessibilityProvider value={{ enabled: true }}>
+          <ThemeProvider theme={defaultTheme}>
+            <OwnCapabilitiesProvider value={{ sendReaction: true } as OwnCapabilitiesContextValue}>
+              <MessagesProvider
+                value={
+                  { supportedReactions: mockSupportedReactions } as unknown as MessagesContextValue
+                }
+              >
+                <MessageProvider
+                  value={
+                    {
+                      message: { own_reactions: [{ type: 'like' }] },
+                    } as unknown as MessageContextValue
+                  }
+                >
+                  <MessageReactionPicker {...defaultProps} />
+                </MessageProvider>
+              </MessagesProvider>
+            </OwnCapabilitiesProvider>
+          </ThemeProvider>
+        </AccessibilityProvider>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(getByLabelText('Reaction picker')).toBeTruthy();
+    });
+    expect(queryByLabelText('Reaction Selector on long pressing message')).toBeNull();
   });
 
   it('does not render when sendReaction capability is false', () => {

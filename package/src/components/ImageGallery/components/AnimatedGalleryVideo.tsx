@@ -160,7 +160,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   if (!shouldRender) {
     return (
       <View
-        accessibilityLabel='Empty View Image Gallery'
+        accessibilityLabel='Image Gallery Video Placeholder'
         style={[style, { transform: [{ scale: oneEighth }] }]}
       />
     );

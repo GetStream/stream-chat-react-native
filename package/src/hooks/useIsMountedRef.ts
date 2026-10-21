@@ -9,10 +9,10 @@ import { useEffect, useRef } from 'react';
  * const [dummyValue, setDummyValue] = useState(false);
  *
  * useEffect(() => {
- *  someAsyncOperation().then(() => {
- *    if (isMounted.current) setDummyValue(true);
- *  })
- * })
+ *   someAsyncOperation().then(() => {
+ *     if (isMounted.current) setDummyValue(true);
+ *   });
+ * }, []);
  * ```
  *
  * @returns A ref whose `current` is true until the component unmounts.

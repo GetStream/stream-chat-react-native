@@ -129,8 +129,10 @@ export type TranslationCatalog = {
   'channelDetails.editChannel.name.placeholder': 'Channel name';
   'channelDetails.editChannel.upload.accessibilityLabel': 'Upload channel image';
   'channelDetails.editChannel.upload.label': 'Upload';
+  'channelDetails.editImageSheet.cameraPermission.text': 'The camera is used to take the channel image.';
   'channelDetails.editImageSheet.chooseImage.label': 'Choose Image';
   'channelDetails.editImageSheet.close.accessibilityLabel': 'Close edit picture sheet';
+  'channelDetails.editImageSheet.galleryPermission.text': 'Gallery access is used to choose the channel image.';
   'channelDetails.editImageSheet.resetPicture.label': 'Reset Picture';
   'channelDetails.editImageSheet.takePhoto.label': 'Take Photo';
   'channelDetails.editImageSheet.title': 'Edit Group Picture';
@@ -181,13 +183,13 @@ export type TranslationCatalog = {
   'channelPreview.unreadCount.accessibilityLabel_one': '{{count}} unread message';
   'channelPreview.unreadCount.accessibilityLabel_other': '{{count}} unread messages';
   'common.anonymousUser.label': 'Anonymous';
-  'common.cameraPermission.text': 'Device camera is used to take photos or videos.';
+  'common.cameraPermission.text': 'The camera is used to take photos and videos.';
   'common.cameraPermission.title': 'Allow camera access in device settings';
   'common.cancel.label': 'Cancel';
   'common.close.accessibilityLabel': 'Close';
   'common.draft.label': 'Draft';
   'common.editMessageFailed.error': 'Edit message request failed';
-  'common.galleryPermission.text': 'Device gallery permissions is used to take photos or videos.';
+  'common.galleryPermission.text': 'Gallery access is used to share photos and videos.';
   'common.galleryPermission.title': 'Allow access to your Gallery';
   'common.linksDisabled.text': 'Sending links is not allowed in this conversation';
   'common.linksDisabled.title': 'Links are disabled';
@@ -311,8 +313,12 @@ export type TranslationCatalog = {
   'messageList.unreadMessages.label': 'Unread Messages';
   'messageList.unreadMessages.withCount.label': '{{count}} unread';
   'messageMenu.actionList.accessibilityLabel': 'Message actions';
+  'messageMenu.reactionPicker.accessibilityLabel': 'Reaction picker';
   'messageMenu.reactionPicker.moreReactions.accessibilityLabel': 'Open more reactions';
   'messageMenu.userReactions.fetchFailed.error': 'Error fetching reactions';
+  'messageMenu.userReactions.item.accessibilityLabel': '{{user}} reacted with {{reaction}}';
+  'messageMenu.userReactions.ownItem.accessibilityLabel': 'You reacted with {{reaction}}';
+  'messageMenu.userReactions.removeHint.accessibilityLabel': 'Double tap to remove';
   'messageMenu.userReactions.tapToRemove.description': 'Tap to remove';
   'messageMenu.userReactions.title_one': '{{count}} Reaction';
   'messageMenu.userReactions.title_other': '{{count}} Reactions';
@@ -498,7 +504,11 @@ export type BundledTranslationKey =
   | 'messageList.dismissUnread.accessibilityLabel'
   | 'messageList.scrollToBottom.accessibilityLabel'
   | 'messageMenu.actionList.accessibilityLabel'
+  | 'messageMenu.reactionPicker.accessibilityLabel'
   | 'messageMenu.reactionPicker.moreReactions.accessibilityLabel'
+  | 'messageMenu.userReactions.item.accessibilityLabel'
+  | 'messageMenu.userReactions.ownItem.accessibilityLabel'
+  | 'messageMenu.userReactions.removeHint.accessibilityLabel'
   | 'notifications.attachmentUploadFailed.error'
   | 'notifications.attachmentUploadFailed.withReason.error'
   | 'notifications.pollCreateFailed.error'
