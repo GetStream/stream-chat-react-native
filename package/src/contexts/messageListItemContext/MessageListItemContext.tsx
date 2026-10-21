@@ -46,7 +46,7 @@ export const useMessageListItemContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useMessageListItemContext hook was called outside of the MessageListItemContext provider. Make sure you have configured MessageListItem component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list',
+      'The useMessageListItemContext hook was called outside of the MessageListItemContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/react-native/ui-components/message-list/',
     );
   }
 

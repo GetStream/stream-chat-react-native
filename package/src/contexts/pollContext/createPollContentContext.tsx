@@ -42,7 +42,7 @@ export const useCreatePollContentContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useCreatePollContentContext hook was called outside of the CreatePollContentContext provider. Make sure you have configured the CreatePollContent component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
+      'The useCreatePollContentContext hook was called outside of the CreatePollContentContext provider. Make sure you have configured the CreatePoll component correctly - https://getstream.io/chat/docs/sdk/react-native/ui-components/create-poll/',
     );
   }
 
