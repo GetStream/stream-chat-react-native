@@ -98,6 +98,11 @@ the base branch, so each PR fills its own: its first run builds cold, and later 
   hook timeout) and ~15s locally.
 - CI boots the simulator at the start of the job and pins it with `DETOX_IOS_UDID` (`.detoxrc.js`), so the boot
   overlaps with setup instead of delaying the first test by ~7 min.
+- A freshly booted CI emulator can show "Quickstep isn't responding" (a launcher ANR). The dialog takes window focus, and
+  every Espresso action then fails with "Waited for the root of the view hierarchy to have window focus". The
+  `test_e2e` lane hides error dialogs and waits up to 60s for the emulator to settle, and `StreamTestCase` dismisses
+  any ANR dialog before each Android launch (`support/AndroidSystemDialogs.ts`). Read the focus from
+  `dumpsys window`: `dumpsys window windows` no longer prints `mCurrentFocus`.
 - `detox test --reuse` does not reinstall the app. After rebuilding, run without it, or you test the old binary.
 - Yarn's `enableScripts: false` skips Detox's postinstall; run `yarn detox build-framework-cache` once on a new machine.
 - The SDK's shared native sources are synced into `stream-chat-react-native` and gitignored; `yarn e2e:build` and

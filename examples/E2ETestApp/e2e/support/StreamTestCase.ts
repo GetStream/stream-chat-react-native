@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, expect as jestExpect } from '@jest/globals';
 
+import { dismissAnrDialog } from './AndroidSystemDialogs';
+
 import { MockServer } from '../mock-server/MockServer';
 import { BackendRobot, ParticipantRobot, UserRobot } from '../robots';
 
@@ -32,6 +34,9 @@ export const setUpStreamTestCase = (): StreamTestCase => {
 
   beforeEach(async () => {
     await testCase.mockServer.start(currentTestName());
+    if (device.getPlatform() === 'android') {
+      dismissAnrDialog();
+    }
     await device.launchApp({
       launchArgs: {
         MOCK_SERVER_URL: testCase.mockServer.appUrl,

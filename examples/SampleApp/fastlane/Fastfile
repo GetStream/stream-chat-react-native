@@ -255,6 +255,15 @@ lane :e2e_pod_install do
   end
 end
 
+# A freshly booted CI emulator is slow enough for the launcher to hit an ANR ("Quickstep isn't
+# responding"). The dialog takes window focus, and Espresso then fails every test waiting for it.
+private_lane :prepare_android_emulator do
+  sh('adb shell settings put global hide_error_dialogs 1')
+  # Gives the post-boot CPU load a minute to settle, dismissing ANR dialogs meanwhile. Capped: the
+  # load can stay above the threshold for minutes, and each test dismisses ANR dialogs too.
+  wait_android_emu_idle(timeout: 60)
+end
+
 desc 'Runs the Detox e2e tests. Options: platform (ios|android), configuration (release|debug), ' \
      'device (android: emu|att), skip_build, test (a test file or -t filter), local_server, mock_server_branch'
 lane :test_e2e do |options|
@@ -265,6 +274,8 @@ lane :test_e2e do |options|
   detox_config = "#{platform}.#{device}.#{options[:configuration] || 'release'}"
 
   start_mock_server(local_server: options[:local_server], branch: options[:mock_server_branch])
+  # An attached emulator is already booted; Detox boots `emu` devices itself.
+  prepare_android_emulator if platform == 'android' && device == 'att'
 
   begin
     Dir.chdir(e2e_app_path) do
