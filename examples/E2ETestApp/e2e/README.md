@@ -70,7 +70,7 @@ only when the PR touches those sources, or when the last change to them hasn't p
 job to require in branch protection: it passes when the e2e jobs pass or are skipped as not required.
 
 iOS runs on `macos-15` (Xcode 26.2, iPhone 17 Pro, `ios.sim.release`). Android runs on `ubuntu-latest` with KVM and an
-API 34 x86_64 emulator (`android.att.release`). Both call `fastlane test_e2e skip_build:true`, which on CI adds
+API 36 x86_64 emulator (`android.att.release`). Both call `fastlane test_e2e skip_build:true`, which on CI adds
 `--retries 2 --headless` and keeps failure logs and screenshots in `artifacts/`. Those and the mock server logs are
 uploaded when a job fails.
 
