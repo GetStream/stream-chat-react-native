@@ -1,6 +1,6 @@
 {
   "name": "sampleapp",
-  "version": "4.16.0",
+  "version": "4.16.1",
   "private": true,
   "repository": {
     "type": "git",
@@ -51,7 +51,7 @@
     "react": "19.3.0",
     "react-native": "0.88.0",
     "react-native-blob-util": "^0.24.12",
-    "react-native-gesture-handler": "^3.3.0",
+    "react-native-gesture-handler": "^3.4.0",
     "react-native-haptic-feedback": "^3.0.0",
     "react-native-image-picker": "^8.2.1",
     "react-native-maps": "^1.29.11",

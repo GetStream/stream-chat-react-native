@@ -1,5 +1,15 @@
 # Change Log
 
+## [9.10.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.0...v9.10.1) (2026-10-19)
+
+### Bug Fixes
+
+* differentiate host layers by id and self register ([#3862](https://github.com/GetStream/stream-chat-react-native/issues/3862)) ([88c8e53](https://github.com/GetStream/stream-chat-react-native/commit/88c8e53f6f2de1028bad2c3da7c4c316760e4c53))
+
+### Refactors
+
+* rn 0.88 and expo 58 upgrade ([#3864](https://github.com/GetStream/stream-chat-react-native/issues/3864)) ([42662cd](https://github.com/GetStream/stream-chat-react-native/commit/42662cdb1fce74776a534204e75ca36b5d9b7360))
+
 ## [9.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.9.4...v9.10.0) (2026-10-14)
 
 ### Features
