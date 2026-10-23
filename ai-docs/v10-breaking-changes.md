@@ -7,8 +7,7 @@ update. Each entry says what changed and how to migrate in one line, and links t
 - **`§…`** → [`ai-migration-v9-to-v10.md`](./ai-migration-v9-to-v10.md), the agent migration ledger (Before/After code,
   detection greps). `§R.x` sections were added by the audit that produced this file.
 - **i18n** → [`i18n-v10-migration.md`](./i18n-v10-migration.md) and [`i18n-v10-key-map.json`](./i18n-v10-key-map.json).
-- **LLC** → `stream-chat` v10's own list: `stream-chat-js` `ai-docs/v10-breaking-changes.md` (branch
-  `claude/sdk-v10-breaking-changes-f64baf`) and the `v9-to-v10-migration-guide-*.md` files on `release-v10`.
+- **LLC** → `stream-chat` v10's own list: `stream-chat-js` `ai-docs/v10-breaking-changes.md` on `release-v10`.
 - **#NNNN** → the `GetStream/stream-chat-react-native` pull request that made the change.
 
 Docs impact (which getstream.io pages change) is in [`v10-docs-impact.md`](./v10-docs-impact.md).
@@ -471,7 +470,7 @@ apps' own code.
 - Message storage moved off `channel.state` (`messages`, `latestMessages`, `threads`, `pinnedMessages`,
   `isUpToDate`, `findMessage`, `addMessageSorted`, `loadMessageIntoState`, …) → `channel.messagePaginator`,
   `channel.pinnedMessagesPaginator`, `client.messageStore`, `client.threads.get(id)`.
-- `channel.lastMessage()` → `channel.messagePaginator.lastMessage`.
+- `channel.lastMessage()` → `channel.messagePaginator.latestMessage ?? undefined`.
 - `channel.state.*Store` handles (pre-release) → `channel.state`; `mutedUsersStore` → `client.mutedUsersStore`. — §K.1 ·
   §K.2
 - `channel.disconnected` → `channel.pendingDisposal`; `<Channel>` keeps rendering a deleted channel. — §K.8 · P.15

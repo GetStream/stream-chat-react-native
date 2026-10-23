@@ -236,8 +236,8 @@ describe('Channel', () => {
       }),
     );
 
-  it('should call the channel query method to load more messages', async () => {
-    const channelQuerySpy = jest.spyOn(channel, 'query');
+  it('should request the channel state to load more messages', async () => {
+    const channelQuerySpy = jest.spyOn(channel, 'requestChannelState');
 
     const newMessages = [generateMessage()];
 
@@ -1008,7 +1008,7 @@ describe('Channel initial load useEffect', () => {
     // the 10 originals + 10 failed remain.
     await waitFor(() => {
       expect(reloadSpy).toHaveBeenCalled();
-      expect(channel.messagePaginator.headItems.length).toBe(20);
+      expect(channel.messagePaginator.anchoredHeadItems.length).toBe(20);
     });
   });
 

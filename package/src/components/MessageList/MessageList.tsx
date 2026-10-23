@@ -442,7 +442,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     }
 
     if (paginator.hasMoreHead) {
-      latestNonCurrentMessageBeforeUpdateRef.current = paginator.lastMessage ?? undefined;
+      latestNonCurrentMessageBeforeUpdateRef.current = paginator.latestMessage ?? undefined;
       setAutoscrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;

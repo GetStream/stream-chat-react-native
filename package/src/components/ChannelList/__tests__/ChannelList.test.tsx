@@ -62,7 +62,7 @@ const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => {
   return (
     <View accessibilityLabel='list-item' testID={channel.id}>
       <Text>{name}</Text>
-      <Text>{channel.messagePaginator.headItems[0]?.text}</Text>
+      <Text>{channel.messagePaginator.latestMessage?.text}</Text>
     </View>
   );
 };
@@ -513,7 +513,7 @@ describe('ChannelList', () => {
     describe('message.new', () => {
       // The message must carry the target channel's `cid`: v10's `MessageIntervalPaginator` filters
       // ingested messages by `cid` (`buildMatchFilters`), so a message without one is dropped and never
-      // reaches the channel's `messagePaginator.headItems` that the preview reads.
+      // reaches the channel's `messagePaginator.anchoredHeadItems` that the preview reads.
       const sendNewMessageOnChannel3 = () => {
         const newMessage = generateMessage({
           cid: testChannel3.channel.cid,

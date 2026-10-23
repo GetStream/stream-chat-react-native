@@ -1078,6 +1078,8 @@ describe('MessageList pagination', () => {
       ),
     });
     channel.messagePaginator.state.partialNext({
+      // an older window than the newest messages, so "go to latest" has to jump
+      hasMoreHead: true,
       items: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
     });
 

@@ -263,7 +263,7 @@ means changed. Details in the linked section.
 | `useMessageContext().members` | `useStateStore(channel.state, (s) => ({ members: s.members }))` | §4 |
 | `<ChannelList options={{ offset, limit }}>` | the `ChannelPaginator` owns paging: `requestOptions` takes neither; page size is `paginatorOptions.pageSize` | §R.6 |
 | `<ChannelList filters={{ myField: x }}>` | `new ChannelPaginator({ client, filters: { 'custom.myField': x } })` | §R.6 |
-| `channel.state.messages` / `channel.lastMessage()` | `channel.messagePaginator.state` (`items`) / `channel.messagePaginator.lastMessage` | §R.7 |
+| `channel.state.messages` / `channel.lastMessage()` | `channel.messagePaginator.state` (`items`) / `channel.messagePaginator.latestMessage` | §R.7 |
 | `client.activeChannels[cid]` | `client.channelManager.get(cid)` | §R.7 |
 | `client.threads.state` `threads` / `client.threads.loadNextPage()` | `client.threads.paginator.state` `items` / `client.threads.paginator.toTail()` | §R.7 |
 | `client.addDevice(token, provider)` / `getDevices()` / `removeDevice(id)` | `client.createDevice({ id: token, push_provider })` / `listDevices()` / `deleteDevice({ id })` | §R.8 |
@@ -3138,8 +3138,8 @@ v9's `<ChannelList>` props.
 v9 → v10:
 
 - `channel.state.messages` → `useStateStore(channel.messagePaginator.state, (s) => ({ items: s.items }))`.
-- `channel.state.latestMessages` / `channel.lastMessage()` → `channel.messagePaginator.lastMessage` (reactive through
-  `messagePaginator.aggregateState`).
+- `channel.state.latestMessages` / `channel.lastMessage()` → `channel.messagePaginator.latestMessage` (reactive through
+  `messagePaginator.aggregateState`; `null` when there is none).
 - `channel.state.threads[id]` → `client.threads.get(id)?.messagePaginator`.
 - `channel.state.findMessage(id)` → `channel.messagePaginator.getItem(id)`, or `client.messageStore` for any loaded
   message.
@@ -3163,9 +3163,10 @@ v9 → v10:
 
 Two request behaviours:
 
-- **`channel.query(…)` no longer updates the message list.** It returns the page; only the latest-page paths
-  (`watch()`, `create()`) seed the list. Page with `channel.messagePaginator.toTail()` / `toHead()` instead of
-  `channel.query({ messages: { id_lt } })`.
+- **`channel.query(…)` no longer updates the message list.** It returns the page; only `watch()` places the page it
+  fetches (`create()` places no messages). Page with `channel.messagePaginator.toTail()` / `toHead()` instead of
+  `channel.query({ messages: { id_lt } })`. `watch()` and the paginator's own page requests do not go through
+  `channel.query()`, so a spy on or an override of it does not see them; listen to `channels.queried` instead.
 - **A request with `watch` or `presence` waits for a WebSocket connection id** — `channel.watch()`, `queryChannels*`,
   `queryUsers({ payload: { presence } })`. v9 silently downgraded it to a non-watching request. With no socket open
   or opening it throws `No connection id is available…`, so call `connectUser()` (or `openConnection()` after a

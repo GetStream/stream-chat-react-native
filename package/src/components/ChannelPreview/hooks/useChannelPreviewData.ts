@@ -18,7 +18,7 @@ export type LastMessageType = LocalMessage | MessageResponse;
 // The latest message comes from the paginator's `aggregateState`, which stays current when a new
 // message lands in the head interval while an older window is active.
 const lastMessageSelector = (state: MessagePaginatorAggregateState) => ({
-  lastMessage: state.lastMessage ?? undefined,
+  lastMessage: state.latestMessage ?? undefined,
 });
 
 export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
