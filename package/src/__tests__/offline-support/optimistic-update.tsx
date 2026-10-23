@@ -380,7 +380,7 @@ export const OptimisticUpdates = () => {
       // is intentionally NOT queued. Force the offline case. See the delete-message variant for detail.
       it('pending task should exist if sendReaction request fails', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.messagePaginator.headItems[0];
+        const targetMessage = channel.messagePaginator.anchoredHeadItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -415,7 +415,7 @@ export const OptimisticUpdates = () => {
 
       it('pending task should be cleared if sendReaction request is successful', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.messagePaginator.headItems[0];
+        const targetMessage = channel.messagePaginator.anchoredHeadItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -516,7 +516,7 @@ export const OptimisticUpdates = () => {
       // is intentionally NOT queued. Force the offline case. See the delete-message variant for detail.
       it('pending task should exist if deleteReaction request fails', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.messagePaginator.headItems[0];
+        const targetMessage = channel.messagePaginator.anchoredHeadItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -549,7 +549,7 @@ export const OptimisticUpdates = () => {
 
       it('pending task should be cleared if deleteReaction request is successful', async () => {
         const reaction = generateReaction();
-        const targetMessage = channel.messagePaginator.headItems[0];
+        const targetMessage = channel.messagePaginator.anchoredHeadItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -576,7 +576,7 @@ export const OptimisticUpdates = () => {
 
     describe('edit message', () => {
       it('should keep the optimistic edit in state and DB if the LLC queues the edit', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
         const editedText = 'edited while offline';
 
         // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
@@ -666,7 +666,7 @@ export const OptimisticUpdates = () => {
       });
 
       it('should keep the optimistic edit if the request fails', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
         const editedText = 'should stay optimistic';
 
         // Registered declaratively — the `<Channel doUpdateMessageRequest>` prop is gone. The LLC
@@ -738,7 +738,7 @@ export const OptimisticUpdates = () => {
         // failed message carries no message_text_updated_at. generateMessage always sets one, so strip
         // it here; the test then verifies the optimistic edit path does not add one back.
         const { message_text_updated_at: _stripped, ...headItem } = channel.messagePaginator
-          .headItems[0] as LocalMessage & { message_text_updated_at?: Date };
+          .anchoredHeadItems[0] as LocalMessage & { message_text_updated_at?: Date };
         const message = headItem as LocalMessage;
         const optimisticStateSpy = jest.fn();
 
@@ -795,7 +795,7 @@ export const OptimisticUpdates = () => {
       });
 
       it('should keep the optimistic edit for attachment updates without auto-queueing', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
         const editedText = 'edited attachment message';
         const localUri = 'file://edited-attachment.png';
         const editedAttachments = [
@@ -899,7 +899,7 @@ export const OptimisticUpdates = () => {
     // failing until the default optimistic offline update/delete lands — the red is the signal.
     describe('default offline update/delete (no custom handler)', () => {
       it('should optimistically apply + persist an offline edit without a custom doUpdateMessageRequest', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
         const editedText = 'edited offline via default path';
 
         render(
@@ -953,7 +953,7 @@ export const OptimisticUpdates = () => {
       });
 
       it('should optimistically apply + persist an offline delete without a custom doDeleteMessageRequest', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
 
         render(
           <Chat client={chatClient} enableOfflineSupport>
@@ -1121,7 +1121,7 @@ export const OptimisticUpdates = () => {
 
     describe('optimistic edit without offline support', () => {
       it('keeps the optimistic edit AND surfaces the failure when there is no offline DB', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
         const editedText = 'edited with no offline support';
 
         chatClient.config.set({
@@ -1180,7 +1180,7 @@ export const OptimisticUpdates = () => {
       jest.setTimeout(20_000);
 
       it('pending task should be executed after connection is recovered', async () => {
-        const message = channel.messagePaginator.headItems[0];
+        const message = channel.messagePaginator.anchoredHeadItems[0];
         const reaction = generateReaction();
 
         render(
@@ -1291,7 +1291,7 @@ export const OptimisticUpdates = () => {
       it('should not re-add a failed local message after reconnect when its pending send task was resolved', async () => {
         const localMessage = generateMessage({
           // The channel paginator only ingests messages whose cid matches (matchesFilter), so the
-          // optimistic message must carry the channel cid to appear in the paginator/headItems.
+          // optimistic message must carry the channel cid to appear in the paginator/anchoredHeadItems.
           cid: channel.cid,
           status: MessageStatusTypes.SENDING,
           text: 'offline resend',
@@ -1344,7 +1344,9 @@ export const OptimisticUpdates = () => {
         });
 
         expect(
-          channel.messagePaginator.headItems.some((message) => message.id === localMessage.id),
+          channel.messagePaginator.anchoredHeadItems.some(
+            (message) => message.id === localMessage.id,
+          ),
         ).toBe(true);
 
         jest
@@ -1380,7 +1382,7 @@ export const OptimisticUpdates = () => {
         });
 
         await waitFor(() => {
-          const matchingMessages = channel.messagePaginator.headItems.filter(
+          const matchingMessages = channel.messagePaginator.anchoredHeadItems.filter(
             (message) => message.text === localMessage.text,
           );
 
@@ -1399,7 +1401,7 @@ export const OptimisticUpdates = () => {
       it('should re-add a failed local message after reconnect when fresh state still does not contain it', async () => {
         const localMessage = generateMessage({
           // The channel paginator only ingests messages whose cid matches (matchesFilter), so the
-          // optimistic message must carry the channel cid to appear in the paginator/headItems.
+          // optimistic message must carry the channel cid to appear in the paginator/anchoredHeadItems.
           cid: channel.cid,
           status: MessageStatusTypes.SENDING,
           text: 'offline resend unresolved',
@@ -1476,7 +1478,7 @@ export const OptimisticUpdates = () => {
         });
 
         await waitFor(() => {
-          const matchingMessages = channel.messagePaginator.headItems.filter(
+          const matchingMessages = channel.messagePaginator.anchoredHeadItems.filter(
             (message) => message.id === localMessage.id,
           );
 

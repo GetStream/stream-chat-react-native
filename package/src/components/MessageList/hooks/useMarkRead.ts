@@ -59,12 +59,12 @@ export const useMarkRead = (channel: Channel) => {
     // with unreads keeps its unread separator until the user catches up.
     const { updateChannelUnreadState = true } = options ?? {};
     if (updateChannelUnreadState) {
-      const { lastMessage, lastMessageAt, unreadStateSnapshot } = channel.messagePaginator;
+      const { latestMessage, latestMessageAt, unreadStateSnapshot } = channel.messagePaginator;
       const previous = unreadStateSnapshot.getLatestValue();
       unreadStateSnapshot.next({
         firstUnreadMessageId: null,
-        lastReadAt: lastMessageAt ?? nowNs(),
-        lastReadMessageId: lastMessage?.id ?? previous.lastReadMessageId,
+        lastReadAt: latestMessageAt ?? nowNs(),
+        lastReadMessageId: latestMessage?.id ?? previous.lastReadMessageId,
         unreadCount: 0,
       });
     }

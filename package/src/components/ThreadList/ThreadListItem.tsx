@@ -50,7 +50,7 @@ const attachmentManagerStateSelector = (state: AttachmentManagerState) => ({
 
 // The newest reply, also when the loaded page of replies is not the newest one.
 const lastReplySelector = (state: MessagePaginatorAggregateState) => ({
-  lastReply: state.lastMessage ?? undefined,
+  lastReply: state.latestMessage ?? undefined,
 });
 
 export const ThreadListItemComponent = () => {

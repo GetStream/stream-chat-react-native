@@ -83,7 +83,7 @@ import { BetterSqlite } from '../../test-utils/BetterSqlite';
 const ChannelPreviewComponent = ({ channel }: { channel: ChannelLLC }) => (
   <View accessibilityLabel='list-item' testID={channel.cid}>
     <Text>{channel.data?.custom?.name}</Text>
-    <Text>{channel.messagePaginator?.headItems?.[0]?.text}</Text>
+    <Text>{channel.messagePaginator?.anchoredHeadItems?.[0]?.text}</Text>
   </View>
 );
 
@@ -796,7 +796,8 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.headItems.length,
+          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.anchoredHeadItems
+            .length,
         );
       });
     });
@@ -831,7 +832,8 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeTruthy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.headItems.length,
+          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.anchoredHeadItems
+            .length,
         );
       });
 
@@ -858,7 +860,8 @@ export const Generic = () => {
         expect(matchingRows.length).toBe(1);
         expect(matchingRows[0].hidden).toBeFalsy();
         expect(matchingMessagesRows.length).toBe(
-          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.headItems.length,
+          chatClient.channelManager.get(hiddenChannel.cid)?.messagePaginator.anchoredHeadItems
+            .length,
         );
       });
     });
