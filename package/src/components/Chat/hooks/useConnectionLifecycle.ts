@@ -9,9 +9,9 @@ import type { NetworkStatusReporter, StreamChat } from 'stream-chat';
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 
 /**
- * Installs the NetInfo network status reporter on the client and closes the WebSocket while the app
- * is in the background, reopening it in the foreground (push notifications are only delivered while
- * no socket is active).
+ * Installs the NetInfo network status reporter on the client, unless the app registered one, and
+ * closes the WebSocket while the app is in the background, reopening it in the foreground (push
+ * notifications are only delivered while no socket is active).
  *
  * Read the results with `useNetworkConnectionState()` and `useWSConnectionState()`.
  *
@@ -55,6 +55,11 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
       return;
     }
 
+    // a reporter the app registered, through `client.config` or the client's constructor wins
+    if (client.config.getConfig('client')?.networkConnection?.statusReporter) {
+      return;
+    }
+
     // Set through the client config so `client.config.get('client')` shows the installed reporter.
     // Required on React Native: the client's fallback mirrors its own WebSocket and cannot report
     // the network returning before the socket notices.
@@ -74,7 +79,8 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
 };
 
 /**
- * Subscribes to NetInfo and reports every change to the client. `<Chat>` installs it in an effect.
+ * Subscribes to NetInfo and reports every change to the client. `<Chat>` installs it in an effect,
+ * unless a reporter is registered in `client.config`.
  *
  * When you build the client yourself, install it at construction instead:
  *

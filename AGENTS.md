@@ -142,9 +142,12 @@ knows it is not rendering a thread. Resolve the list's data with `useMessagePagi
 
 `<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider`.
 
-**Reconnect recovery is owned by the JS client, not this SDK.** `client.connectionRecovery` re-runs
-each channel list's own first-page query and reloads whichever channels are `active` (`<Channel>`
-marks its channel active on mount), then dispatches `connection.recovered`. So do not add a
+**Reconnect recovery is owned by the JS client, not this SDK.** `client.connectionRecovery` re-queries
+every page each registered channel list has loaded, through the list's own query (up to 150 channels,
+`ChannelPaginator.recoverLoadedItems()`), drops the loaded channels no page returned, and reloads
+whichever channels are `active` (`<Channel>` marks its channel active on mount), then dispatches
+`connection.recovered`. `ChannelList`'s pull-to-refresh is separate and still re-queries only the first
+page. So do not add a
 `connection.changed` listener that re-queries a list or re-watches a channel — that duplicates it.
 Recovery is on by default and configured declaratively
 (`client.config.set({ client: { connectionRecovery: { enabled: false } } })` turns it off); the old
