@@ -179,4 +179,25 @@ describe('ThreadList loading states', () => {
     await waitFor(() => expect(rows()).toHaveLength(2));
     expect(screen.queryByText("Couldn't load new threads. Tap to retry")).toBeNull();
   });
+
+  it('keeps the new threads count when a different thread query failed', async () => {
+    jest
+      .spyOn(chatClient, 'queryThreadsAndHydrate')
+      .mockResolvedValueOnce({ next: undefined, threads: [makeThread()] });
+    render(
+      <Chat client={chatClient}>
+        <ThreadList isFocused />
+      </Chat>,
+    );
+    await waitFor(() => expect(rows()).toHaveLength(1));
+
+    // A failed next page, for example: the paginator records it the same way as a failed reload.
+    act(() => {
+      chatClient.threads.paginator.state.partialNext({ lastQueryError: new Error('offline') });
+      chatClient.threads.state.partialNext({ unseenThreadIds: ['a'] });
+    });
+
+    await waitFor(() => expect(screen.getByText('1 new thread')).toBeTruthy());
+    expect(screen.queryByText("Couldn't load new threads. Tap to retry")).toBeNull();
+  });
 });

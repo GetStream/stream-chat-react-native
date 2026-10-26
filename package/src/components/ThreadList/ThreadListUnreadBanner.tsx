@@ -11,13 +11,15 @@ import { primitives } from '../../theme';
 const selector = (nextValue: ThreadManagerState) =>
   ({ unseenThreadIds: nextValue.unseenThreadIds }) as const;
 
-// The paginator records a failed reload and clears it on the next successful query.
+// The paginator records a failed query and clears it on the next successful one.
 const lastQueryErrorSelector = (nextValue: { lastQueryError?: Error }) => ({
   lastQueryError: nextValue.lastQueryError,
 });
 
 export const ThreadListUnreadBanner = () => {
+  // we need the two extra states so we can tell the client's states apart
   const [loading, setLoading] = useState(false);
+  const [reloadFailed, setReloadFailed] = useState(false);
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
@@ -48,8 +50,10 @@ export const ThreadListUnreadBanner = () => {
     setLoading(true);
     try {
       await client.threads.reload();
+      setReloadFailed(!!client.threads.paginator.lastQueryError);
     } catch {
       // Only with the paginator's `throwErrors`; the error is already in its state.
+      setReloadFailed(true);
     } finally {
       setLoading(false);
     }
@@ -64,7 +68,7 @@ export const ThreadListUnreadBanner = () => {
     );
   }
 
-  if (lastQueryError) {
+  if (reloadFailed && lastQueryError) {
     return (
       <Pressable onPress={handlePress} style={pressableStyle}>
         <icons.ExclamationCircle stroke={semantics.textSecondary} height={20} width={20} />
