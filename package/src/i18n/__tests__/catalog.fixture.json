@@ -158,6 +158,7 @@
   "channelPreview.deliveryStatus.read.accessibilityLabel": "Read, sent by you",
   "channelPreview.deliveryStatus.sent.accessibilityLabel": "Sent by you",
   "channelPreview.displayName.others.label": "and {{ count }} others",
+  "channelPreview.doubleTapToOpen.accessibilityLabel": "Double tap to open",
   "channelPreview.lastMessage.accessibilityLabel": "Last message {{date}}",
   "channelPreview.messageFailed.error": "Message failed to send",
   "channelPreview.muted.accessibilityLabel": "Muted",

@@ -169,6 +169,7 @@ export type TranslationCatalog = {
   'channelPreview.deliveryStatus.read.accessibilityLabel': 'Read, sent by you';
   'channelPreview.deliveryStatus.sent.accessibilityLabel': 'Sent by you';
   'channelPreview.displayName.others.label': 'and {{ count }} others';
+  'channelPreview.doubleTapToOpen.accessibilityLabel': 'Double tap to open';
   'channelPreview.lastMessage.accessibilityLabel': 'Last message {{date}}';
   'channelPreview.messageFailed.error': 'Message failed to send';
   'channelPreview.muted.accessibilityLabel': 'Muted';
@@ -469,6 +470,7 @@ export type BundledTranslationKey =
   | 'channelPreview.deliveryStatus.delivered.accessibilityLabel'
   | 'channelPreview.deliveryStatus.read.accessibilityLabel'
   | 'channelPreview.deliveryStatus.sent.accessibilityLabel'
+  | 'channelPreview.doubleTapToOpen.accessibilityLabel'
   | 'channelPreview.lastMessage.accessibilityLabel'
   | 'channelPreview.muted.accessibilityLabel'
   | 'channelPreview.pinned.accessibilityLabel'

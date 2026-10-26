@@ -4,6 +4,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import truncate from 'lodash/truncate';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import type { TranslationDictionary } from '../../../i18n/types';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -11,6 +13,7 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreviewView } from '../ChannelPreviewView';
 
@@ -54,6 +57,43 @@ describe('ChannelPreviewView', () => {
     await waitFor(() => {
       expect(onSelect).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it("takes its accessibility hint from its own key, not the gallery's", async () => {
+    await initializeChannel(generateChannelResponse());
+    const i18nInstance = new Streami18n({ logger: () => {} });
+    i18nInstance.registerTranslation('en', {
+      'attachment.gallery.doubleTapToOpen.accessibilityLabel': 'Double tap to view the photo',
+    } as TranslationDictionary);
+
+    const { rerender } = render(
+      <OverlayProvider accessibility={{ enabled: true }}>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <ChannelPreviewView channel={channel as ChannelType} onSelect={jest.fn()} />
+        </Chat>
+      </OverlayProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId('channel-preview-button').props.accessibilityHint).toBe(
+        'Double tap to open',
+      ),
+    );
+
+    i18nInstance.registerTranslation('en', {
+      'channelPreview.doubleTapToOpen.accessibilityLabel': 'Double tap to open the channel',
+    } as TranslationDictionary);
+    rerender(
+      <OverlayProvider accessibility={{ enabled: true }}>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <ChannelPreviewView channel={channel as ChannelType} onSelect={jest.fn()} />
+        </Chat>
+      </OverlayProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId('channel-preview-button').props.accessibilityHint).toBe(
+        'Double tap to open the channel',
+      ),
+    );
   });
 
   it('should render name of channel', async () => {

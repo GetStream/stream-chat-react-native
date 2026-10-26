@@ -1,5 +1,5 @@
 {
-  "$comment": "v9 -> v10 translation key map for stream-chat-react-native. The left-hand side is the old key, which was the English copy itself; the right-hand side is the stable dotted key that replaces it. `plural` entries live in the catalog as <key>_one / <key>_other, while call sites use the bare key and pass `count`. Keys not listed here have no v10 equivalent -- either they were dead in v9, or the component/notification that rendered them is gone; see the \"Removed keys\" table in i18n-v10-migration.md. Generated keys and their English copy: `yarn i18n:export`.",
+  "$comment": "v9 -> v10 translation key map for stream-chat-react-native. The left-hand side is the old key, which was the English copy itself; the right-hand side is the stable dotted key that replaces it. `plural` entries live in the catalog as <key>_one / <key>_other, while call sites use the bare key and pass `count`. An entry with `alsoKeys` was one v9 key that v10 split into several: apply the old translation to `key` and to each of `alsoKeys`. Keys not listed here have no v10 equivalent -- either they were dead in v9, or the component/notification that rendered them is gone; see the \"Removed keys\" table in i18n-v10-migration.md. Generated keys and their English copy: `yarn i18n:export`.",
   "count": 389,
   "keys": {
     "+{{count}}": {
@@ -1429,6 +1429,7 @@
     },
     "a11y/Double tap to open": {
       "key": "attachment.gallery.doubleTapToOpen.accessibilityLabel",
+      "alsoKeys": ["channelPreview.doubleTapToOpen.accessibilityLabel"],
       "prose": true,
       "plural": false
     },
