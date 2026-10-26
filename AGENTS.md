@@ -357,6 +357,8 @@ Closes #123
 
 Follow `PULL_REQUEST_TEMPLATE.md`. Keep PRs small and focused.
 
+**Linear ticket required.** Before opening a PR, find the Linear ticket for the work (or create one in the `RN` team) and put its ID in the PR title or PR body, e.g. `Ticket: https://linear.app/stream/issue/RN-123`. A Claude Code PreToolUse hook (`.claude/hooks/require-linear-ticket.sh`) blocks `gh pr create` and MCP PR-creation tools unless an `RN-…` ID appears in the PR title or PR body. The branch name does not count. If `LINEAR_API_KEY` is set, it also checks that the ticket exists.
+
 - [ ] `yarn lint-fix` passed
 - [ ] `yarn test:unit` passed
 - [ ] `cd package && yarn test:typecheck` passed
