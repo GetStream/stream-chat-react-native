@@ -6570,7 +6570,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.0-rc.24"
+    stream-chat: "npm:^10.0.0-rc.25"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -10276,7 +10276,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.0-rc.24"
+    stream-chat: "npm:^10.0.0-rc.25"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -17468,7 +17468,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.0-rc.24"
+    stream-chat: "npm:^10.0.0-rc.25"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18233,7 +18233,7 @@ __metadata:
     react-syntax-highlighter: "npm:^16.1.0"
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0-rc.24"
+    stream-chat: "npm:^10.0.0-rc.25"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
@@ -18321,9 +18321,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.0-rc.24":
-  version: 10.0.0-rc.24
-  resolution: "stream-chat@npm:10.0.0-rc.24"
+"stream-chat@npm:^10.0.0-rc.25":
+  version: 10.0.0-rc.25
+  resolution: "stream-chat@npm:10.0.0-rc.25"
   dependencies:
     "@stream-io/logger": "npm:^2.0.0"
     "@stream-io/state-store": "npm:^1.1.6"
@@ -18334,7 +18334,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/111dd28f50b4a331d1faccdc34460d49fe11987f9230984d6c9de0fab0fbbb7972a9afc4c1dfb7296aff46ca5f345a74fefa19ba68fa78df7470f6f0bfbd46a4
+  checksum: 10c0/cb8a316988d73c00347c9a98047246ac05cbedcba28560afaa6358b6e022b84350a51bb80a73bf3376ff68a91fffe2d203414831b342200cde831972ea027d11
   languageName: node
   linkType: hard
 

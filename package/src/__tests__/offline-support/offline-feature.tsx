@@ -386,6 +386,14 @@ export const Generic = () => {
     });
 
     it('should store filter-sort query and cids on ChannelList in channelQueries table', async () => {
+      // A server returns the list in `sort` order, here by each channel's latest message, ascending.
+      // The generated messages have random times, so give them ordered ones: the reconnect below
+      // re-queries the list and sorts what it gets back, which would reorder an unsorted mock.
+      channels.forEach((channel, channelIndex) =>
+        channel.messages.forEach((message, messageIndex) => {
+          message.created_at = dateToNs(new Date(Date.UTC(2026, 0, 1, channelIndex, messageIndex)));
+        }),
+      );
       useMockedApis(chatClient, [queryChannelsApi(channels)]);
       await renderComponent();
 

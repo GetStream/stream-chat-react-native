@@ -208,7 +208,7 @@ export const OptimisticUpdates = () => {
       jest.clearAllMocks();
 
       chatClient = await getTestClientWithUser({ id: 'dan' });
-      const channelResponse = createChannel();
+      channelResponse = createChannel();
       useMockedApis(chatClient, [getOrCreateChannelApi(channelResponse)]);
       channel = chatClient.channel('messaging', channelResponse.id);
       await channel.watch();
@@ -237,6 +237,7 @@ export const OptimisticUpdates = () => {
     });
 
     let channel: ChannelLLC;
+    let channelResponse: ReturnType<typeof createChannel>;
     // This component is used for performing effects in a component that consumes ChannelContext,
     // i.e. making use of the callbacks & values provided by the Channel component.
     // the effect is called every time channelContext changes
@@ -1349,11 +1350,16 @@ export const OptimisticUpdates = () => {
           ),
         ).toBe(true);
 
-        jest
-          .spyOn(channel, 'watch')
-          .mockResolvedValue({} as Awaited<ReturnType<typeof channel.watch>>);
+        // The reconnect reloads the active channel, and by then the server has the sent message. A
+        // page without it would remove the message as deleted while offline.
+        useMockedApis(chatClient, [
+          getOrCreateChannelApi({
+            ...channelResponse,
+            messages: [...channelResponse.messages, serverMessage],
+          }),
+        ]);
         // Without this the reconnect below nukes the offline DB. `client.sync` is a POST, so it
-        // resolves with the `getOrCreateChannelApi` payload mocked in `beforeEach`, whose `events` is
+        // resolves with the `getOrCreateChannelApi` payload mocked above, whose `events` is
         // undefined; `OfflineDBSyncManager.sync` then throws reading `result.events.length` and its
         // catch block calls `resetDB()` — taking the persisted failed message with it. Nothing to do
         // with what these tests assert, so give sync an empty, well-formed reply.
