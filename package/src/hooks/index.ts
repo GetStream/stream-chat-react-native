@@ -13,6 +13,7 @@ export * from './useChannelMuteActive';
 export * from './useIsDirectChat';
 export * from './useIsChannelMember';
 export * from './useStreami18n';
+export * from './useTranslatedMessage';
 export * from './useViewport';
 export * from './useScreenDimensions';
 export * from './useScreenOrientation';
