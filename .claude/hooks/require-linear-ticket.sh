@@ -43,13 +43,16 @@ if [ "$tool_name" = "Bash" ]; then
 
   # The inline title/body (including heredocs) are part of the command string.
   # Scan from `gh pr create` onward, so earlier commands (e.g. `git switch -c
-  # react-123-...`) don't count, and drop the branch/repo flag values.
-  haystack="$(printf '%s\n' "$cmd" \
-    | awk 'found { print; next } match($0, /gh[[:space:]]+pr[[:space:]]+(create|new)/) { print substr($0, RSTART); found = 1 }' \
-    | sed -E 's/(^|[[:space:]])(--head|-H|--base|-B|--repo|-R)([= ]+)("[^"]*"|'\''[^'\'']*'\''|[^[:space:]]+)/\1/g')"
+  # react-123-...`) don't count.
+  pr_cmd="$(printf '%s\n' "$cmd" \
+    | awk 'found { print; next } match($0, /gh[[:space:]]+pr[[:space:]]+(create|new)/) { print substr($0, RSTART); found = 1 }')"
+  # Drop the values of flags that aren't the title or body (branch, repo,
+  # labels, assignees, ...), so e.g. `--label REACT-123` doesn't count.
+  haystack="$(printf '%s\n' "$pr_cmd" \
+    | sed -E 's/(^|[[:space:]])(--head|-H|--base|-B|--repo|-R|--label|-l|--assignee|-a|--reviewer|-r|--milestone|-m|--project|-p)([= ]+)("[^"]*"|'\''[^'\'']*'\''|[^[:space:]]+)/\1/g')"
 
-  # --body-file/-F <path>
-  body_file="$(printf '%s' "$cmd" | grep -oE -- '(--body-file|-F)[= ]+[^[:space:]]+' | head -n1 | sed -E 's/^(--body-file|-F)[= ]+//; s/["'\'']//g')"
+  # --body-file/-F <path> of this `gh pr create`, without a trailing `;`, `&&`, ...
+  body_file="$(printf '%s' "$pr_cmd" | grep -oE -- '(--body-file|-F)[= ]+("[^"]*"|'\''[^'\'']*'\''|[^[:space:];&|)]+)' | head -n1 | sed -E 's/^(--body-file|-F)[= ]+//; s/["'\'']//g')"
   if [ -n "$body_file" ] && [ "$body_file" != "-" ]; then
     case "$body_file" in /*) ;; *) body_file="$cwd/$body_file" ;; esac
     [ -f "$body_file" ] && haystack="$haystack"$'\n'"$(cat "$body_file")"
@@ -60,8 +63,11 @@ else
   exit 0
 fi
 
+# Split into tokens of letters, digits and dashes, so an ID only counts when it
+# isn't glued to other letters or digits (REACT-123abc, NOTREACT-1).
 ids="$(printf '%s\n' "$haystack" \
-  | grep -oiE "(^|[^[:alnum:]])($KEYS_ALT)-[0-9]+" \
+  | tr -c '[:alnum:]-' '\n' \
+  | grep -oiE "(^|-)($KEYS_ALT)-[0-9]+(-|$)" \
   | grep -oiE "($KEYS_ALT)-[0-9]+" \
   | tr '[:lower:]' '[:upper:]' | awk '!seen[$0]++')"
 
@@ -74,8 +80,9 @@ ${TEAM_KEYS} (e.g. REACT-123, RN-45, CHAT-678, VID-910). The branch name does no
 
 Before opening the PR:
   1. Find the existing Linear ticket for this work, or create one in the RN team.
-  2. Put its ID in the PR title or PR body
-     (e.g. 'Ticket: https://linear.app/stream/issue/RN-123').
+  2. Put its ID in the PR body, not the title, to keep the commit history
+     clean. Pass it with --body or --body-file, since the check runs before
+     gh prompts for anything (e.g. 'Ticket: https://linear.app/stream/issue/RN-123').
   3. Retry creating the PR.
 EOF
   exit 2
