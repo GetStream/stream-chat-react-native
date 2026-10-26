@@ -219,6 +219,7 @@ export type TranslationCatalog = {
   'indicators.loading.error': 'Error loading';
   'indicators.loading.messages.error': 'Error loading messages for this channel...';
   'indicators.loading.messages.text': 'Loading messages...';
+  'indicators.loading.replies.error': 'Error loading replies...';
   'message.banUser.label': 'Ban User';
   'message.blockUser.label': 'Block User';
   'message.blockUserConfirm.label': 'Block';

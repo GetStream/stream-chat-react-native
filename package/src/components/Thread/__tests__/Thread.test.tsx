@@ -328,6 +328,8 @@ describe('Thread', () => {
       await waitFor(() => {
         expect(screen.getByTestId('loading-error')).toBeTruthy();
       });
+      // The thread's own copy, not the channel's "Error loading messages for this channel...".
+      expect(screen.getByTestId('loading-error')).toHaveTextContent('Error loading replies...');
     });
 
     it('retries the reply query — and only the reply query — from the indicator', async () => {

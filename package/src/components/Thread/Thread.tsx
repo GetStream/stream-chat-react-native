@@ -138,7 +138,7 @@ export const Thread = (props: PropsWithChildren<ThreadProps>) => {
         .toTail()
         .catch((err: unknown) => console.warn('Reloading the thread replies failed:', err));
 
-    return <LoadingErrorIndicator error={lastQueryError} listType='message' retry={retry} />;
+    return <LoadingErrorIndicator error={lastQueryError} listType='thread' retry={retry} />;
   }
 
   return (
