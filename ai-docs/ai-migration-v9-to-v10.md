@@ -214,6 +214,7 @@ means changed. Details in the linked section.
 | `<Channel thread={thread} threadList><Thread /></Channel>` | `<Thread thread={thread}><MessageList /><MessageComposer /></Thread>`, no `<Channel>` around it | §10.1 |
 | `threadList` (prop or context field) | `useThreadContext().thread` | §10.2 |
 | `ThreadMessageComposer` slot / `additionalMessageComposerProps` | a `MessageComposer` child of `<Thread>` with its own props | §10.2 |
+| `MessageList` slot | a `MessageList` (or `MessageFlashList`) child of `<Thread>`, or your own list component | §10.2 |
 | `useMessageComposerContext().thread` (parent message; deep import only) | `thread` is now the `Thread`; parent on `thread.state` | §10.2 |
 | `editMessage()` on the message input context | removed: `useMessageInputContext().sendMessage()` saves an edit; intercept with `updateMessageRequest` | P.17 |
 | `<MessageList targetedMessage / loadMoreThread / threadInstance …>` props | removed — list reads the `Thread` from `ThreadContext` + paginator internally; `thread` stays, retyped to `Thread \| null` | §12 |
@@ -819,6 +820,8 @@ registers a new one.
   `parentMessagePreventPress` to `ThreadFooterComponent`.
 - **`ThreadMessageComposer` slot**: removed from `WithComponents`. Render the composer you want as a
   child of `<Thread>`.
+- **`MessageList` slot**: removed from `WithComponents`. In v9 only `<Thread>` read it, to render the
+  thread's list; `<Thread>` now renders its children, so render the list you want as a child.
 - **`threadList`**: removed everywhere - `ChannelContextValue.threadList`,
   `MessageContextValue.threadList`, the `threadList` prop of `Message`, `MessageList`,
   `MessageFlashList` and `MessageComposer`, and `useIncomingMessageAnnouncements({ threadList })`.
