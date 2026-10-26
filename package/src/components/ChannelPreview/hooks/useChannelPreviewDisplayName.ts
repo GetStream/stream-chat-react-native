@@ -18,7 +18,7 @@ const pickName = (member: ChannelMemberResponse) => ({
 export const useChannelPreviewDisplayName = (channel?: Channel) => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
-  const currentUserId = client?.userID;
+  const currentUserId = client?.userId;
   const members = useChannelMembersState(channel, pickName);
   const channelName = useChannelName(channel);
 

@@ -513,10 +513,10 @@ describe('Thread lifecycle', () => {
         generateMessage({ reply_count: 3, user }),
       );
       const readState = (unreadMessageCount: number) => ({
-        [chatClient.userID as string]: {
+        [chatClient.userId as string]: {
           lastReadAt: 1,
           unreadMessageCount,
-          user: { id: chatClient.userID as string },
+          user: { id: chatClient.userId as string },
         },
       });
       return { markRead, parentMessage, readState, testChannel };

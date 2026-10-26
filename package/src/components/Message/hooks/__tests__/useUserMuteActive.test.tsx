@@ -13,7 +13,7 @@ const muteOf = (targetId: string) =>
 const createClient = () =>
   ({
     mutedUsersStore: new StateStore<{ mutedUsers: UserMuteResponse[] }>({ mutedUsers: [] }),
-    userID: 'current-user-id',
+    userId: 'current-user-id',
   }) as unknown as StreamChat;
 
 describe('useUserMuteActive', () => {

@@ -60,7 +60,7 @@ export const ChannelMemberItem = ({
   if (!user) return null;
 
   const isLarge = size === 'lg';
-  const isCurrentUser = !!client?.userID && user.id === client.userID;
+  const isCurrentUser = !!client?.userId && user.id === client.userId;
   const displayName = isCurrentUser ? t('common.you.label', 'You') : (user.name ?? user.id);
   const accessibilityLabel = composeAccessibilityLabel(
     displayName,

@@ -482,7 +482,7 @@ export const Generic = () => {
         const readRows = await BetterSqlite.selectFromTable('reads');
         const matchingMessageRows = messagesRows.filter((m) => m.id === newMessage.id);
         const matchingReadRows = readRows.filter(
-          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+          (r) => targetChannel.cid === r.cid && chatClient.userId === r.userId,
         );
 
         expect(matchingMessageRows.length).toBe(1);
@@ -505,7 +505,7 @@ export const Generic = () => {
       await waitFor(async () => {
         const readRows = await BetterSqlite.selectFromTable('reads');
         const matchingReadRows = readRows.filter(
-          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+          (r) => targetChannel.cid === r.cid && chatClient.userId === r.userId,
         );
 
         expect(matchingReadRows.length).toBe(1);
@@ -538,7 +538,7 @@ export const Generic = () => {
           newMessages.some((newMessage) => newMessage.id === m.id),
         );
         const matchingReadRows = readRows.filter(
-          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+          (r) => targetChannel.cid === r.cid && chatClient.userId === r.userId,
         );
 
         expect(matchingMessageRows.length).toBe(3);
@@ -567,7 +567,7 @@ export const Generic = () => {
       await waitFor(async () => {
         const readRows = await BetterSqlite.selectFromTable('reads');
         const matchingReadRows = readRows.filter(
-          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+          (r) => targetChannel.cid === r.cid && chatClient.userId === r.userId,
         );
 
         expect(matchingReadRows.length).toBe(1);
@@ -600,7 +600,7 @@ export const Generic = () => {
           newMessages.some((newMessage) => newMessage.id === m.id),
         );
         const matchingReadRows = readRows.filter(
-          (r) => targetChannel.cid === r.cid && chatClient.userID === r.userId,
+          (r) => targetChannel.cid === r.cid && chatClient.userId === r.userId,
         );
 
         expect(matchingMessageRows.length).toBe(3);
@@ -955,7 +955,7 @@ export const Generic = () => {
 
         const readsRows = await BetterSqlite.selectFromTable('reads');
         const matchingReadRows = readsRows.filter(
-          (r) => r.userId === chatClient.userID && r.cid === channelToTruncate.cid,
+          (r) => r.userId === chatClient.userId && r.cid === channelToTruncate.cid,
         );
 
         expect(matchingMessagesRows.length).toBe(0);
@@ -1006,7 +1006,7 @@ export const Generic = () => {
 
         const readsRows = await BetterSqlite.selectFromTable('reads');
         const matchingReadRows = readsRows.filter(
-          (r) => r.userId === chatClient.userID && r.cid === channelToTruncate.cid,
+          (r) => r.userId === chatClient.userId && r.cid === channelToTruncate.cid,
         );
 
         const messagesLeft = messages.length / 2 - 1;

@@ -32,7 +32,7 @@ export const isUserMuted = (
  */
 export const useUserMuteActive = (user: UserResponse | null | undefined) => {
   const { client } = useChatContext();
-  const currentUserId = client?.userID;
+  const currentUserId = client?.userId;
   const userId = user?.id;
 
   const selector = useCallback(

@@ -211,7 +211,7 @@ export const useChannelMemberActionItems = ({
 
   const isBlocked = blockedUserIds.includes(member.user?.id ?? '');
 
-  const isCurrentUser = member.user?.id === channel.getClient().userID;
+  const isCurrentUser = member.user?.id === channel.getClient().userId;
 
   const channelMemberActionItemsParams = useMemo<ChannelMemberActionItemsParams>(
     () => ({

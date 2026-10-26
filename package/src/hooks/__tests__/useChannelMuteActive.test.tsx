@@ -21,7 +21,7 @@ const createClient = ({
     // muted USERS stay client-global — useMutedUsers reads them reactively from mutedUsersStore.
     mutedUsersStore: new StateStore({ mutedUsers }),
     on: jest.fn(() => ({ unsubscribe: jest.fn() })),
-    userID: CURRENT_USER_ID,
+    userId: CURRENT_USER_ID,
   }) as never;
 
 // Back the mock channel with a real StateStore (so `useStateStore` can subscribe to `members` and

@@ -9,7 +9,7 @@ const pickId = (member: ChannelMemberResponse) => ({ id: member.user?.id });
 
 export const useIsDirectChat = (channel?: Channel) => {
   const { client } = useChatContext();
-  const ownUserId = client.userID;
+  const ownUserId = client.userId;
   const members = useChannelMembersState(channel, pickId);
 
   const otherMembers = useMemo(

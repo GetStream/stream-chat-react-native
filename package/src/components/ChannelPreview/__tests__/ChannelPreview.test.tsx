@@ -145,7 +145,7 @@ describe('ChannelPreview', () => {
   describe('notification.mark_read event', () => {
     it("should not update the unread count if the event's cid does not match the channel's cid", async () => {
       channel = await initChannelFromData(chatClient);
-      seedUnread(channel, chatClient.userID as string, 10);
+      seedUnread(channel, chatClient.userId as string, 10);
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -167,7 +167,7 @@ describe('ChannelPreview', () => {
 
     it('should update the unread count to 0', async () => {
       channel = await initChannelFromData(chatClient);
-      seedUnread(channel, chatClient.userID as string, 10);
+      seedUnread(channel, chatClient.userId as string, 10);
 
       const { getByTestId } = render(<TestComponent />);
 
@@ -327,7 +327,7 @@ describe('ChannelPreview', () => {
         muteStatus: { createdAt: null, expiresAt: null, muted: true },
       });
     });
-    seedUnread(channel, chatClient.userID as string, 5);
+    seedUnread(channel, chatClient.userId as string, 5);
 
     const { getByTestId } = render(<TestComponent />);
 
@@ -360,7 +360,7 @@ describe('ChannelPreview', () => {
   it('should update the unread count on "message.new" event', async () => {
     const someOtherUser = generateUser({ id: 'not-me' });
     channel = await initChannelFromData(chatClient);
-    seedUnread(channel, chatClient.userID as string, 0);
+    seedUnread(channel, chatClient.userId as string, 0);
 
     const { getByTestId } = render(<TestComponent />);
 

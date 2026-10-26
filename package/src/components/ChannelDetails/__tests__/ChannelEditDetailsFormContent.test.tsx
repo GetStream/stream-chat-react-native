@@ -80,7 +80,7 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
       >
         <ChatContext.Provider
           value={
-            { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
+            { client: { on: () => ({ unsubscribe: () => undefined }), userId: 'me' } } as never
           }
         >
           <ChannelDetailsContextProvider channel={channel}>
@@ -128,7 +128,7 @@ describe('ChannelEditDetailsFormContent', () => {
         >
           <ChatContext.Provider
             value={
-              { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
+              { client: { on: () => ({ unsubscribe: () => undefined }), userId: 'me' } } as never
             }
           >
             <ChannelDetailsContextProvider channel={buildChannel()}>

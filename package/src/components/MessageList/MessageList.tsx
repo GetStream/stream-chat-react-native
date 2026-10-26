@@ -321,7 +321,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       channel,
       markRead,
       readEvents,
-      userId: client.userID,
+      userId: client.userId,
     });
 
   const previousDerivedItemsRef = useRef<Map<string, MessageListItemWithNeighbours>>(undefined);
@@ -355,7 +355,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
-    client.userID,
+    client.userId,
   );
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(false);

@@ -96,7 +96,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData })
     [answer.updated_at, t, tDateTimeParser],
   );
 
-  const isMyAnswer = client.userID === answer.user?.id;
+  const isMyAnswer = client.userId === answer.user?.id;
 
   const isAnonymous = useMemo(
     () => votingVisibility === 'anonymous' && !isMyAnswer,

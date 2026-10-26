@@ -22,7 +22,7 @@ const createClient = (mutedUsers: UserMuteResponse[] = []) =>
     on: jest.fn(() => ({ unsubscribe: jest.fn() })),
     pinMessage: jest.fn(),
     unpinMessage: jest.fn(),
-    userID: 'current-user-id',
+    userId: 'current-user-id',
   }) as unknown as StreamChat & {
     moderation: { mute: jest.Mock; unmute: jest.Mock };
     notifications: { add: jest.Mock; remove: jest.Mock; startTimeout: jest.Mock };

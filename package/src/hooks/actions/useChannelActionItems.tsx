@@ -112,7 +112,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     t,
     channel,
   } = channelActionItemsParams;
-  const ownUserId = channel.getClient().userID;
+  const ownUserId = channel.getClient().userId;
 
   const actionItems: ChannelActionItem[] = [
     {

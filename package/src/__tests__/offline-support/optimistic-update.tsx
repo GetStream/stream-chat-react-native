@@ -1000,7 +1000,7 @@ export const OptimisticUpdates = () => {
           status: MessageStatusTypes.SENDING,
           text: 'unsent across a restart',
           user: chatClient.user as UserResponse,
-          user_id: chatClient.userID,
+          user_id: chatClient.userId,
         });
 
         jest
@@ -1069,7 +1069,7 @@ export const OptimisticUpdates = () => {
           status: MessageStatusTypes.SENDING,
           text: 'no guard probe please',
           user: chatClient.user as UserResponse,
-          user_id: chatClient.userID,
+          user_id: chatClient.userId,
         });
 
         jest
@@ -1297,14 +1297,14 @@ export const OptimisticUpdates = () => {
           status: MessageStatusTypes.SENDING,
           text: 'offline resend',
           user: chatClient.user as UserResponse,
-          user_id: chatClient.userID,
+          user_id: chatClient.userId,
         });
         const serverMessage = generateMessage({
           cid: channel.cid,
           id: localMessage.id,
           text: localMessage.text,
           user: chatClient.user as UserResponse,
-          user_id: chatClient.userID,
+          user_id: chatClient.userId,
         });
 
         jest
@@ -1412,7 +1412,7 @@ export const OptimisticUpdates = () => {
           status: MessageStatusTypes.SENDING,
           text: 'offline resend unresolved',
           user: chatClient.user as UserResponse,
-          user_id: chatClient.userID,
+          user_id: chatClient.userId,
         });
 
         jest

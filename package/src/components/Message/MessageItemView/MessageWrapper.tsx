@@ -57,7 +57,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   const createdAtTimestamp = message.created_at;
   const messageId = message.id;
   const nextMessageId = nextMessage?.id;
-  const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
+  const nextMessageIsOwn = nextMessage?.user?.id === client.userId;
   const nextMessageCreatedAt = nextMessage?.created_at ?? undefined;
   const isThreadList = !!messagePaginator.parentMessageId;
 
@@ -129,7 +129,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
 
   const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
-  const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
+  const wrapMessageInTheme = client.userId === message.user?.id && !!myMessageTheme;
   const renderDateSeperator = dateSeparatorDate ? (
     <View style={styles.dateSeparatorContainer}>
       <InlineDateSeparator date={dateSeparatorDate} />

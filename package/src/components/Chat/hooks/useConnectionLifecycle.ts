@@ -32,7 +32,7 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
 
   const onForeground = useCallback(() => {
     // Without a user ID, opening the connection would raise an unneeded error.
-    if (!clientExists || !client.userID) {
+    if (!clientExists || !client.userId) {
       return;
     }
 
@@ -44,7 +44,7 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
   // A `<Chat>` mounted while the app is already active (Android recreating the activity) never sees
   // the background-to-foreground change that reopens a socket its predecessor closed.
   useEffect(() => {
-    if (!closeConnectionOnBackground || !clientExists || !client.userID) return;
+    if (!closeConnectionOnBackground || !clientExists || !client.userId) return;
     if (AppState.currentState === 'active' && client.wsConnection.connection?.isDisconnected) {
       client.openConnection();
     }

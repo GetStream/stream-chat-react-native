@@ -24,7 +24,7 @@ export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
 
   return useMemo(() => {
     if (isDirect) {
-      const ownUserId = channel.getClient().userID;
+      const ownUserId = channel.getClient().userId;
       const otherMember = Object.values(members).find((member) => member.user?.id !== ownUserId);
       return otherMember?.user?.online ? t('common.presence.online.label', 'Online') : '';
     }

@@ -75,7 +75,7 @@ describe('ScrollToBottomButton', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.init();
     // The button reads OUR user's count from `channel.state` (a v10 reactive StateStore) via
-    // `useStateStore`, keyed by the chat client's userID. Seed the `read` slice with 3 unread
+    // `useStateStore`, keyed by the chat client's `userId`. Seed the `read` slice with 3 unread
     // for that user.
     const channel = {
       state: generateChannelState({
@@ -91,7 +91,7 @@ describe('ScrollToBottomButton', () => {
     const { getByTestId, getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t } as unknown as TranslationContextValue}>
-          <ChatProvider value={{ client: { userID: 'me' } } as unknown as ChatContextValue}>
+          <ChatProvider value={{ client: { userId: 'me' } } as unknown as ChatContextValue}>
             <ChannelProvider value={{ channel } as unknown as ChannelContextValue}>
               <ScrollToBottomButton onPress={() => null} showNotification={true} />
             </ChannelProvider>
@@ -139,7 +139,7 @@ describe('ScrollToBottomButton', () => {
       <ThemeProvider>
         <AccessibilityProvider value={{ enabled: true }}>
           <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
-            <ChatProvider value={{ client: { userID: 'me' } } as unknown as ChatContextValue}>
+            <ChatProvider value={{ client: { userId: 'me' } } as unknown as ChatContextValue}>
               <ChannelProvider value={{ channel } as unknown as ChannelContextValue}>
                 <ScrollToBottomButton onPress={() => null} showNotification={true} />
               </ChannelProvider>

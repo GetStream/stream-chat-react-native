@@ -45,7 +45,7 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const isOtherMemberOnline = useMemo(
     () =>
       Object.values(members).some(
-        (member) => member.user?.id !== client.userID && member.user?.online,
+        (member) => member.user?.id !== client.userId && member.user?.online,
       ),
     [client, members],
   );

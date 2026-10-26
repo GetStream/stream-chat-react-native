@@ -63,7 +63,7 @@ const Providers = ({ children }: PropsWithChildren) => (
         }}
       >
         <ChatContext.Provider
-          value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+          value={{ client: { notifications: new NotificationManager(), userId: 'me' } } as never}
         >
           {children}
         </ChatContext.Provider>

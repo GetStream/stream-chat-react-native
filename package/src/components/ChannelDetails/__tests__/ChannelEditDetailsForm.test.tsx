@@ -73,7 +73,7 @@ const renderForm = ({ channel, onClose = jest.fn() }: { channel: Channel; onClos
           }}
         >
           <ChatContext.Provider
-            value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+            value={{ client: { notifications: new NotificationManager(), userId: 'me' } } as never}
           >
             <ChannelDetailsContextProvider channel={channel}>
               <WithComponents overrides={{ ChannelEditDetailsFormContent: EditDetailsProbe }}>

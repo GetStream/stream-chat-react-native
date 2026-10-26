@@ -58,7 +58,7 @@ const createChannelMock = (params?: {
         getLatestValue: () => ({ userIds: blockedUserIds }),
         subscribeWithSelector: () => () => {},
       },
-      userID: ownUserId,
+      userId: ownUserId,
     }),
     state: {
       members: {

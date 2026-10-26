@@ -39,7 +39,7 @@ export type ChannelActions = {
 export const getOtherUserInDirectChannel = (channel: Channel) => {
   const members = Object.values(channel.state.members);
   return members.length === 2
-    ? members.find((member) => member.user?.id !== channel.getClient().userID)
+    ? members.find((member) => member.user?.id !== channel.getClient().userId)
     : undefined;
 };
 
@@ -62,7 +62,7 @@ export const useChannelActions = (channel: Channel) => {
   const { client } = useChatContext();
   const { addNotification } = useNotificationApi();
   const { t } = useTranslationContext();
-  const ownUserId = client.userID;
+  const ownUserId = client.userId;
 
   const pin = useStableCallback(async (options?: ChannelActionOptions) => {
     try {

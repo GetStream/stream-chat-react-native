@@ -113,7 +113,7 @@ export const useProcessReactions = (props: UseProcessReactionsParams) => {
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
           lastReactionAt: convertTimestampToDate(last_reaction_at) ?? null,
           latestReactedUserNames,
-          own: isOwnReaction(reactionType, own_reactions, latest_reactions, client.userID),
+          own: isOwnReaction(reactionType, own_reactions, latest_reactions, client.userId),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };
@@ -126,7 +126,7 @@ export const useProcessReactions = (props: UseProcessReactionsParams) => {
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
   }, [
-    client.userID,
+    client.userId,
     reaction_groups,
     own_reactions,
     latest_reactions,

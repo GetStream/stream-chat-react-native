@@ -35,7 +35,7 @@ export const LiveLocationManagerProvider = (
     }
     return new LiveLocationManager({
       client,
-      getDeviceId: getDeviceId ?? (() => `react-native-${Platform.OS}-${client.userID}`),
+      getDeviceId: getDeviceId ?? (() => `react-native-${Platform.OS}-${client.userId}`),
       watchLocation,
     });
   }, [client, getDeviceId, watchLocation]);
