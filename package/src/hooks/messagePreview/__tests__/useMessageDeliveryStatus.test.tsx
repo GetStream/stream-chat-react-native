@@ -1,9 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 
 import { act, renderHook } from '@testing-library/react-native';
-import { fromPartial } from '@total-typescript/shoehorn';
-
-import type { Channel, UserResponse } from 'stream-chat';
+import { asTimestampNS } from 'stream-chat';
+import type { Channel, MsgRef } from 'stream-chat';
 
 import { Chat } from '../../../components/Chat/Chat';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -12,7 +11,16 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { MessageDeliveryStatus, useMessageDeliveryStatus } from '../useMessageDeliveryStatus';
 
 describe('useMessageDeliveryStatus', () => {
-  const ownMessage = generateMessage({ user: generateUser({ id: 'me' }) });
+  const ownMessage = generateMessage({
+    timestamp: new Date('2026-01-01T10:00:00Z'),
+    user: generateUser({ id: 'me' }),
+  });
+
+  // A cursor `offsetNs` after (or, negative, before) `ownMessage`, on a message of its own.
+  const cursorAt = (offsetNs: number, msgId = `cursor-${offsetNs}`): MsgRef => ({
+    msgId,
+    timestamp: asTimestampNS(ownMessage.created_at + offsetNs),
+  });
 
   const setup = async ({
     isReadEventsEnabled = true,
@@ -32,14 +40,11 @@ describe('useMessageDeliveryStatus', () => {
 
   const setReceipts = (
     channel: Channel,
-    {
-      delivered = {},
-      readers = {},
-    }: { delivered?: Record<string, UserResponse[]>; readers?: Record<string, UserResponse[]> },
+    { delivered = null, read = null }: { delivered?: MsgRef | null; read?: MsgRef | null },
   ) =>
     channel.messageReceiptsTracker.snapshotStore.partialNext({
-      deliveredByMessageId: delivered,
-      readersByMessageId: readers,
+      lastDeliveredRefByOthers: delivered,
+      lastReadRefByOthers: read,
     });
 
   it('returns NOT_SENT_BY_CURRENT_USER when read events are disabled', async () => {
@@ -58,19 +63,52 @@ describe('useMessageDeliveryStatus', () => {
     const { channel, result } = await setup();
     expect(result.current.status).toBe(MessageDeliveryStatus.SENT);
 
-    act(() =>
-      setReceipts(channel, {
-        delivered: { [ownMessage.id]: [fromPartial<UserResponse>({ id: 'other' })] },
-      }),
-    );
+    act(() => setReceipts(channel, { delivered: cursorAt(0, ownMessage.id) }));
     expect(result.current.status).toBe(MessageDeliveryStatus.DELIVERED);
 
     act(() =>
       setReceipts(channel, {
-        delivered: { [ownMessage.id]: [fromPartial<UserResponse>({ id: 'other' })] },
-        readers: { [ownMessage.id]: [fromPartial<UserResponse>({ id: 'other' })] },
+        delivered: cursorAt(0, ownMessage.id),
+        read: cursorAt(0, ownMessage.id),
       }),
     );
+    expect(result.current.status).toBe(MessageDeliveryStatus.READ);
+  });
+
+  it('returns READ when another member read past the message', async () => {
+    const { channel, result } = await setup();
+
+    act(() => setReceipts(channel, { delivered: cursorAt(1000), read: cursorAt(1000) }));
+
+    expect(result.current.status).toBe(MessageDeliveryStatus.READ);
+  });
+
+  it('returns DELIVERED when the message was delivered past it but not read', async () => {
+    const { channel, result } = await setup();
+
+    act(() => setReceipts(channel, { delivered: cursorAt(1000), read: cursorAt(-1000) }));
+
+    expect(result.current.status).toBe(MessageDeliveryStatus.DELIVERED);
+  });
+
+  it('returns SENT when every cursor is before the message', async () => {
+    const { channel, result } = await setup();
+
+    act(() => setReceipts(channel, { delivered: cursorAt(-1000), read: cursorAt(-1000) }));
+
+    expect(result.current.status).toBe(MessageDeliveryStatus.SENT);
+  });
+
+  it('returns READ for a thread reply read past by another member', async () => {
+    const reply = generateMessage({
+      parent_id: 'parent',
+      timestamp: new Date('2026-01-01T10:00:00Z'),
+      user: generateUser({ id: 'me' }),
+    });
+    const { channel, result } = await setup({ lastMessage: reply });
+
+    act(() => setReceipts(channel, { delivered: cursorAt(1000), read: cursorAt(1000) }));
+
     expect(result.current.status).toBe(MessageDeliveryStatus.READ);
   });
 
@@ -95,24 +133,11 @@ describe('useMessageDeliveryStatus', () => {
       { wrapper },
     );
 
-    act(() =>
-      setReceipts(channel, {
-        delivered: { [ownMessage.id]: [fromPartial<UserResponse>({ id: 'other' })] },
-      }),
-    );
+    act(() => setReceipts(channel, { delivered: cursorAt(0, ownMessage.id) }));
     expect(result.current.status).toBe(MessageDeliveryStatus.DELIVERED);
     const rendersWhenDelivered = renders;
 
-    act(() =>
-      setReceipts(channel, {
-        delivered: {
-          [ownMessage.id]: [
-            fromPartial<UserResponse>({ id: 'other' }),
-            fromPartial<UserResponse>({ id: 'third' }),
-          ],
-        },
-      }),
-    );
+    act(() => setReceipts(channel, { delivered: cursorAt(1000) }));
     expect(result.current.status).toBe(MessageDeliveryStatus.DELIVERED);
     expect(renders).toBe(rendersWhenDelivered);
   });
