@@ -6981,7 +6981,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.1"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -10756,7 +10756,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.1"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18262,7 +18262,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19035,7 +19035,7 @@ __metadata:
     react-syntax-highlighter: "npm:^16.1.0"
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.1"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -19123,9 +19123,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.54.0":
-  version: 9.54.0
-  resolution: "stream-chat@npm:9.54.0"
+"stream-chat@npm:^9.54.1":
+  version: 9.54.1
+  resolution: "stream-chat@npm:9.54.1"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
@@ -19141,7 +19141,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/f8c02372ffa672e759970223811667b8263bbded048a85adbdd6c3ed60a16f72c882d9700538b94a3148a8e4bfa259eafae5effdc0d8e7ffd2525e61f27a190e
+  checksum: 10c0/1dd6564a5299f3e9d60a29a6ba6aa8841d94b5622975b71247c7e070e42104f09ef066e44283eb245e20058fb3079881c30bc961dc7e4168ebda0d1dcd66e824
   languageName: node
   linkType: hard
 
