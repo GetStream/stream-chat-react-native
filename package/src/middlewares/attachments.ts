@@ -3,6 +3,7 @@ import {
   AttachmentPreUploadMiddleware,
   FileReference,
   isLocalImageAttachment,
+  isLocalUploadAttachment,
   isLocalVideoAttachment,
   LocalAttachment,
   MessageComposer,
@@ -17,6 +18,10 @@ import { isLocalUrl } from '../utils/utils';
 
 export const localAttachmentToAttachment = (localAttachment: LocalAttachment) => {
   const { localMetadata, ...attachment } = localAttachment;
+
+  // Not an upload (e.g. a custom or giphy attachment of an edited message), so there is no
+  // local file to point at.
+  if (!isLocalUploadAttachment(localAttachment)) return attachment as Attachment;
 
   if (isLocalImageAttachment(localAttachment)) {
     const isRemoteUri = !!attachment.image_url && !isLocalUrl(attachment.image_url);
