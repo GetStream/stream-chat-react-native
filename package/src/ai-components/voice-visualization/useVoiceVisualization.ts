@@ -73,16 +73,12 @@ export const useVoiceVisualization = (
   };
 
   // Starts settled on the first input, so the first frame shows it rather than easing into it.
-  const [initialDriver] = useState(() =>
-    createDriverState(
-      { ...input, audioLevel: audioLevelInput(audioLevel?.value) },
-      style.levelResponse,
-    ),
-  );
+  const [initialDriver] = useState(() => createDriverState(input, style.levelResponse));
   const driver = useSharedValue(initialDriver);
   const inputValue = useSharedValue(input);
   const darkValue = useSharedValue(dark);
   const opacity = useSharedValue(0);
+  const fadingIn = useSharedValue(false);
 
   useEffect(() => {
     inputValue.value = {
@@ -112,9 +108,12 @@ export const useVoiceVisualization = (
       });
       // It fades in once it has something to show, rather than flashing empty while the first
       // frame lands.
-      if (opacity.value === 0) opacity.value = withTiming(1, { duration: FADE_IN_MS });
+      if (!fadingIn.value) {
+        fadingIn.value = true;
+        opacity.value = withTiming(1, { duration: FADE_IN_MS });
+      }
     },
-    [audioLevel, driver, inputValue, opacity],
+    [audioLevel, driver, fadingIn, inputValue, opacity],
   );
   useFrameCallback(onFrame);
 

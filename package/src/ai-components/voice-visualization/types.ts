@@ -32,6 +32,12 @@ export type VoiceVisualizationProps = Omit<ViewProps, 'children'> & {
   colors?: string[];
   /** From 0 to 2: how far and how fast it moves. Colors never change with it. Defaults to 1. */
   expressivity?: number;
+  /**
+   * What screen readers read as the value for each state, for example to translate them. Defaults
+   * to "Ready", "Connecting", "Listening", "Thinking" and "Speaking". The label, "Voice agent", is
+   * `accessibilityLabel`.
+   */
+  stateLabels?: Partial<Record<VoiceAgentState, string>>;
 };
 
 /** A color as hue (a fraction of a turn), saturation and value, each from 0 to 1. */

@@ -19,6 +19,9 @@ const TURN_TIMEOUT_MS = 20_000;
 
 const WORKING_STATES: string[] = [AIStates.Thinking, AIStates.Generating, AIStates.ExternalSources];
 
+// Marks voice mode's dictation as its own, so the composer underneath ignores it.
+const DICTATION_SOURCE = { source: 'voice-mode' };
+
 /** Markdown read aloud as plain words. */
 const toSpeech = (text: string) =>
   text
@@ -38,31 +41,34 @@ const toSpeech = (text: string) =>
  */
 export const useVoiceConversation = (active: boolean) => {
   const [phase, setPhase] = useState<VoiceAgentState>('idle');
-  const { start, cancel } = useDictation();
+  const { start, cancel } = useDictation(undefined, DICTATION_SOURCE);
   const { state: dictationState, error } = useDictationState();
   const { transcript } = useDictationTranscript();
   const send = useSendAIMessage();
   const { channel } = useChannelContext();
   const { aiState } = useAIState(channel);
 
-  const turn = useRef<{ sentAt: number; sawWorking: boolean } | null>(null);
+  // The messages already in the channel when the question was sent, so the reply is found by
+  // identity rather than by comparing the server's timestamps with the device's clock.
+  const turn = useRef<{ seenIds: Set<string>; sawWorking: boolean } | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // An error left over from an earlier turn, ignored until dictation starts again and clears it.
+  const staleError = useRef(dictationStore.getLatestValue().error);
 
   const listen = useStableCallback(() => {
     if (!active) return;
     turn.current = null;
-    // Clears what an earlier turn heard or failed with, before dictation starts again.
-    dictationStore.partialNext({ error: null, transcript: '' });
+    staleError.current = dictationStore.getLatestValue().error;
     setPhase('connecting');
     void start();
   });
 
   const latestReply = useStableCallback(() => {
-    const sentAt = turn.current?.sentAt ?? 0;
+    const seenIds = turn.current?.seenIds ?? new Set<string>();
     const messages = channel?.state.latestMessages ?? [];
     for (let i = messages.length - 1; i >= 0; i--) {
       const message = messages[i];
-      if (new Date(message.created_at ?? 0).getTime() < sentAt) break;
+      if (seenIds.has(message.id)) break;
       if (message.ai_generated && message.text) return message.text;
     }
     return null;
@@ -110,7 +116,7 @@ export const useVoiceConversation = (active: boolean) => {
       return;
     }
     if (dictationState !== 'idle' || (phase !== 'listening' && phase !== 'connecting')) return;
-    if (error) {
+    if (error && error !== staleError.current) {
       setPhase('idle');
       return;
     }
@@ -121,13 +127,16 @@ export const useVoiceConversation = (active: boolean) => {
       listen();
       return;
     }
-    turn.current = { sawWorking: false, sentAt: Date.now() };
+    turn.current = {
+      sawWorking: false,
+      seenIds: new Set((channel?.state.latestMessages ?? []).map((message) => message.id)),
+    };
     setPhase('thinking');
     void send({ text });
     timeout.current = setTimeout(() => {
       if (!turn.current?.sawWorking) finishTurn();
     }, TURN_TIMEOUT_MS);
-  }, [active, dictationState, error, finishTurn, listen, phase, send, transcript]);
+  }, [active, channel, dictationState, error, finishTurn, listen, phase, send, transcript]);
 
   // Follows the agent: its turn ends once it has been seen working and is done.
   useEffect(() => {
@@ -140,5 +149,11 @@ export const useVoiceConversation = (active: boolean) => {
     }
   }, [active, aiState, finishTurn]);
 
-  return { error, listen, phase, userIsTalking: phase === 'listening' };
+  return {
+    // Only an error from the current attempt, not one left over while dictation restarts.
+    error: phase === 'idle' ? error : null,
+    listen,
+    phase,
+    userIsTalking: phase === 'listening',
+  };
 };

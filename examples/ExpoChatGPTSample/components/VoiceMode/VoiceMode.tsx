@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Line } from 'react-native-svg';
 
 import {
   StreamTheme,
@@ -58,6 +59,33 @@ const VoiceModeOverlay = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
+/**
+ * A static waveform icon. The button stays still: a live `VoiceGlow` here would redraw every frame
+ * for as long as the chat is open.
+ */
+const VoiceIcon = () => (
+  <Svg height={22} viewBox='0 0 22 22' width={22}>
+    {[
+      [3, 8, 14],
+      [7, 4, 18],
+      [11, 2, 20],
+      [15, 5, 17],
+      [19, 9, 13],
+    ].map(([x, y1, y2]) => (
+      <Line
+        key={x}
+        stroke='#005fff'
+        strokeLinecap='round'
+        strokeWidth={2.4}
+        x1={x}
+        x2={x}
+        y1={y1}
+        y2={y2}
+      />
+    ))}
+  </Svg>
+);
+
 /** Opens a full-screen voice conversation with the AI agent. */
 export const VoiceMode = () => {
   const [open, setOpen] = useState(false);
@@ -71,7 +99,7 @@ export const VoiceMode = () => {
           onPress={() => setOpen(true)}
           style={styles.button}
         >
-          <VoiceGlow state='idle' style={styles.buttonGlow} />
+          <VoiceIcon />
         </Pressable>
       </View>
       <Modal animationType='fade' onRequestClose={() => setOpen(false)} visible={open}>
@@ -93,7 +121,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 48,
   },
-  buttonGlow: { height: 64, width: 64 },
   close: { color: '#ffffff', fontSize: 22 },
   entry: { alignItems: 'flex-end', paddingHorizontal: 16, paddingBottom: 8 },
   glow: { aspectRatio: 1, width: '100%' },

@@ -23,7 +23,7 @@ type ViewProps = VoiceVisualizationProps & {
   visualStyle: VoiceVisualizationStyle;
 };
 
-const STATE_DESCRIPTIONS: Record<VoiceAgentState, string> = {
+const DEFAULT_STATE_LABELS: Record<VoiceAgentState, string> = {
   connecting: 'Connecting',
   idle: 'Ready',
   listening: 'Listening',
@@ -49,6 +49,7 @@ export const VoiceVisualizationView = ({
   pointerEvents = 'box-none',
   renderCanvas,
   state,
+  stateLabels,
   style,
   visualStyle,
   ...restProps
@@ -122,7 +123,9 @@ export const VoiceVisualizationView = ({
     <View
       accessibilityLabel={accessibilityLabel}
       accessibilityRole='image'
-      accessibilityValue={accessibilityValue ?? { text: STATE_DESCRIPTIONS[state] }}
+      accessibilityValue={
+        accessibilityValue ?? { text: stateLabels?.[state] ?? DEFAULT_STATE_LABELS[state] }
+      }
       accessible
       onLayout={handleLayout}
       pointerEvents={pointerEvents}
@@ -148,6 +151,8 @@ export const VoiceVisualizationView = ({
             {renderCanvas(visualization, canvasSize)}
           </Animated.View>
           <View
+            // A transparent view with only handlers could be flattened away, leaving no target.
+            collapsable={false}
             onPointerLeave={handlePointerLeave}
             onPointerMove={handlePointerMove}
             onTouchEnd={handleTouchEnd}

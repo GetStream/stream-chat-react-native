@@ -1,7 +1,6 @@
 import React from 'react';
 import { AccessibilityInfo, Pressable } from 'react-native';
 
-import { Skia } from '@shopify/react-native-skia';
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react-native';
 
 import { type DeepPartial, StreamTheme, type Theme, VoiceGlow, VoiceWave } from '../index';
@@ -98,18 +97,35 @@ describe('VoiceGlow and VoiceWave', () => {
   });
 
   it('compiles the glow shader once for every glow', () => {
-    const make = jest.spyOn(Skia.RuntimeEffect, 'Make');
-    render(
-      <>
-        <VoiceGlow state='idle' testID='first' />
-        <VoiceGlow state='speaking' testID='second' />
-      </>,
-      { wrapper: themed() },
-    );
-    fireEvent(screen.getByTestId('first'), 'layout', layout(200, 200));
-    fireEvent(screen.getByTestId('second'), 'layout', layout(200, 200));
+    // A fresh copy of the module, so a shader compiled by an earlier test doesn't hide a miss.
+    jest.isolateModules(() => {
+      const { Skia: freshSkia } = require('@shopify/react-native-skia');
+      const { getGlowEffect } = require('../voice-visualization/glowShader');
+      const make = jest.spyOn(freshSkia.RuntimeEffect, 'Make');
 
-    expect(make.mock.calls.length).toBeLessThanOrEqual(1);
+      const first = getGlowEffect();
+      const second = getGlowEffect();
+
+      expect(make).toHaveBeenCalledTimes(1);
+      expect(second).toBe(first);
+    });
+  });
+
+  it('keeps the touch area as a real view, so taps on the shape land', () => {
+    render(<VoiceWave state='idle' />, { wrapper: themed() });
+    fireEvent(screen.getByLabelText('Voice agent'), 'layout', layout(300, 200));
+
+    expect(screen.getByTestId('voice-visualization-hit-area').props.collapsable).toBe(false);
+  });
+
+  it('reads translated state values', () => {
+    render(<VoiceGlow state='thinking' stateLabels={{ thinking: 'Denkt nach' }} />, {
+      wrapper: themed(),
+    });
+
+    expect(screen.getByLabelText('Voice agent').props.accessibilityValue).toEqual({
+      text: 'Denkt nach',
+    });
   });
 });
 
@@ -156,13 +172,6 @@ describe('voice visualization motion', () => {
 
     expect(glow.result.current.driver.value.levelResponse).toBe(GLOW_STYLE.levelResponse);
     expect(wave.result.current.driver.value.levelResponse).toBe(WAVE_STYLE.levelResponse);
-  });
-
-  it('starts with a live level when one is given', () => {
-    const { result } = renderVisualization({ audioLevel: { value: 0.6 } as never });
-
-    expect(result.current.driver.value.voice).toBe(0);
-    expect(result.current.driver.value.mic).toBe(0);
   });
 
   it('bounces on a tap, unless motion is reduced', async () => {

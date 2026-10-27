@@ -195,5 +195,29 @@ describe('ai-components dictation', () => {
       });
       expect(levels).toEqual([0.4, 0.7]);
     });
+
+    it('leaves the composer text alone for dictation started elsewhere', async () => {
+      mockNativeModule = createNativeModule();
+      const composer = renderComposer();
+      fireEvent.changeText(composer.getByPlaceholderText('Ask anything'), 'my draft');
+
+      const { result } = renderHook(() =>
+        aiComponents.useDictation(undefined, { source: 'voice-mode' }),
+      );
+      await act(async () => {
+        await result.current.start();
+      });
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'listening' });
+        DeviceEventEmitter.emit('AIDictationOnResult', { isFinal: true, text: 'spoken question' });
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'idle' });
+      });
+
+      expect(aiComponents.dictationStore.getLatestValue()).toMatchObject({
+        source: 'voice-mode',
+        transcript: 'spoken question',
+      });
+      expect(composer.getByPlaceholderText('Ask anything').props.value).toBe('my draft');
+    });
   });
 });

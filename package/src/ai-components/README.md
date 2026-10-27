@@ -259,6 +259,7 @@ Neither has a size of its own: each draws in the middle of the view it is given,
 | `audioLevel`   | `SharedValue<number \| null>`                                       | no       | The level of whoever is talking, from 0 to 1, read once a frame on the UI thread. Feed it at 15 Hz or more for the motion to follow the words. While it is `null` or absent, speech animates on its own. |
 | `colors`       | `string[]`                                                          | no       | One to five colors. Past five are ignored, and colors that cannot be read are skipped. Defaults to the theme's `voiceVisualization.colors`.                                                              |
 | `expressivity` | `number`                                                            | no       | From 0 to 2: how far and how fast it moves. Colors never change with it. Defaults to `1`.                                                                                                                |
+| `stateLabels`  | `Partial<Record<VoiceAgentState, string>>`                          | no       | What screen readers read as the value for each state, for example to translate them. Defaults to "Ready", "Connecting", "Listening", "Thinking" and "Speaking".                                          |
 
 ```tsx
 import { useDictationAudioLevel, VoiceGlow, VoiceWave } from 'stream-chat-react-native/ai-components';
@@ -287,7 +288,7 @@ The motion runs entirely on the UI thread with Reanimated and Skia, so the visua
 
 **Theming.** The theme's `voiceVisualization.colors` are the default palette (the accent color unless you set them). The visualizations draw for a light or a dark background following `voiceVisualization.backdropColor` when you set it, and the system color scheme otherwise.
 
-**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"), as on iOS and Android. Pass `accessibilityLabel` and `accessibilityValue` to change them, for example to translate them. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
+**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"), as on iOS and Android. Pass `stateLabels` to translate the state values, `accessibilityLabel` to change the label, or `accessibilityValue` to replace the value outright. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
 
 **Differences from the native SDKs.** The glow has no `rendering` option: the shader runs on every Android version through Skia, so there is no Canvas fallback, and it does not switch to a cheaper look in battery saver as on Android. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
 
