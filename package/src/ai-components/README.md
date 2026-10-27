@@ -22,12 +22,12 @@ These components used to ship as the standalone `@stream-io/chat-react-native-ai
 
 2. Dictation is now opt-in on iOS (see [Dictation](#dictation-speech-to-text)): add `$StreamChatEnableDictation = true` to your `Podfile`, or, with Expo, replace the `@stream-io/chat-react-native-ai` config plugin with `stream-chat-expo`.
 3. Keep the `export-namespace-from` Babel plugin (see [Installation](#️-installation)); it is needed by the `zod` dependency.
-4. `ShimmeringView` and `toHexFromRNColor` were removed. `AITypingIndicatorView` now uses the SDK's native shimmer, so `@shopify/react-native-skia` is only needed for charts.
+4. `ShimmeringView` and `toHexFromRNColor` were removed. `AITypingIndicatorView` now uses the SDK's native shimmer, so `@shopify/react-native-skia` is only needed for charts and the voice visualizations.
 5. `SpeechToTextButton` and `isDictationAvailable` are now exported.
 
 ## 🛠️ Installation
 
-The AI components ship with `stream-chat-react-native` and `stream-chat-expo`; their JavaScript dependencies are installed with them. Charts additionally need the following peer dependencies, which only apps using the AI components have to install:
+The AI components ship with `stream-chat-react-native` and `stream-chat-expo`; their JavaScript dependencies are installed with them. Charts and the voice visualizations (`VoiceGlow`, `VoiceWave`) additionally need the following peer dependencies, which only apps using the AI components have to install:
 
 ```bash
 yarn add victory-native @shopify/react-native-skia
@@ -243,6 +243,53 @@ const options = {
 ```
 
 The `SpeechToTextButton` is already integrated within the `ComposerView`, however feel free to use it elsewhere as well. It renders nothing when dictation is not part of the build (see [Dictation](#dictation-speech-to-text)); `isDictationAvailable()` tells you whether it is.
+
+### `VoiceGlow` and `VoiceWave`
+
+Two visualizations of a voice agent, alike on iOS, Android, the web and React Native:
+
+- `VoiceGlow`: a soft, airy globe whose color masses orbit inside it and swell with speech. It is drawn by a Skia shader, every pixel on the GPU.
+- `VoiceWave`: a single string carrying a wave packet that erupts with speech, its colors flowing along it.
+
+Neither has a size of its own: each draws in the middle of the view it is given, the glow about half as wide as its shorter side and the wave about 80% as wide, so give the glow a square and the wave a square or a wide box. Both take the same props, and any other `View` prop goes to their root:
+
+| Name           | Type                                                                | Required | Description                                                                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`        | `'idle' \| 'connecting' \| 'listening' \| 'thinking' \| 'speaking'` | yes      | What the agent is doing. The states differ only in how it moves, never in its colors, and changing the state eases from one motion into the next.                                                        |
+| `audioLevel`   | `SharedValue<number \| null>`                                       | no       | The level of whoever is talking, from 0 to 1, read once a frame on the UI thread. Feed it at 15 Hz or more for the motion to follow the words. While it is `null` or absent, speech animates on its own. |
+| `colors`       | `string[]`                                                          | no       | One to five colors. Past five are ignored, and colors that cannot be read are skipped. Defaults to the theme's `voiceVisualization.colors`.                                                              |
+| `expressivity` | `number`                                                            | no       | From 0 to 2: how far and how fast it moves. Colors never change with it. Defaults to `1`.                                                                                                                |
+
+```tsx
+import { useDictationAudioLevel, VoiceGlow, VoiceWave } from 'stream-chat-react-native/ai-components';
+
+const VoiceAgent = ({ agentState, isListening }) => {
+  const micLevel = useDictationAudioLevel();
+
+  return (
+    <>
+      <VoiceGlow state={agentState} style={{ width: 320, height: 320 }} />
+      <VoiceWave
+        audioLevel={micLevel}
+        state={isListening ? 'listening' : 'idle'}
+        style={{ width: '100%', height: 120 }}
+      />
+    </>
+  );
+};
+```
+
+The motion runs entirely on the UI thread with Reanimated and Skia, so the visualizations stay smooth while the JS thread is busy streaming a reply, and a changing `audioLevel` re-renders nothing.
+
+**Audio level.** `useDictationAudioLevel()` gives the microphone's level while `useDictation` (or the `SpeechToTextButton`) is listening, and `null` otherwise. For any other source, such as a remote participant's audio level from Stream Video, keep a shared value of your own and write to it: `const level = useSharedValue<number | null>(null)`, then `level.value = participant.audioLevel`.
+
+**Interaction.** Tapping the shape bounces it and sends out a ripple, and a hovering mouse or pen ripples it too. Touches are only observed, never claimed, so a `Pressable` around the visualization still gets its press; touches beside the shape reach whatever is behind it.
+
+**Theming.** The theme's `voiceVisualization.colors` are the default palette (the accent color unless you set them). The visualizations draw for a light or a dark background following `voiceVisualization.backdropColor` when you set it, and the system color scheme otherwise.
+
+**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"), as on iOS and Android. Pass `accessibilityLabel` and `accessibilityValue` to change them, for example to translate them. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
+
+**Differences from the native SDKs.** The glow has no `rendering` option: the shader runs on every Android version through Skia, so there is no Canvas fallback, and it does not switch to a cheaper look in battery saver as on Android. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
 
 ### Theming
 

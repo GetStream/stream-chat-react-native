@@ -1,7 +1,7 @@
 import React from 'react';
 import { DeviceEventEmitter } from 'react-native';
 
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react-native';
 
 import * as aiComponents from '../index';
 import { AIDictation } from '../native/AIDictation';
@@ -161,6 +161,39 @@ describe('ai-components dictation', () => {
         isRecording: false,
         state: 'idle',
       });
+    });
+
+    it('streams the microphone level while listening and clears it afterwards', () => {
+      mockNativeModule = createNativeModule();
+      const levels: number[] = [];
+      const unsubscribe = AIDictation.addLevelListener(({ level }) => levels.push(level));
+      const { result, unmount } = renderHook(() => aiComponents.useDictationAudioLevel());
+      expect(result.current.value).toBeNull();
+
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'listening' });
+        DeviceEventEmitter.emit('AIDictationOnLevel', { level: 0.4 });
+      });
+      expect(levels).toEqual([0.4]);
+      expect(result.current.value).toBe(0.4);
+
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'idle' });
+      });
+      expect(result.current.value).toBeNull();
+
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnLevel', { level: 0.7 });
+        DeviceEventEmitter.emit('AIDictationOnError', { code: 'X', message: 'boom' });
+      });
+      expect(result.current.value).toBeNull();
+
+      unsubscribe();
+      unmount();
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnLevel', { level: 0.9 });
+      });
+      expect(levels).toEqual([0.4, 0.7]);
     });
   });
 });
