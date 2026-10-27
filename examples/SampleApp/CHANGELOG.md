@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.16.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.1...sampleapp@v4.16.2) (2026-10-27)
+
+### Bug Fixes
+
+* bump to latest rngh ([#3878](https://github.com/GetStream/stream-chat-react-native/issues/3878)) ([ad4e646](https://github.com/GetStream/stream-chat-react-native/commit/ad4e6466b684ee88510a34c367d05398f05b3acc))
+* onerror ws lifecycle handling ([#3893](https://github.com/GetStream/stream-chat-react-native/issues/3893)) ([61922d7](https://github.com/GetStream/stream-chat-react-native/commit/61922d7335df20c51350d9fbaac364ab985514d9))
+
 ## [4.16.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.0...sampleapp@v4.16.1) (2026-10-19)
 
 ### Refactors
