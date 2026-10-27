@@ -63,6 +63,25 @@ describe('createAttachmentsCompositionMiddleware', () => {
     expect(titles).toEqual(['finished-attachment', 'pending-attachment']);
   });
 
+  it('keeps attachments that are not uploads as they are', () => {
+    // e.g. the attachments of an edited message that never went through an upload
+    const product = { title: 'Camp stove', type: 'product' };
+    const giphy = { thumb_url: 'https://media.giphy.com/cat.gif', title: 'cat', type: 'giphy' };
+    const { next } = runComposeHandler([
+      { ...product, localMetadata: { id: 'product' } },
+      createLocalImageAttachment('finished-attachment', 'finished'),
+      { ...giphy, localMetadata: { id: 'giphy' } },
+    ] as LocalAttachment[]);
+
+    const composedState = next.mock.calls[0][0] as {
+      message: { attachments: { title?: string }[] };
+    };
+
+    expect(composedState.message.attachments[0]).toEqual(product);
+    expect(composedState.message.attachments[1].title).toBe('finished-attachment');
+    expect(composedState.message.attachments[2]).toEqual(giphy);
+  });
+
   it('forwards without attachments when every attachment is blocked', () => {
     const { forward, next } = runComposeHandler([
       createLocalImageAttachment('blocked-1', 'blocked'),
