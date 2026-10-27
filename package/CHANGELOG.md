@@ -1,5 +1,16 @@
 # Change Log
 
+## [9.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.1...v9.10.2) (2026-10-27)
+
+### Bug Fixes
+
+* bump to latest rngh ([#3878](https://github.com/GetStream/stream-chat-react-native/issues/3878)) ([ad4e646](https://github.com/GetStream/stream-chat-react-native/commit/ad4e6466b684ee88510a34c367d05398f05b3acc))
+* channel list swipable stuck state after unmount ([fcc5dfe](https://github.com/GetStream/stream-chat-react-native/commit/fcc5dfee8dcc4cee812bdd17e59cae41bf927777))
+* gracefully handle empty arrays on poll preview label ([#3897](https://github.com/GetStream/stream-chat-react-native/issues/3897)) ([768b06c](https://github.com/GetStream/stream-chat-react-native/commit/768b06cd71e36c6e4a6aa072675fac1f5ff4b8c9))
+* onerror ws lifecycle handling ([#3893](https://github.com/GetStream/stream-chat-react-native/issues/3893)) ([61922d7](https://github.com/GetStream/stream-chat-react-native/commit/61922d7335df20c51350d9fbaac364ab985514d9))
+* stop dropping custom attachments on edit ([87b6c02](https://github.com/GetStream/stream-chat-react-native/commit/87b6c02da30c43c162cff66103f1aebc0c030902))
+* stop dropping custom attachments on edit ([#3898](https://github.com/GetStream/stream-chat-react-native/issues/3898)) ([91f8991](https://github.com/GetStream/stream-chat-react-native/commit/91f899130cfb0b1d04a0743ec8406f50ff691c14))
+
 ## [9.10.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.0...v9.10.1) (2026-10-19)
 
 ### Bug Fixes
