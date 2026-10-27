@@ -70,8 +70,10 @@ exports[`SendButton should render a SendButton 1`] = `
           }
           hoverAnimationInDuration={50}
           hoverAnimationOutDuration={100}
+          immediatePressOut={false}
           longPressAnimationOutDuration={100}
           longPressDuration={500}
+          moduleId={-1}
           onButtonInteractionFinished={[Function]}
           onButtonLongPress={[Function]}
           onButtonPress={[Function]}
@@ -99,7 +101,7 @@ exports[`SendButton should render a SendButton 1`] = `
               ],
             ]
           }
-          tapAnimationInDuration={50}
+          tapAnimationInDuration={130}
           tapAnimationOutDuration={100}
           testID="send-button"
           testOnly_onPress={[Function]}
@@ -250,8 +252,10 @@ exports[`SendButton should render a SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -279,7 +283,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="upload-photo-touchable"
               testOnly_onPress={[Function]}
@@ -405,8 +409,10 @@ exports[`SendButton should render a SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -434,7 +440,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="take-photo-touchable"
               testOnly_onPress={[Function]}
@@ -589,8 +595,10 @@ exports[`SendButton should render a SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -618,7 +626,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="upload-file-touchable"
               testOnly_onPress={[Function]}
@@ -740,8 +748,10 @@ exports[`SendButton should render a SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -769,7 +779,7 @@ exports[`SendButton should render a SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="commands-touchable"
               testOnly_onPress={[Function]}
@@ -1024,8 +1034,10 @@ exports[`SendButton should render a disabled SendButton 1`] = `
           }
           hoverAnimationInDuration={50}
           hoverAnimationOutDuration={100}
+          immediatePressOut={false}
           longPressAnimationOutDuration={100}
           longPressDuration={500}
+          moduleId={-1}
           onButtonInteractionFinished={[Function]}
           onButtonLongPress={[Function]}
           onButtonPress={[Function]}
@@ -1053,7 +1065,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               ],
             ]
           }
-          tapAnimationInDuration={50}
+          tapAnimationInDuration={130}
           tapAnimationOutDuration={100}
           testID="send-button"
           testOnly_onPress={[Function]}
@@ -1204,8 +1216,10 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -1233,7 +1247,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="upload-photo-touchable"
               testOnly_onPress={[Function]}
@@ -1359,8 +1373,10 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -1388,7 +1404,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="take-photo-touchable"
               testOnly_onPress={[Function]}
@@ -1543,8 +1559,10 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -1572,7 +1590,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="upload-file-touchable"
               testOnly_onPress={[Function]}
@@ -1694,8 +1712,10 @@ exports[`SendButton should render a disabled SendButton 1`] = `
               }
               hoverAnimationInDuration={50}
               hoverAnimationOutDuration={100}
+              immediatePressOut={false}
               longPressAnimationOutDuration={100}
               longPressDuration={500}
+              moduleId={-1}
               onButtonInteractionFinished={[Function]}
               onButtonLongPress={[Function]}
               onButtonPress={[Function]}
@@ -1723,7 +1743,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
                   ],
                 ]
               }
-              tapAnimationInDuration={50}
+              tapAnimationInDuration={130}
               tapAnimationOutDuration={100}
               testID="commands-touchable"
               testOnly_onPress={[Function]}

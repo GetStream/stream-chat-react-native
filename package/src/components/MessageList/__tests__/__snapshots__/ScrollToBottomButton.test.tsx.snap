@@ -84,8 +84,10 @@ exports[`ScrollToBottomButton should render the message notification and match s
         }
         hoverAnimationInDuration={50}
         hoverAnimationOutDuration={100}
+        immediatePressOut={false}
         longPressAnimationOutDuration={100}
         longPressDuration={500}
+        moduleId={-1}
         onButtonInteractionFinished={[Function]}
         onButtonLongPress={[Function]}
         onButtonPress={[Function]}
@@ -113,7 +115,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
             ],
           ]
         }
-        tapAnimationInDuration={50}
+        tapAnimationInDuration={130}
         tapAnimationOutDuration={100}
         testID="scroll-to-bottom-button"
         testOnly_onPress={[Function]}

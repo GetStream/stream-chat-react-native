@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - develop
+  # Manual runs cut pre-release (RC) builds from the branch that defines them. GitHub reads this
+  # trigger from the default branch, so it has to live here even though develop never uses it.
+  workflow_dispatch:
 
 permissions:
   id-token: write # for OIDC / npm provenance if you use it
@@ -13,6 +16,8 @@ permissions:
 
 jobs:
   publish:
+    # main and develop release on push only; a manual run there would cut an out-of-band release.
+    if: github.event_name == 'push' || github.ref == 'refs/heads/V10'
     runs-on: ubuntu-latest
     strategy:
       matrix:

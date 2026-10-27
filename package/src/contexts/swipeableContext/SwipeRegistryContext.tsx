@@ -38,6 +38,7 @@ export const SwipeRegistryProvider = ({ children }: PropsWithChildren) => {
       const registered = swipeablesRef.current?.get(id);
       if (registered === close) {
         swipeablesRef.current?.delete(id);
+        openRef.current?.delete(id);
       }
     };
   }, []);
