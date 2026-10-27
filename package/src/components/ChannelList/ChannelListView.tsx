@@ -36,7 +36,7 @@ export type ChannelListState = {
 
 export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
-  'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect'
+  'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect' | 'paginator'
 > &
   ChannelListState;
 
@@ -163,7 +163,6 @@ export const ChannelListView = (props: ChannelListViewProps) => {
     additionalFlatListProps,
     loadMoreThreshold,
     loadNextPage,
-    paginator,
     refreshList,
     reloadList,
     setFlatListRef,
@@ -175,7 +174,6 @@ export const ChannelListView = (props: ChannelListViewProps) => {
         additionalFlatListProps,
         loadMoreThreshold,
         loadNextPage,
-        paginator,
         refreshList,
         reloadList,
         setFlatListRef,

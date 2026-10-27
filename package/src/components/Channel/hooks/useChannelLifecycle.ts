@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { ChannelWatchStatus } from 'stream-chat';
 import type { Channel, StreamChat } from 'stream-chat';
 
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
@@ -107,7 +108,9 @@ export const useChannelLifecycle = ({
       }
 
       if (
-        (!channel.initialized || !channel.messagePaginator.isActiveIntervalAtHead) &&
+        (!channel.initialized ||
+          !channel.messagePaginator.isActiveIntervalAtHead ||
+          channel.watchStatus === ChannelWatchStatus.NotWatching) &&
         initializeOnMount
       ) {
         try {

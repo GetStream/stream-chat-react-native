@@ -371,7 +371,9 @@ timestampFormatter(...) }}` breaks date rendering outright. Pass `--all` for the
 
 ## The old→new key table
 
-Every old key maps to exactly one new key. The full table (389 rows) is
+Every old key maps to one new key, except `a11y/Double tap to open`, which v10 split between the gallery and the
+channel list row: its entry lists the second key under `alsoKeys`, and an old translation applies to both. The full
+table (389 rows) is
 [`i18n-v10-key-map.json`](./i18n-v10-key-map.json). Keys absent from it were dead in v9 and have been removed.
 The exception is four formatter expressions the SDK never rendered but shipped in `en.json`, so apps called them
 directly: `duration/Location end at`, `duration/Remind Me`, `timestamp/ReminderNotification` and

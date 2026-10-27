@@ -3,7 +3,7 @@ import { AppState, AppStateStatus, View } from 'react-native';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
-import { asTimestampNS, StreamChat } from 'stream-chat';
+import { asTimestampNS, ChannelWatchStatus, StreamChat } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
@@ -153,7 +153,7 @@ describe('Channel', () => {
     } as never);
     draft.initialized = true;
     const watchSpy = jest.spyOn(draft, 'watch');
-    const reloadSpy = jest.spyOn(draft.messagePaginator, 'reload');
+    const seedSpy = jest.spyOn(draft.messagePaginator, 'reload');
 
     renderComponent({ channel: draft });
     // let the mount effect run to its end
@@ -163,7 +163,7 @@ describe('Channel', () => {
 
     expect(draft.isProvisional).toBe(true);
     expect(watchSpy).not.toHaveBeenCalled();
-    expect(reloadSpy).not.toHaveBeenCalled();
+    expect(seedSpy).not.toHaveBeenCalled();
   });
 
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
@@ -757,6 +757,45 @@ describe('Channel initial load useEffect', () => {
     await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 
+  describe('watch on mount for an initialized channel at the head', () => {
+    const mountLoadedChannel = async (watchStatus: ChannelWatchStatus) => {
+      const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) }));
+      const mockedChannel = generateChannelResponse({ messages });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+      jest.spyOn(channel.messagePaginator, 'isActiveIntervalAtHead', 'get').mockReturnValue(true);
+      channel.watchStatus = watchStatus;
+      const watchSpy = jest.fn();
+      channel.watch = watchSpy;
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      renderComponent({ channel, markReadOnMount: false });
+      // The seed runs after the watch decision, so the mount effect has made it by then.
+      await waitFor(() => expect(seedSpy).toHaveBeenCalled());
+
+      return watchSpy;
+    };
+
+    it('watches a channel that was loaded without a watch, such as a search result', async () => {
+      const watchSpy = await mountLoadedChannel(ChannelWatchStatus.NotWatching);
+
+      expect(watchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not watch a channel that is already watched', async () => {
+      const watchSpy = await mountLoadedChannel(ChannelWatchStatus.Watching);
+
+      expect(watchSpy).not.toHaveBeenCalled();
+    });
+
+    it('leaves a channel whose watch dropped with the connection to the connection recovery', async () => {
+      const watchSpy = await mountLoadedChannel(ChannelWatchStatus.WasWatching);
+
+      expect(watchSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('message page size', () => {
     const mountChannel = async () => {
       const mockedChannel = generateChannelResponse({ messages: [] });
@@ -979,7 +1018,7 @@ describe('Channel initial load useEffect', () => {
     await channel.watch();
 
     // Call through to the real reload so the resync actually reconciles (and we can assert it ran).
-    const reloadSpy = jest.spyOn(channel, 'reload');
+    const seedSpy = jest.spyOn(channel, 'reload');
 
     renderComponent({ channel });
 
@@ -1007,7 +1046,7 @@ describe('Channel initial load useEffect', () => {
     // The reload re-watches and reconciles, but preserves the failed (locally-unsent) messages —
     // the 10 originals + 10 failed remain.
     await waitFor(() => {
-      expect(reloadSpy).toHaveBeenCalled();
+      expect(seedSpy).toHaveBeenCalled();
       expect(channel.messagePaginator.anchoredHeadItems.length).toBe(20);
     });
   });

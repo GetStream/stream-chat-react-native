@@ -69,7 +69,7 @@ const sectionElement = () => (
               mutedUsers: [],
               mutedUsersStore,
               on: () => ({ unsubscribe: () => undefined }),
-              userID: 'me',
+              userId: 'me',
             },
           } as never
         }

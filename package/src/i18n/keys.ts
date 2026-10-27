@@ -169,6 +169,7 @@ export type TranslationCatalog = {
   'channelPreview.deliveryStatus.read.accessibilityLabel': 'Read, sent by you';
   'channelPreview.deliveryStatus.sent.accessibilityLabel': 'Sent by you';
   'channelPreview.displayName.others.label': 'and {{ count }} others';
+  'channelPreview.doubleTapToOpen.accessibilityLabel': 'Double tap to open';
   'channelPreview.lastMessage.accessibilityLabel': 'Last message {{date}}';
   'channelPreview.messageFailed.error': 'Message failed to send';
   'channelPreview.muted.accessibilityLabel': 'Muted';
@@ -219,6 +220,7 @@ export type TranslationCatalog = {
   'indicators.loading.error': 'Error loading';
   'indicators.loading.messages.error': 'Error loading messages for this channel...';
   'indicators.loading.messages.text': 'Loading messages...';
+  'indicators.loading.replies.error': 'Error loading replies...';
   'message.banUser.label': 'Ban User';
   'message.blockUser.label': 'Block User';
   'message.blockUserConfirm.label': 'Block';
@@ -468,6 +470,7 @@ export type BundledTranslationKey =
   | 'channelPreview.deliveryStatus.delivered.accessibilityLabel'
   | 'channelPreview.deliveryStatus.read.accessibilityLabel'
   | 'channelPreview.deliveryStatus.sent.accessibilityLabel'
+  | 'channelPreview.doubleTapToOpen.accessibilityLabel'
   | 'channelPreview.lastMessage.accessibilityLabel'
   | 'channelPreview.muted.accessibilityLabel'
   | 'channelPreview.pinned.accessibilityLabel'

@@ -328,6 +328,8 @@ describe('Thread', () => {
       await waitFor(() => {
         expect(screen.getByTestId('loading-error')).toBeTruthy();
       });
+      // The thread's own copy, not the channel's "Error loading messages for this channel...".
+      expect(screen.getByTestId('loading-error')).toHaveTextContent('Error loading replies...');
     });
 
     it('retries the reply query — and only the reply query — from the indicator', async () => {
@@ -511,10 +513,10 @@ describe('Thread lifecycle', () => {
         generateMessage({ reply_count: 3, user }),
       );
       const readState = (unreadMessageCount: number) => ({
-        [chatClient.userID as string]: {
+        [chatClient.userId as string]: {
           lastReadAt: 1,
           unreadMessageCount,
-          user: { id: chatClient.userID as string },
+          user: { id: chatClient.userId as string },
         },
       });
       return { markRead, parentMessage, readState, testChannel };

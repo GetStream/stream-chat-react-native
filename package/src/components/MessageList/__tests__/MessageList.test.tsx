@@ -1375,7 +1375,9 @@ describe('MessageList in a thread', () => {
     expect(markReadLocally).not.toHaveBeenCalled();
   });
 
-  it("places the unread separator from the thread's unread state, not the channel's", async () => {
+  // The LLC seeds the thread's snapshot from the channel's read state, which says nothing about the
+  // replies, so a thread draws no separator from either snapshot.
+  it('draws no unread separator in a thread', async () => {
     const { channel, queryAllByLabelText, replies, threadInstance } = await setup();
 
     act(() =>
@@ -1386,12 +1388,28 @@ describe('MessageList in a thread', () => {
     );
     expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
 
-    act(() =>
-      threadInstance.messagePaginator.unreadStateSnapshot.partialNext({
-        firstUnreadMessageId: replies[3].id,
-        unreadCount: 2,
-      }),
-    );
-    await waitFor(() => expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(1));
+    // The first reply too, whose separator row would be the parent message.
+    for (const firstUnread of [replies[0], replies[3]]) {
+      await act(async () => {
+        threadInstance.messagePaginator.unreadStateSnapshot.partialNext({
+          firstUnreadMessageId: firstUnread.id,
+          unreadCount: 2,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
+    }
+
+    // The live boundary, from the read time rather than a frozen first-unread ID.
+    await act(async () => {
+      threadInstance.messagePaginator.unreadStateSnapshot.next({
+        firstUnreadMessageId: null,
+        lastReadAt: replies[1].created_at,
+        lastReadMessageId: replies[1].id,
+        unreadCount: 3,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
   });
 });

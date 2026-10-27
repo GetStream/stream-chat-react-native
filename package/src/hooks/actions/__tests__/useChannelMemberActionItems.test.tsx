@@ -35,15 +35,15 @@ const createMemberMock = (userId = 'target-user-id'): ChannelMemberResponse =>
     user_id: userId,
   }) as ChannelMemberResponse;
 
-const createChannelMock = (params?: { blockedUserIds?: string[]; userID?: string }): Channel => {
-  const { blockedUserIds = [], userID = 'current-user-id' } = params ?? {};
+const createChannelMock = (params?: { blockedUserIds?: string[]; userId?: string }): Channel => {
+  const { blockedUserIds = [], userId = 'current-user-id' } = params ?? {};
   return {
     getClient: () => ({
       blockedUsers: {
         getLatestValue: () => ({ userIds: blockedUserIds }),
         subscribeWithSelector: () => () => {},
       },
-      userID,
+      userId,
     }),
   } as unknown as Channel;
 };
@@ -84,7 +84,7 @@ describe('useChannelMemberActionItems', () => {
   });
 
   it('returns no action items when the member is the current user', () => {
-    const currentUserChannel = createChannelMock({ userID: 'target-user-id' });
+    const currentUserChannel = createChannelMock({ userId: 'target-user-id' });
 
     const { result } = renderHook(() =>
       useChannelMemberActionItems({ channel: currentUserChannel, member }),
@@ -101,7 +101,7 @@ describe('useChannelMemberActionItems', () => {
     });
 
     const wrapper = ({ children }: PropsWithChildren) => (
-      <ChatProvider value={{ client: { mutedUsersStore, userID: 'current-user-id' } } as never}>
+      <ChatProvider value={{ client: { mutedUsersStore, userId: 'current-user-id' } } as never}>
         {children}
       </ChatProvider>
     );
@@ -166,7 +166,7 @@ describe('useChannelMemberActionItems', () => {
     jest
       .spyOn(useChannelOwnCapabilitiesModule, 'useChannelOwnCapabilities')
       .mockReturnValue(['update-channel-members']);
-    const currentUserChannel = createChannelMock({ userID: 'target-user-id' });
+    const currentUserChannel = createChannelMock({ userId: 'target-user-id' });
 
     const { result } = renderHook(() =>
       useChannelMemberActionItems({ channel: currentUserChannel, member }),

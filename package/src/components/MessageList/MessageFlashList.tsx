@@ -321,7 +321,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       channel,
       markRead,
       readEvents,
-      userId: client.userID,
+      userId: client.userId,
     });
 
   const renderItem = useCallback(
@@ -343,7 +343,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
-    client.userID,
+    client.userId,
   );
 
   const [autoscrollToRecent, setAutoscrollToRecent] = useState(true);

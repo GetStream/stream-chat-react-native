@@ -343,7 +343,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
-  const isMyMessage = client && message && client.userID === message.user?.id;
+  const isMyMessage = client && message && client.userId === message.user?.id;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {

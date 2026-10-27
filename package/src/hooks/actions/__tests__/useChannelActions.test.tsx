@@ -58,7 +58,7 @@ const createClient = () => ({
   unblockUser: jest.fn(),
   unmuteUser: jest.fn(),
   uploadImage: jest.fn().mockResolvedValue({ file: 'https://cdn.example.com/uploaded.png' }),
-  userID: 'current-user-id',
+  userId: 'current-user-id',
 });
 
 const createChannel = (client: ReturnType<typeof createClient>) =>

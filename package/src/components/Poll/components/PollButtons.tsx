@@ -229,7 +229,7 @@ export const EndVoteButton = () => {
   const { client } = useChatContext();
   const styles = useStyles();
 
-  return !isClosed && createdBy?.id === client.userID ? (
+  return !isClosed && createdBy?.id === client.userId ? (
     <GenericPollButton
       label={t('poll.endVote.label', 'End Vote')}
       onPress={endVote}

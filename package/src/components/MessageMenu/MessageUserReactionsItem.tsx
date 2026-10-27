@@ -36,7 +36,7 @@ export const MessageUserReactionsItem = ({
   const styles = useStyles();
 
   const { client } = useChatContext();
-  const isOwnReaction = client.userID === id;
+  const isOwnReaction = client.userId === id;
   const { t } = useTranslationContext();
 
   const { handleReaction } = useMessageContext();

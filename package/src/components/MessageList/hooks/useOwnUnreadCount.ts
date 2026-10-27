@@ -14,7 +14,7 @@ import { useStateStore } from '../../../hooks/useStateStore';
  */
 export const useOwnUnreadCount = (channel: Channel | undefined) => {
   const { client } = useChatContext();
-  const userId = client?.userID;
+  const userId = client?.userId;
   const selector = useMemo(
     () => (state: ReadState) => ({
       unreadCount: userId ? (state.read[userId]?.unread_messages ?? 0) : 0,

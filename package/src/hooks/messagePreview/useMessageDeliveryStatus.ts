@@ -5,7 +5,7 @@ import {
   LocalMessage,
   MessageReceiptsSnapshot,
   MessageResponse,
-  UserResponse,
+  MsgRef,
 } from 'stream-chat';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -25,12 +25,18 @@ type MessageDeliveryStatusProps = {
   isReadEventsEnabled: boolean;
 };
 
-const hasOtherUser = (users: UserResponse[] | undefined, currentUserId: string | undefined) =>
-  !!users && (users.length > 1 || (users.length === 1 && users[0].id !== currentUserId));
+/** Whether a cursor has reached a message created at `createdAt`, even from a later message. */
+const hasCursorReached = (createdAt: number | undefined, cursor: MsgRef | null) =>
+  !!cursor && typeof createdAt === 'number' && Number.isFinite(createdAt)
+    ? createdAt <= cursor.timestamp
+    : false;
 
 /**
  * Delivery and read status of the last message when it is the current user's, derived from the
  * channel's `messageReceiptsTracker.snapshotStore`, the same store the in-list receipt hooks use.
+ *
+ * It compares the message against `lastReadRefByOthers` and `lastDeliveredRefByOthers`, the furthest
+ * points anyone else has reached, so a message stays read once another member reads past it.
  *
  * @param params.channel The channel the message belongs to.
  * @param params.lastMessage The channel's last message.
@@ -44,15 +50,15 @@ export const useMessageDeliveryStatus = ({
   isReadEventsEnabled = true,
 }: MessageDeliveryStatusProps) => {
   const { client } = useChatContext();
-  const messageId = lastMessage?.id ?? '';
   const currentUserId = client.user?.id;
+  const createdAt = lastMessage?.created_at;
 
   const selector = useCallback(
     (snapshot: MessageReceiptsSnapshot) => ({
-      isDelivered: hasOtherUser(snapshot.deliveredByMessageId[messageId], currentUserId),
-      isRead: hasOtherUser(snapshot.readersByMessageId[messageId], currentUserId),
+      isDelivered: hasCursorReached(createdAt, snapshot.lastDeliveredRefByOthers),
+      isRead: hasCursorReached(createdAt, snapshot.lastReadRefByOthers),
     }),
-    [currentUserId, messageId],
+    [createdAt],
   );
 
   const { isDelivered, isRead } = useStateStore(

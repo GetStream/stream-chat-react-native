@@ -33,7 +33,7 @@ const LoadingErrorWrapper = (props: React.PropsWithChildren<LoadingErrorWrapperP
 
 export type LoadingErrorProps = {
   error?: Error;
-  listType?: 'channel' | 'message' | 'default';
+  listType?: 'channel' | 'message' | 'thread' | 'default';
   loadNextPage?: () => Promise<void>;
   retry?: () => void;
 };
@@ -62,6 +62,13 @@ export const LoadingErrorIndicator = (props: LoadingErrorProps) => {
             'indicators.loading.messages.error',
             'Error loading messages for this channel...',
           )}
+        />
+      );
+    case 'thread':
+      return (
+        <LoadingErrorWrapper
+          onPress={retry}
+          text={t('indicators.loading.replies.error', 'Error loading replies...')}
         />
       );
     default:

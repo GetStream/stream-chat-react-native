@@ -55,7 +55,7 @@ const t = ((
 const OWN_USER_ID = 'own-user';
 const channel = {
   cid: 'messaging:test',
-  getClient: () => ({ userID: OWN_USER_ID }),
+  getClient: () => ({ userId: OWN_USER_ID }),
 } as unknown as Channel;
 
 const renderStatusText = () => {

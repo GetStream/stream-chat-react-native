@@ -10,5 +10,5 @@ export const useIsPollCreatedByCurrentUser = () => {
   const { createdBy } = usePollState();
   const { client } = useChatContext();
 
-  return createdBy?.id === client.userID;
+  return createdBy?.id === client.userId;
 };

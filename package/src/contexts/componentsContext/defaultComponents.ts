@@ -149,7 +149,6 @@ import { StopMessageStreamingButton } from '../../components/MessageInput/StopMe
 import { DateHeader } from '../../components/MessageList/DateHeader';
 import { InlineDateSeparator } from '../../components/MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator } from '../../components/MessageList/InlineUnreadIndicator';
-import { MessageList } from '../../components/MessageList/MessageList';
 import { MessageSystem } from '../../components/MessageList/MessageSystem';
 import { NetworkDownIndicator } from '../../components/MessageList/NetworkDownIndicator';
 import { ScrollToBottomButton } from '../../components/MessageList/ScrollToBottomButton';
@@ -448,7 +447,6 @@ const components = {
   MessageInputLeadingView,
   MessageInputTrailingView,
   MessageItemView,
-  MessageList,
   MessagePinnedHeader,
   MessageReactionPicker,
   MessageReminderHeader,

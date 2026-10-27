@@ -30,7 +30,7 @@ Docs impact (which getstream.io pages change) is in [`v10-docs-impact.md`](./v10
   4. the `examples/` diff (the migration the team already did on its own apps), the deleted/rewritten tests, and a
      cross-check against the `stream-chat` and `stream-chat-react` v10 breaking-change lists.
 - Not breaking (checked): theme shape (`Theme` is identical), the `icons` map, `DEFAULT_COMPONENTS` slot names except
-  the removed `ThreadMessageComposer`, native modules, podspecs, the Expo config plugin, `registerNativeHandlers` and
+  the removed `ThreadMessageComposer` and `MessageList`, native modules, podspecs, the Expo config plugin, `registerNativeHandlers` and
   the native handler interfaces.
 
 ---
@@ -420,7 +420,7 @@ message input).
 
 ## 9. Component slots, icons and theme
 
-- One slot was removed: `ThreadMessageComposer`. Render the composer you want as a child of `<Thread>`. — §10.2 ·
+- Two slots were removed: `ThreadMessageComposer` and `MessageList`, the ones `<Thread>` read in v9. Render the composer and the list you want as children of `<Thread>`. — §10.2 ·
   #3867
 - No other `DEFAULT_COMPONENTS` slot or icon was added, removed or renamed, and the `Theme` type is identical. What
   changed is the **props and context** those slots receive (sections 3–4) — a custom slot written against v9 contexts

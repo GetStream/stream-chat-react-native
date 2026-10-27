@@ -77,7 +77,7 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
   } = useTheme();
   const styles = useStyles();
   const swipeRegistry = useSwipeRegistryContext();
-  const accessibilityHint = useA11yLabel('attachment.gallery.doubleTapToOpen.accessibilityLabel');
+  const accessibilityHint = useA11yLabel('channelPreview.doubleTapToOpen.accessibilityLabel');
 
   const onPress = useStableCallback(() => {
     if (swipeRegistry?.hasOpen()) {

@@ -76,7 +76,7 @@ const renderSheet = ({
               client: {
                 mutedUsers: [],
                 on: () => ({ unsubscribe: () => undefined }),
-                userID: 'me',
+                userId: 'me',
               },
             } as never
           }
@@ -156,7 +156,7 @@ describe('ChannelMemberActionsSheet', () => {
       <ChatContext.Provider
         value={
           {
-            client: { userID: 'me', mutedUsers: [], on: () => ({ unsubscribe: () => undefined }) },
+            client: { userId: 'me', mutedUsers: [], on: () => ({ unsubscribe: () => undefined }) },
           } as never
         }
       >

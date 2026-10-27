@@ -82,6 +82,7 @@ export const runtimeDefaults = {
   'channelPreview.deliveryStatus.delivered.accessibilityLabel': 'Delivered, sent by you',
   'channelPreview.deliveryStatus.read.accessibilityLabel': 'Read, sent by you',
   'channelPreview.deliveryStatus.sent.accessibilityLabel': 'Sent by you',
+  'channelPreview.doubleTapToOpen.accessibilityLabel': 'Double tap to open',
   'channelPreview.lastMessage.accessibilityLabel': 'Last message {{date}}',
   'channelPreview.muted.accessibilityLabel': 'Muted',
   'channelPreview.pinned.accessibilityLabel': 'Pinned',

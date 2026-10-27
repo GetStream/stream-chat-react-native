@@ -22,7 +22,7 @@ const lastMessageSelector = (state: MessagePaginatorAggregateState) => ({
 });
 
 export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
-  const userId = client.userID;
+  const userId = client.userId;
   const { lastMessage } =
     useStateStore(channel.messagePaginator.aggregateState, lastMessageSelector) ?? {};
 

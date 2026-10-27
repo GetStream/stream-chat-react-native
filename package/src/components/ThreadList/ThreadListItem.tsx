@@ -158,7 +158,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
         channel: nextValue.channel,
         deletedAt: nextValue.deletedAt,
         ownUnreadMessageCount:
-          (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
+          (client.userId && nextValue.read[client.userId]?.unreadMessageCount) || 0,
         parentMessage: nextValue.parentMessage,
       }) as const,
     [client],

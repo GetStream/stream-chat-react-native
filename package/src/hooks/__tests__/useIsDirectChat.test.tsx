@@ -23,7 +23,7 @@ describe('useIsDirectChat', () => {
     jest
       .spyOn(ChatContext, 'useChatContext')
       .mockImplementation(
-        () => ({ client: { userID: OWN_USER_ID } }) as unknown as ChatContextValue,
+        () => ({ client: { userId: OWN_USER_ID } }) as unknown as ChatContextValue,
       );
   });
 

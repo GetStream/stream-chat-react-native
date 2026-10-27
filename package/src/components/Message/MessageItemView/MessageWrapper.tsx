@@ -57,8 +57,9 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   const createdAtTimestamp = message.created_at;
   const messageId = message.id;
   const nextMessageId = nextMessage?.id;
-  const nextMessageIsOwn = nextMessage?.user?.id === client.userID;
+  const nextMessageIsOwn = nextMessage?.user?.id === client.userId;
   const nextMessageCreatedAt = nextMessage?.created_at ?? undefined;
+  const isThreadList = !!messagePaginator.parentMessageId;
 
   // The unread separator goes on the row above the first unread message from another user. It is
   // located per message inside the selector, so the flag stays `false` for every other row and a
@@ -66,7 +67,9 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   const showUnreadSeparatorSelector = useCallback(
     (snapshot: UnreadSnapshotState) => {
       let showUnreadSeparator: boolean;
-      if (snapshot.firstUnreadMessageId) {
+      if (isThreadList) {
+        showUnreadSeparator = false;
+      } else if (snapshot.firstUnreadMessageId) {
         // Frozen boundary (channel open or mark-unread): anchor to the known first unread ID.
         showUnreadSeparator = nextMessageId === snapshot.firstUnreadMessageId;
       } else if (snapshot.unreadCount) {
@@ -103,7 +106,14 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
         unreadCount: showUnreadSeparator ? snapshot.unreadCount : undefined,
       };
     },
-    [createdAtTimestamp, messageId, nextMessageCreatedAt, nextMessageId, nextMessageIsOwn],
+    [
+      createdAtTimestamp,
+      isThreadList,
+      messageId,
+      nextMessageCreatedAt,
+      nextMessageId,
+      nextMessageIsOwn,
+    ],
   );
   const { showUnreadSeparator, unreadCount } = useStateStore(
     messagePaginator.unreadStateSnapshot,
@@ -119,7 +129,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
 
   const showUnreadUnderlay = !!shouldShowUnreadUnderlay && showUnreadSeparator;
 
-  const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
+  const wrapMessageInTheme = client.userId === message.user?.id && !!myMessageTheme;
   const renderDateSeperator = dateSeparatorDate ? (
     <View style={styles.dateSeparatorContainer}>
       <InlineDateSeparator date={dateSeparatorDate} />

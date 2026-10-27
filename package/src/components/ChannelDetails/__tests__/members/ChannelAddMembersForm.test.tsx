@@ -102,7 +102,7 @@ const renderForm = ({
           }}
         >
           <ChatContext.Provider
-            value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+            value={{ client: { notifications: new NotificationManager(), userId: 'me' } } as never}
           >
             <ChannelDetailsContextProvider channel={applyCapabilities(channel, capabilities)}>
               <WithComponents overrides={{ ChannelAddMembersFormContent: AddMembersProbe }}>

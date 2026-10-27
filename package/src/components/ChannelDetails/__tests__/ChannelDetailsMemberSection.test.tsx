@@ -99,7 +99,7 @@ const renderSection = ({
                   mutedUsers: [],
                   notifications: new NotificationManager(),
                   on: () => ({ unsubscribe: () => undefined }),
-                  userID: 'me',
+                  userId: 'me',
                 },
               } as never
             }

@@ -282,9 +282,11 @@ const createNativeMultipartAdapter =
  * Routes multipart file uploads through the native uploader by setting `adapter` on those requests
  * only. Does nothing when native multipart upload is unavailable or the client is already set up.
  *
- * The client's default adapter is left alone: replacing it would require importing axios here to
- * resolve the fallback, and a copy different from `stream-chat`'s would fail every request with an
- * `AxiosError` that `stream-chat` does not recognize.
+ * Uploads go native even when the app installed an axios adapter of its own, as they did in v9;
+ * every other request still goes through the app's adapter. `defaults.adapter` itself is not
+ * replaced: that would require importing axios here to resolve the fallback, and a copy different
+ * from `stream-chat`'s would fail every request with an `AxiosError` that `stream-chat` does not
+ * recognize.
  *
  * @param client The client to install the adapter on.
  */

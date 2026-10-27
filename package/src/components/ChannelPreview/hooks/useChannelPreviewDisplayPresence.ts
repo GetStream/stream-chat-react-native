@@ -11,7 +11,7 @@ import { useSyncClientEventsToChannel } from '../../../hooks/useSyncClientEvents
 const selector = (channel: Channel, client: StreamChat) => {
   const members = channel.state.members;
   const membersCount = Object.keys(members).length;
-  const otherMember = Object.values(members).find((member) => member.user?.id !== client.userID);
+  const otherMember = Object.values(members).find((member) => member.user?.id !== client.userId);
 
   if (membersCount !== 2) return false;
   return otherMember?.user?.online ?? false;

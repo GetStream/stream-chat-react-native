@@ -31,7 +31,7 @@ const buildChannel = () =>
   ({
     cid: 'messaging:test',
     data: {},
-    getClient: () => ({ userID: OWN_USER_ID }),
+    getClient: () => ({ userId: OWN_USER_ID }),
     on: () => ({ unsubscribe: () => undefined }),
   }) as unknown as Channel;
 
@@ -45,7 +45,7 @@ const renderProfile = ({ channel = buildChannel() }: { channel?: Channel } = {})
           userLanguage: 'en',
         }}
       >
-        <ChatProvider value={{ client: { userID: OWN_USER_ID } } as never}>
+        <ChatProvider value={{ client: { userId: OWN_USER_ID } } as never}>
           <ChannelDetailsContextProvider channel={channel}>
             <ChannelDetailsProfile />
           </ChannelDetailsContextProvider>

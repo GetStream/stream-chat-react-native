@@ -150,7 +150,9 @@ export * from './MessageList/hooks/useMarkRead';
 // Only the constant, for integrators running their own `jumpToMessage`.
 export { DEFAULT_HIGHLIGHT_DURATION } from './MessageList/hooks/useMessageListFocus';
 export * from './MessageList/hooks/useMessageList';
+export * from './MessageList/hooks/useOwnUnreadCount';
 export * from './MessageList/hooks/useTypingString';
+export * from './MessageList/hooks/useTypingUsers';
 export * from './MessageList/InlineDateSeparator';
 export * from './MessageList/InlineLoadingMoreIndicator';
 export * from './MessageList/InlineLoadingMoreRecentIndicator';

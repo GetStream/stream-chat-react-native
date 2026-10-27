@@ -197,7 +197,7 @@ export const useCreateMessageActionHandlers = ({
 
     const isMuted = isUserMuted(
       client.mutedUsersStore.getLatestValue().mutedUsers,
-      client.userID,
+      client.userId,
       message.user.id,
     );
 
@@ -371,9 +371,9 @@ export const useCreateMessageActionHandlers = ({
     const userExistingReaction = own_reactions.find((reaction) => {
       // `own_reactions` should only hold the current user's reactions; checked anyway so a bad
       // message update cannot break toggling.
-      if (reaction.user && client.userID === reaction.user.id && reaction.type === reactionType) {
+      if (reaction.user && client.userId === reaction.user.id && reaction.type === reactionType) {
         return true;
-      } else if (reaction.user && client.userID !== reaction.user.id) {
+      } else if (reaction.user && client.userId !== reaction.user.id) {
         console.warn(
           'message.own_reactions contained reactions from a different user, this indicates a bug',
         );

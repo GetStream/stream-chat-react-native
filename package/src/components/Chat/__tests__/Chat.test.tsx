@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
 
-import type { StreamChat } from 'stream-chat';
+import { StreamChat } from 'stream-chat';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -134,6 +134,36 @@ describe('Chat', () => {
     // ...but until NetInfo has probed, isInternetReachable is null and isConnected is all we have.
     act(() => report({ isConnected: true, isInternetReachable: null }));
     expect(chatClient.networkConnection.isOnline).toBe(true);
+  });
+
+  it('keeps a reporter the app registered before mounting', async () => {
+    const statusReporter = jest.fn(() => () => undefined);
+    chatClient.config.set({ client: { networkConnection: { statusReporter } } });
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
+    );
+    await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+
+    expect(chatClient.networkConnection.config.statusReporter).toBe(statusReporter);
+    expect(NetInfo.addEventListener).not.toHaveBeenCalled();
+  });
+
+  it('keeps a reporter passed to the client constructor', async () => {
+    const statusReporter = jest.fn(() => () => undefined);
+    const client = new StreamChat('key', { client: { networkConnection: { statusReporter } } });
+
+    const { getByTestId } = render(
+      <Chat client={client}>
+        <View testID='children' />
+      </Chat>,
+    );
+    await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+
+    expect(client.networkConnection.config.statusReporter).toBe(statusReporter);
+    expect(NetInfo.addEventListener).not.toHaveBeenCalled();
   });
 
   it('keeps the NetInfo listener alive after unmount, because the client outlives <Chat>', async () => {

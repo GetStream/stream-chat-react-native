@@ -75,7 +75,7 @@ const renderRow = ({
                 // `useMutedUsers` reads the mutes reactively off `client.mutedUsersStore`.
                 mutedUsersStore: new StateStore({ mutedUsers }),
                 on: () => ({ unsubscribe: () => undefined }),
-                userID: currentUserId,
+                userId: currentUserId,
               },
             } as never
           }

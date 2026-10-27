@@ -9,9 +9,9 @@ import type { NetworkStatusReporter, StreamChat } from 'stream-chat';
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 
 /**
- * Installs the NetInfo network status reporter on the client and closes the WebSocket while the app
- * is in the background, reopening it in the foreground (push notifications are only delivered while
- * no socket is active).
+ * Installs the NetInfo network status reporter on the client, unless the app registered one, and
+ * closes the WebSocket while the app is in the background, reopening it in the foreground (push
+ * notifications are only delivered while no socket is active).
  *
  * Read the results with `useNetworkConnectionState()` and `useWSConnectionState()`.
  *
@@ -32,7 +32,7 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
 
   const onForeground = useCallback(() => {
     // Without a user ID, opening the connection would raise an unneeded error.
-    if (!clientExists || !client.userID) {
+    if (!clientExists || !client.userId) {
       return;
     }
 
@@ -44,7 +44,7 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
   // A `<Chat>` mounted while the app is already active (Android recreating the activity) never sees
   // the background-to-foreground change that reopens a socket its predecessor closed.
   useEffect(() => {
-    if (!closeConnectionOnBackground || !clientExists || !client.userID) return;
+    if (!closeConnectionOnBackground || !clientExists || !client.userId) return;
     if (AppState.currentState === 'active' && client.wsConnection.connection?.isDisconnected) {
       client.openConnection();
     }
@@ -52,6 +52,11 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
 
   useEffect(() => {
     if (!clientExists) {
+      return;
+    }
+
+    // a reporter the app registered, through `client.config` or the client's constructor wins
+    if (client.config.getConfig('client')?.networkConnection?.statusReporter) {
       return;
     }
 
@@ -74,7 +79,8 @@ export const useConnectionLifecycle = (client: StreamChat, closeConnectionOnBack
 };
 
 /**
- * Subscribes to NetInfo and reports every change to the client. `<Chat>` installs it in an effect.
+ * Subscribes to NetInfo and reports every change to the client. `<Chat>` installs it in an effect,
+ * unless a reporter is registered in `client.config`.
  *
  * When you build the client yourself, install it at construction instead:
  *
