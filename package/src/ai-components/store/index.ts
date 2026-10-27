@@ -6,3 +6,5 @@ export * from './composer/useComposerHasText';
 export * from './composer/useComposerText';
 
 export * from './dictation/store';
+export * from './dictation/useDictationState';
+export * from './dictation/useDictationTranscript';

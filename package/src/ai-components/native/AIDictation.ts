@@ -11,6 +11,10 @@ import NativeAIDictation, {
 const ON_STATE_EVENT = 'AIDictationOnState';
 const ON_RESULT_EVENT = 'AIDictationOnResult';
 const ON_ERROR_EVENT = 'AIDictationOnError';
+const ON_LEVEL_EVENT = 'AIDictationOnLevel';
+
+/** The microphone's level while dictation listens, from 0 to 1. */
+export type DictationLevel = { level: number };
 
 let eventEmitter: NativeEventEmitter | undefined;
 const getEventEmitter = () => {
@@ -72,6 +76,13 @@ export const AIDictation = {
   addErrorListener(listener: (payload: DictationError) => void) {
     const sub = getEventEmitter()?.addListener(ON_ERROR_EVENT, (event) =>
       listener(event as DictationError),
+    );
+    return sub ? () => sub.remove() : noop;
+  },
+  /** The microphone's level while dictation listens, about 10 to 30 times a second. */
+  addLevelListener(listener: (payload: DictationLevel) => void) {
+    const sub = getEventEmitter()?.addListener(ON_LEVEL_EVENT, (event) =>
+      listener(event as DictationLevel),
     );
     return sub ? () => sub.remove() : noop;
   },
