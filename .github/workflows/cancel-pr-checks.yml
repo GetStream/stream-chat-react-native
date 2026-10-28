@@ -1,0 +1,30 @@
+name: Cancel PR Checks
+
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  actions: write
+
+jobs:
+  cancel:
+    name: Cancel
+    runs-on: ubuntu-latest
+    steps:
+    # Match on the head repository too: a fork's branch can share its name with another PR's branch.
+    # Not on the PR number: GitHub leaves `pull_requests` empty on runs from forks and once the PR is closed.
+    # A failed lookup fails the job. A failed cancel only warns: the run may have finished in the meantime.
+    - run: |
+        for status in queued in_progress waiting pending requested; do
+          ids=$(gh api --paginate "repos/$REPO/actions/runs?event=pull_request&status=$status&per_page=100" -f branch="$BRANCH" -X GET \
+            --jq '.workflow_runs[] | select(.head_repository.full_name == env.HEAD_REPO) | .id')
+          for id in $ids; do
+            gh run cancel "$id" --repo "$REPO" || echo "::warning::Could not cancel run $id"
+          done
+        done
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        BRANCH: ${{ github.event.pull_request.head.ref }}
+        HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
