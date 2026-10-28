@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.16.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.2...sampleapp@v4.16.3) (2026-10-28)
+
+### Bug Fixes
+
+* bump stream-chat to 9.54.2 ([fc6b6e6](https://github.com/GetStream/stream-chat-react-native/commit/fc6b6e647fd85d9a052547ecec35ecd9d67b8bef))
+* bump stream-chat to 9.54.2 ([a6bb08f](https://github.com/GetStream/stream-chat-react-native/commit/a6bb08f4d8b745e4b1bcccfb67ae340a3112a3e2))
+
 ## [4.16.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.1...sampleapp@v4.16.2) (2026-10-27)
 
 ### Bug Fixes
