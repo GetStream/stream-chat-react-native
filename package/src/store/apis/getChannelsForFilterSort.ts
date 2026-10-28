@@ -48,5 +48,6 @@ export const getChannelsForFilterSort = async ({
   return await getChannels({
     channelIds,
     currentUserId,
+    messageLimit: options?.message_limit,
   });
 };
