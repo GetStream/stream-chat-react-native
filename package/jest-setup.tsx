@@ -65,8 +65,16 @@ jest.mock('react-native-reanimated', () => {
     makeMutable: <T,>(init: T) => ({ addListener: noop, removeListener: noop, value: init }),
     useSharedValue: <T,>(init: T) =>
       new Proxy(RNReanimatedmock.useSharedValue(init), {
-        get: (target, prop) =>
-          prop === 'addListener' || prop === 'removeListener' ? noop : Reflect.get(target, prop),
+        get: (target, prop) => {
+          if (prop === 'addListener' || prop === 'removeListener') return noop;
+          // The mock's shared values have no `modify`; run it in place, as on the UI thread.
+          if (prop === 'modify') {
+            return (modifier: (value: T) => T) => {
+              target.value = modifier(target.value);
+            };
+          }
+          return Reflect.get(target, prop);
+        },
       }),
     NativeEventsManager: class {
       attachEvents() {}
@@ -150,13 +158,43 @@ jest.mock('react-native-teleport', () => {
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
-// Skia and victory-native are optional peers used by the `ai-components` charts. Skia's JS needs its
-// native module at import time, so both are replaced with inert stand-ins that render plain views.
-jest.mock('@shopify/react-native-skia', () => ({
-  LinearGradient: () => null,
-  matchFont: () => ({}),
-  vec: (x: number, y: number) => ({ x, y }),
-}));
+// Skia and victory-native are optional peers used by the `ai-components` charts and voice
+// visualizations. Skia's JS needs its native module at import time, so both are replaced with inert
+// stand-ins that render plain views.
+jest.mock('@shopify/react-native-skia', () => {
+  const React = require('react');
+  const rn = require('react-native');
+  const Primitive = () => null;
+  const pathBuilder = () => {
+    const commands: Array<[string, number, number]> = [];
+    const builder = {
+      build: () => ({ commands }),
+      lineTo: (x: number, y: number) => {
+        commands.push(['L', x, y]);
+        return builder;
+      },
+      moveTo: (x: number, y: number) => {
+        commands.push(['M', x, y]);
+        return builder;
+      },
+    };
+    return builder;
+  };
+  return {
+    Canvas: ({ children, style }: { children?: unknown; style?: unknown }) =>
+      React.createElement(rn.View, { style, testID: 'skia-canvas' }, children),
+    Fill: ({ children }: { children?: unknown }) => children ?? null,
+    LinearGradient: Primitive,
+    matchFont: () => ({}),
+    Path: Primitive,
+    Shader: Primitive,
+    Skia: {
+      PathBuilder: { Make: pathBuilder },
+      RuntimeEffect: { Make: (source: string) => ({ source }) },
+    },
+    vec: (x: number, y: number) => ({ x, y }),
+  };
+});
 
 jest.mock('victory-native', () => {
   const React = require('react');

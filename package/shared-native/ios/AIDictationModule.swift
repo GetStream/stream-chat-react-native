@@ -15,6 +15,7 @@ import React
     func emitOnState(_ value: NSDictionary)
     func emitOnResult(_ value: NSDictionary)
     func emitOnError(_ value: NSDictionary)
+    func emitOnLevel(_ value: NSDictionary)
 }
 
 @objc(AIDictationModule)
@@ -66,6 +67,19 @@ public class AIDictationModule: NSObject {
 
     // Timer used for the simple silence monitor.
     private var silenceTimer: Timer?
+
+    // When the microphone level was last emitted, read and written only on the audio tap's thread.
+    private var lastLevelTime: TimeInterval = 0
+    // The audio session as dictation found it, restored once dictation ends. Its `.record`
+    // category mutes all playback, so leaving it in place would silence the app.
+    private var savedAudioSession: (
+        category: AVAudioSession.Category,
+        mode: AVAudioSession.Mode,
+        options: AVAudioSession.CategoryOptions
+    )?
+    // The loudness, in dBFS, that maps to a level of 0 and of 1.
+    private let LEVEL_FLOOR_DB: Float = -60
+    private let LEVEL_CEILING_DB: Float = -35
 
     // Set while the permission prompts of the first `start()` are on screen. `stop()` and
     // `cancel()` clear it, which abandons that start.
@@ -194,6 +208,7 @@ public class AIDictationModule: NSObject {
                 try self.startRecognition()
             } catch {
                 self.isListening = false
+                self.stopAudioEngine()
                 self.emitState(self.STATE_IDLE)
                 self.emitError(
                     self.ERROR_INTERNAL,
@@ -282,13 +297,32 @@ public class AIDictationModule: NSObject {
      * - Uses `.record` category and `.measurement` mode for best recognition
      *   quality.
      * - Ducks other audio and notifies other sessions on deactivation.
+     * - Remembers the session's previous configuration for `restoreAudioSession()`.
      *
      * Throws if the session cannot be configured or activated.
      */
     private func setupAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
+        if savedAudioSession == nil {
+            savedAudioSession = (session.category, session.mode, session.categoryOptions)
+        }
         try session.setCategory(.record, mode: .measurement, options: [.duckOthers])
         try session.setActive(true, options: .notifyOthersOnDeactivation)
+    }
+
+    /**
+     * Gives the audio session back as dictation found it: deactivates it, so audio that was ducked
+     * resumes, and restores its category, mode and options, so the app can play sound again.
+     *
+     * Failures are ignored: deactivation fails while other audio in the app is still running, and
+     * restoring the category is still worth trying then.
+     */
+    private func restoreAudioSession() {
+        guard let saved = savedAudioSession else { return }
+        savedAudioSession = nil
+        let session = AVAudioSession.sharedInstance()
+        try? session.setActive(false, options: .notifyOthersOnDeactivation)
+        try? session.setCategory(saved.category, mode: saved.mode, options: saved.options)
     }
 
     /**
@@ -324,6 +358,7 @@ public class AIDictationModule: NSObject {
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) {
             [weak self] (buffer, _) in
             self?.recognitionRequest?.append(buffer)
+            self?.measureLevel(buffer)
         }
 
         audioEngine.prepare()
@@ -420,13 +455,15 @@ public class AIDictationModule: NSObject {
     }
 
     /**
-     * Stops the audio engine and removes any installed tap on the input node.
+     * Stops the audio engine, removes any installed tap on the input node and gives the audio
+     * session back.
      */
     private func stopAudioEngine() {
         if audioEngine.isRunning {
             audioEngine.stop()
             audioEngine.inputNode.removeTap(onBus: 0)
         }
+        restoreAudioSession()
     }
 
     // -------------------------------------------------------------------------
@@ -547,6 +584,35 @@ public class AIDictationModule: NSObject {
             "state": state
         ]
         eventSink?.emitOnState(payload)
+    }
+
+    /**
+     * Emits the microphone's level to JS for the voice visualizations, from 0 to 1, about 30 times
+     * a second at most. Called on the audio tap's thread.
+     *
+     * The level is the buffer's loudness in dBFS mapped onto 0 to 1. The session records in
+     * `.measurement` mode, which turns off the input's gain processing, so speech arrives quiet:
+     * about -52 to -44 dBFS at a normal distance on an iPhone. A quiet room (about -60 dBFS) reads
+     * 0 and loud speech close to the phone (about -35 dBFS) reads 1, so talking lands around the
+     * middle.
+     */
+    private func measureLevel(_ buffer: AVAudioPCMBuffer) {
+        let now = ProcessInfo.processInfo.systemUptime
+        guard now - lastLevelTime >= 1.0 / 30.0,
+              let samples = buffer.floatChannelData?[0],
+              buffer.frameLength > 0 else { return }
+        lastLevelTime = now
+        let count = Int(buffer.frameLength)
+        var sum: Float = 0
+        for i in 0..<count {
+            sum += samples[i] * samples[i]
+        }
+        let rms = sqrt(sum / Float(count))
+        let decibels = 20 * log10(max(rms, 1e-7))
+        let level = min(max((decibels - LEVEL_FLOOR_DB) / (LEVEL_CEILING_DB - LEVEL_FLOOR_DB), 0), 1)
+        DispatchQueue.main.async { [weak self] in
+            self?.eventSink?.emitOnLevel(["level": level])
+        }
     }
 
     /**

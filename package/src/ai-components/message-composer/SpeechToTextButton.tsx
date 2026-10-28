@@ -9,7 +9,7 @@ import { Mic } from '../internal/icons/Mic';
 
 import { isDictationAvailable, warnIfDictationUnavailable } from '../native/AIDictation';
 import type { DictationStartOptions } from '../native-specs/NativeAIDictation';
-import { dictationStore, type DictationStoreState } from '../store';
+import { COMPOSER_DICTATION_SOURCE, dictationStore, type DictationStoreState } from '../store';
 import { useDictation } from '../transcription/useDictation';
 
 const selector = ({ isRecording }: DictationStoreState) => ({
@@ -33,6 +33,9 @@ export const SpeechToTextButton = (props: SpeechToTextButtonProps) => {
   return <AvailableSpeechToTextButton {...props} />;
 };
 
+// Marks this button's dictation as the composer's, so `ComposerView` fills its input with it.
+const DICTATION_OPTIONS = { source: COMPOSER_DICTATION_SOURCE };
+
 const AvailableSpeechToTextButton = ({ options }: SpeechToTextButtonProps) => {
   const {
     theme: {
@@ -41,7 +44,7 @@ const AvailableSpeechToTextButton = ({ options }: SpeechToTextButtonProps) => {
     },
   } = useTheme();
 
-  const { cancel, toggle } = useDictation(options);
+  const { cancel, toggle } = useDictation(options, DICTATION_OPTIONS);
   const { isRecording } = useStateStore(dictationStore, selector);
 
   useEffect(() => {

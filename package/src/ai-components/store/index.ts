@@ -9,3 +9,5 @@ export * from './composer/useComposerText';
 
 // dictation
 export * from './dictation/store';
+export * from './dictation/useDictationState';
+export * from './dictation/useDictationTranscript';

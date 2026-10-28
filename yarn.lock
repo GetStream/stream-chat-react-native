@@ -7344,7 +7344,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.2"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -10040,7 +10040,7 @@ __metadata:
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.2"
     stream-chat-react-native: "workspace:^"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -11306,6 +11306,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-speech@npm:~58.0.3":
+  version: 58.0.3
+  resolution: "expo-speech@npm:58.0.3"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/552c3a34a96210cd0405ee278f8065500203ae87881e5b43500a9251ca2d58b6956e14e37e922872b6480669eff7a0a1ad8ff5aca500eea912cd7ae6d71bcf4d
+  languageName: node
+  linkType: hard
+
 "expo-splash-screen@npm:~58.0.8":
   version: 58.0.8
   resolution: "expo-splash-screen@npm:58.0.8"
@@ -11413,6 +11422,7 @@ __metadata:
     expo-image-picker: "npm:~58.0.10"
     expo-linking: "npm:~58.0.12"
     expo-router: "npm:~58.0.18"
+    expo-speech: "npm:~58.0.3"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-gesture-handler: "npm:~3.4.0"
@@ -11422,7 +11432,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.2"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19342,7 +19352,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.2"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -20163,7 +20173,7 @@ __metadata:
     react-syntax-highlighter: "npm:^16.1.0"
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^9.54.0"
+    stream-chat: "npm:^9.54.2"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -20251,9 +20261,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.54.0":
-  version: 9.54.0
-  resolution: "stream-chat@npm:9.54.0"
+"stream-chat@npm:^9.54.2":
+  version: 9.54.2
+  resolution: "stream-chat@npm:9.54.2"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
@@ -20269,7 +20279,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/f8c02372ffa672e759970223811667b8263bbded048a85adbdd6c3ed60a16f72c882d9700538b94a3148a8e4bfa259eafae5effdc0d8e7ffd2525e61f27a190e
+  checksum: 10c0/ebe3835165ad942c1eb7c3c1e4d5b2d24f9638ce6b849918efe945cf4a41a856c3287b12e9f0ab166a128276f36a74f4482da0c505c3e5a339b47f90b800b65f
   languageName: node
   linkType: hard
 
