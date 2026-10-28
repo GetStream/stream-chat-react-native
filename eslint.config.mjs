@@ -44,6 +44,10 @@ export default tsEslint.config(
       '**/android/',
       '**/fastlane/',
 
+      // Detox e2e: mock server checkout cloned by `fastlane start_mock_server`, test artifacts
+      'examples/E2ETestApp/stream-chat-test-mock-server/',
+      'examples/E2ETestApp/artifacts/',
+
       // Generated SDK assets
       'package/src/components/docs/',
       'package/src/theme/generated/',
