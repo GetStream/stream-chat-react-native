@@ -27,7 +27,19 @@ const selector = ({ isRecording }: DictationStoreState) => ({
 });
 
 // TODO: add proper jsdocs
-export const useDictation = (defaultOptions: DictationStartOptions = DEFAULT_OPTIONS) => {
+export type UseDictationOptions = {
+  /**
+   * Who is dictating, stored as the dictation store's `source` when dictation starts. The
+   * `ComposerView` only fills its input with dictation whose source is the composer's own, so
+   * dictation started elsewhere (a voice mode, say) leaves the composer's text alone.
+   */
+  source?: string;
+};
+
+export const useDictation = (
+  defaultOptions: DictationStartOptions = DEFAULT_OPTIONS,
+  { source }: UseDictationOptions = {},
+) => {
   const { isRecording } = useStateStore(dictationStore, selector);
 
   useEffect(() => {
@@ -65,11 +77,12 @@ export const useDictation = (defaultOptions: DictationStartOptions = DEFAULT_OPT
             code: 'NO_PERMISSION',
             message: 'Microphone permission not granted',
           },
+          source: source ?? null,
         });
         return;
       }
 
-      dictationStore.partialNext({ error: null, transcript: '' });
+      dictationStore.partialNext({ error: null, source: source ?? null, transcript: '' });
 
       const opts: DictationStartOptions = {
         ...defaultOptions,
@@ -78,7 +91,7 @@ export const useDictation = (defaultOptions: DictationStartOptions = DEFAULT_OPT
 
       AIDictation.start(opts);
     },
-    [defaultOptions],
+    [defaultOptions, source],
   );
 
   const stop = useCallback(() => {

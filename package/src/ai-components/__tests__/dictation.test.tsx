@@ -1,7 +1,7 @@
 import React from 'react';
 import { DeviceEventEmitter } from 'react-native';
 
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react-native';
 
 import * as aiComponents from '../index';
 import { AIDictation } from '../native/AIDictation';
@@ -161,6 +161,63 @@ describe('ai-components dictation', () => {
         isRecording: false,
         state: 'idle',
       });
+    });
+
+    it('streams the microphone level while listening and clears it afterwards', () => {
+      mockNativeModule = createNativeModule();
+      const levels: number[] = [];
+      const unsubscribe = AIDictation.addLevelListener(({ level }) => levels.push(level));
+      const { result, unmount } = renderHook(() => aiComponents.useDictationAudioLevel());
+      expect(result.current.value).toBeNull();
+
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'listening' });
+        DeviceEventEmitter.emit('AIDictationOnLevel', { level: 0.4 });
+      });
+      expect(levels).toEqual([0.4]);
+      expect(result.current.value).toBe(0.4);
+
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'idle' });
+      });
+      expect(result.current.value).toBeNull();
+
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnLevel', { level: 0.7 });
+        DeviceEventEmitter.emit('AIDictationOnError', { code: 'X', message: 'boom' });
+      });
+      expect(result.current.value).toBeNull();
+
+      unsubscribe();
+      unmount();
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnLevel', { level: 0.9 });
+      });
+      expect(levels).toEqual([0.4, 0.7]);
+    });
+
+    it('leaves the composer text alone for dictation started elsewhere', async () => {
+      mockNativeModule = createNativeModule();
+      const composer = renderComposer();
+      fireEvent.changeText(composer.getByPlaceholderText('Ask anything'), 'my draft');
+
+      const { result } = renderHook(() =>
+        aiComponents.useDictation(undefined, { source: 'voice-mode' }),
+      );
+      await act(async () => {
+        await result.current.start();
+      });
+      act(() => {
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'listening' });
+        DeviceEventEmitter.emit('AIDictationOnResult', { isFinal: true, text: 'spoken question' });
+        DeviceEventEmitter.emit('AIDictationOnState', { state: 'idle' });
+      });
+
+      expect(aiComponents.dictationStore.getLatestValue()).toMatchObject({
+        source: 'voice-mode',
+        transcript: 'spoken question',
+      });
+      expect(composer.getByPlaceholderText('Ask anything').props.value).toBe('my draft');
     });
   });
 });

@@ -17,9 +17,7 @@ import {
   ThemeProvider,
   useAIState,
   useChannelContext,
-  useMessageComposer,
   useMessageContext,
-  useMessageInputContext,
   useStableCallback,
   useTheme,
   WithComponents,
@@ -28,12 +26,13 @@ import {
 import {
   AITypingIndicatorView,
   ComposerView,
-  type ComposerViewProps,
   StreamingMessageView,
 } from 'stream-chat-expo/ai-components';
 
 import { bottomSheetOptions } from '../bottomSheetOptions';
+import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
+import { useSendAIMessage } from '../hooks/useSendAIMessage';
 import { startAI, summarize } from '../http/requests';
 
 const CustomMessage = (props: MessageProps) => {
@@ -93,8 +92,6 @@ const CustomStreamingMessageView = () => {
 };
 
 const CustomComposerView = () => {
-  const messageComposer = useMessageComposer();
-  const { sendMessage } = useMessageInputContext();
   const { channel } = useChannelContext();
 
   const { aiState } = useAIState(channel);
@@ -114,27 +111,7 @@ const CustomComposerView = () => {
     [safeAreaInsets],
   );
 
-  const serializeToMessage = useStableCallback(
-    async ({ text, attachments }: Parameters<ComposerViewProps['onSendMessage']>[0]) => {
-      messageComposer.textComposer.setText(text);
-      if (attachments && attachments.length > 0) {
-        const localAttachments = await Promise.all(
-          attachments.map((asset) =>
-            messageComposer.attachmentManager.fileToLocalUploadAttachment({
-              ...asset,
-              // The picker can leave these out (e.g. some iOS photos have no file name).
-              name: asset.name ?? asset.uri.split('/').pop() ?? 'image',
-              size: asset.size ?? 0,
-              type: asset.type ?? 'image/jpeg',
-            }),
-          ),
-        );
-        messageComposer.attachmentManager.upsertAttachments(localAttachments);
-      }
-
-      await sendMessage();
-    },
-  );
+  const serializeToMessage = useSendAIMessage();
 
   return (
     <ComposerView
@@ -252,6 +229,7 @@ export const ChatContent = () => {
         >
           <MessageList additionalFlatListProps={additionalFlatListProps} />
           <CustomAITypingIndicatorView />
+          <VoiceMode />
           <CustomComposerView />
         </Channel>
       </WithComponents>
