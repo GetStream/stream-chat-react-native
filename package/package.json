@@ -86,7 +86,7 @@
     "react-syntax-highlighter": "^16.1.0",
     "stream-chat": "^9.54.2",
     "use-sync-external-store": "^1.5.0",
-    "zod": "^4.1.12"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {
     "@emoji-mart/data": ">=1.1.0",
