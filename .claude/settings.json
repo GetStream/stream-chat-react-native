@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|mcp__.*(create_pull_request|create_pr|pull_request_create|open_pull_request).*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/require-linear-ticket.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

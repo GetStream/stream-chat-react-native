@@ -32,7 +32,7 @@ export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabe
     () =>
       latestVotesByOption
         ? Object.values(latestVotesByOption)
-            .map((votes) => votes?.[0])
+            .flatMap((votes) => votes?.[0] ?? [])
             .sort((a, b) => b.created_at - a.created_at)
         : [],
     [latestVotesByOption],
