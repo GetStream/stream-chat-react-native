@@ -7344,7 +7344,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.54.2"
+    stream-chat: "npm:^9.54.3"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -10040,7 +10040,7 @@ __metadata:
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.54.2"
+    stream-chat: "npm:^9.54.3"
     stream-chat-react-native: "workspace:^"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -11432,7 +11432,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.54.2"
+    stream-chat: "npm:^9.54.3"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19352,7 +19352,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.54.2"
+    stream-chat: "npm:^9.54.3"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -20173,7 +20173,7 @@ __metadata:
     react-syntax-highlighter: "npm:^16.1.0"
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^9.54.2"
+    stream-chat: "npm:^9.54.3"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -20261,9 +20261,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.54.2":
-  version: 9.54.2
-  resolution: "stream-chat@npm:9.54.2"
+"stream-chat@npm:^9.54.3":
+  version: 9.54.3
+  resolution: "stream-chat@npm:9.54.3"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
@@ -20279,7 +20279,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/ebe3835165ad942c1eb7c3c1e4d5b2d24f9638ce6b849918efe945cf4a41a856c3287b12e9f0ab166a128276f36a74f4482da0c505c3e5a339b47f90b800b65f
+  checksum: 10c0/ef2ffcb83a8e18ec9b9742d62c16a2575d9b8a8895ac2469490a39f53afdf6d2135f860297b2a95da8d89d6a0e687cd472fc64f85dbeca1cced630bf1940d354
   languageName: node
   linkType: hard
 
