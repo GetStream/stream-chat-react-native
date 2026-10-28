@@ -1,5 +1,18 @@
 # Change Log
 
+## [9.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.2...v9.11.0) (2026-10-28)
+
+### Bug Fixes
+
+* adjusted message composer bottom offset calculation ([0e9a0c0](https://github.com/GetStream/stream-chat-react-native/commit/0e9a0c000be5523cafd1aa3d2b6a4dc22a44a455))
+* adjusted message composer bottom offset calculation ([9bc37a3](https://github.com/GetStream/stream-chat-react-native/commit/9bc37a3fe52fabbad6d2d5d9f44545c273e820d8))
+* bump stream-chat to 9.54.2 ([fc6b6e6](https://github.com/GetStream/stream-chat-react-native/commit/fc6b6e647fd85d9a052547ecec35ecd9d67b8bef))
+* bump stream-chat to 9.54.2 ([a6bb08f](https://github.com/GetStream/stream-chat-react-native/commit/a6bb08f4d8b745e4b1bcccfb67ae340a3112a3e2))
+
+### Features
+
+* **ai-components:** add VoiceGlow and VoiceWave voice-agent visualizations ([#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895)) ([304618e](https://github.com/GetStream/stream-chat-react-native/commit/304618edf41de54a1a0a3d95addfc112d4520009)), closes [GetStream/stream-chat-android#6848](https://github.com/GetStream/stream-chat-android/issues/6848) [GetStream/stream-chat-android#6849](https://github.com/GetStream/stream-chat-android/issues/6849) [GetStream/stream-chat-android#6851](https://github.com/GetStream/stream-chat-android/issues/6851) [GetStream/stream-chat-swift#4338](https://github.com/GetStream/stream-chat-swift/issues/4338) [GetStream/stream-chat-react#3339](https://github.com/GetStream/stream-chat-react/issues/3339)
+
 ## [9.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.1...v9.10.2) (2026-10-27)
 
 ### Bug Fixes
