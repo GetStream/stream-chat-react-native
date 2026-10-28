@@ -56,6 +56,19 @@ export type Theme = {
   aiTypingIndicatorView: {
     text: TextStyle;
   };
+  /**
+   * `VoiceGlow` and `VoiceWave`. Optional, so a hand-built `Theme` without it keeps type-checking;
+   * the visualizations fall back to the default accent then.
+   */
+  voiceVisualization?: {
+    /** One to five colors, used when a visualization is given no `colors` of its own. */
+    colors: string[];
+    /**
+     * The color the visualizations sit on, which tells them to draw for a light or a dark
+     * background. Defaults to the system's color scheme.
+     */
+    backdropColor?: string;
+  };
 };
 
 export const defaultTheme: Theme = {
@@ -134,5 +147,8 @@ export const defaultTheme: Theme = {
   },
   aiTypingIndicatorView: {
     text: {},
+  },
+  voiceVisualization: {
+    colors: [colors.accent_blue],
   },
 };

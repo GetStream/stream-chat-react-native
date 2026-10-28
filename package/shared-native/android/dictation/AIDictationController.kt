@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -24,7 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * Shared by the `AIDictation` TurboModule of both SDK packages (each package's codegen generates its
  * own `NativeAIDictationSpec`), which forward their calls here. Events are delivered through
- * [emitEvent] with the names in [EVENT_ON_STATE], [EVENT_ON_RESULT] and [EVENT_ON_ERROR].
+ * [emitEvent] with the names in [EVENT_ON_STATE], [EVENT_ON_RESULT], [EVENT_ON_ERROR] and
+ * [EVENT_ON_LEVEL].
  */
 class AIDictationController(
     private val reactContext: ReactApplicationContext,
@@ -41,6 +43,16 @@ class AIDictationController(
         const val EVENT_ON_STATE = "AIDictationOnState"
         const val EVENT_ON_RESULT = "AIDictationOnResult"
         const val EVENT_ON_ERROR = "AIDictationOnError"
+        const val EVENT_ON_LEVEL = "AIDictationOnLevel"
+
+        // The recognizer's RMS reads about -2 dB in a quiet room and up to about 10 dB for speech
+        // close to the microphone; this span maps onto the level from 0 to 1.
+        private const val LEVEL_FLOOR_DB = 0f
+        private const val LEVEL_CEILING_DB = 10f
+
+        // The shortest time between two level events, about 30 a second as on iOS: the recognizer
+        // can report RMS faster than the voice visualizations need.
+        private const val LEVEL_INTERVAL_MS = 33L
 
         private const val STATE_IDLE = "idle"
         private const val STATE_STARTING = "starting"
@@ -63,6 +75,7 @@ class AIDictationController(
     private var currentLocale: Locale = Locale.getDefault()
     private var silenceTimeoutMs: Long = DEFAULT_SILENCE_TIMEOUT_MS
     private var lastSpeechTimeMs: Long = 0L
+    private var lastLevelAtMs: Long = 0L
 
     private var isSpeechInProgress: Boolean = false
 
@@ -328,7 +341,9 @@ class AIDictationController(
                     lastSpeechTimeMs = System.currentTimeMillis()
                 }
 
-                override fun onRmsChanged(rmsdB: Float) = Unit
+                override fun onRmsChanged(rmsdB: Float) {
+                    emitLevel(rmsdB)
+                }
                 override fun onBufferReceived(buffer: ByteArray?) = Unit
 
                 override fun onEndOfSpeech() {
@@ -469,6 +484,21 @@ class AIDictationController(
             putString("state", state)
         }
         emitEvent(EVENT_ON_STATE, map)
+    }
+
+    /**
+     * Emits the microphone's level to JS, from 0 to 1, for the voice visualizations, at most about
+     * 30 times a second. The recognizer reports it as RMS in dB while it listens.
+     */
+    private fun emitLevel(rmsdB: Float) {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastLevelAtMs < LEVEL_INTERVAL_MS) return
+        lastLevelAtMs = now
+        val level = ((rmsdB - LEVEL_FLOOR_DB) / (LEVEL_CEILING_DB - LEVEL_FLOOR_DB)).coerceIn(0f, 1f)
+        val map = Arguments.createMap().apply {
+            putDouble("level", level.toDouble())
+        }
+        emitEvent(EVENT_ON_LEVEL, map)
     }
 
     /**

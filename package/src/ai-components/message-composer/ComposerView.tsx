@@ -19,7 +19,7 @@ import type {
   AbstractMediaPickerService,
   MediaPickerState,
 } from '../services/media-picker-service/AbstractMediaPickerService';
-import { useComposerText } from '../store';
+import { COMPOSER_DICTATION_SOURCE, useComposerText } from '../store';
 import type { ComposerState } from '../store';
 import { useDictationState } from '../store/dictation/useDictationState';
 import { useDictationTranscript } from '../store/dictation/useDictationTranscript';
@@ -100,7 +100,7 @@ export const AIMessageInput = () => {
   } = useTheme();
   const styles = useStyles();
 
-  const { error, isRecording } = useDictationState();
+  const { error, isRecording, source } = useDictationState();
   const { text } = useComposerText();
   const { transcript } = useDictationTranscript();
   const { setText } = useMessageComposerContext();
@@ -109,10 +109,13 @@ export const AIMessageInput = () => {
   useEffect(() => {
     const transcriptChanged = transcript !== previousTranscript.current;
     previousTranscript.current = transcript;
+    // Only dictation from the composer's own button fills the input; dictation started elsewhere
+    // (a voice mode, say) must not overwrite what the user typed.
+    if (source !== COMPOSER_DICTATION_SOURCE) return;
     if (!error && (isRecording || transcriptChanged)) {
       setText(transcript);
     }
-  }, [isRecording, transcript, error, setText]);
+  }, [isRecording, transcript, error, setText, source]);
 
   return (
     <TextInput

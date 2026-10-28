@@ -17,6 +17,7 @@
 static NSString *const AIDictationOnStateEventName = @"AIDictationOnState";
 static NSString *const AIDictationOnResultEventName = @"AIDictationOnResult";
 static NSString *const AIDictationOnErrorEventName = @"AIDictationOnError";
+static NSString *const AIDictationOnLevelEventName = @"AIDictationOnLevel";
 
 @interface AIDictation () <AIDictationEventSink>
 @end
@@ -46,7 +47,12 @@ RCT_EXPORT_MODULE(AIDictation)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ AIDictationOnStateEventName, AIDictationOnResultEventName, AIDictationOnErrorEventName ];
+  return @[
+    AIDictationOnStateEventName,
+    AIDictationOnResultEventName,
+    AIDictationOnErrorEventName,
+    AIDictationOnLevelEventName,
+  ];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
@@ -107,6 +113,11 @@ RCT_EXPORT_MODULE(AIDictation)
 - (void)emitOnError:(NSDictionary *)value
 {
   [self sendEventWithName:AIDictationOnErrorEventName body:value];
+}
+
+- (void)emitOnLevel:(NSDictionary *)value
+{
+  [self sendEventWithName:AIDictationOnLevelEventName body:value];
 }
 
 @end
