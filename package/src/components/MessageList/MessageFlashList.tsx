@@ -4,6 +4,7 @@ import { LayoutChangeEvent, ScrollViewProps, StyleSheet, View, useColorScheme } 
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
+import debounce from 'lodash/debounce';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -1121,6 +1122,31 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     currentListHeightRef.current = height;
   });
 
+  const debouncedPrefillMessages = useMemo(
+    () =>
+      debounce(
+        (viewportHeight: number, contentHeight: number) => {
+          if (viewportHeight >= contentHeight) {
+            maybeCallOnEndReached();
+          }
+        },
+        500,
+        {
+          leading: false,
+          trailing: true,
+        },
+      ),
+    [maybeCallOnEndReached],
+  );
+
+  const onContentSizeChange = useStableCallback((width: number, height: number) => {
+    if (additionalFlashListProps?.onContentSizeChange) {
+      additionalFlashListProps.onContentSizeChange(width, height);
+    }
+
+    debouncedPrefillMessages(currentListHeightRef.current ?? 0, height);
+  });
+
   const ListFooterComponent = useCallback(() => {
     if (FooterComponent) {
       return <FooterComponent />;
@@ -1193,6 +1219,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             {...additionalFlashListPropsExcludingStyle}
             accessibilityActions={messageListAccessibilityActions}
             onAccessibilityAction={messageListOnAccessibilityAction}
+            onContentSizeChange={onContentSizeChange}
           />
         </MessageListItemProvider>
       )}
