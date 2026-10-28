@@ -4,7 +4,6 @@ import { LayoutChangeEvent, ScrollViewProps, StyleSheet, View, useColorScheme } 
 import Animated from 'react-native-reanimated';
 
 import type { FlashListProps, FlashListRef } from '@shopify/flash-list';
-import debounce from 'lodash/debounce';
 import type { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useMessageList } from './hooks/useMessageList';
@@ -148,7 +147,7 @@ type MessageFlashListPropsWithContext = Pick<
   > &
   Pick<
     ThreadContextValue,
-    'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadHasMore' | 'threadInstance'
+    'loadMoreRecentThread' | 'loadMoreThread' | 'thread' | 'threadInstance'
   > & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
@@ -347,7 +346,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     hasPendingInitialTargetLoad,
     targetedMessage,
     thread,
-    threadHasMore,
     threadInstance,
     threadList = false,
   } = props;
@@ -838,16 +836,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    */
 
   /**
-   * How many messages the list pages through are loaded: the thread's replies in a thread list, the
-   * channel's messages otherwise.
-   */
-  const getLoadedMessageCount = useStableCallback(() =>
-    threadList && thread?.id
-      ? (channel?.state.threads[thread.id]?.length ?? 0)
-      : (channel?.state.messages.length ?? 0),
-  );
-
-  /**
    * 1. Makes a call to `loadMore` function, which queries more older messages.
    * 2. Ensures that we call `loadMore`, once per content length
    * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
@@ -865,11 +853,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       onStartReachedTracker.current[processedMessageList.length] = true;
     }
 
-    const callback = (loadedMessageCount: number) => {
+    const callback = () => {
       onStartReachedInPromise.current = null;
-      if (getLoadedMessageCount() === loadedMessageCount) {
-        onError();
-      }
       return Promise.resolve();
     };
 
@@ -884,13 +869,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     if (onEndReachedInPromise.current) {
       await onEndReachedInPromise.current;
     }
-    const loadedMessageCount = getLoadedMessageCount();
     onStartReachedInPromise.current = (
       threadList && !!threadInstance && loadMoreRecentThread
         ? loadMoreRecentThread({})
         : loadMoreRecent()
     )
-      .then(() => callback(loadedMessageCount))
+      .then(callback)
       .catch(onError);
   });
 
@@ -901,10 +885,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
    */
   const maybeCallOnEndReached = useStableCallback(async () => {
     // If onStartReached has already been called for given data length, then ignore.
-    if (
-      (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) ||
-      (threadList && !threadHasMore)
-    ) {
+    if (processedMessageList?.length && onEndReachedTracker.current[processedMessageList.length]) {
       return;
     }
 
@@ -912,11 +893,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       onEndReachedTracker.current[processedMessageList.length] = true;
     }
 
-    const callback = (loadedMessageCount: number) => {
+    const callback = () => {
       onEndReachedInPromise.current = null;
-      if (getLoadedMessageCount() === loadedMessageCount) {
-        onError();
-      }
+
       return Promise.resolve();
     };
 
@@ -932,9 +911,8 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       await onStartReachedInPromise.current;
     }
 
-    const loadedMessageCount = getLoadedMessageCount();
     onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
-      .then(() => callback(loadedMessageCount))
+      .then(callback)
       .catch(onError);
   });
 
@@ -1122,31 +1100,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     currentListHeightRef.current = height;
   });
 
-  const debouncedPrefillMessages = useMemo(
-    () =>
-      debounce(
-        (viewportHeight: number, contentHeight: number) => {
-          if (viewportHeight >= contentHeight) {
-            maybeCallOnEndReached();
-          }
-        },
-        500,
-        {
-          leading: false,
-          trailing: true,
-        },
-      ),
-    [maybeCallOnEndReached],
-  );
-
-  const onContentSizeChange = useStableCallback((width: number, height: number) => {
-    if (additionalFlashListProps?.onContentSizeChange) {
-      additionalFlashListProps.onContentSizeChange(width, height);
-    }
-
-    debouncedPrefillMessages(currentListHeightRef.current ?? 0, height);
-  });
-
   const ListFooterComponent = useCallback(() => {
     if (FooterComponent) {
       return <FooterComponent />;
@@ -1219,7 +1172,6 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             {...additionalFlashListPropsExcludingStyle}
             accessibilityActions={messageListAccessibilityActions}
             onAccessibilityAction={messageListOnAccessibilityAction}
-            onContentSizeChange={onContentSizeChange}
           />
         </MessageListItemProvider>
       )}
@@ -1361,8 +1313,7 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
   const { disableTypingIndicator, FlatList, myMessageTheme, shouldShowUnreadUnderlay } =
     useMessagesContext();
   const { loadMore, loadMoreRecent } = usePaginatedMessageListContext();
-  const { loadMoreRecentThread, loadMoreThread, thread, threadHasMore, threadInstance } =
-    useThreadContext();
+  const { loadMoreRecentThread, loadMoreThread, thread, threadInstance } = useThreadContext();
   const { readEvents } = useOwnCapabilitiesContext();
   const { allowSendBeforeAttachmentsUpload, messageInputFloating, messageInputHeightStore } =
     useMessageInputContext();
@@ -1404,7 +1355,6 @@ export const MessageFlashList = (props: MessageFlashListProps) => {
         shouldShowUnreadUnderlay,
         targetedMessage,
         thread,
-        threadHasMore,
         threadInstance,
         threadList,
       }}
