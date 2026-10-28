@@ -80,7 +80,7 @@ describe('useChannelPreviewPollLabel', () => {
       poll.removeVote(voteA.id, MESSAGE_ID);
     });
 
-    expect(poll.data.latest_votes_by_option['option-a']).toEqual([]);
+    expect(poll.data.latest_votes_by_option['option-a']).toBeUndefined();
     expect(result.current).toBe('You voted: {{ option }}');
   });
 });
