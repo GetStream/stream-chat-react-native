@@ -4,6 +4,7 @@ export * from './charts';
 export * from './message-composer';
 export * from './StreamingMessageView';
 export * from './AITypingIndicatorView';
+export * from './voice-visualization';
 
 export * from './components';
 
@@ -11,7 +12,8 @@ export * from './contexts';
 
 export * from './services';
 export * from './transcription/useDictation';
-export { isDictationAvailable } from './native/AIDictation';
+export * from './transcription/useDictationAudioLevel';
+export { isDictationAvailable, type DictationLevel } from './native/AIDictation';
 
 export * from './store';
 

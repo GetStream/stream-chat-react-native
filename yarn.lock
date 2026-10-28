@@ -10160,6 +10160,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-speech@npm:~58.0.3":
+  version: 58.0.3
+  resolution: "expo-speech@npm:58.0.3"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/552c3a34a96210cd0405ee278f8065500203ae87881e5b43500a9251ca2d58b6956e14e37e922872b6480669eff7a0a1ad8ff5aca500eea912cd7ae6d71bcf4d
+  languageName: node
+  linkType: hard
+
 "expo-splash-screen@npm:~58.0.8":
   version: 58.0.8
   resolution: "expo-splash-screen@npm:58.0.8"
@@ -10267,6 +10276,7 @@ __metadata:
     expo-image-picker: "npm:~58.0.10"
     expo-linking: "npm:~58.0.12"
     expo-router: "npm:~58.0.18"
+    expo-speech: "npm:~58.0.3"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-gesture-handler: "npm:~3.4.0"
