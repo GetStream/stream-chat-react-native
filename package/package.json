@@ -84,7 +84,7 @@
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-syntax-highlighter": "^16.1.0",
-    "stream-chat": "^9.54.2",
+    "stream-chat": "^9.54.3",
     "use-sync-external-store": "^1.5.0",
     "zod": "^4.1.12"
   },

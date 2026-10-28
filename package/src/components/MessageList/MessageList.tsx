@@ -933,6 +933,16 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
    */
 
   /**
+   * How many messages the list pages through are loaded: the thread's replies in a thread list, the
+   * channel's messages otherwise.
+   */
+  const getLoadedMessageCount = useStableCallback(() =>
+    threadList && thread?.id
+      ? (channel?.state.threads[thread.id]?.length ?? 0)
+      : (channel?.state.messages.length ?? 0),
+  );
+
+  /**
    * 1. Makes a call to `loadMoreRecent` function, which queries more recent messages.
    * 2. Ensures that we call `loadMoreRecent`, once per content length
    * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
@@ -950,9 +960,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       onStartReachedTracker.current[processedMessageList.length] = true;
     }
 
-    const callback = () => {
+    const callback = (loadedMessageCount: number) => {
       onStartReachedInPromise.current = null;
-
+      if (getLoadedMessageCount() === loadedMessageCount) {
+        onError();
+      }
       return Promise.resolve();
     };
 
@@ -967,12 +979,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     if (onEndReachedInPromise.current) {
       await onEndReachedInPromise.current;
     }
+    const loadedMessageCount = getLoadedMessageCount();
     onStartReachedInPromise.current = (
       threadList && !!threadInstance && loadMoreRecentThread
         ? loadMoreRecentThread({})
         : loadMoreRecent()
     )
-      .then(callback)
+      .then(() => callback(loadedMessageCount))
       .catch(onError);
   });
 
@@ -995,8 +1008,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       onEndReachedTracker.current[processedMessageList.length] = true;
     }
 
-    const callback = () => {
+    const callback = (loadedMessageCount: number) => {
       onEndReachedInPromise.current = null;
+      if (getLoadedMessageCount() === loadedMessageCount) {
+        onError();
+      }
       return Promise.resolve();
     };
 
@@ -1011,8 +1027,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     if (onStartReachedInPromise.current) {
       await onStartReachedInPromise.current;
     }
+    const loadedMessageCount = getLoadedMessageCount();
     onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
-      .then(callback)
+      .then(() => callback(loadedMessageCount))
       .catch(onError);
   });
 

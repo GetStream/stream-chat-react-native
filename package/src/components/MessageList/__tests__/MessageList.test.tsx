@@ -650,6 +650,57 @@ describe('MessageList pagination', () => {
     });
   });
 
+  it('tries loading older messages again after a load that loaded nothing', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: Array.from({ length: 100 }, (_, i) => generateMessage({ text: `message-${i}` })),
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    // resolves without loading anything, as `loadMore` does when its request fails, e.g. offline
+    const loadMore = jest.fn(() => Promise.resolve());
+    mockedHook({ loadMore });
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    const scrollToEnd = () =>
+      act(() => {
+        fireEvent(getByTestId('message-flat-list'), 'momentumScrollEnd', {
+          nativeEvent: {
+            contentOffset: { y: 1900 },
+            contentSize: { height: 2000, width: 200 },
+            layoutMeasurement: { height: 400, width: 200 },
+          },
+        });
+      });
+
+    scrollToEnd();
+    await waitFor(() => {
+      expect(loadMore).toHaveBeenCalledTimes(1);
+    });
+
+    // released after the same 2 second backoff as a rejected load
+    await act(() => new Promise((resolve) => setTimeout(resolve, 2100)));
+    scrollToEnd();
+
+    await waitFor(() => {
+      expect(loadMore).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('should call load latest messages when the scroll to bottom button is pressed', async () => {
     const user1 = generateUser();
     const messages = Array.from({ length: 10 }, (_, i) =>
