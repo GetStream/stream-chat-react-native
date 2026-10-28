@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import Animated, {
   Extrapolation,
@@ -316,7 +316,9 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   }));
   const { bottom } = useSafeAreaInsets();
 
-  const BOTTOM_OFFSET = isKeyboardVisible || selectedPicker ? 16 : bottom ? bottom : 16;
+  const safeAreaBottomOffset = Platform.OS === 'android' ? bottom + 16 : bottom;
+  const BOTTOM_OFFSET =
+    isKeyboardVisible || selectedPicker ? 16 : bottom ? safeAreaBottomOffset : 16;
 
   const micPositionContextValue = useMemo(
     () => ({ micPositionX, micPositionY }),
