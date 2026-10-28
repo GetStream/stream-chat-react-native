@@ -316,7 +316,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   }));
   const { bottom } = useSafeAreaInsets();
 
-  const BOTTOM_OFFSET = isKeyboardVisible || selectedPicker ? 16 : bottom ? bottom : 16;
+  const BOTTOM_OFFSET = isKeyboardVisible || selectedPicker ? 16 : bottom ? bottom + 16 : 16;
 
   const micPositionContextValue = useMemo(
     () => ({ micPositionX, micPositionY }),
