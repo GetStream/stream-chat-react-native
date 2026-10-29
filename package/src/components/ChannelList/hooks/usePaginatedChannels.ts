@@ -41,7 +41,7 @@ export const usePaginatedChannels = ({ paginator }: { paginator: ChannelPaginato
 
   const queryChannels = useStableCallback(
     async (queryType: QueryType = 'loadChannels'): Promise<void> => {
-      if (!client || !isMountedRef.current) {
+      if (!client || !isMountedRef.current || paginator.isLoading) {
         return;
       }
 
