@@ -1298,11 +1298,10 @@ detection won't fire.**
 
 ## 17.5 Underlying `stream-chat` type changes (renames / Date / method sigs)
 
-If you call the `stream-chat` client/channel directly or annotate with its types, see the LLC's own
-guides in `stream-chat-js`: `v9-to-v10-migration-guide-{type-renames,other,sort,methods,logging,client-construction}.md`.
-The long-term reference is the consolidated list `ai-docs/v10-breaking-changes.md` in `stream-chat-js` (branch
-`claude/sdk-v10-breaking-changes-f64baf`), which replaces those per-topic guides once it lands. The calls RN apps
-make most are in §R.7 and §R.8. Highlights that hit integrator code:
+If you call the `stream-chat` client/channel directly or annotate with its types, the reference is
+[`ai-docs/v10-breaking-changes.md`](https://github.com/GetStream/stream-chat-js/blob/release-v10/ai-docs/v10-breaking-changes.md)
+in `stream-chat-js` (branch `release-v10`; re-pin to the release tag at v10 GA). The calls RN apps make most are in
+§R.7 and §R.8. Highlights that hit integrator code:
 
 - **Server-sent dates are unix-nanosecond numbers** on every response and event type (`created_at`,
   `updated_at`, `last_read`, …) — not `Date` objects and not ISO strings. They are typed
@@ -3219,7 +3218,18 @@ The ones the v9 sample apps hit. The full list is `stream-chat`'s own (§17.5).
 - **Custom events** — `channel.sendEvent({ type, ...fields })` →
   `channel.sendEvent({ event: { type, custom: {…} } })`.
 - **`connectUser` takes a `ClientUser`**: your own user fields go under `custom`. A `UserResponse` fixture no longer
-  type-checks (it requires server-owned fields such as `created_at`); type it as `ClientUser`.
+  type-checks (it requires server-owned fields such as `created_at`); type it as `ClientUser`. Grep for extra top-level
+  keys on the user you connect with (`imageUrl`, `avatar`, `nickname`, ...): TypeScript rejects them only in an object
+  literal passed straight to `connectUser`, not in a user object built earlier (a `useMemo`, a variable). An avatar URL
+  goes in `image`, which the SDK's avatars read; anything else app-owned goes in `custom`.
+
+  ```ts
+  // v9
+  const user = { id, name, imageUrl: avatarUrl, team: 'red' };
+  // v10
+  const user: ClientUser = { id, name, image: avatarUrl, custom: { team: 'red' } };
+  await client.connectUser(user, token);
+  ```
 - **Type renames the sample apps hit**: `MessageResponseBase` → `MessageResponse`; search results are
   `SearchResultMessage` and `result.message` is optional; `DeliveredMessageConfirmation` → `DeliveredMessagePayload`;
   `DraftFilters` / `DraftSort` / `Pager` → `QueryDraftsRequest`.
