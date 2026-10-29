@@ -1,5 +1,19 @@
 # Change Log
 
+## [9.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.0...v9.11.1) (2026-10-29)
+
+### Bug Fixes
+
+* load older messages in MessageFlashList until the list fills the screen ([54c967a](https://github.com/GetStream/stream-chat-react-native/commit/54c967a97e142ea5821d2d511414d0cdf0216cc5))
+* offline message limit pagination ([#3907](https://github.com/GetStream/stream-chat-react-native/issues/3907)) ([59528b7](https://github.com/GetStream/stream-chat-react-native/commit/59528b707ce332c99c7002767ef7ae01fa203beb))
+* read message_limit messages per channel from the offline DB ([2c66e7c](https://github.com/GetStream/stream-chat-react-native/commit/2c66e7cb8be87f1bd6f75f2af07c89a6fe0c80cb))
+* retry message list pagination after a load that loaded nothing ([03f7e17](https://github.com/GetStream/stream-chat-react-native/commit/03f7e17a534fa1e1cab0f916972b340cd2a02a32))
+* token provider rejection during reconnect ([#3913](https://github.com/GetStream/stream-chat-react-native/issues/3913)) ([07e1b0e](https://github.com/GetStream/stream-chat-react-native/commit/07e1b0edf04926b3fdc4df74328e70104cb1d2f7)), closes [GetStream/stream-chat-js#1962](https://github.com/GetStream/stream-chat-js/issues/1962)
+
+### Reverts
+
+* offline message_limit and pagination fixes pushed to develop by mistake ([cb078c7](https://github.com/GetStream/stream-chat-react-native/commit/cb078c72218660b13d1ea098eb31eb54f0b1acf1))
+
 ## [9.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.2...v9.11.0) (2026-10-28)
 
 ### Bug Fixes
