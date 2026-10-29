@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.16.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.3...sampleapp@v4.16.4) (2026-10-29)
+
+### Bug Fixes
+
+* offline message limit pagination ([#3907](https://github.com/GetStream/stream-chat-react-native/issues/3907)) ([59528b7](https://github.com/GetStream/stream-chat-react-native/commit/59528b707ce332c99c7002767ef7ae01fa203beb))
+* token provider rejection during reconnect ([#3913](https://github.com/GetStream/stream-chat-react-native/issues/3913)) ([07e1b0e](https://github.com/GetStream/stream-chat-react-native/commit/07e1b0edf04926b3fdc4df74328e70104cb1d2f7)), closes [GetStream/stream-chat-js#1962](https://github.com/GetStream/stream-chat-js/issues/1962)
+
 ## [4.16.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v4.16.2...sampleapp@v4.16.3) (2026-10-28)
 
 ### Bug Fixes
