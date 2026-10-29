@@ -12,15 +12,18 @@ import type { TableRow, TableRowJoinedUser } from '../types';
 export const getChannelMessages = async ({
   channelIds,
   userId,
+  messageLimit,
 }: {
   channelIds: string[];
   userId: string;
+  messageLimit?: number;
 }) => {
   SqliteClient.logger?.('info', 'getChannelMessages', {
     channelIds,
     userId,
+    messageLimit,
   });
-  const messageRows = await selectMessagesForChannels(channelIds);
+  const messageRows = await selectMessagesForChannels(channelIds, messageLimit);
   const messageIds = messageRows.map(({ id }) => id);
 
   const reactionRows = await selectReactionsForMessages(messageIds, null);

@@ -2,8 +2,12 @@ import { tables } from '../../schema';
 import { SqliteClient } from '../../SqliteClient';
 import type { TableRowJoinedUser } from '../../types';
 
+/** The `message_limit` the client assumes for a channel list query that sets none. */
+export const DEFAULT_CHANNEL_LIST_MESSAGE_LIMIT = 25;
+
 export const selectMessagesForChannels = async (
   cids: string[],
+  messageLimit: number = DEFAULT_CHANNEL_LIST_MESSAGE_LIMIT,
 ): Promise<TableRowJoinedUser<'messages'>[]> => {
   const questionMarks = Array(cids.length).fill('?').join(',');
   const messagesColumnNames = Object.keys(tables.messages.columns)
@@ -15,6 +19,7 @@ export const selectMessagesForChannels = async (
 
   SqliteClient.logger?.('info', 'selectMessagesForChannels', {
     cids,
+    messageLimit,
   });
 
   const result = await SqliteClient.executeSql(
@@ -38,9 +43,9 @@ export const selectMessagesForChannels = async (
     LEFT JOIN
       users b
     ON b.id = a.userId
-    WHERE RowNum <= 25
+    WHERE RowNum <= ?
     ORDER BY a.createdAt ASC`,
-    cids,
+    [...cids, messageLimit],
   );
 
   return result.map((r) => JSON.parse(r.value));

@@ -56,6 +56,7 @@ export const getChannelsForFilterSort = async ({
     channels: await getChannels({
       channelIds: cids,
       userId,
+      messageLimit: options?.message_limit,
     }),
     predefinedFilter,
   };

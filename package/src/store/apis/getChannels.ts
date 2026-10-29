@@ -16,16 +16,19 @@ import { SqliteClient } from '../SqliteClient';
  *
  * @param params.channelIds The channel IDs to fetch.
  * @param params.userId The ID of the current user.
+ * @param params.messageLimit How many of each channel's newest messages to return, 25 by default.
  * @returns The channels with their state.
  */
 export const getChannels = async ({
   channelIds,
   userId,
+  messageLimit,
 }: {
   channelIds: string[];
   userId: string;
+  messageLimit?: number;
 }): Promise<Omit<ChannelStateResponseFields, 'duration'>[]> => {
-  SqliteClient.logger?.('info', 'getChannels', { channelIds, userId });
+  SqliteClient.logger?.('info', 'getChannels', { channelIds, userId, messageLimit });
 
   const [channels, cidVsDraft, cidVsMembers, cidVsReads, cidVsMessages, cidVsActiveLocations] =
     await Promise.all([
@@ -36,6 +39,7 @@ export const getChannels = async ({
       getChannelMessages({
         channelIds,
         userId,
+        messageLimit,
       }),
       getChannelActiveLocations({ channelIds }),
     ]);
