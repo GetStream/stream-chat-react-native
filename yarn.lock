@@ -5799,11 +5799,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stream-io/i18n@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@stream-io/i18n@npm:1.0.2"
+"@stream-io/i18n@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@stream-io/i18n@npm:1.1.0"
   dependencies:
-    "@stream-io/state-store": "npm:^1.1.6"
+    "@stream-io/state-store": "npm:^1.2.0"
     dayjs: "npm:^1.11.23"
     i18next: "npm:^26.4.2"
     use-sync-external-store: "npm:^1.7.0"
@@ -5812,20 +5812,20 @@ __metadata:
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 10c0/4b073bc8b39064ee31cab37f5c6ea6da03db916acf7fe998e0954fee6c458f0784d27678954c4aaa1eaed68eb8556d10e88ad3127e5ae4081c3ef16f747a3cda
+  checksum: 10c0/c027a082cf7a2592e2ac87f5a91c873171cd0db1f3c86d016596533cd087e30fce9a9a6ad5810c38703852af2bd2e7ec2dfab08f4a109f4b62ae39cfc40822b5
   languageName: node
   linkType: hard
 
 "@stream-io/logger@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@stream-io/logger@npm:2.0.0"
-  checksum: 10c0/b12b1a8005b99b7fbdcfd91dbda08b5021da9044f861bb574005975d43dcfe9f406795015c6ddadc3a18cb9dda0c949e303b6c454b9f5139fa24701bed5a0bd7
+  version: 2.1.0
+  resolution: "@stream-io/logger@npm:2.1.0"
+  checksum: 10c0/0a09c9420b8bbec7a3007bf02acccaf7c0792b18d76eb791198e2a20890f1244b42788c3cc99d6ab52a591f49fde80dd6b2236e194f95f03b36fce5d0aa71dc3
   languageName: node
   linkType: hard
 
-"@stream-io/state-store@npm:^1.1.6":
-  version: 1.1.6
-  resolution: "@stream-io/state-store@npm:1.1.6"
+"@stream-io/state-store@npm:^1.1.6, @stream-io/state-store@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@stream-io/state-store@npm:1.2.0"
   peerDependencies:
     react: ^17 || ^18 || ^19
     use-sync-external-store: ^1.5.0
@@ -5834,7 +5834,7 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: 10c0/42927cdb6a5bf6ba5f4ec11bb5e530db0a04edc65abd5348eb423780e40a3e53f57125e328d0318a0dc6b24ca0fcb28e8b91895a14a62ed8d82645f67ebcee5a
+  checksum: 10c0/27179805cb9a042416c741e1759c3324eefae0b27612c50f5fa0e0e13675d71bbe0a324978fcb5fdceaa4df5a99d11c6746eae319761216861b338e8cb7f1928
   languageName: node
   linkType: hard
 
@@ -17453,7 +17453,7 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.20.0"
     "@rnx-kit/metro-config": "npm:^2.2.6"
     "@shopify/flash-list": "npm:^2.3.3"
-    "@stream-io/state-store": "npm:^1.1.6"
+    "@stream-io/state-store": "npm:^1.2.0"
     "@stream-io/typescript-config": "workspace:^"
     "@types/lodash.mergewith": "npm:^4.6.9"
     "@types/react": "npm:^19.3.0"
@@ -18196,8 +18196,8 @@ __metadata:
     "@react-native/jest-preset": "npm:0.88.0"
     "@shopify/flash-list": "npm:^2.3.3"
     "@shopify/react-native-skia": "npm:^2.13.0"
-    "@stream-io/i18n": "npm:^1.0.2"
-    "@stream-io/state-store": "npm:^1.1.6"
+    "@stream-io/i18n": "npm:^1.1.0"
+    "@stream-io/state-store": "npm:^1.2.0"
     "@stream-io/typescript-config": "workspace:^"
     "@testing-library/jest-native": "npm:^5.4.3"
     "@testing-library/react-native": "npm:13.2.0"
