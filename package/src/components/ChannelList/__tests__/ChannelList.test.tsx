@@ -1084,6 +1084,50 @@ describe('ChannelList', () => {
       executeQuery.mockRestore();
     });
 
+    it('keeps the footer loading indicator while a next page loads', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+      const paginator = createPaginator({ paginatorOptions: { pageSize: 1 } });
+      let loadNextPage: (() => Promise<void>) | undefined;
+      const LoadNextPageProbe = () => {
+        loadNextPage = useChannelsContext().loadNextPage;
+        return null;
+      };
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ListHeaderComponent: LoadNextPageProbe }}>
+            <ChannelList paginator={paginator} />
+          </WithComponents>
+        </Chat>,
+      );
+      await waitFor(() => expect(paginator.hasMoreTail).toBe(true));
+
+      useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+      const nextPage = new DeferredPromise<void>();
+      const queryChannels = chatClient.queryChannels.bind(chatClient);
+      jest.spyOn(chatClient, 'queryChannels').mockImplementation(async (...args) => {
+        await nextPage.promise;
+        return queryChannels(...args);
+      });
+      act(() => {
+        loadNextPage?.();
+      });
+      expect(screen.getByTestId('channel-list-footer-loading-indicator')).toBeTruthy();
+
+      // FlatList asks again when the footer changes the content length
+      await act(async () => {
+        await loadNextPage?.();
+      });
+      expect(screen.getByTestId('channel-list-footer-loading-indicator')).toBeTruthy();
+
+      await act(async () => {
+        nextPage.resolve();
+        await nextPage.promise;
+      });
+      await waitFor(() => expect(paginator.items).toHaveLength(2));
+      expect(screen.queryByTestId('channel-list-footer-loading-indicator')).toBeNull();
+    });
+
     it('shows the channels it already has when it mounts again, without a query', async () => {
       useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
