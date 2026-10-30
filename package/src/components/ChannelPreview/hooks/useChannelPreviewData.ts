@@ -30,20 +30,19 @@ export const useChannelPreviewData = (channel: Channel, client: StreamChat) => {
   // rather than one subscription per concern.
   const previewStateSelector = useCallback(
     (state: MembershipState & MuteStatusState & ReadState) => ({
-      membership: state.membership,
       muteStatus: state.muteStatus,
+      pinned: state.membership?.pinned_at != null,
       unread: userId ? (state.read[userId]?.unread_messages ?? 0) : 0,
     }),
     [userId],
   );
   const {
-    membership,
     muteStatus,
+    pinned = false,
     unread: reactiveUnread,
   } = useStateStore(channel.state, previewStateSelector) ?? {};
 
   const muted = muteStatus?.muted ?? false;
-  const pinned = membership?.pinned_at != null;
   // Muted channels show no unread count.
   const unread = muted ? 0 : (reactiveUnread ?? 0);
 
