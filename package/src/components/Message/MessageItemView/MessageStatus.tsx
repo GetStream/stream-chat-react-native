@@ -71,6 +71,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
           <icons.CheckAll
             height={16}
             stroke={styles.readCheck.color}
+            testID='message-status-read'
             width={16}
             {...checkAllIcon}
           />
@@ -78,13 +79,26 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
           <icons.CheckAll
             stroke={styles.deliveredCheck.color}
             height={16}
+            testID='message-status-delivered'
             width={16}
             {...checkAllIcon}
           />
         ) : sending ? (
-          <icons.Time stroke={styles.sendingCheck.color} height={16} width={16} {...timeIcon} />
+          <icons.Time
+            stroke={styles.sendingCheck.color}
+            height={16}
+            testID='message-status-sending'
+            width={16}
+            {...timeIcon}
+          />
         ) : sent ? (
-          <icons.Check stroke={styles.sentCheck.color} height={16} width={16} {...checkIcon} />
+          <icons.Check
+            stroke={styles.sentCheck.color}
+            height={16}
+            testID='message-status-sent'
+            width={16}
+            {...checkIcon}
+          />
         ) : null}
       </View>
     </>

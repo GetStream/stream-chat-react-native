@@ -1,5 +1,32 @@
 # Change Log
 
+## [9.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.0...v9.11.1) (2026-10-29)
+
+### Bug Fixes
+
+* load older messages in MessageFlashList until the list fills the screen ([54c967a](https://github.com/GetStream/stream-chat-react-native/commit/54c967a97e142ea5821d2d511414d0cdf0216cc5))
+* offline message limit pagination ([#3907](https://github.com/GetStream/stream-chat-react-native/issues/3907)) ([59528b7](https://github.com/GetStream/stream-chat-react-native/commit/59528b707ce332c99c7002767ef7ae01fa203beb))
+* read message_limit messages per channel from the offline DB ([2c66e7c](https://github.com/GetStream/stream-chat-react-native/commit/2c66e7cb8be87f1bd6f75f2af07c89a6fe0c80cb))
+* retry message list pagination after a load that loaded nothing ([03f7e17](https://github.com/GetStream/stream-chat-react-native/commit/03f7e17a534fa1e1cab0f916972b340cd2a02a32))
+* token provider rejection during reconnect ([#3913](https://github.com/GetStream/stream-chat-react-native/issues/3913)) ([07e1b0e](https://github.com/GetStream/stream-chat-react-native/commit/07e1b0edf04926b3fdc4df74328e70104cb1d2f7)), closes [GetStream/stream-chat-js#1962](https://github.com/GetStream/stream-chat-js/issues/1962)
+
+### Reverts
+
+* offline message_limit and pagination fixes pushed to develop by mistake ([cb078c7](https://github.com/GetStream/stream-chat-react-native/commit/cb078c72218660b13d1ea098eb31eb54f0b1acf1))
+
+## [9.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.2...v9.11.0) (2026-10-28)
+
+### Bug Fixes
+
+* adjusted message composer bottom offset calculation ([0e9a0c0](https://github.com/GetStream/stream-chat-react-native/commit/0e9a0c000be5523cafd1aa3d2b6a4dc22a44a455))
+* adjusted message composer bottom offset calculation ([9bc37a3](https://github.com/GetStream/stream-chat-react-native/commit/9bc37a3fe52fabbad6d2d5d9f44545c273e820d8))
+* bump stream-chat to 9.54.2 ([fc6b6e6](https://github.com/GetStream/stream-chat-react-native/commit/fc6b6e647fd85d9a052547ecec35ecd9d67b8bef))
+* bump stream-chat to 9.54.2 ([a6bb08f](https://github.com/GetStream/stream-chat-react-native/commit/a6bb08f4d8b745e4b1bcccfb67ae340a3112a3e2))
+
+### Features
+
+* **ai-components:** add VoiceGlow and VoiceWave voice-agent visualizations ([#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895)) ([304618e](https://github.com/GetStream/stream-chat-react-native/commit/304618edf41de54a1a0a3d95addfc112d4520009)), closes [GetStream/stream-chat-android#6848](https://github.com/GetStream/stream-chat-android/issues/6848) [GetStream/stream-chat-android#6849](https://github.com/GetStream/stream-chat-android/issues/6849) [GetStream/stream-chat-android#6851](https://github.com/GetStream/stream-chat-android/issues/6851) [GetStream/stream-chat-swift#4338](https://github.com/GetStream/stream-chat-swift/issues/4338) [GetStream/stream-chat-react#3339](https://github.com/GetStream/stream-chat-react/issues/3339)
+
 ## [9.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.10.1...v9.10.2) (2026-10-27)
 
 ### Bug Fixes

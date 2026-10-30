@@ -29,7 +29,7 @@ export const ChannelLastMessagePreview = ({ message }: ChannelLastMessagePreview
           width={16}
         />
       ) : null}
-      <Text numberOfLines={1} style={[styles.subtitle]}>
+      <Text numberOfLines={1} style={[styles.subtitle]} testID='channel-preview-message'>
         {messagePreviewTitle}
       </Text>
     </View>

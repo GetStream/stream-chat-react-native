@@ -184,4 +184,25 @@ describe('MessageStatus', () => {
       });
     });
   });
+
+  it.each([
+    [false, false, 'sending', 'message-status-sending'],
+    [true, true, 'received', 'message-status-read'],
+    [false, false, 'received', 'message-status-sent'],
+    [true, false, 'received', 'message-status-delivered'],
+  ] as [boolean, boolean, string, string][])(
+    'exposes a status testID when delivered is %s, read is %s and status is %s',
+    async (delivered, read, status, testID) => {
+      const message = generateMessage({ user: generateUser() });
+      const { getByTestId } = renderMessageStatus({
+        delivered,
+        message: { ...message, status },
+        read,
+      });
+      // The icon row is hidden from screen readers in favour of the hidden text label.
+      await waitFor(() => {
+        expect(getByTestId(testID, { includeHiddenElements: true })).toBeTruthy();
+      });
+    },
+  );
 });

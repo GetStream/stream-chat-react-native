@@ -96,7 +96,11 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   }
 
   if (!isLastMessageByCurrentUser) {
-    return <Text style={styles.username}>{message?.user?.name || message?.user?.id}:</Text>;
+    return (
+      <Text style={styles.username} testID='channel-preview-sender'>
+        {message?.user?.name || message?.user?.id}:
+      </Text>
+    );
   }
 
   return (
@@ -122,7 +126,9 @@ export const ChannelMessagePreviewDeliveryStatus = ({
         ) : status === MessageDeliveryStatus.SENT ? (
           <icons.Check stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkIcon} />
         ) : null}
-        <Text style={styles.text}>{t('common.you.label', 'You')}:</Text>
+        <Text style={styles.text} testID='channel-preview-sender'>
+          {t('common.you.label', 'You')}:
+        </Text>
       </View>
     </CompositeAccessibilityProbe>
   );
