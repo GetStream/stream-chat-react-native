@@ -95,7 +95,7 @@ export const usePaginatedChannels = ({ paginator }: { paginator: ChannelPaginato
   // new paginator, and after `client.disconnectUser` resets it. A paginator that already has
   // channels is shown as is, and a load in flight is left alone.
   const userId = useClientUserId(client);
-  const isUnloaded = channels === undefined;
+  const isUnloaded = channels === undefined || !paginator.isInitialized;
   useEffect(() => {
     if (!isUnloaded || !userId || paginator.isLoading) return;
     reloadList();
