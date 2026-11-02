@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FlatList, StyleSheet } from 'react-native';
 
@@ -8,6 +8,9 @@ import type { LocalMessage, StreamChat as StreamChatClient, UserResponse } from 
 import { msToNs, Thread } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
+import { useMessageComposerAPIContext } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
+import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
@@ -22,6 +25,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { primitives } from '../../../theme';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
+import { MessageComposer } from '../../MessageInput/MessageComposer';
 
 import { Thread as ThreadComponent } from '../../Thread/Thread';
 import { SCROLL_TO_BOTTOM_ACCESSIBILITY_ACTION_NAME } from '../hooks/useScrollToBottomAccessibilityAction';
@@ -1412,4 +1416,83 @@ describe('MessageList in a thread', () => {
     });
     expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
   });
+});
+
+describe('MessageList optimistic edit', () => {
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  // A UI renders `i18n.<language>_text` in place of `text`, so an optimistic edit that kept the
+  // translations of the old text showed the "Edited" label over the old message until the server
+  // responded (or, offline, until the edit was replayed).
+  it('shows an edit of an auto-translated message before the request resolves', async () => {
+    const me = generateUser({ id: 'testID' });
+    const mine = generateMessage({
+      i18n: { en_text: 'before edit', es_text: 'antes de editar', language: 'en' },
+      text: 'before edit',
+      user: me,
+    });
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: me })],
+      messages: [mine],
+    });
+    mine.cid = mockedChannel.channel.cid;
+
+    const chatClient = await getTestClientWithUser(me);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    // Never settles, so whatever is on screen is the optimistic state.
+    const updateMessage = jest
+      .spyOn(chatClient, 'updateMessage')
+      .mockImplementation(() => new Promise(() => undefined));
+
+    let startEditing: (message: LocalMessage) => void = () => undefined;
+    let submit: () => Promise<void> = () => Promise.resolve();
+    let composer: ReturnType<typeof useMessageComposer> | undefined;
+    const EditDriver = () => {
+      const { setEditingState } = useMessageComposerAPIContext();
+      const { sendMessage } = useMessageInputContext();
+      const messageComposer = useMessageComposer();
+      useEffect(() => {
+        startEditing = setEditingState;
+        submit = sendMessage;
+        composer = messageComposer;
+      });
+      return null;
+    };
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+            <MessageComposer />
+            <EditDriver />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+    await waitFor(() =>
+      expect(
+        within(getByTestId(`message-list-item-${mine.id}`)).getByText('before edit'),
+      ).toBeTruthy(),
+    );
+
+    act(() => startEditing(channel.messagePaginator.getItem(mine.id) as LocalMessage));
+    await waitFor(() => expect(composer?.editedMessage?.id).toBe(mine.id));
+    act(() => composer?.textComposer.setText('after edit'));
+    act(() => {
+      void submit();
+    });
+
+    await waitFor(() => expect(updateMessage).toHaveBeenCalled());
+    await waitFor(() => {
+      const row = within(getByTestId(`message-list-item-${mine.id}`));
+      expect(row.getByText('after edit')).toBeTruthy();
+      expect(row.queryByText('before edit')).toBeNull();
+    });
+  }, 15000);
 });
