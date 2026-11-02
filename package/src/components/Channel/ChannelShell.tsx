@@ -15,6 +15,7 @@ import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
+import { useJumpToLatestOnOpen } from './hooks/useJumpToLatestOnOpen';
 
 import {
   AttachmentPickerContextValue,
@@ -208,6 +209,8 @@ export type ChannelConfigProps = Partial<
 type ChannelShellProps = ChannelConfigProps & {
   channel: Channel;
   hasPendingInitialTargetLoad: () => boolean;
+  /** `<Channel>`'s `initializeOnMount`: when false, the app places the list's pages itself. */
+  initializeOnMount?: boolean;
   /** Set by `<Thread>`: the list and composer below show this thread's replies. */
   thread?: Thread;
 };
@@ -227,6 +230,13 @@ const channelStatusSelector = (state: ChannelDataState & ChannelLifecycleState) 
   frozen: state.data?.frozen ?? false,
   pendingDisposal: state.pendingDisposal,
 });
+
+// Renders nothing. It sits under the providers below so its hook can read the
+// channel and thread context this component provides.
+const JumpToLatestOnOpen = () => {
+  useJumpToLatestOnOpen();
+  return null;
+};
 
 /**
  * The providers a message list and composer need, shared by `<Channel>` and `<Thread>`, which each
@@ -288,6 +298,7 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     hasFilePicker = isDocumentPickerAvailable(),
     hasImagePicker = isImagePickerAvailable() || isImageMediaLibraryAvailable(),
     hasPendingInitialTargetLoad,
+    initializeOnMount = true,
     allowDateSeparatorForSystemMessages = false,
     hideDateSeparators = false,
     hideStickyDateHeader = false,
@@ -508,6 +519,7 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
                 <MessageInputProvider value={inputMessageInputContext}>
                   <AudioPlayerProvider value={audioPlayerContext}>
                     <NotificationAnnouncer />
+                    {initializeOnMount ? <JumpToLatestOnOpen /> : null}
                     <View style={{ height: '100%' }}>{children}</View>
                     {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
                   </AudioPlayerProvider>

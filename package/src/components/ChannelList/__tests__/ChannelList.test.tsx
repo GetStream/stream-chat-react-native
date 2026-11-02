@@ -1154,6 +1154,34 @@ describe('ChannelList', () => {
       expect(querySpy).not.toHaveBeenCalled();
     });
 
+    it('loads the first page when an event put a channel in the list before it was ever queried', async () => {
+      const seededChannel = chatClient.channel(testChannel1.channel.type, testChannel1.channel.id);
+      // What `message.new` / `member.updated` do for a channel matching a list nobody queried yet.
+      chatClient.channelManager.ingestChannel(seededChannel);
+      expect(props.paginator.items?.map((channel) => channel.id)).toEqual([
+        testChannel1.channel.id,
+      ]);
+      expect(props.paginator.isInitialized).toBe(false);
+
+      useMockedApis(chatClient, [queryChannelsApi([testChannel2, testChannel1])]);
+      const querySpy = jest.spyOn(chatClient, 'queryChannels');
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+
+      // The seeded channel does not count as a loaded first page, so the list queries on mount.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      expect(querySpy).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.getByTestId(testChannel2.channel.id)).toBeTruthy());
+      expect(props.paginator.isInitialized).toBe(true);
+    });
+
     it('leaves the paginator registered and loaded when it unmounts', async () => {
       useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 

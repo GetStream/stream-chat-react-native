@@ -17,15 +17,18 @@ export const setupCommandUIMiddlewares = (messageComposer: MessageComposer) => {
   messageComposer.draftCompositionMiddlewareExecutor.insert({
     middleware: [createDraftCommandInjectionMiddleware(messageComposer)],
     position: { after: 'stream-io/message-composer-middleware/draft-attachments' },
+    unique: true,
   });
 
   messageComposer.textComposer.middlewareExecutor.insert({
     middleware: [createActiveCommandGuardMiddleware() as TextComposerMiddleware],
     position: { before: 'stream-io/text-composer/commands-middleware' },
+    unique: true,
   });
 
   messageComposer.textComposer.middlewareExecutor.insert({
     middleware: [createCommandStringExtractionMiddleware() as TextComposerMiddleware],
     position: { after: 'stream-io/text-composer/commands-middleware' },
+    unique: true,
   });
 };

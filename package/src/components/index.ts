@@ -34,6 +34,7 @@ export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
 export * from './Channel/hooks/useCreateThreadContext';
+export * from './Channel/hooks/useJumpToLatestOnOpen';
 
 export * from './ChannelList/ChannelList';
 export * from './ChannelList/ChannelListFooterLoadingIndicator';
