@@ -1,9 +1,10 @@
 import React, { PropsWithChildren } from 'react';
 
 import { act, renderHook } from '@testing-library/react-native';
-import { Poll, PollResponse, PollVote, StreamChat } from 'stream-chat';
+import { Poll, PollResponse, PollVote, StreamChat, TranslationLanguages } from 'stream-chat';
 
 import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { useChannelPreviewPollLabel } from '../useChannelPreviewPollLabel';
 
 const OWN_USER = { id: 'own-user' };
@@ -20,7 +21,7 @@ const generateVote = (id: string, optionId: string, createdAt: string): PollVote
   user_id: OWN_USER.id,
 });
 
-const setup = (ownVotes: PollVote[]) => {
+const setup = (ownVotes: PollVote[], userLanguage: TranslationLanguages = 'en') => {
   const client = {
     removePollVote: jest.fn(() => new Promise(() => {})),
     user: OWN_USER,
@@ -41,7 +42,7 @@ const setup = (ownVotes: PollVote[]) => {
       latest_votes_by_option: latestVotesByOption,
       name: 'Poll',
       options: [
-        { id: 'option-a', text: 'A' },
+        { id: 'option-a', text: 'A', text_i18n: { es_text: 'A (es)', language: 'en' } },
         { id: 'option-b', text: 'B' },
       ],
       own_votes: ownVotes,
@@ -52,7 +53,19 @@ const setup = (ownVotes: PollVote[]) => {
   (client as unknown as { polls: unknown }).polls = { fromState: () => poll };
 
   const wrapper = ({ children }: PropsWithChildren) => (
-    <ChatProvider value={{ client } as never}>{children}</ChatProvider>
+    <ChatProvider value={{ client } as never}>
+      <TranslationProvider
+        value={
+          {
+            t: (key: string, { option }: { option?: string } = {}) =>
+              key.replace('{{ option }}', String(option)),
+            userLanguage,
+          } as never
+        }
+      >
+        {children}
+      </TranslationProvider>
+    </ChatProvider>
   );
   const hook = renderHook(() => useChannelPreviewPollLabel({ pollId: POLL_ID }), { wrapper });
   return { ...hook, poll };
@@ -62,7 +75,7 @@ describe('useChannelPreviewPollLabel', () => {
   it('returns no label once the only vote is removed', () => {
     const vote = generateVote('vote-a', 'option-a', '2026-10-27T10:00:00.000Z');
     const { poll, result } = setup([vote]);
-    expect(result.current).toBe('You voted: {{ option }}');
+    expect(result.current).toBe('You voted: A');
 
     act(() => {
       poll.removeVote(vote.id, MESSAGE_ID);
@@ -81,6 +94,18 @@ describe('useChannelPreviewPollLabel', () => {
     });
 
     expect(poll.data.latest_votes_by_option['option-a']).toBeUndefined();
-    expect(result.current).toBe('You voted: {{ option }}');
+    expect(result.current).toBe('You voted: B');
+  });
+
+  it("labels the vote with the option's translation into the user's language", () => {
+    const vote = generateVote('vote-a', 'option-a', '2026-10-27T10:00:00.000Z');
+    const { result } = setup([vote], 'es');
+    expect(result.current).toBe('You voted: A (es)');
+  });
+
+  it('labels the vote with the original option text when it has no translation', () => {
+    const vote = generateVote('vote-b', 'option-b', '2026-10-27T10:00:00.000Z');
+    const { result } = setup([vote], 'es');
+    expect(result.current).toBe('You voted: B');
   });
 });

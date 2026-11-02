@@ -59,6 +59,26 @@ describe('useTranslatedMessage', () => {
     });
   });
 
+  it("doesn't translate a deleted message", async () => {
+    const message = {
+      i18n: {
+        no_text: 'Hallo verden!',
+      },
+      text: 'Hello world!',
+      type: 'deleted',
+    } as unknown as MessageResponse;
+
+    render(
+      <TranslationProvider value={{ userLanguage: 'no' } as TranslationContextValue}>
+        <TestComponent message={message} />
+      </TranslationProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Hello world!')).toBeTruthy();
+    });
+  });
+
   it("returns the original text if the message doesn't contain any translations", async () => {
     const message = {
       text: 'Hello world!',

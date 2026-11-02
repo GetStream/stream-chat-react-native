@@ -12,9 +12,11 @@ import { useGroupedAttachments } from './useGroupedAttachments';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
+import { getTranslatedText } from '../../utils/i18n/getTranslatedText';
 
 const selector = (nextValue: PollState) => ({
   name: nextValue.name,
+  name_i18n: nextValue.name_i18n,
 });
 
 export const useMessagePreviewText = ({
@@ -22,10 +24,11 @@ export const useMessagePreviewText = ({
 }: {
   message?: LocalMessage | MessageResponse | DraftMessage | null;
 }) => {
-  const { t } = useTranslationContext();
+  const { t, userLanguage } = useTranslationContext();
   const { client } = useChatContext();
   const poll = client.polls.fromState(message?.poll_id ?? '');
-  const { name: pollName } = useStateStore(poll?.state, selector) ?? {};
+  const { name, name_i18n } = useStateStore(poll?.state, selector) ?? {};
+  const pollName = getTranslatedText(name_i18n, userLanguage) ?? name;
   const { giphys, audios, images, videos, files, voiceRecordings } = useGroupedAttachments(
     message?.attachments,
   );

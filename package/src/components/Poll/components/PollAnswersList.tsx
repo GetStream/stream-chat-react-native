@@ -21,6 +21,7 @@ import { Button } from '../../ui';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
 import { usePollState } from '../hooks/usePollState';
+import { usePollTextTranslation } from '../hooks/usePollTextTranslation';
 
 export const AnswerListAddCommentButton = (props: PollButtonProps) => {
   const { t } = useTranslationContext();
@@ -71,6 +72,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
+  const translate = usePollTextTranslation();
 
   const {
     theme: {
@@ -104,7 +106,9 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   return (
     <View style={[styles.listItemWrapper, itemStyle.wrapper]}>
       <View style={[styles.listItemContainer, itemStyle.container]}>
-        <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>{answer.answer_text}</Text>
+        <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>
+          {translate(answer.answer_text, answer.answer_text_i18n)}
+        </Text>
         <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
           <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
             {!isAnonymous && answer.user?.image ? (
