@@ -586,4 +586,89 @@ describe('Thread lifecycle', () => {
       expect(markRead.mock.calls.every(([options]) => options?.thread_id)).toBe(true);
     });
   });
+
+  describe('reopening a thread left on an older page', () => {
+    const OLDER_PAGE_START = new Date('2020-01-01T00:00:00.000Z').getTime();
+
+    // A thread whose newest replies are loaded, but whose list shows an older page, as it does
+    // after a jump to a quoted or searched reply.
+    const setUpThreadOnOlderPage = async () => {
+      const testChannel = await watchChannel();
+      const parentMessage = testChannel.state.formatMessage(generateMessage({ user }));
+      const threadInstance = new ThreadClass({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage,
+      });
+      jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+      jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: Array.from({ length: 10 }, (_, i) =>
+          generateMessage({ id: `newest-${i}`, parent_id: parentMessage.id }),
+        ),
+        isFirstPage: true,
+        isLastPage: true,
+      });
+      threadInstance.messagePaginator.ingestPage({
+        page: Array.from({ length: 5 }, (_, i) =>
+          generateMessage({
+            id: `older-${i}`,
+            parent_id: parentMessage.id,
+            timestamp: OLDER_PAGE_START + i * 1000,
+          }),
+        ),
+        policy: 'strict-overlap-only',
+        setActive: true,
+      });
+      expect(threadInstance.messagePaginator.isActiveIntervalAtHead).toBe(false);
+
+      return threadInstance;
+    };
+
+    it('shows the newest replies again', async () => {
+      const threadInstance = await setUpThreadOnOlderPage();
+
+      openThread(threadInstance);
+
+      await waitFor(() =>
+        expect(threadInstance.messagePaginator.isActiveIntervalAtHead).toBe(true),
+      );
+      expect(threadInstance.messagePaginator.items?.map((reply) => reply.id)).toContain('newest-9');
+    });
+
+    it('keeps a jump the integrator already made to a loaded reply', async () => {
+      const threadInstance = await setUpThreadOnOlderPage();
+      // A deep link from the screen: the target is loaded, so the jump lands at once.
+      await threadInstance.messagePaginator.jumpToMessage('older-2', {
+        focusReason: 'jump-to-message',
+      });
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        threadInstance.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      openThread(threadInstance);
+
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+      expect(threadInstance.messagePaginator.isActiveIntervalAtHead).toBe(false);
+      expect(
+        threadInstance.messagePaginator.messageFocusSignal.getLatestValue().signal?.messageId,
+      ).toBe('older-2');
+    });
+
+    it('leaves a jump that is still in flight alone', async () => {
+      const threadInstance = await setUpThreadOnOlderPage();
+      // A deep link to a reply that is not loaded: its query is in flight.
+      jest.spyOn(threadInstance.messagePaginator, 'isLoading', 'get').mockReturnValue(true);
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        threadInstance.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      openThread(threadInstance);
+
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+    });
+  });
 });

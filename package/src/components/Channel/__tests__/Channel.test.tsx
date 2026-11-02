@@ -796,6 +796,108 @@ describe('Channel initial load useEffect', () => {
     });
   });
 
+  describe('reopening a channel left on an older page', () => {
+    const OLDER_PAGE_START = new Date('2020-01-01T00:00:00.000Z').getTime();
+
+    // A watched channel whose newest messages are loaded, but whose list shows an older page, as it
+    // does after a jump to a quoted, pinned or searched message.
+    const setUpChannelOnOlderPage = async () => {
+      const newestMessages = Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ id: `newest-${i}` }),
+      );
+      const mockedChannel = generateChannelResponse({ messages: newestMessages });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+
+      const olderMessages = Array.from({ length: 5 }, (_, i) =>
+        generateMessage({ id: `older-${i}`, timestamp: OLDER_PAGE_START + i * 1000 }),
+      );
+      channel.messagePaginator.ingestPage({
+        page: olderMessages,
+        policy: 'strict-overlap-only',
+        setActive: true,
+      });
+      expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(false);
+
+      return channel;
+    };
+
+    it('shows the newest messages again', async () => {
+      const channel = await setUpChannelOnOlderPage();
+
+      renderComponent({ channel, markReadOnMount: false });
+
+      await waitFor(() => expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(true));
+      expect(channel.messagePaginator.items?.map((message) => message.id)).toContain('newest-9');
+    });
+
+    it('keeps a jump the integrator already made to a loaded message', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      // A deep link from the screen: the target is loaded, so the jump lands at once.
+      await channel.messagePaginator.jumpToMessage('older-2', { focusReason: 'jump-to-message' });
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      renderComponent({ channel, markReadOnMount: false });
+
+      await waitFor(() => expect(seedSpy).toHaveBeenCalled());
+      expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(false);
+      expect(channel.messagePaginator.messageFocusSignal.getLatestValue().signal?.messageId).toBe(
+        'older-2',
+      );
+    });
+
+    it('leaves a jump that is still in flight alone', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      // A deep link to a message that is not loaded: its query is in flight.
+      jest.spyOn(channel.messagePaginator, 'isLoading', 'get').mockReturnValue(true);
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        channel.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      renderComponent({ channel, markReadOnMount: false });
+
+      await waitFor(() => expect(seedSpy).toHaveBeenCalled());
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+    });
+
+    it('leaves the list alone when the app places its pages itself', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        channel.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      renderComponent({ channel, initializeOnMount: false, markReadOnMount: false });
+
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+      expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(false);
+    });
+
+    it('leaves the jump to the first unread message to the initial load', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => 3);
+      const jumpToTheFirstUnreadMessageSpy = jest
+        .spyOn(channel.messagePaginator, 'jumpToTheFirstUnreadMessage')
+        .mockResolvedValue(undefined as never);
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        channel.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      renderComponent({
+        channel,
+        initialScrollToFirstUnreadMessage: true,
+        markReadOnMount: false,
+      });
+
+      await waitFor(() => expect(jumpToTheFirstUnreadMessageSpy).toHaveBeenCalledTimes(1));
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('message page size', () => {
     const mountChannel = async () => {
       const mockedChannel = generateChannelResponse({ messages: [] });

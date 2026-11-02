@@ -104,6 +104,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       {...shellProps}
       channel={channel}
       hasPendingInitialTargetLoad={hasPendingInitialTargetLoad}
+      initializeOnMount={initializeOnMount}
     >
       {children}
     </ChannelShell>

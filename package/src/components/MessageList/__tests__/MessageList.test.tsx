@@ -1294,12 +1294,12 @@ describe('MessageList in a thread', () => {
         generateMessage({ parent_id: parentMessage.id, text: `reply-${i}` }),
       ),
     ) as LocalMessage[];
+    // Seeded as the thread seeds `latest_replies`: one complete page, which is the newest one.
     act(() =>
-      threadInstance.messagePaginator.state.partialNext({
-        hasMoreHead: false,
-        hasMoreTail: false,
-        isLoading: false,
-        items: replies,
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: replies,
+        isFirstPage: true,
+        isLastPage: true,
       }),
     );
 
