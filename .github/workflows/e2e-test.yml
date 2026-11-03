@@ -60,7 +60,6 @@ jobs:
           # The pull request's merge commit and its base, which the impact analysis diffs.
           fetch-depth: 2
       - uses: ./.github/actions/ruby-cache
-      # Also selects the tests the change can reach from the nightly coverage map (impact analysis).
       - name: Check if e2e tests are required
         id: check
         working-directory: examples/SampleApp

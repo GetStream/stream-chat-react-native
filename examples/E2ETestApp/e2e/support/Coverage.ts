@@ -57,7 +57,6 @@ export class CoverageCollector {
     return new Promise((resolve) => (this.server ? this.server.close(() => resolve()) : resolve()));
   }
 
-  /** Forgets the previous test's report. */
   reset() {
     this.latest = undefined;
   }

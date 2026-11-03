@@ -2,7 +2,6 @@ name: E2E Tests Nightly
 
 on:
   schedule:
-    # Every night at 2:00 UTC, on the default branch (develop).
     - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
@@ -197,11 +196,9 @@ jobs:
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
 
-  # Instrumented: builds the per-test coverage map that pull requests select their tests from.
   android:
     if: github.event_name == 'schedule' || inputs.android
     runs-on: ubuntu-latest
-    # One app launch per test, every test, plus retries.
     timeout-minutes: 180
     env:
       # Same as the native Android SDK e2e jobs, which run stably on these runners
@@ -222,7 +219,6 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "21"
-      # Caches Gradle's dependencies, wrapper and build cache (written on the default branch).
       - uses: gradle/actions/setup-gradle@v4
       - uses: ./.github/actions/ruby-cache
 

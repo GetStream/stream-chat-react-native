@@ -87,7 +87,6 @@ declare module './UserRobot' {
     assertUnreadSeparator(unreadCount: number, isDisplayed?: boolean): this;
     assertLinkPreviewInComposer(isDisplayed: boolean): this;
     assertMediaAttachmentInPreview(isDisplayed: boolean, count?: number): this;
-    /** Images of a message's gallery. */
     assertImage(isDisplayed: boolean, count?: number): this;
     assertPollMessage(question: string, multipleVotes?: boolean): this;
     /** `isChecked`: also waits for the option's vote state, which a vote round-trip changes. */

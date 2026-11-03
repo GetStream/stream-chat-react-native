@@ -456,7 +456,6 @@ lane :test_e2e do |options|
     env['E2E_SELECTION'] = selection_path
   end
   if coverage
-    # The app posts what it ran to the suite after each test (e2e/support/Coverage.ts).
     FileUtils.rm_rf(e2e_coverage_path)
     env['E2E_COVERAGE_DIR'] = e2e_coverage_path
   end
@@ -467,7 +466,6 @@ lane :test_e2e do |options|
 
   begin
     Dir.chdir(e2e_app_path) do
-      # A coverage build instruments the JS (babel.config.js).
       sh({ 'E2E_COVERAGE' => coverage ? '1' : '0' }, "yarn e2e:build -c #{detox_config}") unless options[:skip_build]
       # Kept across Detox's --retries runs (jest-allure2-reporter `overwrite: false`), so cleared here.
       FileUtils.rm_rf(allure_results_path)

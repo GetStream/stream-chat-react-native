@@ -37,7 +37,6 @@ declare module './UserRobot' {
     assertChannelWithName(name: string, isDisplayed?: boolean): this;
     assertChannelIsMuted(isMuted: boolean): this;
     assertDraftInChannelPreview(text: string): this;
-    /** The sheet a group channel's "more" action opens. */
     assertChannelActionsSheetForGroupChannel(): this;
     assertGroupChannelInfoScreen(): this;
     assertPinnedMessagesScreen(): this;

@@ -48,12 +48,10 @@ export class ParticipantRobot extends Robot {
     );
   }
 
-  /** Posts a system message, as a server-side action would. */
   sendSystemMessage(text: string): this {
     return this.post('participant/message?system=true', text);
   }
 
-  /** Sends `text` to the channel named `channelName` instead of the current one. */
   sendMessageInChannelNamed(text: string, channelName: string): this {
     return this.post(`participant/message?channel_name=${encodeURIComponent(channelName)}`, text);
   }

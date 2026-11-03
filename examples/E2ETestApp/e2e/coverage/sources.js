@@ -18,7 +18,6 @@ const excluded = [
   /\.d\.ts$/,
 ];
 
-/** Whether a repo-relative path is mapped code. */
 const isSource = (id) =>
   /\.(js|jsx|ts|tsx)$/.test(id) &&
   included.some((prefix) => id.startsWith(prefix)) &&

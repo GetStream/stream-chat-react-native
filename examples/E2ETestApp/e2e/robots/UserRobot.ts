@@ -23,7 +23,6 @@ import {
 const { ChannelList } = ChannelListPage;
 const { Alert, Composer, ContextMenu, Header, MessageList } = MessageListPage;
 
-/** The emoji each supported reaction type has in the extended reactions picker. */
 const extendedPickerEmoji: Record<ReactionType, string> = {
   [ReactionType.LIKE]: '👍',
   [ReactionType.LOL]: '😂',
@@ -96,7 +95,6 @@ export class UserRobot extends Robot {
     return this.perform(() => waitToAppearAndClick(ContextMenu.action(actionType), { index: 0 }));
   }
 
-  /** Closes an open message menu without picking an action. */
   closeContextMenu(): this {
     return this.perform(async () => {
       if (device.getPlatform() === 'android') {
@@ -121,12 +119,10 @@ export class UserRobot extends Robot {
     return this.openContextMenu(messageCellIndex).tapOnContextMenuAction('quotedReply');
   }
 
-  /** Quotes the `messageCellIndex`-th message from the newest and sends `text` with it. */
   quoteMessage(text: string, messageCellIndex = 0): this {
     return this.selectReplyFromContextMenu(messageCellIndex).sendMessage(text);
   }
 
-  /** Quotes the message that reads `quotedMessageText` and sends `text` with it. */
   quoteMessageWithText(text: string, quotedMessageText: string): this {
     return this.openContextMenuOnMessage(quotedMessageText)
       .tapOnContextMenuAction('quotedReply')
@@ -265,7 +261,6 @@ export class UserRobot extends Robot {
     });
   }
 
-  /** Creates a poll from the attachment picker. */
   createPoll(question: string, options: string[], { multipleVotes = false } = {}): this {
     const { CreatePoll } = MessageListPage;
     return this.openAttachmentsMenu()
@@ -351,7 +346,6 @@ export class UserRobot extends Robot {
     ).perform(() => waitToAppear(Composer.alsoSendToChannelCheckbox));
   }
 
-  /** Swipes a channel row right to left, revealing its swipe actions. */
   swipeChannel(channelCellIndex = 0): this {
     return this.perform(async () => {
       const channel = await waitToAppear(ChannelList.channels, { index: channelCellIndex });
@@ -412,7 +406,6 @@ export class UserRobot extends Robot {
     return this.tapOnChannelAction('Delete Group');
   }
 
-  /** Confirms the leave or delete dialog. */
   confirmChannelAction(action: 'Leave' | 'Delete'): this {
     return this.tapOnAlertButton(action);
   }
@@ -566,7 +559,6 @@ export class UserRobot extends Robot {
       .moveToChannelListFromMessageList();
   }
 
-  /** Taps the middle of the message list, away from any message action. */
   tapOnMessageList(): this {
     return this.perform(async () => {
       // The upper part: the suggestions and the keyboard cover the lower one.
@@ -576,7 +568,6 @@ export class UserRobot extends Robot {
     });
   }
 
-  /** Typing `/` opens the command suggestions. */
   openComposerCommands(): this {
     return this.typeText('/');
   }
@@ -616,7 +607,6 @@ export class UserRobot extends Robot {
     return this.swipe(MessageList.scrollTarget, 'down', times);
   }
 
-  /** Scrolls down one swipe at a time until the message is on screen, up to `maxScrolls` swipes. */
   scrollMessageListDownToMessage(text: string, maxScrolls = 10): this {
     return this.perform(async () => {
       for (let i = 0; i < maxScrolls && !(await isDisplayed(MessageList.Message.text(text))); i++) {
@@ -626,7 +616,6 @@ export class UserRobot extends Robot {
     });
   }
 
-  /** Scrolls up one swipe at a time until the message is on screen, up to `maxScrolls` swipes. */
   scrollMessageListUpToMessage(text: string, maxScrolls = 10): this {
     return this.perform(async () => {
       for (let i = 0; i < maxScrolls && !(await isDisplayed(MessageList.Message.text(text))); i++) {
@@ -688,7 +677,6 @@ export const editMessageNow = async (newText: string, messageCellIndex = 0) => {
   await waitToAppearAndClick(Composer.sendButton);
 };
 
-/** The characters that open the composer's command (`/`) and mention (`@`) suggestions. */
 const isTrigger = (text: string) => text === '/' || text === '@';
 
 const currentComposerText = async () => {

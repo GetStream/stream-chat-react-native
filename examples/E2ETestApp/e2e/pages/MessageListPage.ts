@@ -97,20 +97,17 @@ export const MessageListPage = {
     get backdrop() {
       return by.id('message-overlay-backdrop');
     },
-    /** A reaction of the menu's reaction picker. */
     reaction(type: string) {
       return by.id(`reaction-button-${type}`);
     },
     get showMoreReactions() {
       return by.id('more-reactions-button');
     },
-    /** An emoji in the extended reactions picker. */
     emoji(emoji: string) {
       return by.text(emoji);
     },
   },
 
-  /** The native confirmation dialogs (`Alert.alert`). */
   Alert: {
     button(text: string) {
       return device.getPlatform() === 'android'
@@ -252,18 +249,15 @@ export const MessageListPage = {
           return by.text('Poll Results');
         },
       },
-      /** The quote inside a quoted reply. */
       get quotedMessage() {
         return inMessageList(by.id('quoted-message'));
       },
       quotedMessageWithText(text: string) {
         return by.text(text).withAncestor(by.id('quoted-message'));
       },
-      /** A link preview (OG card) under a message. */
       get linkPreview() {
         return inMessageList(by.id('card-attachment'));
       },
-      /** An image or video of a message's gallery. */
       get galleryItem() {
         return inMessageList(by.id(/^gallery-(row|column)-\d+-item-\d+$/));
       },

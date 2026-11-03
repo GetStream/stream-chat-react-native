@@ -131,7 +131,6 @@ const ChannelScreen = ({
   );
 };
 
-/** A thread stacked over its channel, like the SampleApp's thread screen. */
 const ThreadScreen = ({
   onBack,
   targetedMessageId,
@@ -166,7 +165,6 @@ const ThreadScreen = ({
   );
 };
 
-/** The SDK's channel details (members, pinned messages, files…), like the SampleApp's screen. */
 const ChannelDetailsScreen = ({
   channel,
   onBack,
@@ -189,7 +187,6 @@ const ChannelDetailsScreen = ({
 
 type Tab = 'channels' | 'threads';
 
-/** The bottom bar of the root screen, like the SampleApp's channels and threads tabs. */
 const TabBar = ({ onSelect, tab }: { onSelect: (tab: Tab) => void; tab: Tab }) => (
   <SafeAreaView edges={['bottom']} style={styles.tabBar}>
     {(['channels', 'threads'] as const).map((item) => (
@@ -242,7 +239,6 @@ const ChatScreens = ({ client }: { client: StreamChat }) => {
   const [tab, setTab] = useState<Tab>('channels');
   const closeChannel = useCallback(() => setChannel(undefined), []);
   const closeDetails = useCallback(() => setDetailsChannel(undefined), []);
-  // "View Info" in the channel actions sheet, as the SampleApp adds it.
   const getChannelActionItems = useCallback<GetChannelActionItems>(
     ({ context: { channel: actionChannel }, defaultItems }) => {
       const viewInfo: ChannelActionItem = {
@@ -257,7 +253,6 @@ const ChatScreens = ({ client }: { client: StreamChat }) => {
     },
     [],
   );
-  // A thread picked on the thread list opens over its channel.
   const onThreadListSelect = useCallback(
     (selected: ThreadType) => {
       setChannel(selected.channel);

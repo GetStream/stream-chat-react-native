@@ -61,7 +61,6 @@ export const ChannelListPage = {
       get messageSender() {
         return by.id('channel-preview-sender');
       },
-      /** The delivery status icon in front of the current user's last message. */
       deliveryStatus(status: 'sending' | 'sent' | 'delivered' | 'read' | 'none') {
         return by.id(`channel-preview-status-${status}`);
       },
