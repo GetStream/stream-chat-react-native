@@ -69,6 +69,43 @@ export type Theme = {
      */
     backdropColor?: string;
   };
+  /**
+   * The steps of an agent's reply: reasoning, tool calls and their questions. Optional, so a
+   * hand-built `Theme` without it keeps type-checking.
+   */
+  messageParts?: {
+    /** The colour of a completed tool call's check. */
+    successColor?: string;
+    container?: ViewStyle;
+    reasoning?: {
+      container?: ViewStyle;
+      rule?: ViewStyle;
+      header?: ViewStyle;
+      title?: TextStyle;
+      summary?: TextStyle;
+      panel?: ViewStyle;
+    };
+    toolCall?: {
+      container?: ViewStyle;
+      title?: TextStyle;
+      detail?: TextStyle;
+      duration?: TextStyle;
+    };
+    approvalCard?: {
+      container?: ViewStyle;
+      title?: TextStyle;
+      message?: TextStyle;
+      allowButton?: ViewStyle;
+      allowButtonText?: TextStyle;
+      declineButton?: ViewStyle;
+      declineButtonText?: TextStyle;
+      failure?: TextStyle;
+    };
+    unsupported?: {
+      container?: ViewStyle;
+      text?: TextStyle;
+    };
+  };
 };
 
 export const defaultTheme: Theme = {
@@ -150,5 +187,22 @@ export const defaultTheme: Theme = {
   },
   voiceVisualization: {
     colors: [colors.accent_blue],
+  },
+  messageParts: {
+    successColor: '#20E070',
+    container: {},
+    reasoning: { container: {}, rule: {}, header: {}, title: {}, summary: {}, panel: {} },
+    toolCall: { container: {}, title: {}, detail: {}, duration: {} },
+    approvalCard: {
+      container: {},
+      title: {},
+      message: {},
+      allowButton: {},
+      allowButtonText: {},
+      declineButton: {},
+      declineButtonText: {},
+      failure: {},
+    },
+    unsupported: { container: {}, text: {} },
   },
 };
