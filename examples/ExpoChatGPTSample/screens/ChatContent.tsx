@@ -94,19 +94,27 @@ const CustomMessage = (props: MessageProps) => {
 type UnsupportedAttachmentComponent = ResolvedComponents['UnsupportedAttachment'];
 
 // A reply's steps (`ai_reasoning`, `ai_tool_call`) are attachments the chat SDK doesn't know. They
-// show in the reply's own view, so they're left out here; any other unknown attachment keeps the
-// SDK's own view.
+// show in the reply's own view, so they're left out here, as is the router's `connector_authorization`,
+// a second copy of a sign-in its tool call's step already asks for. Any other unknown attachment
+// keeps the SDK's own view.
 const hidingAISteps = (Fallback: UnsupportedAttachmentComponent) => {
   const HideAISteps: UnsupportedAttachmentComponent = (props) =>
-    props.attachment.type?.startsWith(AI_MESSAGE_PART_TYPE_PREFIX) ? null : <Fallback {...props} />;
+    props.attachment.type?.startsWith(AI_MESSAGE_PART_TYPE_PREFIX) ||
+    props.attachment.type === 'connector_authorization' ? null : (
+      <Fallback {...props} />
+    );
   return HideAISteps;
 };
 
 // A reply: its steps (reasoning, tool calls and their questions), then its answer.
 const CustomStreamingMessageView = () => {
-  const { message } = useMessageContext();
-  // Read so the steps render again as more of their reasoning arrives.
-  const { reasoningText, reasoningVersion } = useAppContext();
+  const { message: listed } = useMessageContext();
+  // Read so the steps render again as each live update arrives.
+  const { channel, reasoningText, reasoningVersion } = useAppContext();
+  // The list passes a row its message again only when it changes in ways it compares, which a
+  // step changing on its own, such as a tool call starting to wait for a sign-in, isn't. The
+  // channel's state has every update.
+  const message = channel?.state.findMessage(listed.id) ?? listed;
   const parts = useMemo(() => parseMessageParts(message.attachments), [message.attachments]);
   const stepText = useMemo(
     () => (stepId: string) => reasoningText(message.id, stepId),

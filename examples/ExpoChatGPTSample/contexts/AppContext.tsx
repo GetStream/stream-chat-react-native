@@ -9,7 +9,11 @@ import {
 } from '@stream-io/calypso';
 import type { Channel, Event, StreamChat } from 'stream-chat';
 import { useStableCallback } from 'stream-chat-expo';
-import type { AIToolApprover } from 'stream-chat-expo/ai-components';
+import {
+  AIClientIdentity,
+  type AIToolApprover,
+  createAuthSessionAuthorizer,
+} from 'stream-chat-expo/ai-components';
 
 import { agents, agentSessions, streamToken } from '../agent/agents';
 import { AgentConfig } from '../agent/config';
@@ -18,8 +22,20 @@ type Conversation = { channel: Channel; reasoning: LiveReasoning; session: Sessi
 
 const IDLE: ConversationSnapshot = { kind: 'idle', skills: [] };
 
-// This install, for the tool calls addressed to it. Kept for the app's lifetime.
-const clientId = `rn-sample-${(globalThis as { crypto: { randomUUID: () => string } }).crypto.randomUUID()}`;
+// This install, for the tool calls addressed to it.
+const clientId = AIClientIdentity.installId();
+
+// Where a sign-in comes back to: the app's own scheme, which the web auth session hands back.
+// The router takes only https or a native app's own scheme in reverse domain form (RFC 8252).
+const SIGN_IN_SCHEME = 'io.getstream.expochatgptsample';
+const SIGN_IN_RETURN_URL = `${SIGN_IN_SCHEME}://sign-in`;
+
+// The person's "not now" on a sign-in. calypso 0.2.3 has no `declineLogin` yet, so this sends
+// the frame Vision-Agents' JS SDK sends for it over the session's socket.
+const declineLogin = (session: Session, toolCallId: string) =>
+  (session as unknown as { held(): { send(frame: Record<string, unknown>): void } })
+    .held()
+    .send({ allowed: false, tool_call_id: toolCallId, type: 'tool_approval' });
 
 export type AppContextValue = {
   /** What the agent is doing in the open conversation, from the session's socket. */
@@ -95,7 +111,12 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   });
 
   const startConversation = useStableCallback(() => {
-    void open(() => agentSessions().create({ modelOverwrites: { llm: AgentConfig.chatModel } }));
+    void open(() =>
+      agentSessions().create({
+        modelOverwrites: { llm: AgentConfig.chatModel },
+        return_url: SIGN_IN_RETURN_URL,
+      }),
+    );
   });
 
   const openConversation = useStableCallback((sessionId: string) => {
@@ -160,6 +181,14 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     () =>
       conversation
         ? {
+            authorizer: createAuthSessionAuthorizer({
+              callbackScheme: SIGN_IN_SCHEME,
+              decline: (call) =>
+                new Promise<void>((resolve) => {
+                  declineLogin(conversation.session, call.id);
+                  resolve();
+                }),
+            }),
             clientId,
             // `decide` sends over the session's socket and throws when it can't.
             decide: (call, allowed) =>
