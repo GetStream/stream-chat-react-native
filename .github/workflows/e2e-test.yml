@@ -22,6 +22,8 @@ permissions:
   contents: read
   pull-requests: read
   checks: read
+  # Downloads the nightly e2e coverage map (impact analysis).
+  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,6 +32,8 @@ concurrency:
 env:
   MOCK_SERVER_BRANCH: ${{ inputs.mock_server_branch || 'main' }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Allure TestOps (project 3). Empty for forks and Dependabot, which then skip the upload.
+  ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
   GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
   GITHUB_EVENT_ACTION: ${{ github.event.action }}
   GITHUB_EVENT_BEFORE: ${{ github.event.before }}
@@ -53,11 +57,20 @@ jobs:
       required: ${{ steps.check.outputs.required }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          # The pull request's merge commit and its base, which the impact analysis diffs.
+          fetch-depth: 2
       - uses: ./.github/actions/ruby-cache
+      # Also selects the tests the change can reach from the nightly coverage map (impact analysis).
       - name: Check if e2e tests are required
         id: check
         working-directory: examples/SampleApp
         run: bundle exec fastlane e2e_check_required
+      - uses: actions/upload-artifact@v6
+        if: steps.check.outputs.required == 'true'
+        with:
+          name: e2e-selection
+          path: examples/E2ETestApp/e2e_selection.json
 
   ios:
     needs: check
@@ -190,9 +203,29 @@ jobs:
         # `-b` boots it if the background boot never started; it errors (405) when the device is
         # already booted, and then the plain call returns at once.
         run: xcrun simctl bootstatus "$DETOX_IOS_UDID" -b || xcrun simctl bootstatus "$DETOX_IOS_UDID"
+      - name: Launch Allure TestOps
+        if: env.ALLURE_TOKEN != ''
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch
+        continue-on-error: true
+        env:
+          # Names the launch after the pull request and tags it with its labels.
+          GITHUB_EVENT: ${{ toJson(github.event) }}
+      - uses: actions/download-artifact@v7
+        with:
+          name: e2e-selection
+          path: examples/E2ETestApp
       - name: Run e2e tests
         working-directory: examples/SampleApp
-        run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
+        run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" selection:examples/E2ETestApp/e2e_selection.json
+      - name: Upload Allure results
+        if: env.LAUNCH_ID != '' && (success() || failure())
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_upload launch_id:"$LAUNCH_ID"
+      - name: Allure TestOps Launch Removal
+        if: env.LAUNCH_ID != '' && cancelled()
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch_removal launch_id:"$LAUNCH_ID"
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
@@ -295,6 +328,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mock-server-gems-
 
+      - name: Launch Allure TestOps
+        if: env.ALLURE_TOKEN != ''
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch
+        continue-on-error: true
+        env:
+          # Names the launch after the pull request and tags it with its labels.
+          GITHUB_EVENT: ${{ toJson(github.event) }}
+      - uses: actions/download-artifact@v7
+        with:
+          name: e2e-selection
+          path: examples/E2ETestApp
       - name: Run e2e tests (Android emulator)
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -304,7 +349,15 @@ jobs:
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
-          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
+          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" selection:examples/E2ETestApp/e2e_selection.json
+      - name: Upload Allure results
+        if: env.LAUNCH_ID != '' && (success() || failure())
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_upload launch_id:"$LAUNCH_ID"
+      - name: Allure TestOps Launch Removal
+        if: env.LAUNCH_ID != '' && cancelled()
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch_removal launch_id:"$LAUNCH_ID"
       # The emulator has vanished mid-run without any output; this shows whether the kernel killed it.
       - name: Diagnose emulator
         if: failure()

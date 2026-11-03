@@ -28,6 +28,7 @@ export const ChannelPreviewUnreadCount = (props: ChannelPreviewUnreadCountProps)
       accessibilityLabel={accessibilityLabel}
       count={unread > maxUnreadCount ? maxUnreadCount : unread}
       size='sm'
+      testID='channel-preview-unread-count'
       type='primary'
     />
   );

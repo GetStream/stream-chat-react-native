@@ -50,7 +50,7 @@ const SentToChannelHeaderWithContext = (props: SentToChannelHeaderPropsWithConte
           >
             ·
           </Text>
-          <Pressable onPress={onPress}>
+          <Pressable onPress={onPress} testID='sent-to-channel-header-view-button'>
             <Text style={styles.link}>{t('message.sentToChannelHeader.view.label', 'View')}</Text>
           </Pressable>
         </>

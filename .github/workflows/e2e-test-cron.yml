@@ -1,0 +1,164 @@
+name: E2E Tests Nightly
+
+# Runs every e2e test on Android with an instrumented build and publishes the per-test coverage map
+# (`e2e-coverage-map`) that pull requests select their tests from (impact analysis, e2e/README.md).
+on:
+  schedule:
+    # Every night at 2:00 UTC, on the default branch (develop).
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      mock_server_branch:
+        description: "stream-chat-test-mock-server branch"
+        type: string
+        default: "main"
+
+permissions:
+  contents: read
+  # Downloads the previous map, whose coverage failed tests keep.
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MOCK_SERVER_BRANCH: ${{ inputs.mock_server_branch || 'main' }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
+  # node_modules of the e2e app and the workspaces it depends on (nmHoistingLimits: workspaces
+  # keeps them apart); `yarn workspaces focus` installs nothing else.
+  NODE_MODULES_PATHS: |
+    node_modules
+    configs/*/node_modules
+    package/node_modules
+    package/native-package/node_modules
+    examples/E2ETestApp/node_modules
+    .yarn/install-state.gz
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    # One app launch per test, every test, plus retries.
+    timeout-minutes: 180
+    env:
+      # Same as the native Android SDK e2e jobs, which run stably on these runners
+      ANDROID_API_LEVEL: "36"
+      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
+      DETOX_ADB_NAME: "emulator-5554"
+      MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
+      # The emulator is x86_64: skip compiling native code for the other ABIs.
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "zulu"
+          java-version: "21"
+      # Caches Gradle's dependencies, wrapper and build cache (written on the default branch).
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: ./.github/actions/ruby-cache
+
+      # --- JS dependencies ---
+      - name: Restore node_modules
+        id: node-modules
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.NODE_MODULES_PATHS }}
+          key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
+      # Only the e2e app's dependency tree, not every example app.
+      - name: Install dependencies
+        run: yarn workspaces focus e2etestapp
+      - name: Save node_modules
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.NODE_MODULES_PATHS }}
+          key: ${{ steps.node-modules.outputs.cache-primary-key }}
+
+      # --- App binary, instrumented (E2E_COVERAGE): never cached with the pull requests' builds ---
+      # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
+      - name: Build app
+        working-directory: examples/E2ETestApp
+        run: yarn e2e:build -c android.att.release
+        env:
+          E2E_COVERAGE: "1"
+      # Frees the daemons' memory for the emulator, which otherwise can get killed mid-run.
+      - name: Stop Gradle daemons
+        working-directory: examples/E2ETestApp/android
+        run: ./gradlew --stop
+
+      # --- Emulator: same setup as the native Android SDK's e2e jobs (AOSP image, no Play services) ---
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # --- Test tooling ---
+      - name: Resolve mock server revision
+        id: mock-server
+        run: echo "sha=$(git ls-remote https://github.com/GetStream/stream-chat-test-mock-server "refs/heads/$MOCK_SERVER_BRANCH" | cut -f1)" >> "$GITHUB_OUTPUT"
+      - name: Cache mock server gems
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.MOCK_SERVER_BUNDLE_PATH }}
+          key: ${{ runner.os }}-mock-server-gems-${{ steps.mock-server.outputs.sha }}
+          restore-keys: |
+            ${{ runner.os }}-mock-server-gems-
+
+      - name: Launch Allure TestOps
+        if: env.ALLURE_TOKEN != ''
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch cron:true
+        continue-on-error: true
+      - name: Run e2e tests (Android emulator)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+          arch: x86_64
+          profile: pixel
+          emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
+          disable-animations: true
+          working-directory: examples/SampleApp
+          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" coverage:true
+      # Also when tests failed: those keep their coverage from the previous map.
+      - name: Build e2e coverage map
+        if: success() || failure()
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane build_e2e_coverage_map
+      - uses: actions/upload-artifact@v6
+        if: success() || failure()
+        with:
+          name: e2e-coverage-map
+          path: examples/E2ETestApp/e2e_coverage_map.json
+          retention-days: 14
+      - name: Upload Allure results
+        if: env.LAUNCH_ID != '' && (success() || failure())
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_upload launch_id:"$LAUNCH_ID"
+      - name: Allure TestOps Launch Removal
+        if: env.LAUNCH_ID != '' && cancelled()
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch_removal launch_id:"$LAUNCH_ID"
+      # The emulator has vanished mid-run without any output; this shows whether the kernel killed it.
+      - name: Diagnose emulator
+        if: failure()
+        run: |
+          sudo dmesg -T | grep -i -E 'out of memory|oom-kill|killed process' || echo "No OOM kills in dmesg"
+          free -m
+          df -h
+          ls -la /tmp/android-runner 2>/dev/null || true
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: e2e-android-coverage-logs
+          path: |
+            examples/E2ETestApp/stream-chat-test-mock-server/logs
+            examples/E2ETestApp/artifacts
+            /tmp/android-runner

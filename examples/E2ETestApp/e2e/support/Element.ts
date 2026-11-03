@@ -162,3 +162,59 @@ export const textOf = async (selector: Selector, index = 0) => {
     return '';
   }
 };
+
+type ElementAttributes = {
+  enabled?: boolean;
+  visible?: boolean;
+  frame?: { height: number; width: number; x: number; y: number };
+  label?: string;
+  text?: string;
+};
+
+/** Attributes of every element matching `selector`, in Detox's match order; `[]` when none match. */
+export const allAttributes = async (selector: Selector): Promise<ElementAttributes[]> => {
+  try {
+    const attributes = (await element(selector).getAttributes()) as
+      | ElementAttributes
+      | { elements: ElementAttributes[] };
+    return 'elements' in attributes ? attributes.elements : [attributes];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * The Detox index of the `fromBottom`-th match counted from the bottom of the screen (0 is the
+ * lowest), like Android's `waitToAppearBottomUp`. Message lists render the newest message at the
+ * bottom, but the platforms disagree on the order in which they report matches.
+ */
+export const indexFromBottom = async (
+  selector: Selector,
+  fromBottom = 0,
+  timeout = defaultTimeout,
+) => {
+  let matches: ElementAttributes[] = [];
+  await waitUntil(async () => {
+    matches = await allAttributes(selector);
+    return matches.length > 0;
+  }, timeout);
+  if (matches.length === 0) {
+    throw new Error(`No element matches ${JSON.stringify(selector)}`);
+  }
+  const order = matches
+    .map((match, index) => ({ index, y: match.frame?.y ?? 0 }))
+    .sort((a, b) => b.y - a.y);
+  return order[Math.min(fromBottom, order.length - 1)].index;
+};
+
+/** The frame of the `index`-th match of `selector`. */
+export const frameOf = async (selector: Selector, index = 0) => {
+  const matches = await allAttributes(selector);
+  const frame = matches[index]?.frame;
+  if (!frame) {
+    throw new Error(`No frame for ${JSON.stringify(selector)} at index ${index}`);
+  }
+  return frame;
+};
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

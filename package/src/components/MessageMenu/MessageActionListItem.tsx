@@ -79,6 +79,7 @@ export const MessageActionListItem = (props: MessageActionListItemProps) => {
         styles.buttonContainer,
         { backgroundColor: pressed ? semantics.backgroundUtilityPressed : 'transparent' },
       ]}
+      testID={`message-action-${actionType}`}
     >
       <View style={[styles.container, container]}>
         <View style={iconTheme}>{icon}</View>

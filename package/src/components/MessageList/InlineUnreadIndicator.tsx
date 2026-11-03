@@ -15,7 +15,11 @@ export const InlineUnreadIndicator = (props: InlineUnreadIndicatorProps) => {
   const { t } = useTranslationContext();
 
   return (
-    <View accessibilityLabel='Inline unread indicator' style={styles.container}>
+    <View
+      accessibilityLabel='Inline unread indicator'
+      style={styles.container}
+      testID='inline-unread-indicator'
+    >
       <Text style={styles.text}>
         {unreadCount
           ? t('messageList.newMessages.text', {

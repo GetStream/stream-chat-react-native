@@ -27,6 +27,10 @@ yarn.lock
 # Detox e2e: mock server checkout cloned by `fastlane start_mock_server`, test artifacts
 examples/E2ETestApp/stream-chat-test-mock-server/
 examples/E2ETestApp/artifacts/
+examples/E2ETestApp/allure-results/
+examples/E2ETestApp/e2e-coverage/
+examples/E2ETestApp/e2e_coverage_map.json
+examples/E2ETestApp/e2e_selection.json
 
 # Generated SDK assets
 package/src/components/docs/

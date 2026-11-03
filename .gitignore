@@ -14,6 +14,8 @@
 node_modules
 NEXT_RELEASE_CHANGELOG.md
 artifacts
+allure-results
+examples/E2ETestApp/allurectl
 e2e/.env
 *.log
 .DS_STORE

@@ -85,6 +85,11 @@ export class BackendRobot extends Robot {
     );
   }
 
+  /** Mutes the current channel for the user on the server side. */
+  muteChannel(): this {
+    return this.post('mute_channel');
+  }
+
   revokeToken(duration = 5): this {
     return this.post(`jwt/revoke_token?duration=${duration}`);
   }

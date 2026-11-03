@@ -18,7 +18,13 @@ export const ChannelPreviewMutedStatus = () => {
 
   return (
     <CompositeAccessibilityProbe label={accessibilityLabel}>
-      <icons.Mute height={20} fill={semantics.textTertiary} width={20} {...mutedStatus} />
+      <icons.Mute
+        height={20}
+        fill={semantics.textTertiary}
+        testID='channel-preview-muted-icon'
+        width={20}
+        {...mutedStatus}
+      />
     </CompositeAccessibilityProbe>
   );
 };

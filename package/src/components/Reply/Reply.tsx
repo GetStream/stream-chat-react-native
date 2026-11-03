@@ -161,6 +161,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       accessibilityLabel={title}
       accessibilityRole='text'
       style={[!messageFromContext?.quoted_message ? styles.wrapper : null, wrapper]}
+      testID={messageFromContext?.quoted_message ? 'quoted-message' : 'reply-composer-preview'}
     >
       <View style={[styles.container, container, stylesProp?.container]}>
         <View style={[styles.leftContainer, leftContainer, stylesProp?.leftContainer]}>

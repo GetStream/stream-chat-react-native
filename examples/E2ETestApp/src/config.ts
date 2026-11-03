@@ -9,9 +9,19 @@ import type { ClientUser } from 'stream-chat';
 type E2ELaunchArguments = {
   /** Base URL of the per-test `stream-chat-test-mock-server` instance, e.g. `http://localhost:54321`. */
   MOCK_SERVER_URL?: string;
+  /** Opens the JWT test screen (token provider + connection status) instead of the chat. */
+  JWT_TEST?: boolean | string;
+  /** Where to post the e2e coverage on going to the background (`src/e2eCoverage.ts`). */
+  E2E_COVERAGE_URL?: string;
 };
 
-export const mockServerUrl = LaunchArguments.value<E2ELaunchArguments>().MOCK_SERVER_URL;
+const launchArguments = LaunchArguments.value<E2ELaunchArguments>();
+
+export const mockServerUrl = launchArguments.MOCK_SERVER_URL;
+
+export const e2eCoverageUrl = launchArguments.E2E_COVERAGE_URL;
+
+export const isJwtTest = launchArguments.JWT_TEST === true || launchArguments.JWT_TEST === 'true';
 
 /** The app user every mock server fixture is recorded for. */
 export const appUser: ClientUser = {

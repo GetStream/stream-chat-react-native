@@ -218,6 +218,7 @@ exports[`ScrollToBottomButton should render the message notification and match s
         "top": 0,
       }
     }
+    testID="scroll-to-bottom-button-unread-count"
   />
 </View>
 `;

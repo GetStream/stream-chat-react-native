@@ -30,7 +30,7 @@ export class MockServer {
   /** Never retried: every call to the driver's `/start` spawns a new server on a new port. */
   async start(testName: string): Promise<void> {
     const response = await this.execute(
-      `${MockServer.driverUrl}/start/${encodeURIComponent(testName)}`,
+      `${MockServer.driverUrl}/start/${encodeURIComponent(testName)}?api_version=v2&timestamps=ns`,
     );
     this.port = (await response.text()).trim();
     await this.waitUntilReady();

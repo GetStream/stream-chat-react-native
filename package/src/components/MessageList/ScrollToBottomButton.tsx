@@ -78,6 +78,7 @@ export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
         accessibilityElementsHidden
         importantForAccessibility='no-hide-descendants'
         style={styles.unreadCountNotificationContainer}
+        testID='scroll-to-bottom-button-unread-count'
       >
         {unreadCount ? (
           <BadgeNotification count={unreadCount} size='xs' type='primary' testID='unread-count' />

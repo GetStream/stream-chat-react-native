@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { ReactionListItemWrapper } from './ReactionListItemWrapper';
 
@@ -123,12 +123,15 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
     >
       {reactions?.slice(0, 4).map((reaction) => (
         <Fragment key={reaction.type}>
-          <Icon
-            size={icon.size}
-            style={[styles.iconStyle, icon.style]}
-            supportedReactions={supportedReactions}
-            type={reaction.type}
-          />
+          {/* Identifies each reaction type for e2e tests; adds no layout of its own. */}
+          <View testID={`reaction-list-item-${reaction.type}`}>
+            <Icon
+              size={icon.size}
+              style={[styles.iconStyle, icon.style]}
+              supportedReactions={supportedReactions}
+              type={reaction.type}
+            />
+          </View>
           {reaction.own ? <HiddenA11yText label={youReacted} /> : null}
         </Fragment>
       ))}

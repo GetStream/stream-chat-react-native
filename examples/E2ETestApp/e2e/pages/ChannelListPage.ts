@@ -1,4 +1,41 @@
 export const ChannelListPage = {
+  Tabs: {
+    get channels() {
+      return by.id('tab-channels');
+    },
+    get threads() {
+      return by.id('tab-threads');
+    },
+  },
+
+  ThreadList: {
+    get screen() {
+      return by.id('thread-list-screen');
+    },
+    get threads() {
+      return by.id('thread-list-item');
+    },
+  },
+
+  /** The channel actions bottom sheet, opened with the "more" swipe action. */
+  ChannelActions: {
+    item(label: string) {
+      return by.text(label);
+    },
+  },
+
+  ChannelDetails: {
+    get pinnedMessagesOption() {
+      return by.id('channel-details-pinned-messages');
+    },
+    get pinnedMessageList() {
+      return by.id('pinned-message-list');
+    },
+    pinnedMessage(text: string) {
+      return by.text(text).withAncestor(by.id('pinned-message-list'));
+    },
+  },
+
   ChannelList: {
     get channelList() {
       return by.id('channel-list-view');
@@ -24,8 +61,28 @@ export const ChannelListPage = {
       get messageSender() {
         return by.id('channel-preview-sender');
       },
+      /** The delivery status icon in front of the current user's last message. */
+      deliveryStatus(status: 'sending' | 'sent' | 'delivered' | 'read' | 'none') {
+        return by.id(`channel-preview-status-${status}`);
+      },
+      get anyDeliveryStatus() {
+        return by.id(/^channel-preview-status-/);
+      },
+      get failedMessage() {
+        return by.text('Message failed to send').withAncestor(by.id('channel-preview-button'));
+      },
+      get timestamp() {
+        return by.id('channel-preview-timestamp');
+      },
+      /** The swipe actions behind a channel row: `openSheet` ("more") and `mute`. */
+      swipeAction(id: string) {
+        return by.id(`swipe-action-${id}`);
+      },
+      get mutedIcon() {
+        return by.id('channel-preview-muted-icon');
+      },
       get unreadCount() {
-        return by.id('unread-count').withAncestor(by.id('channel-preview-button'));
+        return by.id('channel-preview-unread-count');
       },
     },
   },

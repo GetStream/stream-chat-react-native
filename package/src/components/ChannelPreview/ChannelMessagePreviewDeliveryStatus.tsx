@@ -87,6 +87,18 @@ export const ChannelMessagePreviewDeliveryStatus = ({
             : 'message.status.sending.accessibilityLabel',
   );
 
+  // Which icon the row shows, for e2e tests (the icons themselves carry no identifier).
+  const statusTestID =
+    messageStatus === MessageStatusTypes.SENDING
+      ? 'channel-preview-status-sending'
+      : messageStatus === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
+        ? 'channel-preview-status-read'
+        : status === MessageDeliveryStatus.DELIVERED
+          ? 'channel-preview-status-delivered'
+          : status === MessageDeliveryStatus.SENT
+            ? 'channel-preview-status-sent'
+            : 'channel-preview-status-none';
+
   if (
     !channel.data?.custom?.name &&
     membersWithoutSelf.length === 1 &&
@@ -105,7 +117,7 @@ export const ChannelMessagePreviewDeliveryStatus = ({
 
   return (
     <CompositeAccessibilityProbe label={statusLabel}>
-      <View style={styles.container}>
+      <View style={styles.container} testID={statusTestID}>
         {messageStatus === MessageStatusTypes.SENDING ? (
           <icons.Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
         ) : messageStatus === MessageStatusTypes.RECEIVED &&
