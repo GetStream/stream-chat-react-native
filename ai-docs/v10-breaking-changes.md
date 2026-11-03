@@ -88,6 +88,9 @@ Everything below was exported from the package root in v9 and is gone in v10.
 - `reduceMessagesToString`, `findInMessagesById`, `findInMessagesByDate` → `channel.messagePaginator.getItem(id)` /
   `jumpToMessage(id)`. — P.1
 - `patchMessageTextCommand` → nothing (the composer submits through `stream-chat`). — P.17
+- `setupCommandUIMiddlewares` → nothing; `stream-chat` installs the four command middlewares by default, so delete
+  the call. An app that never called it now gets them too: typing `/giphy cats` makes `giphy` the active command and
+  leaves `cats` in the input. — §13.1
 - `createAttachmentsCompositionMiddleware`, `createDraftAttachmentsCompositionMiddleware`,
   `localAttachmentToAttachment` → `stream-chat`'s own `createAttachmentsCompositionMiddleware` (installed by default).
   — §17.6 · #3821
@@ -641,10 +644,6 @@ on `V10` after the guide's last update are listed first.
 
 ### #3916 (V10 @ `74884ff55`)
 
-- `setupCommandUIMiddlewares` inserts all four middleware with `unique: true`, so running it again (the composer
-  setup function re-runs on every composer subscribe and every `client.config` change) replaces them rather than
-  stacking duplicates. A draft saved with an active command no longer comes back as `/giphy /giphy cats`. No action;
-  an app that calls it from its own setup function gets the fix too.
 - `<ChannelList>` treats a paginator that was never queried as unloaded, so a list that mounts after
   `ChannelManager.ingestChannel()` routed an event into its paginator (opened from a push notification, or a second
   list such as archived channels) runs its first query instead of showing only the routed channels. — P.21
