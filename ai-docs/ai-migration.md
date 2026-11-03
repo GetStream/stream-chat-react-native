@@ -1,3 +1,6 @@
+> **Upgrading from v9 to v10?** This file covers v8 → v9 only. Use
+> https://raw.githubusercontent.com/GetStream/stream-chat-react-native/V10/ai-docs/ai-migration-v9-to-v10.md instead.
+
 # stream-chat-react-native v8 → v9 — Agent Migration Guide
 
 > Machine-oriented migration reference for AI coding agents. The prose-heavy
