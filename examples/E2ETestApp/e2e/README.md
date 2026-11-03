@@ -138,9 +138,10 @@ those sources and the selection isn't empty, or when the last change to them has
 `e2e-selection` artifact's tests. `Test E2E Result` is the job to require in branch protection: it passes when the e2e
 jobs pass or are skipped as not required.
 
-`.github/workflows/e2e-test-cron.yml` runs nightly on `develop` (and on demand): every test on Android with an
-instrumented build, then `build_e2e_coverage_map`, and uploads the `e2e-coverage-map` artifact (14 days) that pull
-requests download. Until its first run on `develop`, every pull request runs everything ("no coverage map").
+`.github/workflows/e2e-test-cron.yml` runs nightly on `develop` (and on demand, with iOS/Android toggles), reporting to
+Allure as cron launches. iOS runs every test on the PR job's simulator setup, the only regular iOS run, since pull
+requests run iOS on dispatch only. Android runs every test with an instrumented build, then `build_e2e_coverage_map`,
+and uploads the `e2e-coverage-map` artifact (14 days) that pull requests download. Until its first run on `develop`, every pull request runs everything ("no coverage map").
 
 iOS runs on `macos-15` (Xcode 26.2, iPhone 17 Pro, `ios.sim.release`). Android runs on `ubuntu-latest` with KVM and an
 API 36 x86_64 emulator (`android.att.release`). Both call `fastlane test_e2e skip_build:true`, which on CI adds

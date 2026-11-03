@@ -6,6 +6,14 @@ on:
     - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
+      ios:
+        description: "Run iOS e2e tests"
+        type: boolean
+        default: true
+      android:
+        description: "Run Android e2e tests"
+        type: boolean
+        default: true
       mock_server_branch:
         description: "stream-chat-test-mock-server branch"
         type: string
@@ -35,7 +43,163 @@ env:
     .yarn/install-state.gz
 
 jobs:
+  ios:
+    if: github.event_name == 'schedule' || inputs.ios
+    runs-on: macos-15
+    timeout-minutes: 180
+    env:
+      DETOX_IOS_DEVICE: "iPhone 17 Pro"
+      IOS_VERSION: "26.2"
+      XCODE_VERSION: "26.2"
+      APP_PATH: examples/E2ETestApp/ios/build/detox/Build/Products/Release-iphonesimulator/E2ETestApp.app
+      MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+      # A fresh simulator takes minutes to boot on CI; boot it now so that overlaps with setup.
+      - name: Boot simulator
+        run: |
+          runtime="com.apple.CoreSimulator.SimRuntime.iOS-${IOS_VERSION//./-}"
+          udid=$(xcrun simctl list devices available -j |
+            jq -r --arg rt "$runtime" --arg name "$DETOX_IOS_DEVICE" '.devices[$rt][]? | select(.name == $name) | .udid' | head -1)
+          if [ -z "$udid" ]; then
+            echo "::warning::No $DETOX_IOS_DEVICE on iOS $IOS_VERSION; Detox will pick and boot a simulator itself"
+            exit 0
+          fi
+          echo "DETOX_IOS_UDID=$udid" >> "$GITHUB_ENV"
+          nohup xcrun simctl boot "$udid" > /dev/null 2>&1 &
+      - uses: ./.github/actions/ruby-cache
+
+      # --- JS dependencies ---
+      - name: Restore node_modules
+        id: node-modules
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.NODE_MODULES_PATHS }}
+          key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
+      # Only the e2e app's dependency tree, not every example app.
+      - name: Install dependencies
+        run: yarn workspaces focus e2etestapp
+      - name: Save node_modules
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.NODE_MODULES_PATHS }}
+          key: ${{ steps.node-modules.outputs.cache-primary-key }}
+
+      # --- App binary: rebuilt only when the app or SDK sources change, not for test-only changes ---
+      - name: Restore app
+        id: app
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.APP_PATH }}
+          key: e2e-ios-app-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/ios/**', 'package/native-package/*.podspec', 'examples/SampleApp/Gemfile.lock', 'examples/E2ETestApp/*.js', '!examples/E2ETestApp/.detoxrc.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/ios/**', '!examples/E2ETestApp/ios/build/**', '!examples/E2ETestApp/ios/Pods/**') }}
+      - name: Set up ccache
+        if: steps.app.outputs.cache-hit != 'true'
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: e2e-ios-xcode${{ env.XCODE_VERSION }}
+          max-size: 1500M
+      - name: Point the RN ccache wrappers at ccache
+        if: steps.app.outputs.cache-hit != 'true'
+        # RN's ccache-clang.sh runs `$CCACHE_BINARY clang`, but Xcode doesn't export that build
+        # setting to the compiler, so without this every compile silently skips ccache.
+        run: echo "CCACHE_BINARY=$(which ccache)" >> "$GITHUB_ENV"
+      - name: Cache pods
+        if: steps.app.outputs.cache-hit != 'true'
+        uses: actions/cache@v5
+        with:
+          path: examples/E2ETestApp/ios/Pods
+          key: ${{ runner.os }}-e2e-pods-${{ hashFiles('examples/E2ETestApp/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-e2e-pods-
+      - name: Install pods
+        if: steps.app.outputs.cache-hit != 'true'
+        working-directory: examples/SampleApp
+        run: USE_CCACHE=1 bundle exec fastlane e2e_pod_install
+      - name: Build app
+        if: steps.app.outputs.cache-hit != 'true'
+        working-directory: examples/E2ETestApp
+        run: yarn e2e:build -c ios.sim.release
+      - name: Save app
+        if: steps.app.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.APP_PATH }}
+          key: ${{ steps.app.outputs.cache-primary-key }}
+
+      # --- Test tooling ---
+      - name: Install applesimutils
+        # Homebrew refuses formulae from non-official taps until they are trusted.
+        run: brew tap wix/brew && brew trust --formula wix/brew/applesimutils && brew install wix/brew/applesimutils
+      - name: Restore Detox framework
+        id: detox-framework
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/Library/Detox
+          key: ${{ runner.os }}-detox-framework-xcode${{ env.XCODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      # Yarn's `enableScripts: false` skips Detox's postinstall, which would build this.
+      - name: Build Detox framework
+        if: steps.detox-framework.outputs.cache-hit != 'true'
+        working-directory: examples/E2ETestApp
+        run: yarn detox build-framework-cache
+      - name: Save Detox framework
+        if: steps.detox-framework.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ~/Library/Detox
+          key: ${{ steps.detox-framework.outputs.cache-primary-key }}
+      - name: Resolve mock server revision
+        id: mock-server
+        run: echo "sha=$(git ls-remote https://github.com/GetStream/stream-chat-test-mock-server "refs/heads/$MOCK_SERVER_BRANCH" | cut -f1)" >> "$GITHUB_OUTPUT"
+      - name: Cache mock server gems
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.MOCK_SERVER_BUNDLE_PATH }}
+          key: ${{ runner.os }}-mock-server-gems-${{ steps.mock-server.outputs.sha }}
+          restore-keys: |
+            ${{ runner.os }}-mock-server-gems-
+
+      - name: Wait for the simulator
+        if: env.DETOX_IOS_UDID != ''
+        timeout-minutes: 15
+        # `-b` boots it if the background boot never started; it errors (405) when the device is
+        # already booted, and then the plain call returns at once.
+        run: xcrun simctl bootstatus "$DETOX_IOS_UDID" -b || xcrun simctl bootstatus "$DETOX_IOS_UDID"
+      - name: Launch Allure TestOps
+        if: env.ALLURE_TOKEN != ''
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch cron:true
+        continue-on-error: true
+      - name: Run e2e tests
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
+      - name: Upload Allure results
+        if: env.LAUNCH_ID != '' && (success() || failure())
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_upload launch_id:"$LAUNCH_ID"
+      - name: Allure TestOps Launch Removal
+        if: env.LAUNCH_ID != '' && cancelled()
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane allure_launch_removal launch_id:"$LAUNCH_ID"
+      - uses: actions/upload-artifact@v6
+        if: failure()
+        with:
+          name: e2e-ios-nightly-logs
+          path: |
+            examples/E2ETestApp/stream-chat-test-mock-server/logs
+            examples/E2ETestApp/artifacts
+
+  # Instrumented: builds the per-test coverage map that pull requests select their tests from.
   android:
+    if: github.event_name == 'schedule' || inputs.android
     runs-on: ubuntu-latest
     # One app launch per test, every test, plus retries.
     timeout-minutes: 180
