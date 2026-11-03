@@ -1,12 +1,11 @@
-import { useCallback, useMemo } from 'react';
-import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useHeaderHeight } from 'expo-router/react-navigation';
 
-import type { LocalMessage } from 'stream-chat';
-import type { MessageProps } from 'stream-chat-expo';
+import type { MessageProps, ResolvedComponents } from 'stream-chat-expo';
 import {
   AIStates,
   Channel,
@@ -17,13 +16,14 @@ import {
   ThemeProvider,
   useAIState,
   useChannelContext,
+  useComponentsContext,
   useMessageContext,
-  useStableCallback,
   useTheme,
   WithComponents,
 } from 'stream-chat-expo';
 
 import {
+  AI_MESSAGE_PART_TYPE_PREFIX,
   AITypingIndicatorView,
   ComposerView,
   StreamingMessageView,
@@ -33,7 +33,6 @@ import { bottomSheetOptions } from '../bottomSheetOptions';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { useSendAIMessage } from '../hooks/useSendAIMessage';
-import { startAI, summarize } from '../http/requests';
 
 const CustomMessage = (props: MessageProps) => {
   const { theme } = useTheme();
@@ -82,6 +81,17 @@ const CustomMessage = (props: MessageProps) => {
   );
 };
 
+type UnsupportedAttachmentComponent = ResolvedComponents['UnsupportedAttachment'];
+
+// A reply's steps (`ai_reasoning`, `ai_tool_call`) are attachments the chat SDK doesn't know. They
+// get their own views; until then they're left out rather than shown as unsupported files, and any
+// other unknown attachment keeps the SDK's own view.
+const hidingAISteps = (Fallback: UnsupportedAttachmentComponent) => {
+  const HideAISteps: UnsupportedAttachmentComponent = (props) =>
+    props.attachment.type?.startsWith(AI_MESSAGE_PART_TYPE_PREFIX) ? null : <Fallback {...props} />;
+  return HideAISteps;
+};
+
 const CustomStreamingMessageView = () => {
   const { message } = useMessageContext();
   return (
@@ -93,10 +103,12 @@ const CustomStreamingMessageView = () => {
 
 const CustomComposerView = () => {
   const { channel } = useChannelContext();
+  const { stop } = useAppContext();
 
   const { aiState } = useAIState(channel);
 
-  const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
+  // The router stops through its own session, not with an AI indicator event.
+  const stopGenerating = useMemo(() => () => Promise.resolve(stop()), [stop]);
 
   const isGenerating = [AIStates.Thinking, AIStates.Generating].includes(aiState);
 
@@ -164,42 +176,21 @@ const additionalFlatListProps = {
 };
 
 export const ChatContent = () => {
-  const { channel } = useAppContext();
+  const { channel, failure } = useAppContext();
   const { bottom } = useSafeAreaInsets();
   // The channel sits below the drawer header, so the keyboard offset has to account for it
   // (without it, Android keeps the composer behind the keyboard).
   const headerHeight = useHeaderHeight();
-
-  const preSendMessageRequest = useStableCallback(
-    async ({ localMessage }: { localMessage: LocalMessage }) => {
-      if (!channel) {
-        return;
-      }
-
-      if (!channel.initialized) {
-        await channel.watch({
-          created_by_id: localMessage.user_id,
-        });
-        summarize(localMessage.text ?? '').then((response) => {
-          // `post` resolves to undefined when the request fails; the channel then keeps its id.
-          const summary = (response as { summary?: string } | undefined)?.summary;
-          if (summary) {
-            channel.update({ name: summary });
-          }
-        });
-      }
-
-      if (
-        !Object.keys(channel.state.watchers).some((watcher) => watcher.startsWith('ai-bot')) &&
-        channel.id
-      ) {
-        await startAI(channel.id);
-      }
-    },
-  );
+  // Read above this screen's own overrides, so it is the SDK's view.
+  const { UnsupportedAttachment } = useComponentsContext();
+  const [CustomUnsupportedAttachment] = useState(() => hidingAISteps(UnsupportedAttachment));
 
   if (!channel) {
-    return null;
+    return (
+      <View style={styles.emptyContainer}>
+        {failure ? <Text style={styles.failureText}>{failure}</Text> : <ActivityIndicator />}
+      </View>
+    );
   }
 
   return (
@@ -217,18 +208,13 @@ export const ChatContent = () => {
           MessageFooter: RenderNull,
           NetworkDownIndicator: RenderNull,
           StreamingMessageView: CustomStreamingMessageView,
+          UnsupportedAttachment: CustomUnsupportedAttachment,
         }}
       >
-        <Channel
-          channel={channel}
-          initializeOnMount={false}
-          keyboardVerticalOffset={headerHeight}
-          preSendMessageRequest={preSendMessageRequest}
-          enableSwipeToReply={false}
-          allowSendBeforeAttachmentsUpload={true}
-        >
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} enableSwipeToReply={false}>
           <MessageList additionalFlatListProps={additionalFlatListProps} />
           <CustomAITypingIndicatorView />
+          {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
           <VoiceMode />
           <CustomComposerView />
         </Channel>
@@ -247,6 +233,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyContainerText: { fontSize: 24, fontWeight: 'bold' },
+  failureText: { color: '#B00020', fontSize: 15, paddingHorizontal: 24, textAlign: 'center' },
   streamingMessageViewWrapper: { width: '100%', paddingHorizontal: 16 },
   aiTypingIndicatorWrapper: {
     paddingHorizontal: 24,

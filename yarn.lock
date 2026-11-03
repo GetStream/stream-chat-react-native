@@ -6385,6 +6385,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stream-io/calypso@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@stream-io/calypso@npm:0.2.3"
+  peerDependencies:
+    "@stream-io/video-client": ">=1.0.0"
+    stream-chat: ">=9.0.0"
+  peerDependenciesMeta:
+    "@stream-io/video-client":
+      optional: true
+    stream-chat:
+      optional: true
+  checksum: 10c0/9bc97c29ee41f9ba7dfc46d9d5cd800717b44fa32b94dcfc5410a33a41800bd748e4078f6a28d818f06626dc52b030cdb008549966fa03f8269724887a02f374
+  languageName: node
+  linkType: hard
+
 "@stream-io/state-store@npm:^1.1.6":
   version: 1.1.6
   resolution: "@stream-io/state-store@npm:1.1.6"
@@ -11413,6 +11428,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
+    "@stream-io/calypso": "npm:^0.2.3"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"

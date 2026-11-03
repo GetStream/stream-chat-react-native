@@ -6,25 +6,25 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
 import type { ChannelSort } from 'stream-chat';
 
-import type { Channel as ChannelClass } from 'stream-chat';
+import type { Channel as ChannelClass, ChannelFilters } from 'stream-chat';
 import {
   ChannelList,
   ChannelPreviewProps,
   Plus,
   useChannelsContext,
-  useChatContext,
   useStableCallback,
   WithComponents,
 } from 'stream-chat-expo';
 
-import { chatUserId } from '../chatConfig';
+import { AgentConfig } from '../agent/config';
+import { useAppContext } from '../contexts/AppContext';
 
-import { createChannel, useAppContext } from '../contexts/AppContext';
-
-const filters = {
+// The router keeps each conversation in an `agent` channel the user is a member of.
+const filters: ChannelFilters = {
   members: {
-    $in: [chatUserId],
+    $in: [AgentConfig.user.id],
   },
+  type: 'agent',
 };
 
 const sort: ChannelSort = { last_updated: -1 };
@@ -52,16 +52,15 @@ const ChannelPreview = (props: ChannelPreviewProps) => {
 };
 
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
-  const { client } = useChatContext();
-  const { setChannel } = useAppContext();
+  const { openConversation, startConversation } = useAppContext();
 
   const onSelect = useStableCallback((channel: ChannelClass) => {
-    setChannel(channel);
+    openConversation(channel);
     navigation.closeDrawer();
   });
 
   const onCreateNewChat = useStableCallback(() => {
-    setChannel(createChannel(client));
+    startConversation();
     navigation.closeDrawer();
   });
 
