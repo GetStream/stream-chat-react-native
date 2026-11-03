@@ -18,7 +18,6 @@ import {
   createTextComposerEmojiMiddleware,
   LiveLocationManagerProvider,
   OverlayProvider,
-  setupCommandUIMiddlewares,
   SqliteClient,
   Streami18n,
   ThemeProvider,
@@ -247,8 +246,6 @@ const App = () => {
     // to the declarative `client.config.set()` call in `useChatClient`, next to where the client is
     // created. A setup function is re-run on every configuration cycle, which is what middleware needs.
     chatClient.config.setSetupFunction('messageComposer', ({ composer }) => {
-      setupCommandUIMiddlewares(composer);
-
       composer.textComposer.middlewareExecutor.insert({
         middleware: [
           createTextComposerEmojiMiddleware({

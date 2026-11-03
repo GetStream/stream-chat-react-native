@@ -315,6 +315,7 @@ means changed. Details in the linked section.
 | `client.configs[cid]` | `client.channelServerConfigs[cid]` | §13.1 |
 | `channel.serverConfig?.typing_events` (and the other gated flags) | `channel.config.typingEvents.enabled` — resolved, server ANDed with yours | §13.1 |
 | `client.setMessageComposerSetupFunction(fn)` | `client.config.setSetupFunction('messageComposer', fn)` | §13.1 |
+| `setupCommandUIMiddlewares(composer)` | delete the call; `stream-chat` installs the command middlewares by default | §13.1 |
 | re-setting `channel.messagePaginator.pageSize` after mount | `client.config.set({ channel: { messagePaginator: { pageSize } } })` | §13.1, §16.1 |
 | `useTargetedMessage()` / `setTargetedMessage(id)` | `useMessagePaginator()?.jumpToMessage(id, { focusReason: 'jump-to-message', focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION })`; read with `useIsTargetedMessage(id)` | §6 |
 | `useChannelContext().channelUnreadStateStore` / `setChannelUnreadState` | `channel.messagePaginator.unreadStateSnapshot` | §7 |
@@ -1222,7 +1223,6 @@ that no value can express — middleware, comparators:
 
 ```tsx
 client.config.setSetupFunction('messageComposer', ({ composer }) => {
-  setupCommandUIMiddlewares(composer);
   composer.textComposer.middlewareExecutor.insert({ /* … */ });
 });
 ```
@@ -3313,7 +3313,7 @@ Names that still exist in v10 with a different meaning or on a different object 
 ```bash
 # stream-chat-react-native / -expo / -core names removed or renamed in v10
 rg -n -t js -t ts -g '!**/node_modules/**' '\b(useTypingContext|TypingProvider|TypingContextValue|useCreateTypingContext|usePaginatedMessageListContext|PaginatedMessageListProvider|PaginatedMessageListContextValue|useCreatePaginatedMessageListContext|useTargetedMessage|setTargetedMessage|channelUnreadStateStore|setChannelUnreadState|ChannelUnreadState|loadChannelAroundMessage|loadChannelAtFirstUnreadMessage|reloadChannel|highlightedMessageId|loadMoreThread|loadMoreRecentThread|reloadThread|threadMessages|setThreadMessages|threadHasMore|threadLoadingMore|threadLoadingMoreRecent|threadInstance|closeThreadOnDismount|ThreadMessageComposer|ThreadType|additionalMessageListProps|additionalMessageFlashListProps|additionalMessageComposerProps|shouldUseFlashList|shouldSyncChannel|MessageActionsHookProps|uploadAbortControllerRef|deliveredToCount|connectionRecovering)\b' .
-rg -n -t js -t ts -g '!**/node_modules/**' '\b(doMarkReadRequest|doSendMessageRequest|doUpdateMessageRequest|stateUpdateThrottleInterval|newMessageStateUpdateThrottleInterval|preSendMessageRequest|patchMessageTextCommand|maximumMessageLimit|allowSendBeforeAttachmentsUpload|useChannelUpdated|queryChannelsOverride|lockChannelOrder|onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|useSelectedChannelState|reduceMessagesToString|findInMessagesById|findInMessagesByDate|getLastReceivedMessage|DebugContextProvider|useDebugContext|DebugContextValue|DebugDataType|useIsOnline|isChannelActive|scrollToFirstUnreadThreshold|deleteReactionsForMessage|useClientMutedUsers|useAppSettings)\b' .
+rg -n -t js -t ts -g '!**/node_modules/**' '\b(doMarkReadRequest|doSendMessageRequest|doUpdateMessageRequest|stateUpdateThrottleInterval|newMessageStateUpdateThrottleInterval|preSendMessageRequest|patchMessageTextCommand|maximumMessageLimit|allowSendBeforeAttachmentsUpload|useChannelUpdated|queryChannelsOverride|lockChannelOrder|onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|useSelectedChannelState|reduceMessagesToString|findInMessagesById|findInMessagesByDate|getLastReceivedMessage|DebugContextProvider|useDebugContext|DebugContextValue|DebugDataType|useIsOnline|isChannelActive|scrollToFirstUnreadThreshold|deleteReactionsForMessage|useClientMutedUsers|useAppSettings|setupCommandUIMiddlewares)\b' .
 rg -n -t js -t ts -g '!**/node_modules/**' '\b(geti18Instance|getAvailableLanguages|getTranslations|addOnTFunctionOverrideListener|addOnLanguageChangeListener|getTranslators|relativeCompactDateFormatter|getDateStringForA11y|(en|es|fr|he|hi|it|ja|ko|nl|ptBR|ru|tr)Translations)\b' .
 rg -n -t js -t ts -t json -g '!**/node_modules/**' "'a11y/|\"a11y/" .
 rg -n -t js -t ts -g '!**/node_modules/**' '\bthreadList\s*[=:,}]|\bhardDelete\s*:|\buse(MutedUsers|MutedChannels)\(\s*\w|\buse(MessageActions|MessageActionHandlers)\(\s*\{|\buseMessageList\(\{\s*threadList' .

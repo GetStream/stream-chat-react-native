@@ -23,7 +23,6 @@ export * from './types/types';
 export * from './utils/attachmentUrls';
 export * from './utils/i18n/Streami18n';
 export * from './i18n';
-export * from './utils/setupCommandUIMiddlewares';
 export * from './utils/createGenerateVideoThumbnails';
 export * from './utils/utils';
 export * from './nativeMultipartUpload';
