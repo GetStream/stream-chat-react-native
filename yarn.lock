@@ -6933,7 +6933,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.0-rc.30"
+    stream-chat: "npm:^10.0.0-rc.31"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -9569,7 +9569,7 @@ __metadata:
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.0-rc.30"
+    stream-chat: "npm:^10.0.0-rc.31"
     stream-chat-react-native: "workspace:^"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -10952,7 +10952,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.0-rc.30"
+    stream-chat: "npm:^10.0.0-rc.31"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -18558,7 +18558,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.0-rc.30"
+    stream-chat: "npm:^10.0.0-rc.31"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19371,7 +19371,7 @@ __metadata:
     react-syntax-highlighter: "npm:^16.1.0"
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0-rc.30"
+    stream-chat: "npm:^10.0.0-rc.31"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
@@ -19459,9 +19459,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.0-rc.30":
-  version: 10.0.0-rc.30
-  resolution: "stream-chat@npm:10.0.0-rc.30"
+"stream-chat@npm:^10.0.0-rc.31":
+  version: 10.0.0-rc.31
+  resolution: "stream-chat@npm:10.0.0-rc.31"
   dependencies:
     "@stream-io/logger": "npm:^2.1.0"
     "@stream-io/state-store": "npm:^1.2.0"
@@ -19472,7 +19472,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/7b37807f87081900ea407dba5fd26f8ad345ab7c7e8c4caf3b40c6bafb20a1fc56a0c7249a760d12949c700de5e633186b5c49c380f08d2c908e583d999f174f
+  checksum: 10c0/aa6dfa9c4b9adb6d7a3c86afe2f819e0f1f27f4903f2e29596a8e4e19ffdef7f7bc8b7fd579a9e6a25b95a4984137ce7f96557ef8932a4c4a127624a34c13374
   languageName: node
   linkType: hard
 
