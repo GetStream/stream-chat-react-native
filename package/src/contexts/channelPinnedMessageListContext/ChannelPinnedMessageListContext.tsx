@@ -21,20 +21,11 @@ export const ChannelPinnedMessageListProvider = ({
 }: PropsWithChildren<{ channel: Channel; searchSource?: MessageSearchSource }>) => {
   const { client } = useChatContext();
   const [defaultSearchSource] = useState(() => {
-    const source = new MessageSearchSource(
-      client,
-      { pageSize: 25, allowEmptySearchString: true, resetOnNewSearchQuery: false },
-      {
-        messageSearch: {
-          initialFilterConfig: {
-            $or: {
-              enabled: true,
-              generate: ({ searchQuery }) => (searchQuery ? { text: { $q: searchQuery } } : {}),
-            },
-          },
-        },
-      },
-    );
+    const source = new MessageSearchSource(client, {
+      pageSize: 25,
+      allowEmptySearchString: true,
+      resetOnNewSearchQuery: false,
+    });
     source.messageSearchChannelFilters = { cid: channel.cid, members: undefined };
     source.messageSearchFilters = { pinned: true, type: undefined };
     source.activate();
