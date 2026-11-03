@@ -22,8 +22,8 @@ Beyond the flattening, three things changed name or shape rather than location:
 
 - **`channel.disconnected` → `channel.pendingDisposal`**, and the old name is **removed outright — there is
   no deprecated alias.** (V10 is a major, so the LLC is not carrying aliases through it.) The flag is one-way
-  and terminal: the paginators are disposed, the subscriptions unregistered, and the client drops the channel
-  from `activeChannels`, so it never revives. `getClient()` throws on such an instance. RN had five call
+  and terminal: the paginators are disposed, the subscriptions unregistered, and `client.channelManager` drops
+  the channel, so it never revives. `getClient()` throws on such an instance. RN had five call
   sites, all plain property reads.
 - **`WatcherState` → `ChannelWatchState`**, also with no alias. The slice no longer describes only *other*
   people watching (`watchers`, `watcherCount`) — it now also answers whether *this client* is watching, so
@@ -49,9 +49,9 @@ ownCapabilities consumers.
   `client.on(...)` subscription + imperative `channel.muteStatus()` call. `useMutedChannels` stayed
   event-based on purpose (it's the client-global muted-channel *list*, not this channel's status).
 
-**3. Channel lifecycle wired.** `<Channel>` calls `channel.activate()` on mount and
-`channel.deactivate()` on unmount (refcounted). This is what gates the reconnect no-destructive-reseed
-of an open channel's message list.
+**3. Channel lifecycle wired.** `<Channel>` calls `channel.activate()` on mount and the release
+function it returns on unmount (refcounted; there is no `deactivate()`). This is what gates the
+reconnect no-destructive-reseed of an open channel's message list.
 
 **4. AI indicator.** `useAIState` became a thin `useStateStore(channel.state, (s) => ({ aiState: s.aiState }))`
 reader — the public `{ aiState }` shape is unchanged, and it now honors `ai_indicator.stop`. The
