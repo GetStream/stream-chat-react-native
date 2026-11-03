@@ -388,10 +388,12 @@ export const getInitialsFromName = (name: string, numberOfInitials: number = 2) 
   const trimmed = name.trim();
 
   if (!trimmed) return '';
+  // Take the first code point of each word, not the first UTF-16 code unit, so names that
+  // start with an emoji or another non-BMP character do not render a lone surrogate.
   return trimmed
     .split(/\s+/)
     .slice(0, numberOfInitials)
-    .map((n) => n.charAt(0).toUpperCase())
+    .map((n) => Array.from(n)[0].toUpperCase())
     .join('');
 };
 

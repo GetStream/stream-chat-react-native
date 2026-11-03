@@ -1,4 +1,4 @@
-import { formatMsToMinSec, getUrlWithoutParams } from '../utils';
+import { formatMsToMinSec, getInitialsFromName, getUrlWithoutParams } from '../utils';
 
 describe('getUrlWithoutParams', () => {
   const testUrlMap: Record<string, string> = {
@@ -35,5 +35,21 @@ describe('formatMsToMinSec', () => {
     expect(formatMsToMinSec(3_600_000)).toBe('1h');
     expect(formatMsToMinSec(3_661_000)).toBe('1h');
     expect(formatMsToMinSec(7_200_000)).toBe('2h');
+  });
+});
+
+describe('getInitialsFromName', () => {
+  it('should return the uppercased first letter of each word', () => {
+    expect(getInitialsFromName('john doe')).toBe('JD');
+    expect(getInitialsFromName('  Jane   Mary Doe ')).toBe('JM');
+    expect(getInitialsFromName('Jane Mary Doe', 3)).toBe('JMD');
+    expect(getInitialsFromName('Jane', 1)).toBe('J');
+    expect(getInitialsFromName('   ')).toBe('');
+  });
+
+  it('should not split characters outside the BMP into lone surrogates', () => {
+    expect(getInitialsFromName('😀 Smiley')).toBe('😀S');
+    expect(getInitialsFromName('𝒜lice 𐐨bob')).toBe('𝒜𐐀');
+    expect(getInitialsFromName('🚀', 1)).toBe('🚀');
   });
 });
