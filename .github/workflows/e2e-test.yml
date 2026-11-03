@@ -32,7 +32,6 @@ concurrency:
 env:
   MOCK_SERVER_BRANCH: ${{ inputs.mock_server_branch || 'main' }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # Allure TestOps (project 3). Empty for forks and Dependabot, which then skip the upload.
   ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
   GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
   GITHUB_EVENT_ACTION: ${{ github.event.action }}

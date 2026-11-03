@@ -21,6 +21,10 @@ e2e/.env
 .DS_STORE
 *.db
 .idea
+# Eclipse / Buildship metadata (VS Code Java, Android Studio imports)
+.settings/
+.project
+.classpath
 
 # Testing
 examples/SampleApp/fastlane/fastlane.log

@@ -1,7 +1,5 @@
 name: E2E Tests Nightly
 
-# Runs every e2e test on Android with an instrumented build and publishes the per-test coverage map
-# (`e2e-coverage-map`) that pull requests select their tests from (impact analysis, e2e/README.md).
 on:
   schedule:
     # Every night at 2:00 UTC, on the default branch (develop).
