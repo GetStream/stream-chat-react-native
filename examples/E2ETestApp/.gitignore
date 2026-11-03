@@ -81,3 +81,4 @@ yarn-error.log
 /e2e-coverage/
 /e2e_coverage_map.json
 /e2e_selection.json
+/e2e_batch_selection.json

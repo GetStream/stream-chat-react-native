@@ -279,6 +279,8 @@ mock_server_driver_port = ENV['MOCK_DRIVER_PORT'] || '4569'
 # Impact analysis (e2e/README.md): pull requests run only the tests a coverage map says the diff can reach.
 e2e_tests_path = File.join(e2e_app_path, 'e2e', 'tests')
 e2e_selection_path = File.join(e2e_app_path, 'e2e_selection.json')
+e2e_batch_selection_path = File.join(e2e_app_path, 'e2e_batch_selection.json')
+e2e_max_batches = 8
 e2e_coverage_path = File.join(e2e_app_path, 'e2e-coverage')
 e2e_coverage_map_path = File.join(e2e_app_path, 'e2e_coverage_map.json')
 e2e_coverage_map_artifact = 'e2e-coverage-map'
@@ -329,12 +331,15 @@ private_lane :wait_for_mock_server_driver do |options|
   UI.user_error!("Mock server driver did not start on port #{options[:port]}") unless ready
 end
 
-desc 'Writes `required=true|false` to $GITHUB_OUTPUT, so CI can skip the e2e jobs before building anything. ' \
-     'When required, also selects the tests to run (select_e2e_tests); none selected means not required'
+desc 'Writes `required=true|false` and `e2e_batches` to $GITHUB_OUTPUT, so CI can skip the e2e jobs before building anything'
 lane :e2e_check_required do
   required = is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
-  required &&= !select_e2e_tests['tests'].empty?
-  File.write(ENV['GITHUB_OUTPUT'], "required=#{required}\n", mode: 'a') if ENV['GITHUB_OUTPUT']
+  tests = required ? select_e2e_tests['tests'] : []
+  required &&= !tests.empty?
+  # Like the native Android SDK: 8 batches, or one per test when fewer are selected.
+  batches = (0...[tests.size, e2e_max_batches].min).to_a
+  UI.important("E2E batches: #{batches.size}")
+  File.write(ENV['GITHUB_OUTPUT'], "required=#{required}\ne2e_batches=#{batches.to_json}\n", mode: 'a') if ENV['GITHUB_OUTPUT']
   required
 end
 
@@ -397,10 +402,8 @@ lane :select_e2e_tests do |options|
   )
 end
 
-desc 'Builds the e2e coverage map from a `test_e2e coverage:true` run (impact analysis)'
+desc 'Builds the e2e coverage map from a `test_e2e coverage:true` run'
 lane :build_e2e_coverage_map do
-  # Detox retries a failed test in a new run, so a test failed when its last Allure result did. Each
-  # file's `describe` is named after it: `MessageListTests` is `MessageListTests.e2e.ts`.
   results = Dir.glob(File.join(allure_results_path, '*-result.json')).map { |file| JSON.parse(File.read(file)) }
   failed = results.group_by { |result| result['fullName'] }.values
                   .map { |runs| runs.max_by { |run| run['stop'].to_i } }
@@ -435,7 +438,7 @@ private_lane :prepare_android_emulator do
   wait_android_emu_idle(timeout: 60)
 end
 
-desc 'Runs the Detox e2e tests.'
+desc 'Runs the Detox e2e tests'
 lane :test_e2e do |options|
   next unless is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
 
@@ -445,16 +448,27 @@ lane :test_e2e do |options|
   coverage = options[:coverage] == true || options[:coverage].to_s == 'true'
 
   env = { 'MOCK_DRIVER_PORT' => mock_server_driver_port }
-  if options[:selection]
-    selection_path = File.expand_path(options[:selection], root_path)
+  selection_path = options[:selection] && File.expand_path(options[:selection], root_path)
+  if selection_path
     selection = JSON.parse(File.read(selection_path))
     if selection['tests'].empty?
       UI.important("No e2e tests selected: #{selection['reasons'].join('; ')}")
       next
     end
     UI.important("Running #{selection['run_all'] ? 'all' : selection['tests'].size} selected e2e tests")
-    env['E2E_SELECTION'] = selection_path
   end
+  if options[:batch] && options[:batch_count]
+    tests = selection ? selection['tests'] : e2e_test_ids(e2e_tests_path)
+    batch = options[:batch].to_i
+    batch_count = options[:batch_count].to_i
+    # Round-robin, as on native Android: slicing by a rounded-up size can leave the last batches empty.
+    batch_tests = tests.select.with_index { |_, i| i % batch_count == batch }
+    UI.user_error!("Batch #{batch} is empty: #{tests.size} tests cannot fill #{batch_count} batches") if batch_tests.empty?
+    UI.important("Batch #{batch + 1} of #{batch_count}: #{batch_tests.size} of #{tests.size} tests")
+    File.write(e2e_batch_selection_path, JSON.pretty_generate('run_all' => false, 'tests' => batch_tests))
+    selection_path = e2e_batch_selection_path
+  end
+  env['E2E_SELECTION'] = selection_path if selection_path
   if coverage
     FileUtils.rm_rf(e2e_coverage_path)
     env['E2E_COVERAGE_DIR'] = e2e_coverage_path

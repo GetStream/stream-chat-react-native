@@ -138,6 +138,11 @@ those sources and the selection isn't empty, or when the last change to them has
 `e2e-selection` artifact's tests. `Test E2E Result` is the job to require in branch protection: it passes when the e2e
 jobs pass or are skipped as not required.
 
+Android splits the tests like the native Android SDK: `Build Android` builds (or restores) the APKs once and uploads
+them, `Launch Allure TestOps (Android)` creates one launch for all batches, and `Test Android` runs a matrix of up to 8
+batches (`e2e_batches` from `e2e_check_required`: one per selected test when fewer than 8 are selected). Each batch
+runs `test_e2e batch:<n> batch_count:<total>`, every `total`-th test of the selection, round-robin.
+
 `.github/workflows/e2e-test-cron.yml` runs nightly on `develop` (and on demand, with iOS/Android toggles), reporting to
 Allure as cron launches. iOS runs every test on the PR job's simulator setup, the only regular iOS run, since pull
 requests run iOS on dispatch only. Android runs every test with an instrumented build, then `build_e2e_coverage_map`,

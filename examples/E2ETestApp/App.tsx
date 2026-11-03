@@ -23,7 +23,6 @@ import {
   MessageComposer,
   MessageList,
   OverlayProvider,
-  setupCommandUIMiddlewares,
   SqliteClient,
   Thread,
   ThreadList,
@@ -310,11 +309,6 @@ const App = () => {
   const login = useCallback(async () => {
     const chatClient = StreamChat.getInstance(apiKey, {
       client: { axiosRequestConfig: { timeout: 6000 }, baseURL: mockServerUrl },
-    });
-    // As the v10 guide says: the composer only sends a command picked from the suggestions with
-    // these middlewares (RN-484).
-    chatClient.config.setSetupFunction('messageComposer', ({ composer }) => {
-      setupCommandUIMiddlewares(composer);
     });
     // Every test launches the app anew but keeps its data: start from an empty offline database so
     // nothing a previous test stored is hydrated into this one.

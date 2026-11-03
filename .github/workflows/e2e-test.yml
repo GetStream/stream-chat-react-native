@@ -54,6 +54,7 @@ jobs:
     timeout-minutes: 10
     outputs:
       required: ${{ steps.check.outputs.required }}
+      e2e_batches: ${{ steps.check.outputs.e2e_batches }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -232,20 +233,16 @@ jobs:
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
 
-  android:
+  android-build:
+    name: Build Android
     needs: check
     if: needs.check.outputs.required == 'true' && (github.event_name != 'workflow_dispatch' || inputs.android)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      # Same as the native Android SDK e2e jobs, which run stably on these runners
-      ANDROID_API_LEVEL: "36"
-      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
-      DETOX_ADB_NAME: "emulator-5554"
       APK_PATHS: |
         examples/E2ETestApp/android/app/build/outputs/apk/release/app-release.apk
         examples/E2ETestApp/android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk
-      MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
       # The emulator is x86_64: skip compiling native code for the other ABIs.
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
     steps:
@@ -290,7 +287,6 @@ jobs:
         with:
           path: ${{ env.APK_PATHS }}
           key: e2e-android-apk-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/android/**', '!package/native-package/android/build/**', 'examples/E2ETestApp/*.js', '!examples/E2ETestApp/.detoxrc.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/android/**', '!examples/E2ETestApp/android/**/build/**', '!examples/E2ETestApp/android/.gradle/**') }}
-      # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
       - name: Build app
         if: steps.apk.outputs.cache-hit != 'true'
         working-directory: examples/E2ETestApp
@@ -301,13 +297,76 @@ jobs:
         with:
           path: ${{ env.APK_PATHS }}
           key: ${{ steps.apk.outputs.cache-primary-key }}
-      # Frees the daemons' memory for the emulator, which otherwise can get killed mid-run.
-      - name: Stop Gradle daemons
-        if: steps.apk.outputs.cache-hit != 'true'
-        working-directory: examples/E2ETestApp/android
-        run: ./gradlew --stop
+      - uses: actions/upload-artifact@v6
+        with:
+          name: e2e-android-apks
+          path: ${{ env.APK_PATHS }}
+          retention-days: 1
 
-      # --- Emulator: same setup as the native Android SDK's e2e jobs (AOSP image, no Play services) ---
+  android-allure-launch:
+    name: Launch Allure TestOps (Android)
+    needs: android-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      launch_id: ${{ steps.launch.outputs.launch_id }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - uses: ./.github/actions/ruby-cache
+      - name: Launch Allure TestOps
+        id: launch
+        if: env.ALLURE_TOKEN != ''
+        working-directory: examples/SampleApp
+        run: |
+          bundle exec fastlane allure_launch
+          echo "launch_id=$(grep '^LAUNCH_ID=' "$GITHUB_ENV" | tail -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+        env:
+          # Names the launch after the pull request and tags it with its labels.
+          GITHUB_EVENT: ${{ toJson(github.event) }}
+
+  android:
+    name: Test Android
+    needs: [check, android-build, android-allure-launch]
+    if: ${{ !cancelled() && needs.android-build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        batch: ${{ fromJson(needs.check.outputs.e2e_batches) }}
+      fail-fast: false
+    env:
+      # Same as the native Android SDK e2e jobs, which run stably on these runners
+      ANDROID_API_LEVEL: "36"
+      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
+      DETOX_ADB_NAME: "emulator-5554"
+      MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
+      LAUNCH_ID: ${{ needs.android-allure-launch.outputs.launch_id }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "zulu"
+          java-version: "21"
+      - uses: ./.github/actions/ruby-cache
+      - name: Restore node_modules
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.NODE_MODULES_PATHS }}
+          key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies
+        run: yarn workspaces focus e2etestapp
+      - uses: actions/download-artifact@v7
+        with:
+          name: e2e-android-apks
+          path: examples/E2ETestApp/android/app/build/outputs/apk
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -326,14 +385,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mock-server-gems-
 
-      - name: Launch Allure TestOps
-        if: env.ALLURE_TOKEN != ''
-        working-directory: examples/SampleApp
-        run: bundle exec fastlane allure_launch
-        continue-on-error: true
-        env:
-          # Names the launch after the pull request and tags it with its labels.
-          GITHUB_EVENT: ${{ toJson(github.event) }}
       - uses: actions/download-artifact@v7
         with:
           name: e2e-selection
@@ -347,7 +398,7 @@ jobs:
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
-          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" selection:examples/E2ETestApp/e2e_selection.json
+          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" selection:examples/E2ETestApp/e2e_selection.json batch:${{ matrix.batch }} batch_count:${{ strategy.job-total }}
       - name: Upload Allure results
         if: env.LAUNCH_ID != '' && (success() || failure())
         working-directory: examples/SampleApp
@@ -367,7 +418,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: e2e-android-logs
+          name: e2e-android-logs-${{ matrix.batch }}
           path: |
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
@@ -379,6 +430,8 @@ jobs:
     if: always()
     needs:
       - check
+      - android-build
+      - android-allure-launch
       - android
     steps:
       - name: Check E2E results

@@ -51,6 +51,7 @@ export default tsEslint.config(
       'examples/E2ETestApp/e2e-coverage/',
       'examples/E2ETestApp/e2e_coverage_map.json',
       'examples/E2ETestApp/e2e_selection.json',
+      'examples/E2ETestApp/e2e_batch_selection.json',
 
       // Generated SDK assets
       'package/src/components/docs/',
