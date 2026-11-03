@@ -386,7 +386,7 @@ means changed. Details in the linked section.
 | `client.threads.state` `threads` / `client.threads.loadNextPage()` | `client.threads.paginator.state` `items` / `client.threads.paginator.toTail()` | §R.7 |
 | `client.addDevice(token, provider)` / `getDevices()` / `removeDevice(id)` | `client.createDevice({ id: token, push_provider })` / `listDevices()` / `deleteDevice({ id })` | §R.8 |
 | `client.queryChannels(filters, sort, options)` returning `Channel[]` | `client.queryChannelsAndHydrate({ filter_conditions: filters, sort, ...options })` | §R.8 |
-| `client.muteUser(id)` / `client.banUser(id)` / `client.flagMessage(id)` | `client.moderation.mute({ target_ids: [id] })` / `.ban({ target_user_id: id })` / `.flagMessage(id)` | §R.8 |
+| `client.muteUser(id)` / `client.banUser(id)` / `client.flagMessage(id)` | `client.moderation.mute({ target_ids: [id] })` / `.ban({ target_user_id: id })` / `.flagMessage({ message_id: id })` | §R.8 |
 | `message.ai_generated` | `message.custom?.ai_generated` | §R.8 |
 | custom `AbstractOfflineDB.getChannelsForQuery({ filters, sort })` | `getChannelsForQuery({ userId, options })` — `options.filter_conditions`, `options.sort` | §R.9 |
 | `i18n.geti18Instance()` | `i18n.i18nInstance` | §R.10 |
@@ -3147,8 +3147,8 @@ The ones the v9 sample apps hit. The full list is `stream-chat`'s own (§17.5).
   `sort` (an array), `limit`, `offset`, …
 - **Moderation moved to `client.moderation`** — `client.muteUser(id)` →
   `client.moderation.mute({ target_ids: [id] })`, `client.banUser(id)` →
-  `client.moderation.ban({ target_user_id: id })`, `flagMessage` / `flagUser` → `client.moderation.flagMessage` /
-  `flagUser`.
+  `client.moderation.ban({ target_user_id: id })`, `flagMessage(id)` / `flagUser(id)` →
+  `client.moderation.flagMessage({ message_id: id })` / `flagUser({ user_id: id })`.
 - **Reminders** — `client.reminders.upsertReminder({ message_id }, { remind_at: date })` (`remind_at` is a `Date`;
   omit it to clear), sort as `[{ field: 'remind_at', direction: 1 }]`, `ReminderResponse` → `ReminderResponseData`.
 - **Live location** — `channel.stopLiveLocationSharing({ message_id })` (it took the location object),
