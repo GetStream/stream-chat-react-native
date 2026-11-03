@@ -1,5 +1,7 @@
 skip_docs
 
+import 'Allurefile'
+
 # Common Configuration
 github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
 root_path = File.absolute_path('../../../')
@@ -271,9 +273,6 @@ end
 
 # The e2e suite drives the dedicated examples/E2ETestApp; its lanes live here with the repo's other lanes.
 e2e_app_path = File.absolute_path('../../E2ETestApp')
-allure_url = 'https://streamio.testops.cloud'
-allure_api_url = "#{allure_url}/api"
-allure_project_id = '3'
 allure_results_path = File.join(e2e_app_path, 'allure-results')
 mock_server_repo_name = 'stream-chat-test-mock-server'
 mock_server_driver_port = ENV['MOCK_DRIVER_PORT'] || '4569'
@@ -479,66 +478,6 @@ lane :test_e2e do |options|
   ensure
     stop_mock_server
   end
-end
-
-desc 'Creates an Allure TestOps launch and exports LAUNCH_ID to the following CI steps. Options: cron'
-lane :allure_launch do |options|
-  next unless is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
-
-  launch_id = allure_create_launch(
-    url: allure_api_url,
-    project_id: allure_project_id,
-    github_run_details: github_run_details,
-    cron: options[:cron]
-  )
-  sh("echo 'LAUNCH_ID=#{launch_id}' >> $GITHUB_ENV") if is_ci
-end
-
-desc 'Uploads the e2e Allure results. Options: launch_id'
-lane :allure_upload do |options|
-  unless Dir.exist?(allure_results_path) && Dir.children(allure_results_path).any?
-    UI.important("No Allure results in #{allure_results_path}; skipping upload")
-    next
-  end
-
-  allurectl = install_allurectl
-  allure_args = "-e #{allure_url} --project-id #{allure_project_id} --launch-id #{options[:launch_id]}"
-  sh("#{allurectl} launch reopen #{options[:launch_id]} || true") # allurectl can't upload to a closed launch
-  # Reporting stays optional: a failed upload is logged, it doesn't fail the job.
-  uploaded = true
-  sh("env BRANCH_NAME='#{current_branch}' #{allurectl} upload #{allure_args} #{allure_results_path}",
-     error_callback: ->(_) { uploaded = false })
-  if uploaded
-    UI.success("Check out test results in Allure TestOps: #{allure_url}/launch/#{options[:launch_id]} 🎉")
-  else
-    UI.important("Allure upload failed; launch #{options[:launch_id]} is missing these results")
-  end
-end
-
-desc 'Deletes an Allure TestOps launch (for cancelled runs). Options: launch_id'
-lane :allure_launch_removal do |options|
-  allure_api(url: allure_api_url, path: "launch/#{options[:launch_id]}", http_method: 'DELETE')
-end
-
-private_lane :install_allurectl do
-  path = File.join(e2e_app_path, 'allurectl')
-  next path if File.exist?(path)
-
-  allure_version = '2.21.1'
-  os = `uname -s`.strip.downcase
-  arch = `uname -m`.strip == 'x86_64' ? 'amd64' : 'arm64'
-  sh("curl -sSL -o #{path} " \
-     "https://github.com/allure-framework/allurectl/releases/download/#{allure_version}/allurectl_#{os}_#{arch}")
-  sh("chmod +x #{path}")
-  path
-end
-
-def github_run_details
-  return nil unless is_ci
-
-  github_path = "#{ENV.fetch('GITHUB_API_URL', nil)}/repos/#{ENV.fetch('GITHUB_REPOSITORY', nil)}/actions/runs/#{ENV.fetch('GITHUB_RUN_ID', nil)}"
-  output = sh(command: "curl -s -H 'authorization: Bearer #{ENV.fetch('GITHUB_TOKEN', nil)}' -X GET -G #{github_path}")
-  JSON.parse(output)
 end
 
 lane :file_size do |options|

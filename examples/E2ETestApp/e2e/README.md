@@ -73,10 +73,12 @@ JDK 17 or 21 (`JAVA_HOME`).
 
 Every test links to a case in Allure TestOps project 3 (`stream-chat-react-native`, https://streamio.testops.cloud) with
 `allureId(<case id>)` from `support/step.ts`; `step()` reports each GIVEN / WHEN / THEN as an Allure step.
-`jest-allure2-reporter` writes `allure-results/`, and the `allure_launch` / `allure_upload` / `allure_launch_removal`
-lanes create the launch and upload the results on CI (they need the `ALLURE_TOKEN` repository secret). A new test gets a
-new case: create it in project 3 (`POST /api/rs/testcase` with `name`, `fullName: "<Suite>.<test>"`,
-`automated: true`) rather than reusing a native SDK's ID; the native projects are separate.
+`jest-allure2-reporter` writes `allure-results/`, and the lanes in `examples/SampleApp/fastlane/Allurefile` (imported by
+the Fastfile, as on iOS) talk to TestOps: `allure_launch` / `allure_upload` / `allure_launch_removal` create the launch
+and upload the results on CI, and `allure_testcase` creates a case and prints its id. They need `ALLURE_TOKEN` (a
+repository secret on CI). A new test gets a new case: create it in project 3 (`allure_testcase`, or
+`POST /api/rs/testcase` with `name`, `fullName: "<Suite>.<test>"`, `automated: true`) rather than reusing a native SDK's
+ID; the native projects are separate.
 
 ## Ported tests
 
