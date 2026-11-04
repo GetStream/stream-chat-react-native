@@ -1495,6 +1495,92 @@ describe('MessageList in a thread', () => {
   );
 });
 
+// Pressing a quote goes to the quoted message. A quoted reply that lives only in another thread is
+// not in this list, so its thread is opened at it instead.
+describe('MessageList quote press', () => {
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  const setup = async ({ quoteThreadOnlyReply }: { quoteThreadOnlyReply: boolean }) => {
+    const user = generateUser();
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const parentMessage = generateMessage({ timestamp: new Date(base), user });
+    const quotedMessage = generateMessage({
+      parent_id: quoteThreadOnlyReply ? parentMessage.id : undefined,
+      text: 'quoted text',
+      timestamp: new Date(base + 1000),
+      user,
+    });
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user })],
+      messages: [
+        parentMessage,
+        generateMessage({
+          quoted_message: quotedMessage,
+          quoted_message_id: quotedMessage.id,
+          timestamp: new Date(base + 2000),
+          user,
+        }),
+      ],
+    });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    const thread = chatClient.threads.ensure({
+      channel,
+      parentMessage: channel.state.formatMessage(parentMessage),
+    });
+    const jumpToMessage = jest
+      .spyOn(channel.messagePaginator, 'jumpToMessage')
+      .mockResolvedValue(true);
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const utils = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+          >
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+    return { ...utils, jumpToMessage, onAlsoSentToChannelHeaderPress, quotedMessage, thread };
+  };
+
+  it('opens the thread of a quoted reply that lives only in that thread', async () => {
+    const { findByText, jumpToMessage, onAlsoSentToChannelHeaderPress, quotedMessage, thread } =
+      await setup({ quoteThreadOnlyReply: true });
+
+    fireEvent.press(await findByText('quoted text'));
+
+    await waitFor(() =>
+      expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({
+        targetedMessageId: quotedMessage.id,
+        thread,
+      }),
+    );
+    expect(jumpToMessage).not.toHaveBeenCalled();
+  });
+
+  it('jumps to a quoted message that is in the channel', async () => {
+    const { findByText, jumpToMessage, onAlsoSentToChannelHeaderPress, quotedMessage } =
+      await setup({ quoteThreadOnlyReply: false });
+
+    fireEvent.press(await findByText('quoted text'));
+
+    await waitFor(() =>
+      expect(jumpToMessage).toHaveBeenCalledWith(quotedMessage.id, expect.anything()),
+    );
+    expect(onAlsoSentToChannelHeaderPress).not.toHaveBeenCalled();
+  });
+});
+
 describe('MessageList optimistic edit', () => {
   afterEach(() => {
     cleanup();

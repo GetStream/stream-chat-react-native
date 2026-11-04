@@ -19,6 +19,7 @@ import type { Rect } from '../../state-store/message-overlay-store';
 import type { ViewRef } from '../../types/react-native-compat';
 
 import type { MessageComposerAPIContextValue } from '../messageComposerContext/MessageComposerAPIContext';
+import type { GoToMessage } from '../messageListItemContext/MessageListItemContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type Alignment = 'right' | 'left';
@@ -113,7 +114,7 @@ export type MessageContextValue = {
   showMessageStatus: boolean;
   /** The video attachments of the message. */
   videos: Attachment[];
-  goToMessage?: (messageId: string) => void;
+  goToMessage?: GoToMessage;
   /**
    * Handles a reaction on the message.
    *

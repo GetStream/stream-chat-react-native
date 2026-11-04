@@ -1,18 +1,27 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
 
+import type { LocalMessage } from 'stream-chat';
+
 import { MessageListProps } from '../../components/MessageList/MessageList';
 
 import { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+/**
+ * Goes to a message, used when a quoted message is pressed.
+ *
+ * @param messageId The ID of the message to go to.
+ * @param message The message, when the caller has it (the pressed quote passes its quoted message).
+ */
+export type GoToMessage = (
+  messageId: string,
+  message?: NonNullable<LocalMessage['quoted_message']>,
+) => void;
+
 export type MessageListItemContextValue = {
-  /**
-   * Goes to a message, used when a quoted message is pressed.
-   *
-   * @param messageId The ID of the message to go to.
-   */
-  goToMessage: (messageId: string) => void;
+  /** Goes to a message, used when a quoted message is pressed. */
+  goToMessage: GoToMessage;
   /** The theme of the list items, with `myMessageTheme` merged in. */
   modifiedTheme: Theme;
   /** Turns off grouping of consecutive messages by user. */

@@ -254,14 +254,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
                       if (onPress) {
                         onPress({
-                          defaultHandler: () => goToMessage(message.quoted_message!.id),
+                          defaultHandler: () =>
+                            goToMessage(message.quoted_message!.id, message.quoted_message!),
                           emitter: 'messageContent',
                           event,
                         });
                         return;
                       }
 
-                      goToMessage(message.quoted_message.id);
+                      goToMessage(message.quoted_message.id, message.quoted_message);
                     }}
                     onPressIn={(event) => {
                       if (onPressIn) {

@@ -47,7 +47,10 @@ import {
   MessageOverlayRuntimeProvider,
   MessageProvider,
 } from '../../contexts/messageContext/MessageContext';
-import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
+import {
+  GoToMessage,
+  useMessageListItemContext,
+} from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -223,7 +226,7 @@ export type MessagePropsWithContext = Pick<
     messagesContext: MessagesContextValue;
     /** Whether long pressing a message is enabled. Defaults to true. */
     enableLongPress?: boolean;
-    goToMessage?: (messageId: string) => void;
+    goToMessage?: GoToMessage;
     isTargetedMessage?: boolean;
     /**
      * Called with the message's thread when its replies button is pressed.
