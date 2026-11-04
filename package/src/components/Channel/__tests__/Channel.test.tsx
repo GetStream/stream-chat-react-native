@@ -223,6 +223,37 @@ describe('Channel', () => {
     );
   });
 
+  describe('connection.recovered', () => {
+    const renderAndRecover = async () => {
+      const markReadSpy = jest
+        .spyOn(chatClient.messageDeliveryReporter, 'throttledMarkRead')
+        .mockImplementation(() => undefined);
+      renderComponent({ channel });
+      await waitFor(() => expect(channel.initialized).toBe(true));
+      markReadSpy.mockClear();
+
+      act(() => {
+        chatClient.dispatchEvent({ type: 'connection.recovered' });
+      });
+
+      return markReadSpy;
+    };
+
+    it('marks the channel read after a recovery', async () => {
+      const markReadSpy = await renderAndRecover();
+
+      expect(markReadSpy).toHaveBeenCalledWith(channel);
+    });
+
+    it('does not mark the channel read when recovery is disabled', async () => {
+      chatClient.config.set({ client: { connectionRecovery: { enabled: false } } });
+
+      const markReadSpy = await renderAndRecover();
+
+      expect(markReadSpy).not.toHaveBeenCalled();
+    });
+  });
+
   const queryChannelWithNewMessages = (newMessages: ReturnType<typeof generateMessage>[]) =>
     // generate new channel mock from existing channel with new messages added
     getOrCreateChannelApi(
@@ -610,12 +641,14 @@ describe('Channel', () => {
     });
     const rendersBefore = renderSpy.mock.calls.length;
     const capabilitiesBefore = channel.state.getLatestValue().ownCapabilities;
+    const dataBefore = channel.data;
 
     act(() => dispatchChannelUpdatedEvent(chatClient, { ...channel.data }));
 
-    // Guard against a vacuous pass: the update was applied and republished the capabilities.
-    expect(channel.state.getLatestValue().ownCapabilities).not.toBe(capabilitiesBefore);
-    expect(channel.state.getLatestValue().ownCapabilities).toEqual(capabilitiesBefore);
+    // Guard against a vacuous pass: the update was applied. The capabilities did not change, so
+    // the client keeps their array.
+    expect(channel.data).not.toBe(dataBefore);
+    expect(channel.state.getLatestValue().ownCapabilities).toBe(capabilitiesBefore);
     expect(renderSpy.mock.calls.length).toBe(rendersBefore);
   });
 

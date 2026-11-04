@@ -1453,6 +1453,10 @@ SDK's own reads are already migrated.
 The RN SDK augments `CustomChannelData` (`name`, `image`); `mime_type` and `file_size` come from
 `stream-chat` itself. Add your own custom keys the same way (`declare module 'stream-chat'`).
 
+`stream-chat` no longer has `CustomCommandData`, and the SDK's `DefaultCommandData` is gone with it.
+Delete `interface CustomCommandData extends DefaultCommandData {}` and the `DefaultCommandData` import
+from your augmentation file.
+
 ## 17.2 `deleteMessage` options are snake_case
 
 `useMessageOperations().deleteMessage(message, options)` (and the `MessageContext` value) now takes
@@ -2084,8 +2088,10 @@ Consequences:
 
 - A listener that was effectively dead on backgrounding now runs there. If it is expensive or not
   idempotent, check it.
-- It is now a valid "recovery finished" hook: the channel reloads have settled by the time it fires.
-  That is how the SDK sequences its own mark-read-on-catch-up (§L.4).
+- It is now a valid "recovery finished" hook while recovery is on: the channel reloads have settled
+  by the time it fires. That is how the SDK sequences its own mark-read-on-catch-up (§L.4).
+- With recovery off (`connectionRecovery: { enabled: false }`) it still fires on every reconnect, as
+  in v9, but nothing was reloaded. `<Channel>` does not mark read on it then.
 
 ## L.3 A lost watch is restored on demand (behavioral — amends §18.5)
 
@@ -3313,7 +3319,7 @@ Names that still exist in v10 with a different meaning or on a different object 
 ```bash
 # stream-chat-react-native / -expo / -core names removed or renamed in v10
 rg -n -t js -t ts -g '!**/node_modules/**' '\b(useTypingContext|TypingProvider|TypingContextValue|useCreateTypingContext|usePaginatedMessageListContext|PaginatedMessageListProvider|PaginatedMessageListContextValue|useCreatePaginatedMessageListContext|useTargetedMessage|setTargetedMessage|channelUnreadStateStore|setChannelUnreadState|ChannelUnreadState|loadChannelAroundMessage|loadChannelAtFirstUnreadMessage|reloadChannel|highlightedMessageId|loadMoreThread|loadMoreRecentThread|reloadThread|threadMessages|setThreadMessages|threadHasMore|threadLoadingMore|threadLoadingMoreRecent|threadInstance|closeThreadOnDismount|ThreadMessageComposer|ThreadType|additionalMessageListProps|additionalMessageFlashListProps|additionalMessageComposerProps|shouldUseFlashList|shouldSyncChannel|MessageActionsHookProps|uploadAbortControllerRef|deliveredToCount|connectionRecovering)\b' .
-rg -n -t js -t ts -g '!**/node_modules/**' '\b(doMarkReadRequest|doSendMessageRequest|doUpdateMessageRequest|stateUpdateThrottleInterval|newMessageStateUpdateThrottleInterval|preSendMessageRequest|patchMessageTextCommand|maximumMessageLimit|allowSendBeforeAttachmentsUpload|useChannelUpdated|queryChannelsOverride|lockChannelOrder|onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|useSelectedChannelState|reduceMessagesToString|findInMessagesById|findInMessagesByDate|getLastReceivedMessage|DebugContextProvider|useDebugContext|DebugContextValue|DebugDataType|useIsOnline|isChannelActive|scrollToFirstUnreadThreshold|deleteReactionsForMessage|useClientMutedUsers|useAppSettings|setupCommandUIMiddlewares)\b' .
+rg -n -t js -t ts -g '!**/node_modules/**' '\b(doMarkReadRequest|doSendMessageRequest|doUpdateMessageRequest|stateUpdateThrottleInterval|newMessageStateUpdateThrottleInterval|preSendMessageRequest|patchMessageTextCommand|maximumMessageLimit|allowSendBeforeAttachmentsUpload|useChannelUpdated|queryChannelsOverride|lockChannelOrder|onAddedToChannel|onRemovedFromChannel|onChannelDeleted|onChannelHidden|onChannelVisible|onChannelUpdated|onChannelTruncated|onChannelMemberUpdated|onNewMessage|onNewMessageNotification|useSelectedChannelState|reduceMessagesToString|findInMessagesById|findInMessagesByDate|getLastReceivedMessage|DebugContextProvider|useDebugContext|DebugContextValue|DebugDataType|useIsOnline|isChannelActive|scrollToFirstUnreadThreshold|deleteReactionsForMessage|useClientMutedUsers|useAppSettings|setupCommandUIMiddlewares|DefaultCommandData)\b' .
 rg -n -t js -t ts -g '!**/node_modules/**' '\b(geti18Instance|getAvailableLanguages|getTranslations|addOnTFunctionOverrideListener|addOnLanguageChangeListener|getTranslators|relativeCompactDateFormatter|getDateStringForA11y|(en|es|fr|he|hi|it|ja|ko|nl|ptBR|ru|tr)Translations)\b' .
 rg -n -t js -t ts -t json -g '!**/node_modules/**' "'a11y/|\"a11y/" .
 rg -n -t js -t ts -g '!**/node_modules/**' '\bthreadList\s*[=:,}]|\bhardDelete\s*:|\buse(MutedUsers|MutedChannels)\(\s*\w|\buse(MessageActions|MessageActionHandlers)\(\s*\{|\buseMessageList\(\{\s*threadList' .

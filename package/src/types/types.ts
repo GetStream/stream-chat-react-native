@@ -60,11 +60,6 @@ export interface DefaultChannelData {
   name?: string;
 }
 
-export interface DefaultCommandData {
-  flag: unknown;
-  imgur: unknown;
-}
-
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
 export interface DefaultEventData {}

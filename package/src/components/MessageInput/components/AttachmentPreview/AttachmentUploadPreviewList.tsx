@@ -21,6 +21,7 @@ import {
   isVideoAttachment,
   LocalAttachment,
   LocalAudioAttachment,
+  LocalUploadAttachment,
   LocalVoiceRecordingAttachment,
 } from 'stream-chat';
 
@@ -292,6 +293,16 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     [attachmentManager, dataRef, prepareForRemoval],
   );
 
+  // `uploadFile` does not check whether uploads are enabled, so a retry does not start one while
+  // they are off.
+  const handleRetry = useCallback(
+    (attachment: LocalUploadAttachment) => {
+      if (!attachmentManager.isUploadEnabled) return;
+      return attachmentManager.uploadFile(attachment);
+    },
+    [attachmentManager],
+  );
+
   useLayoutEffect(() => {
     const previousData = previousDataRef.current;
     const nextIds = new Set(data.map((attachment) => attachment.localMetadata.id));
@@ -346,7 +357,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <ImageAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -354,7 +365,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <AudioAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -363,7 +374,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
           return (
             <AudioAttachmentUploadPreview
               attachment={attachment}
-              handleRetry={attachmentManager.uploadAttachment}
+              handleRetry={handleRetry}
               removeAttachments={removeAttachments}
             />
           );
@@ -371,7 +382,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
           return (
             <FileAttachmentUploadPreview
               attachment={attachment}
-              handleRetry={attachmentManager.uploadAttachment}
+              handleRetry={handleRetry}
               removeAttachments={removeAttachments}
             />
           );
@@ -380,7 +391,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <VideoAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -388,7 +399,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <FileAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -399,7 +410,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       FileAttachmentUploadPreview,
       ImageAttachmentUploadPreview,
       VideoAttachmentUploadPreview,
-      attachmentManager.uploadAttachment,
+      handleRetry,
       removeAttachments,
       soundPackageAvailable,
     ],
@@ -496,7 +507,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
             <AttachmentPreviewCell key={attachment.localMetadata.id}>
               <AudioAttachmentUploadPreview
                 attachment={attachment}
-                handleRetry={attachmentManager.uploadAttachment}
+                handleRetry={handleRetry}
                 removeAttachments={removeAttachments}
               />
             </AttachmentPreviewCell>
