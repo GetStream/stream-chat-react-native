@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.11.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.1...v9.11.2) (2026-11-04)
+
+### Bug Fixes
+
+* keep emoji intact in avatar initials ([#3927](https://github.com/GetStream/stream-chat-react-native/issues/3927)) ([2d12303](https://github.com/GetStream/stream-chat-react-native/commit/2d12303291aab93f09f6f00e757499be03cdb4da))
+* keep emoji intact in avatar initials ([#3927](https://github.com/GetStream/stream-chat-react-native/issues/3927)) ([fbf71ae](https://github.com/GetStream/stream-chat-react-native/commit/fbf71ae6ec71d9c7db0b6e6484f41871c607b4e8)), closes [#3922](https://github.com/GetStream/stream-chat-react-native/issues/3922)
+
 ## [9.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.0...v9.11.1) (2026-10-29)
 
 ### Bug Fixes
