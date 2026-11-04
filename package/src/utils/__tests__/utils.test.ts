@@ -1,4 +1,45 @@
-import { formatMsToMinSec, getUrlWithoutParams } from '../utils';
+import { formatMsToMinSec, getInitialsFromName, getUrlWithoutParams } from '../utils';
+
+describe('getInitialsFromName', () => {
+  it('should return the uppercased first letter of the first two words', () => {
+    expect(getInitialsFromName('ivan sekovanikj')).toBe('IS');
+    expect(getInitialsFromName('  Jane   Mary Doe ')).toBe('JM');
+    expect(getInitialsFromName('Jane Mary Doe', 3)).toBe('JMD');
+    expect(getInitialsFromName('Jane')).toBe('J');
+  });
+
+  it('should return an empty string for empty or blank names', () => {
+    expect(getInitialsFromName('')).toBe('');
+    expect(getInitialsFromName('   ')).toBe('');
+  });
+
+  it('should keep characters outside the Basic Multilingual Plane intact', () => {
+    expect(getInitialsFromName('😀 Smiley')).toBe('😀S');
+    expect(getInitialsFromName('𝒜lice Bob')).toBe('𝒜B');
+  });
+
+  it('should keep emoji sequences intact', () => {
+    expect(getInitialsFromName('👍🏽 Thumb')).toBe('👍🏽T');
+    expect(getInitialsFromName('🇺🇸 Flag')).toBe('🇺🇸F');
+    expect(getInitialsFromName('🇺🇸🇬🇧 Flags')).toBe('🇺🇸F');
+    expect(getInitialsFromName('👨‍👩‍👧 Family')).toBe('👨‍👩‍👧F');
+    expect(getInitialsFromName('❤️ Heart')).toBe('❤️H');
+    expect(getInitialsFromName('🏴󠁧󠁢󠁥󠁮󠁧󠁿 England')).toBe('🏴󠁧󠁢󠁥󠁮󠁧󠁿E');
+  });
+
+  it('should bound the length of a pathological emoji sequence', () => {
+    const initials = getInitialsFromName(`${'👨‍👩‍👧'.repeat(2000)} x`);
+
+    expect(initials.length).toBeLessThanOrEqual(33);
+    expect(initials.endsWith('X')).toBe(true);
+  });
+
+  it('should take the first code unit of words that do not start with an emoji', () => {
+    expect(getInitialsFromName('Иван Петров')).toBe('ИП');
+    expect(getInitialsFromName('大学 同学')).toBe('大同');
+    expect(getInitialsFromName('1️⃣ One')).toBe('1O');
+  });
+});
 
 describe('getUrlWithoutParams', () => {
   const testUrlMap: Record<string, string> = {
