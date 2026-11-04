@@ -1,5 +1,6 @@
 import React, { type ReactNode, useMemo, useRef } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 
 import type { LegendListRef, LegendListRenderItemProps } from '@legendapp/list/react-native';
 import { AnimatedLegendList } from '@legendapp/list/reanimated';
@@ -42,6 +43,15 @@ const LoadingOlder = () => {
     </View>
   );
 };
+
+const SCROLL_BUTTON_IN = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 0.8 }] },
+  100: { easing: Easing.inOut(Easing.ease), opacity: 1, transform: [{ scale: 1 }] },
+}).duration(200);
+const SCROLL_BUTTON_OUT = new Keyframe({
+  0: { opacity: 1, transform: [{ scale: 1 }] },
+  100: { easing: Easing.inOut(Easing.ease), opacity: 0, transform: [{ scale: 0.8 }] },
+}).duration(200);
 
 const ScrollToLatestButton = ({ onPress }: { onPress: () => void }) => {
   const { t } = useAITranslation();
@@ -145,9 +155,11 @@ export const AIChatList = <T,>({
       {!isEndInView && !isEmpty ? (
         <View
           pointerEvents='box-none'
-          style={[styles.scrollButtonContainer, { bottom: bottomInset + 8 }]}
+          style={[styles.scrollButtonContainer, { bottom: bottomInset + primitives.spacingXs }]}
         >
-          <ScrollToLatestButton onPress={scrollToEnd} />
+          <Animated.View entering={SCROLL_BUTTON_IN} exiting={SCROLL_BUTTON_OUT}>
+            <ScrollToLatestButton onPress={scrollToEnd} />
+          </Animated.View>
         </View>
       ) : null}
     </View>

@@ -15,6 +15,7 @@ import {
 
 import { PieLegend } from './PieLegend';
 
+import { primitives } from '../../internal/tokens';
 import type { ChartSpec } from '../types';
 
 const font = matchFont({
@@ -23,7 +24,8 @@ const font = matchFont({
     android: 'sans-serif',
     default: 'serif',
   }),
-  fontSize: 12,
+  // A chart's labels read at the caption size, as in StreamChatAI.
+  fontSize: primitives.typographyFontSizeXxs,
   fontWeight: 'normal',
   fontStyle: 'normal',
 });

@@ -3,6 +3,7 @@ import { processColor } from 'react-native';
 // @ts-expect-error createStyleObject is not available in the type exports, it is still exported though
 import { createStyleObject } from 'react-syntax-highlighter/dist/esm/create-element';
 
+import { primitives } from '../../internal/tokens';
 import type { ColorRange } from '../SyntaxHighlighter';
 import type { SyntaxHighlighterStylesheet } from '../types';
 
@@ -19,7 +20,7 @@ export const flattenNodesToTextAndColorRanges = ({
   stylesheet,
   defaultColor,
   fontFamily,
-  fontSize = 13,
+  fontSize = primitives.typographyFontSizeXs,
 }: FlattenOptions): { text: string; ranges: ColorRange[] } => {
   let text = '';
   const rawRanges: { start: number; end: number; color: string | number }[] = [];

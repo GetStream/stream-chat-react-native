@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { primitives } from '../../internal/tokens';
 import type { Datum } from '../types';
 
 export const PieLegend = ({ items, maxRows = 3 }: { items: Datum[]; maxRows?: number }) => {
@@ -45,6 +46,6 @@ const styles = StyleSheet.create({
     height: 12,
   },
   label: {
-    fontSize: 13,
+    fontSize: primitives.typographyFontSizeXs,
   },
 });

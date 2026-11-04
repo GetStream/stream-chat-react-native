@@ -35,6 +35,8 @@ export type AIAssistantMessageProps = {
   isGenerating?: boolean;
   /** Opens a link in the answer, instead of the system's handler. */
   onLink?: (url: string) => void;
+  /** Called when the answer starts or stops being typed out. */
+  onWritingChange?: (isWriting: boolean) => void;
   /** The steps the agent took, in order, shown before the answer. */
   parts?: AIMessagePartData[];
   /** The whole of a reasoning step's thinking, when the app has it. */
@@ -53,6 +55,7 @@ export const AIAssistantMessage = ({
   id,
   isGenerating = false,
   onLink,
+  onWritingChange,
   parts = [],
   reasoningText,
   text,
@@ -71,7 +74,9 @@ export const AIAssistantMessage = ({
         <AIMessageParts approver={approver} key={id} parts={parts} reasoningText={reasoningText} />
       ) : null}
       {/* What arrives after mount is typed out; a reply loaded from history shows at once. */}
-      {text !== '' ? <StreamingMessageView onLink={onLink} text={text} /> : null}
+      {text !== '' ? (
+        <StreamingMessageView onLink={onLink} onWritingChange={onWritingChange} text={text} />
+      ) : null}
       {attachments.length > 0 ? (
         <View style={[defaultStyles.attachments, styles?.attachments]}>
           {attachments.map((attachment, index) => (

@@ -8,6 +8,7 @@ import { createStyleObject } from 'react-syntax-highlighter/dist/esm/create-elem
 
 import { cssToRNTextStyle } from './converter';
 
+import { primitives } from '../../internal/tokens';
 import { AndroidNativeRenderer } from '../components';
 import type {
   NativeSyntaxHighlighterProps,
@@ -16,7 +17,8 @@ import type {
   SyntaxHighlighterStylesheet,
 } from '../types';
 
-export const DEFAULT_FONT_SIZE = 13;
+// Code reads at the footnote size, as in StreamChatAI.
+export const DEFAULT_FONT_SIZE = primitives.typographyFontSizeXs;
 
 export const generateNewStylesheet = ({
   stylesheet,
@@ -120,7 +122,7 @@ export const createNativeElement = ({
 export const nativeRenderer = ({
   defaultColor,
   fontFamily,
-  fontSize = 13,
+  fontSize = DEFAULT_FONT_SIZE,
 }: {
   defaultColor: string;
   fontFamily?: string;

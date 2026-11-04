@@ -5,8 +5,10 @@ import React, {
   type ReactNode,
   useContext,
   useMemo,
+  useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
@@ -42,6 +44,11 @@ export type AIConversationAssistantMessageProps = {
   parts: AIMessagePartData[];
   text: string;
   approver?: AIToolApprover;
+  /**
+   * Called when the answer starts or stops being typed out. The reply's actions wait until it is
+   * done. A view that never calls it has its actions shown once the reply is finished.
+   */
+  onWritingChange?: (isWriting: boolean) => void;
   reasoningText?: (stepId: string) => string | undefined;
 };
 
@@ -116,6 +123,7 @@ const DefaultAssistantMessage = ({
   attachments,
   isGenerating,
   message,
+  onWritingChange,
   parts,
   reasoningText,
   text,
@@ -125,6 +133,7 @@ const DefaultAssistantMessage = ({
     attachments={attachments}
     id={message.id}
     isGenerating={isGenerating}
+    onWritingChange={onWritingChange}
     parts={parts}
     reasoningText={reasoningText}
     text={text}
@@ -159,6 +168,21 @@ type EntryViewProps = {
   approver?: AIToolApprover;
 };
 
+const REPLY_ACTIONS_IN = FadeIn.duration(200).easing(Easing.out(Easing.ease));
+
+const useReplyWriting = (messageId: string | undefined, isGenerating: boolean) => {
+  const [writing, setWriting] = useState<string>();
+  const [watched, setWatched] = useState<string>();
+  const isWriting = !!messageId && writing === messageId;
+  if (messageId && (isGenerating || isWriting) && watched !== messageId) setWatched(messageId);
+  const onWritingChange = useMemo(
+    () => (value: boolean) =>
+      setWriting((current) => (value ? messageId : current === messageId ? undefined : current)),
+    [messageId],
+  );
+  return { isWriting, onWritingChange, wasWatched: !!messageId && watched === messageId };
+};
+
 const EntryView = ({
   approver,
   AssistantMessage,
@@ -167,6 +191,12 @@ const EntryView = ({
   UserMessage,
 }: EntryViewProps) => {
   const { message, pending } = entry;
+  const isReply = message?.role !== 'user';
+  const isGenerating = !!message?.isGenerating;
+  const { isWriting, onWritingChange, wasWatched } = useReplyWriting(
+    isReply ? message?.id : undefined,
+    isGenerating,
+  );
   if (!message) {
     return pending ? (
       <UserMessage attachments={pending.attachments ?? []} text={pending.text} />
@@ -188,20 +218,17 @@ const EntryView = ({
       <AssistantMessage
         approver={approver}
         attachments={message.attachments ?? []}
-        isGenerating={!!message.isGenerating}
+        isGenerating={isGenerating}
         message={message}
+        onWritingChange={onWritingChange}
         parts={message.parts ?? []}
         reasoningText={message.reasoningText}
         text={message.text}
       />
-      {ReplyActions && !message.isGenerating && message.text !== '' ? (
-        // Keyed: a row reused for another reply starts its actions afresh, such as not "Copied".
-        <ReplyActions
-          isLatestReply={entry.isLatestReply}
-          key={message.id}
-          message={message}
-          text={message.text}
-        />
+      {ReplyActions && !isGenerating && !isWriting && message.text !== '' ? (
+        <Animated.View entering={wasWatched ? REPLY_ACTIONS_IN : undefined} key={message.id}>
+          <ReplyActions isLatestReply={entry.isLatestReply} message={message} text={message.text} />
+        </Animated.View>
       ) : null}
     </View>
   );
