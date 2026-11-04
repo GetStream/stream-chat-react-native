@@ -67,7 +67,6 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
         groupStyles={['single']}
         message={parentMessage}
         preventPress={parentMessagePreventPress}
-        showMessageStatus={false}
       />
       <View style={styles.newThread}>
         <Text style={styles.text}>

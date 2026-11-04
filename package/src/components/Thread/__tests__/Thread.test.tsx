@@ -1,6 +1,14 @@
 import React from 'react';
 
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react-native';
 import type {
   Channel as ChannelType,
   MessageResponse,
@@ -212,6 +220,43 @@ describe('Thread', () => {
   // already has its data doesn't.
   // An activation that is never released keeps the thread active for the session, so recovery
   // keeps reloading it and it keeps being read automatically.
+  it.each([
+    ['shows', true],
+    ['does not show', false],
+  ])(
+    '%s the delivery status of the parent message when it is the current user’s',
+    async (_, isOwn) => {
+      const parentMessage = generateMessage({
+        cid: channel.cid,
+        status: 'received',
+        text: 'Parent Message Text',
+        ...(isOwn ? { user: generateUser({ id: chatClient.userId }) } : {}),
+      });
+      const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+      // A thread with its replies loaded is not reloaded on open (see "metadata reload on open").
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: [
+          channel.state.formatMessage(
+            generateMessage({
+              cid: channel.cid,
+              parent_id: parentMessage.id,
+            }) as unknown as MessageResponse,
+          ),
+        ],
+        isFirstPage: true,
+        isLastPage: true,
+      });
+
+      renderComponent({ chatClient, thread: threadInstance });
+
+      const header = await screen.findByTestId('thread-footer-component');
+      expect(within(header).getByText('Parent Message Text')).toBeTruthy();
+      expect(within(header).queryByTestId('message-status-sent')).toBe(
+        isOwn ? within(header).getByTestId('message-status-sent') : null,
+      );
+    },
+  );
+
   it('releases its activation of the thread on unmount', async () => {
     const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
     const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
