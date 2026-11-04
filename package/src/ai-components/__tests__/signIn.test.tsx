@@ -76,7 +76,7 @@ describe('AIToolAuthorization', () => {
     expect(screen.queryByText('Connect Linear')).toBeNull();
   });
 
-  it('connects, and lets the person try again when the sign-in closes', async () => {
+  it('connects, and lets the person try again when the sign-in ends unconnected', async () => {
     let finish: (connected: boolean) => void = () => undefined;
     const connect = jest.fn(
       () =>
@@ -101,6 +101,24 @@ describe('AIToolAuthorization', () => {
       await Promise.resolve();
     });
     expect(screen.getByRole('button', { name: 'Connect' })).toBeEnabled();
+  });
+
+  it('declines a sign-in the person closed, which cannot be opened again', async () => {
+    const decline = jest.fn(() => Promise.reject(new Error('offline')));
+    renderWithTheme(
+      <AIToolAuthorization
+        approver={approverWith({ connect: () => Promise.resolve('closed'), decline })}
+        part={signIn}
+      />,
+    );
+    fireEvent.press(screen.getByRole('button', { name: 'Connect' }));
+    await act(() => Promise.resolve());
+    expect(decline).toHaveBeenCalledWith(signIn);
+
+    // As with "Not now", an answer that couldn't be sent can be given again.
+    await act(() => Promise.resolve());
+    expect(screen.getByText("Your answer couldn't be sent. Try again.")).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Not now' })).toBeEnabled();
   });
 
   it('keeps connecting once connected, until the step changes', async () => {
@@ -230,12 +248,22 @@ describe('createAuthSessionAuthorizer', () => {
     );
     await expect(authorizer.connect(signIn)).resolves.toBe(false);
 
-    // The person closed the sheet.
+    // The person closed the sheet: the sign-in can't be opened again.
     native.openAuthSession.mockResolvedValueOnce('');
-    await expect(authorizer.connect(signIn)).resolves.toBe(false);
+    await expect(authorizer.connect(signIn)).resolves.toBe('closed');
 
     await authorizer.decline(signIn);
     expect(decline).toHaveBeenCalledWith(signIn);
+  });
+
+  it('lets a closed sign-in be tried again with declineOnClose off', async () => {
+    const authorizer = createAuthSessionAuthorizer({
+      callbackScheme: 'myapp',
+      decline: jest.fn(),
+      declineOnClose: false,
+    });
+    native.openAuthSession.mockResolvedValueOnce('');
+    await expect(authorizer.connect(signIn)).resolves.toBe(false);
   });
 
   it('rejects when the sign-in could not be opened', async () => {

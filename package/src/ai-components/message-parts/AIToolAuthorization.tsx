@@ -206,15 +206,21 @@ export const AIToolAuthorization = ({
     if (mounted.current) setState(next);
   };
 
+  const sendDecline = (signIn: AIToolAuthorizer) => {
+    update({ ...idle, isDeclining: true });
+    signIn.decline(part).catch(() => update({ ...idle, declineFailed: true }));
+  };
+
   const connect = (signIn: AIToolAuthorizer) => {
     if (state.isConnecting || state.isDeclining) return;
     setState({ ...idle, isConnecting: true });
     signIn.connect(part).then(
       // Your backend has the provider's answer before the sign-in comes back, and its change to
-      // the step hides this. Until then it says it is connecting, unless the person closed the
-      // sign-in or the provider did not connect them.
+      // the step hides this. Until then it says it is connecting, unless the provider did not
+      // connect them. A sign-in the person closed can't be opened again, so it declines.
       (connected) => {
-        if (!connected) update(idle);
+        if (connected === 'closed') sendDecline(signIn);
+        else if (!connected) update(idle);
       },
       () => update({ ...idle, connectFailed: true }),
     );
@@ -222,8 +228,7 @@ export const AIToolAuthorization = ({
 
   const decline = (signIn: AIToolAuthorizer) => {
     if (state.isDeclining) return;
-    setState({ ...idle, isDeclining: true });
-    signIn.decline(part).catch(() => update({ ...idle, declineFailed: true }));
+    sendDecline(signIn);
   };
 
   const actions = {

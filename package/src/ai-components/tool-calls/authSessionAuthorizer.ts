@@ -86,6 +86,12 @@ export type AuthSessionAuthorizerOptions = {
    * the person answer again.
    */
   decline: (call: AIToolCallPart) => Promise<void>;
+  /**
+   * Whether closing the sign-in declines the call, as "Not now" does. Defaults to `true`: the
+   * router's sign-in can be opened once, so after a close its page would only say it expired, and
+   * asking again starts a new one. Pass `false` if your app can give the call a new sign-in.
+   */
+  declineOnClose?: boolean;
 };
 
 export type AuthSessionAuthorizer = AIToolAuthorizer & { callbackScheme: string };
@@ -95,13 +101,14 @@ export type AuthSessionAuthorizer = AIToolAuthorizer & { callbackScheme: string 
  * `ASWebAuthenticationSession` on iOS, and on Android the browser's Auth Tab, or a Custom Tab when
  * the browser has none.
  *
- * `connect` resolves `true` when the return URL says the account is connected, and `false` when
- * the person closed the sign-in or it ended otherwise. It rejects with an `AIConnectorSignInError`
- * when the sign-in couldn't be opened.
+ * `connect` resolves `true` when the return URL says the account is connected, `'closed'` when
+ * the person closed the sign-in (`false` with `declineOnClose: false`), and `false` when it ended
+ * otherwise. It rejects with an `AIConnectorSignInError` when the sign-in couldn't be opened.
  */
 export const createAuthSessionAuthorizer = ({
   callbackScheme,
   decline,
+  declineOnClose = true,
 }: AuthSessionAuthorizerOptions): AuthSessionAuthorizer => {
   const connect = async (call: AIToolCallPart) => {
     const authorization = call.authorization;
@@ -118,7 +125,9 @@ export const createAuthSessionAuthorizer = ({
         error instanceof Error ? error.message : undefined,
       );
     }
-    return returned !== '' && readConnectorSignInResult(returned)?.status === 'connected';
+    // Nothing comes back when the person closed the sheet or the tab.
+    if (returned === '') return declineOnClose ? ('closed' as const) : false;
+    return readConnectorSignInResult(returned)?.status === 'connected';
   };
 
   return { callbackScheme, connect, decline };
