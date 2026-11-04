@@ -1416,6 +1416,38 @@ describe('MessageList in a thread', () => {
     });
     expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
   });
+
+  it.each([
+    ['scrolls to', 'testID', 1],
+    ['does not scroll to', 'other-user', 0],
+  ])(
+    '%s the latest reply when a new reply is the user’s own (%s)',
+    async (_, userId, expectedScrolls) => {
+      const { channel, chatClient, getByText, threadInstance } = await setup();
+      const scrollToOffset = jest.spyOn(FlatList.prototype, 'scrollToOffset');
+
+      const reply = channel.state.formatMessage(
+        generateMessage({
+          cid: channel.cid,
+          parent_id: threadInstance.id,
+          text: 'new reply',
+          timestamp: new Date(),
+          user: generateUser({ id: userId }),
+        }),
+      ) as LocalMessage;
+      await act(async () => {
+        threadInstance.messagePaginator.ingestItem(reply);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      await waitFor(() => expect(getByText('new reply')).toBeTruthy());
+      expect(chatClient.userId).toBe('testID');
+      expect(scrollToOffset).toHaveBeenCalledTimes(expectedScrolls);
+      if (expectedScrolls) {
+        expect(scrollToOffset).toHaveBeenCalledWith({ animated: true, offset: 0 });
+      }
+    },
+  );
 });
 
 describe('MessageList optimistic edit', () => {
