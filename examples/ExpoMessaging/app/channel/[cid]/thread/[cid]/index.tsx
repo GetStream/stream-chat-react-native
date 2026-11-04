@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
 import { Channel, Thread } from 'stream-chat-expo';
 
+import { attachmentPickerPresentation } from '../../../../../components/attachmentPicker';
 import { AppContext } from '../../../../../context/AppContext';
 
 export default function ThreadScreen() {
@@ -17,6 +18,7 @@ export default function ThreadScreen() {
 
   return (
     <Channel
+      attachmentPickerPresentation={attachmentPickerPresentation}
       audioRecordingEnabled={true}
       channel={channel}
       keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : undefined}

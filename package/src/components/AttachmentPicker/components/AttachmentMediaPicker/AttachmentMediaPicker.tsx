@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, StyleSheet } from 'react-native';
+import { FlatList, Linking, StyleSheet } from 'react-native';
 
 import { renderAttachmentPickerItem } from './AttachmentPickerItem';
 
@@ -46,8 +46,12 @@ export const AttachmentMediaPickerIcon = () => {
 
 export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
   const { t } = useTranslationContext();
-  const { numberOfAttachmentImagesToLoadPerCall, numberOfAttachmentPickerImageColumns } =
-    useAttachmentPickerContext();
+  const {
+    attachmentPickerPresentation,
+    numberOfAttachmentImagesToLoadPerCall,
+    numberOfAttachmentPickerImageColumns,
+  } = useAttachmentPickerContext();
+  const List = attachmentPickerPresentation === 'modal' ? FlatList : BottomSheetFlatList;
   const { height } = props;
 
   const {
@@ -167,7 +171,8 @@ export const AttachmentMediaPicker = (props: AttachmentPickerContentProps) => {
       description={t('You have not granted access to the photo library.')}
     />
   ) : (
-    <BottomSheetFlatList
+    <List
+      nestedScrollEnabled={attachmentPickerPresentation === 'modal'}
       contentContainerStyle={[styles.container, bottomSheetContentContainer]}
       data={photos}
       keyExtractor={keyExtractor}

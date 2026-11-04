@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Alert } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
@@ -19,6 +19,7 @@ import { Chat } from '../../Chat/Chat';
 import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
+let mockPickerPresentation: 'inline' | 'modal' = 'inline';
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(() => {
   const attachmentPickerStore = new AttachmentPickerStore();
   attachmentPickerStore.setSelectedPicker('images');
@@ -30,6 +31,9 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
     setBottomInset: jest.fn(),
     setTopInset: jest.fn(),
     attachmentPickerStore,
+    attachmentPickerBottomSheetHeight: 333,
+    attachmentPickerPresentation: mockPickerPresentation,
+    bottomInset: 0,
   } as unknown as ReturnType<typeof AttachmentPickerUtils.useAttachmentPickerContext>;
 });
 
@@ -58,12 +62,25 @@ describe('MessageComposer', () => {
   let channel: ChannelType;
 
   beforeEach(async () => {
+    mockPickerPresentation = 'inline';
     jest.clearAllMocks();
     cleanup();
     const { client: chatClient, channels } = await initiateClientWithChannels();
     client = chatClient;
     channel = channels[0];
   });
+
+  it.each(['inline', 'modal'] as const)(
+    'reserves composer space only for an inline picker (%s)',
+    (presentation) => {
+      mockPickerPresentation = presentation;
+      renderComponent({ channelProps: { channel }, client, props: {} });
+      const reservesPickerSpace = screen
+        .UNSAFE_getAllByType(View)
+        .some((view) => StyleSheet.flatten(view.props.style)?.paddingBottom === 333 + 16);
+      expect(reservesPickerSpace).toBe(presentation === 'inline');
+    },
+  );
 
   afterEach(() => {
     act(() => {

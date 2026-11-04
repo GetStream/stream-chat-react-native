@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { type CommandSuggestion, notifyCommandDisabled } from 'stream-chat';
 
 jest.mock('stream-chat', () => ({
@@ -10,6 +10,7 @@ jest.mock('stream-chat', () => ({
   notifyCommandDisabled: jest.fn(),
 }));
 
+import { useAttachmentPickerContext } from '../../../../contexts';
 import {
   AttachmentCommandNativePickerItem,
   AttachmentCommandPickerItem,
@@ -72,10 +73,43 @@ const command = {
 
 describe('AttachmentPickerContent commands', () => {
   beforeEach(() => {
+    jest
+      .mocked(useAttachmentPickerContext)
+      .mockReturnValue({ disableAttachmentPicker: false } as ReturnType<
+        typeof useAttachmentPickerContext
+      >);
     mockClose.mockClear();
     mockFocus.mockClear();
     mockNotifyCommandDisabled.mockReset();
     mockSetCommand.mockClear();
+  });
+
+  it('waits for a modal picker to finish dismissing before focusing the composer', async () => {
+    let finishDismiss!: () => void;
+    const dismissPicker = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finishDismiss = resolve;
+        }),
+    );
+    jest.mocked(useAttachmentPickerContext).mockReturnValue({
+      attachmentPickerPresentation: 'modal',
+      disableAttachmentPicker: true,
+      dismissPicker,
+    } as unknown as ReturnType<typeof useAttachmentPickerContext>);
+
+    render(<AttachmentCommandPickerItem item={command} />);
+    fireEvent.press(screen.getByText('ban'));
+    expect(mockSetCommand).toHaveBeenCalledWith(command);
+    expect(dismissPicker).toHaveBeenCalledTimes(1);
+    expect(mockFocus).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishDismiss();
+      await Promise.resolve();
+    });
+    expect(mockFocus).toHaveBeenCalledTimes(1);
+    expect(mockClose).not.toHaveBeenCalled();
   });
 
   it('does not focus the input when a disabled command notification is emitted', () => {

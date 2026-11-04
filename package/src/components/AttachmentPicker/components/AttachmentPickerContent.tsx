@@ -70,22 +70,24 @@ export const AttachmentCommandNativePickerItem = ({ item }: { item: CommandSugge
 };
 
 export const AttachmentCommandPickerItem = ({ item }: { item: CommandSuggestion }) => {
-  const { disableAttachmentPicker } = useAttachmentPickerContext();
+  const { attachmentPickerPresentation, disableAttachmentPicker, dismissPicker } =
+    useAttachmentPickerContext();
 
   const messageComposer = useMessageComposer();
   const { textComposer } = messageComposer;
   const { inputBoxRef } = useMessageInputContext();
 
-  const handlePress = useCallback(() => {
+  const handlePress = useCallback(async () => {
     if (notifyCommandDisabled(messageComposer, item)) {
       return;
     }
 
     textComposer.setCommand(item);
+    if (dismissPicker) await dismissPicker();
     inputBoxRef.current?.focus();
-  }, [messageComposer, item, textComposer, inputBoxRef]);
+  }, [messageComposer, item, textComposer, inputBoxRef, dismissPicker]);
 
-  if (disableAttachmentPicker) {
+  if (disableAttachmentPicker && attachmentPickerPresentation !== 'modal') {
     return <AttachmentCommandNativePickerItem item={item} />;
   }
 
@@ -152,8 +154,10 @@ export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
   const { icons } = useComponentsContext();
   const { height } = props;
   const { openPollCreationDialog, sendMessage } = useMessageInputContext();
+  const { dismissPicker } = useAttachmentPickerContext();
 
-  const openPollCreationModal = useStableCallback(() => {
+  const openPollCreationModal = useStableCallback(async () => {
+    if (dismissPicker) await dismissPicker();
     openPollCreationDialog?.({ sendMessage });
   });
 
@@ -176,8 +180,10 @@ export const AttachmentCameraPicker = (
   const { icons } = useComponentsContext();
   const { height, videoOnly } = props;
   const { takeAndUploadImage } = useMessageInputContext();
+  const { dismissPicker } = useAttachmentPickerContext();
 
   const openCameraPicker = useStableCallback(async () => {
+    if (dismissPicker) await dismissPicker();
     const result = await takeAndUploadImage(
       videoOnly ? 'video' : Platform.OS === 'android' ? 'image' : 'mixed',
     );
@@ -222,11 +228,16 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
   const { icons } = useComponentsContext();
   const { height } = props;
   const { pickFile } = useMessageInputContext();
+  const { dismissPicker } = useAttachmentPickerContext();
+  const openFilePicker = useStableCallback(async () => {
+    if (dismissPicker) await dismissPicker();
+    pickFile();
+  });
 
   return (
     <AttachmentPickerGenericContent
       Icon={icons.FilePickerIcon}
-      onPress={pickFile}
+      onPress={openFilePicker}
       height={height}
       buttonText={t('Open Files')}
       description={t('Select files to share')}

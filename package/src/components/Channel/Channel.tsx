@@ -113,7 +113,6 @@ import {
   ReactionData,
 } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
-import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Emoji } from '../MessageMenu/EmojiPickerList';
 import { emojis } from '../MessageMenu/emojis';
@@ -188,6 +187,7 @@ export type ChannelPropsWithContext = Pick<ChannelContextValue, 'channel'> &
       | 'topInset'
       | 'disableAttachmentPicker'
       | 'shouldRenderAttachmentPicker'
+      | 'attachmentPickerPresentation'
       | 'numberOfAttachmentPickerImageColumns'
       | 'numberOfAttachmentImagesToLoadPerCall'
     >
@@ -391,6 +391,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   const {
     disableAttachmentPicker = !isImageMediaLibraryAvailable(),
     shouldRenderAttachmentPicker = true,
+    attachmentPickerPresentation = 'inline',
     additionalKeyboardAvoidingViewProps,
     additionalPressableProps,
     additionalTextInputProps,
@@ -510,7 +511,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
   } = props;
 
   const components = useComponentsContext();
-  const { KeyboardCompatibleView, LoadingErrorIndicator } = components;
+  const { AttachmentPicker, KeyboardCompatibleView, LoadingErrorIndicator } = components;
 
   const { thread: threadProps, threadInstance } = threadFromProps;
 
@@ -1574,6 +1575,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       disableAttachmentPicker,
       openPicker: handleOpenPicker,
       shouldRenderAttachmentPicker,
+      attachmentPickerPresentation,
       topInset,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,
@@ -1587,6 +1589,7 @@ const ChannelWithContext = (props: PropsWithChildren<ChannelPropsWithContext>) =
       disableAttachmentPicker,
       handleOpenPicker,
       shouldRenderAttachmentPicker,
+      attachmentPickerPresentation,
       topInset,
       numberOfAttachmentPickerImageColumns,
       attachmentPickerBottomSheetHeight,

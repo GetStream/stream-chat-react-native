@@ -28,6 +28,12 @@ export type AttachmentPickerContextValue = Pick<
    * for more details.
    */
   bottomInset: number;
+  /** Presentation of a custom AttachmentPicker. Modal pickers do not displace the composer. */
+  attachmentPickerPresentation?: 'inline' | 'modal';
+  /** Width of a modal picker, which can be narrower than the window on tablets. */
+  attachmentPickerContentWidth?: number;
+  /** A modal picker supplies this to defer native presentation/focus until dismissal finishes. */
+  dismissPicker?: () => Promise<void>;
   bottomSheetRef: React.RefObject<BottomSheet | null>;
   closePicker: () => void;
   openPicker: () => void;

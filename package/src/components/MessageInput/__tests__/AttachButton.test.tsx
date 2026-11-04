@@ -6,6 +6,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
+import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { useAttachmentPickerState } from '../../../hooks/useAttachmentPickerState';
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -298,5 +299,22 @@ describe('AttachButton', () => {
     });
 
     expect(screen.queryByTestId('upload-file-touchable')).toBeNull();
+  });
+
+  it('renders an opted-in attachment picker through WithComponents', () => {
+    const CustomPicker = () => <Text>Custom attachment picker</Text>;
+    render(
+      <WithComponents overrides={{ AttachmentPicker: CustomPicker }}>
+        <OverlayProvider>
+          <Chat client={client}>
+            <Channel channel={channel} attachmentPickerPresentation='modal'>
+              <AttachButton />
+            </Channel>
+          </Chat>
+        </OverlayProvider>
+      </WithComponents>,
+    );
+    expect(screen.getByText('Custom attachment picker')).toBeTruthy();
+    expect(screen.queryByTestId('upload-photo-touchable')).toBeNull();
   });
 });

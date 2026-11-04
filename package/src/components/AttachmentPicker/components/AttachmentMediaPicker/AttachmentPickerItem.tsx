@@ -27,9 +27,10 @@ type AttachmentPickerItemType = {
 
 const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { asset } = props;
-  const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { attachmentPickerContentWidth, numberOfAttachmentPickerImageColumns } =
+    useAttachmentPickerContext();
   const { ImageOverlaySelectedComponent } = useComponentsContext();
-  const contentWidth = useWindowContentWidth();
+  const contentWidth = useWindowContentWidth(attachmentPickerContentWidth);
   const { t } = useTranslationContext();
   const messageComposer = useMessageComposer();
   const { uploadNewFile } = useMessageInputContext();
@@ -97,7 +98,8 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
 const AttachmentImage = (props: AttachmentPickerItemType) => {
   const { asset } = props;
-  const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
+  const { attachmentPickerContentWidth, numberOfAttachmentPickerImageColumns } =
+    useAttachmentPickerContext();
   const { ImageOverlaySelectedComponent } = useComponentsContext();
   const {
     theme: {
@@ -105,7 +107,7 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
     },
   } = useTheme();
   const styles = useStyles();
-  const contentWidth = useWindowContentWidth();
+  const contentWidth = useWindowContentWidth(attachmentPickerContentWidth);
   const { t } = useTranslationContext();
   const { uploadNewFile } = useMessageInputContext();
   const messageComposer = useMessageComposer();
