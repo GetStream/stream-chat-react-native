@@ -84,6 +84,24 @@ describe('MessageStatus', () => {
     },
   );
 
+  it.each([
+    ['renders', 'regular', 1],
+    ['renders no', 'deleted', 0],
+  ])('%s status for a %s message', async (_, type, expectedCount) => {
+    const message = generateMessage({ user: user1 });
+    const { queryAllByLabelText } = renderMessageStatus({
+      delivered: true,
+      message: { ...message, status: 'received', type },
+      read: true,
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(queryAllByLabelText('Read')).toHaveLength(expectedCount);
+  });
+
   describe('reactive receipt state', () => {
     // Two own messages, older first. `olderMessage` is the one under test throughout: the whole
     // point of sourcing from `lastReadRefByOthers` is that it reports correctly even though no

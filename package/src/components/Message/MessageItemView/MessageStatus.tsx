@@ -55,7 +55,11 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
             : '',
   );
 
-  if (message.status === MessageStatusTypes.FAILED || message.type === 'error') {
+  if (
+    message.status === MessageStatusTypes.FAILED ||
+    message.type === 'error' ||
+    message.type === 'deleted'
+  ) {
     return null;
   }
 
