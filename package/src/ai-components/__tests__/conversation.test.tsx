@@ -104,7 +104,22 @@ describe('AIConversation', () => {
       <AIConversation emptyContent={<Text>Ask me anything</Text>} messages={[]} />,
     );
     expect(screen.getByText('Ask me anything')).toBeTruthy();
-    expect(screen.queryByTestId('ai-conversation-list')).toBeNull();
+    // The list stays mounted under it, so it follows a keyboard opened before the first question.
+    expect(screen.getByTestId('ai-conversation-list')).toBeTruthy();
+  });
+
+  it('hides the empty content once there are messages', async () => {
+    const { rerender } = await renderConversation(
+      <AIConversation emptyContent={<Text>Ask me anything</Text>} messages={[]} />,
+    );
+    await rerender(
+      <AIConversation
+        emptyContent={<Text>Ask me anything</Text>}
+        messages={[user('u1', 'Is 7 prime?')]}
+      />,
+    );
+    expect(screen.queryByText('Ask me anything')).toBeNull();
+    expect(screen.getByText('Is 7 prime?')).toBeTruthy();
   });
 
   it('groups the messages into turns, each starting with a question', async () => {

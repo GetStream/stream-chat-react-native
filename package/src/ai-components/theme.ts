@@ -169,6 +169,10 @@ export type Theme = {
       bubble?: ViewStyle;
       text?: TextStyle;
       editButton?: ViewStyle;
+      /** The menu a long press on the message opens, and its items. */
+      menu?: ViewStyle;
+      menuItem?: ViewStyle;
+      menuItemText?: TextStyle;
     };
     assistantMessage?: {
       container?: ViewStyle;
@@ -352,7 +356,16 @@ export const defaultTheme: Theme = {
     attachmentName: '#1A1B25',
     attachmentDetails: '#414552',
     attachmentImagePlaceholder: '#F6F8FA',
-    userMessage: { container: {}, attachments: {}, bubble: {}, text: {}, editButton: {} },
+    userMessage: {
+      container: {},
+      attachments: {},
+      bubble: {},
+      text: {},
+      editButton: {},
+      menu: {},
+      menuItem: {},
+      menuItemText: {},
+    },
     assistantMessage: { container: {}, attachments: {} },
     attachment: { image: {}, file: {}, fileIcon: {}, fileName: {}, fileDetails: {} },
     replyActions: { container: {}, button: {} },

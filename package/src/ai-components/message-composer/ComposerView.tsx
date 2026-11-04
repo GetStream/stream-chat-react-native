@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { type ReactNode, useEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import type { StateStore } from '@stream-io/state-store';
@@ -16,6 +17,7 @@ import { MediaPreviewList } from './MediaPreviewList';
 import { BottomSheet } from '../components/BottomSheet';
 
 import { ComposerProvider, useMessageComposerContext, useTheme } from '../contexts';
+import { useBottomSafeArea } from '../internal/hooks/useBottomSafeArea';
 import { primitives } from '../internal/tokens';
 import type {
   AbstractMediaPickerService,
@@ -55,6 +57,15 @@ export type ComposerViewProps = {
    * picked until the person removes it. It is kept in `state`, as `chatOption`.
    */
   chatOptions?: AIChatOption[];
+  /** Shown above the composer, riding the keyboard with it, such as suggestions to start with. */
+  header?: ReactNode;
+  /**
+   * How far above the bottom of the screen the composer sits, such as above a tab bar: it rides
+   * the keyboard up by as much as the keyboard rises past that. Defaults to the bottom safe area,
+   * the same as `AIConversation`'s. Needs a `KeyboardProvider` from react-native-keyboard-controller
+   * above it.
+   */
+  keyboardOffset?: number;
   isGenerating?: boolean;
   stopGenerating?: () => Promise<void>;
   bottomSheetInsets?: BottomSheetInsets;
@@ -66,7 +77,9 @@ export const ComposerViewUI = ({
   bottomSheetOptions = [],
   bottomSheetInsets,
   chatOptions,
+  header,
   isGenerating,
+  keyboardOffset,
   stopGenerating,
 }: ComposerViewProps) => {
   const {
@@ -75,24 +88,35 @@ export const ComposerViewUI = ({
     },
   } = useTheme();
   const styles = useStyles();
+  const bottomSafeArea = useBottomSafeArea();
+  const offset = useMemo(
+    () => ({ closed: 0, opened: keyboardOffset ?? bottomSafeArea }),
+    [bottomSafeArea, keyboardOffset],
+  );
 
   return (
-    <View pointerEvents={'box-none'} style={[styles.container, container]}>
-      <View style={[styles.row, containerRow]}>
-        <AttachmentButton />
+    <View pointerEvents={'box-none'}>
+      <KeyboardStickyView offset={offset} pointerEvents={'box-none'}>
+        {/* Edge to edge, as the room around the composer is its own. */}
+        {header}
+        <View style={[styles.container, container]}>
+          <View style={[styles.row, containerRow]}>
+            <AttachmentButton />
 
-        <Animated.View
-          style={[styles.inputPillContainer, inputPillContainer]}
-          layout={LinearTransition.duration(150)}
-        >
-          <MediaPreviewList />
-          <ChatOptionChip />
-          <View style={[styles.inputPill, inputPill]}>
-            <AIMessageInput />
-            <ActionButton isGenerating={isGenerating} stopGenerating={stopGenerating} />
+            <Animated.View
+              style={[styles.inputPillContainer, inputPillContainer]}
+              layout={LinearTransition.duration(150)}
+            >
+              <MediaPreviewList />
+              <ChatOptionChip />
+              <View style={[styles.inputPill, inputPill]}>
+                <AIMessageInput />
+                <ActionButton isGenerating={isGenerating} stopGenerating={stopGenerating} />
+              </View>
+            </Animated.View>
           </View>
-        </Animated.View>
-      </View>
+        </View>
+      </KeyboardStickyView>
       <BottomSheet>
         <BottomSheetContent
           bottomSheetOptions={bottomSheetOptions}

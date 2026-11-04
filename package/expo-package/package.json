@@ -47,6 +47,7 @@
     "expo-sharing": "*",
     "expo-video": "*",
     "react-native": ">=0.76.0",
+    "react-native-keyboard-controller": ">=1.21.7",
     "victory-native": ">=41.0.0"
   },
   "peerDependenciesMeta": {
@@ -84,6 +85,9 @@
       "optional": true
     },
     "expo-video": {
+      "optional": true
+    },
+    "react-native-keyboard-controller": {
       "optional": true
     },
     "victory-native": {

@@ -195,6 +195,20 @@ describe('ai-components ComposerView', () => {
   });
 });
 
+describe('ComposerView header', () => {
+  it('shows what it is given above the composer', () => {
+    render(
+      <StreamTheme>
+        <ComposerView
+          header={<Text>Starters</Text>}
+          onSendMessage={jest.fn(() => Promise.resolve())}
+        />
+      </StreamTheme>,
+    );
+    expect(screen.getByText('Starters')).toBeTruthy();
+  });
+});
+
 describe('AISuggestions', () => {
   it('hands the picked suggestion over, and shows nothing without any', () => {
     const onSelect = jest.fn();

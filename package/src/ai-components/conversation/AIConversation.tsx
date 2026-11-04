@@ -4,11 +4,17 @@ import React, {
   memo,
   type ReactNode,
   useContext,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, { Easing, FadeIn } from 'react-native-reanimated';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  FadeIn,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
@@ -82,6 +88,14 @@ export type AIConversationProps = {
   /** A view under the latest turn's messages, such as what the agent is doing, or an error with a way to retry. */
   footer?: ReactNode;
   /**
+   * How far above the bottom of the screen the composer sits, such as above a tab bar. The
+   * keyboard comes up over the conversation, which makes room for it below the latest turn (the
+   * room the pinned question leaves takes it first), and covers it only as far as it rises past
+   * this. Defaults to the bottom safe area. Needs a `KeyboardProvider` from
+   * react-native-keyboard-controller above it.
+   */
+  keyboardOffset?: number;
+  /**
    * Whether the agent is answering the latest message and its reply shows nothing yet.
    * Meanwhile the latest turn ends with `AIThinking`, and the reply's first reasoning step takes
    * over its seconds. The conversation also knows it is while `pendingMessage` waits, and while
@@ -142,9 +156,17 @@ const DefaultAssistantMessage = ({
 
 // What every row reads, rather than each row's item carrying it: a row renders again only when
 // its item is a new object, or when this changes.
+// The tallest each row of the latest turn has been, by row key. The turn never shrinks while it is
+// the latest: the room the list leaves under it to keep its question at the top follows a row that
+// shrinks (a sign-in going, reasoning folding, the thinking going) only a frame later, and in that
+// frame the question would be pulled down. Below a pinned turn there is room anyway, so it looks
+// the same, and the room stays the list's, which the keyboard takes before it lifts anything.
+type TurnFloor = { heights: Map<string, number>; turnKey: string | undefined };
+
 type ConversationContextValue = {
   AssistantMessage: ComponentType<AIConversationAssistantMessageProps>;
   clock: AIThinkingClock;
+  turnFloor: TurnFloor;
   ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
   UserMessage: ComponentType<AIConversationUserMessageProps>;
   approver?: AIToolApprover;
@@ -244,12 +266,30 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
     () => (clock ? { clock, firstStepId: row.firstStepId, key: row.turnKey } : undefined),
     [clock, row.firstStepId, row.turnKey],
   );
+  // A row reused for another starts from that row's floor.
+  const turnFloor = context?.turnFloor;
+  const isHeld = !!turnFloor && row.turnKey === turnFloor.turnKey;
+  const floor = useSharedValue(0);
+  useLayoutEffect(() => {
+    floor.value = isHeld ? (turnFloor?.heights.get(row.key) ?? 0) : 0;
+  }, [floor, isHeld, row.key, turnFloor]);
+  const onLayout = isHeld
+    ? ({ nativeEvent }: LayoutChangeEvent) => {
+        const height = nativeEvent.layout.height;
+        if (height <= floor.value) return;
+        floor.value = height;
+        turnFloor?.heights.set(row.key, height);
+      }
+    : undefined;
+  const floorStyle = useAnimatedStyle(() => ({ minHeight: floor.value }));
   if (!context) return null;
   return (
-    <View
+    <Animated.View
+      onLayout={onLayout}
       style={[
         styles.row,
         { paddingTop: row.kind === 'entry' ? ROW_GAPS[row.position] : primitives.spacingMd },
+        floorStyle,
         conversation?.row,
       ]}
     >
@@ -269,7 +309,7 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
           </>
         )}
       </AIThinkingTurnContext.Provider>
-    </View>
+    </Animated.View>
   );
 });
 Row.displayName = 'AIConversationRow';
@@ -311,6 +351,7 @@ export const AIConversation = ({
   emptyContent,
   footer,
   isThinking = false,
+  keyboardOffset,
   loadOlderMessages,
   messages,
   pendingMessage,
@@ -328,9 +369,26 @@ export const AIConversation = ({
   const ReplyActions =
     ReplyActionsProp === undefined ? DefaultConversationReplyActions : ReplyActionsProp;
 
+  const latestTurnKey = useMemo(
+    () => rows.find((row) => row.key === anchorKey)?.turnKey,
+    [anchorKey, rows],
+  );
+  const turnFloor = useMemo<TurnFloor>(
+    () => ({ heights: new Map(), turnKey: latestTurnKey }),
+    [latestTurnKey],
+  );
+
   const contextValue = useMemo<ConversationContextValue>(
-    () => ({ approver, AssistantMessage, clock, ReplyActions, replyActions, UserMessage }),
-    [approver, AssistantMessage, clock, ReplyActions, replyActions, UserMessage],
+    () => ({
+      approver,
+      AssistantMessage,
+      clock,
+      ReplyActions,
+      replyActions,
+      turnFloor,
+      UserMessage,
+    }),
+    [approver, AssistantMessage, clock, ReplyActions, replyActions, turnFloor, UserMessage],
   );
 
   return (
@@ -342,6 +400,7 @@ export const AIConversation = ({
           data={rows}
           emptyContent={emptyContent}
           getItemType={typeOf}
+          keyboardOffset={keyboardOffset}
           keyExtractor={keyOf}
           loadOlderMessages={loadOlderMessages}
           renderItem={renderRow}

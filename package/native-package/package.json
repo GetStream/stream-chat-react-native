@@ -43,6 +43,7 @@
     "react-native-blob-util": ">=0.22.0",
     "react-native-haptic-feedback": ">=2.3.0",
     "react-native-image-picker": ">=7.1.2",
+    "react-native-keyboard-controller": ">=1.21.7",
     "react-native-nitro-sound": ">=0.2.9",
     "react-native-share": ">=11.0.0",
     "react-native-video": ">=6.18.0",
@@ -71,6 +72,9 @@
       "optional": true
     },
     "react-native-image-picker": {
+      "optional": true
+    },
+    "react-native-keyboard-controller": {
       "optional": true
     },
     "react-native-nitro-sound": {

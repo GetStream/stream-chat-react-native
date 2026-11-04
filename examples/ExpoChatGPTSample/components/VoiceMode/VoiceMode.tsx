@@ -92,7 +92,7 @@ export const VoiceMode = () => {
 
   return (
     <>
-      <View style={styles.entry}>
+      <View pointerEvents='box-none' style={styles.entry}>
         <Pressable
           accessibilityLabel='Start voice mode'
           accessibilityRole='button'

@@ -1,14 +1,16 @@
 import React, { type ReactNode, useMemo, useRef } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import Animated, { Easing, Keyframe, useAnimatedStyle } from 'react-native-reanimated';
 
+import { KeyboardAwareLegendList } from '@legendapp/list/keyboard';
 import type { LegendListRef, LegendListRenderItemProps } from '@legendapp/list/react-native';
-import { AnimatedLegendList } from '@legendapp/list/reanimated';
 
 import { useChatListController } from './useChatListController';
+import { keyboardOverlapOf } from './useKeyboardOverlap';
 
 import { useAITranslation, useTheme } from '../../contexts';
 import { useAIIcons } from '../../icons';
+import { useBottomSafeArea } from '../../internal/hooks/useBottomSafeArea';
 import { primitives } from '../../internal/tokens';
 
 export type AIChatListProps<T> = {
@@ -22,6 +24,11 @@ export type AIChatListProps<T> = {
   bottomInset?: number;
   /** What shows while there are no rows, centered. */
   emptyContent?: ReactNode;
+  /**
+   * How far above the bottom of the screen the composer sits, such as above a tab bar: the
+   * keyboard covers the list only as far as it rises past that. Defaults to the bottom safe area.
+   */
+  keyboardOffset?: number;
   /** Loads the rows before the first one. `undefined` once there are none left. */
   loadOlderMessages?: () => Promise<void> | void;
   testID?: string;
@@ -92,6 +99,7 @@ export const AIChatList = <T,>({
   data,
   emptyContent,
   getItemType,
+  keyboardOffset: keyboardOffsetProp,
   keyExtractor,
   loadOlderMessages,
   renderItem,
@@ -102,7 +110,7 @@ export const AIChatList = <T,>({
   } = useTheme();
   const listRef = useRef<LegendListRef>(null);
   const isEmpty = data.length === 0;
-  const { contentFloor, isEndInView, listProps, loadsOlder, onContainerLayout, scrollToEnd } =
+  const { isEndInView, keyboard, keyboardOffset, listProps, loadsOlder, scrollToEnd } =
     useChatListController({
       anchorKey,
       bottomInset,
@@ -112,55 +120,72 @@ export const AIChatList = <T,>({
       loadOlderMessages: isEmpty ? undefined : loadOlderMessages,
     });
 
-  // Flattened: the list reads the floor from it.
   const contentContainerStyle = useMemo(
     () =>
       StyleSheet.flatten([
-        { minHeight: contentFloor, paddingBottom: primitives.spacingMd + bottomInset },
+        { paddingBottom: primitives.spacingMd + bottomInset },
         conversation?.content,
       ]),
-    [bottomInset, contentFloor, conversation?.content],
+    [bottomInset, conversation?.content],
   );
 
+  const bottomSafeArea = useBottomSafeArea();
+  const offset = keyboardOffsetProp ?? bottomSafeArea;
+  keyboardOffset.current = offset;
+
+  // The button rides the keyboard, so it stays in sight above it.
+  const buttonLift = useAnimatedStyle(() => ({
+    transform: [{ translateY: -keyboardOverlapOf(keyboard.value, offset) }],
+  }));
+  // What shows while there are no rows stays centered in what the keyboard leaves of the list.
+  const emptyLift = useAnimatedStyle(() => ({
+    paddingBottom: bottomInset + keyboardOverlapOf(keyboard.value, offset),
+  }));
+
   return (
-    <View
-      onLayout={onContainerLayout}
-      style={[styles.container, conversation?.container]}
-      testID={testID}
-    >
+    <View style={[styles.container, conversation?.container]} testID={testID}>
+      {/* Mounted even while there are no rows: the list follows the keyboard only from its next
+          move, so one mounted while the keyboard is up would leave the first turn under it. The
+          keyboard comes up over the list, which makes room for it below the latest turn: the room
+          the pinned question leaves takes it first. */}
+      <KeyboardAwareLegendList
+        {...listProps}
+        contentContainerStyle={contentContainerStyle}
+        data={data}
+        getItemType={getItemType}
+        initialScrollAtEnd
+        keyboardOffset={offset}
+        keyboardShouldPersistTaps='handled'
+        keyExtractor={keyExtractor}
+        ListHeaderComponent={loadsOlder ? LoadingOlder : null}
+        maintainVisibleContentPosition
+        recycleItems
+        ref={listRef}
+        renderItem={renderItem}
+        testID={testID && `${testID}-list`}
+      />
       {isEmpty ? (
-        <View
-          style={[styles.empty, { paddingBottom: bottomInset }, conversation?.empty]}
+        <Animated.View
+          pointerEvents='box-none'
+          style={[styles.empty, emptyLift, conversation?.empty]}
           testID={testID && `${testID}-empty`}
         >
           {emptyContent}
-        </View>
-      ) : (
-        <AnimatedLegendList
-          {...listProps}
-          contentContainerStyle={contentContainerStyle}
-          data={data}
-          getItemType={getItemType}
-          initialScrollAtEnd
-          keyExtractor={keyExtractor}
-          keyboardShouldPersistTaps='handled'
-          ListHeaderComponent={loadsOlder ? LoadingOlder : null}
-          maintainVisibleContentPosition
-          recycleItems
-          ref={listRef}
-          renderItem={renderItem}
-          testID={testID && `${testID}-list`}
-        />
-      )}
+        </Animated.View>
+      ) : null}
       {!isEndInView && !isEmpty ? (
-        <View
+        <Animated.View
           pointerEvents='box-none'
-          style={[styles.scrollButtonContainer, { bottom: bottomInset + primitives.spacingXs }]}
+          style={[
+            styles.scrollButtonContainer,
+            { bottom: bottomInset + primitives.spacingXs },
+            buttonLift,
+          ]}
         >
           <Animated.View entering={SCROLL_BUTTON_IN} exiting={SCROLL_BUTTON_OUT}>
             <ScrollToLatestButton onPress={scrollToEnd} />
           </Animated.View>
-        </View>
+        </Animated.View>
       ) : null}
     </View>
   );
@@ -168,7 +193,15 @@ export const AIChatList = <T,>({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  empty: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  empty: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
   loadingOlder: { alignItems: 'center', paddingTop: primitives.spacingMd },
   scrollButton: {
     alignItems: 'center',

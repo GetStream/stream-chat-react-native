@@ -32,6 +32,7 @@ const AI_ONLY_PACKAGES = [
   '@legendapp/list',
   '@shopify/react-native-skia',
   '@stream-io/state-store',
+  'react-native-keyboard-controller',
   'react-syntax-highlighter',
   'victory-native',
   'zod',
