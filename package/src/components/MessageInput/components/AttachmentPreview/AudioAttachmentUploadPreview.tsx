@@ -43,11 +43,8 @@ export const AudioAttachmentUploadPreview = ({
   const messageComposer = useMessageComposer();
   const isDraft = messageComposer.draftId;
   const isEditing = messageComposer.editedMessage;
-  const assetUrl =
-    (isDraft || isEditing
-      ? attachment.asset_url
-      : (attachment.localMetadata.file as FileReference).uri) ??
-    (attachment.localMetadata.file as FileReference).uri;
+  const fileUri = (attachment.localMetadata.file as FileReference | undefined)?.uri;
+  const assetUrl = (isDraft || isEditing ? attachment.asset_url : fileUri) ?? fileUri;
 
   const finalAttachment = useMemo(
     () => ({

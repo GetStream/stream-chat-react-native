@@ -55,7 +55,7 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const isAsset = useCallback(
     (attachment: LocalAttachment) =>
       isLocalVideoAttachment(attachment)
-        ? (attachment.localMetadata.file as FileReference).uri === asset.uri
+        ? (attachment.localMetadata.file as FileReference | undefined)?.uri === asset.uri
         : false,
     [asset.uri],
   );
