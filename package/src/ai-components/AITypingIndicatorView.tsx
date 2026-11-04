@@ -3,6 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from './contexts';
 import { Shimmer } from './internal/Shimmer';
+import { primitives } from './internal/tokens';
 
 export const AITypingIndicatorView = ({ text }: { text: string }) => {
   const styles = useStyles();
@@ -21,7 +22,7 @@ const useStyles = () => {
     () =>
       StyleSheet.create({
         text: {
-          fontSize: 16,
+          fontSize: primitives.typographyFontSizeMd,
           color: theme.colors.grey_dark,
         },
         wrapper: {

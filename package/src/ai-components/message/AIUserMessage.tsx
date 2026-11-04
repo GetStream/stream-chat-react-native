@@ -9,6 +9,7 @@ import {
 
 import { useAITranslation, useTheme } from '../contexts';
 import { useAIIcons } from '../icons';
+import { primitives } from '../internal/tokens';
 
 export type AIUserMessageProps = {
   /** What the person wrote. */
@@ -114,8 +115,8 @@ const defaultStyles = StyleSheet.create({
     maxWidth: '100%',
   },
   text: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightRelaxed,
     writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
   },
 });

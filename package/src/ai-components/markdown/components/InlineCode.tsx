@@ -8,6 +8,7 @@ export const InlineCode = ({ children, styles }: MarkdownComponentProps) => (
 
 export const renderInlineCode: RuleRenderFunction = ({ node, output, state, styles }) => {
   state.withinText = true;
+  state.withinInlineCode = true;
   return (
     <InlineCode key={state.key} node={node} output={output} state={state} styles={styles}>
       {output(node.content, state)}

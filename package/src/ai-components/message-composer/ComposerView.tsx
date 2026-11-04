@@ -15,6 +15,7 @@ import { MediaPreviewList } from './MediaPreviewList';
 import { BottomSheet } from '../components/BottomSheet';
 
 import { ComposerProvider, useMessageComposerContext, useTheme } from '../contexts';
+import { primitives } from '../internal/tokens';
 import type {
   AbstractMediaPickerService,
   MediaPickerState,
@@ -179,7 +180,7 @@ const useStyles = () => {
       },
       textInput: {
         flex: 1,
-        fontSize: 16,
+        fontSize: primitives.typographyFontSizeMd,
         color: colors.black,
         paddingVertical: 0,
         paddingHorizontal: 0,

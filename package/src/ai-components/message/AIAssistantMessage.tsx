@@ -25,6 +25,12 @@ export type AIAssistantMessageProps = {
   Attachment?: ComponentType<AIMessageAttachmentProps>;
   /** What the agent sent with it, such as images and files. */
   attachments?: AIMessageAttachmentData[];
+  /**
+   * The message's id. The steps keep their state for it, such as a reasoning step opened by
+   * hand, and start afresh for another, as when a list reuses this view for another reply. Step
+   * ids are only unique within a message.
+   */
+  id?: string;
   /** Whether the agent is still writing it. The text that arrives meanwhile is typed out. */
   isGenerating?: boolean;
   /** Opens a link in the answer, instead of the system's handler. */
@@ -44,6 +50,7 @@ export const AIAssistantMessage = ({
   approver,
   Attachment = AIMessageAttachment,
   attachments = [],
+  id,
   isGenerating = false,
   onLink,
   parts = [],
@@ -61,7 +68,7 @@ export const AIAssistantMessage = ({
       testID='ai-assistant-message'
     >
       {parts.length > 0 ? (
-        <AIMessageParts approver={approver} parts={parts} reasoningText={reasoningText} />
+        <AIMessageParts approver={approver} key={id} parts={parts} reasoningText={reasoningText} />
       ) : null}
       {/* What arrives after mount is typed out; a reply loaded from history shows at once. */}
       {text !== '' ? <StreamingMessageView onLink={onLink} text={text} /> : null}

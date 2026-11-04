@@ -119,6 +119,27 @@ export type Theme = {
     };
   };
   /**
+   * `AIConversation`: the list of turns, the spinner while older messages load, and the button back
+   * to the latest message. Optional, so a hand-built `Theme` without it keeps type-checking.
+   */
+  conversation?: {
+    /** The spinner while older messages load. */
+    loadingIndicator?: string;
+    /** The button back to the latest message. */
+    scrollButtonBackground?: string;
+    scrollButtonBorder?: string;
+    scrollButtonIcon?: string;
+    container?: ViewStyle;
+    /** The list's content: the turns, with the room around them. */
+    content?: ViewStyle;
+    /** What shows while there are no messages. */
+    empty?: ViewStyle;
+    loadingOlder?: ViewStyle;
+    scrollButton?: ViewStyle;
+    /** The view around each message, and around what ends the latest turn. */
+    row?: ViewStyle;
+  };
+  /**
    * Icons of your own for the agent replies' views, by name, over `defaultAIIcons`. Kept as they
    * are when themes merge.
    */
@@ -274,6 +295,19 @@ export const defaultTheme: Theme = {
       failure: {},
     },
     unsupported: { container: {}, text: {} },
+  },
+  conversation: {
+    // StreamChatAI's defaults, from the shared design tokens.
+    loadingIndicator: '#414552',
+    scrollButtonBackground: '#FFFFFF',
+    scrollButtonBorder: '#D5DBE1',
+    scrollButtonIcon: '#1A1B25',
+    container: {},
+    content: {},
+    empty: {},
+    loadingOlder: {},
+    scrollButton: {},
+    row: {},
   },
   message: {
     // StreamChatAI's and the Android AI SDK's defaults, from the shared design tokens.

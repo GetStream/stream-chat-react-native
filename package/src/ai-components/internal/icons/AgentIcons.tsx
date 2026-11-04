@@ -55,6 +55,9 @@ export const ReasoningIcon = strokeIcon(
   'M7.5 15.625H12.5M8.125 18.125H11.875M10 1.875C6.89 1.875 4.375 4.39 4.375 7.5C4.375 9.53 5.45 11.31 7.06 12.3C7.33 12.47 7.5 12.76 7.5 13.08V13.75H12.5V13.08C12.5 12.76 12.67 12.47 12.94 12.3C14.55 11.31 15.625 9.53 15.625 7.5C15.625 4.39 13.11 1.875 10 1.875Z',
 );
 
+// Points down in either direction, so it isn't mirrored.
+export const ArrowDownIcon = strokeIcon('M10 3.75V16.25M4.375 10.625L10 16.25L15.625 10.625');
+
 export const ChevronIcon = strokeIcon('M7.5 4.375L13.125 10L7.5 15.625', { mirrorsInRTL: true });
 
 export const CheckIcon = strokeIcon('M4.375 10.625L8.125 14.375L15.625 5.625');

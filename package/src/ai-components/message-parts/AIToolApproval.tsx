@@ -5,6 +5,7 @@ import { isAwaitingApproval } from './parseMessageParts';
 import type { AIToolApprovalData, AIToolCallPart } from './types';
 
 import { useAITranslation, useTheme } from '../contexts';
+import { primitives } from '../internal/tokens';
 import { type AIToolApprover, useAIToolApprover } from '../tool-calls/AIToolApprover';
 
 /** Where the person's answer to a tool call's question is. */
@@ -183,11 +184,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
   },
-  buttonText: { fontSize: 14, fontWeight: '600' },
+  buttonText: { fontSize: primitives.typographyFontSizeSm, fontWeight: '600' },
   container: { borderRadius: 16, borderWidth: 1, gap: 12, padding: 12 },
   declineButton: { borderWidth: 1 },
-  failure: { fontSize: 13 },
-  message: { fontSize: 14, lineHeight: 20 },
+  failure: { fontSize: primitives.typographyFontSizeXs },
+  message: {
+    fontSize: primitives.typographyFontSizeXs,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
   text: { gap: 4 },
-  title: { fontSize: 15, fontWeight: '600', lineHeight: 20 },
+  title: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: '600',
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
 });

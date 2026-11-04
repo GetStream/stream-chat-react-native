@@ -21,8 +21,19 @@ export const useStreamingMessage = ({
   const [streamedMessageText, setStreamedMessageText] = useState<string>(text);
   const textCursor = useRef<number>(text.length);
 
+  // Only text added to the end is typed out. Another text, such as another message's when a list
+  // reuses this view, shows at once, from this render rather than after the old text's.
+  const [lastText, setLastText] = useState(text);
+  if (text !== lastText) {
+    setLastText(text);
+    if (!text.startsWith(lastText)) setStreamedMessageText(text);
+  }
+  const typedToward = useRef(text);
+
   useEffect(() => {
     const textLength = text.length;
+    if (!text.startsWith(typedToward.current)) textCursor.current = textLength;
+    typedToward.current = text;
     const interval = setInterval(() => {
       if (!text || textCursor.current >= textLength) {
         clearInterval(interval);
