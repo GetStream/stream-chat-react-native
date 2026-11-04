@@ -361,8 +361,8 @@ export const it: TranslationDictionary = {
 
   // Message list
   'messageList.dismissUnread.accessibilityLabel': 'Ignora i messaggi non letti',
-  'messageList.newMessages.text_one': '{{count}} nuovo messaggio',
-  'messageList.newMessages.text_other': '{{count}} nuovi messaggi',
+  'messageList.newMessages.text_one': '{{count}} messaggio non letto',
+  'messageList.newMessages.text_other': '{{count}} messaggi non letti',
   'messageList.scrollToBottom.accessibilityLabel': 'Vai in fondo',
   'messageList.scrollToBottom.withCount.accessibilityLabel_one':
     'Vai in fondo, {{count}} nuovo messaggio',
