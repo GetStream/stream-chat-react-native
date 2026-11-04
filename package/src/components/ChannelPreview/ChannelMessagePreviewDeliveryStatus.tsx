@@ -103,6 +103,14 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     );
   }
 
+  if (message.type === 'deleted') {
+    return (
+      <Text style={styles.text} testID='channel-preview-sender'>
+        {t('common.you.label', 'You')}:
+      </Text>
+    );
+  }
+
   return (
     <CompositeAccessibilityProbe label={statusLabel}>
       <View style={styles.container}>
