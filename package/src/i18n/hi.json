@@ -499,5 +499,7 @@
   "No members found": "कोई सदस्य नहीं मिला",
   "a11y/Search members": "सदस्य खोजें",
   "Message copied to clipboard": "संदेश क्लिपबोर्ड पर कॉपी किया गया",
-  "Failed to copy message": "संदेश कॉपी करने में विफल रहा"
+  "Failed to copy message": "संदेश कॉपी करने में विफल रहा",
+  "Remove attachment": "अटैचमेंट हटाएं",
+  "Remove option: {{ option }}": "विकल्प हटाएं: {{ option }}"
 }

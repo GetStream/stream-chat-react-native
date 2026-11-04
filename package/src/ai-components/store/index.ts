@@ -4,6 +4,7 @@ export * from './bottom-sheet/useBottomSheetState';
 
 // message composer
 export * from './composer/store';
+export * from './composer/useComposerChatOption';
 export * from './composer/useComposerHasText';
 export * from './composer/useComposerText';
 

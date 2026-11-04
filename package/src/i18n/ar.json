@@ -499,5 +499,7 @@
   "No members found": "لم يتم العثور على أعضاء",
   "a11y/Search members": "البحث عن الأعضاء",
   "Message copied to clipboard": "تم نسخ الرسالة إلى الحافظة",
-  "Failed to copy message": "فشل نسخ الرسالة"
+  "Failed to copy message": "فشل نسخ الرسالة",
+  "Remove attachment": "إزالة المرفق",
+  "Remove option: {{ option }}": "إزالة الخيار: {{ option }}"
 }

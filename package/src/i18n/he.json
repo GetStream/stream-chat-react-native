@@ -499,5 +499,7 @@
   "No members found": "לא נמצאו חברים",
   "a11y/Search members": "חיפוש חברים",
   "Message copied to clipboard": "ההודעה הועתקה ללוח",
-  "Failed to copy message": "העתקת ההודעה נכשלה"
+  "Failed to copy message": "העתקת ההודעה נכשלה",
+  "Remove attachment": "הסר קובץ מצורף",
+  "Remove option: {{ option }}": "הסר אפשרות: {{ option }}"
 }
