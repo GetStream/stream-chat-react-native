@@ -66,6 +66,11 @@ export type ComposerViewProps = {
    * above it.
    */
   keyboardOffset?: number;
+  /**
+   * Shown after the message box, on the same line, such as a button into voice mode. The
+   * counterpart of StreamChatAI's trailing composer view.
+   */
+  trailing?: ReactNode;
   isGenerating?: boolean;
   stopGenerating?: () => Promise<void>;
   bottomSheetInsets?: BottomSheetInsets;
@@ -81,10 +86,11 @@ export const ComposerViewUI = ({
   isGenerating,
   keyboardOffset,
   stopGenerating,
+  trailing,
 }: ComposerViewProps) => {
   const {
     theme: {
-      composer: { container, containerRow, inputPillContainer, inputPill },
+      composer: { container, containerRow, inputPillContainer, inputPill, trailing: trailingStyle },
     },
   } = useTheme();
   const styles = useStyles();
@@ -114,6 +120,7 @@ export const ComposerViewUI = ({
                 <ActionButton isGenerating={isGenerating} stopGenerating={stopGenerating} />
               </View>
             </Animated.View>
+            {trailing ? <View style={[styles.trailing, trailingStyle]}>{trailing}</View> : null}
           </View>
         </View>
       </KeyboardStickyView>
@@ -233,6 +240,11 @@ const useStyles = () => {
         shadowOffset: { width: 0, height: 1 },
         shadowRadius: 4,
         elevation: 2,
+      },
+      trailing: {
+        justifyContent: 'center',
+        marginStart: 8,
+        minHeight: pillHeight,
       },
       textInput: {
         flex: 1,

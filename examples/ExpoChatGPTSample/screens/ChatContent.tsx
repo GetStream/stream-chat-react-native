@@ -23,7 +23,15 @@ import { useSendAIMessage } from '../hooks/useSendAIMessage';
 
 type Composer = ReturnType<typeof createNewComposerStore>;
 
-const CustomComposerView = ({ composer, header }: { composer: Composer; header: ReactNode }) => {
+const CustomComposerView = ({
+  composer,
+  header,
+  trailing,
+}: {
+  composer: Composer;
+  header: ReactNode;
+  trailing: ReactNode;
+}) => {
   const { isBusy, stop } = useAppContext();
 
   // The router stops through its own session, not with an AI indicator event.
@@ -51,6 +59,7 @@ const CustomComposerView = ({ composer, header }: { composer: Composer; header: 
       onSendMessage={serializeToMessage}
       isGenerating={isBusy}
       stopGenerating={stopGenerating}
+      trailing={trailing}
     />
   );
 };
@@ -75,8 +84,8 @@ const Starters = ({ chat, composer }: { chat: AgentChat; composer: Composer }) =
 };
 
 /**
- * The composer, with what rides the keyboard above it: a failure, the way into voice mode and the
- * starters, which share the composer's draft and picked option.
+ * The composer, with what rides the keyboard above it, a failure and the starters (which share the
+ * composer's draft and picked option), and the way into voice mode beside it.
  */
 const ComposerArea = ({ chat, failure }: { chat: AgentChat; failure: string | undefined }) => {
   const [composer] = useState(createNewComposerStore);
@@ -86,10 +95,10 @@ const ComposerArea = ({ chat, failure }: { chat: AgentChat; failure: string | un
       header={
         <>
           {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
-          <VoiceMode />
           <Starters chat={chat} composer={composer} />
         </>
       }
+      trailing={<VoiceMode />}
     />
   );
 };

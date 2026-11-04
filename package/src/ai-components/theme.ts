@@ -30,6 +30,8 @@ export type Theme = {
     inputPillContainer: ViewStyle;
     inputPill: ViewStyle;
     textInput: TextStyle;
+    /** What `ComposerView`'s `trailing` sits in, after the message box. */
+    trailing: ViewStyle;
     roundButton: ViewStyle;
     attachIcon: TextStyle;
     mediaPreviewStyle: ViewStyle;
@@ -273,6 +275,7 @@ export const defaultTheme: Theme = {
     inputPillContainer: {},
     inputPill: {},
     textInput: {},
+    trailing: {},
     roundButton: {},
     attachIcon: {},
     mediaPreviewStyle: {},
