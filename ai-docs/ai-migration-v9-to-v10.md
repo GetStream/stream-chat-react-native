@@ -453,6 +453,7 @@ for `rg -n -t js -t ts -g '!**/node_modules/**' … .` run from the app root.
 | A thread screen reads `thread.text` / `thread.user` as `undefined` (plain JS) | `thread` is the `Thread` instance everywhere; the parent message is on `thread.state` | `rg -e '\bthread\??\.text\b' -e '\bthread\??\.user\b' -e '\bthread\??\.reply_count\b'` | `useStateStore(thread.state, (s) => ({ parentMessage: s.parentMessage }))` | §10 |
 | A custom `UnreadMessagesNotification` stops marking the channel read on dismiss | Dismiss goes through its `markRead` prop | `rg UnreadMessagesNotification` | Forward `markRead` | §R.5 |
 | `<Channel initializeOnMount={false}>` still sends a request | It runs a non-watching query when the paginator is empty | `rg initializeOnMount` | Seed the paginator before mounting | §R.5 |
+| A conversation opened from members shows no messages, and the first send fails with "Channel isn't yet created" | `<Channel>` no longer watches a channel with no id, so it neither creates it nor loads an existing one | `rg -e "\.channel\([^)]*members" -e "initialized = true"` | `await channel.watch()` before rendering, or create it on the first send | §R.5 |
 | A screen holds a stale channel after a direct message is created | `<Channel>` may render `channel.supersededBy` | Review code that reads the channel from its own prop inside `<Channel>` | Read it from `useChannelContext()` | §R.5 |
 | A deep link lands on the newest messages instead of the target | `<Channel>` / `<Thread>` jump back to the newest page when opened on an older one, unless a jump is already landed or loading | Review deep-link code (`rg 'jumpToMessage'`) | Start the jump before `<Channel>` mounts | §8 |
 | Plain JS: `stream-chat` calls written for v9 (`addDevice`, `queryChannels` expecting `Channel[]`, `muteUser`, positional arguments) fail at runtime | Request objects, raw `queryChannels`, moved moderation methods, renamed device methods | §R.8 detection | Apply §R.8; anything else in the `stream-chat` guide | §R.8 |
@@ -3024,9 +3025,12 @@ Retyped:
 - **`initializeOnMount={false}` still queries** when the channel's paginator is empty: it skips `watch()` but runs
   `channel.messagePaginator.reload()`, a non-watching channel query. Seed the paginator yourself before mounting if no
   request may go out.
-- **A provisional channel is not queried on mount.** A members-only channel with no id that is already initialized
-  is created on its first send, not when `<Channel>` opens it. Call `channel.watch()` yourself if you relied on the
-  open creating it.
+- **A provisional channel is not queried on mount.** `<Channel>` never watches, queries or reloads a members-only
+  channel with no id (`client.channel(type, { members })`), whatever `initialized` and `initializeOnMount` are. v9
+  watched it on mount, which created the channel or loaded an existing one with the same members. To open an existing
+  conversation, `await channel.watch()` before rendering and render the channel it resolves with. To start a new
+  one, render it as is and create it on the first send. Setting `channel.initialized = true` to skip the mount
+  watch is no longer needed; remove it.
 - **`<Channel>` may render a different instance than you passed.** When `channel.supersededBy` is set (a
   members-only channel whose real cid another instance already holds), `<Channel>` renders the successor, unless the
   successor is open elsewhere and this composer has content. Inside `<Channel>`, read the channel from
