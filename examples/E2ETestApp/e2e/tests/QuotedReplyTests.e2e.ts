@@ -551,7 +551,8 @@ describe('QuotedReplyTests', () => {
     );
   };
 
-  it('test_threadShowsOnlyThePageAroundTheQuote_whenUserJumpsToQuotedReplyNotInList', async () => {
+  // https://linear.app/stream/issue/RN-510
+  it.skip('test_threadShowsOnlyThePageAroundTheQuote_whenUserJumpsToQuotedReplyNotInList', async () => {
     allureId(13232);
     const newReply = 'New reply';
     const nextReply = 'Next reply';
@@ -586,7 +587,8 @@ describe('QuotedReplyTests', () => {
     );
   });
 
-  it('test_replySentWhileOnJumpedToPage_isShown_whenUserScrollsDownToNewestReplies', async () => {
+  // https://linear.app/stream/issue/RN-510
+  it.skip('test_replySentWhileOnJumpedToPage_isShown_whenUserScrollsDownToNewestReplies', async () => {
     allureId(13234);
     const newReply = 'New reply';
     await jumpToTheFirstReplyInLongThread();

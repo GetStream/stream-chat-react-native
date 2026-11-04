@@ -6,7 +6,7 @@ import { ReactionType } from '../mock-server/DataTypes';
 import { ChannelListPage } from '../pages/ChannelListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { MessageListPage } from '../pages/MessageListPage';
-import { adb } from '../support/AndroidSystemDialogs';
+import { adb, isKeyboardShown } from '../support/AndroidSystemDialogs';
 import {
   allAttributes,
   frameOf,
@@ -275,7 +275,9 @@ export class UserRobot extends Robot {
         if (multipleVotes) {
           // The keyboard covers the switches below the options.
           if (device.getPlatform() === 'android') {
-            await device.pressBack();
+            if (isKeyboardShown()) {
+              await device.pressBack();
+            }
           } else {
             await element(CreatePoll.fields).atIndex(0).tapReturnKey();
           }
