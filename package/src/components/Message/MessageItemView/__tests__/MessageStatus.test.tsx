@@ -102,6 +102,45 @@ describe('MessageStatus', () => {
     expect(queryAllByLabelText('Read')).toHaveLength(expectedCount);
   });
 
+  describe('with read events disabled', () => {
+    beforeEach(() => {
+      chatClient.config.set({ channel: { readEvents: { enabled: false } } });
+    });
+
+    it.each([
+      [false, false, 'Sent'],
+      [true, false, 'Delivered'],
+      [true, true, 'Read'],
+    ])(
+      'renders no status when delivered is %s and read is %s',
+      async (delivered, read, accessibilityLabel) => {
+        const message = generateMessage({ user: user1 });
+        const { queryByLabelText } = renderMessageStatus({
+          delivered,
+          message: { ...message, status: 'received' },
+          read,
+        });
+
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        });
+
+        expect(queryByLabelText(accessibilityLabel)).toBeNull();
+      },
+    );
+
+    it('still renders the sending status', async () => {
+      const message = generateMessage({ user: user1 });
+      const { getByLabelText } = renderMessageStatus({
+        message: { ...message, status: 'sending' },
+      });
+
+      await waitFor(() => {
+        expect(getByLabelText('Sending')).toBeTruthy();
+      });
+    });
+  });
+
   describe('reactive receipt state', () => {
     // Two own messages, older first. `olderMessage` is the one under test throughout: the whole
     // point of sourcing from `lastReadRefByOthers` is that it reports correctly even though no
