@@ -6,7 +6,7 @@ import { ReactionType } from '../mock-server/DataTypes';
 import { ChannelListPage } from '../pages/ChannelListPage';
 import { LoginPage } from '../pages/LoginPage';
 import { MessageListPage } from '../pages/MessageListPage';
-import { adb, isKeyboardShown } from '../support/AndroidSystemDialogs';
+import { adb } from '../support/AndroidSystemDialogs';
 import {
   allAttributes,
   frameOf,
@@ -275,9 +275,9 @@ export class UserRobot extends Robot {
         if (multipleVotes) {
           // The keyboard covers the switches below the options.
           if (device.getPlatform() === 'android') {
-            if (isKeyboardShown()) {
-              await device.pressBack();
-            }
+            // A tap outside the fields hides the keyboard (the sheet's ScrollView doesn't persist
+            // taps). Back would close the sheet when a CI emulator has shown no keyboard.
+            await element(CreatePoll.questionLabel).tap();
           } else {
             await element(CreatePoll.fields).atIndex(0).tapReturnKey();
           }

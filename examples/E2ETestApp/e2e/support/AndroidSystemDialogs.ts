@@ -16,14 +16,6 @@ export const adb = (...args: string[]) => {
 };
 
 /**
- * Whether the soft keyboard is up. A CI emulator may not show it for a focused field, and Back then
- * closes the screen or sheet instead of the keyboard. Filtered on the device: the full dump
- * overflows execFileSync's output buffer.
- */
-export const isKeyboardShown = () =>
-  adb('shell', 'dumpsys input_method | grep mInputShown').includes('mInputShown=true');
-
-/**
  * Dismisses an "<app> isn't responding" dialog, if one is showing. On a slow CI emulator the
  * launcher (Quickstep) can hit an ANR; its dialog takes window focus, and Espresso then fails every
  * test waiting for the app's window to get it. Same handling as the `wait_android_emu_idle` fastlane

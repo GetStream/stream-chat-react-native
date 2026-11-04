@@ -79,6 +79,9 @@ export const MessageListPage = {
         ? by.type('com.facebook.react.views.textinput.ReactEditText')
         : by.type('RCTUITextField');
     },
+    get questionLabel() {
+      return by.text('Questions');
+    },
     get multipleVotesSwitch() {
       return device.getPlatform() === 'android'
         ? by.type('com.facebook.react.views.switchview.ReactSwitch')
