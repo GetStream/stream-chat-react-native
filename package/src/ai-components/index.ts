@@ -8,6 +8,8 @@ export * from './AITypingIndicatorView';
 export * from './voice-visualization';
 
 // agent replies
+export * from './icons';
+export * from './message';
 export * from './message-parts';
 export * from './reasoning';
 export * from './tool-calls';

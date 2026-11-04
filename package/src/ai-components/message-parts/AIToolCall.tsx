@@ -5,15 +5,8 @@ import { isDeclined, isToolCallFinished } from './parseMessageParts';
 import type { AIToolCallPart } from './types';
 
 import { useAITranslation, useTheme } from '../contexts';
+import { useAIIcons } from '../icons';
 import { formatCallDuration } from '../internal/format';
-import {
-  CancelledIcon,
-  CheckIcon,
-  DeviceIcon,
-  FailedIcon,
-  HandRaisedIcon,
-  KeyIcon,
-} from '../internal/icons/AgentIcons';
 import { Shimmer } from '../internal/Shimmer';
 
 export type AIToolCallProps = {
@@ -29,6 +22,7 @@ export const AIToolCall = ({ part }: AIToolCallProps) => {
   const {
     theme: { colors, messageParts },
   } = useTheme();
+  const { Cancelled, Check, Device, Failed, HandRaised, Key } = useAIIcons();
 
   const title = part.displayTitle ?? part.name.replace(/_/g, ' ');
   const detail = (() => {
@@ -53,17 +47,17 @@ export const AIToolCall = ({ part }: AIToolCallProps) => {
   const icon = (() => {
     switch (part.status) {
       case 'awaiting_approval':
-        return <HandRaisedIcon color={colors.accent_blue} />;
+        return <HandRaised color={colors.accent_blue} />;
       case 'awaiting_authorization':
-        return <KeyIcon color={colors.accent_blue} />;
+        return <Key color={colors.accent_blue} />;
       case 'awaiting_client':
-        return <DeviceIcon color={colors.accent_blue} />;
+        return <Device color={colors.accent_blue} />;
       case 'completed':
-        return <CheckIcon color={messageParts?.successColor ?? colors.accent_blue} />;
+        return <Check color={messageParts?.successColor ?? colors.accent_blue} />;
       case 'failed':
-        return <FailedIcon color={colors.accent_red} />;
+        return <Failed color={colors.accent_red} />;
       case 'cancelled':
-        return <CancelledIcon color={colors.grey} />;
+        return <Cancelled color={colors.grey} />;
       default:
         return <ActivityIndicator color={colors.accent_blue} size='small' style={styles.spinner} />;
     }

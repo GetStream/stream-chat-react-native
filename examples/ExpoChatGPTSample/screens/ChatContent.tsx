@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -13,30 +13,26 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useHeaderHeight } from 'expo-router/react-navigation';
 
-import type { MessageProps, ResolvedComponents } from 'stream-chat-expo';
+import type { Attachment, LocalMessage } from 'stream-chat';
+import type { MessageProps } from 'stream-chat-expo';
 import {
   Channel,
   isLocalUrl,
-  mergeThemes,
-  Message,
   MessageList,
-  ThemeProvider,
-  useComponentsContext,
-  useMessageContext,
   usePaginatedMessageListContext,
-  useTheme,
   WithComponents,
 } from 'stream-chat-expo';
 
 import {
-  AI_MESSAGE_PART_TYPE_PREFIX,
-  AIMessageParts,
+  AIAssistantMessage,
+  type AIMessageAttachmentData,
+  AIReplyActions,
   AIThinking,
   AIToolApproverProvider,
   AITypingIndicatorView,
+  AIUserMessage,
   ComposerView,
   parseMessageParts,
-  StreamingMessageView,
 } from 'stream-chat-expo/ai-components';
 
 import { bottomSheetOptions } from '../bottomSheetOptions';
@@ -44,11 +40,39 @@ import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { useSendAIMessage } from '../hooks/useSendAIMessage';
 
-const CustomMessage = (props: MessageProps) => {
-  const { theme } = useTheme();
-  const { message } = props;
-  const isFromBot = message.ai_generated;
-  const hasPendingAttachments = useMemo(
+// Images and files only: a reply's steps (`ai_*`) are read as its parts, and other kinds, such as
+// the router's `connector_authorization`, a second copy of a sign-in its tool call's step asks for,
+// aren't shown.
+const attachmentOf = (attachment: Attachment): AIMessageAttachmentData | undefined => {
+  const name = attachment.title ?? attachment.fallback ?? undefined;
+  if (attachment.type === 'image') {
+    const url = attachment.image_url ?? attachment.asset_url ?? attachment.thumb_url;
+    return url ? { kind: 'image', mimeType: attachment.mime_type, name, url } : undefined;
+  }
+  if (attachment.type === 'file') {
+    const size = Number(attachment.file_size);
+    return attachment.asset_url
+      ? {
+          kind: 'file',
+          mimeType: attachment.mime_type,
+          name,
+          size: Number.isFinite(size) && size > 0 ? size : undefined,
+          url: attachment.asset_url,
+        }
+      : undefined;
+  }
+  return undefined;
+};
+
+const attachmentsOf = (attachments: Attachment[] | undefined) =>
+  (attachments ?? [])
+    .map(attachmentOf)
+    .filter((attachment): attachment is AIMessageAttachmentData => !!attachment);
+
+// The person's message, dimmed while its photos upload.
+const UserMessage = ({ message }: { message: LocalMessage }) => {
+  const attachments = useMemo(() => attachmentsOf(message.attachments), [message.attachments]);
+  const isUploading = useMemo(
     () =>
       (message.attachments ?? []).some(
         (attachment) =>
@@ -57,80 +81,54 @@ const CustomMessage = (props: MessageProps) => {
       ),
     [message.attachments],
   );
-
-  const modifiedTheme = useMemo(
-    () =>
-      mergeThemes({
-        theme,
-        style: {
-          messageItemView: isFromBot
-            ? {
-                content: {
-                  containerInner: {
-                    backgroundColor: 'transparent',
-                    borderRadius: 0,
-                    borderColor: 'transparent',
-                  },
-                  textContainer: { maxWidth: '100%' },
-                },
-              }
-            : {
-                container: {
-                  opacity: hasPendingAttachments ? 0.5 : 1,
-                },
-              },
-        },
-      }),
-    [theme, isFromBot, hasPendingAttachments],
-  );
-
   return (
-    <ThemeProvider mergedStyle={modifiedTheme}>
-      <Message {...props} preventPress={true} />
-    </ThemeProvider>
+    <View style={[styles.message, { opacity: isUploading ? 0.5 : 1 }]}>
+      <AIUserMessage attachments={attachments} text={message.text ?? ''} />
+    </View>
   );
 };
 
-type UnsupportedAttachmentComponent = ResolvedComponents['UnsupportedAttachment'];
-
-// A reply's steps (`ai_reasoning`, `ai_tool_call`) are attachments the chat SDK doesn't know. They
-// show in the reply's own view, so they're left out here, as is the router's `connector_authorization`,
-// a second copy of a sign-in its tool call's step already asks for. Any other unknown attachment
-// keeps the SDK's own view.
-const hidingAISteps = (Fallback: UnsupportedAttachmentComponent) => {
-  const HideAISteps: UnsupportedAttachmentComponent = (props) =>
-    props.attachment.type?.startsWith(AI_MESSAGE_PART_TYPE_PREFIX) ||
-    props.attachment.type === 'connector_authorization' ? null : (
-      <Fallback {...props} />
-    );
-  return HideAISteps;
-};
-
-// A reply: its steps (reasoning, tool calls and their questions), then its answer.
-const CustomStreamingMessageView = () => {
-  const { message: listed } = useMessageContext();
-  // Read so the steps render again as each live update arrives.
-  const { channel, reasoningText, reasoningVersion } = useAppContext();
+// A reply: its steps, its answer and what it sent, then its actions once it's written.
+const AssistantMessage = ({ message: listed }: { message: LocalMessage }) => {
+  // Read so the reply renders again as each live update arrives.
+  const { channel, rate, ratings, reasoningText, reasoningVersion } = useAppContext();
   // The list passes a row its message again only when it changes in ways it compares, which a
   // step changing on its own, such as a tool call starting to wait for a sign-in, isn't. The
   // channel's state has every update.
   const message = channel?.state.findMessage(listed.id) ?? listed;
   const parts = useMemo(() => parseMessageParts(message.attachments), [message.attachments]);
+  const attachments = useMemo(() => attachmentsOf(message.attachments), [message.attachments]);
   const stepText = useMemo(
     () => (stepId: string) => reasoningText(message.id, stepId),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- a new function per slice of reasoning
     [message.id, reasoningText, reasoningVersion],
   );
-  // The message list sizes a bubble to its content; a reply's steps take the row's whole width,
-  // the screen less the list's 16 on each side.
+  const isGenerating = message.generating === true;
+  const text = message.text ?? '';
+  // The list sizes a row to its content; a reply takes the row's whole width.
   const { width } = useWindowDimensions();
   return (
-    <View style={[styles.streamingMessageViewWrapper, { width: width - 32 }]}>
-      {parts.length > 0 ? <AIMessageParts parts={parts} reasoningText={stepText} /> : null}
-      {message.text ? <StreamingMessageView text={message.text} /> : null}
+    <View style={[styles.message, styles.assistantMessage, { width }]}>
+      <AIAssistantMessage
+        attachments={attachments}
+        isGenerating={isGenerating}
+        parts={parts}
+        reasoningText={stepText}
+        text={text}
+      />
+      {!isGenerating && text ? (
+        <AIReplyActions
+          onRate={(rating) => rate(message.id, rating)}
+          rating={ratings[message.id] ?? null}
+          text={text}
+        />
+      ) : null}
     </View>
   );
 };
+
+const CustomMessage = ({ message }: MessageProps) =>
+  message.ai_generated ? <AssistantMessage message={message} /> : <UserMessage message={message} />;
 
 const CustomComposerView = () => {
   const { agentState, stop } = useAppContext();
@@ -212,9 +210,6 @@ export const ChatContent = () => {
   // The channel sits below the drawer header, so the keyboard offset has to account for it
   // (without it, Android keeps the composer behind the keyboard).
   const headerHeight = useHeaderHeight();
-  // Read above this screen's own overrides, so it is the SDK's view.
-  const { UnsupportedAttachment } = useComponentsContext();
-  const [CustomUnsupportedAttachment] = useState(() => hidingAISteps(UnsupportedAttachment));
 
   if (!channel) {
     return (
@@ -235,11 +230,7 @@ export const ChatContent = () => {
         overrides={{
           EmptyStateIndicator,
           Message: CustomMessage,
-          MessageAuthor: RenderNull,
-          MessageFooter: RenderNull,
           NetworkDownIndicator: RenderNull,
-          StreamingMessageView: CustomStreamingMessageView,
-          UnsupportedAttachment: CustomUnsupportedAttachment,
         }}
       >
         <AIToolApproverProvider approver={approver}>
@@ -271,7 +262,8 @@ const styles = StyleSheet.create({
   },
   emptyContainerText: { fontSize: 24, fontWeight: 'bold' },
   failureText: { color: '#B00020', fontSize: 15, paddingHorizontal: 24, textAlign: 'center' },
-  streamingMessageViewWrapper: { paddingHorizontal: 16 },
+  assistantMessage: { gap: 4 },
+  message: { paddingHorizontal: 16, paddingVertical: 8 },
   aiTypingIndicatorWrapper: {
     paddingHorizontal: 24,
     paddingVertical: 12,

@@ -14,8 +14,8 @@ import { FINISHED_REASONING_SHOWN_MS, useAIThinkingTurn } from './thinkingClock'
 
 import type { ScrollViewRef } from '../../types/react-native-compat';
 import { type DeepPartial, StreamTheme, useAITranslation, useTheme } from '../contexts';
+import { useAIIcons } from '../icons';
 import { formatMinutesAndSeconds, useNow } from '../internal/format';
-import { ChevronIcon, ReasoningIcon } from '../internal/icons/AgentIcons';
 import { Shimmer } from '../internal/Shimmer';
 import { Markdown } from '../markdown';
 import type { AIReasoningPart } from '../message-parts/types';
@@ -183,6 +183,7 @@ export const AIReasoning = ({
 }: AIReasoningProps) => {
   const { t, userLanguage } = useAITranslation();
   const { theme } = useTheme();
+  const { Chevron, Reasoning } = useAIIcons();
   const { colors, messageParts } = theme;
   const reasoningStyle = messageParts?.reasoning;
   const turn = useAIThinkingTurn();
@@ -309,7 +310,7 @@ export const AIReasoning = ({
         style={[styles.header, reasoningStyle?.header]}
       >
         <Shimmer active={isThinking} style={styles.lead}>
-          <ReasoningIcon color={colors.black} />
+          <Reasoning color={colors.black} />
           <Text style={[styles.title, { color: colors.black }, reasoningStyle?.title]}>
             {title}
           </Text>
@@ -327,7 +328,7 @@ export const AIReasoning = ({
             transform: [{ rotate: expanded ? (I18nManager.isRTL ? '-90deg' : '90deg') : '0deg' }],
           }}
         >
-          <ChevronIcon color={colors.grey} size={12} />
+          <Chevron color={colors.grey} size={12} />
         </View>
       </Pressable>
       {expanded ? (
