@@ -1417,6 +1417,51 @@ describe('MessageList in a thread', () => {
     expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
   });
 
+  // A thread opened without its replies shows only its parent message until the first page lands.
+  // Autoscroll has to be on by then, or the list keeps the parent in view and the replies render out
+  // of view below it.
+  it('autoscrolls to the replies that arrive after the thread opened empty', async () => {
+    const mockedChannel = generateChannelResponse();
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    const parentMessage = channel.state.formatMessage(generateMessage({ text: 'parent' }));
+    const threadInstance = new Thread({ channel, client: chatClient, parentMessage });
+    // The replies arrive from the test below, not from a query.
+    jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+    const { getByTestId, getByText } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ThreadComponent thread={threadInstance}>
+            <MessageList />
+          </ThreadComponent>
+        </Chat>
+      </OverlayProvider>,
+    );
+    const autoscrollThreshold = () =>
+      getByTestId('message-flat-list').props.maintainVisibleContentPosition
+        ?.autoscrollToTopThreshold;
+    await waitFor(() => expect(autoscrollThreshold()).toBeDefined());
+
+    const replies = Array.from({ length: 3 }, (_, i) =>
+      channel.state.formatMessage(
+        generateMessage({ parent_id: parentMessage.id, text: `reply-${i}` }),
+      ),
+    ) as LocalMessage[];
+    act(() =>
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: replies,
+        isFirstPage: true,
+        isLastPage: true,
+      }),
+    );
+
+    await waitFor(() => expect(getByText('reply-2')).toBeTruthy());
+    expect(autoscrollThreshold()).toBeDefined();
+  });
+
   it.each([
     ['scrolls to', 'testID', 1],
     ['does not scroll to', 'other-user', 0],

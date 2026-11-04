@@ -433,6 +433,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   useEffect(() => {
     if (!processedMessageList.length || !paginator) {
+      if (thread) setAutoscrollToRecent(true);
       return;
     }
 
@@ -472,7 +473,13 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         }, WAIT_FOR_SCROLL_TIMEOUT); // FlatList may need a moment to update
       }
     }
-  }, [paginator, processedMessageList, shouldScrollToRecentOnNewOwnMessageRef, maxLoadedItems]);
+  }, [
+    paginator,
+    thread,
+    processedMessageList,
+    shouldScrollToRecentOnNewOwnMessageRef,
+    maxLoadedItems,
+  ]);
 
   const lastFocusScrollTokenRef = useRef<number | undefined>(undefined);
 
