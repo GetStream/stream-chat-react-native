@@ -287,17 +287,6 @@ jobs:
         with:
           path: ${{ env.APK_PATHS }}
           key: e2e-android-apk-${{ hashFiles('yarn.lock', 'package/package.json', 'package/src/**', 'package/shared-native/**', 'package/native-package/package.json', 'package/native-package/src/**', 'package/native-package/android/**', '!package/native-package/android/build/**', 'examples/E2ETestApp/*.js', '!examples/E2ETestApp/.detoxrc.js', 'examples/E2ETestApp/*.json', 'examples/E2ETestApp/*.tsx', 'examples/E2ETestApp/src/**', 'examples/E2ETestApp/android/**', '!examples/E2ETestApp/android/**/build/**', '!examples/E2ETestApp/android/.gradle/**') }}
-      - name: Install NDK
-        if: steps.apk.outputs.cache-hit != 'true'
-        run: |
-          ndk=$(sed -n 's/.*ndkVersion = "\(.*\)".*/\1/p' examples/E2ETestApp/android/build.gradle)
-          for attempt in 1 2 3; do
-            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$ndk" > /dev/null && exit 0
-            echo "::warning::NDK $ndk install attempt $attempt failed"
-            rm -rf "$ANDROID_HOME/ndk/$ndk"
-            sleep 10
-          done
-          exit 1
       - name: Build app
         if: steps.apk.outputs.cache-hit != 'true'
         working-directory: examples/E2ETestApp

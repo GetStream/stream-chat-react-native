@@ -239,16 +239,7 @@ jobs:
           path: ${{ env.NODE_MODULES_PATHS }}
           key: ${{ steps.node-modules.outputs.cache-primary-key }}
 
-      - name: Install NDK
-        run: |
-          ndk=$(sed -n 's/.*ndkVersion = "\(.*\)".*/\1/p' examples/E2ETestApp/android/build.gradle)
-          for attempt in 1 2 3; do
-            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$ndk" > /dev/null && exit 0
-            echo "::warning::NDK $ndk install attempt $attempt failed"
-            rm -rf "$ANDROID_HOME/ndk/$ndk"
-            sleep 10
-          done
-          exit 1
+      # --- App binary, instrumented (E2E_COVERAGE): never cached with the pull requests' builds ---
       # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
       - name: Build app
         working-directory: examples/E2ETestApp
