@@ -64,7 +64,7 @@ export const messageActions = ({
     actions.push(threadReply);
   }
 
-  if (ownCapabilities.quoteMessage && !isThreadMessage && !error) {
+  if (ownCapabilities.quoteMessage && !error) {
     actions.push(quotedReply);
   }
 

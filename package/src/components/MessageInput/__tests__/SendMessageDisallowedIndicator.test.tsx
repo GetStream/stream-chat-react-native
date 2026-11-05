@@ -115,8 +115,7 @@ describe('SendMessageDisallowedIndicator', () => {
       expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
     });
 
-    // Own capabilities are now sourced reactively from channel.state; `capabilities.changed` is an
-    // output-only notification in v10, so drive the change through the store directly.
+    // Own capabilities are read from `channel.state`, so the change is driven through the store.
     act(() => {
       channel.state.partialNext({
         ownCapabilities: channel.data!.own_capabilities!.filter(
@@ -226,12 +225,10 @@ describe("SendMessageDisallowedIndicator's edited state", () => {
     });
 
     act(() => {
-      chatClient.dispatchEvent({
-        cid: customChannel.cid,
-        own_capabilities: customChannel.data!.own_capabilities!.filter(
+      customChannel.state.partialNext({
+        ownCapabilities: customChannel.data!.own_capabilities!.filter(
           (capability: string) => capability !== 'send-message',
         ),
-        type: 'capabilities.changed',
       });
     });
 

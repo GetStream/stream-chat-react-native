@@ -97,8 +97,9 @@ export const useChannelLifecycle = ({
         return;
       }
 
-      // A draft has no ID and is marked initialized, and querying it would create it on the server.
-      if (channel.isProvisional && channel.initialized) {
+      // A channel built from members has no ID yet, and querying it would create it on the server. It
+      // is the app's responsibility to create it before trying to interact.
+      if (channel.isProvisional) {
         return;
       }
 
@@ -155,9 +156,12 @@ export const useChannelLifecycle = ({
   useEffect(() => {
     // Waits for `connection.recovered`, which fires after the reloads land, so `hasMoreHead`
     // reflects the refreshed window. Marks read only when that window is at the newest message,
-    // leaving the read state alone when the user has paginated up into older history.
+    // leaving the read state alone when the user has paginated up into older history. With
+    // recovery disabled the event fires on every reconnect without a reload, so the messages sent
+    // during the drop were never shown and are not marked read. A manual `recover()` dispatches the
+    // same event, so it does not mark read either.
     const { unsubscribe } = client.on('connection.recovered', () => {
-      if (channel.messagePaginator.hasMoreHead) {
+      if (!client.connectionRecovery.config.enabled || channel.messagePaginator.hasMoreHead) {
         return;
       }
       markRead();

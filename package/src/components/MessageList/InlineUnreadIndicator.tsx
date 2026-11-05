@@ -24,8 +24,8 @@ export const InlineUnreadIndicator = (props: InlineUnreadIndicatorProps) => {
         {unreadCount
           ? t('messageList.newMessages.text', {
               count: unreadCount,
-              defaultValue_one: '{{count}} new message',
-              defaultValue_other: '{{count}} new messages',
+              defaultValue_one: '{{count}} unread message',
+              defaultValue_other: '{{count}} unread messages',
             })
           : t('messageList.unreadMessages.label', 'Unread Messages')}
       </Text>

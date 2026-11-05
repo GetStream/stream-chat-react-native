@@ -126,6 +126,47 @@ describe('ChannelPreviewView', () => {
     await waitFor(() => screen.queryByText(expectedDisplayName));
   });
 
+  describe('the sender of the latest message', () => {
+    const otherUser = generateUser({ name: 'Count Dooku' });
+
+    const renderWithLatestMessage = async (latestMessage: ReturnType<typeof generateMessage>) => {
+      await initializeChannel(
+        generateChannelResponse({
+          channel: { custom: { name: 'group' } },
+          members: [generateMember({ user: clientUser }), generateMember({ user: otherUser })],
+          messages: [latestMessage],
+        }),
+      );
+      render(
+        <OverlayProvider accessibility={{ enabled: true }}>
+          <Chat client={chatClient}>
+            <ChannelPreviewView
+              channel={channel as ChannelType}
+              lastMessage={latestMessage}
+              onSelect={jest.fn()}
+            />
+          </Chat>
+        </OverlayProvider>,
+      );
+    };
+
+    it.each([
+      ['an own message', clientUser, 'regular', 'You:', 1],
+      ['an own deleted message', clientUser, 'deleted', 'You:', 0],
+      ['a deleted message from another member', otherUser, 'deleted', 'Count Dooku:', 0],
+    ] as const)('names the sender of %s', async (_, user, type, prefix, statusLabels) => {
+      await renderWithLatestMessage(generateMessage({ status: 'received', type, user }));
+
+      // An own message's status hides its sender text from screen readers, so hidden elements count.
+      const sender = () =>
+        screen.getByTestId('channel-preview-sender', { includeHiddenElements: true });
+      await waitFor(() => expect(sender()).toBeTruthy());
+      expect(sender().props.children.join('')).toBe(prefix);
+      // The delivery status announces itself with "Sent by you" or "Read, sent by you".
+      expect(screen.queryAllByLabelText(/sent by you/i)).toHaveLength(statusLabels);
+    });
+  });
+
   it('should render latest message, truncated to length given by latestMessageLength', async () => {
     const message = generateMessage();
     await initializeChannel(generateChannelResponse());

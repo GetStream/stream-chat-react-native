@@ -97,8 +97,8 @@ export const useAudioRecorder = ({
         if (sendOnComplete) {
           attachmentManager.upsertAttachments([audioFile]);
           sendMessage();
-        } else {
-          await attachmentManager.uploadAttachment(audioFile);
+        } else if (attachmentManager.isUploadEnabled) {
+          await attachmentManager.uploadFile(audioFile);
         }
       } catch (error) {
         console.log('Error uploading voice recording: ', error);

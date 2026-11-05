@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -380,6 +380,73 @@ describe('MessageContent', () => {
     expect(contentContainerStyle.paddingTop).toBeGreaterThan(0);
     expect(contentContainerStyle.paddingHorizontal).toBeGreaterThan(0);
     expect(contentContainerStyle.paddingBottom).toBeGreaterThan(0);
+  });
+
+  describe('pressing a quote', () => {
+    const renderQuote = ({
+      quotedMessage,
+    }: {
+      quotedMessage: ReturnType<typeof generateMessage>;
+    }) => {
+      const goToMessage = jest.fn();
+      render(
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <Message
+              goToMessage={goToMessage}
+              groupStyles={['bottom']}
+              message={generateMessage({ quoted_message: quotedMessage, user })}
+            />
+          </Channel>
+        </Chat>,
+      );
+      return { goToMessage };
+    };
+
+    const threadOnlyReply = () => {
+      const parentMessage = generateMessage({ cid: channel.cid, user });
+      const thread = chatClient.threads.ensure({ channel, parentMessage });
+      const reply = generateMessage({ parent_id: parentMessage.id, text: 'quoted message', user });
+      return { reply, thread };
+    };
+
+    it('passes the quoted message to goToMessage when the quote is pressed', async () => {
+      const quotedMessage = generateMessage({ text: 'quoted message', user });
+      const { goToMessage } = renderQuote({ quotedMessage });
+
+      fireEvent.press(await screen.findByText('quoted message'));
+
+      await waitFor(() =>
+        expect(goToMessage).toHaveBeenCalledWith(
+          quotedMessage.id,
+          expect.objectContaining({ id: quotedMessage.id }),
+        ),
+      );
+    });
+
+    it('opens the thread from the header of a reply also sent to the channel', async () => {
+      const onAlsoSentToChannelHeaderPress = jest.fn();
+      const { reply, thread } = threadOnlyReply();
+      render(
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+          >
+            <Message groupStyles={['bottom']} message={{ ...reply, show_in_channel: true }} />
+          </Channel>
+        </Chat>,
+      );
+
+      fireEvent.press(await screen.findByText('View'));
+
+      await waitFor(() =>
+        expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({
+          targetedMessageId: reply.id,
+          thread,
+        }),
+      );
+    });
   });
 
   it('does not render the quoted reply for an ephemeral giphy preview', async () => {

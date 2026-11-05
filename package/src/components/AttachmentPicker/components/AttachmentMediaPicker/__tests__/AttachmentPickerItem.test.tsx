@@ -1,7 +1,7 @@
 import React, { Profiler } from 'react';
 
 import { act, cleanup, render } from '@testing-library/react-native';
-import type { Channel, LocalImageAttachment, StreamChat } from 'stream-chat';
+import type { Channel, LocalImageAttachment, LocalVideoAttachment, StreamChat } from 'stream-chat';
 
 import { MessageComposerProvider } from '../../../../../contexts/messageComposerContext/MessageComposerContext';
 import { initiateClientWithChannels } from '../../../../../mock-builders/api/initiateClientWithChannels';
@@ -59,5 +59,33 @@ describe('AttachmentPickerItem', () => {
     // Guard against a vacuous pass: the progress really was written.
     expect(attachmentManager.attachments[0].localMetadata.uploadProgress).toBe(90);
     expect(renders).toBe(rendersBefore);
+  });
+
+  it('renders a video while the composer holds a video without a local file', () => {
+    // A video from the edited message or the draft: uploaded, so it has no local file.
+    const uploadedVideo = {
+      asset_url: 'https://example.com/video.mp4',
+      localMetadata: { id: 'video', uploadState: 'finished' },
+      type: 'video',
+    } as unknown as LocalVideoAttachment;
+    act(() => channel.messageComposer.attachmentManager.upsertAttachments([uploadedVideo]));
+
+    const { getByText } = render(
+      <Chat client={chatClient}>
+        <MessageComposerProvider value={{ channel, thread: undefined }}>
+          {renderAttachmentPickerItem({
+            item: {
+              duration: 12000,
+              name: 'clip.mp4',
+              size: 1024,
+              type: 'video/mp4',
+              uri: 'file://clip.mp4',
+            },
+          })}
+        </MessageComposerProvider>
+      </Chat>,
+    );
+
+    expect(getByText('0:12')).toBeTruthy();
   });
 });
