@@ -16,3 +16,9 @@ export type A2UIComponentProps = {
 
 /** Views of the basic catalog's components by their A2UI type, such as `Card`. */
 export type A2UIComponents = Partial<Record<string, ComponentType<A2UIComponentProps>>>;
+
+/** An icon an app draws for A2UI's Icon, in the color and at the size it is given. */
+export type A2UIIcon = ComponentType<{ color: string; size: number }>;
+
+/** The app's icons by the names A2UI's Icon takes, such as `shoppingCart`. */
+export type A2UIIcons = Partial<Record<string, A2UIIcon>>;

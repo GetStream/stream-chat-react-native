@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
@@ -13,9 +13,14 @@ import {
   StreamTheme,
 } from '../../ai-components';
 import { ohridLines, uiComponents } from '../../mock-builders/a2ui/ohrid';
+import { NativeHandlers } from '../../native';
 import { a2uiMessagesIn, normalizeA2UIMessage, supportsA2UIVersion } from '../A2UIStream';
+import basicCatalogJSON from '../basicCatalog.json';
 import { a2uiAppCatalogDocument, a2uiTypeName } from '../catalogDocument';
+import { formatMoment, parseMoment } from '../components/DateTimeInput';
+import { A2UI_ICON_PATHS } from '../components/iconPaths';
 import { A2UI_DEFAULT_CATALOG_ID, type A2UIRendererOptions, createA2UIRenderer } from '../index';
+import { withoutPaths, withoutSecrets } from '../secrets';
 
 const definitionOf = (name: string) => {
   const definition = parseAIUIComponentDefinition(
@@ -163,12 +168,41 @@ describe('the A2UI versions and catalog it reads', () => {
     });
   });
 
-  it('tells the agent’s backend its fence and catalog', async () => {
+  it('tells the agent’s backend its fence, catalog and instructions', async () => {
     const { ui } = setup();
     const { renderers } = await ui.capabilities();
     expect(renderers).toEqual([
-      { catalog_id: A2UI_DEFAULT_CATALOG_ID, fence: 'ui:a2ui@1.0', format: 'a2ui' },
+      {
+        catalog_id: A2UI_DEFAULT_CATALOG_ID,
+        fence: 'ui:a2ui@1.0',
+        format: 'a2ui',
+        instructions: expect.any(String),
+      },
     ]);
+    const { instructions } = renderers[0] as unknown as { instructions: string };
+    expect(instructions).toContain('whose info string is `ui:a2ui@1.0`');
+    expect(instructions).toContain(`## The catalog \`${A2UI_DEFAULT_CATALOG_ID}\``);
+    expect(instructions).toContain('"PlaceCard"');
+  });
+
+  it('leaves what it removes out of what it shows and of what the agent is told', async () => {
+    const { errors, ui } = setup({ removing: ['Divider', 'formatCurrency'] });
+    const { renderers } = await ui.capabilities();
+    const { instructions } = renderers[0] as unknown as { instructions: string };
+    expect(instructions).not.toContain('"Divider"');
+    expect(instructions).not.toContain('"formatCurrency"');
+    expect(instructions).toContain('"Card"');
+    await renderReply(
+      ui,
+      surfaceOf([
+        { children: ['line', 'words'], component: 'Column', id: 'root' },
+        { component: 'Divider', id: 'line' },
+        { component: 'Text', id: 'words', text: 'Still here' },
+      ]),
+    );
+    await waitFor(() => expect(screen.getByText(/Still here/)).toBeTruthy());
+    expect(screen.queryByTestId('a2ui-line')).toBeNull();
+    expect(errors.map(({ code }) => code)).not.toContain('EXECUTION_ERROR');
   });
 });
 
@@ -364,6 +398,340 @@ describe('a reply written in A2UI', () => {
   });
 });
 
+describe('what the person types into an obscured field', () => {
+  // A sign-in form: an email, a password, and a button that sends both, and the password inside
+  // a sentence, as an agent may bind it.
+  const signIn = ({ sendDataModel = false } = {}) => [
+    line({
+      createSurface: {
+        dataModel: { account: { email: '', password: '' } },
+        sendDataModel,
+        surfaceId: 's',
+      },
+    }),
+    line({
+      updateComponents: {
+        components: [
+          { children: ['email', 'password', 'go'], component: 'Column', id: 'root' },
+          {
+            component: 'TextField',
+            id: 'email',
+            label: 'Email',
+            value: { '@path': '/account/email' },
+          },
+          {
+            component: 'TextField',
+            id: 'password',
+            label: 'Password',
+            value: { '@path': '/account/password' },
+            variant: 'obscured',
+          },
+          ...button('go', 'Sign in', {
+            event: {
+              context: {
+                email: { '@path': '/account/email' },
+                password: { '@path': '/account/password' },
+                said: {
+                  '@call': 'formatString',
+                  args: { value: 'My password is ${/account/password}' },
+                },
+              },
+              name: 'sign_in',
+            },
+          }),
+        ],
+        surfaceId: 's',
+      },
+    }),
+  ];
+
+  const fillIn = async () => {
+    fireEvent.changeText(await screen.findByLabelText('Email'), 'ana@example.com');
+    fireEvent.changeText(screen.getByLabelText('Password'), 'hunter22');
+    fireEvent.press(screen.getByRole('button', { name: 'Sign in' }));
+  };
+
+  it('never reaches the agent in an action’s context, written out or within text', async () => {
+    const { sent, ui } = setup();
+    await renderReply(ui, signIn());
+    await fillIn();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]?.payload.context).toEqual({ email: 'ana@example.com' });
+    expect(sent[0]?.payload).not.toHaveProperty('dataModel');
+    expect(JSON.stringify(sent[0])).not.toContain('hunter22');
+  });
+
+  it('is left out of the data model a surface sends with its actions', async () => {
+    const { sent, ui } = setup();
+    await renderReply(ui, signIn({ sendDataModel: true }));
+    await fillIn();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]?.payload.dataModel).toEqual({ account: { email: 'ana@example.com' } });
+    expect(JSON.stringify(sent[0])).not.toContain('hunter22');
+  });
+
+  it('stays the person’s whichever view the app draws the field with', async () => {
+    const { sent, ui } = setup({
+      components: {
+        TextField: ({ props }) => (
+          <TextInput
+            accessibilityLabel={String(props.label)}
+            onChangeText={(text) => (props.setValue as (value: string) => void)(text)}
+            value={String(props.value ?? '')}
+          />
+        ),
+      },
+    });
+    await renderReply(ui, signIn());
+    await fillIn();
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(JSON.stringify(sent[0])).not.toContain('hunter22');
+  });
+});
+
+describe('parseMoment and formatMoment', () => {
+  it('read and write the days and times an agent writes', () => {
+    expect(parseMoment('2026-11-14')).toEqual({ day: { date: 14, month: 10, year: 2026 } });
+    expect(parseMoment('09:30')).toEqual({ hours: 9, minutes: 30 });
+    expect(parseMoment('2026-11-14T09:30:00Z')).toEqual({
+      day: { date: 14, month: 10, year: 2026 },
+      hours: 9,
+      minutes: 30,
+    });
+    const both = { enableDate: true, enableTime: true };
+    expect(formatMoment(parseMoment('2026-01-02T03:04'), both)).toBe('2026-01-02T03:04');
+    expect(formatMoment(parseMoment('2026-01-02'), { ...both, enableTime: false })).toBe(
+      '2026-01-02',
+    );
+    expect(formatMoment(parseMoment('03:04'), { ...both, enableDate: false })).toBe('03:04');
+  });
+});
+
+describe('withoutSecrets and withoutPaths', () => {
+  it('leave out what holds a secret, in objects and lists, and a short one only when whole', () => {
+    expect(
+      withoutSecrets({ a: 'hunter22', b: ['x', 'my hunter22'], c: { d: 'keep', e: 'hunter22' } }, [
+        'hunter22',
+      ]),
+    ).toEqual({ b: ['x'], c: { d: 'keep' } });
+    expect(withoutSecrets({ a: 'abc', b: 'abcdef' }, ['abc'])).toEqual({ b: 'abcdef' });
+    expect(withoutSecrets({ a: 1 }, [])).toEqual({ a: 1 });
+  });
+
+  it('remove what is at JSON Pointers, escaped segments and list items included', () => {
+    expect(
+      withoutPaths({ 'a/b': 1, list: [1, 2, 3], nested: { keep: true, secret: 's' } }, [
+        '/a~1b',
+        '/list/1',
+        '/nested/secret',
+        '/missing/path',
+      ]),
+    ).toEqual({ list: [1, 3], nested: { keep: true } });
+  });
+});
+
+describe('the app’s tools in a reply’s UI', () => {
+  const weather = {
+    description: 'The weather in a city today.',
+    inputSchema: {
+      properties: { city: { description: 'The city', type: 'string' } },
+      required: ['city'],
+      type: 'object',
+    },
+    name: 'weather',
+  };
+
+  const withTools = (tools: ConstructorParameters<typeof AIUIHost>[0]['tools']) => {
+    const errors: { code: string; message: string }[] = [];
+    const ui = new AIUIHost({
+      renderers: [createA2UIRenderer({ onError: (error) => errors.push(error) })],
+      send: jest.fn(),
+      tools,
+    });
+    return { errors, ui };
+  };
+
+  const forecast = surfaceOf(
+    [
+      { children: ['title', 'sky'], component: 'Column', id: 'root' },
+      { component: 'Text', id: 'title', text: 'Ohrid today' },
+      {
+        component: 'Text',
+        id: 'sky',
+        text: { '@call': 'weather', args: { city: { '@path': '/city' } } },
+      },
+    ],
+    { city: 'Ohrid' },
+  );
+
+  it('runs a tool the agent calls as a function, with its arguments worked out', async () => {
+    const run = jest.fn(({ city }: Record<string, unknown>) =>
+      Promise.resolve(`Sunny in ${String(city)}`),
+    );
+    const { errors, ui } = withTools([{ ...weather, run }]);
+    await renderReply(ui, forecast);
+    await waitFor(() => expect(screen.getByText(/Sunny in Ohrid/)).toBeTruthy());
+    expect(run).toHaveBeenCalledWith({ city: 'Ohrid' });
+    expect(errors).toEqual([]);
+  });
+
+  it('tells the agent about the tools it can call, with what they take', async () => {
+    const { ui } = withTools([{ ...weather, run: () => 'Sunny' }]);
+    const { renderers } = await ui.capabilities();
+    const { instructions } = renderers[0] as unknown as { instructions: string };
+    expect(instructions).toContain('"weather"');
+    expect(instructions).toContain('The weather in a city today.');
+    expect(instructions).toContain('"city"');
+  });
+
+  it('shows the rest of the UI when a tool fails, and says so', async () => {
+    const { errors, ui } = withTools([
+      { ...weather, run: () => Promise.reject(new Error('No forecast')) },
+    ]);
+    await renderReply(ui, forecast);
+    await waitFor(() => expect(screen.getByText(/Ohrid today/)).toBeTruthy());
+    await waitFor(() => expect(errors.length).toBeGreaterThan(0));
+    expect(screen.queryByText(/Sunny/)).toBeNull();
+  });
+
+  it('leaves out a tool that would take the name of one of the basic catalog’s functions', async () => {
+    const { errors, ui } = withTools([{ name: 'required', run: () => true }]);
+    await renderReply(ui, surfaceOf([{ component: 'Text', id: 'root', text: 'Here' }]));
+    await waitFor(() => expect(screen.getByText(/Here/)).toBeTruthy());
+    await waitFor(() =>
+      expect(errors).toEqual([expect.objectContaining({ code: 'CATALOG_ERROR' })]),
+    );
+  });
+});
+
+describe('the basic catalog’s icons', () => {
+  const pathOf = (id: string) =>
+    screen.getByTestId(`a2ui-${id}`).findAll((node) => typeof node.props.d === 'string')[0]?.props
+      .d as string | undefined;
+
+  it('draws every icon name the catalog has', () => {
+    const document = basicCatalogJSON.components.Icon as unknown as Record<string, unknown>;
+    const enumOf = (value: unknown): string[] | undefined => {
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          const found = enumOf(item);
+          if (found) return found;
+        }
+        return undefined;
+      }
+      if (typeof value !== 'object' || value === null) return undefined;
+      const record = value as Record<string, unknown>;
+      if (Array.isArray(record.enum)) return record.enum as string[];
+      for (const item of Object.values(record)) {
+        const found = enumOf(item);
+        if (found) return found;
+      }
+      return undefined;
+    };
+    const catalogNames = enumOf(document) ?? [];
+    expect(catalogNames.length).toBeGreaterThan(50);
+    expect(catalogNames.filter((name) => !A2UI_ICON_PATHS[name])).toEqual([]);
+  });
+
+  // A name the catalog doesn't have fails validation before it is drawn, so only a path that
+  // isn't one falls back to the neutral icon.
+  it('draws a name’s Material icon, the agent’s own path, and a neutral one for a bad path', async () => {
+    const { ui } = setup();
+    await renderReply(
+      ui,
+      surfaceOf([
+        { children: ['cart', 'drawn', 'bad'], component: 'Row', id: 'root' },
+        { component: 'Icon', id: 'cart', name: 'shoppingCart' },
+        { component: 'Icon', id: 'drawn', name: { svgPath: 'M0 0h24v24H0z' } },
+        { component: 'Icon', id: 'bad', name: { svgPath: '<script>' } },
+      ]),
+    );
+    await waitFor(() => expect(pathOf('cart')).toBe(A2UI_ICON_PATHS.shoppingCart));
+    expect(pathOf('drawn')).toBe('M0 0h24v24H0z');
+    expect(pathOf('bad')).toBe(A2UI_ICON_PATHS.help);
+  });
+
+  it('draws the app’s own icon for a name it gives one', async () => {
+    const { ui } = setup({
+      icons: { shoppingCart: ({ size }) => <Text testID='my-cart'>{size}</Text> },
+    });
+    await renderReply(ui, surfaceOf([{ component: 'Icon', id: 'root', name: 'shoppingCart' }]));
+    await waitFor(() => expect(screen.getByTestId('my-cart')).toHaveTextContent('24'));
+  });
+});
+
+describe('video and audio in a reply’s UI', () => {
+  const media = surfaceOf([
+    { children: ['clip', 'note'], component: 'Column', id: 'root' },
+    {
+      component: 'Video',
+      id: 'clip',
+      posterUrl: 'https://example.com/poster.jpg',
+      url: 'https://example.com/clip.mp4',
+    },
+    {
+      component: 'AudioPlayer',
+      description: 'A song by the lake',
+      id: 'note',
+      url: 'https://example.com/song.mp3',
+    },
+  ]);
+  const handlers = { ...NativeHandlers };
+
+  afterEach(() => {
+    NativeHandlers.Sound = handlers.Sound;
+    NativeHandlers.Video = handlers.Video;
+  });
+
+  it('plays a video in place with the app’s player, from a tap', async () => {
+    const { ui } = setup();
+    await renderReply(ui, media);
+    const play = (await screen.findAllByRole('button', { name: 'Play' }))[0];
+    expect(screen.queryByTestId('a2ui-video')).toBeNull();
+    fireEvent.press(play);
+    expect(screen.getByTestId('a2ui-video').props).toMatchObject({
+      paused: false,
+      uri: 'https://example.com/clip.mp4',
+    });
+  });
+
+  it('plays and pauses a recording with the app’s audio player', async () => {
+    const playAsync = jest.fn(() => Promise.resolve());
+    const pauseAsync = jest.fn(() => Promise.resolve());
+    const initializeSound = jest.fn(() =>
+      Promise.resolve({ pauseAsync, playAsync, testID: 'sound' }),
+    );
+    NativeHandlers.Sound = { initializeSound, Player: null };
+    const { ui } = setup();
+    await renderReply(ui, media);
+    expect(screen.getByText('A song by the lake')).toBeTruthy();
+    fireEvent.press(screen.getAllByRole('button', { name: 'Play' })[1]);
+    // Lets the player load and start, which it does asynchronously.
+    await act(() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
+    expect(initializeSound).toHaveBeenCalledWith(
+      { uri: 'https://example.com/song.mp3' },
+      expect.any(Object),
+      expect.any(Function),
+    );
+    expect(playAsync).toHaveBeenCalled();
+    fireEvent.press(screen.getByRole('button', { name: 'Pause' }));
+    // Lets the player load and start, which it does asynchronously.
+    await act(() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
+    expect(pauseAsync).toHaveBeenCalled();
+  });
+
+  it('links to them when the app has no player', async () => {
+    NativeHandlers.Video = undefined;
+    NativeHandlers.Sound = undefined;
+    const { open, ui } = setup();
+    await renderReply(ui, media);
+    const links = await screen.findAllByRole('link');
+    expect(links).toHaveLength(2);
+    fireEvent.press(links[1]);
+    expect(open).toHaveBeenCalledWith('https://example.com/song.mp3');
+  });
+});
+
 describe('the basic catalog', () => {
   it('works out its functions, such as formatting text, numbers and dates', async () => {
     const { ui } = setup();
@@ -499,6 +867,123 @@ describe('the basic catalog', () => {
     fireEvent.press(screen.getByRole('tab', { name: 'Sunday' }));
     expect(screen.getByText(/the boat from the harbour to St\. Naum/)).toBeTruthy();
     expect(screen.queryByText(/coffee by the harbour/)).toBeNull();
+  });
+
+  it('parts the borderless buttons of a Column, its follow-ups, with hairlines', async () => {
+    const { ui } = setup();
+    await renderReply(ui, [
+      ...ohridLines,
+      line({
+        updateComponents: {
+          components: [
+            { children: ['inline'], component: 'Row', id: 'tip' },
+            ...button('inline', 'A link', { event: { name: 'ask' } }, { variant: 'borderless' }),
+          ],
+          surfaceId: 'ohrid-weekend',
+        },
+      }),
+    ]);
+    const hairlineOf = (id: string) =>
+      StyleSheet.flatten(
+        screen.getByTestId(`a2ui-${id}`).findAll((node) => node.props.style !== undefined)[1]?.props
+          .style,
+      )?.borderTopWidth;
+    await waitFor(() => expect(screen.getByTestId('a2ui-hotel')).toBeTruthy());
+    expect(hairlineOf('hotel')).toBeUndefined();
+    expect(hairlineOf('eat')).toBe(StyleSheet.hairlineWidth);
+    expect(hairlineOf('longer')).toBe(StyleSheet.hairlineWidth);
+    expect(hairlineOf('inline')).toBeUndefined();
+  });
+
+  it('picks a date and a time in a sheet, within its bounds, and writes them as ISO 8601', async () => {
+    const { sent, ui } = setup();
+    await renderReply(
+      ui,
+      surfaceOf(
+        [
+          { children: ['when', 'book'], component: 'Column', id: 'root' },
+          {
+            component: 'DateTimeInput',
+            enableDate: true,
+            enableTime: true,
+            id: 'when',
+            label: 'Departure',
+            min: '2026-11-10',
+            value: { '@path': '/when' },
+          },
+          ...button('book', 'Book', {
+            event: { context: { when: { '@path': '/when' } }, name: 'book' },
+          }),
+        ],
+        { when: '2026-11-12T08:00' },
+      ),
+    );
+    fireEvent.press(await screen.findByRole('button', { name: /Nov 12, 2026/ }));
+    expect(screen.getByText('November 2026')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'November 9, 2026' })).toBeDisabled();
+    fireEvent.press(screen.getByRole('button', { name: 'November 14, 2026' }));
+    fireEvent.press(screen.getByRole('button', { name: '09' }));
+    // The minutes come after the calendar, whose 30th says 30 too.
+    fireEvent.press(screen.getAllByRole('button', { name: '30' }).at(-1)!);
+    fireEvent.press(screen.getAllByRole('button', { name: 'Close' })[0]);
+    fireEvent.press(screen.getByRole('button', { name: 'Book' }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]?.payload.context).toEqual({ when: '2026-11-14T09:30' });
+  });
+
+  it('opens the time lists on the time it holds', async () => {
+    const { ui } = setup();
+    await renderReply(
+      ui,
+      surfaceOf(
+        [
+          {
+            component: 'DateTimeInput',
+            enableTime: true,
+            id: 'root',
+            label: 'Departure',
+            value: { '@path': '/when' },
+          },
+        ],
+        { when: '09:00' },
+      ),
+    );
+    fireEvent.press(await screen.findByRole('button', { name: /09:00|9:00/ }));
+    const [hours] = screen.UNSAFE_getAllByType(ScrollView);
+    const scrollTo = hours.instance.scrollTo as jest.Mock;
+    scrollTo.mockClear();
+    const nine = screen.getByRole('button', { name: '09', selected: true });
+    const layout = { nativeEvent: { layout: { height: 36, width: 100, x: 0, y: 342 } } };
+    fireEvent(nine, 'layout', layout);
+    // The chosen hour lands in the middle of the 180 point tall list, and only the first time.
+    expect(scrollTo).toHaveBeenCalledWith({ animated: false, y: 342 - (180 - 36) / 2 });
+    fireEvent(nine, 'layout', layout);
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+  });
+
+  it('takes its colors and the look of its parts from the theme', async () => {
+    const { ui } = setup();
+    render(
+      <StreamTheme style={{ a2ui: { card: { borderWidth: 3 }, colors: { accent: '#ff0000' } } }}>
+        <AIUIView
+          document={documentOf(
+            surfaceOf([
+              { child: 'go', component: 'Card', id: 'root' },
+              ...button('go', 'Go', { event: { name: 'go' } }, { variant: 'primary' }),
+            ]),
+          )}
+          host={ui}
+          messageId='a1'
+        />
+      </StreamTheme>,
+    );
+    await act(() => Promise.resolve());
+    const go = await screen.findByRole('button', { name: 'Go' });
+    expect(StyleSheet.flatten(go.props.style)).toMatchObject({ backgroundColor: '#ff0000' });
+    const card = screen
+      .getByTestId('a2ui-root')
+      .findAll((node) => StyleSheet.flatten(node.props.style)?.borderWidth === 3);
+    expect(card.length).toBeGreaterThan(0);
   });
 
   it('takes the app’s own views for its components', async () => {

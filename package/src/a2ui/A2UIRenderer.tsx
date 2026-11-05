@@ -22,8 +22,11 @@ import { A2UISurfaceView } from './A2UISurface';
 import { A2UI_DEFAULT_CATALOG_ID, a2uiTypeName } from './catalogDocument';
 import { a2uiCatalogsOf } from './catalogs';
 import { A2UI_BASIC_COMPONENTS } from './components/basicComponents';
-import type { A2UIComponents } from './components/types';
+import type { A2UIComponents, A2UIIcons } from './components/types';
+import { a2uiInstructions } from './instructions';
+import { withoutPaths, withoutSecrets } from './secrets';
 
+import { useTheme } from '../ai-components/contexts';
 import type { AIUIDocument } from '../ai-components/generative-ui/AIUIDocument';
 import { isRecord } from '../ai-components/generative-ui/AIUIHelpers';
 import type { AIUIHost } from '../ai-components/generative-ui/AIUIHost';
@@ -53,8 +56,19 @@ export type A2UIRendererOptions = {
    * A2UI type, such as `{ Card: MyCard }`. Each gets what the agent wrote for it, resolved.
    */
   components?: A2UIComponents;
+  /**
+   * The app's icons for the names A2UI's Icon takes, such as `{ shoppingCart: MyCartIcon }`, over
+   * the Material icons it draws by default. An app's own names work too, when its agent is told
+   * them.
+   */
+  icons?: A2UIIcons;
   /** The locale numbers and dates are formatted in. `en-US` by default. */
   locale?: string;
+  /**
+   * The basic catalog's components and functions this renderer leaves out, such as `['Video']`.
+   * The agent's instructions leave them out too, and a reply that places one shows the rest.
+   */
+  removing?: string[];
   /**
    * Tells the app what went wrong in a reply's A2UI, such as a message that isn't JSON or a
    * component the catalog doesn't have, with the reply's id. The rest of the reply's UI still
@@ -108,6 +122,9 @@ export class A2UIReplyState {
   private readonly messageId: string;
   private processor: MessageProcessor<ComponentApi>;
   private reported = new Set<string>();
+  // The paths of each surface's data model that hold what the person typed into an obscured
+  // field, such as a password, by surface.
+  private secrets = new Map<string, Set<string>>();
   private shown: SurfaceModel<ComponentApi>[] = [];
   private showedNothing = false;
   private stopWatching: () => void;
@@ -142,6 +159,7 @@ export class A2UIReplyState {
       this.processor = this.makeProcessor();
       this.stopWatching = this.watch();
       this.applied = [];
+      this.secrets.clear();
     }
     for (const raw of messages.slice(this.applied.length)) {
       let json: unknown;
@@ -213,17 +231,37 @@ export class A2UIReplyState {
     return new MessageProcessor<ComponentApi>(this.engine.catalogs(), (action) => this.act(action));
   }
 
+  /** Keeps what is written at `path` of a surface's data model from the agent, such as a password. */
+  keepSecret = (surfaceId: string, path: string) => {
+    let paths = this.secrets.get(surfaceId);
+    if (!paths) {
+      paths = new Set();
+      this.secrets.set(surfaceId, paths);
+    }
+    paths.add(path);
+  };
+
   // Tells the agent what the person did, in the words of the button they tapped, else its name.
   // Never in the words the agent gave the action, which could say something the button doesn't.
+  // What the person typed into an obscured field is left out of what goes, as is its place in the
+  // data model, which goes along when the surface asks for it.
   private act(action: ActionPayload) {
-    const { dataModel, userMessage } = action;
+    const { userMessage } = action;
+    const surface = this.processor.model.getSurface(action.surfaceId);
+    const paths = this.secrets.get(action.surfaceId) ?? new Set<string>();
+    const secrets = [...paths]
+      .map((path) => surface?.dataModel.get(path))
+      .filter((value): value is string => typeof value === 'string' && value !== '');
+    const dataModel = surface?.sendDataModel
+      ? withoutSecrets(withoutPaths(surface.dataModel.get('/'), paths), secrets)
+      : undefined;
     void this.engine.host.send({
       format: 'a2ui',
       label: this.buttonText(action) ?? wordsOf(action.name),
       messageId: this.messageId,
       name: action.name,
       payload: {
-        context: action.context,
+        context: withoutSecrets(action.context, secrets) as Record<string, unknown>,
         sourceComponentId: action.sourceComponentId,
         surfaceId: action.surfaceId,
         ...(typeof userMessage === 'string' ? { userMessage } : {}),
@@ -297,12 +335,16 @@ const A2UIReplyContent = ({
     reply.update(source, isStreaming);
   }, [isStreaming, reply, source]);
   const surfaces = useSyncExternalStore(reply.subscribe, reply.surfaces);
-  const replyContext = useMemo(() => ({ isStreaming, messageId }), [isStreaming, messageId]);
+  const { theme } = useTheme();
+  const replyContext = useMemo(
+    () => ({ isStreaming, keepSecret: reply.keepSecret, messageId }),
+    [isStreaming, messageId, reply],
+  );
   if (surfaces.length === 0) return isStreaming ? <A2UIPlaceholder /> : null;
   return (
     <A2UIEngineContext.Provider value={engine}>
       <A2UIReplyContext.Provider value={replyContext}>
-        <View style={styles.surfaces}>
+        <View style={[styles.surfaces, theme.a2ui?.surfaces]}>
           {surfaces.map((surface) => (
             <A2UISurfaceView key={surface.id} surface={surface} />
           ))}
@@ -320,6 +362,7 @@ export class A2UIEngine implements AIUIEngine {
   readonly catalogId: string;
   readonly components: A2UIComponents;
   readonly host: AIUIHost;
+  readonly icons: A2UIIcons;
   /** Each reply's surfaces, by the reply's id. */
   readonly replies = new Map<string, A2UIReplyState>();
 
@@ -332,6 +375,7 @@ export class A2UIEngine implements AIUIEngine {
     this.catalogId = options.catalogId ?? A2UI_DEFAULT_CATALOG_ID;
     // The basic catalog's views, the app's own over them.
     this.components = { ...A2UI_BASIC_COMPONENTS, ...options.components };
+    this.icons = options.icons ?? {};
   }
 
   /** The catalogs a reply's surfaces are made with, made once. */
@@ -340,12 +384,20 @@ export class A2UIEngine implements AIUIEngine {
       catalogId: this.catalogId,
       components: this.host.components,
       locale: this.options.locale,
+      removing: this.options.removing,
       onComponentError: (component, error) =>
         this.report({
           code: 'CATALOG_ERROR',
           message: `The component ${component.definition.name} can't join the catalog: ${String(error)}`,
         }),
+      onToolError: (tool, error) =>
+        this.report({
+          code: 'CATALOG_ERROR',
+          message: `The tool ${tool.name} can't join the catalog: ${String(error)}`,
+        }),
       openUrl: (url) => this.host.open(url),
+      runTool: (name, args) => this.host.runTool(name, args),
+      tools: this.host.toolDefinitions,
     });
     return this.made;
   }
@@ -400,7 +452,32 @@ export class A2UIEngine implements AIUIEngine {
 export const createA2UIRenderer = (options: A2UIRendererOptions = {}): AIUIRenderer => {
   const catalogId = options.catalogId ?? A2UI_DEFAULT_CATALOG_ID;
   return {
-    capabilities: () => ({ catalog_id: catalogId, fence: `ui:a2ui@${A2UI_VERSION}` }),
+    // The fence, the catalog and the instructions for both, so the agent's backend has its model
+    // write UI this renderer shows. Without the instructions, when they can't be written, the rest
+    // still goes.
+    capabilities: async (components, tools) => {
+      const fence = `ui:a2ui@${A2UI_VERSION}`;
+      let instructions: string | undefined;
+      try {
+        instructions = await a2uiInstructions({
+          catalogId,
+          components,
+          fence,
+          removing: options.removing,
+          tools,
+        });
+      } catch (error) {
+        reportA2UIError(options, {
+          code: 'EXECUTION_ERROR',
+          message: `The A2UI instructions couldn't be written: ${String(error)}`,
+        });
+      }
+      return {
+        catalog_id: catalogId,
+        fence,
+        ...(instructions === undefined ? {} : { instructions }),
+      };
+    },
     createEngine: (host) => new A2UIEngine(host, options),
     format: 'a2ui',
     supports: supportsA2UIVersion,

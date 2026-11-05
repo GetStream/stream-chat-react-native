@@ -501,5 +501,7 @@
   "Message copied to clipboard": "تم نسخ الرسالة إلى الحافظة",
   "Failed to copy message": "فشل نسخ الرسالة",
   "Remove attachment": "إزالة المرفق",
-  "Remove option: {{ option }}": "إزالة الخيار: {{ option }}"
+  "Remove option: {{ option }}": "إزالة الخيار: {{ option }}",
+  "Play": "تشغيل",
+  "Pause": "إيقاف مؤقت"
 }

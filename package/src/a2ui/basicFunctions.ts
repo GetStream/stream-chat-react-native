@@ -364,6 +364,9 @@ const formatString = (template: string, context: DataContext) => {
   );
 };
 
+// The links `openUrl` may open, as the specification lists them. The host may refuse more.
+const OPEN_URL_SCHEMES = new Set(['http', 'https', 'mailto', 'tel']);
+
 type Args = Record<string, unknown>;
 type Execute = (args: Args, context: DataContext) => unknown;
 
@@ -404,7 +407,13 @@ export const basicFunctionsOf = (
     numeric: ({ max, min, value }) =>
       validateNumeric(value, optionalNumber(min), optionalNumber(max)),
     openUrl: ({ url }) => {
-      if (typeof url === 'string') openUrl(url);
+      if (typeof url !== 'string') return;
+      // The schemes the specification allows, as the A2UI core's own openUrl reports others.
+      const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(url.trim())?.[1]?.toLowerCase();
+      if (!scheme || !OPEN_URL_SCHEMES.has(scheme)) {
+        throw new A2uiExpressionError(`Unsupported URL scheme: ${scheme ?? url}`, 'openUrl');
+      }
+      openUrl(url);
     },
     or: ({ values }) => atLeastTwo(values, 'or').some(isTruthyOrValid),
     pluralize: (args) => pluralize(number(args.value), args, resolved),

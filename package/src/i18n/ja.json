@@ -501,5 +501,7 @@
   "Message copied to clipboard": "メッセージをクリップボードにコピーしました",
   "Failed to copy message": "メッセージのコピーに失敗しました",
   "Remove attachment": "添付ファイルを削除",
-  "Remove option: {{ option }}": "オプションを削除: {{ option }}"
+  "Remove option: {{ option }}": "オプションを削除: {{ option }}",
+  "Play": "再生",
+  "Pause": "一時停止"
 }

@@ -7,5 +7,11 @@ export const A2UIEngineContext = createContext<A2UIEngine | undefined>(undefined
 
 /** The reply the surfaces below belong to, and whether the agent is still writing it. */
 export const A2UIReplyContext = createContext<
-  { isStreaming: boolean; messageId: string } | undefined
+  | {
+      isStreaming: boolean;
+      /** Keeps what is written at `path` of a surface's data model from the agent. */
+      keepSecret: (surfaceId: string, path: string) => void;
+      messageId: string;
+    }
+  | undefined
 >(undefined);

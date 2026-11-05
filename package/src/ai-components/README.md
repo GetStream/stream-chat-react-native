@@ -6,6 +6,7 @@
 - `ComposerView` - a prompt composer with attachments and speech input
 - `SpeechToTextButton` - records voice input and streams the recognized transcript into your UI
 - `AITypingIndicatorView` - displays the state of the LLM (thinking, checking external sources, etc.)
+- Generated UI - draws the UI an agent writes for its replies, such as A2UI, with your own components
 
 The components live in their own entry point. Apps that never import `stream-chat-react-native/ai-components` do not bundle any of it, and apps that only use the AI components do not bundle the rest of the chat SDK.
 
@@ -291,6 +292,55 @@ The motion runs entirely on the UI thread with Reanimated and Skia, so the visua
 **Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"), as on iOS and Android. Pass `stateLabels` to translate the state values, `accessibilityLabel` to change the label, or `accessibilityValue` to replace the value outright. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
 
 **Differences from the native SDKs.** The glow has no `rendering` option: the shader runs on every Android version through Skia, so there is no Canvas fallback, and it does not switch to a cheaper look in battery saver as on Android. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
+
+### Generated UI
+
+An agent can answer with UI instead of text: a form, a list of options, a card with buttons. The backend splits the model's UI block out of the reply into the message's `ai_ui` field, and the app draws it with a renderer for the format the agent writes. Today that is [A2UI](https://a2ui.org) v1.0, from its own entry point, so apps that don't use it don't bundle it:
+
+```tsx
+import { createA2UIRenderer } from 'stream-chat-react-native/a2ui'; // or 'stream-chat-expo/a2ui'
+import { AIConversation, AIUIHost, aiUIActionJSON } from 'stream-chat-react-native/ai-components';
+
+const Conversation = ({ messages, session }) => {
+  // One host per conversation, kept for as long as it shows, so what a reply's UI holds (a
+  // half-filled form) survives scrolling it away and back.
+  const [ui] = useState(
+    () =>
+      new AIUIHost({
+        renderers: [createA2UIRenderer()],
+        // What the person did goes to the agent as their next message.
+        send: action => session.responses.create(action.label, { uiAction: aiUIActionJSON(action) }),
+      }),
+  );
+
+  return <AIConversation messages={messages} ui={ui} />;
+};
+```
+
+The label of the message an action sends is the text of the control the person tapped, never text the agent wrote. Values typed into obscured text fields never leave the device. A reply's UI shows a placeholder until its first surface arrives, and a finished reply whose UI draws nothing shows its text instead.
+
+`createA2UIRenderer` draws all 18 components of A2UI's basic catalog natively, and takes:
+
+| Name         | Description                                                                                                          |
+| ------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `components` | Your own views for basic components, by type, such as `{ Card: MyCard }`. Each gets the node and its resolved props. |
+| `icons`      | Your own icons for the names `Icon` takes, over the Material icons drawn by default.                                 |
+| `removing`   | Basic components or functions to leave out, such as `['Video']`. The agent's instructions leave them out too.        |
+| `locale`     | The locale numbers and dates are formatted in. `en-US` by default.                                                   |
+| `catalogId`  | The id of the catalog with your own components.                                                                      |
+| `onError`    | Called with what was wrong in a reply's A2UI. The rest of the reply still shows. Logged by default.                  |
+
+**Your own components.** Define a component with `defineAIUIComponent(definition, View)` and pass it to the host's `components`. The definition is portable JSON (name, description, parameters, events), so the same `UIComponents.json` can describe it to the agent and to the Swift and Android apps. A component calls `context.emit(name, label, payload)` to send an action.
+
+**Tools.** The host's `tools` are functions of yours that a reply's UI can call, such as reading something on the device. They run without asking the person, so only pass ones that are safe to run that way.
+
+**Instructions for the model.** `await ui.capabilities()` returns what the backend needs to tell the model: each renderer's format and instructions, your components and your tools. To write them yourself, use `a2uiInstructions({ components, removing, tools, examples })`, which refuses examples that wouldn't render. `a2uiProblems(text)` checks a reply's A2UI the same way.
+
+**Links.** Only web and email links open by default, since the agent writes them. Pass the host an `open` function to allow others.
+
+**Theming.** The theme's `a2ui` key styles the basic components: `colors` (`accent`, `onAccent`, `text`, `secondaryText`, `surface`, `subtleSurface`, `border`, `error`) and one style per part (`surfaces`, `card`, `button`, `buttonText`, `input`, `label`, `chip`, `chipText`, `tab`, `tabText`, `divider`, `caption`, `image`).
+
+**Media.** `Video` and `AudioPlayer` play in place with the player you registered for the chat SDK's own video and voice messages. Without one they show a link that opens where the device plays it.
 
 ### Theming
 

@@ -8,6 +8,7 @@ import type {
   AIUIJSONSchema,
 } from '../ai-components/generative-ui/AIUIComponentDefinition';
 import { aiUISentence, aiUITypeName } from '../ai-components/generative-ui/AIUIHelpers';
+import type { AIUIClientToolDefinition } from '../ai-components/generative-ui/AIUIHost';
 
 /** The id of the catalog with the app's components, unless the renderer is given another. */
 export const A2UI_DEFAULT_CATALOG_ID = 'getstream.io:app-catalog';
@@ -29,6 +30,39 @@ const dynamic = (schema: AIUIJSONSchema) => ({
 });
 
 /**
+ * One of the app's tools as a function of the catalog, which the agent can call from the UI it
+ * writes, such as to fill a list with what the tool answers. Its arguments are its input's
+ * properties, each, with `bindings`, also bound to the data model or worked out by a function.
+ */
+const toolFunctionOf = (tool: AIUIClientToolDefinition, bindings: boolean) => {
+  const schema = tool.inputSchema ?? {};
+  const properties =
+    typeof schema.properties === 'object' && schema.properties !== null
+      ? (schema.properties as Record<string, AIUIJSONSchema>)
+      : {};
+  const required = Array.isArray(schema.required) ? schema.required : [];
+  return {
+    ...(tool.description ? { description: aiUISentence(tool.description) } : {}),
+    properties: {
+      '@call': { const: tool.name },
+      args: {
+        properties: Object.fromEntries(
+          Object.entries(properties).map(([name, property]) => [
+            name,
+            bindings ? dynamic(property) : property,
+          ]),
+        ),
+        required,
+        type: 'object',
+      },
+    },
+    required: ['@call'],
+    returnType: 'any',
+    type: 'object',
+  };
+};
+
+/**
  * The app's components as an A2UI catalog document: each under its A2UI type, its parameters
  * as its properties and what its events do in its description, since it reports them itself
  * rather than through an A2UI action the agent writes. The same as StreamChatA2UI's
@@ -39,7 +73,7 @@ const dynamic = (schema: AIUIJSONSchema) => ({
 export const a2uiAppCatalogDocument = (
   catalogId: string,
   components: (AIUIComponent | AIUIComponentDefinition)[],
-  { bindings = true }: { bindings?: boolean } = {},
+  { bindings = true, tools = [] }: { bindings?: boolean; tools?: AIUIClientToolDefinition[] } = {},
 ) => ({
   catalogId,
   components: Object.fromEntries(
@@ -76,5 +110,12 @@ export const a2uiAppCatalogDocument = (
       ];
     }),
   ),
+  ...(tools.length
+    ? {
+        functions: Object.fromEntries(
+          tools.map((tool) => [tool.name, toolFunctionOf(tool, bindings)]),
+        ),
+      }
+    : {}),
   protocolVersion: A2UI_VERSION,
 });

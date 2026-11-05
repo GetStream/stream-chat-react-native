@@ -501,5 +501,7 @@
   "Message copied to clipboard": "Message copié dans le presse-papiers",
   "Failed to copy message": "Échec de la copie du message",
   "Remove attachment": "Retirer la pièce jointe",
-  "Remove option: {{ option }}": "Retirer l'option : {{ option }}"
+  "Remove option: {{ option }}": "Retirer l'option : {{ option }}",
+  "Play": "Lire",
+  "Pause": "Pause"
 }

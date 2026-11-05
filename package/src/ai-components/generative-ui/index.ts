@@ -37,6 +37,12 @@ export {
   parseAIUIDocument,
 } from './AIUIDocument';
 export { AIUICascade, AIUIEntrance, AIUIEntranceStage, useAIUIEntrance } from './AIUIEntrance';
-export { type AIUIClientTool, AIUIHost, type AIUIHostOptions, isWebOrEmailLink } from './AIUIHost';
+export {
+  type AIUIClientTool,
+  type AIUIClientToolDefinition,
+  AIUIHost,
+  type AIUIHostOptions,
+  isWebOrEmailLink,
+} from './AIUIHost';
 export type { AIUIEngine, AIUIRenderer } from './AIUIRenderer';
 export { AIUIView, type AIUIViewProps, useAIUIHostRefresh } from './AIUIView';

@@ -501,5 +501,7 @@
   "mention/Channel Description": "Notify everyone in this channel",
   "mention/Here Description": "Notify every online member in this channel",
   "Remove attachment": "Remove attachment",
-  "Remove option: {{ option }}": "Remove option: {{ option }}"
+  "Remove option: {{ option }}": "Remove option: {{ option }}",
+  "Play": "Play",
+  "Pause": "Pause"
 }

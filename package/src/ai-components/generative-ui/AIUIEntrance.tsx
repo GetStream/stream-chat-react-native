@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { Platform, type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   ReduceMotion,
@@ -55,9 +55,12 @@ const FADE = {
   easing: Easing.out(Easing.ease),
   reduceMotion: ReduceMotion.Never,
 };
-// How far a part rises into place, and how small it starts.
+// How far a part rises into place, how small it starts, and how far out of focus.
 const RISE = 16;
 const START_SCALE = 0.97;
+const START_BLUR = 8;
+// A blur only Android 12 and later draws; elsewhere a part comes in without it.
+const CAN_BLUR = Platform.OS === 'android' && Number(Platform.Version) >= 31;
 
 // Shows its content, bringing it in after the cascade's delay when it starts hidden.
 const useEntrance = (startsHidden: boolean, cascade: AIUICascade | undefined) => {
@@ -79,6 +82,8 @@ const useEntrance = (startsHidden: boolean, cascade: AIUICascade | undefined) =>
         { translateY: (1 - progress.value) * RISE },
         { scale: START_SCALE + (1 - START_SCALE) * progress.value },
       ],
+      // Back in focus as it settles: a blur this small draws nothing.
+      ...(CAN_BLUR ? { filter: [{ blur: Math.max(0, 1 - shown) * START_BLUR }] } : {}),
     };
   }, [reduceMotion]);
   return { hasShown, style };
@@ -137,9 +142,10 @@ export const useAIUIEntrance = () => {
 
 /**
  * Brings a part of a reply's generated UI in when it shows, such as when the agent writes it:
- * the part fades in, rising into place, after the parts that came in just before it. What shows
- * together with the reply's UI, or with a part around it, comes in with that, so a reply written
- * before it showed shows at once. With reduced motion it only fades.
+ * the part fades in, rising into place and, on Android 12 and later, coming into focus, after the
+ * parts that came in just before it. What shows together with the reply's UI, or with a part
+ * around it, comes in with that, so a reply written before it showed shows at once. With reduced
+ * motion it only fades.
  *
  * Renderers give it to each part they place. Every app component has it.
  */

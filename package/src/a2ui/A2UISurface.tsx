@@ -3,6 +3,7 @@ import React, {
   memo,
   useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react';
@@ -146,11 +147,31 @@ const PlacedComponent = ({
  * coming in when it shows, with its weight and what the agent tells assistive technology. A part
  * whose type no catalog has, or that is still on its way, shows nothing.
  */
+// The path of the data model a TextField writes what the person types to, when it is obscured,
+// such as a password, which must never reach the agent.
+const secretPathOf = (node: ComponentNode, resolved: Record<string, unknown>) => {
+  if (node.type !== 'TextField') return undefined;
+  const variant =
+    resolved.variant instanceof ResolvedBinding ? resolved.variant.value : resolved.variant;
+  const { value } = resolved;
+  return variant === 'obscured' && value instanceof ResolvedBinding && isWritable(value)
+    ? value.path
+    : undefined;
+};
+
 const A2UINode = memo(({ node }: { node: ComponentNode }) => {
   const engine = useContext(A2UIEngineContext);
+  const reply = useContext(A2UIReplyContext);
   const axis = useContext(A2UIAxisContext);
-  const resolved = useSignalValue(node.props);
-  const props = useMemo(() => viewPropsOf(resolved as Record<string, unknown>), [resolved]);
+  const resolved = useSignalValue(node.props) as Record<string, unknown>;
+  const props = useMemo(() => viewPropsOf(resolved), [resolved]);
+  // Before the person can type: whichever view draws the field, what they type stays theirs.
+  const secretPath = secretPathOf(node, resolved);
+  const surfaceId = node.context?.dataContext.surface?.id;
+  const keepSecret = reply?.keepSecret;
+  useLayoutEffect(() => {
+    if (secretPath && surfaceId) keepSecret?.(surfaceId, secretPath);
+  }, [keepSecret, secretPath, surfaceId]);
   const { scope, style } = useAIUIEntrance();
   if (!engine || node.isPlaceholder || node.state !== 'resolved') return null;
   const View = engine.components[node.type];

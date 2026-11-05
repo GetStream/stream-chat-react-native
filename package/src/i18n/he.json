@@ -501,5 +501,7 @@
   "Message copied to clipboard": "ההודעה הועתקה ללוח",
   "Failed to copy message": "העתקת ההודעה נכשלה",
   "Remove attachment": "הסר קובץ מצורף",
-  "Remove option: {{ option }}": "הסר אפשרות: {{ option }}"
+  "Remove option: {{ option }}": "הסר אפשרות: {{ option }}",
+  "Play": "הפעלה",
+  "Pause": "השהיה"
 }

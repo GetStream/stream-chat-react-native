@@ -501,5 +501,7 @@
   "Message copied to clipboard": "Mesaj panoya kopyalandı",
   "Failed to copy message": "Mesaj kopyalanamadı",
   "Remove attachment": "Eki kaldır",
-  "Remove option: {{ option }}": "Seçeneği kaldır: {{ option }}"
+  "Remove option: {{ option }}": "Seçeneği kaldır: {{ option }}",
+  "Play": "Oynat",
+  "Pause": "Duraklat"
 }

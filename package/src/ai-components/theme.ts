@@ -228,6 +228,41 @@ export type Theme = {
     /** What a reply's generated UI sits in, as wide as the reply. */
     container?: ViewStyle;
   };
+  /**
+   * A2UI's basic catalog, from the `a2ui` entry point: its colors, over ones from the theme's own,
+   * and the look of its parts. Optional, as above.
+   */
+  a2ui?: {
+    colors?: {
+      /** Primary buttons, chosen chips and tabs, links and the slider. */
+      accent?: string;
+      /** Text on the accent. */
+      onAccent?: string;
+      text?: string;
+      secondaryText?: string;
+      /** Inputs and chips. */
+      surface?: string;
+      /** Cards, default buttons and placeholders. */
+      subtleSurface?: string;
+      border?: string;
+      /** What a check found, and the border of the input it found it in. */
+      error?: string;
+    };
+    /** What a reply's surfaces sit in, one under another. */
+    surfaces?: ViewStyle;
+    card?: ViewStyle;
+    button?: ViewStyle;
+    buttonText?: TextStyle;
+    input?: TextStyle;
+    label?: TextStyle;
+    chip?: ViewStyle;
+    chipText?: TextStyle;
+    tab?: ViewStyle;
+    tabText?: TextStyle;
+    divider?: ViewStyle;
+    caption?: TextStyle;
+    image?: ImageStyle;
+  };
 };
 
 export const defaultTheme: Theme = {
@@ -405,5 +440,21 @@ export const defaultTheme: Theme = {
   },
   generatedUI: {
     container: {},
+  },
+  a2ui: {
+    colors: {},
+    surfaces: {},
+    card: {},
+    button: {},
+    buttonText: {},
+    input: {},
+    label: {},
+    chip: {},
+    chipText: {},
+    tab: {},
+    tabText: {},
+    divider: {},
+    caption: {},
+    image: {},
   },
 };

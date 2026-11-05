@@ -3,7 +3,7 @@ import { Linking } from 'react-native';
 
 import { type AIUIAction, aiUIActionProblem } from './AIUIAction';
 import type { AIUIComponent } from './AIUIComponent';
-import { aiUIComponentDefinitionJSON } from './AIUIComponentDefinition';
+import { type AIUIJSONSchema, aiUIComponentDefinitionJSON } from './AIUIComponentDefinition';
 import { type AIUIDocument, isSameAIUIDocument } from './AIUIDocument';
 import { aiUILinkScheme } from './AIUIHelpers';
 import { type AIUIEngine, type AIUIRenderer, aiUIRendererReads } from './AIUIRenderer';
@@ -19,7 +19,14 @@ export type AIUIClientTool = {
   name: string;
   /** Runs the tool. What it returns is the output the UI gets. */
   run: (args: Record<string, unknown>) => unknown;
+  /** What it does and when to use it, for the agent, which may then call it from the UI it writes. */
+  description?: string;
+  /** What it takes, as a JSON Schema object, for the agent. */
+  inputSchema?: AIUIJSONSchema;
 };
+
+/** One of the app's tools as the agent is told it: everything but how it runs. */
+export type AIUIClientToolDefinition = Omit<AIUIClientTool, 'run'>;
 
 export type AIUIHostOptions = {
   /** The renderer of each format the agent writes, the first one listed asked first. */
@@ -101,6 +108,11 @@ export class AIUIHost {
   /** The names of the app's tools a reply's UI can run with `runTool`. */
   get toolNames() {
     return [...this.tools.keys()];
+  }
+
+  /** The app's tools a reply's UI can run, as the agent is told them. */
+  get toolDefinitions(): AIUIClientToolDefinition[] {
+    return [...this.tools.values()].map(({ run: _run, ...definition }) => definition);
   }
 
   /** The app's component the agent places by `name`. */
@@ -288,7 +300,7 @@ export class AIUIHost {
       components: this.components.map(({ definition }) => aiUIComponentDefinitionJSON(definition)),
       renderers: await Promise.all(
         this.renderers.map(async (renderer) => ({
-          ...(await renderer.capabilities?.(this.components)),
+          ...(await renderer.capabilities?.(this.components, this.toolDefinitions)),
           format: renderer.format,
         })),
       ),
