@@ -9,6 +9,7 @@ export * from './voice-visualization';
 
 // agent replies
 export * from './conversation';
+export * from './generative-ui';
 export * from './icons';
 export * from './message';
 export * from './message-parts';

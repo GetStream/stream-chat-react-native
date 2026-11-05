@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { type ConversationSnapshot, type Session } from '@stream-io/calypso';
+import { type ConversationSnapshot, type Session, type UIAction } from '@stream-io/calypso';
 import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
 import { useStableCallback, useStateStore } from 'stream-chat-expo';
 import {
@@ -39,27 +39,20 @@ const declineLogin = (session: Session, toolCallId: string) =>
     .held()
     .send({ allowed: false, tool_call_id: toolCallId, type: 'tool_approval' });
 
-// Asks. The router addresses a client tool's call to the install a question came from, which
-// only its `respond` endpoint takes. `responses` (calypso's `responses.create`) takes photos and a
-// reasoning effort but no install, so a question with either reaches the device's tools without
-// one, and the phone runs them itself.
+// Asks, with calypso's `responses.create`, which takes photos, a reasoning effort and what the
+// person did in a reply's UI. The router's `respond`, which addresses a client tool's call to the
+// install a question came from, is only for an app's backend, and this is a phone: the calls reach
+// the device's tools without an install, and the phone runs them itself.
 const respond = async (
   session: Session,
   text: string,
-  options: { images: { url: string }[]; reasoningEffort?: string },
+  options: { images: { url: string }[]; reasoningEffort?: string; uiAction?: UIAction },
 ) => {
-  if (options.images.length > 0 || options.reasoningEffort) {
-    deviceTools.addressed = false;
-    await session.responses.create(text, {
-      ...(options.images.length > 0 ? { images: options.images } : {}),
-      ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {}),
-    });
-    return;
-  }
-  deviceTools.addressed = true;
-  await agents.post('/v1/agents/sessions/{id}/respond', {
-    body: { client_id: clientId, request_id: crypto.randomUUID(), text },
-    path: { id: session.id },
+  deviceTools.addressed = false;
+  await session.responses.create(text, {
+    ...(options.images.length > 0 ? { images: options.images } : {}),
+    ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {}),
+    ...(options.uiAction ? { uiAction: options.uiAction } : {}),
   });
 };
 
@@ -87,10 +80,16 @@ export type AppContextValue = {
   /** The open conversation's session id. */
   sessionId: string | undefined;
   /**
-   * Asks the agent, with photos by their local URIs, and with more time to reason when
-   * `thinkHarder`. Its reply arrives in the channel.
+   * Asks the agent, with photos by their local URIs, with more time to reason when
+   * `thinkHarder`, and with what the person did in a reply's UI as `uiAction`. Its reply arrives
+   * in the channel. Resolves to whether it was asked: not while the agent is busy.
    */
-  ask: (text: string, photos?: string[], thinkHarder?: boolean) => Promise<void>;
+  ask: (
+    text: string,
+    photos?: string[],
+    thinkHarder?: boolean,
+    uiAction?: UIAction,
+  ) => Promise<boolean>;
   /** Carries on a conversation from the drawer, by its session id. */
   openConversation: (sessionId: string) => void;
   /** Rates a reply, or takes the rating back with null. */
@@ -106,7 +105,7 @@ export type AppContextValue = {
 export const AppContext = React.createContext<AppContextValue>({
   agentState: IDLE,
   approver: undefined,
-  ask: async () => {},
+  ask: () => Promise.resolve(false),
   chat: undefined,
   conversationsVersion: 0,
   failure: undefined,
@@ -204,10 +203,10 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   const isBusy = !!asked || isResponding || followed?.lastReply?.generating === true;
 
   const ask = useStableCallback(
-    async (text: string, photos: string[] = [], thinkHarder = false) => {
+    async (text: string, photos: string[] = [], thinkHarder = false, uiAction?: UIAction) => {
       const opened = current.current;
       if (!opened || isBusy) {
-        return;
+        return false;
       }
       // Shows at once, with the photos as they were picked.
       const asking: Asked = {
@@ -229,11 +228,14 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         await respond(opened.session, text, {
           images,
           reasoningEffort: thinkHarder ? 'high' : undefined,
+          uiAction,
         });
+        return true;
       } catch (error) {
         setFailure(messageOf(error));
         setAskedAfter(undefined);
         if (askedRef.current === asking) setAsked(undefined);
+        return false;
       }
     },
   );

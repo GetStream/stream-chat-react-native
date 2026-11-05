@@ -223,6 +223,11 @@ export type Theme = {
     item?: ViewStyle;
     itemText?: TextStyle;
   };
+  /** The UI the agent generates for a reply, in place of its text. Optional, as above. */
+  generatedUI?: {
+    /** What a reply's generated UI sits in, as wide as the reply. */
+    container?: ViewStyle;
+  };
 };
 
 export const defaultTheme: Theme = {
@@ -397,5 +402,8 @@ export const defaultTheme: Theme = {
     content: {},
     item: {},
     itemText: {},
+  },
+  generatedUI: {
+    container: {},
   },
 };

@@ -95,9 +95,10 @@ export class AgentChat {
 /** A reply the agent wrote. */
 export const isAgentReply = (message: LocalMessage) => message.ai_generated === true;
 
-/** A reply with nothing to show yet: no text and no steps. */
+/** A reply with nothing to show yet: no text, no steps and no UI. */
 export const isEmptyReply = (message: LocalMessage) =>
   !message.text &&
+  !message.ai_ui &&
   !(message.attachments ?? []).some(
     (attachment) => attachment.type === 'ai_reasoning' || attachment.type === 'ai_tool_call',
   );

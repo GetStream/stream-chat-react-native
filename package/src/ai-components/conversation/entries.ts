@@ -1,5 +1,6 @@
 import type { AIMessage, AIPendingMessage } from './types';
 
+import type { AIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
 
 /** A row of the conversation: a message, or a message the person sent that is on its way. */
@@ -20,12 +21,19 @@ export type AIConversationEntry = {
 /** The person's message and the replies to it. */
 export type AIConversationTurn = { entries: AIConversationEntry[]; id: string };
 
-// A reply the agent has started but that has nothing to show yet.
-const showsNothing = (message: AIMessage) =>
+/** Whether a reply's generated UI shows, such as `AIUIHost.canShow`. */
+export type AIConversationCanShowUI = (document: AIUIDocument) => boolean;
+
+const showsNoUI: AIConversationCanShowUI = () => false;
+
+// A reply the agent has started but that has nothing to show yet: no text, steps or attachments,
+// and no UI that `canShowUI` says shows.
+const showsNothing = (message: AIMessage, canShowUI: AIConversationCanShowUI) =>
   message.role !== 'user' &&
   message.text === '' &&
   !message.parts?.length &&
-  !message.attachments?.length;
+  !message.attachments?.length &&
+  !(message.uiDocument && canShowUI(message.uiDocument));
 
 /** Groups the rows into turns, each starting with one of the person's messages. */
 export const turnsOf = (entries: AIConversationEntry[]) =>
@@ -52,8 +60,12 @@ export class AIPendingMessageTracker {
   private lastPending?: AIPendingMessage;
 
   // The rows of a conversation: its messages, apart from replies with nothing to show yet, and
-  // a message on its way until its copy arrives.
-  entries(messages: AIMessage[], pending?: AIPendingMessage | null): AIConversationEntry[] {
+  // a message on its way until its copy arrives. A reply's UI shows when `canShowUI` says.
+  entries(
+    messages: AIMessage[],
+    pending?: AIPendingMessage | null,
+    canShowUI: AIConversationCanShowUI = showsNoUI,
+  ): AIConversationEntry[] {
     let showsPending = !!pending;
     // A copy that arrives in the update that stops passing its pending message still takes over
     // its row. Only then: a message sent later is not the copy of one that failed.
@@ -76,7 +88,7 @@ export class AIPendingMessageTracker {
     this.lastPending = pending ?? undefined;
 
     const entries: AIConversationEntry[] = messages
-      .filter((message) => !showsNothing(message))
+      .filter((message) => !showsNothing(message, canShowUI))
       .map((message) => {
         const taken = this.copies.get(message.id);
         return {
@@ -122,9 +134,14 @@ export class AIPendingMessageTracker {
   // Whether the latest message is surely waiting for a reply that shows nothing yet: it is on its
   // way, it is the copy of the one on its way, or its reply is being written but shows nothing.
   // Call it after `entries`, which matches the copies.
-  isAwaitingReply(messages: AIMessage[], pending?: AIPendingMessage | null) {
+  isAwaitingReply(
+    messages: AIMessage[],
+    pending?: AIPendingMessage | null,
+    canShowUI: AIConversationCanShowUI = showsNoUI,
+  ) {
     const last = messages[messages.length - 1];
-    if (last && last.role !== 'user' && last.isGenerating && showsNothing(last)) return true;
+    if (last && last.role !== 'user' && last.isGenerating && showsNothing(last, canShowUI))
+      return true;
     if (!pending) return false;
     const copy = [...this.copies].find(([, original]) => original.id === pending.id)?.[0];
     if (copy === undefined) return true;

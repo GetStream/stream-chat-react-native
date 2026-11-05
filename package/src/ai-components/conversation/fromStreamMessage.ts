@@ -2,6 +2,7 @@ import type { Attachment, LocalMessage, MessageResponse } from 'stream-chat';
 
 import type { AIMessage } from './types';
 
+import { AI_UI_CUSTOM_DATA_KEY, parseAIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
 import { parseMessageParts } from '../message-parts/parseMessageParts';
 
@@ -41,7 +42,8 @@ const attachmentOf = (attachment: Attachment): AIMessageAttachmentData | undefin
 /**
  * Adapts a Stream message for `AIConversation`: a reply is one with `ai_generated: true`, it is
  * being written while `generating: true`, its steps are its `ai_reasoning` and `ai_tool_call`
- * attachments, and its images and files are its other attachments.
+ * attachments, its images and files are its other attachments, and the UI the agent wrote for
+ * it is its `ai_ui` field. A person's message has no UI, whatever its fields say.
  */
 export const fromStreamMessage = (
   message: AIStreamMessage,
@@ -49,6 +51,7 @@ export const fromStreamMessage = (
 ): AIMessage => {
   const attachments = message.attachments ?? [];
   const assistant = isAssistant ? isAssistant(message) : message.ai_generated === true;
+  const uiDocument = assistant ? parseAIUIDocument(message[AI_UI_CUSTOM_DATA_KEY]) : undefined;
   return {
     attachments: attachments
       .map(attachmentOf)
@@ -61,6 +64,7 @@ export const fromStreamMessage = (
       : undefined,
     role: assistant ? 'assistant' : 'user',
     text: message.text ?? '',
+    ...(uiDocument ? { uiDocument } : {}),
   };
 };
 
