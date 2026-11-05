@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.11.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.2...v9.11.3) (2026-11-05)
+
+### Bug Fixes
+
+* babel 7.29.13 ternary parsing regression ([#3937](https://github.com/GetStream/stream-chat-react-native/issues/3937)) ([3544393](https://github.com/GetStream/stream-chat-react-native/commit/3544393cabfe5f762e95a87a7e94333aced577fe))
+* babel 7.29.13 ternary parsing regression ([#3937](https://github.com/GetStream/stream-chat-react-native/issues/3937)) ([dff0b73](https://github.com/GetStream/stream-chat-react-native/commit/dff0b736abb299514a2a9b51bd5926657984f6f6)), closes [babel/babel#18264](https://github.com/babel/babel/issues/18264)
+
 ## [9.11.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.1...v9.11.2) (2026-11-04)
 
 ### Bug Fixes
