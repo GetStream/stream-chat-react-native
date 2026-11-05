@@ -63,12 +63,14 @@ export const AttachmentTypePickerButton = ({
 
 export const MediaPickerButton = () => {
   const { hasImagePicker, pickAndUploadImageFromNativePicker } = useMessageInputContext();
-  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker, dismissPicker } =
+    useAttachmentPickerContext();
   const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
-  const setImagePicker = useStableCallback(() => {
+  const setImagePicker = useStableCallback(async () => {
     if (disableAttachmentPicker) {
+      if (dismissPicker) await dismissPicker();
       pickAndUploadImageFromNativePicker();
     } else {
       attachmentPickerStore.setSelectedPicker('images');
@@ -87,22 +89,25 @@ export const MediaPickerButton = () => {
 };
 
 export const CameraPickerButton = () => {
-  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker, dismissPicker } =
+    useAttachmentPickerContext();
   const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { hasCameraPicker, takeAndUploadImage } = useMessageInputContext();
 
-  const onCameraPickerPress = useStableCallback(() => {
+  const onCameraPickerPress = useStableCallback(async () => {
     if (disableAttachmentPicker) {
+      if (dismissPicker) await dismissPicker();
       takeAndUploadImage(Platform.OS === 'android' ? 'image' : 'mixed');
     } else {
       attachmentPickerStore.setSelectedPicker('camera-photo');
     }
   });
 
-  const onVideoRecorderPickerPress = useStableCallback(() => {
+  const onVideoRecorderPickerPress = useStableCallback(async () => {
     if (disableAttachmentPicker) {
+      if (dismissPicker) await dismissPicker();
       takeAndUploadImage('video');
     } else {
       attachmentPickerStore.setSelectedPicker('camera-video');
@@ -131,16 +136,18 @@ export const CameraPickerButton = () => {
 };
 
 export const FilePickerButton = () => {
-  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker, dismissPicker } =
+    useAttachmentPickerContext();
   const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { hasFilePicker, pickFile } = useMessageInputContext();
 
-  const openFilePicker = useStableCallback(() => {
+  const openFilePicker = useStableCallback(async () => {
     if (!disableAttachmentPicker) {
       attachmentPickerStore.setSelectedPicker('files');
     }
+    if (dismissPicker) await dismissPicker();
     pickFile();
   });
 
@@ -156,7 +163,8 @@ export const FilePickerButton = () => {
 };
 
 export const PollPickerButton = () => {
-  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { attachmentPickerStore, disableAttachmentPicker, dismissPicker } =
+    useAttachmentPickerContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const { threadList } = useChannelContext();
@@ -166,10 +174,11 @@ export const PollPickerButton = () => {
 
   const { openPollCreationDialog, sendMessage } = useMessageInputContext();
 
-  const openPollCreationModal = useStableCallback(() => {
+  const openPollCreationModal = useStableCallback(async () => {
     if (!disableAttachmentPicker) {
       attachmentPickerStore.setSelectedPicker('polls');
     }
+    if (dismissPicker) await dismissPicker();
     openPollCreationDialog?.({ sendMessage });
   });
 
@@ -187,12 +196,13 @@ export const PollPickerButton = () => {
 export const CommandsPickerButton = () => {
   const [showCommandsSheet, setShowCommandsSheet] = useState(false);
   const { hasCommands } = useMessageInputContext();
-  const { attachmentPickerStore, disableAttachmentPicker } = useAttachmentPickerContext();
+  const { attachmentPickerPresentation, attachmentPickerStore, disableAttachmentPicker } =
+    useAttachmentPickerContext();
   const { icons } = useComponentsContext();
   const { selectedPicker } = useAttachmentPickerState();
 
   const setCommandsPicker = useStableCallback(() => {
-    if (disableAttachmentPicker) {
+    if (disableAttachmentPicker && attachmentPickerPresentation !== 'modal') {
       setShowCommandsSheet(true);
     } else {
       attachmentPickerStore.setSelectedPicker('commands');

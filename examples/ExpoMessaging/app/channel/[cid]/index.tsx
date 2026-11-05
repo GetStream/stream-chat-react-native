@@ -15,6 +15,7 @@ import {
   useChatContext,
 } from 'stream-chat-expo';
 
+import { attachmentPickerPresentation } from '../../../components/attachmentPicker';
 import { AuthProgressLoader } from '../../../components/AuthProgressLoader';
 import { AppContext } from '../../../context/AppContext';
 
@@ -101,6 +102,7 @@ export default function ChannelScreen() {
         }}
       />
       <Channel
+        attachmentPickerPresentation={attachmentPickerPresentation}
         audioRecordingEnabled={true}
         channel={channel}
         onPressMessage={onPressMessage}

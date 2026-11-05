@@ -1,6 +1,6 @@
 /* global __dirname, process, require */
 /**
- * Keeps the `ai-components` entry point isolated from the main SDK entry point, in both directions.
+ * Keeps optional entry points isolated from the main SDK entry point.
  *
  * Metro does not tree-shake: everything reachable from an imported module ends up in the app's
  * bundle. So:
@@ -35,6 +35,9 @@ const AI_ONLY_PACKAGES = [
   'victory-native',
   'zod',
 ];
+
+// Expo UI is an optional peer, reachable only through the attachment-picker entry point.
+const MAIN_FORBIDDEN_PACKAGES = [...AI_ONLY_PACKAGES, '@expo/ui'];
 
 // Files outside `src/ai-components` that the AI entry points are allowed to reach.
 const AI_ALLOWED_FILES = [
@@ -171,8 +174,8 @@ for (const entry of [
     }
   }
   for (const [specifier, chain] of packages) {
-    if (AI_ONLY_PACKAGES.includes(packageNameOf(specifier))) {
-      report(`${relative(entry)} reaches the AI-only dependency "${specifier}"`, chain);
+    if (MAIN_FORBIDDEN_PACKAGES.includes(packageNameOf(specifier))) {
+      report(`${relative(entry)} reaches the optional-entry dependency "${specifier}"`, chain);
     }
   }
 }

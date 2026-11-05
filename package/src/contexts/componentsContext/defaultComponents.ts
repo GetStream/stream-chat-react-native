@@ -20,6 +20,7 @@ import { UnsupportedAttachment } from '../../components/Attachment/UnsupportedAt
 import { URLPreview } from '../../components/Attachment/UrlPreview';
 import { URLPreviewCompact } from '../../components/Attachment/UrlPreview/URLPreviewCompact';
 import { VideoThumbnail } from '../../components/Attachment/VideoThumbnail';
+import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPicker';
 import { AttachmentPickerContent } from '../../components/AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../components/AttachmentPicker/components/AttachmentPickerSelectionBar';
 import { ImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
@@ -394,6 +395,7 @@ const components = {
   Attachment,
   AttachmentUploadIndicator,
   AttachButton,
+  AttachmentPicker,
   AttachmentPickerContent,
   AttachmentPickerSelectionBar,
   AttachmentUploadPreviewList,

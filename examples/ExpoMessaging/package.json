@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@expo/ui": "~58.0.26",
     "@notifee/react-native": "^9.1.8",
     "@op-engineering/op-sqlite": "^18.2.5",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -19,7 +20,7 @@
     "@react-native-firebase/app": "^24.0.0",
     "@react-native-firebase/messaging": "^24.0.0",
     "@shopify/flash-list": "^2.3.3",
-    "expo": "^58.0.8",
+    "expo": "^58.0.9",
     "expo-asset": "~58.0.14",
     "expo-audio": "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch",
     "expo-build-properties": "~58.0.10",

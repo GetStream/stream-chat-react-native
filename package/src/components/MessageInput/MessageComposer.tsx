@@ -212,7 +212,9 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
   const styles = useStyles();
   const { selectedPicker } = useAttachmentPickerState();
-  const { attachmentPickerBottomSheetHeight, bottomInset } = useAttachmentPickerContext();
+  const { attachmentPickerBottomSheetHeight, attachmentPickerPresentation, bottomInset } =
+    useAttachmentPickerContext();
+  const isInlinePickerOpen = !!selectedPicker && attachmentPickerPresentation !== 'modal';
   const messageComposer = useMessageComposer();
 
   const { height } = useStateStore(messageInputHeightStore.store, messageInputHeightStoreSelector);
@@ -318,7 +320,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
   const safeAreaBottomOffset = Platform.OS === 'android' ? bottom + 16 : bottom;
   const BOTTOM_OFFSET =
-    isKeyboardVisible || selectedPicker ? 16 : bottom ? safeAreaBottomOffset : 16;
+    isKeyboardVisible || isInlinePickerOpen ? 16 : bottom ? safeAreaBottomOffset : 16;
 
   const micPositionContextValue = useMemo(
     () => ({ micPositionX, micPositionY }),
@@ -330,7 +332,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
         <View
           style={{
             paddingBottom:
-              selectedPicker && !isKeyboardVisible
+              isInlinePickerOpen && !isKeyboardVisible
                 ? attachmentPickerBottomSheetHeight - bottomInset
                 : 0,
           }}
@@ -343,7 +345,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                 styles.floatingWrapper,
                 {
                   bottom:
-                    selectedPicker && !isKeyboardVisible
+                    isInlinePickerOpen && !isKeyboardVisible
                       ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
                       : BOTTOM_OFFSET,
                 },
@@ -362,7 +364,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
             }) => {
               messageInputHeightStore.setHeight(
                 newHeight -
-                  (selectedPicker && !isKeyboardVisible
+                  (isInlinePickerOpen && !isKeyboardVisible
                     ? attachmentPickerBottomSheetHeight - bottomInset
                     : 0),
               );
@@ -378,7 +380,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                       borderTopColor: semantics.borderCoreSubtle,
                       // paddingBottom: BOTTOM_OFFSET,
                       paddingBottom:
-                        selectedPicker && !isKeyboardVisible
+                        isInlinePickerOpen && !isKeyboardVisible
                           ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
                           : BOTTOM_OFFSET,
                     },

@@ -2515,6 +2515,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/ui@npm:~58.0.26":
+  version: 58.0.26
+  resolution: "@expo/ui@npm:58.0.26"
+  dependencies:
+    sf-symbols-typescript: "npm:^2.1.0"
+  peerDependencies:
+    "@babel/core": "*"
+    expo: "*"
+    react: "*"
+    react-dom: "*"
+    react-native: "*"
+    react-native-worklets: "*"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    react-dom:
+      optional: true
+    react-native-worklets:
+      optional: true
+  checksum: 10c0/f670864f3ea4f0b43b70768eba3221190b7efb95d620f8b7a2a74426b69f28288807f372f6fffc940d81fc7e1de00f4361160d99aeaf70890387db9b015d6295
+  languageName: node
+  linkType: hard
+
 "@expo/ws-tunnel@npm:^2.0.1":
   version: 2.0.1
   resolution: "@expo/ws-tunnel@npm:2.0.1"
@@ -7301,6 +7324,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ExpoMessaging@workspace:examples/ExpoMessaging"
   dependencies:
+    "@expo/ui": "npm:~58.0.26"
     "@notifee/react-native": "npm:^9.1.8"
     "@op-engineering/op-sqlite": "npm:^18.2.5"
     "@react-native-async-storage/async-storage": "npm:2.2.0"
@@ -7312,7 +7336,7 @@ __metadata:
     "@shopify/flash-list": "npm:^2.3.3"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
-    expo: "npm:^58.0.8"
+    expo: "npm:^58.0.9"
     expo-asset: "npm:~58.0.14"
     expo-audio: "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch"
     expo-build-properties: "npm:~58.0.10"
@@ -11196,12 +11220,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-modules-core@npm:~58.0.17":
+  version: 58.0.17
+  resolution: "expo-modules-core@npm:58.0.17"
+  dependencies:
+    expo-modules-jsi: "npm:~58.0.12"
+    expo-modules-macros: "npm:0.19.1"
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-worklets: ^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0
+  peerDependenciesMeta:
+    react-native-worklets:
+      optional: true
+  checksum: 10c0/45cfd52372e584c6704d7008d80602df0b01c826ef70d278d7e9b3dad3052c054ed4b91cd433d44255f83614a630ba6592409a37c70cbe63799cfe2cde3e0196
+  languageName: node
+  linkType: hard
+
 "expo-modules-jsi@npm:~58.0.11":
   version: 58.0.11
   resolution: "expo-modules-jsi@npm:58.0.11"
   peerDependencies:
     react-native: "*"
   checksum: 10c0/434fd989c22dc79e6c3466e5f6b97c9b1edac66f78d85c6077f6bf517cae48306f5de112cf47010b4100dbbca152bd49d9122b496bc3dbb0845009f7696275ed
+  languageName: node
+  linkType: hard
+
+"expo-modules-jsi@npm:~58.0.12":
+  version: 58.0.12
+  resolution: "expo-modules-jsi@npm:58.0.12"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10c0/17d47900d3a2d5adb85098b5c009122369f459c162305a5064d8bcb7b5424a7f6ddb4837a49b8bcab25755018cd9411536b431c1594da1282e020aa1dd1991f4
   languageName: node
   linkType: hard
 
@@ -11402,6 +11453,61 @@ __metadata:
     expo-modules-autolinking: bin/autolinking
     fingerprint: bin/fingerprint
   checksum: 10c0/fefdc15bc988449a9fe0569c953a10d0b3a9d2c5cd5eba1eb7a463212a86ec3d215efd948140566bf15129a8eeae58ea37bac57bc577a2d089f0312f8986799a
+  languageName: node
+  linkType: hard
+
+"expo@npm:^58.0.9":
+  version: 58.0.9
+  resolution: "expo@npm:58.0.9"
+  dependencies:
+    "@babel/runtime": "npm:^7.20.0"
+    "@expo/cli": "npm:^58.1.7"
+    "@expo/config": "npm:~58.0.5"
+    "@expo/config-plugins": "npm:~58.0.8"
+    "@expo/devtools": "npm:~58.0.2"
+    "@expo/dom-webview": "npm:~58.0.2"
+    "@expo/fingerprint": "npm:^0.21.5"
+    "@expo/local-build-cache-provider": "npm:^58.0.5"
+    "@expo/log-box": "npm:^58.0.12"
+    "@expo/log-box-utils": "npm:^58.0.2"
+    "@expo/metro": "npm:~58.0.0-rc.0"
+    "@expo/metro-config": "npm:~58.0.12"
+    "@ungap/structured-clone": "npm:^1.3.0"
+    babel-preset-expo: "npm:~58.0.13"
+    expo-asset: "npm:~58.0.14"
+    expo-constants: "npm:~58.0.11"
+    expo-file-system: "npm:~58.0.9"
+    expo-font: "npm:~58.0.8"
+    expo-keep-awake: "npm:~58.0.3"
+    expo-modules-autolinking: "npm:~58.0.12"
+    expo-modules-core: "npm:~58.0.17"
+    pretty-format: "npm:^29.7.0"
+    react-refresh: "npm:^0.14.2"
+    whatwg-url-minimum: "npm:^0.2.0"
+  peerDependencies:
+    "@expo/dom-webview": "*"
+    "@expo/metro-runtime": "*"
+    react: "*"
+    react-dom: "*"
+    react-native: "*"
+    react-native-web: "*"
+    react-native-webview: "*"
+  peerDependenciesMeta:
+    "@expo/dom-webview":
+      optional: true
+    "@expo/metro-runtime":
+      optional: true
+    react-dom:
+      optional: true
+    react-native-web:
+      optional: true
+    react-native-webview:
+      optional: true
+  bin:
+    expo: bin/cli
+    expo-modules-autolinking: bin/autolinking
+    fingerprint: bin/fingerprint
+  checksum: 10c0/fb81d6e531950c642aeff546a626845695e965a20794ba30ee42131723a0a3632defcbd1995d7d334a00b084537ca8bd844cefc5633052ba9692a4554c2677f2
   languageName: node
   linkType: hard
 
@@ -20058,6 +20164,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "stream-chat-expo@workspace:package/expo-package"
   dependencies:
+    "@expo/ui": "npm:~58.0.26"
     "@stream-io/typescript-config": "workspace:^"
     expo: "npm:^58.0.8"
     expo-audio: "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch"
@@ -20066,6 +20173,7 @@ __metadata:
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
   peerDependencies:
+    "@expo/ui": ">=58.0.26 <59.0.0"
     "@shopify/react-native-skia": ">=2.0.0"
     expo: ">=52.0.0"
     expo-audio: "*"
@@ -20082,6 +20190,8 @@ __metadata:
     react-native: ">=0.76.0"
     victory-native: ">=41.0.0"
   peerDependenciesMeta:
+    "@expo/ui":
+      optional: true
     "@shopify/react-native-skia":
       optional: true
     expo-audio:

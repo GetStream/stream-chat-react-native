@@ -1,0 +1,13 @@
+steps:
+  - echo: Open attachments; expect the native Expo sheet with its Close button.
+  - tap:
+      id: attach-button
+  - tool: await-ui-element
+    args:
+      condition: visible
+      selector:
+        identifier: expo-attachment-picker-close
+      timeoutMs: 5000
+executionPrerequisite: ExpoMessaging running with the Expo attachment picker
+  enabled, signed in, and a channel open with the attach button visible,
+  keyboard and sheet closed. Do not send messages.

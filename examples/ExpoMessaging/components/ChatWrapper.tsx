@@ -1,10 +1,11 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 
 import { UserResponse } from 'stream-chat';
 import {
   Chat,
   enTranslations,
   OverlayProvider,
+  setupCommandUIMiddlewares,
   SqliteClient,
   Streami18n,
   useCreateChatClient,
@@ -39,6 +40,13 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   });
 
   usePushNotifications({ chatClient });
+
+  useEffect(() => {
+    chatClient?.setMessageComposerSetupFunction(({ composer }) => {
+      // Apply to channel and thread composers, including commands selected from the picker.
+      setupCommandUIMiddlewares(composer);
+    });
+  }, [chatClient]);
 
   streami18n.registerTranslation('en', {
     ...enTranslations,

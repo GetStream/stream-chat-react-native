@@ -1,0 +1,29 @@
+steps:
+  - echo: Open the attachment picker; expect the Expo native modal and its Close
+      button.
+  - tap:
+      id: attach-button
+  - await:
+      visible:
+        id: expo-attachment-picker-close
+      timeout: 5000
+  - await:
+      idle: true
+  - echo: Close the native sheet; expect the Close button to disappear and the
+      composer to return.
+  - tap:
+      id: expo-attachment-picker-close
+  - await:
+      hidden:
+        id: expo-attachment-picker-close
+      timeout: 5000
+  - await:
+      visible:
+        id: auto-complete-text-input
+      timeout: 5000
+  - await:
+      idle: true
+executionPrerequisite: iOS ExpoMessaging demo signed in with a channel open,
+  Expo attachment picker enabled, notifications/log overlays dismissed, keyboard
+  and sheet closed. Photo access must be granted for replay. Do not send
+  messages.
