@@ -321,18 +321,20 @@ The label of the message an action sends is the text of the control the person t
 
 `createA2UIRenderer` draws all 18 components of A2UI's basic catalog natively, and takes:
 
-| Name         | Description                                                                                                          |
-| ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `components` | Your own views for basic components, by type, such as `{ Card: MyCard }`. Each gets the node and its resolved props. |
-| `icons`      | Your own icons for the names `Icon` takes, over the Material icons drawn by default.                                 |
-| `removing`   | Basic components or functions to leave out, such as `['Video']`. The agent's instructions leave them out too.        |
-| `locale`     | The locale numbers and dates are formatted in. `en-US` by default.                                                   |
-| `catalogId`  | The id of the catalog with your own components.                                                                      |
-| `onError`    | Called with what was wrong in a reply's A2UI. The rest of the reply still shows. Logged by default.                  |
+| Name           | Description                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `components`   | Your own views for basic components, by type, such as `{ Card: MyCard }`. Each gets the node and its resolved props. |
+| `icons`        | Your own icons for the names `Icon` takes, over the Material icons drawn by default.                                 |
+| `removing`     | Basic components or functions to leave out, such as `['Video']`. The agent's instructions leave them out too.        |
+| `locale`       | The locale numbers and dates are formatted in. `en-US` by default.                                                   |
+| `mediaUrl`     | Decides what an `Image`, `Video` or `AudioPlayer` loads for a link. Public web links only by default.                |
+| `instructions` | What you tell the model before A2UI's own instructions, such as which answers to write as UI.                        |
+| `catalogId`    | The id of the catalog with your own components.                                                                      |
+| `onError`      | Called with what was wrong in a reply's A2UI. The rest of the reply still shows. Logged by default.                  |
 
 **Your own components.** Define a component with `defineAIUIComponent(definition, View)` and pass it to the host's `components`. The definition is portable JSON (name, description, parameters, events), so the same `UIComponents.json` can describe it to the agent and to the Swift and Android apps. A component calls `context.emit(name, label, payload)` to send an action.
 
-**Tools.** The host's `tools` are functions of yours that a reply's UI can call, such as reading something on the device. They run without asking the person, so only pass ones that are safe to run that way.
+**Tools.** The host's `tools` are functions of yours that a reply's UI can call, such as reading something on the device. They are the same `AIClientTool`s an `AIClientToolRunner` takes, so a tool is defined once. A tool runs by itself as a reply shows only when its definition says it is read-only (`annotations: { readOnlyHint: true }`); any other runs only from something the person did, such as a tap. Output that isn't JSON is refused, and what the person typed into a password field never reaches a tool.
 
 **Instructions for the model.** `await ui.capabilities()` returns what the backend needs to tell the model: each renderer's format and instructions, your components and your tools. To write them yourself, use `a2uiInstructions({ components, removing, tools, examples })`, which refuses examples that wouldn't render. `a2uiProblems(text)` checks a reply's A2UI the same way.
 
@@ -340,7 +342,7 @@ The label of the message an action sends is the text of the control the person t
 
 **Theming.** The theme's `a2ui` key styles the basic components: `colors` (`accent`, `onAccent`, `text`, `secondaryText`, `surface`, `subtleSurface`, `border`, `error`) and one style per part (`surfaces`, `card`, `button`, `buttonText`, `input`, `label`, `chip`, `chipText`, `tab`, `tabText`, `divider`, `caption`, `image`).
 
-**Media.** `Video` and `AudioPlayer` play in place with the player you registered for the chat SDK's own video and voice messages. Without one they show a link that opens where the device plays it.
+**Media.** `Image`, `Video` and `AudioPlayer` load only public web links by default, never addresses on the person's network such as `192.168.1.1` or `localhost`, since the agent writes the links. Pass `mediaUrl` to decide otherwise. `Video` and `AudioPlayer` play in place with the player you registered for the chat SDK's own video and voice messages. Without one they show a link that opens where the device plays it.
 
 ### Theming
 

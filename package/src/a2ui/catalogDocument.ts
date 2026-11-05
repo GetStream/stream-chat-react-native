@@ -8,7 +8,7 @@ import type {
   AIUIJSONSchema,
 } from '../ai-components/generative-ui/AIUIComponentDefinition';
 import { aiUISentence, aiUITypeName } from '../ai-components/generative-ui/AIUIHelpers';
-import type { AIUIClientToolDefinition } from '../ai-components/generative-ui/AIUIHost';
+import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClientToolRunner';
 
 /** The id of the catalog with the app's components, unless the renderer is given another. */
 export const A2UI_DEFAULT_CATALOG_ID = 'getstream.io:app-catalog';
@@ -34,7 +34,7 @@ const dynamic = (schema: AIUIJSONSchema) => ({
  * writes, such as to fill a list with what the tool answers. Its arguments are its input's
  * properties, each, with `bindings`, also bound to the data model or worked out by a function.
  */
-const toolFunctionOf = (tool: AIUIClientToolDefinition, bindings: boolean) => {
+const toolFunctionOf = (tool: AIClientToolDefinition, bindings: boolean) => {
   const schema = tool.inputSchema ?? {};
   const properties =
     typeof schema.properties === 'object' && schema.properties !== null
@@ -73,7 +73,7 @@ const toolFunctionOf = (tool: AIUIClientToolDefinition, bindings: boolean) => {
 export const a2uiAppCatalogDocument = (
   catalogId: string,
   components: (AIUIComponent | AIUIComponentDefinition)[],
-  { bindings = true, tools = [] }: { bindings?: boolean; tools?: AIUIClientToolDefinition[] } = {},
+  { bindings = true, tools = [] }: { bindings?: boolean; tools?: AIClientToolDefinition[] } = {},
 ) => ({
   catalogId,
   components: Object.fromEntries(

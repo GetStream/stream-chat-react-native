@@ -2,7 +2,9 @@ import type { ReactNode } from 'react';
 
 import type { AIUIComponent } from './AIUIComponent';
 import type { AIUIDocument, AIUIFormat } from './AIUIDocument';
-import type { AIUIClientToolDefinition, AIUIHost } from './AIUIHost';
+import type { AIUIHost } from './AIUIHost';
+
+import type { AIClientToolDefinition } from '../tool-calls/AIClientToolRunner';
 
 /**
  * Shows the documents of one conversation in a renderer's format. A host makes one per
@@ -48,7 +50,7 @@ export type AIUIRenderer = {
   capabilities?: (
     components: AIUIComponent[],
     /** The app's tools a reply's UI can run, which the agent can be told about too. */
-    tools: AIUIClientToolDefinition[],
+    tools: AIClientToolDefinition[],
   ) => Record<string, unknown> | Promise<Record<string, unknown>>;
   /** Whether it reads documents of `version`, or of no version. Every version by default. */
   supports?: (version: string | undefined) => boolean;

@@ -9,8 +9,6 @@ export const A2UIEngineContext = createContext<A2UIEngine | undefined>(undefined
 export const A2UIReplyContext = createContext<
   | {
       isStreaming: boolean;
-      /** Keeps what is written at `path` of a surface's data model from the agent. */
-      keepSecret: (surfaceId: string, path: string) => void;
       messageId: string;
     }
   | undefined

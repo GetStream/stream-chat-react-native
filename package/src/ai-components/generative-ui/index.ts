@@ -37,12 +37,12 @@ export {
   parseAIUIDocument,
 } from './AIUIDocument';
 export { AIUICascade, AIUIEntrance, AIUIEntranceStage, useAIUIEntrance } from './AIUIEntrance';
+export { AIUIHost, type AIUIHostOptions, AIUIToolError, isWebOrEmailLink } from './AIUIHost';
 export {
-  type AIUIClientTool,
-  type AIUIClientToolDefinition,
-  AIUIHost,
-  type AIUIHostOptions,
-  isWebOrEmailLink,
-} from './AIUIHost';
+  aiUIMediaSource,
+  type AIUIMediaURL,
+  aiUIPublicMediaURL,
+  isPublicWebURL,
+} from './AIUIMedia';
 export type { AIUIEngine, AIUIRenderer } from './AIUIRenderer';
 export { AIUIView, type AIUIViewProps, useAIUIHostRefresh } from './AIUIView';

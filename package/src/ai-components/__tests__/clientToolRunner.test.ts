@@ -149,6 +149,28 @@ describe('AIClientToolRunner', () => {
     });
   });
 
+  it('reports output that isn’t JSON as failed, and sends JSON as JSON', async () => {
+    const looped: Record<string, unknown> = {};
+    looped.self = looped;
+    const send = jest.fn(() => Promise.resolve());
+    const at = new Date('2026-11-05T09:00:00Z');
+    runnerWith([
+      { definition: { name: 'athena_device_location' }, run: () => ({ output: looped }) },
+    ]).run(awaiting(), send);
+    await settle();
+    expect(send).toHaveBeenLastCalledWith(expect.anything(), {
+      failure: "The tool's output isn't JSON",
+    });
+
+    runnerWith([
+      { definition: { name: 'athena_device_location' }, run: () => ({ output: { at } }) },
+    ]).run(awaiting(), send);
+    await settle();
+    expect(send).toHaveBeenLastCalledWith(expect.anything(), {
+      output: { at: '2026-11-05T09:00:00.000Z' },
+    });
+  });
+
   it('sorts its tool names and keeps the first tool of a name', async () => {
     const named = (name: string) =>
       ({

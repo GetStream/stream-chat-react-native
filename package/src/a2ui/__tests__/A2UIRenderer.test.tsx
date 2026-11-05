@@ -12,6 +12,11 @@ import {
   parseAIUIDocument,
   StreamTheme,
 } from '../../ai-components';
+import { aiUIMediaSource, isPublicWebURL } from '../../ai-components/generative-ui/AIUIMedia';
+import type {
+  AIClientTool,
+  AIClientToolDefinition,
+} from '../../ai-components/tool-calls/AIClientToolRunner';
 import { ohridLines, uiComponents } from '../../mock-builders/a2ui/ohrid';
 import { NativeHandlers } from '../../native';
 import { a2uiMessagesIn, normalizeA2UIMessage, supportsA2UIVersion } from '../A2UIStream';
@@ -437,6 +442,10 @@ describe('what the person types into an obscured field', () => {
                 },
               },
               name: 'sign_in',
+              userMessage: {
+                '@call': 'formatString',
+                args: { value: 'Signing in with ${/account/password}' },
+              },
             },
           }),
         ],
@@ -451,12 +460,17 @@ describe('what the person types into an obscured field', () => {
     fireEvent.press(screen.getByRole('button', { name: 'Sign in' }));
   };
 
-  it('never reaches the agent in an action’s context, written out or within text', async () => {
+  it('never reaches the agent in an action’s context or its message, bound or within text', async () => {
     const { sent, ui } = setup();
     await renderReply(ui, signIn());
     await fillIn();
     await waitFor(() => expect(sent).toHaveLength(1));
-    expect(sent[0]?.payload.context).toEqual({ email: 'ana@example.com' });
+    // The key bound to the field goes; text written with the password goes without it.
+    expect(sent[0]?.payload.context).toEqual({
+      email: 'ana@example.com',
+      said: 'My password is ',
+    });
+    expect(sent[0]?.payload.userMessage).toBe('Signing in with');
     expect(sent[0]?.payload).not.toHaveProperty('dataModel');
     expect(JSON.stringify(sent[0])).not.toContain('hunter22');
   });
@@ -508,13 +522,14 @@ describe('parseMoment and formatMoment', () => {
 });
 
 describe('withoutSecrets and withoutPaths', () => {
-  it('leave out what holds a secret, in objects and lists, and a short one only when whole', () => {
+  it('cut a secret out of every string, in objects and lists', () => {
     expect(
-      withoutSecrets({ a: 'hunter22', b: ['x', 'my hunter22'], c: { d: 'keep', e: 'hunter22' } }, [
+      withoutSecrets({ a: 'hunter22', b: ['x', 'my hunter22'], c: { d: 'keep', e: 1 } }, [
         'hunter22',
+        '',
       ]),
-    ).toEqual({ b: ['x'], c: { d: 'keep' } });
-    expect(withoutSecrets({ a: 'abc', b: 'abcdef' }, ['abc'])).toEqual({ b: 'abcdef' });
+    ).toEqual({ a: '', b: ['x', 'my '], c: { d: 'keep', e: 1 } });
+    expect(withoutSecrets('Signing in with abc', ['abc'])).toBe('Signing in with ');
     expect(withoutSecrets({ a: 1 }, [])).toEqual({ a: 1 });
   });
 
@@ -532,6 +547,7 @@ describe('withoutSecrets and withoutPaths', () => {
 
 describe('the app’s tools in a reply’s UI', () => {
   const weather = {
+    annotations: { readOnlyHint: true },
     description: 'The weather in a city today.',
     inputSchema: {
       properties: { city: { description: 'The city', type: 'string' } },
@@ -540,6 +556,14 @@ describe('the app’s tools in a reply’s UI', () => {
     },
     name: 'weather',
   };
+  // A tool as the app gives it, whose output is what `run` resolves to.
+  const toolOf = (
+    definition: AIClientToolDefinition,
+    run: (args: Record<string, unknown>) => unknown,
+  ): AIClientTool => ({
+    definition,
+    run: async (call) => ({ output: await run(call.arguments as Record<string, unknown>) }),
+  });
 
   const withTools = (tools: ConstructorParameters<typeof AIUIHost>[0]['tools']) => {
     const errors: { code: string; message: string }[] = [];
@@ -568,7 +592,7 @@ describe('the app’s tools in a reply’s UI', () => {
     const run = jest.fn(({ city }: Record<string, unknown>) =>
       Promise.resolve(`Sunny in ${String(city)}`),
     );
-    const { errors, ui } = withTools([{ ...weather, run }]);
+    const { errors, ui } = withTools([toolOf(weather, run)]);
     await renderReply(ui, forecast);
     await waitFor(() => expect(screen.getByText(/Sunny in Ohrid/)).toBeTruthy());
     expect(run).toHaveBeenCalledWith({ city: 'Ohrid' });
@@ -576,8 +600,9 @@ describe('the app’s tools in a reply’s UI', () => {
   });
 
   it('tells the agent about the tools it can call, with what they take', async () => {
-    const { ui } = withTools([{ ...weather, run: () => 'Sunny' }]);
-    const { renderers } = await ui.capabilities();
+    const { ui } = withTools([toolOf(weather, () => 'Sunny')]);
+    const { renderers, tools } = await ui.capabilities();
+    expect(tools).toEqual([weather]);
     const { instructions } = renderers[0] as unknown as { instructions: string };
     expect(instructions).toContain('"weather"');
     expect(instructions).toContain('The weather in a city today.');
@@ -586,7 +611,7 @@ describe('the app’s tools in a reply’s UI', () => {
 
   it('shows the rest of the UI when a tool fails, and says so', async () => {
     const { errors, ui } = withTools([
-      { ...weather, run: () => Promise.reject(new Error('No forecast')) },
+      toolOf(weather, () => Promise.reject(new Error('No forecast'))),
     ]);
     await renderReply(ui, forecast);
     await waitFor(() => expect(screen.getByText(/Ohrid today/)).toBeTruthy());
@@ -594,8 +619,58 @@ describe('the app’s tools in a reply’s UI', () => {
     expect(screen.queryByText(/Sunny/)).toBeNull();
   });
 
+  it('tells the model the app’s own instructions first', async () => {
+    const ui = new AIUIHost({
+      renderers: [createA2UIRenderer({ instructions: '  Write every trip plan as UI. ' })],
+      send: jest.fn(),
+    });
+    const { renderers } = await ui.capabilities();
+    const { instructions } = renderers[0] as unknown as { instructions: string };
+    expect(instructions.startsWith('Write every trip plan as UI.')).toBe(true);
+  });
+
+  it('runs a tool that changes something only when the person asks, never as the reply shows', async () => {
+    const run = jest.fn(() => 'Sunny');
+    const { errors, ui } = withTools([
+      toolOf({ ...weather, annotations: { readOnlyHint: false } }, run),
+    ]);
+    await renderReply(ui, forecast);
+    await waitFor(() => expect(screen.getByText(/Ohrid today/)).toBeTruthy());
+    await waitFor(() => expect(errors.length).toBeGreaterThan(0));
+    expect(errors[0]?.message).toMatch(/isn't read-only/);
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it('gives a tool none of what the person typed into an obscured field', async () => {
+    const run = jest.fn((args: Record<string, unknown>) => `Sunny in ${String(args.city)}`);
+    const { ui } = withTools([toolOf(weather, run)]);
+    await renderReply(
+      ui,
+      surfaceOf(
+        [
+          { children: ['secret', 'sky'], component: 'Column', id: 'root' },
+          {
+            component: 'TextField',
+            id: 'secret',
+            label: 'Password',
+            value: { '@path': '/password' },
+            variant: 'obscured',
+          },
+          {
+            component: 'Text',
+            id: 'sky',
+            text: { '@call': 'weather', args: { city: { '@path': '/password' } } },
+          },
+        ],
+        { password: 'hunter22' },
+      ),
+    );
+    await waitFor(() => expect(run).toHaveBeenCalled());
+    expect(JSON.stringify(run.mock.calls)).not.toContain('hunter22');
+  });
+
   it('leaves out a tool that would take the name of one of the basic catalog’s functions', async () => {
-    const { errors, ui } = withTools([{ name: 'required', run: () => true }]);
+    const { errors, ui } = withTools([toolOf({ name: 'required' }, () => true)]);
     await renderReply(ui, surfaceOf([{ component: 'Text', id: 'root', text: 'Here' }]));
     await waitFor(() => expect(screen.getByText(/Here/)).toBeTruthy());
     await waitFor(() =>
@@ -729,6 +804,75 @@ describe('video and audio in a reply’s UI', () => {
     expect(links).toHaveLength(2);
     fireEvent.press(links[1]);
     expect(open).toHaveBeenCalledWith('https://example.com/song.mp3');
+  });
+});
+
+describe('the media a reply’s UI loads', () => {
+  it('tells public web links from others', () => {
+    for (const url of [
+      'https://example.com/a.jpg',
+      'http://upload.wikimedia.org/a.jpg',
+      'https://user@cdn.example.com:8443/a.mp4',
+      'https://172.32.0.1/a.jpg',
+    ]) {
+      expect([url, isPublicWebURL(url)]).toEqual([url, true]);
+    }
+    for (const url of [
+      'http://localhost:8080/a.jpg',
+      'http://127.0.0.1/a.jpg',
+      'http://10.0.0.2/a.jpg',
+      'http://172.16.4.1/a.jpg',
+      'http://192.168.1.1/admin.png',
+      'http://169.254.169.254/latest',
+      'http://printer.local/a.jpg',
+      'http://router.internal./a.jpg',
+      'http://[::1]/a.jpg',
+      'http://[fe80::1]/a.jpg',
+      'http://user@192.168.1.1/a.jpg',
+      'data:image/png;base64,AAAA',
+      'file:///etc/hosts',
+      'https:///nohost.jpg',
+    ]) {
+      expect([url, isPublicWebURL(url)]).toEqual([url, false]);
+    }
+    expect(aiUIMediaSource('  https://example.com/a.jpg ')).toBe('https://example.com/a.jpg');
+    expect(aiUIMediaSource(42)).toBeUndefined();
+  });
+
+  const image = (url: string) => surfaceOf([{ component: 'Image', id: 'root', url }]);
+  const imagesShown = () =>
+    screen.UNSAFE_root.findAll(
+      (node) => typeof node.props.source === 'object' && node.props.source?.uri !== undefined,
+    );
+
+  it('loads an image from a public link, never from the person’s network', async () => {
+    const { ui } = setup();
+    await renderReply(ui, image('http://192.168.1.1/admin.png'));
+    expect(imagesShown()).toHaveLength(0);
+    const shown = setup();
+    await renderReply(shown.ui, image('https://example.com/a.jpg'));
+    expect(imagesShown()[0]?.props.source).toEqual({ uri: 'https://example.com/a.jpg' });
+  });
+
+  it('loads what the app’s mediaUrl decides', async () => {
+    const mediaUrl = jest.fn((url: string) => (url.startsWith('http://192.168.') ? url : null));
+    const { ui } = setup({ mediaUrl });
+    await renderReply(ui, image('http://192.168.1.5/photo.jpg'));
+    expect(mediaUrl).toHaveBeenCalledWith('http://192.168.1.5/photo.jpg');
+    expect(imagesShown()[0]?.props.source).toEqual({ uri: 'http://192.168.1.5/photo.jpg' });
+  });
+
+  it('plays no video or sound from the person’s network', async () => {
+    const { ui } = setup();
+    await renderReply(
+      ui,
+      surfaceOf([
+        { children: ['clip', 'note'], component: 'Column', id: 'root' },
+        { component: 'Video', id: 'clip', url: 'http://10.0.0.2/clip.mp4' },
+        { component: 'AudioPlayer', id: 'note', url: 'http://localhost/song.mp3' },
+      ]),
+    );
+    expect(screen.queryAllByRole('button', { name: 'Play' })).toHaveLength(0);
   });
 });
 

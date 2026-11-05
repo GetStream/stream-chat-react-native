@@ -2,6 +2,7 @@ import {
   Catalog,
   type ComponentApi,
   createFunctionImplementation,
+  type DataContext,
   type FunctionApi,
   type FunctionImplementation,
 } from '@a2ui/web_core';
@@ -10,9 +11,10 @@ import { A2UI_VERSION } from './A2UIStream';
 import basicCatalogDocument from './basicCatalog.json';
 import { basicFunctionsOf } from './basicFunctions';
 import { a2uiAppCatalogDocument, a2uiTypeName } from './catalogDocument';
+import { secretValuesOf, withoutSecrets } from './secrets';
 
 import type { AIUIComponent } from '../ai-components/generative-ui/AIUIComponent';
-import type { AIUIClientToolDefinition } from '../ai-components/generative-ui/AIUIHost';
+import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClientToolRunner';
 
 /** How long a reply's UI waits for one of the app's tools before it gives up on it. */
 export const A2UI_TOOL_TIMEOUT_MS = 30_000;
@@ -45,12 +47,19 @@ export type A2UICatalogsOptions = {
   locale?: string;
   /** The basic catalog's components and functions to leave out. */
   removing?: string[];
-  /** Runs one of the app's tools, which the agent calls from the UI as a function of the catalog. */
-  runTool?: (name: string, args: Record<string, unknown>) => Promise<unknown>;
+  /**
+   * Runs one of the app's tools, which the agent calls from the UI as a function of the catalog,
+   * `userInitiated` when the person started it, such as with a tap.
+   */
+  runTool?: (
+    name: string,
+    args: Record<string, unknown>,
+    options: { userInitiated: boolean },
+  ) => Promise<unknown>;
   /** The app's tools the agent can call from the UI it writes. */
-  tools?: AIUIClientToolDefinition[];
+  tools?: AIClientToolDefinition[];
   /** Tells the app that one of its tools can't join the catalog. */
-  onToolError?: (tool: AIUIClientToolDefinition, error: unknown) => void;
+  onToolError?: (tool: AIClientToolDefinition, error: unknown) => void;
 };
 
 // Runs a tool, giving up on it after `A2UI_TOOL_TIMEOUT_MS`.
@@ -72,8 +81,9 @@ const withTimeout = (name: string, running: Promise<unknown>) =>
     );
   });
 
-// The app's tools as functions of the catalog, each running the tool. One named like a function of
-// the basic catalog is left out: the basic catalog's own come first.
+// The app's tools as functions of the catalog, each running the tool with none of what the person
+// typed into an obscured field. One named like a function of the basic catalog is left out: the
+// basic catalog's own come first.
 const toolFunctionsOf = (
   catalogId: string,
   taken: Set<string>,
@@ -96,8 +106,15 @@ const toolFunctionsOf = (
       ).functions.get(tool.name);
       if (!api) return [];
       return [
-        createFunctionImplementation(api as never, (args: Record<string, unknown>) =>
-          withTimeout(tool.name, runTool(tool.name, args ?? {})),
+        createFunctionImplementation(
+          api as never,
+          (args: Record<string, unknown>, context?: DataContext) =>
+            withTimeout(
+              tool.name,
+              runTool(tool.name, withoutSecrets(args ?? {}, secretValuesOf(context?.surface)), {
+                userInitiated: context?.isUserActivated ?? false,
+              }),
+            ),
         ) as FunctionImplementation,
       ];
     } catch (error) {

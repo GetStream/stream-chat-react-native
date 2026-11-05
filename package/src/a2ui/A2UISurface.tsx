@@ -25,6 +25,7 @@ import {
 } from '@a2ui/web_core';
 
 import { A2UIEngineContext, A2UIReplyContext } from './A2UIContexts';
+import { keepSecretPath } from './secrets';
 
 import { AIUIComponentView } from '../ai-components/generative-ui/AIUIComponent';
 import { useAIUIEntrance } from '../ai-components/generative-ui/AIUIEntrance';
@@ -161,17 +162,15 @@ const secretPathOf = (node: ComponentNode, resolved: Record<string, unknown>) =>
 
 const A2UINode = memo(({ node }: { node: ComponentNode }) => {
   const engine = useContext(A2UIEngineContext);
-  const reply = useContext(A2UIReplyContext);
   const axis = useContext(A2UIAxisContext);
   const resolved = useSignalValue(node.props) as Record<string, unknown>;
   const props = useMemo(() => viewPropsOf(resolved), [resolved]);
   // Before the person can type: whichever view draws the field, what they type stays theirs.
   const secretPath = secretPathOf(node, resolved);
-  const surfaceId = node.context?.dataContext.surface?.id;
-  const keepSecret = reply?.keepSecret;
+  const surface = node.context?.dataContext.surface;
   useLayoutEffect(() => {
-    if (secretPath && surfaceId) keepSecret?.(surfaceId, secretPath);
-  }, [keepSecret, secretPath, surfaceId]);
+    if (secretPath && surface) keepSecretPath(surface, secretPath);
+  }, [secretPath, surface]);
   const { scope, style } = useAIUIEntrance();
   if (!engine || node.isPlaceholder || node.state !== 'resolved') return null;
   const View = engine.components[node.type];

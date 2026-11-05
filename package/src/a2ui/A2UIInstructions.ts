@@ -4,7 +4,7 @@ import { A2UI_VERSION } from './A2UIStream';
 import type { AIUIComponent } from '../ai-components/generative-ui/AIUIComponent';
 import type { AIUIComponentDefinition } from '../ai-components/generative-ui/AIUIComponentDefinition';
 import { isRecord } from '../ai-components/generative-ui/AIUIHelpers';
-import type { AIUIClientToolDefinition } from '../ai-components/generative-ui/AIUIHost';
+import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClientToolRunner';
 
 /**
  * What an agent is told to write replies' UI in A2UI with: the basic catalog, or the part of it
@@ -37,7 +37,7 @@ export type A2UIInstructionsConfig = {
   /** Rules added after the protocol's. */
   rules?: string[];
   /** The app's tools the agent can call from the UI it writes, as functions of the catalog. */
-  tools?: AIUIClientToolDefinition[];
+  tools?: AIClientToolDefinition[];
 };
 
 /** The A2UI an example holds that would not render, and why. */

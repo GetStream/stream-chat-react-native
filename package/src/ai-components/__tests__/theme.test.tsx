@@ -38,4 +38,22 @@ describe('ai-components theme', () => {
     });
     expect(preMerged.current.theme).toBe(mergedStyle);
   });
+  it('draws the conversation’s parts in the app’s palette when it changes it, as for dark mode', () => {
+    const dark = mergeThemes({
+      style: {
+        colors: { black: '#FFFFFF', grey_whisper: '#27272F', white: '#050509' },
+        suggestions: { text: '#FF0000' },
+      },
+    });
+    expect(dark.message?.userMessageBackground).toBe('#27272F');
+    expect(dark.message?.userMessageText).toBe('#FFFFFF');
+    expect(dark.conversation?.scrollButtonBackground).toBe('#050509');
+    // A part the style sets keeps its own; one drawn in a color it left alone keeps the design's.
+    expect(dark.suggestions?.text).toBe('#FF0000');
+    expect(dark.chatOptions?.chipText).toBe(defaultTheme.chatOptions?.chipText);
+    // Without palette changes, the design's own colors stay.
+    expect(mergeThemes({ style: { conversation: {} } }).message?.userMessageBackground).toBe(
+      defaultTheme.message?.userMessageBackground,
+    );
+  });
 });

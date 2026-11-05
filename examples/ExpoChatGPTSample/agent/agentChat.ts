@@ -25,6 +25,9 @@ export class AgentChat {
   /** Each reply's thinking in full, from its live updates. A stored step only keeps its opening. */
   readonly reasoning = new LiveReasoning();
 
+  /** Whether the person asked something here, which may not have arrived in `messages` yet. */
+  wasAsked = false;
+
   readonly state = new StateStore<AgentChatState>({
     hasOlderMessages: false,
     isLoaded: false,

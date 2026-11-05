@@ -18,7 +18,11 @@ import {
   signInLaunchUrl,
   StreamTheme,
 } from '../index';
+import { forgetCallStates } from '../message-parts/callStates';
 import NativeAIAgent from '../native-specs/NativeAIAgent';
+
+// Each test's questions start unanswered, though tests reuse calls.
+afterEach(forgetCallStates);
 
 jest.mock('../native-specs/NativeAIAgent', () => ({
   __esModule: true,
@@ -254,6 +258,19 @@ describe('createAuthSessionAuthorizer', () => {
 
     await authorizer.decline(signIn);
     expect(decline).toHaveBeenCalledWith(signIn);
+  });
+
+  it('takes the app’s scheme written as the start of a URL', async () => {
+    for (const written of ['myapp://', 'myapp:', ' myapp:/ ']) {
+      const authorizer = createAuthSessionAuthorizer({
+        callbackScheme: written,
+        decline: jest.fn(),
+      });
+      expect(authorizer.callbackScheme).toBe('myapp');
+      native.openAuthSession.mockResolvedValueOnce('');
+      await authorizer.connect(signIn);
+      expect(native.openAuthSession).toHaveBeenLastCalledWith(expect.any(String), 'myapp');
+    }
   });
 
   it('lets a closed sign-in be tried again with declineOnClose off', async () => {

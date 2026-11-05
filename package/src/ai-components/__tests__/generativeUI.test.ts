@@ -10,6 +10,7 @@ import {
   AIUICascade,
   aiUIComponentDefinitionJSON,
   AIUIHost,
+  AIUIToolError,
   AIUIParameterType,
   type AIUIRenderer,
   decodeAIUIArguments,
@@ -519,13 +520,58 @@ describe('AIUIHost', () => {
     const ui = new AIUIHost({
       renderers: [],
       send: jest.fn(),
-      tools: [{ name: 'weather', run: ({ city }) => ({ city, sky: 'clear' }) }],
+      tools: [
+        {
+          definition: { annotations: { readOnlyHint: true }, name: 'weather' },
+          run: (call) => ({
+            output: { city: (call.arguments as { city: string }).city, sky: 'clear' },
+          }),
+        },
+      ],
     });
     await expect(ui.runTool('weather', { city: 'Ohrid' })).resolves.toEqual({
       city: 'Ohrid',
       sky: 'clear',
     });
     await expect(ui.runTool('calendar')).rejects.toThrow('No tool named calendar');
+    await expect(ui.runTool('calendar')).rejects.toBeInstanceOf(AIUIToolError);
+  });
+
+  it('runs a tool that changes something only when the person started it', async () => {
+    const run = jest.fn(() => ({ output: 'Booked' }));
+    const ui = new AIUIHost({
+      renderers: [],
+      send: jest.fn(),
+      tools: [{ definition: { name: 'book' }, run }],
+    });
+    await expect(ui.runTool('book')).rejects.toThrow("book isn't read-only");
+    expect(run).not.toHaveBeenCalled();
+    await expect(ui.runTool('book', {}, { userInitiated: true })).resolves.toBe('Booked');
+  });
+
+  it('refuses a tool’s failure and output that isn’t JSON, naming the tool', async () => {
+    const looped: Record<string, unknown> = {};
+    looped.self = looped;
+    const readOnly = { annotations: { readOnlyHint: true } };
+    const ui = new AIUIHost({
+      renderers: [],
+      send: jest.fn(),
+      tools: [
+        { definition: { ...readOnly, name: 'down' }, run: () => ({ failure: 'Offline' }) },
+        {
+          definition: { ...readOnly, name: 'broken' },
+          run: () => {
+            throw new Error('boom');
+          },
+        },
+        { definition: { ...readOnly, name: 'loop' }, run: () => ({ output: looped }) },
+        { definition: { ...readOnly, name: 'fn' }, run: () => ({ output: () => 1 }) },
+      ],
+    });
+    await expect(ui.runTool('down')).rejects.toThrow('Offline');
+    await expect(ui.runTool('broken')).rejects.toThrow('broken failed: boom');
+    await expect(ui.runTool('loop')).rejects.toThrow("loop gave output that isn't JSON");
+    await expect(ui.runTool('fn')).rejects.toThrow("fn gave output that isn't JSON");
   });
 
   it('describes the formats it reads and the app’s components to the agent’s backend', async () => {
@@ -556,6 +602,7 @@ describe('AIUIHost', () => {
         { catalog_id: 'app', components: 1, format: 'a2ui' },
         { format: 'openui', instructions: 'Write OpenUI.' },
       ],
+      tools: [],
       v: 1,
     });
     expect(ui.component('place_card')?.definition).toBe(definition);

@@ -13,6 +13,7 @@ import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.Locale
 import java.util.UUID
 
@@ -39,8 +40,13 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
   private class SignIn(
     val callbackScheme: String,
     val promise: Promise,
-    val launcher: ActivityResultLauncher<Intent>?,
+    /** The key the Auth Tab's result comes back under, or null for a Custom Tab. */
+    val resultKey: String?,
   ) {
+    /** Where the Auth Tab's result is received, and the activity it is registered on. */
+    var launcher: ActivityResultLauncher<Intent>? = null
+    var host: WeakReference<Activity>? = null
+
     /** Whether the person left the app for the Custom Tab, so coming back means it was closed. */
     var left = false
   }
@@ -91,7 +97,7 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
         ) {
           openAuthTab(activity, browser, uri, callbackScheme, promise)
         } else {
-          signIn = SignIn(callbackScheme, promise, launcher = null)
+          signIn = SignIn(callbackScheme, promise, resultKey = null)
           CustomTabsIntent.Builder().build().launchUrl(activity, uri)
         }
       } catch (error: Exception) {
@@ -108,16 +114,27 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
     callbackScheme: String,
     promise: Promise,
   ) {
-    // Registered for this sign-in alone and dropped once it answers, since a TurboModule can't
-    // register before the activity starts, as `AuthTabIntent.registerActivityResultLauncher`
-    // requires. Auth Tab's own contract only passes the intent through and reads the result's
-    // data, which is what `StartActivityForResult` does.
-    lateinit var launcher: ActivityResultLauncher<Intent>
-    launcher = activity.activityResultRegistry.register(
-      "stream-chat-ai-sign-in-${launches++}",
+    val current = SignIn(callbackScheme, promise, resultKey = "stream-chat-ai-sign-in-${launches++}")
+    signIn = current
+    val launcher = receiveResult(current, activity)
+    AgentAuthTab.launch(launcher, browser, uri, callbackScheme)
+  }
+
+  // Registers where `current`'s Auth Tab result is received, on `activity`. It is registered for
+  // this sign-in alone and dropped once it answers, since a TurboModule can't register before the
+  // activity starts, as `AuthTabIntent.registerActivityResultLauncher` requires. Auth Tab's own
+  // contract only passes the intent through and reads the result's data, which is what
+  // `StartActivityForResult` does. An activity recreated while the tab is open, such as one
+  // rotated or reclaimed in the background, keeps the result under the same key until it is
+  // registered on it again, which `onHostResume` does.
+  private fun receiveResult(current: SignIn, activity: ComponentActivity): ActivityResultLauncher<Intent> {
+    current.launcher?.unregister()
+    current.host = WeakReference(activity)
+    val launcher = activity.activityResultRegistry.register(
+      current.resultKey!!,
       ActivityResultContracts.StartActivityForResult(),
     ) { result ->
-      if (signIn?.launcher !== launcher) return@register
+      if (signIn !== current) return@register
       when (result.resultCode) {
         // Auth Tab's RESULT_OK and RESULT_CANCELED are the activity's own.
         Activity.RESULT_OK -> finish(result.data?.data?.toString() ?: "")
@@ -125,8 +142,8 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
         else -> fail("The sign-in didn't complete.")
       }
     }
-    signIn = SignIn(callbackScheme, promise, launcher)
-    AgentAuthTab.launch(launcher, browser, uri, callbackScheme)
+    current.launcher = launcher
+    return launcher
   }
 
   private fun finish(callback: String) {
@@ -148,7 +165,7 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
   override fun onNewIntent(intent: Intent) {
     val current = signIn ?: return
     val data = intent.data ?: return
-    if (current.launcher == null && data.scheme.equals(current.callbackScheme, ignoreCase = true)) {
+    if (current.resultKey == null && data.scheme.equals(current.callbackScheme, ignoreCase = true)) {
       finish(data.toString())
     }
   }
@@ -161,12 +178,20 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
   ) = Unit
 
   override fun onHostPause() {
-    signIn?.takeIf { it.launcher == null }?.left = true
+    signIn?.takeIf { it.resultKey == null }?.left = true
   }
 
   override fun onHostResume() {
     val current = signIn ?: return
-    if (current.launcher == null && current.left) finish("")
+    if (current.resultKey != null) {
+      // The activity was recreated while the Auth Tab was open: its result waits on this one.
+      val activity = reactContext.currentActivity
+      if (activity is ComponentActivity && current.host?.get() !== activity) {
+        receiveResult(current, activity)
+      }
+      return
+    }
+    if (current.left) finish("")
   }
 
   override fun onHostDestroy() = Unit

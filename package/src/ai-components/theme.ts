@@ -265,6 +265,34 @@ export type Theme = {
   };
 };
 
+/**
+ * The colors of the conversation's parts that the design sets, each with the palette color it is
+ * drawn as. A style that changes that palette color, such as for dark mode, changes the part too,
+ * unless it sets the part's own.
+ */
+export const PALETTE_COLORED_PARTS = [
+  ['conversation', 'loadingIndicator', 'grey_dark'],
+  ['conversation', 'scrollButtonBackground', 'white'],
+  ['conversation', 'scrollButtonBorder', 'grey_gainsboro'],
+  ['conversation', 'scrollButtonIcon', 'black'],
+  ['message', 'userMessageBackground', 'grey_whisper'],
+  ['message', 'userMessageText', 'black'],
+  ['message', 'messageAction', 'grey_dark'],
+  ['message', 'attachmentBackground', 'white'],
+  ['message', 'attachmentBorder', 'grey_gainsboro'],
+  ['message', 'attachmentIcon', 'white'],
+  ['message', 'attachmentIconBackground', 'accent_blue'],
+  ['message', 'attachmentName', 'black'],
+  ['message', 'attachmentDetails', 'grey_dark'],
+  ['message', 'attachmentImagePlaceholder', 'white_smoke'],
+  ['chatOptions', 'chipBackground', 'white'],
+  ['chatOptions', 'chipText', 'accent_blue'],
+  ['chatOptions', 'descriptionText', 'grey_dark'],
+  ['chatOptions', 'titleText', 'black'],
+  ['suggestions', 'background', 'grey_whisper'],
+  ['suggestions', 'text', 'black'],
+] as const satisfies readonly (readonly [keyof Theme, string, keyof typeof colors])[];
+
 export const defaultTheme: Theme = {
   colors,
   markdown: {

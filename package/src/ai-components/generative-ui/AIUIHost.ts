@@ -3,30 +3,27 @@ import { Linking } from 'react-native';
 
 import { type AIUIAction, aiUIActionProblem } from './AIUIAction';
 import type { AIUIComponent } from './AIUIComponent';
-import { type AIUIJSONSchema, aiUIComponentDefinitionJSON } from './AIUIComponentDefinition';
+import { aiUIComponentDefinitionJSON } from './AIUIComponentDefinition';
 import { type AIUIDocument, isSameAIUIDocument } from './AIUIDocument';
 import { aiUILinkScheme } from './AIUIHelpers';
 import { type AIUIEngine, type AIUIRenderer, aiUIRendererReads } from './AIUIRenderer';
 
 import type { AIMessage } from '../conversation/types';
+import type { AIToolCallPart } from '../message-parts/types';
+import type { AIClientTool, AIClientToolDefinition } from '../tool-calls/AIClientToolRunner';
 
 /**
- * One of the app's tools a reply's UI can run, such as to load data on this device. It runs
- * whenever the UI asks, without asking the person, so give the host only tools that are safe to
- * run that way. It is apart from the tools the agent calls.
+ * Why one of the app's tools didn't run for a reply's UI, or failed, in words that name the tool.
+ * The counterpart of `AIUIToolError` in StreamChatAI.
  */
-export type AIUIClientTool = {
-  name: string;
-  /** Runs the tool. What it returns is the output the UI gets. */
-  run: (args: Record<string, unknown>) => unknown;
-  /** What it does and when to use it, for the agent, which may then call it from the UI it writes. */
-  description?: string;
-  /** What it takes, as a JSON Schema object, for the agent. */
-  inputSchema?: AIUIJSONSchema;
-};
+export class AIUIToolError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AIUIToolError';
+  }
+}
 
-/** One of the app's tools as the agent is told it: everything but how it runs. */
-export type AIUIClientToolDefinition = Omit<AIUIClientTool, 'run'>;
+let toolRuns = 0;
 
 export type AIUIHostOptions = {
   /** The renderer of each format the agent writes, the first one listed asked first. */
@@ -51,8 +48,12 @@ export type AIUIHostOptions = {
    * agent writes the links, so another could call someone or act in another app.
    */
   open?: (url: string) => void;
-  /** The app's tools a reply's UI can run. */
-  tools?: AIUIClientTool[];
+  /**
+   * The app's tools a reply's UI can run, the same ones an `AIClientToolRunner` takes. A tool
+   * whose definition doesn't say it is read-only (`annotations.readOnlyHint`) runs only when the
+   * person asks for it, such as with a tap, never by itself as a reply shows.
+   */
+  tools?: AIClientTool[];
 };
 
 const WEB_OR_EMAIL = new Set(['http', 'https', 'mailto']);
@@ -91,7 +92,7 @@ export class AIUIHost {
   private readonly options: AIUIHostOptions;
   private readonly received = new Map<string, AIUIDocument>();
   private readonly states = new Map<string, unknown>();
-  private readonly tools: Map<string, AIUIClientTool>;
+  private readonly tools: Map<string, AIClientTool>;
   private refreshing = false;
   private version = 0;
 
@@ -101,18 +102,18 @@ export class AIUIHost {
     this.components = options.components ?? [];
     this.tools = new Map();
     for (const tool of options.tools ?? []) {
-      if (!this.tools.has(tool.name)) this.tools.set(tool.name, tool);
+      if (!this.tools.has(tool.definition.name)) this.tools.set(tool.definition.name, tool);
     }
   }
 
-  /** The names of the app's tools a reply's UI can run with `runTool`. */
+  /** The names of the app's tools a reply's UI can run with `runTool`, sorted. */
   get toolNames() {
-    return [...this.tools.keys()];
+    return [...this.tools.keys()].sort();
   }
 
-  /** The app's tools a reply's UI can run, as the agent is told them. */
-  get toolDefinitions(): AIUIClientToolDefinition[] {
-    return [...this.tools.values()].map(({ run: _run, ...definition }) => definition);
+  /** The app's tools a reply's UI can run, as the agent is told them, sorted by name. */
+  get toolDefinitions(): AIClientToolDefinition[] {
+    return this.toolNames.map((name) => this.tools.get(name)!.definition);
   }
 
   /** The app's component the agent places by `name`. */
@@ -264,11 +265,48 @@ export class AIUIHost {
   /** A number that changes each time the conversation should show its replies again. */
   getVersion = () => this.version;
 
-  /** Runs one of the app's tools for a reply's UI, such as to load data on this device. */
-  async runTool(name: string, args: Record<string, unknown> = {}): Promise<unknown> {
+  /**
+   * Runs one of the app's tools for a reply's UI, such as to load data on this device, and
+   * resolves to its output. A tool that isn't read-only runs only when `userInitiated`, from
+   * something the person did. Rejects with an `AIUIToolError` when the tool can't run here, fails,
+   * or gives output that isn't JSON.
+   */
+  async runTool(
+    name: string,
+    args: Record<string, unknown> = {},
+    { userInitiated = false }: { userInitiated?: boolean } = {},
+  ): Promise<unknown> {
     const tool = this.tools.get(name);
-    if (!tool) throw new Error(`No tool named ${name}`);
-    return await tool.run(args);
+    if (!tool) throw new AIUIToolError(`No tool named ${name}`);
+    if (!userInitiated && tool.definition.annotations?.readOnlyHint !== true) {
+      throw new AIUIToolError(
+        `${name} isn't read-only, so it runs only when the person asks for it`,
+      );
+    }
+    const call: AIToolCallPart = {
+      arguments: args,
+      executor: 'client',
+      id: `ui-${name}-${++toolRuns}`,
+      name,
+      status: 'awaiting_client',
+    };
+    let result;
+    try {
+      result = await tool.run(call);
+    } catch (error) {
+      throw new AIUIToolError(
+        `${name} failed${error instanceof Error && error.message ? `: ${error.message}` : ''}`,
+      );
+    }
+    if (result.failure !== undefined) throw new AIUIToolError(result.failure);
+    if (result.output === undefined) return undefined;
+    try {
+      const json = JSON.stringify(result.output);
+      if (json !== undefined) return JSON.parse(json) as unknown;
+    } catch {
+      // Not JSON, such as a value that refers to itself.
+    }
+    throw new AIUIToolError(`${name} gave output that isn't JSON`);
   }
 
   /** Opens a link from a reply's UI, as the host's `open` allows. */
@@ -293,11 +331,13 @@ export class AIUIHost {
 
   /**
    * What the agent's backend needs to write UI this app shows: each format it reads, with what
-   * its renderer adds, such as the model's instructions, and the app's components.
+   * its renderer adds, such as the model's instructions, and the app's components and tools.
    */
   async capabilities() {
     return {
       components: this.components.map(({ definition }) => aiUIComponentDefinitionJSON(definition)),
+      // The app's tools as Model Context Protocol tools.
+      tools: this.toolDefinitions,
       renderers: await Promise.all(
         this.renderers.map(async (renderer) => ({
           ...(await renderer.capabilities?.(this.components, this.toolDefinitions)),

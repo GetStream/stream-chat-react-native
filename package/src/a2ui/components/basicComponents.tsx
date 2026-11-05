@@ -146,14 +146,15 @@ const RESIZE_MODES: Record<string, ImageResizeMode> = {
   scaleDown: 'contain',
 };
 
-// Images load only from the web: the agent writes the links.
-const isWebImage = (url: string) => /^https?:\/\/[^\s/?#]+/i.test(url);
+// The address to load for a link the agent wrote, as the renderer's `mediaUrl` allows: by
+// default a public web link, never one on the person's network.
+const useMediaSource = (value: unknown) => useContext(A2UIEngineContext)?.mediaSource(value);
 
 const ImageComponent = ({ props }: A2UIComponentProps) => {
   const theme = useA2UITheme();
   const palette = usePalette();
-  const url = textOf(props.url);
-  if (!isWebImage(url)) return null;
+  const url = useMediaSource(props.url);
+  if (!url) return null;
   const size = IMAGE_SIZES[textOf(props.variant)] ?? IMAGE_SIZES.mediumFeature;
   const description = textOf(props.description);
   return (
@@ -207,18 +208,16 @@ const Icon = ({ props }: A2UIComponentProps) => {
 
 const Video = ({ props }: A2UIComponentProps) => {
   const palette = usePalette();
-  const url = textOf(props.url);
-  const poster = textOf(props.posterUrl);
-  if (!isWebImage(url)) return null;
-  return (
-    <VideoView palette={palette} posterUrl={isWebImage(poster) ? poster : undefined} url={url} />
-  );
+  const url = useMediaSource(props.url);
+  const poster = useMediaSource(props.posterUrl);
+  if (!url) return null;
+  return <VideoView palette={palette} posterUrl={poster} url={url} />;
 };
 
 const AudioPlayer = ({ props }: A2UIComponentProps) => {
   const palette = usePalette();
-  const url = textOf(props.url);
-  if (!isWebImage(url)) return null;
+  const url = useMediaSource(props.url);
+  if (!url) return null;
   return (
     <AudioView description={textOf(props.description) || undefined} palette={palette} url={url} />
   );
