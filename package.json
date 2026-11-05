@@ -12,8 +12,7 @@
     "examples/ExpoChatGPTSample"
   ],
   "resolutions": {
-    "@types/react": "^19.3.0",
-    "stream-chat": "portal:/private/tmp/claude-501/-Users-isekovanic-Projects-stream-chat-react-native/cd97beaf-b38e-4b8b-a526-e8d98ffda9ca/scratchpad/js-rc33"
+    "@types/react": "^19.3.0"
   },
   "engines": {
     "node": ">=22.13.0"
