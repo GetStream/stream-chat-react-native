@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { BackHandler, ImageProps, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  ImageProps,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,6 +29,8 @@ import {
   GetChannelActionItems,
   DEFAULT_HIGHLIGHT_DURATION,
   Chat,
+  MessageActionsParams,
+  messageActions as defaultMessageActions,
   MessageComposer,
   MessageList,
   OverlayProvider,
@@ -127,6 +138,65 @@ const ChannelScreen = ({
     [onThreadSelect],
   );
 
+  // RN-506: a message sent from a jumped-to page sometimes leaves the list there. The paginator state
+  // at the own send's echo ends up in the logcat of a failing test.
+  useEffect(() => {
+    const { unsubscribe } = channel.on('message.new', (event) => {
+      if (event.user?.id !== channel.getClient().userID) {
+        return;
+      }
+      const paginator = channel.messagePaginator;
+      const items = paginator.items ?? [];
+      console.info(
+        '[RN-506] own message.new',
+        JSON.stringify({
+          first: items[0]?.text,
+          hasMoreHead: paginator.hasMoreHead,
+          hasMoreTail: paginator.hasMoreTail,
+          isActiveIntervalAtHead: paginator.isActiveIntervalAtHead,
+          items: items.length,
+          last: items[items.length - 1]?.text,
+        }),
+      );
+    });
+    return unsubscribe;
+  }, [channel]);
+
+  // The SDK leaves hard delete out of the menu on purpose (RN-504); apps add it themselves, as here.
+  const messageActions = useCallback(
+    (params: MessageActionsParams) => {
+      const actions = defaultMessageActions(params);
+      if (!params.isMyMessage || !params.ownCapabilities.deleteOwnMessage) {
+        return actions;
+      }
+      const hardDelete = () =>
+        Alert.alert('Hard delete message', 'The message will be removed for everyone.', [
+          { style: 'cancel', text: 'Cancel' },
+          {
+            onPress: () =>
+              channel.messageOperations
+                .delete({ localMessage: params.message, options: { hard: true } })
+                .catch((error: unknown) => console.warn('Hard delete failed:', error)),
+            style: 'destructive',
+            text: 'Delete',
+          },
+        ]);
+      return [
+        ...actions,
+        {
+          action: () => {
+            params.dismissOverlay();
+            hardDelete();
+          },
+          actionType: 'hardDeleteMessage',
+          title: 'Hard Delete Message',
+          type: 'destructive' as const,
+        },
+      ];
+    },
+    [channel],
+  );
+
   // Laid out like the SampleApp's channel screen: the header lives inside <Channel>, which sizes
   // itself to the screen and handles the bottom inset and keyboard for the composer.
   return (
@@ -138,6 +208,7 @@ const ChannelScreen = ({
         channel={channel}
         keyboardVerticalOffset={0}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        messageActions={messageActions}
       >
         <ScreenHeader onBack={onBack} title={channel.id ?? ''} />
         <MessageList onThreadSelect={(selected) => onThreadSelect(selected)} />

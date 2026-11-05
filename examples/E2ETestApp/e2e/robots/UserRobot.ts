@@ -458,8 +458,8 @@ export class UserRobot extends Robot {
   }
 
   /**
-   * Deletes the `messageCellIndex`-th message from the newest. `hard` picks a hard delete, which the
-   * message menu doesn't offer yet (https://linear.app/stream/issue/RN-504), so it fails until then.
+   * Deletes the `messageCellIndex`-th message from the newest. `hard` picks the E2E app's own hard
+   * delete action: the SDK leaves it out of the menu on purpose (RN-504).
    */
   deleteMessage(messageCellIndex = 0, hard = false): this {
     return this.openContextMenu(messageCellIndex)

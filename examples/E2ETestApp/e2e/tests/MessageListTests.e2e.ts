@@ -547,8 +547,7 @@ describe('MessageListTests', () => {
     );
   });
 
-  // https://linear.app/stream/issue/RN-504
-  it.skip('test_userHardDeletesMessage', async () => {
+  it('test_userHardDeletesMessage', async () => {
     allureId(13320);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
     await step('WHEN user sends the message', () =>
