@@ -1,14 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  BackHandler,
-  ImageProps,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -35,10 +26,8 @@ import {
   MessageList,
   OverlayProvider,
   SqliteClient,
-  SvgAwareImage,
   Thread,
   ThreadList,
-  WithComponents,
 } from 'stream-chat-react-native';
 
 import { apiKey, appUser, appUserToken, isJwtTest, mockServerUrl } from './src/config';
@@ -47,20 +36,6 @@ import { JwtScreen } from './src/JwtScreen';
 // Same opt-in as the SampleApp, so the e2e suite sees the same accessibility tree.
 const accessibility = { enabled: true };
 
-// EXPERIMENT (PR #3925): the Android CI emulator freezes once a giphy loads, even its single-frame
-// GIF still. Loading the still as a JPEG from the same host tells whether GIF decoding triggers it.
-const giphyMediaUrl = /^(https:\/\/media\d*\.giphy\.com\/media\/.+\/)[^/]+\.(gif|webp)$/;
-const toGiphyStill = (source: ImageProps['source']) => {
-  if (!source || typeof source !== 'object' || !('uri' in source) || !source.uri) {
-    return source;
-  }
-  const match = giphyMediaUrl.exec(source.uri);
-  return match ? { ...source, uri: `${match[1]}480w_s.jpg` } : source;
-};
-const StillGiphyImage = (props: ImageProps) => (
-  <SvgAwareImage {...props} source={toGiphyStill(props.source)} />
-);
-const componentOverrides = Platform.OS === 'android' ? { ImageComponent: StillGiphyImage } : {};
 const sort: SortParamRequest[] = [{ direction: -1, field: 'last_message_at' }];
 
 /** Lists the mock server's app user, like the SampleApp's user selector. */
@@ -410,15 +385,13 @@ const App = () => {
     <GestureHandlerRootView style={styles.flex}>
       <SafeAreaProvider>
         <OverlayProvider accessibility={accessibility}>
-          <WithComponents overrides={componentOverrides}>
-            {isJwtTest ? (
-              <JwtScreen />
-            ) : client ? (
-              <ChatScreens client={client} />
-            ) : (
-              <LoginScreen onLogin={login} />
-            )}
-          </WithComponents>
+          {isJwtTest ? (
+            <JwtScreen />
+          ) : client ? (
+            <ChatScreens client={client} />
+          ) : (
+            <LoginScreen onLogin={login} />
+          )}
         </OverlayProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -107,3 +107,10 @@ export const itOnAndroid: typeof it = ((name: string, fn: () => Promise<void>, t
   device.getPlatform() === 'android'
     ? it(name, fn, timeout)
     : it.skip(name, fn, timeout)) as typeof it;
+
+/**
+ * `it` on iOS, `it.skip` on Android: for tests that take the Android CI emulator down with them
+ * (RN-513). Name the ticket in a comment above each one.
+ */
+export const itOnIOS: typeof it = ((name: string, fn: () => Promise<void>, timeout?: number) =>
+  device.getPlatform() === 'ios' ? it(name, fn, timeout) : it.skip(name, fn, timeout)) as typeof it;

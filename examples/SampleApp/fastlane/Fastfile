@@ -344,12 +344,13 @@ lane :e2e_check_required do
 end
 
 # `<test file>/<test>` ids of the tests that can run, e.g. `MessageListTests.e2e/test_x`: the coverage
-# map's keys. `it.skip` tests are left out; `itOnAndroid` ones are in (on iOS, Jest skips them).
+# map's keys. `it.skip` tests are left out; `itOnAndroid` and `itOnIOS` ones are in (Jest skips them
+# on the other platform).
 def e2e_test_ids(tests_path)
   Dir.glob(File.join(tests_path, '*.e2e.ts')).sort.flat_map do |file|
     source = File.read(file)
-    calls = source.scan(/^\s*(?:it|itOnAndroid)(?:\.skip)?\(/).size
-    tests = source.scan(/^\s*(?:it|itOnAndroid)(\.skip)?\(\s*'(test_\w+)'/)
+    calls = source.scan(/^\s*(?:it|itOnAndroid|itOnIOS)(?:\.skip)?\(/).size
+    tests = source.scan(/^\s*(?:it|itOnAndroid|itOnIOS)(\.skip)?\(\s*'(test_\w+)'/)
     # A test this misses would never run on a pull request, so fail loudly instead.
     UI.user_error!("#{file}: read #{tests.size} of its #{calls} tests; name each one with a `test_*` literal") if tests.size != calls
 
