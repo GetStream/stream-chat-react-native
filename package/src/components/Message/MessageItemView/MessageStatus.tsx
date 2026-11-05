@@ -1,13 +1,17 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { ChannelConfig } from 'stream-chat';
+
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
 import { HiddenA11yText } from '../../Accessibility/HiddenA11yText';
@@ -15,15 +19,27 @@ import { useIsMessageDeliveredToOthers } from '../hooks/useIsMessageDeliveredToO
 import { useIsMessageReadByOthers } from '../hooks/useIsMessageReadByOthers';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
+const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
+  readEventsEnabled: readEvents.enabled,
+});
+
 export type MessageStatusPropsWithContext = Pick<MessageContextValue, 'message'> & {
   /** Whether the message reached at least one other member. */
   delivered: boolean;
   /** Whether at least one other member read the message. */
   read: boolean;
+  /**
+   * Whether the channel has read events. Without them only the sending status shows, as in the
+   * channel preview.
+   * @default true
+   */
+  readEventsEnabled?: boolean;
 };
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const { delivered, message, read } = props;
+  const { message, readEventsEnabled = true } = props;
+  const delivered = readEventsEnabled && props.delivered;
+  const read = readEventsEnabled && props.read;
 
   const styles = useStyles();
   const { icons } = useComponentsContext();
@@ -38,6 +54,7 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
 
   const sending = message.status === MessageStatusTypes.SENDING;
   const sent =
+    readEventsEnabled &&
     message.status === MessageStatusTypes.RECEIVED &&
     !delivered &&
     !read &&
@@ -55,7 +72,11 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
             : '',
   );
 
-  if (message.status === MessageStatusTypes.FAILED || message.type === 'error') {
+  if (
+    message.status === MessageStatusTypes.FAILED ||
+    message.type === 'error' ||
+    message.type === 'deleted'
+  ) {
     return null;
   }
 
@@ -109,8 +130,23 @@ const areEqual = (
   prevProps: MessageStatusPropsWithContext,
   nextProps: MessageStatusPropsWithContext,
 ) => {
-  const { delivered: prevDelivered, message: prevMessage, read: prevRead } = prevProps;
-  const { delivered: nextDelivered, message: nextMessage, read: nextRead } = nextProps;
+  const {
+    delivered: prevDelivered,
+    message: prevMessage,
+    read: prevRead,
+    readEventsEnabled: prevReadEventsEnabled,
+  } = prevProps;
+  const {
+    delivered: nextDelivered,
+    message: nextMessage,
+    read: nextRead,
+    readEventsEnabled: nextReadEventsEnabled,
+  } = nextProps;
+
+  const readEventsEnabledEqual = prevReadEventsEnabled === nextReadEventsEnabled;
+  if (!readEventsEnabledEqual) {
+    return false;
+  }
 
   const deliveredEqual = prevDelivered === nextDelivered;
   if (!deliveredEqual) {
@@ -141,14 +177,17 @@ export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 export const MessageStatus = (props: MessageStatusProps) => {
   const { message: contextMessage } = useMessageContext();
   const message = props.message ?? contextMessage;
+  const { channel } = useChannelContext();
   const readByOthers = useIsMessageReadByOthers({ message });
   const deliveredToOthers = useIsMessageDeliveredToOthers({ message });
+  const { readEventsEnabled } = useStateStore(channel?.configState, readEventsSelector) ?? {};
 
   return (
     <MemoizedMessageStatus
       delivered={props.delivered ?? deliveredToOthers}
       message={message}
       read={props.read ?? readByOthers}
+      readEventsEnabled={props.readEventsEnabled ?? readEventsEnabled}
     />
   );
 };

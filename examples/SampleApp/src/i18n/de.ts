@@ -365,8 +365,8 @@ export const de: TranslationDictionary = {
 
   // Message list
   'messageList.dismissUnread.accessibilityLabel': 'Ungelesene Nachrichten ausblenden',
-  'messageList.newMessages.text_one': '{{count}} neue Nachricht',
-  'messageList.newMessages.text_other': '{{count}} neue Nachrichten',
+  'messageList.newMessages.text_one': '{{count}} ungelesene Nachricht',
+  'messageList.newMessages.text_other': '{{count}} ungelesene Nachrichten',
   'messageList.scrollToBottom.accessibilityLabel': 'Nach unten scrollen',
   'messageList.scrollToBottom.withCount.accessibilityLabel_one':
     'Nach unten scrollen, {{count}} neue Nachricht',

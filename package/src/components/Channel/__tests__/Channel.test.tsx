@@ -147,12 +147,12 @@ describe('Channel', () => {
     await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
   });
 
-  it('does not watch or load a draft channel, which has no id and is marked initialized', async () => {
+  it('does not watch, query or load a channel built from members', async () => {
     const draft = chatClient.channel('messaging', {
       members: [{ user_id: user.id }, { user_id: 'other' }],
     } as never);
-    draft.initialized = true;
     const watchSpy = jest.spyOn(draft, 'watch');
+    const querySpy = jest.spyOn(draft, 'query');
     const seedSpy = jest.spyOn(draft.messagePaginator, 'reload');
 
     renderComponent({ channel: draft });
@@ -162,7 +162,9 @@ describe('Channel', () => {
     });
 
     expect(draft.isProvisional).toBe(true);
+    expect(draft.initialized).toBe(false);
     expect(watchSpy).not.toHaveBeenCalled();
+    expect(querySpy).not.toHaveBeenCalled();
     expect(seedSpy).not.toHaveBeenCalled();
   });
 
@@ -221,6 +223,37 @@ describe('Channel', () => {
     await waitFor(() =>
       expect(clientOnSpy).toHaveBeenCalledWith('connection.recovered', expect.any(Function)),
     );
+  });
+
+  describe('connection.recovered', () => {
+    const renderAndRecover = async () => {
+      const markReadSpy = jest
+        .spyOn(chatClient.messageDeliveryReporter, 'throttledMarkRead')
+        .mockImplementation(() => undefined);
+      renderComponent({ channel });
+      await waitFor(() => expect(channel.initialized).toBe(true));
+      markReadSpy.mockClear();
+
+      act(() => {
+        chatClient.dispatchEvent({ type: 'connection.recovered' });
+      });
+
+      return markReadSpy;
+    };
+
+    it('marks the channel read after a recovery', async () => {
+      const markReadSpy = await renderAndRecover();
+
+      expect(markReadSpy).toHaveBeenCalledWith(channel);
+    });
+
+    it('does not mark the channel read when recovery is disabled', async () => {
+      chatClient.config.set({ client: { connectionRecovery: { enabled: false } } });
+
+      const markReadSpy = await renderAndRecover();
+
+      expect(markReadSpy).not.toHaveBeenCalled();
+    });
   });
 
   const queryChannelWithNewMessages = (newMessages: ReturnType<typeof generateMessage>[]) =>
@@ -400,8 +433,6 @@ describe('Channel', () => {
         members: [{ user_id: user.id }, { user_id: otherUser.id }],
       });
       const stored = chatClient.channel('messaging', '!members-xyz');
-      // the mount's first-page load would query (and so supersede) the draft before the test does
-      jest.spyOn(draft.messagePaginator, 'reload').mockResolvedValue(undefined);
       useMockedApis(chatClient, [
         getOrCreateChannelApi(
           generateChannelResponse({
@@ -610,12 +641,14 @@ describe('Channel', () => {
     });
     const rendersBefore = renderSpy.mock.calls.length;
     const capabilitiesBefore = channel.state.getLatestValue().ownCapabilities;
+    const dataBefore = channel.data;
 
     act(() => dispatchChannelUpdatedEvent(chatClient, { ...channel.data }));
 
-    // Guard against a vacuous pass: the update was applied and republished the capabilities.
-    expect(channel.state.getLatestValue().ownCapabilities).not.toBe(capabilitiesBefore);
-    expect(channel.state.getLatestValue().ownCapabilities).toEqual(capabilitiesBefore);
+    // Guard against a vacuous pass: the update was applied. The capabilities did not change, so
+    // the client keeps their array.
+    expect(channel.data).not.toBe(dataBefore);
+    expect(channel.state.getLatestValue().ownCapabilities).toBe(capabilitiesBefore);
     expect(renderSpy.mock.calls.length).toBe(rendersBefore);
   });
 

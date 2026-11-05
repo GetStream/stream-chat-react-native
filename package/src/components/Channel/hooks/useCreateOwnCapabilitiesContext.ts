@@ -22,7 +22,7 @@ export const useCreateOwnCapabilitiesContext = ({
   channel: Channel;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
-  // Updated by the client on watch, query and `capabilities.changed`.
+  // Updated by the client on watch, query and `channel.updated`.
   const { ownCapabilities } = useStateStore(channel.state, selector);
 
   const overrideCapabilitiesKey = overrideCapabilities

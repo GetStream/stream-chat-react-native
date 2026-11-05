@@ -9,8 +9,8 @@ import { InlineUnreadIndicator } from '../InlineUnreadIndicator';
 
 describe('InlineUnreadIndicator', () => {
   it.each([
-    [1, '1 new message'],
-    [3, '3 new messages'],
+    [1, '1 unread message'],
+    [3, '3 unread messages'],
   ])('labels %i unread messages as "%s"', async (unreadCount, label) => {
     const translators = await new Streami18n().init();
     render(

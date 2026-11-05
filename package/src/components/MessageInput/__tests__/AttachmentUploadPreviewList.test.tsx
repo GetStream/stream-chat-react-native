@@ -312,8 +312,8 @@ describe('AttachmentUploadPreviewList', () => {
     });
 
     it('should render FileAttachmentUploadPreview with all failed files', async () => {
-      const uploadAttachmentSpy = jest.fn();
-      channel.messageComposer.attachmentManager.uploadAttachment = uploadAttachmentSpy;
+      const uploadFileSpy = jest.fn();
+      channel.messageComposer.attachmentManager.uploadFile = uploadFileSpy;
       const attachments = [
         generateFileAttachment({
           localMetadata: {
@@ -353,8 +353,36 @@ describe('AttachmentUploadPreviewList', () => {
       await waitFor(() => {
         expect(queryAllByTestId('file-attachment-upload-preview')).toHaveLength(2);
         expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(2);
-        expect(uploadAttachmentSpy).toHaveBeenCalled();
+        expect(uploadFileSpy).toHaveBeenCalled();
       });
+    });
+
+    it('does not retry a failed upload while uploads are disabled', async () => {
+      const { attachmentManager } = channel.messageComposer;
+      const uploadFileSpy = jest.fn();
+      attachmentManager.uploadFile = uploadFileSpy;
+      jest.spyOn(attachmentManager, 'isUploadEnabled', 'get').mockReturnValue(false);
+
+      act(() => {
+        attachmentManager.upsertAttachments([
+          generateFileAttachment({
+            localMetadata: { id: 'file-attachment', uploadState: FileState.FAILED },
+          }),
+        ]);
+      });
+
+      renderComponent({ channel, client, props: {} });
+
+      await waitFor(() => {
+        expect(screen.queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
+      });
+
+      act(() => {
+        fireEvent.press(screen.getAllByTestId('retry-upload-progress-indicator')[0]);
+      });
+
+      expect(uploadFileSpy).not.toHaveBeenCalled();
+      expect(attachmentManager.attachments).toHaveLength(1);
     });
 
     it('should render FileAttachmentUploadPreview with all unsupported', async () => {
@@ -472,8 +500,8 @@ describe('AttachmentUploadPreviewList', () => {
     });
 
     it('should render ImageAttachmentUploadPreview with all failed images', async () => {
-      const uploadAttachmentSpy = jest.fn();
-      channel.messageComposer.attachmentManager.uploadAttachment = uploadAttachmentSpy;
+      const uploadFileSpy = jest.fn();
+      channel.messageComposer.attachmentManager.uploadFile = uploadFileSpy;
       const attachments = [
         generateImageAttachment({
           localMetadata: {
@@ -511,7 +539,7 @@ describe('AttachmentUploadPreviewList', () => {
       await waitFor(() => {
         expect(queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
         expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(1);
-        expect(uploadAttachmentSpy).toHaveBeenCalled();
+        expect(uploadFileSpy).toHaveBeenCalled();
       });
     });
 

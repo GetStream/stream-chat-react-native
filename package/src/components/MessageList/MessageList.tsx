@@ -432,12 +432,8 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   }, [disabled]);
 
   useEffect(() => {
-    if (thread) {
-      setAutoscrollToRecent(true);
-      return;
-    }
-
     if (!processedMessageList.length || !paginator) {
+      if (thread) setAutoscrollToRecent(true);
       return;
     }
 

@@ -1416,6 +1416,169 @@ describe('MessageList in a thread', () => {
     });
     expect(queryAllByLabelText('Inline unread indicator')).toHaveLength(0);
   });
+
+  // A thread opened without its replies shows only its parent message until the first page lands.
+  // Autoscroll has to be on by then, or the list keeps the parent in view and the replies render out
+  // of view below it.
+  it('autoscrolls to the replies that arrive after the thread opened empty', async () => {
+    const mockedChannel = generateChannelResponse();
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    const parentMessage = channel.state.formatMessage(generateMessage({ text: 'parent' }));
+    const threadInstance = new Thread({ channel, client: chatClient, parentMessage });
+    // The replies arrive from the test below, not from a query.
+    jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+    const { getByTestId, getByText } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ThreadComponent thread={threadInstance}>
+            <MessageList />
+          </ThreadComponent>
+        </Chat>
+      </OverlayProvider>,
+    );
+    const autoscrollThreshold = () =>
+      getByTestId('message-flat-list').props.maintainVisibleContentPosition
+        ?.autoscrollToTopThreshold;
+    await waitFor(() => expect(autoscrollThreshold()).toBeDefined());
+
+    const replies = Array.from({ length: 3 }, (_, i) =>
+      channel.state.formatMessage(
+        generateMessage({ parent_id: parentMessage.id, text: `reply-${i}` }),
+      ),
+    ) as LocalMessage[];
+    act(() =>
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: replies,
+        isFirstPage: true,
+        isLastPage: true,
+      }),
+    );
+
+    await waitFor(() => expect(getByText('reply-2')).toBeTruthy());
+    expect(autoscrollThreshold()).toBeDefined();
+  });
+
+  it.each([
+    ['scrolls to', 'testID', 1],
+    ['does not scroll to', 'other-user', 0],
+  ])(
+    '%s the latest reply when a new reply is the user’s own (%s)',
+    async (_, userId, expectedScrolls) => {
+      const { channel, chatClient, getByText, threadInstance } = await setup();
+      const scrollToOffset = jest.spyOn(FlatList.prototype, 'scrollToOffset');
+
+      const reply = channel.state.formatMessage(
+        generateMessage({
+          cid: channel.cid,
+          parent_id: threadInstance.id,
+          text: 'new reply',
+          timestamp: new Date(),
+          user: generateUser({ id: userId }),
+        }),
+      ) as LocalMessage;
+      await act(async () => {
+        threadInstance.messagePaginator.ingestItem(reply);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      await waitFor(() => expect(getByText('new reply')).toBeTruthy());
+      expect(chatClient.userId).toBe('testID');
+      expect(scrollToOffset).toHaveBeenCalledTimes(expectedScrolls);
+      if (expectedScrolls) {
+        expect(scrollToOffset).toHaveBeenCalledWith({ animated: true, offset: 0 });
+      }
+    },
+  );
+});
+
+// Pressing a quote goes to the quoted message. A quoted reply that lives only in another thread is
+// not in this list, so its thread is opened at it instead.
+describe('MessageList quote press', () => {
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  const setup = async ({ quoteThreadOnlyReply }: { quoteThreadOnlyReply: boolean }) => {
+    const user = generateUser();
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const parentMessage = generateMessage({ timestamp: new Date(base), user });
+    const quotedMessage = generateMessage({
+      parent_id: quoteThreadOnlyReply ? parentMessage.id : undefined,
+      text: 'quoted text',
+      timestamp: new Date(base + 1000),
+      user,
+    });
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user })],
+      messages: [
+        parentMessage,
+        generateMessage({
+          quoted_message: quotedMessage,
+          quoted_message_id: quotedMessage.id,
+          timestamp: new Date(base + 2000),
+          user,
+        }),
+      ],
+    });
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    const thread = chatClient.threads.ensure({
+      channel,
+      parentMessage: channel.state.formatMessage(parentMessage),
+    });
+    const jumpToMessage = jest
+      .spyOn(channel.messagePaginator, 'jumpToMessage')
+      .mockResolvedValue(true);
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const utils = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+          >
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+    return { ...utils, jumpToMessage, onAlsoSentToChannelHeaderPress, quotedMessage, thread };
+  };
+
+  it('opens the thread of a quoted reply that lives only in that thread', async () => {
+    const { findByText, jumpToMessage, onAlsoSentToChannelHeaderPress, quotedMessage, thread } =
+      await setup({ quoteThreadOnlyReply: true });
+
+    fireEvent.press(await findByText('quoted text'));
+
+    await waitFor(() =>
+      expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({
+        targetedMessageId: quotedMessage.id,
+        thread,
+      }),
+    );
+    expect(jumpToMessage).not.toHaveBeenCalled();
+  });
+
+  it('jumps to a quoted message that is in the channel', async () => {
+    const { findByText, jumpToMessage, onAlsoSentToChannelHeaderPress, quotedMessage } =
+      await setup({ quoteThreadOnlyReply: false });
+
+    fireEvent.press(await findByText('quoted text'));
+
+    await waitFor(() =>
+      expect(jumpToMessage).toHaveBeenCalledWith(quotedMessage.id, expect.anything()),
+    );
+    expect(onAlsoSentToChannelHeaderPress).not.toHaveBeenCalled();
+  });
 });
 
 describe('MessageList optimistic edit', () => {

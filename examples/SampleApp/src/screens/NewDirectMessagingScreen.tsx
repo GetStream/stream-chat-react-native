@@ -212,16 +212,13 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         currentChannel.current = channels[0];
         isDraft.current = false;
       } else {
-        // Channel doesn't exist.
+        // Channel doesn't exist. `<Channel>` leaves a channel built from members alone, and the
+        // send button creates it with the first message.
         isDraft.current = true;
 
-        const channel = chatClient.channel('messaging', {
+        currentChannel.current = chatClient.channel('messaging', {
           members: members.map((user_id) => ({ user_id })),
         });
-
-        // Hack to trick channel component into accepting channel without watching it.
-        channel.initialized = true;
-        currentChannel.current = channel;
       }
 
       if (messageInputRef.current) {

@@ -119,7 +119,6 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps) => {
     }
 
     const members = [chatClient.user.id, ...selectedUserIds];
-    channel.initialized = false;
     const newChannel = chatClient.channel('messaging', {
       members: members.map((user_id) => ({ user_id })),
     });

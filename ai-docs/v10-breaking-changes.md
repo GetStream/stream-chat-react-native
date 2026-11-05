@@ -100,6 +100,8 @@ Everything below was exported from the package root in v9 and is gone in v10.
 - `ThreadType` → a `Thread` instance (`client.threads.ensure({ channel, parentMessage })` builds one). — §10.1 · #3861
 - `ChannelUnreadState` → `channel.messagePaginator.unreadStateSnapshot` (`UnreadSnapshotState`). — §7 · P.9
 - `MessageActionsHookProps` → nothing; `useMessageActions()` reads the message's contexts. — §15.1 · #3866
+- `DefaultCommandData` → nothing; `stream-chat` no longer has `CustomCommandData`, so delete the augmentation. —
+  §17.1
 
 **Translations**
 
@@ -494,7 +496,7 @@ apps' own code.
 
 - `recoverStateOnReconnect` / `client.recoverState()` → `client.connectionRecovery` (`client.config`). — §L.1 · §L.6
 - `connection.changed` is never dispatched → `client.wsConnection.state`, `client.networkConnection.state`.
-- `connection.recovered` fires on every reconnect path. — §L.2
+- `connection.recovered` fires on every reconnect path, also with recovery off (without a reload). — §L.2
 - Requests with `watch` / `presence` wait for a connection id and throw when no socket is open. — §R.7
 
 **Client construction and configuration** — §13.1 · §17.7
@@ -565,7 +567,8 @@ apps' own code.
 - A failed mount `watch()` no longer shows the full-screen error; the error screen follows the paginator's
   `lastQueryError`.
 - `initializeOnMount={false}` still runs a non-watching query when the paginator is empty.
-- A provisional (members-only, id-less) channel is not queried on mount.
+- A provisional (members-only, id-less) channel is never watched, queried or reloaded on mount, so it is no longer
+  created or loaded by opening it; `channel.initialized = true` is no longer needed to stop that.
 - `<Channel>` may render `channel.supersededBy` instead of the instance you passed.
 - Reopening a channel whose paginator was left on an older page (after a jump to a quoted, pinned or searched
   message) shows the newest messages; skipped while a jump has landed or is loading, before a first-unread jump, and

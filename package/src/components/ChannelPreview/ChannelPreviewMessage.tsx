@@ -55,7 +55,6 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   const lastMessageStatus = lastMessage && 'status' in lastMessage ? lastMessage.status : undefined;
   const isFailedMessage =
     lastMessageStatus === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
-  const showMessageDeliveryStatus = !isMessageDeleted;
 
   if (usersTyping.length > 0) {
     return <ChannelPreviewTypingIndicator channel={channel} usersTyping={usersTyping} />;
@@ -103,18 +102,14 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (channel.data?.custom?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
-        {showMessageDeliveryStatus ? (
-          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
-        ) : null}
+        <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
-        {showMessageDeliveryStatus ? (
-          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
-        ) : null}
+        <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
