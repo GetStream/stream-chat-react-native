@@ -5,6 +5,7 @@ This is a bare minimum Chat application using Stream Chat SDK build using Expo w
 ## Opt-in Expo UI attachment picker
 
 This demo uses the native modal sheet from `@expo/ui/community/bottom-sheet` (Expo SDK 58).
+This adapter targets iOS and Android only; web support is outside this integration's scope.
 The SDK continues to use Gorhom by default. To compare the original picker, start the demo with
 `EXPO_PUBLIC_ATTACHMENT_PICKER=gorhom yarn workspace ExpoMessaging start` and reload the app.
 The Expo picker applies to channels and threads. Close the sheet to return to the composer and send

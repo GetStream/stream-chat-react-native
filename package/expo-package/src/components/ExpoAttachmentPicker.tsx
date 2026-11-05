@@ -43,12 +43,15 @@ export const ExpoAttachmentPicker = () => {
   const closingRef = useRef(false);
   const afterDismissRef = useRef<Array<() => void>>([]);
   const pendingOpenRef = useRef<(() => void) | undefined>(undefined);
+  const mountedRef = useRef(true);
+  const [dismissalCount, setDismissalCount] = useState(0);
   const [contentSize, setContentSize] = useState({
     width: undefined as number | undefined,
     height: Math.max(0, height - 100),
   });
 
   const close = useCallback(() => {
+    pendingOpenRef.current = undefined;
     if (!openRef.current || closingRef.current) return;
     closingRef.current = true;
     sheetRef.current?.close();
@@ -89,24 +92,34 @@ export const ExpoAttachmentPicker = () => {
   );
 
   const onDismiss = useCallback(() => {
+    if (!mountedRef.current) return;
     openRef.current = false;
-    closingRef.current = false;
+    closingRef.current = true;
     attachmentPickerStore.setSelectedPicker(undefined);
+    setDismissalCount((count) => count + 1);
     const callbacks = afterDismissRef.current.splice(0);
     callbacks.forEach((callback) => callback());
+  }, [attachmentPickerStore]);
+
+  useEffect(() => {
+    if (dismissalCount === 0) return;
+    // Expo Android calls onDismiss before its closed state has committed. Wait
+    // for that commit so snapToIndex sees the closed ref and can reopen it.
+    closingRef.current = false;
     const pendingOpen = pendingOpenRef.current;
     pendingOpenRef.current = undefined;
     pendingOpen?.();
-  }, [attachmentPickerStore]);
+  }, [dismissalCount]);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
       // Do not launch a camera/dialog after the channel has unmounted.
       afterDismissRef.current = [];
       pendingOpenRef.current = undefined;
-    },
-    [],
-  );
+    };
+  }, []);
 
   const value = useMemo(
     () => ({

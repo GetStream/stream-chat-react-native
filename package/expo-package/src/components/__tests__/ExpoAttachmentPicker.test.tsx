@@ -24,6 +24,8 @@ const mockContext = {
   bottomSheetRef: React.createRef<typeof mockNativeMethods>(),
 };
 let mockDismissPicker: () => Promise<void>;
+let mockFinishNativeDismiss: () => void;
+let mockNativeIsOpen = false;
 
 jest.mock('@expo/ui/community/bottom-sheet', () => {
   const React = require('react');
@@ -32,6 +34,21 @@ jest.mock('@expo/ui/community/bottom-sheet', () => {
     default: React.forwardRef(
       (props: React.PropsWithChildren<typeof mockSheetProps>, ref: React.Ref<unknown>) => {
         mockSheetProps = props;
+        const [isOpen, setIsOpen] = React.useState(false);
+        const isOpenRef = React.useRef(isOpen);
+        isOpenRef.current = isOpen;
+        mockNativeIsOpen = isOpen;
+        // Model Expo Android: onDismiss fires after setIsOpen(false), but before
+        // the render that updates isOpenRef. A synchronous reopen is lost.
+        mockFinishNativeDismiss = () => {
+          setIsOpen(false);
+          props.onDismiss();
+          props.onChange(-1);
+        };
+        mockNativeMethods.snapToIndex.mockImplementation((index: number) => {
+          if (!isOpenRef.current) setIsOpen(true);
+          props.onChange(index);
+        });
         React.useImperativeHandle(ref, () => mockNativeMethods);
         return <>{props.children}</>;
       },
@@ -82,7 +99,7 @@ describe('ExpoAttachmentPicker', () => {
     expect(mockSelectedPicker).toBe('images');
 
     await act(async () => {
-      mockSheetProps.onDismiss();
+      mockFinishNativeDismiss();
       await dismissed;
     });
     expect(finished).toBe(true);
@@ -96,25 +113,54 @@ describe('ExpoAttachmentPicker', () => {
     const dismissed = Promise.all([mockDismissPicker(), mockDismissPicker()]);
     expect(mockNativeMethods.close).toHaveBeenCalledTimes(1);
     await act(async () => {
-      mockSheetProps.onDismiss();
+      mockFinishNativeDismiss();
       await dismissed;
     });
   });
 
-  it('defers a rapid reopen until native dismissal completes', () => {
+  it('defers a rapid reopen until the native closed state commits', () => {
     render(<ExpoAttachmentPicker />);
+    act(() => mockContext.bottomSheetRef.current?.snapToIndex(0));
+    expect(mockNativeIsOpen).toBe(true);
     act(() => {
-      mockContext.bottomSheetRef.current?.snapToIndex(0);
       mockContext.bottomSheetRef.current?.close();
       mockContext.bottomSheetRef.current?.snapToIndex(0);
     });
     expect(mockNativeMethods.snapToIndex).toHaveBeenCalledTimes(1);
     act(() => {
-      mockSheetProps.onDismiss();
-      mockSheetProps.onChange(0);
+      mockFinishNativeDismiss();
     });
     expect(mockNativeMethods.snapToIndex).toHaveBeenCalledTimes(2);
+    expect(mockNativeIsOpen).toBe(true);
     expect(mockSelectedPicker).toBe('images');
+  });
+
+  it('cancels a queued reopen when close is requested again', () => {
+    render(<ExpoAttachmentPicker />);
+    act(() => mockContext.bottomSheetRef.current?.snapToIndex(0));
+    act(() => {
+      mockContext.bottomSheetRef.current?.close();
+      mockContext.bottomSheetRef.current?.snapToIndex(0);
+      mockContext.bottomSheetRef.current?.close();
+      mockFinishNativeDismiss();
+    });
+    expect(mockNativeMethods.snapToIndex).toHaveBeenCalledTimes(1);
+    expect(mockNativeIsOpen).toBe(false);
+  });
+
+  it('drops pending actions and a queued reopen when unmounted', async () => {
+    const { unmount } = render(<ExpoAttachmentPicker />);
+    act(() => mockContext.bottomSheetRef.current?.snapToIndex(0));
+    const afterDismiss = jest.fn();
+    void mockDismissPicker().then(afterDismiss);
+    act(() => mockContext.bottomSheetRef.current?.snapToIndex(0));
+    unmount();
+    await act(async () => {
+      mockSheetProps.onDismiss();
+      await Promise.resolve();
+    });
+    expect(afterDismiss).not.toHaveBeenCalled();
+    expect(mockNativeMethods.snapToIndex).toHaveBeenCalledTimes(1);
   });
 
   it('clears selection after a system swipe/back dismissal and can reopen', () => {
