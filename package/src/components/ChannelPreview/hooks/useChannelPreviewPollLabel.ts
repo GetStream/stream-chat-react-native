@@ -5,6 +5,7 @@ import { PollState } from 'stream-chat';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
+import { getTranslatedText } from '../../../utils/i18n/getTranslatedText';
 
 export type UseChannelPreviewPollLabelProps = {
   pollId: string;
@@ -22,7 +23,7 @@ const selector = (nextValue: PollState) => ({
  */
 export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabelProps) => {
   const { client } = useChatContext();
-  const { t } = useTranslationContext();
+  const { t, userLanguage } = useTranslationContext();
   const poll = client.polls.fromState(pollId);
   const pollState = useStateStore(poll?.state, selector) ?? ({} as PollState);
   const { latest_votes_by_option: latestVotesByOption, options: pollOptions } = pollState;
@@ -42,14 +43,17 @@ export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabe
     {
       const option = pollOptions?.find((option) => option.id === latestVotes[0].option_id);
       const voteUser = latestVotes[0].user;
+      const optionText = option
+        ? (getTranslatedText(option.text_i18n, userLanguage) ?? option.text)
+        : undefined;
       if (voteUser.id === client.user?.id) {
-        return t('You voted: {{ option }}', { option: option?.text });
+        return t('You voted: {{ option }}', { option: optionText });
       } else {
         return t('{{ user }} voted: {{ option }}', {
           user: voteUser.name || voteUser.id,
-          option: option?.text,
+          option: optionText,
         });
       }
     }
-  }, [latestVotes, pollOptions, client.user?.id, t]);
+  }, [latestVotes, pollOptions, client.user?.id, t, userLanguage]);
 };
