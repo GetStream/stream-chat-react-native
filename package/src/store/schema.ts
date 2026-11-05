@@ -224,6 +224,7 @@ export const tables: Tables = {
       created_by: 'TEXT',
       created_by_id: 'TEXT',
       description: 'TEXT',
+      description_i18n: 'TEXT',
       enforce_unique_vote: 'BOOLEAN DEFAULT FALSE',
       id: 'TEXT NOT NULL',
       is_closed: 'BOOLEAN DEFAULT FALSE',
@@ -231,6 +232,7 @@ export const tables: Tables = {
       latest_votes_by_option: 'TEXT',
       max_votes_allowed: 'INTEGER DEFAULT 1',
       name: 'TEXT',
+      name_i18n: 'TEXT',
       options: 'TEXT',
       own_votes: 'TEXT',
       updated_at: 'TEXT',
@@ -459,7 +461,9 @@ export type Schema = {
     allow_answers?: boolean;
     allow_user_suggested_options?: boolean;
     description?: string;
+    description_i18n?: string;
     is_closed?: boolean;
+    name_i18n?: string;
     own_votes?: string;
     voting_visibility?: string;
   };

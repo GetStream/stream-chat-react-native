@@ -7,6 +7,7 @@ import {
   PollOption,
   PollState,
   PollVote,
+  TranslatedField,
   UpdatePollAPIResponse,
   UserResponse,
   VotingVisibility,
@@ -28,6 +29,7 @@ export type UsePollStateSelectorReturnType = {
   maxVotedOptionIds: string[];
   maxVotesAllowed: number;
   name: string;
+  nameI18n: TranslatedField | undefined;
   options: PollOption[];
   ownAnswer: PollAnswer | undefined;
   ownVotesByOptionId: Record<string, PollVote>;
@@ -53,6 +55,7 @@ const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
   maxVotedOptionIds: nextValue.maxVotedOptionIds,
   maxVotesAllowed: nextValue.max_votes_allowed,
   name: nextValue.name,
+  nameI18n: nextValue.name_i18n,
   options: nextValue.options,
   ownAnswer: nextValue.ownAnswer,
   ownVotesByOptionId: nextValue.ownVotesByOptionId,
@@ -74,6 +77,7 @@ export const usePollState = (): UsePollStateReturnType => {
     maxVotedOptionIds,
     maxVotesAllowed,
     name,
+    nameI18n,
     options,
     ownAnswer,
     ownVotesByOptionId,
@@ -108,6 +112,7 @@ export const usePollState = (): UsePollStateReturnType => {
     maxVotedOptionIds,
     maxVotesAllowed,
     name,
+    nameI18n,
     options,
     ownAnswer,
     ownVotesByOptionId,
