@@ -18,6 +18,12 @@ export const enableInternetConnection = (): Promise<void> => {
   return Promise.resolve();
 };
 
+/**
+ * Detox waits for in-flight requests before every action, so a delayed send would be done before
+ * the test could see it pending. Stops it from waiting on message sends until the app relaunches.
+ */
+export const ignoreMessageSendsForSync = () => device.setURLBlacklist(['.*/message(\\?.*)?$']);
+
 export const goToBackground = () => device.sendToHome();
 
 export const goToForeground = () => device.launchApp({ newInstance: false });

@@ -44,6 +44,11 @@ export class BackendRobot extends Robot {
     return this.post('freeze_messages');
   }
 
+  /** The mock answers new messages after `seconds`, so they stay in the sending state meanwhile. */
+  delayNewMessages(seconds = 5): this {
+    return this.post(`delay_messages?delay=${seconds}`);
+  }
+
   setCooldown(enabled: boolean, duration: number): this {
     return this.post(`config/cooldown?enabled=${enabled}&duration=${duration}`);
   }

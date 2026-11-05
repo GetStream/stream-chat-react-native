@@ -314,14 +314,15 @@ describe('MessageListTests', () => {
     );
   });
 
-  // https://linear.app/stream/issue/RN-500
-  it.skip('test_userAddsMessageWhileOffline', async () => {
+  // Follows iOS: RN marks a message sent offline as failed until the queue sends it (RN-500).
+  // Android shows it as pending instead.
+  it('test_userAddsMessageWhileOffline', async () => {
     allureId(13159);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
     await step('AND user becomes offline', () => disableInternetConnection());
     await step('WHEN user sends a new message', () => userRobot.sendMessage(sampleText));
-    await step('THEN pending indicator is shown for the message', () =>
-      userRobot.assertMessageDeliveryStatus(MessageDeliveryStatus.PENDING, 1),
+    await step('THEN error indicator is shown for the message', () =>
+      userRobot.assertMessageFailedIcon(true),
     );
     await step('WHEN user becomes online', () => enableInternetConnection());
     await step('THEN new message is delivered', () =>

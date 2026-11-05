@@ -2,7 +2,7 @@ import { describe, it } from '@jest/globals';
 
 import { MessageDeliveryStatus } from '../mock-server/DataTypes';
 import { ParticipantRobot } from '../robots';
-import { disableInternetConnection } from '../support/Device';
+import { disableInternetConnection, ignoreMessageSendsForSync } from '../support/Device';
 import { allureId, step } from '../support/step';
 import { itOnAndroid, setUpStreamTestCase } from '../support/StreamTestCase';
 
@@ -23,12 +23,12 @@ describe('MessageDeliveryStatusTests', () => {
     );
   });
 
-  // https://linear.app/stream/issue/RN-500
-  it.skip('test_deliveryStatusShowsClocks_whenMessageIsInPendingState', async () => {
+  it('test_deliveryStatusShowsClocks_whenMessageIsInPendingState', async () => {
     allureId(13103);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
-    await step('WHEN user sends a new message that is gonna freeze', async () => {
-      await backendRobot.freezeNewMessages();
+    await step('WHEN user sends a new message that is delayed', async () => {
+      await ignoreMessageSendsForSync();
+      await backendRobot.delayNewMessages();
       await userRobot.sendMessage('pending message');
     });
     await step('THEN message delivery status shows clocks', () =>
@@ -300,12 +300,12 @@ describe('MessageDeliveryStatusTests', () => {
 
   // MARK: Channel preview
 
-  // https://linear.app/stream/issue/RN-500
-  it.skip('test_deliveryStatusClocksShownInPreview_whenTheLastMessageIsInPendingState', async () => {
+  it('test_deliveryStatusClocksShownInPreview_whenTheLastMessageIsInPendingState', async () => {
     allureId(13119);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
-    await step('WHEN user sends a new message that is gonna freeze', async () => {
-      await backendRobot.freezeNewMessages();
+    await step('WHEN user sends a new message that is delayed', async () => {
+      await ignoreMessageSendsForSync();
+      await backendRobot.delayNewMessages();
       await userRobot.sendMessage(sampleText);
     });
     await step('AND user returns to the channel list', () =>
@@ -556,15 +556,15 @@ describe('MessageDeliveryStatusTests', () => {
     await step('THEN delivery status is hidden', () => userRobot.assertMessageDeliveryStatus(NIL));
   });
 
-  // https://linear.app/stream/issue/RN-500
-  it.skip('test_deliveryStatusShowsClocks_whenMessageIsInPendingStateAndReadEventsIsDisabled', async () => {
+  it('test_deliveryStatusShowsClocks_whenMessageIsInPendingStateAndReadEventsIsDisabled', async () => {
     allureId(13133);
     await step('GIVEN read events are disabled and user opens the channel', async () => {
       await backendRobot.setReadEvents(false);
       await userRobot.login().openChannel();
     });
-    await step('WHEN user sends a new message that is gonna freeze', async () => {
-      await backendRobot.freezeNewMessages();
+    await step('WHEN user sends a new message that is delayed', async () => {
+      await ignoreMessageSendsForSync();
+      await backendRobot.delayNewMessages();
       await userRobot.sendMessage('pending message');
     });
     await step('THEN message delivery status shows clocks', () =>
