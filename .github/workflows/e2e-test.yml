@@ -340,7 +340,9 @@ jobs:
     env:
       # Same as the native Android SDK e2e jobs, which run stably on these runners
       ANDROID_API_LEVEL: "36"
-      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
+      # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
+      # (RN-513, also outside GiphyTests).
+      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swangle_indirect -camera-back none -camera-front none
       DETOX_ADB_NAME: "emulator-5554"
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
       LAUNCH_ID: ${{ needs.android-allure-launch.outputs.launch_id }}
