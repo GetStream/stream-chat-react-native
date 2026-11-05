@@ -47,15 +47,15 @@ import { JwtScreen } from './src/JwtScreen';
 // Same opt-in as the SampleApp, so the e2e suite sees the same accessibility tree.
 const accessibility = { enabled: true };
 
-// EXPERIMENT (PR #3925): the Android CI emulator freezes once an animated giphy loads. Loading each
-// giphy's still frame from the same host tells whether the animation is what triggers it.
+// EXPERIMENT (PR #3925): the Android CI emulator freezes once a giphy loads, even its single-frame
+// GIF still. Loading the still as a JPEG from the same host tells whether GIF decoding triggers it.
 const giphyMediaUrl = /^(https:\/\/media\d*\.giphy\.com\/media\/.+\/)[^/]+\.(gif|webp)$/;
 const toGiphyStill = (source: ImageProps['source']) => {
   if (!source || typeof source !== 'object' || !('uri' in source) || !source.uri) {
     return source;
   }
   const match = giphyMediaUrl.exec(source.uri);
-  return match ? { ...source, uri: `${match[1]}200_s.gif` } : source;
+  return match ? { ...source, uri: `${match[1]}480w_s.jpg` } : source;
 };
 const StillGiphyImage = (props: ImageProps) => (
   <SvgAwareImage {...props} source={toGiphyStill(props.source)} />
