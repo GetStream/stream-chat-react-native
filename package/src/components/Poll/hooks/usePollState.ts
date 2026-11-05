@@ -26,6 +26,7 @@ export type UsePollStateSelectorReturnType = {
   maxVotedOptionIds: string[];
   maxVotesAllowed: number;
   name: string;
+  nameI18n: Record<string, string> | undefined;
   options: PollOptionResponseData[];
   ownAnswer: PollVoteResponseData | undefined;
   ownVotesByOptionId: Record<string, PollVoteResponseData>;
@@ -51,6 +52,7 @@ const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
   maxVotedOptionIds: nextValue.maxVotedOptionIds,
   maxVotesAllowed: nextValue.max_votes_allowed ?? 0,
   name: nextValue.name,
+  nameI18n: nextValue.name_i18n,
   options: nextValue.options,
   ownAnswer: nextValue.ownAnswer,
   ownVotesByOptionId: nextValue.ownVotesByOptionId,
@@ -72,6 +74,7 @@ export const usePollState = (): UsePollStateReturnType => {
     maxVotedOptionIds,
     maxVotesAllowed,
     name,
+    nameI18n,
     options,
     ownAnswer,
     ownVotesByOptionId,
@@ -106,6 +109,7 @@ export const usePollState = (): UsePollStateReturnType => {
     maxVotedOptionIds,
     maxVotesAllowed,
     name,
+    nameI18n,
     options,
     ownAnswer,
     ownVotesByOptionId,

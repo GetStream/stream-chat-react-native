@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 
 import { renderHook } from '@testing-library/react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, PollResponseData, StreamChat } from 'stream-chat';
 
 import { Chat } from '../../../components/Chat/Chat';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -15,8 +15,12 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { useMessagePreviewText } from '../useMessagePreviewText';
 
 describe('useMessagePreviewText', () => {
-  const render = async (message: ReturnType<typeof generateMessage>) => {
+  const render = async (
+    message: ReturnType<typeof generateMessage>,
+    prepareClient?: (client: StreamChat) => void,
+  ) => {
     const { client } = await initiateClientWithChannels();
+    prepareClient?.(client);
     const wrapper = ({ children }: PropsWithChildren) => <Chat client={client}>{children}</Chat>;
     const { result } = renderHook(() => useMessagePreviewText({ message }), { wrapper });
     return result;
@@ -53,5 +57,36 @@ describe('useMessagePreviewText', () => {
       generateMessage({ attachments: [generateFileAttachment()], text: 'hello' }),
     );
     expect(result.current).toBe('hello');
+  });
+
+  describe('poll messages', () => {
+    const poll = {
+      id: 'poll-id',
+      latest_answers: [],
+      latest_votes_by_option: {},
+      name: 'Favourite colour?',
+      name_i18n: { es_text: '¿Color favorito?', language: 'en' },
+      options: [],
+      vote_count: 0,
+      vote_counts_by_option: {},
+    } as unknown as PollResponseData;
+
+    const renderPollMessage = (language: string) => {
+      const message = generateMessage({ poll, poll_id: poll.id, text: '' });
+      return render(message, (client) => {
+        (client.user as { language?: string }).language = language;
+        client.polls.hydratePollCache([message]);
+      });
+    };
+
+    it("shows the poll question in the user's language", async () => {
+      const result = await renderPollMessage('es');
+      expect(result.current).toBe('¿Color favorito?');
+    });
+
+    it('shows the original poll question when it has no translation', async () => {
+      const result = await renderPollMessage('de');
+      expect(result.current).toBe('Favourite colour?');
+    });
   });
 });

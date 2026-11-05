@@ -72,69 +72,71 @@ const verifyAndroidPermissions = async () => {
   return true;
 };
 
-export const getPhotos = CameraRollDependency
-  ? async ({ after, first }): Promise<ReturnType> => {
-      try {
-        if (Platform.OS === 'android') {
-          console.warn(
-            '@react-native-camera-roll/camera-roll can be removed in favour of new google policy(https://support.google.com/googleplay/android-developer/answer/14115180?hl=en) if you do not have gallery as your core feature of the app.\nYou can replace it with react-native-image-picker and uninstall it. Guide - https://getstream.io/chat/docs/sdk/react-native/guides/native-image-picker/.',
-          );
-          const granted = await verifyAndroidPermissions();
-          if (!granted) {
-            throw new Error('getPhotos Error');
-          }
-        }
-        const results = await CameraRollDependency.CameraRoll.getPhotos({
-          after,
-          assetType: 'All',
-          first,
-          include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
-        });
-        const assetEntries = await Promise.all(
-          results.edges.map(async (edge) => {
-            const originalUri = edge.node?.image?.uri;
-            const type =
-              (Platform.OS === 'ios'
-                ? mime.getType(edge.node.image.filename as string) || edge.node.type
-                : edge.node.type) ||
-              mime.getType(edge.node.image.filename as string) ||
-              mime.getType(originalUri) ||
-              (edge.node.image.playableDuration ? 'video/*' : 'image/*');
-            const isImage = type.includes('image');
-
-            return {
-              edge,
-              isImage,
-              originalUri,
-              type,
-              uri: isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri,
-            };
-          }),
-        );
-        const videoUris = assetEntries
-          .filter(({ isImage, originalUri }) => !isImage && !!originalUri)
-          .map(({ originalUri }) => originalUri);
-        const videoThumbnailResults = await generateThumbnails(videoUris);
-
-        const assets = assetEntries.map(({ edge, isImage, originalUri, type, uri }) => {
-          const thumbnailResult =
-            !isImage && originalUri ? videoThumbnailResults[originalUri] : undefined;
-
-          return {
-            ...edge.node.image,
-            name: edge.node.image.filename as string,
-            duration: edge.node.image.playableDuration * 1000,
-            thumb_url: thumbnailResult?.uri || undefined,
-            size: edge.node.image.fileSize as number,
-            type,
-            uri,
-          };
-        });
-        const hasNextPage = results.page_info.has_next_page;
-        const endCursor = results.page_info.end_cursor;
-        return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };
-      } catch (_error) {
+// done this way to work around this issue: https://github.com/babel/babel/issues/18264
+// until it gets fixed upstream
+const getPhotosWithDependency = async ({ after, first }): Promise<ReturnType> => {
+  try {
+    if (Platform.OS === 'android') {
+      console.warn(
+        '@react-native-camera-roll/camera-roll can be removed in favour of new google policy(https://support.google.com/googleplay/android-developer/answer/14115180?hl=en) if you do not have gallery as your core feature of the app.\nYou can replace it with react-native-image-picker and uninstall it. Guide - https://getstream.io/chat/docs/sdk/react-native/guides/native-image-picker/.',
+      );
+      const granted = await verifyAndroidPermissions();
+      if (!granted) {
         throw new Error('getPhotos Error');
       }
     }
-  : null;
+    const results = await CameraRollDependency.CameraRoll.getPhotos({
+      after,
+      assetType: 'All',
+      first,
+      include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
+    });
+    const assetEntries = await Promise.all(
+      results.edges.map(async (edge) => {
+        const originalUri = edge.node?.image?.uri;
+        const type =
+          (Platform.OS === 'ios'
+            ? mime.getType(edge.node.image.filename as string) || edge.node.type
+            : edge.node.type) ||
+          mime.getType(edge.node.image.filename as string) ||
+          mime.getType(originalUri) ||
+          (edge.node.image.playableDuration ? 'video/*' : 'image/*');
+        const isImage = type.includes('image');
+
+        return {
+          edge,
+          isImage,
+          originalUri,
+          type,
+          uri: isImage && getLocalAssetUri ? await getLocalAssetUri(originalUri) : originalUri,
+        };
+      }),
+    );
+    const videoUris = assetEntries
+      .filter(({ isImage, originalUri }) => !isImage && !!originalUri)
+      .map(({ originalUri }) => originalUri);
+    const videoThumbnailResults = await generateThumbnails(videoUris);
+
+    const assets = assetEntries.map(({ edge, isImage, originalUri, type, uri }) => {
+      const thumbnailResult =
+        !isImage && originalUri ? videoThumbnailResults[originalUri] : undefined;
+
+      return {
+        ...edge.node.image,
+        name: edge.node.image.filename as string,
+        duration: edge.node.image.playableDuration * 1000,
+        thumb_url: thumbnailResult?.uri || undefined,
+        size: edge.node.image.fileSize as number,
+        type,
+        uri,
+      };
+    });
+    const hasNextPage = results.page_info.has_next_page;
+    const endCursor = results.page_info.end_cursor;
+    return { assets, endCursor, hasNextPage, iOSLimited: !!results.limited };
+  } catch (_error) {
+    throw new Error('getPhotos Error');
+  }
+};
+
+export const getPhotos = CameraRollDependency ? getPhotosWithDependency : null;

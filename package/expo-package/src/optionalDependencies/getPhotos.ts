@@ -32,75 +32,77 @@ type ReturnType = {
   iOSLimited: boolean;
 };
 
-export const getPhotos = MediaLibrary
-  ? async ({ after, first }): Promise<ReturnType> => {
-      try {
-        if (Platform.OS === 'android') {
-          console.warn(
-            'expo-media-library can be removed in favour of new google policy(https://support.google.com/googleplay/android-developer/answer/14115180?hl=en) if you do not have gallery as your core feature of the app.\nYou can replace it with expo-image-picker and uninstall it. Guide - https://getstream.io/chat/docs/sdk/react-native/guides/native-image-picker/.',
-          );
-        }
-        // NOTE:
-        // should always check first before requesting permission
-        // because always requesting permission will cause
-        // the app to go to background even if it was granted
-        const { accessPrivileges, status } = await MediaLibrary.getPermissionsAsync();
-        if (status !== 'granted') {
-          const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
-          if (newStatus !== 'granted') {
-            throw new Error('getPhotos Error');
-          }
-        }
-        const results = await MediaLibrary.getAssetsAsync({
-          after,
-          first,
-          mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
-          sortBy: [MediaLibrary.SortBy.modificationTime],
-        });
-        const assetEntries = await Promise.all(
-          results.assets.map(async (asset) => {
-            const localUri = await getLocalAssetUri(asset.id);
-            const mimeType =
-              mime.getType(asset.filename || asset.uri) ||
-              (asset.mediaType === MediaLibrary.MediaType.video ? 'video/*' : 'image/*');
-            const originalUri = asset.uri;
-            const uri = localUri || originalUri;
-
-            return {
-              asset,
-              isVideo: asset.mediaType === MediaLibrary.MediaType.video,
-              mimeType,
-              originalUri,
-              uri,
-            };
-          }),
-        );
-        const videoUris = assetEntries
-          .filter(({ isVideo, originalUri }) => isVideo && !!originalUri)
-          .map(({ originalUri }) => originalUri);
-        const videoThumbnailResults = await generateThumbnails(videoUris);
-
-        const assets = assetEntries.map(({ asset, isVideo, mimeType, originalUri, uri }) => {
-          const thumbnailResult =
-            isVideo && originalUri ? videoThumbnailResults[originalUri] : undefined;
-
-          return {
-            duration: asset.duration * 1000,
-            height: asset.height,
-            name: asset.filename,
-            size: 0,
-            thumb_url: thumbnailResult?.uri || undefined,
-            type: mimeType,
-            uri,
-            width: asset.width,
-          };
-        });
-
-        const hasNextPage = results.hasNextPage;
-        const endCursor = results.endCursor;
-        return { assets, endCursor, hasNextPage, iOSLimited: accessPrivileges === 'limited' };
-      } catch {
+// done this way to work around this issue: https://github.com/babel/babel/issues/18264
+// until it gets fixed upstream
+const getPhotosWithDependency = async ({ after, first }): Promise<ReturnType> => {
+  try {
+    if (Platform.OS === 'android') {
+      console.warn(
+        'expo-media-library can be removed in favour of new google policy(https://support.google.com/googleplay/android-developer/answer/14115180?hl=en) if you do not have gallery as your core feature of the app.\nYou can replace it with expo-image-picker and uninstall it. Guide - https://getstream.io/chat/docs/sdk/react-native/guides/native-image-picker/.',
+      );
+    }
+    // NOTE:
+    // should always check first before requesting permission
+    // because always requesting permission will cause
+    // the app to go to background even if it was granted
+    const { accessPrivileges, status } = await MediaLibrary.getPermissionsAsync();
+    if (status !== 'granted') {
+      const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
+      if (newStatus !== 'granted') {
         throw new Error('getPhotos Error');
       }
     }
-  : null;
+    const results = await MediaLibrary.getAssetsAsync({
+      after,
+      first,
+      mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
+      sortBy: [MediaLibrary.SortBy.modificationTime],
+    });
+    const assetEntries = await Promise.all(
+      results.assets.map(async (asset) => {
+        const localUri = await getLocalAssetUri(asset.id);
+        const mimeType =
+          mime.getType(asset.filename || asset.uri) ||
+          (asset.mediaType === MediaLibrary.MediaType.video ? 'video/*' : 'image/*');
+        const originalUri = asset.uri;
+        const uri = localUri || originalUri;
+
+        return {
+          asset,
+          isVideo: asset.mediaType === MediaLibrary.MediaType.video,
+          mimeType,
+          originalUri,
+          uri,
+        };
+      }),
+    );
+    const videoUris = assetEntries
+      .filter(({ isVideo, originalUri }) => isVideo && !!originalUri)
+      .map(({ originalUri }) => originalUri);
+    const videoThumbnailResults = await generateThumbnails(videoUris);
+
+    const assets = assetEntries.map(({ asset, isVideo, mimeType, originalUri, uri }) => {
+      const thumbnailResult =
+        isVideo && originalUri ? videoThumbnailResults[originalUri] : undefined;
+
+      return {
+        duration: asset.duration * 1000,
+        height: asset.height,
+        name: asset.filename,
+        size: 0,
+        thumb_url: thumbnailResult?.uri || undefined,
+        type: mimeType,
+        uri,
+        width: asset.width,
+      };
+    });
+
+    const hasNextPage = results.hasNextPage;
+    const endCursor = results.endCursor;
+    return { assets, endCursor, hasNextPage, iOSLimited: accessPrivileges === 'limited' };
+  } catch {
+    throw new Error('getPhotos Error');
+  }
+};
+
+export const getPhotos = MediaLibrary ? getPhotosWithDependency : null;

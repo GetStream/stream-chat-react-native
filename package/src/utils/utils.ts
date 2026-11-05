@@ -313,6 +313,55 @@ export const checkQuotedMessageEquality = (
   return quotedMessageEqual;
 };
 
+const ZERO_WIDTH_JOINER = 0x200d;
+// The longest real emoji sequences are ~15 code units, this only bounds pathological input.
+const MAX_EMOJI_LENGTH = 32;
+// Emoji start with a high surrogate or sit in the BMP symbol blocks (e.g. ❤ U+2764). Kept as
+// one-character strings so a word's first character can be compared without `charCodeAt`.
+const SYMBOLS_START = String.fromCharCode(0x2000);
+const SYMBOLS_END = String.fromCharCode(0x2bff);
+const HIGH_SURROGATE_START = String.fromCharCode(0xd800);
+const HIGH_SURROGATE_END = String.fromCharCode(0xdbff);
+
+const isRegionalIndicator = (codePoint: number) => codePoint >= 0x1f1e6 && codePoint <= 0x1f1ff;
+
+// Code points that attach to the preceding emoji instead of starting a new character.
+const isEmojiModifier = (codePoint: number) =>
+  (codePoint >= 0xfe00 && codePoint <= 0xfe0f) || // variation selectors
+  (codePoint >= 0x1f3fb && codePoint <= 0x1f3ff) || // skin tone modifiers
+  (codePoint >= 0xe0020 && codePoint <= 0xe007f); // tags, used by subdivision flags
+
+const codePointLength = (codePoint: number) => (codePoint > 0xffff ? 2 : 1);
+
+/**
+ * Returns the first character of a string that starts with an emoji, keeping skin tones, flags
+ * and ZWJ sequences intact. Hermes has no `Intl.Segmenter`, so the common cases are covered with
+ * explicit code point ranges.
+ */
+const getFirstEmoji = (text: string) => {
+  const first = text.codePointAt(0) as number;
+  let end = codePointLength(first);
+
+  if (isRegionalIndicator(first)) {
+    const next = text.codePointAt(end);
+    if (next !== undefined && isRegionalIndicator(next)) {
+      end += 2;
+    }
+  }
+  while (end < text.length && end < MAX_EMOJI_LENGTH) {
+    const codePoint = text.codePointAt(end) as number;
+    if (isEmojiModifier(codePoint)) {
+      end += codePointLength(codePoint);
+    } else if (codePoint === ZERO_WIDTH_JOINER && end + 1 < text.length) {
+      end += 1 + codePointLength(text.codePointAt(end + 1) as number);
+    } else {
+      break;
+    }
+  }
+
+  return text.slice(0, end);
+};
+
 /**
  * Returns the uppercase first letters of the first words of a name.
  *
@@ -328,7 +377,14 @@ export const getInitialsFromName = (name: string, numberOfInitials: number = 2) 
   return trimmed
     .split(/\s+/)
     .slice(0, numberOfInitials)
-    .map((n) => n.charAt(0).toUpperCase())
+    .map((n) => {
+      const first = n.charAt(0);
+      // Plain names take the same `charAt(0)` path as before; only possible emoji do more work.
+      const mayBeEmoji =
+        first >= SYMBOLS_START &&
+        (first <= SYMBOLS_END || (first >= HIGH_SURROGATE_START && first <= HIGH_SURROGATE_END));
+      return (mayBeEmoji ? getFirstEmoji(n) : first).toUpperCase();
+    })
     .join('');
 };
 
