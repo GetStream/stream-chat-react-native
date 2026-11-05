@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.3...v9.12.0) (2026-11-05)
+
+### Features
+
+* poll translations ([#3917](https://github.com/GetStream/stream-chat-react-native/issues/3917)) ([2617c70](https://github.com/GetStream/stream-chat-react-native/commit/2617c7061337c71a7e4e265f7d2b5cec134b6ce8))
+* poll translations ([#3917](https://github.com/GetStream/stream-chat-react-native/issues/3917)) ([#3941](https://github.com/GetStream/stream-chat-react-native/issues/3941)) ([32e897f](https://github.com/GetStream/stream-chat-react-native/commit/32e897f8e78611c54fc2a43a7b28e0e7728e8267))
+
 ## [9.11.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.2...v9.11.3) (2026-11-05)
 
 ### Bug Fixes
