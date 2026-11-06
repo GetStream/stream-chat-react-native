@@ -9,6 +9,8 @@ export * from './voice-visualization';
 
 // agent replies
 export * from './message-parts';
+export * from './reasoning';
+export * from './tool-calls';
 
 // components
 export * from './components';
