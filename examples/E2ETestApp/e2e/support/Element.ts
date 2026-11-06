@@ -207,7 +207,6 @@ export const indexFromBottom = async (
   return order[Math.min(fromBottom, order.length - 1)].index;
 };
 
-/** The frame of the `index`-th match of `selector`. */
 export const frameOf = async (selector: Selector, index = 0) => {
   const matches = await allAttributes(selector);
   const frame = matches[index]?.frame;

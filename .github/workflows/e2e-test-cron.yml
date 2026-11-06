@@ -76,14 +76,12 @@ jobs:
           nohup xcrun simctl boot "$udid" > /dev/null 2>&1 &
       - uses: ./.github/actions/ruby-cache
 
-      # --- JS dependencies ---
       - name: Restore node_modules
         id: node-modules
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.NODE_MODULES_PATHS }}
           key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
-      # Only the e2e app's dependency tree, not every example app.
       - name: Install dependencies
         run: yarn workspaces focus e2etestapp
       - name: Save node_modules
@@ -134,7 +132,6 @@ jobs:
           path: ${{ env.APP_PATH }}
           key: ${{ steps.app.outputs.cache-primary-key }}
 
-      # --- Test tooling ---
       - name: Install applesimutils
         # Homebrew refuses formulae from non-official taps until they are trusted.
         run: brew tap wix/brew && brew trust --formula wix/brew/applesimutils && brew install wix/brew/applesimutils
@@ -201,7 +198,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
-      # Same as the native Android SDK e2e jobs, which run stably on these runners
+      # Same as the native Android SDK e2e jobs
       ANDROID_API_LEVEL: "36"
       ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
       DETOX_ADB_NAME: "emulator-5554"
@@ -222,14 +219,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - uses: ./.github/actions/ruby-cache
 
-      # --- JS dependencies ---
       - name: Restore node_modules
         id: node-modules
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.NODE_MODULES_PATHS }}
           key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
-      # Only the e2e app's dependency tree, not every example app.
       - name: Install dependencies
         run: yarn workspaces focus e2etestapp
       - name: Save node_modules
@@ -258,7 +253,6 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # --- Test tooling ---
       - name: Resolve mock server revision
         id: mock-server
         run: echo "sha=$(git ls-remote https://github.com/GetStream/stream-chat-test-mock-server "refs/heads/$MOCK_SERVER_BRANCH" | cut -f1)" >> "$GITHUB_OUTPUT"

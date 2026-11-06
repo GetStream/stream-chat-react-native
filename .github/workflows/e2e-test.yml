@@ -106,14 +106,12 @@ jobs:
           nohup xcrun simctl boot "$udid" > /dev/null 2>&1 &
       - uses: ./.github/actions/ruby-cache
 
-      # --- JS dependencies ---
       - name: Restore node_modules
         id: node-modules
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.NODE_MODULES_PATHS }}
           key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
-      # Only the e2e app's dependency tree, not every example app.
       - name: Install dependencies
         run: yarn workspaces focus e2etestapp
       - name: Save node_modules
@@ -164,7 +162,6 @@ jobs:
           path: ${{ env.APP_PATH }}
           key: ${{ steps.app.outputs.cache-primary-key }}
 
-      # --- Test tooling ---
       - name: Install applesimutils
         # Homebrew refuses formulae from non-official taps until they are trusted.
         run: brew tap wix/brew && brew trust --formula wix/brew/applesimutils && brew install wix/brew/applesimutils
@@ -263,14 +260,12 @@ jobs:
           cache-read-only: false
       - uses: ./.github/actions/ruby-cache
 
-      # --- JS dependencies ---
       - name: Restore node_modules
         id: node-modules
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.NODE_MODULES_PATHS }}
           key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
-      # Only the e2e app's dependency tree, not every example app.
       - name: Install dependencies
         run: yarn workspaces focus e2etestapp
       - name: Save node_modules
@@ -338,7 +333,7 @@ jobs:
         batch: ${{ fromJson(needs.check.outputs.e2e_batches) }}
       fail-fast: false
     env:
-      # Same as the native Android SDK e2e jobs, which run stably on these runners
+      # Same as the native Android SDK e2e jobs
       ANDROID_API_LEVEL: "36"
       # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
       # (RN-513, also outside GiphyTests).
@@ -375,7 +370,6 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # --- Test tooling ---
       - name: Resolve mock server revision
         id: mock-server
         run: echo "sha=$(git ls-remote https://github.com/GetStream/stream-chat-test-mock-server "refs/heads/$MOCK_SERVER_BRANCH" | cut -f1)" >> "$GITHUB_OUTPUT"
@@ -400,7 +394,7 @@ jobs:
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
-          # Logcat is written on the runner, so it survives the emulator dying mid-run (GiphyTests).
+          # Logcat is written on the runner, so it survives the emulator dying mid-run.
           script: |
             nohup "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 logcat -b all -v threadtime > "$RUNNER_TEMP/logcat.txt" 2>&1 < /dev/null &
             bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" selection:examples/E2ETestApp/e2e_selection.json batch:${{ matrix.batch }} batch_count:${{ strategy.job-total }}

@@ -7,7 +7,7 @@ import { itOnIOS, setUpStreamTestCase } from '../support/StreamTestCase';
 describe('GiphyTests', () => {
   const { backendRobot, participantRobot, userRobot } = setUpStreamTestCase();
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_userObservesAnimatedGiphy_whenUserAddsGiphyMessage', async () => {
     allureId(13081);
     await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
@@ -17,7 +17,7 @@ describe('GiphyTests', () => {
     );
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_userObservesAnimatedGiphy_whenParticipantAddsGiphyMessage', async () => {
     allureId(13082);
     await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
@@ -25,7 +25,7 @@ describe('GiphyTests', () => {
     await step('THEN user observes the animated gif', () => userRobot.assertGiphyImage());
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_userObservesAnimatedGiphy_whenUserAddsGiphyMessageInThread', async () => {
     allureId(13083);
     await step('GIVEN user opens a channel', async () => {
@@ -38,7 +38,7 @@ describe('GiphyTests', () => {
     await step('THEN user observes the animated gif in thread', () => userRobot.assertGiphyImage());
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_userObservesAnimatedGiphy_whenParticipantAddsGiphyMessageInThread', async () => {
     allureId(13084);
     await step('GIVEN user opens a channel', async () => {
@@ -54,7 +54,7 @@ describe('GiphyTests', () => {
     );
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_userObservesAnimatedGiphy_afterAddingGiphyThroughComposerMenu', async () => {
     allureId(13085);
     await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
@@ -64,7 +64,7 @@ describe('GiphyTests', () => {
     await step('THEN user observes the animated gif', () => userRobot.assertGiphyImage());
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_userObservesAnimatedGiphy_whenUserAddsGiphyMessage_AfterShuffling', async () => {
     allureId(13086);
     await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
@@ -80,7 +80,7 @@ describe('GiphyTests', () => {
     );
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_messageIsNotSent_whenUserCancelsEphemeralMessage', async () => {
     allureId(13087);
     await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
@@ -126,7 +126,7 @@ describe('GiphyTests', () => {
     );
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_deliveryStatusHidden_whenEphemeralMessageShown', async () => {
     allureId(13090);
     await step('GIVEN user opens a channel', () => userRobot.login().openChannel());
@@ -140,7 +140,7 @@ describe('GiphyTests', () => {
     );
   });
 
-  // The Android CI emulator dies loading giphy media: https://linear.app/stream/issue/RN-513
+  // https://linear.app/stream/issue/RN-513
   itOnIOS('test_deliveryStatusHidden_whenEphemeralMessageShownInThread', async () => {
     allureId(13091);
     await step('GIVEN user opens a channel', async () => {

@@ -241,7 +241,6 @@ UserRobot.prototype.assertMessageSizeChangesAfterEditing = function (increased) 
     newText = increased ? `ok\n${messageText}\nnew line` : 'new line';
   })
     .perform(async () => {
-      // The edit's text depends on the message text read above.
       await editMessageNow(newText);
       await waitToAppear(Message.text(newText));
     })
