@@ -13,6 +13,7 @@ export * from './icons';
 export * from './message';
 export * from './message-parts';
 export * from './reasoning';
+export * from './suggestions';
 export * from './tool-calls';
 
 // components

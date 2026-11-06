@@ -499,5 +499,7 @@
   "No members found": "メンバーが見つかりません",
   "a11y/Search members": "メンバーを検索",
   "Message copied to clipboard": "メッセージをクリップボードにコピーしました",
-  "Failed to copy message": "メッセージのコピーに失敗しました"
+  "Failed to copy message": "メッセージのコピーに失敗しました",
+  "Remove attachment": "添付ファイルを削除",
+  "Remove option: {{ option }}": "オプションを削除: {{ option }}"
 }

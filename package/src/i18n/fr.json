@@ -499,5 +499,7 @@
   "No members found": "Aucun membre trouvé",
   "a11y/Search members": "Rechercher des membres",
   "Message copied to clipboard": "Message copié dans le presse-papiers",
-  "Failed to copy message": "Échec de la copie du message"
+  "Failed to copy message": "Échec de la copie du message",
+  "Remove attachment": "Retirer la pièce jointe",
+  "Remove option: {{ option }}": "Retirer l'option : {{ option }}"
 }

@@ -57,8 +57,11 @@ export type AppContextValue = {
   pending: AIPendingMessage | undefined;
   /** The open conversation's session id. */
   sessionId: string | undefined;
-  /** Asks the agent, with photos by their local URIs. Its reply arrives in the channel. */
-  ask: (text: string, photos?: string[]) => Promise<void>;
+  /**
+   * Asks the agent, with photos by their local URIs, and with more time to reason when
+   * `thinkHarder`. Its reply arrives in the channel.
+   */
+  ask: (text: string, photos?: string[], thinkHarder?: boolean) => Promise<void>;
   /** Carries on a conversation from the drawer, by its session id. */
   openConversation: (sessionId: string) => void;
   /** Rates a reply, or takes the rating back with null. */
@@ -161,33 +164,40 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   const isResponding = agentState.kind === 'responding' || agentState.kind === 'working';
   const isBusy = !!asked || isResponding || followed?.lastReply?.generating === true;
 
-  const ask = useStableCallback(async (text: string, photos: string[] = []) => {
-    const opened = current.current;
-    if (!opened || isBusy) {
-      return;
-    }
-    // Shows at once, with the photos as they were picked.
-    const asking: Asked = {
-      after: userMessageCount(opened.state.getLatestValue().messages),
-      message: {
-        attachments: photos.map((url) => ({ kind: 'image', url })),
-        id: crypto.randomUUID(),
-        text,
-      },
-    };
-    const messages = opened.state.getLatestValue().messages;
-    setFailure(undefined);
-    setAsked(asking);
-    setAskedAfter(messages[messages.length - 1]?.id ?? '');
-    try {
-      const images = await Promise.all(photos.map(async (uri) => ({ url: await toDataUri(uri) })));
-      await opened.session.responses.create(text, images.length > 0 ? { images } : undefined);
-    } catch (error) {
-      setFailure(messageOf(error));
-      setAskedAfter(undefined);
-      if (askedRef.current === asking) setAsked(undefined);
-    }
-  });
+  const ask = useStableCallback(
+    async (text: string, photos: string[] = [], thinkHarder = false) => {
+      const opened = current.current;
+      if (!opened || isBusy) {
+        return;
+      }
+      // Shows at once, with the photos as they were picked.
+      const asking: Asked = {
+        after: userMessageCount(opened.state.getLatestValue().messages),
+        message: {
+          attachments: photos.map((url) => ({ kind: 'image', url })),
+          id: crypto.randomUUID(),
+          text,
+        },
+      };
+      const messages = opened.state.getLatestValue().messages;
+      setFailure(undefined);
+      setAsked(asking);
+      setAskedAfter(messages[messages.length - 1]?.id ?? '');
+      try {
+        const images = await Promise.all(
+          photos.map(async (uri) => ({ url: await toDataUri(uri) })),
+        );
+        await opened.session.responses.create(text, {
+          ...(images.length > 0 ? { images } : {}),
+          ...(thinkHarder ? { reasoningEffort: 'high' } : {}),
+        });
+      } catch (error) {
+        setFailure(messageOf(error));
+        setAskedAfter(undefined);
+        if (askedRef.current === asking) setAsked(undefined);
+      }
+    },
+  );
 
   // Stream's copy of the question on its way is the person's first message after the ones there
   // were when they asked: once it is in, the question on its way goes.

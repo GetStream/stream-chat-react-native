@@ -499,5 +499,7 @@
   "No members found": "Geen leden gevonden",
   "a11y/Search members": "Zoek leden",
   "Message copied to clipboard": "Bericht gekopieerd naar klembord",
-  "Failed to copy message": "Kopiëren van bericht mislukt"
+  "Failed to copy message": "Kopiëren van bericht mislukt",
+  "Remove attachment": "Bijlage verwijderen",
+  "Remove option: {{ option }}": "Optie verwijderen: {{ option }}"
 }

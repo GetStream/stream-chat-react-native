@@ -1,12 +1,18 @@
 import React, { useMemo } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
-import { useMessageComposerContext, useTheme } from '../contexts';
+import { useAITranslation, useMessageComposerContext, useTheme } from '../contexts';
 import { Close } from '../internal/icons/Close';
+import { AIMessageAttachment } from '../message/AIMessageAttachment';
+import type { MediaAsset } from '../services/media-picker-service/AbstractMediaPickerService';
 import { useMediaPickerState } from '../services/media-picker-service/hooks/useMediaPickerState';
 
+// An asset without a type is a photo, as the pickers give them.
+const isImage = (asset: MediaAsset) => !asset.type || asset.type.startsWith('image');
+
 export const MediaPreviewList = () => {
+  const { t } = useAITranslation();
   const { mediaPickerService } = useMessageComposerContext();
   const { attachments } = useMediaPickerState({ service: mediaPickerService }) ?? {};
   const {
@@ -42,13 +48,32 @@ export const MediaPreviewList = () => {
           exiting={FadeOut.duration(150)}
           layout={LinearTransition.duration(150)}
         >
-          <Image
-            style={[styles.mediaPreviewImage, mediaPreviewImage]}
-            source={{ uri: attachment.uri }}
-            width={100}
-            height={100}
-          />
+          {isImage(attachment) ? (
+            <Image
+              style={[styles.mediaPreviewImage, mediaPreviewImage]}
+              source={{ uri: attachment.uri }}
+              width={100}
+              height={100}
+            />
+          ) : (
+            // Anything else, such as a video, can't show in an `Image`, so it shows as a file.
+            <View style={styles.mediaPreviewFile}>
+              <AIMessageAttachment
+                attachment={{
+                  kind: 'file',
+                  mimeType: attachment.type,
+                  name: attachment.name,
+                  size: attachment.size,
+                  url: attachment.uri,
+                }}
+                role='user'
+              />
+            </View>
+          )}
           <Pressable
+            accessibilityLabel={t('Remove attachment')}
+            accessibilityRole='button'
+            hitSlop={8}
             style={[styles.mediaPreviewRemoveButton, mediaPreviewRemoveButton]}
             onPress={() => mediaPickerService?.removeAsset(index)}
           >
@@ -71,6 +96,7 @@ const useStyles = () => {
         },
         mediaPreviewContentContainerStyle: { flexGrow: 1, paddingBottom: 8 },
         mediaPreviewImage: { borderRadius: 12, marginRight: 8 },
+        mediaPreviewFile: { height: 100, justifyContent: 'center', marginRight: 8, width: 220 },
         mediaPreviewRemoveButton: {
           position: 'absolute',
           top: 8,

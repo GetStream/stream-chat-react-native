@@ -499,5 +499,7 @@
   "No members found": "Участники не найдены",
   "a11y/Search members": "Поиск участников",
   "Message copied to clipboard": "Сообщение скопировано в буфер обмена",
-  "Failed to copy message": "Не удалось скопировать сообщение"
+  "Failed to copy message": "Не удалось скопировать сообщение",
+  "Remove attachment": "Удалить вложение",
+  "Remove option: {{ option }}": "Удалить параметр: {{ option }}"
 }

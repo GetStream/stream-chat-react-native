@@ -10,18 +10,22 @@ import { KeyboardCompatibleView, useStateStore } from 'stream-chat-expo';
 import {
   AIConversation,
   type AIMessage,
+  AISuggestions,
   AITypingIndicatorView,
   ComposerView,
   createFromStreamMessage,
+  createNewComposerStore,
 } from 'stream-chat-expo/ai-components';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
-import { bottomSheetOptions } from '../bottomSheetOptions';
+import { chatOptions, STARTERS, THINK_HARDER } from '../chatOptions';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { useSendAIMessage } from '../hooks/useSendAIMessage';
 
-const CustomComposerView = () => {
+type Composer = ReturnType<typeof createNewComposerStore>;
+
+const CustomComposerView = ({ composer }: { composer: Composer }) => {
   const { isBusy, stop } = useAppContext();
 
   // The router stops through its own session, not with an AI indicator event.
@@ -42,7 +46,8 @@ const CustomComposerView = () => {
 
   return (
     <ComposerView
-      bottomSheetOptions={bottomSheetOptions}
+      chatOptions={chatOptions}
+      state={composer}
       bottomSheetInsets={insets}
       onSendMessage={serializeToMessage}
       isGenerating={isBusy}
@@ -52,6 +57,34 @@ const CustomComposerView = () => {
 };
 
 const EmptyState = () => <Text style={styles.emptyText}>What can I help with ?</Text>;
+
+const isEmptySelector = ({ messages }: AgentChatState) => ({ isEmpty: messages.length === 0 });
+
+/**
+ * Starters, above the composer, until the conversation has a first question. One is asked with the
+ * option picked in the composer, as the composer would ask it.
+ */
+const Starters = ({ chat, composer }: { chat: AgentChat; composer: Composer }) => {
+  const { ask, pending } = useAppContext();
+  const { isEmpty } = useStateStore(chat.state, isEmptySelector);
+  if (!isEmpty || pending) return null;
+  const onSelect = (text: string) => {
+    const { chatOption } = composer.getLatestValue();
+    void ask(text, [], chatOption?.id === THINK_HARDER.id);
+  };
+  return <AISuggestions onSelect={onSelect} suggestions={STARTERS} />;
+};
+
+/** The starters and the composer, sharing the composer's draft and picked option. */
+const ComposerArea = ({ chat }: { chat: AgentChat }) => {
+  const [composer] = useState(createNewComposerStore);
+  return (
+    <>
+      <Starters chat={chat} composer={composer} />
+      <CustomComposerView composer={composer} />
+    </>
+  );
+};
 
 const conversationSelector = ({ hasOlderMessages, messages }: AgentChatState) => ({
   hasOlderMessages,
@@ -130,7 +163,7 @@ export const ChatContent = () => {
         <Conversation chat={chat} />
         {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
         <VoiceMode />
-        <CustomComposerView />
+        <ComposerArea chat={chat} />
       </KeyboardCompatibleView>
     </Animated.View>
   );
