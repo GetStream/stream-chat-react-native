@@ -18,34 +18,34 @@ describe('useUserActions', () => {
   const muteUser = jest.fn();
   const unmuteUser = jest.fn();
   const blockUser = jest.fn();
-  const unBlockUser = jest.fn();
+  const unblockUser = jest.fn();
   const addNotification = jest.fn();
 
   const setUpMocks = () => {
     muteUser.mockResolvedValue(undefined);
     unmuteUser.mockResolvedValue(undefined);
     blockUser.mockResolvedValue(undefined);
-    unBlockUser.mockResolvedValue(undefined);
+    unblockUser.mockResolvedValue(undefined);
 
     jest.spyOn(ChatContext, 'useChatContext').mockImplementation(
       () =>
         ({
           client: {
             blockUser,
-            muteUser,
-            unBlockUser,
-            unmuteUser,
+            moderation: { mute: muteUser, unmute: unmuteUser },
+            unblockUser,
           },
         }) as unknown as ChatContext.ChatContextValue,
     );
     jest
       .spyOn(useNotificationApiModule, 'useNotificationApi')
       .mockReturnValue({ addNotification } as unknown as useNotificationApiModule.NotificationApi);
-    jest
-      .spyOn(TranslationContext, 'useTranslationContext')
-      .mockImplementation(
-        () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
-      );
+    jest.spyOn(TranslationContext, 'useTranslationContext').mockImplementation(
+      () =>
+        ({
+          t: (value: string, d?: unknown) => (typeof d === 'string' ? d : value),
+        }) as unknown as TranslationContextValue,
+    );
   };
 
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('useUserActions', () => {
 
       await result.current.muteUser({ onSuccess });
 
-      expect(muteUser).toHaveBeenCalledWith('target-user-id');
+      expect(muteUser).toHaveBeenCalledWith({ target_ids: ['target-user-id'] });
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(addNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -118,7 +118,7 @@ describe('useUserActions', () => {
 
       await result.current.unmuteUser({ onSuccess });
 
-      expect(unmuteUser).toHaveBeenCalledWith('target-user-id');
+      expect(unmuteUser).toHaveBeenCalledWith({ target_ids: ['target-user-id'] });
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(addNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -199,7 +199,7 @@ describe('useUserActions', () => {
 
       await result.current.unblockUser({ onSuccess });
 
-      expect(unBlockUser).toHaveBeenCalledWith('target-user-id');
+      expect(unblockUser).toHaveBeenCalledWith('target-user-id');
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(addNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -213,7 +213,7 @@ describe('useUserActions', () => {
     });
 
     it('emits an error notification when the client rejects', async () => {
-      unBlockUser.mockRejectedValueOnce(new Error('boom'));
+      unblockUser.mockRejectedValueOnce(new Error('boom'));
       const user = createUser();
       const { result } = renderHook(() => useUserActions(user));
 
@@ -244,7 +244,7 @@ describe('useUserActions', () => {
       expect(muteUser).not.toHaveBeenCalled();
       expect(unmuteUser).not.toHaveBeenCalled();
       expect(blockUser).not.toHaveBeenCalled();
-      expect(unBlockUser).not.toHaveBeenCalled();
+      expect(unblockUser).not.toHaveBeenCalled();
       expect(addNotification).not.toHaveBeenCalled();
     });
   });

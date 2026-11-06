@@ -1,4 +1,4 @@
-import type { DraftResponse, MessageResponseBase } from 'stream-chat';
+import type { DraftResponse, MessageResponse } from 'stream-chat';
 
 import { upsertMessages } from './upsertMessages';
 
@@ -19,7 +19,7 @@ export const upsertDraft = async ({
   const queries: PreparedQueries[] = [];
   const { channel_cid, parent_id, message } = draft;
 
-  // Delete existing draft message if it exists.
+  // Deletes any existing draft of the same channel and parent first.
   const deleteQuery = createDeleteQuery('draft', {
     cid: channel_cid,
     parentId: parent_id,
@@ -27,7 +27,7 @@ export const upsertDraft = async ({
 
   queries.push(deleteQuery);
 
-  // Important: Make sure you create a draft only after a draft message is created.
+  // The draft row references the draft message, so the message is queued first.
   const storableDraftMessage = mapDraftMessageToStorable({ draftMessage: message });
 
   queries.push(createUpsertQuery('draftMessage', storableDraftMessage));
@@ -40,7 +40,7 @@ export const upsertDraft = async ({
     draftMessage: storableDraftMessage,
   });
 
-  const messagesToUpsert: MessageResponseBase[] = [];
+  const messagesToUpsert: MessageResponse[] = [];
 
   if (draft.quoted_message) {
     messagesToUpsert.push(draft.quoted_message);
@@ -51,8 +51,7 @@ export const upsertDraft = async ({
   }
 
   if (messagesToUpsert.length > 0) {
-    const query = await upsertMessages({ execute: false, messages: messagesToUpsert });
-    queries.concat(query);
+    queries.push(...(await upsertMessages({ execute: false, messages: messagesToUpsert })));
   }
 
   if (execute) {

@@ -51,9 +51,10 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     );
   }, [channel.state.members, client.user?.id]);
 
+  // `status` exists only on local messages (`LocalMessage`), so it is read through an `in` guard.
+  const lastMessageStatus = lastMessage && 'status' in lastMessage ? lastMessage.status : undefined;
   const isFailedMessage =
-    lastMessage?.status === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
-  const showMessageDeliveryStatus = !isMessageDeleted;
+    lastMessageStatus === MessageStatusTypes.FAILED || lastMessage?.type === 'error';
 
   if (usersTyping.length > 0) {
     return <ChannelPreviewTypingIndicator channel={channel} usersTyping={usersTyping} />;
@@ -62,17 +63,16 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
   if (draftMessage) {
     return (
       <View style={styles.container}>
-        <Text style={styles.draftText}>{t('Draft')}:</Text>
+        <Text style={styles.draftText}>{t('common.draft.label', 'Draft')}:</Text>
         <ChannelPreviewLastMessage message={draftMessage} />
       </View>
     );
   }
 
-  // If there are no messages yet, show a message saying "No messages yet"
   if (!lastMessage) {
     return (
       <Text style={[styles.subtitle, { color: semantics.textTertiary }]}>
-        {t('No messages yet')}
+        {t('channelPreview.noMessages.text', 'No messages yet')}
       </Text>
     );
   }
@@ -92,26 +92,24 @@ export const ChannelPreviewMessage = (props: ChannelPreviewMessageProps) => {
     return (
       <View style={styles.container}>
         <ErrorBadge size='xs' />
-        <Text style={styles.errorText}>{t('Message failed to send')}</Text>
+        <Text style={styles.errorText}>
+          {t('channelPreview.messageFailed.error', 'Message failed to send')}
+        </Text>
       </View>
     );
   }
 
-  if (channel.data?.name || membersWithoutSelf.length > 1) {
+  if (channel.data?.custom?.name || membersWithoutSelf.length > 1) {
     return (
       <View style={styles.container}>
-        {showMessageDeliveryStatus ? (
-          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
-        ) : null}
+        <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
-        {showMessageDeliveryStatus ? (
-          <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
-        ) : null}
+        <ChannelPreviewMessageDeliveryStatus channel={channel} message={lastMessage} />
         <ChannelPreviewLastMessage message={lastMessage} />
       </View>
     );

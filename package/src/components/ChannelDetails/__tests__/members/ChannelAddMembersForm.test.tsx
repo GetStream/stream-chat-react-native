@@ -19,6 +19,7 @@ import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../../hooks/actions/useChannelActions';
+import { runtimeDefaults } from '../../../../i18n/runtimeDefaults';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelAddMembersForm } from '../../components/members/ChannelAddMembersForm';
@@ -90,13 +91,18 @@ const renderForm = ({
       <AccessibilityProvider value={{ enabled: true }}>
         <TranslationProvider
           value={{
-            t: ((key: string) => key) as never,
+            // Prose keys pass their English copy inline as the second argument; keys resolved by
+            // name (e.g. the close button's `accessibilityLabelKey`) come from `runtimeDefaults`.
+            t: ((key: string, d?: unknown) =>
+              typeof d === 'string'
+                ? d
+                : (runtimeDefaults[key as keyof typeof runtimeDefaults] ?? key)) as never,
             tDateTimeParser: ((input: unknown) => input) as never,
             userLanguage: 'en',
           }}
         >
           <ChatContext.Provider
-            value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+            value={{ client: { notifications: new NotificationManager(), userId: 'me' } } as never}
           >
             <ChannelDetailsContextProvider channel={applyCapabilities(channel, capabilities)}>
               <WithComponents overrides={{ ChannelAddMembersFormContent: AddMembersProbe }}>
@@ -175,7 +181,7 @@ describe('ChannelAddMembersForm', () => {
 
     renderForm({ channel, onClose });
 
-    fireEvent.press(screen.getByLabelText('a11y/Close'));
+    fireEvent.press(screen.getByLabelText('Close'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

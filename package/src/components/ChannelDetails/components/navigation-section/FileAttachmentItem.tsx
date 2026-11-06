@@ -9,8 +9,7 @@ import { FilePreview } from '../../../Attachment/FilePreview';
 import { openUrlSafely } from '../../../Attachment/utils/openUrlSafely';
 
 /**
- * The shape passed to `FileAttachmentItem`'s `onPress` callback, identifying the rendered
- * attachment and the message it belongs to.
+ * Passed to the `onPress` callback of `FileAttachmentItem`: the attachment and its message.
  */
 export type FileAttachmentItemPressParams = {
   attachment: Attachment;
@@ -18,14 +17,11 @@ export type FileAttachmentItemPressParams = {
 };
 
 export type FileAttachmentItemProps = {
-  /** The file/audio attachment to render. */
+  /** The file or audio attachment to render. */
   attachment: Attachment;
   /** The message the attachment belongs to. */
   message: MessageResponse;
-  /**
-   * Fired with the pressed attachment and its message. When provided, this overrides the default
-   * behavior of opening the attachment's `asset_url`.
-   */
+  /** Overrides the default behavior of opening the attachment's `asset_url`. */
   onPress?: (params: FileAttachmentItemPressParams) => void;
 };
 
@@ -72,7 +68,7 @@ const useStyles = () => {
           paddingVertical: primitives.spacingXs,
         },
       }),
-      // FilePreview's default container has a hardcoded width; stretch it to the row width.
+      // The default `FilePreview` container has a fixed width, so stretch it to the row.
       filePreview: StyleSheet.create({
         container: { width: '100%' },
         title: {

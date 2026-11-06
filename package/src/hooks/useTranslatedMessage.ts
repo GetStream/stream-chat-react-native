@@ -3,9 +3,18 @@ import type { LocalMessage, MessageResponse } from 'stream-chat';
 import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
 import { getTranslatedText } from '../utils/i18n/getTranslatedText';
 
-export const useTranslatedMessage = (message?: LocalMessage | MessageResponse) => {
-  const { userLanguage } = useTranslationContext();
-
+/**
+ * Returns a copy of `message` with its text swapped for the auto-translation into `userLanguage`,
+ * when there is one. Deleted messages keep their text.
+ *
+ * @param message The message to translate.
+ * @param userLanguage The language to translate into.
+ * @returns The message copy, or `undefined` without a message.
+ */
+export const getTranslatedMessage = (
+  message: LocalMessage | MessageResponse | undefined,
+  userLanguage: string,
+) => {
   if (!message) {
     return undefined;
   }
@@ -21,4 +30,10 @@ export const useTranslatedMessage = (message?: LocalMessage | MessageResponse) =
   }
 
   return { ...message };
+};
+
+export const useTranslatedMessage = (message?: LocalMessage | MessageResponse) => {
+  const { userLanguage } = useTranslationContext();
+
+  return getTranslatedMessage(message, userLanguage);
 };

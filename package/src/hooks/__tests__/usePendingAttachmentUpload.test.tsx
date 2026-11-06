@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { act, renderHook } from '@testing-library/react-native';
-import { StateStore } from 'stream-chat';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { usePendingAttachmentUpload } from '../usePendingAttachmentUpload';

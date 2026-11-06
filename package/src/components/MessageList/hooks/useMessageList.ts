@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
 
-import type { LocalMessage } from 'stream-chat';
+import type { LocalMessage, MessagePaginator } from 'stream-chat';
 
-import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
-
-import { useRAFCoalescedValue } from '../../../hooks';
+import { useRAFCoalescedValue, useStateStore } from '../../../hooks';
+import { usePrunableMessageList } from '../../../hooks/usePrunableMessageList';
 
 export type UseMessageListParams = {
-  threadList?: boolean;
+  /** The paginator the list renders: the channel's, or the open thread's in a thread list. */
+  paginator: MessagePaginator | undefined;
   isLiveStreaming?: boolean;
   isFlashList?: boolean;
 };
@@ -22,34 +21,33 @@ export type MessageGroupStyles = {
   [key: string]: string[];
 };
 
-export const useMessageList = (params: UseMessageListParams) => {
-  const { threadList, isLiveStreaming, isFlashList = false } = params;
-  const { messages, viewabilityChangedCallback } = usePaginatedMessageListContext();
-  const { threadMessages } = useThreadContext();
-  const messageList = threadList ? threadMessages : messages;
+const EMPTY_MESSAGES: LocalMessage[] = [];
 
-  const processedMessageList = useMemo<LocalMessage[]>(() => {
-    const newMessageList: LocalMessage[] = [];
-    for (const message of messageList) {
-      if (isFlashList) {
-        newMessageList.push(message);
-      } else {
-        newMessageList.unshift(message);
-      }
-    }
-    return newMessageList;
-  }, [messageList, isFlashList]);
+const messageListSelector = (state: { items?: LocalMessage[] }) => ({ messages: state.items });
+
+export const useMessageList = (params: UseMessageListParams) => {
+  const { isLiveStreaming, isFlashList = false, paginator } = params;
+  const { messages } = useStateStore(paginator?.state, messageListSelector) ?? {};
+  const { maxLoadedItems, viewabilityChangedCallback } = usePrunableMessageList({ paginator });
+  const messageList = messages ?? EMPTY_MESSAGES;
+
+  const processedMessageList = useMemo<LocalMessage[]>(
+    () => (isFlashList ? messageList : messageList.slice().reverse()),
+    [messageList, isFlashList],
+  );
 
   const data = useRAFCoalescedValue(processedMessageList, isLiveStreaming);
 
   return useMemo(
     () => ({
-      /** Messages enriched with dates/readby/groups and also reversed in order */
+      /** The paginator's configured window cap, or `undefined` when the list is unbounded. */
+      maxLoadedItems,
+      /** Render order: newest first for the inverted FlatList, oldest first for FlashList. */
       processedMessageList: data,
-      /** Raw messages from the channel state */
+      /** The paginator's messages, oldest first. */
       rawMessageList: messageList,
       viewabilityChangedCallback,
     }),
-    [data, messageList, viewabilityChangedCallback],
+    [data, messageList, maxLoadedItems, viewabilityChangedCallback],
   );
 };

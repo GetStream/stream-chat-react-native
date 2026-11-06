@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import { PollOptionResponseData, PollVoteResponseData as PollVoteClass } from 'stream-chat';
 
 import { PollVote } from './PollVote';
 
@@ -19,7 +19,7 @@ import { usePollState } from '../../hooks/usePollState';
 import { usePollTextTranslation } from '../../hooks/usePollTextTranslation';
 
 export type PollOptionFullResultsProps = PollContextValue & {
-  option: PollOption;
+  option: PollOptionResponseData;
   additionalFlatListProps?: Partial<FlatListProps<PollVoteClass>>;
 };
 
@@ -51,7 +51,11 @@ export const PollOptionFullResultsContent = ({
       <View style={[styles.headerContainer, headerContainer]}>
         <Text style={[styles.headerTitle, headerTitle]}>{optionText}</Text>
         <Text style={[styles.headerText, headerText]}>
-          {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+          {t('poll.votes.text', {
+            count: voteCountsByOption[option.id] ?? 0,
+            defaultValue_one: '{{count}} vote',
+            defaultValue_other: '{{count}} votes',
+          })}
         </Text>
       </View>
     ),

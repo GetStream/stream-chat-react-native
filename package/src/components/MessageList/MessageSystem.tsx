@@ -1,31 +1,22 @@
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { LocalMessage } from 'stream-chat';
+import { convertTimestampToDate, LocalMessage } from 'stream-chat';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
+import { getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
-import { getDateString } from '../../utils/i18n/getDateString';
 
 export type MessageSystemProps = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  /** The system message to render. */
   message: LocalMessage;
-  /**
-   * Additional styles for the system message container.
-   */
+  /** Additional styles for the system message container. */
   style?: StyleProp<ViewStyle>;
-  /*
-   * Lookup key in the language corresponding translations sheet to perform date formatting
-   */
 };
 
-/**
- * A component to display system message. e.g, when someone updates the channel,
- * they can attach a message with that update. That message will be available
- * in message list as (type) system message.
- */
+/** Renders a message of type `system`, such as the one attached to a channel update. */
 export const MessageSystem = (props: MessageSystemProps) => {
   const { message, style } = props;
 
@@ -44,10 +35,10 @@ export const MessageSystem = (props: MessageSystemProps) => {
   const formattedDate = useMemo(
     () =>
       getDateString({
-        date: createdAt,
+        messageCreatedAt: convertTimestampToDate(createdAt),
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/MessageSystem',
+        timestampTranslationKey: 'timestamp.MessageSystem',
       }),
     [createdAt, t, tDateTimeParser],
   );

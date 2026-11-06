@@ -45,4 +45,17 @@ describe('openUrlSafely', () => {
       expect(Linking.canOpenURL).toHaveBeenCalledWith('http://google.com');
     });
   });
+
+  it.each([
+    ['undefined', undefined],
+    ['an empty string', ''],
+  ])('should do nothing when the url is %s', async (_, url) => {
+    jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn().mockResolvedValue(true));
+    jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn());
+
+    await openUrlSafely(url);
+
+    expect(Linking.canOpenURL).not.toHaveBeenCalled();
+    expect(Linking.openURL).not.toHaveBeenCalled();
+  });
 });

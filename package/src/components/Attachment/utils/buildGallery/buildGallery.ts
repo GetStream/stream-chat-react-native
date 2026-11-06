@@ -14,20 +14,14 @@ import {
 } from '../../../../contexts/chatConfigContext/ChatConfigContext';
 
 /**
- * Builds and returns a gallery of optimized images to be rendered on UI.
- * This function take a object parameter with following properties:
+ * Builds the gallery layout for image attachments, with a dedicated layout for one, two and three
+ * images. Four or more use a 2x2 grid of the first four.
  *
- * @param {Attachment[]} images - Array of image attachments
- * @param {GallerySizeConfig} sizeConfig - Theme config for the gallery
- *
- * The returned object contains following properties:
- *
- * - height {number[]} - Height of the gallery
- * - width {number[]} - Width of the gallery
- * - thumbnailGrid {number[][]} - Grid of thumbnail images
- * - invertedDirections {boolean} - Whether to invert the direction of the grid. By default grid is rendered with column as primary direction and row as secondary direction.
- *
- * @return {GallerySizeAndThumbnailGrid}
+ * @param params.images Image attachments to lay out.
+ * @param params.resizableCDNHosts CDN hosts whose image URLs can be resized. Defaults to the chat
+ * config default.
+ * @param params.sizeConfig Size limits of the gallery.
+ * @returns The gallery size, its thumbnails and the `invertedDirections` it was built with.
  */
 export function buildGallery({
   images,
@@ -61,15 +55,7 @@ export function buildGallery({
     });
   }
 
-  /**
-   * -----------
-   * |    |    |
-   * |    |    |
-   * -----------
-   * |    |    |
-   * |    |    |
-   * -----------
-   */
+  // Four or more images: a 2x2 grid of the first four.
   return buildThumbnailGrid({
     grid: [
       [1, 1],

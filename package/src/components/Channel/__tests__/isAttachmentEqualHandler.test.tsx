@@ -11,9 +11,11 @@ import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateCha
 
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageUpdateEvent from '../../../mock-builders/event/messageUpdated';
+import { toChannelResponse } from '../../../mock-builders/event/utils';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Channel } from '../../Channel/Channel';
@@ -107,12 +109,15 @@ describe('isAttachmentEqualHandler', () => {
         chatClient,
         {
           ...messages[0],
+          // v10 routes message.updated through channel.messagePaginator.ingestItem, whose match
+          // filter keys on cid; the event message must carry it or the update is dropped.
+          cid: channel.cid,
           attachments: [
             { customField: 'custom-field-2', type: 'test' } as AttachmentWithCustomField,
           ],
-          updated_at: new Date(),
+          updated_at: convertDateToTimestamp(),
         },
-        channel,
+        toChannelResponse(channel),
       );
     });
 

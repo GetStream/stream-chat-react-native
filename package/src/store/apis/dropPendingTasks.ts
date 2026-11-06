@@ -2,15 +2,12 @@ import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 import { SqliteClient } from '../SqliteClient';
 
 /**
- * dropPendingTasks - Drops all pending tasks from the DB given a specific messageId.
- * Useful for when we do some message actions on a failed message and then we decide to
- * delete it afterwards, removing it from the state.
+ * Drops all pending tasks of a message, for example when a failed message that had actions queued
+ * on it is deleted.
  *
- * @param {Object} param
- * @param {string} param.messageId The messageId for which we want to remove the pending tasks.
- * @param {boolean} param.execute Whether we should immediately execute the query or return it as a prepared one.
- *
- * @return {() => void} - A function that can be called to remove the task from the database
+ * @param params.messageId The ID of the message whose pending tasks are removed.
+ * @param params.execute Whether to run the query now or only return it. Defaults to true.
+ * @returns The prepared delete queries.
  */
 export const dropPendingTasks = async ({
   messageId,

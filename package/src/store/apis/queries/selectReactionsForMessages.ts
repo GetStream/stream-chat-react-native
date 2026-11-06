@@ -1,21 +1,24 @@
-import type { ReactionFilters, ReactionSort } from 'stream-chat';
+import type { ReactionFilters, SortParamRequest } from 'stream-chat';
 
 import { tables } from '../../schema';
 import { SqliteClient } from '../../SqliteClient';
-import type { TableRowJoinedUser } from '../../types';
+import type { Scalar, TableRowJoinedUser } from '../../types';
 
 /**
- * Fetches reactions for a message from the database for messageIds.
- * @param messageIds The message IDs for which reactions are to be fetched.
- * @param limit The limit of how many reactions should be returned.
- * @param filters A ReactionFilter for the reactions we want to fetch. Only type is currently supported.
- * @param sort A sort for reactions to be used when querying. Custom data is currently not supported for sorting.
+ * Fetches the reactions of the given messages. Only the `type` filter and sorting by `created_at`
+ * are supported.
+ *
+ * @param messageIds The IDs of the messages to fetch reactions for.
+ * @param limit Maximum number of reactions to return, or `null` for no limit. Defaults to 25.
+ * @param filters Reaction filters. Only `type` is supported.
+ * @param sort Reaction sort. Only `created_at` is supported.
+ * @returns The reactions joined with their users.
  */
 export const selectReactionsForMessages = async (
   messageIds: string[],
   limit: number | null = 25,
   filters?: Pick<ReactionFilters, 'type'>,
-  sort?: ReactionSort,
+  sort?: SortParamRequest[],
 ): Promise<TableRowJoinedUser<'reactions'>[]> => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
   const reactionsColumnNames = Object.keys(tables.reactions.columns)
@@ -27,11 +30,9 @@ export const selectReactionsForMessages = async (
   const filterValue = filters?.type
     ? [typeof filters.type === 'string' ? filters.type : filters.type.$eq]
     : [];
-  const createdAtSort = Array.isArray(sort)
-    ? sort.find((s) => !!s.created_at)?.created_at
-    : sort?.created_at;
+  const createdAtSort = sort?.find((s) => s.field === 'created_at')?.direction;
   const orderByClause = createdAtSort
-    ? `ORDER BY cast(strftime('%s', a.createdAt) AS INTEGER) ${createdAtSort === 1 ? 'ASC' : 'DESC'}`
+    ? `ORDER BY a.createdAt ${createdAtSort === 1 ? 'ASC' : 'DESC'}`
     : '';
 
   SqliteClient.logger?.('info', 'selectReactionsForMessages', {
@@ -53,7 +54,7 @@ export const selectReactionsForMessages = async (
     WHERE a.messageId in (${questionMarks}) ${filters?.type ? `AND a.type = ?` : ''}
     ${orderByClause}
     ${limit ? 'LIMIT ?' : ''}`,
-    [...messageIds, ...filterValue, ...(limit ? [limit] : [])],
+    [...messageIds, ...filterValue, ...(limit ? [limit] : [])] as Scalar[],
   );
 
   return result.map((r) => JSON.parse(r.value));

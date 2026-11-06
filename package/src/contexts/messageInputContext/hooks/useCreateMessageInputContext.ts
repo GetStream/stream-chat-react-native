@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
 
-import type { ThreadContextValue } from '../../threadContext/ThreadContext';
 import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = ({
   additionalTextInputProps,
-  allowSendBeforeAttachmentsUpload,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
   asyncMessagesSlideToCancelDistance,
@@ -17,7 +15,6 @@ export const useCreateMessageInputContext = ({
   closePollCreationDialog,
   compressImageQuality,
   createPollOptionGap,
-  editMessage,
   focusInputOnPickerClose,
   handleAttachButtonPress,
   hasCameraPicker,
@@ -42,14 +39,10 @@ export const useCreateMessageInputContext = ({
   deleteVoiceRecording,
   uploadVoiceRecording,
   stopVoiceRecording,
-  thread,
-}: MessageInputContextValue & Pick<ThreadContextValue, 'thread'>) => {
-  const threadId = thread?.id;
-
+}: MessageInputContextValue) => {
   const messageInputContext: MessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
-      allowSendBeforeAttachmentsUpload,
       asyncMessagesLockDistance,
       asyncMessagesMinimumPressDuration,
       asyncMessagesSlideToCancelDistance,
@@ -61,7 +54,6 @@ export const useCreateMessageInputContext = ({
       closePollCreationDialog,
       compressImageQuality,
       createPollOptionGap,
-      editMessage,
       focusInputOnPickerClose,
       handleAttachButtonPress,
       hasCameraPicker,
@@ -88,7 +80,7 @@ export const useCreateMessageInputContext = ({
       stopVoiceRecording,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [threadId, showPollCreationDialog, allowSendBeforeAttachmentsUpload],
+    [hasCommands, showPollCreationDialog],
   );
 
   return messageInputContext;

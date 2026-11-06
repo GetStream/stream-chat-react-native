@@ -1,8 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { renderHook } from '@testing-library/react-native';
 
-import type { Attachment, PollResponse, StreamChat } from 'stream-chat';
+import type { Attachment, PollResponseData, StreamChat } from 'stream-chat';
 
 import { Chat } from '../../../components/Chat/Chat';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -29,7 +29,7 @@ describe('useMessagePreviewText', () => {
   const withAttachments = (attachments?: Attachment[]) =>
     generateMessage({ attachments, text: '' });
 
-  // Drafts can have no text and no attachments; they rendered "{{count}} Files" / "0 Audios".
+  // Drafts can have no text and nothing attached; they used to render "0 Files" / "0 Audios".
   it.each([
     ['absent', undefined],
     ['empty', []],
@@ -42,16 +42,14 @@ describe('useMessagePreviewText', () => {
     const result = await render(
       withAttachments([generateImageAttachment(), generateFileAttachment()]),
     );
-    // Counted copy comes from the translations, which load asynchronously.
-    await waitFor(() => expect(result.current).toBe('2 Files'));
+    expect(result.current).toBe('2 Files');
   });
 
   it('counts audio-only attachments as audios', async () => {
     const result = await render(
       withAttachments([generateAudioAttachment(), generateAudioAttachment()]),
     );
-    // Counted copy comes from the translations, which load asynchronously.
-    await waitFor(() => expect(result.current).toBe('2 Audios'));
+    expect(result.current).toBe('2 Audios');
   });
 
   it('prefers the message text over its attachments', async () => {
@@ -71,7 +69,7 @@ describe('useMessagePreviewText', () => {
       options: [],
       vote_count: 0,
       vote_counts_by_option: {},
-    } as unknown as PollResponse;
+    } as unknown as PollResponseData;
 
     const renderPollMessage = (language: string) => {
       const message = generateMessage({ poll, poll_id: poll.id, text: '' });

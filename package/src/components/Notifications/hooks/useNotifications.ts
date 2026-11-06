@@ -17,7 +17,14 @@ export type UseNotificationsOptions = {
   target?: NotificationTarget;
 };
 
-/** Subscribes to the client notification store and returns matching non-system notifications. */
+/**
+ * Subscribes to the client notification store and returns matching non-system notifications.
+ *
+ * @param options.filter Additional filter applied after optional target filtering.
+ * @param options.requireTarget When true, returns an empty list unless `target` is provided.
+ * @param options.target Exact target used to select notifications for one host.
+ * @returns The matching notifications.
+ */
 export const useNotifications = (options?: UseNotificationsOptions): Notification[] => {
   const { client } = useChatContext();
   const selector = useCallback(

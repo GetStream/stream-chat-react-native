@@ -5,7 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
-import { ReactionSortBase } from 'stream-chat';
+import { SortParamRequest } from 'stream-chat';
 
 import { EmojiPickerList } from './EmojiPickerList';
 import { useFetchReactions } from './hooks/useFetchReactions';
@@ -43,19 +43,13 @@ const getItemLayout = (_, index: number) => ({
 
 export type MessageUserReactionsProps = Partial<Pick<MessagesContextValue, 'supportedReactions'>> &
   Partial<Pick<MessageContextValue, 'message'>> & {
-    /**
-     * An array of reactions
-     */
+    /** Reactions to list, used instead of the fetched ones. */
     reactions?: Reaction[];
-    /**
-     * The selected reaction
-     */
+    /** The reaction type selected initially. */
     selectedReaction?: string;
   };
 
-const sort: ReactionSortBase = {
-  created_at: -1,
-};
+const sort: SortParamRequest[] = [{ direction: -1, field: 'created_at' }];
 
 export type ReactionSelectorItemType = ReactionData & {
   onSelectReaction: (type: string) => void;
@@ -139,13 +133,13 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
             ...reactionData,
             onSelectReaction,
             selectedReaction,
-            count: (message?.reaction_counts?.[reactionData.type] ?? 0).toString(),
+            count: (message?.reaction_groups?.[reactionData.type]?.count ?? 0).toString(),
           });
         }
         return acc;
       }, []),
     [
-      message?.reaction_counts,
+      message?.reaction_groups,
       onSelectReaction,
       reactionTypes,
       selectedReaction,
@@ -196,11 +190,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
 
   const totalReactionCount = useMemo(
     () =>
-      Object.values(message?.reaction_counts ?? {}).reduce(
-        (acc, reactionCount) => acc + reactionCount,
+      Object.values(message?.reaction_groups ?? {}).reduce(
+        (acc, reactionGroup) => acc + reactionGroup.count,
         0,
       ),
-    [message?.reaction_counts],
+    [message?.reaction_groups],
   );
 
   const reactions = useMemo(
@@ -270,7 +264,11 @@ export const MessageUserReactions = (props: MessageUserReactionsProps) => {
       ) : (
         <Animated.View key={'reaction-details'} exiting={FadeOut.duration(200)}>
           <Text style={[styles.reactionsText, reactionsText]}>
-            {t('{{count}} Reactions', { count: totalReactionCount })}
+            {t('messageMenu.userReactions.title', {
+              count: totalReactionCount,
+              defaultValue_one: '{{count}} Reaction',
+              defaultValue_other: '{{count}} Reactions',
+            })}
           </Text>
           <View style={[styles.reactionSelectorContainer, reactionSelectorContainer]}>
             <FlatList

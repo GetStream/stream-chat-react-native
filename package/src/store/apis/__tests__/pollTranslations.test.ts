@@ -1,4 +1,4 @@
-import type { ChannelAPIResponse, PollResponse } from 'stream-chat';
+import type { ChannelStateResponseFields, PollResponseData } from 'stream-chat';
 
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -12,7 +12,7 @@ const POLL_ID = 'poll-id';
 
 const translatedPoll = {
   answers_count: 0,
-  created_at: '2026-10-27T10:00:00.000Z',
+  created_at: new Date('2026-10-27T10:00:00.000Z').getTime(),
   created_by: { id: 'other-user' },
   created_by_id: 'other-user',
   description: 'For the team dinner',
@@ -32,10 +32,10 @@ const translatedPoll = {
       text_i18n: { es_text: 'Rojo', language: 'en' },
     },
   ],
-  updated_at: '2026-10-27T10:00:00.000Z',
+  updated_at: new Date('2026-10-27T10:00:00.000Z').getTime(),
   vote_count: 0,
   vote_counts_by_option: {},
-} as unknown as PollResponse;
+} as unknown as PollResponseData;
 
 /**
  * The backend translates poll texts. The offline DB has to keep those translations, so a cold start
@@ -54,7 +54,7 @@ describe('poll translations in the offline DB', () => {
       generateMessage({ cid, poll: translatedPoll, poll_id: POLL_ID, text: '' }),
     ] as unknown as typeof channelResponse.messages;
     await upsertChannels({
-      channels: [channelResponse] as unknown as ChannelAPIResponse[],
+      channels: [channelResponse] as unknown as ChannelStateResponseFields[],
       isLatestMessagesSet: true,
     });
   });
@@ -65,7 +65,7 @@ describe('poll translations in the offline DB', () => {
   });
 
   const getStoredPoll = async () => {
-    const [channel] = await getChannels({ channelIds: [cid], currentUserId: 'some-user' });
+    const [channel] = await getChannels({ channelIds: [cid], userId: 'some-user' });
     return channel.messages[0].poll;
   };
 
@@ -79,7 +79,7 @@ describe('poll translations in the offline DB', () => {
 
   it('replaces the translations when the poll is stored again', async () => {
     const name_i18n = { de_text: 'Lieblingsfarbe?', language: 'en' };
-    await upsertPoll({ poll: { ...translatedPoll, name_i18n } as PollResponse });
+    await upsertPoll({ poll: { ...translatedPoll, name_i18n } as PollResponseData });
 
     expect((await getStoredPoll())?.name_i18n).toEqual(name_i18n);
   });
@@ -99,19 +99,19 @@ describe('poll translations in the offline DB', () => {
           ...untranslatedPoll,
           id: 'untranslated-poll-id',
           options: [{ id: 'option-red', poll_id: 'untranslated-poll-id', text: 'Red' }],
-        } as unknown as PollResponse,
+        } as unknown as PollResponseData,
         poll_id: 'untranslated-poll-id',
         text: '',
       }),
     ] as unknown as typeof untranslatedChannel.messages;
     await upsertChannels({
-      channels: [untranslatedChannel] as unknown as ChannelAPIResponse[],
+      channels: [untranslatedChannel] as unknown as ChannelStateResponseFields[],
       isLatestMessagesSet: true,
     });
 
     const [channel] = await getChannels({
       channelIds: [untranslatedCid],
-      currentUserId: 'some-user',
+      userId: 'some-user',
     });
     const poll = channel.messages[0].poll;
 

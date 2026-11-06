@@ -71,7 +71,7 @@ export type TableNode = SingleASTNode & {
 };
 export type TargetNode = SingleASTNode & { target: string };
 
-// Allow dynamic heading style access like styles["heading1"]
+// Heading levels that index the `heading1` to `heading6` styles.
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6 | undefined;
 
 export type MarkdownStyle = Partial<{

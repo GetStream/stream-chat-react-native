@@ -1,7 +1,5 @@
 import { useCallback } from 'react';
 
-import type { TranslatedField } from 'stream-chat';
-
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { getTranslatedText } from '../../../utils/i18n/getTranslatedText';
 
@@ -14,7 +12,7 @@ export const usePollTextTranslation = () => {
   const { userLanguage } = useTranslationContext();
 
   return useCallback(
-    (original: string, i18n: TranslatedField | undefined): string =>
+    (original: string, i18n: Record<string, string> | undefined): string =>
       getTranslatedText(i18n, userLanguage) ?? original,
     [userLanguage],
   );

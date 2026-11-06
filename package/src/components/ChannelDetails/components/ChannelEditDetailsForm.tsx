@@ -7,21 +7,17 @@ import type { GlobalFileUploadRequest } from '../../../types/types';
 import { NotificationList } from '../../Notifications/NotificationList';
 
 export type ChannelEditDetailsFormProps = {
-  /** Called when the form is dismissed via the close button or after a successful save. */
+  /** Called when the form is dismissed with the close button or after a successful save. */
   onClose: () => void;
-  /**
-   * Compress image with quality (from 0 to 1, where 1 is best quality) applied
-   * to the channel image picked during editing.
-   */
+  /** Compression quality, from 0 to 1 (best), applied to the channel image picked while editing. */
   compressImageQuality?: number;
-  /** Override the upload request used to upload the channel image. */
+  /** Overrides the request that uploads the channel image. */
   doFileUploadRequest?: GlobalFileUploadRequest;
 };
 
 /**
- * Renders the channel edit details form: a header with a confirm action, the
- * editable fields, and the notification list. Wrap-free — mount it wherever the
- * edit UI should appear (e.g. inside a modal or a navigation screen).
+ * The channel edit form: a header with a confirm action, the editable fields and the notification
+ * list. Mount it wherever the edit UI should appear, such as a modal or a screen.
  */
 export const ChannelEditDetailsForm = ({
   compressImageQuality,

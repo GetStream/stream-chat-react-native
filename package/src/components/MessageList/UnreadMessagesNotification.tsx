@@ -1,62 +1,73 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../contexts/channelContext/ChannelContext';
+import type { UnreadSnapshotState } from 'stream-chat';
+
+import { DEFAULT_HIGHLIGHT_DURATION } from './hooks/useMessageListFocus';
+
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { ChannelUnreadStateStoreType } from '../../state-store/channel-unread-state';
 import { primitives } from '../../theme';
+import { MarkReadFunctionOptions } from '../Channel/Channel';
+import { useNotificationApi } from '../Notifications';
 import { Button } from '../ui';
 
-export type UnreadMessagesNotificationProps = Pick<
-  ChannelContextValue,
-  'channelUnreadStateStore'
-> & {
+export type UnreadMessagesNotificationProps = {
   /**
-   * Callback to handle the close event
+   * Marks the channel as read. Passed down from the message list so the notification shares the
+   * list's throttled `markRead` instance.
    */
+  markRead?: (options?: MarkReadFunctionOptions) => void;
+  /** Called when the dismiss button is pressed. Defaults to calling `markRead`. */
   onCloseHandler?: () => void;
-  /**
-   * Callback to handle the press event
-   */
+  /** Called when the notification is pressed. Defaults to jumping to the first unread message. */
   onPressHandler?: () => Promise<void>;
-  /**
-   * Unread count
-   */
-  unreadCount?: number;
 };
 
-const channelUnreadStateSelector = (state: ChannelUnreadStateStoreType) => ({
-  unread_messages: state.channelUnreadState?.unread_messages,
+const unreadCountSelector = (snapshot: UnreadSnapshotState) => ({
+  count: snapshot.unreadCount,
 });
 
 export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProps) => {
-  const { onCloseHandler, onPressHandler, unreadCount, channelUnreadStateStore } = props;
+  const { markRead, onCloseHandler, onPressHandler } = props;
   const { t } = useTranslationContext();
   const { icons } = useComponentsContext();
-  const { loadChannelAtFirstUnreadMessage, markRead, setChannelUnreadState, setTargetedMessage } =
-    useChannelContext();
-  const { unread_messages } = useStateStore(
-    channelUnreadStateStore.state,
-    channelUnreadStateSelector,
+  const { channel } = useChannelContext();
+  const { addNotification } = useNotificationApi();
+  const { count } = useStateStore(
+    channel.messagePaginator.unreadStateSnapshot,
+    unreadCountSelector,
   );
-
-  const count = unread_messages ?? unreadCount;
 
   const handleOnPress = async () => {
     if (onPressHandler) {
       await onPressHandler();
     } else {
-      await loadChannelAtFirstUnreadMessage({
-        channelUnreadState: channelUnreadStateStore.channelUnreadState,
-        setChannelUnreadState,
-        setTargetedMessage,
-      });
+      try {
+        // The paginator emits `messageFocusSignal`, which drives both the highlight and the scroll.
+        await channel.messagePaginator.jumpToTheFirstUnreadMessage({
+          focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+        });
+      } catch (error) {
+        addNotification({
+          message: t(
+            'channel.jumpToFirstUnreadFailed.error',
+            'Failed to jump to the first unread message',
+          ),
+          options: {
+            ...(error instanceof Error ? { originalError: error } : {}),
+            severity: 'error',
+            type: 'channel:jumpToFirstUnread:failed',
+          },
+          origin: {
+            context: { feature: 'jumpToFirstUnread' },
+            emitter: 'UnreadMessagesNotification',
+          },
+        });
+      }
     }
   };
 
@@ -64,7 +75,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
     if (onCloseHandler) {
       await onCloseHandler();
     } else {
-      await markRead();
+      await markRead?.();
     }
   };
 
@@ -77,14 +88,18 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           variant='secondary'
           type='ghost'
           LeadingIcon={icons.ArrowUp}
-          label={count ? t('{{count}} unread', { count }) : t('Unread Messages')}
+          label={
+            count
+              ? t('messageList.unreadMessages.withCount.label', '{{count}} unread', { count })
+              : t('messageList.unreadMessages.label', 'Unread Messages')
+          }
           onPress={handleOnPress}
           size='md'
         />
       </View>
       <View style={styles.rightButtonContainer}>
         <Button
-          accessibilityLabelKey='a11y/Dismiss unread messages'
+          accessibilityLabelKey='messageList.dismissUnread.accessibilityLabel'
           variant='secondary'
           type='ghost'
           iconOnly

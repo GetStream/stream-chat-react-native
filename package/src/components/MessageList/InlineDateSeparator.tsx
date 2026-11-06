@@ -3,16 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { getCalendarDateStringForA11y, getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
-import { getDateString, getDateStringForA11y } from '../../utils/i18n/getDateString';
 
-/**
- * Props for the `InlineDateSeparator` component.
- */
 export type InlineDateSeparatorProps = {
-  /**
-   * Date to be displayed.
-   */
+  /** Date to display. */
   date?: Date;
 };
 
@@ -23,16 +18,16 @@ export const InlineDateSeparator = ({ date }: InlineDateSeparatorProps) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date,
+        messageCreatedAt: date,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/InlineDateSeparator',
+        timestampTranslationKey: 'timestamp.InlineDateSeparator',
       }),
     [date, t, tDateTimeParser],
   );
 
   const a11yDateString = useMemo(
-    () => getDateStringForA11y({ date, tDateTimeParser, userLanguage }),
+    () => getCalendarDateStringForA11y({ messageCreatedAt: date, tDateTimeParser, userLanguage }),
     [date, tDateTimeParser, userLanguage],
   );
 

@@ -8,7 +8,16 @@ import { MessagesContextValue } from '../../../contexts/messagesContext/Messages
 import { getGroupStyle } from '../utils/getGroupStyles';
 
 /**
- * Hook to get the group styles for a message
+ * Returns the group styles of a message, computed by `getMessageGroupStyle`.
+ *
+ * @param params.noGroupByUser Skips grouping, which yields an empty array.
+ * @param params.dateSeparatorDate Date of the separator above the message, if any.
+ * @param params.maxTimeBetweenGroupedMessages Longest gap, in milliseconds, within a group.
+ * @param params.message The message to style.
+ * @param params.previousMessage The message rendered before it.
+ * @param params.nextMessage The message rendered after it.
+ * @param params.getMessageGroupStyle Computes the group styles. Defaults to `getGroupStyle`.
+ * @returns The group styles.
  */
 export const useMessageGroupStyles = ({
   noGroupByUser,
@@ -27,7 +36,7 @@ export const useMessageGroupStyles = ({
   previousMessage?: LocalMessage;
   nextMessage?: LocalMessage;
 }) => {
-  // This is needed to calculate the group styles for the next message
+  // The next message's separator feeds into this message's group style.
   const nextMessageDateSeparatorDate = useMessageDateSeparator({
     message: nextMessage,
     previousMessage: message,

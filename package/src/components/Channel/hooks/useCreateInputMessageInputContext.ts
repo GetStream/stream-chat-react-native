@@ -4,7 +4,6 @@ import type { InputMessageInputContextValue } from '../../../contexts/messageInp
 
 export const useCreateInputMessageInputContext = ({
   additionalTextInputProps,
-  allowSendBeforeAttachmentsUpload,
   asyncMessagesLockDistance,
   asyncMessagesMinimumPressDuration,
   asyncMessagesSlideToCancelDistance,
@@ -15,8 +14,6 @@ export const useCreateInputMessageInputContext = ({
   channelId,
   compressImageQuality,
   createPollOptionGap,
-  doFileUploadRequest,
-  editMessage,
   focusInputOnPickerClose,
   handleAttachButtonPress,
   hasCameraPicker,
@@ -26,19 +23,15 @@ export const useCreateInputMessageInputContext = ({
   messageInputFloating,
   messageInputHeightStore,
   openPollCreationDialog,
-  sendMessage,
   setInputRef,
   showPollCreationDialog,
 }: InputMessageInputContextValue & {
-  /**
-   * To ensure we allow re-render, when channel is changed
-   */
+  /** Re-creates the context when the channel changes. */
   channelId?: string;
 }) => {
   const inputMessageInputContext: InputMessageInputContextValue = useMemo(
     () => ({
       additionalTextInputProps,
-      allowSendBeforeAttachmentsUpload,
       asyncMessagesLockDistance,
       asyncMessagesMinimumPressDuration,
       asyncMessagesSlideToCancelDistance,
@@ -48,8 +41,6 @@ export const useCreateInputMessageInputContext = ({
       audioRecordingEnabled,
       compressImageQuality,
       createPollOptionGap,
-      doFileUploadRequest,
-      editMessage,
       focusInputOnPickerClose,
       handleAttachButtonPress,
       hasCameraPicker,
@@ -59,12 +50,11 @@ export const useCreateInputMessageInputContext = ({
       messageInputFloating,
       messageInputHeightStore,
       openPollCreationDialog,
-      sendMessage,
       setInputRef,
       showPollCreationDialog,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [compressImageQuality, channelId, showPollCreationDialog, allowSendBeforeAttachmentsUpload],
+    [channelId, compressImageQuality, hasCommands, showPollCreationDialog],
   );
 
   return inputMessageInputContext;

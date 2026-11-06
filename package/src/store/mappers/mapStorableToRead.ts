@@ -1,10 +1,11 @@
-import type { ReadResponse } from 'stream-chat';
+import type { ReadStateResponse } from 'stream-chat';
 
+import { mapStorableToRequiredTimestamp, mapStorableToTimestamp } from './mapStorableToTimestamp';
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { TableRowJoinedUser } from '../types';
 
-export const mapStorableToRead = (row: TableRowJoinedUser<'reads'>): ReadResponse => {
+export const mapStorableToRead = (row: TableRowJoinedUser<'reads'>): ReadStateResponse => {
   const {
     lastRead,
     unreadMessages,
@@ -15,11 +16,11 @@ export const mapStorableToRead = (row: TableRowJoinedUser<'reads'>): ReadRespons
   } = row;
 
   return {
-    last_delivered_at: lastDeliveredAt,
+    last_delivered_at: mapStorableToTimestamp(lastDeliveredAt),
     last_delivered_message_id: lastDeliveredMessageId,
-    last_read: lastRead,
+    last_read: mapStorableToRequiredTimestamp(lastRead),
     last_read_message_id: lastReadMessageId,
-    unread_messages: unreadMessages,
+    unread_messages: unreadMessages ?? 0,
     user: mapStorableToUser(user),
   };
 };

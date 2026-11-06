@@ -17,7 +17,7 @@ const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number 
 );
 
 export type ChannelAddMembersFormHeaderProps = {
-  /** Called when the form is dismissed via the close button or after members are added. */
+  /** Called when the form is dismissed with the close button or after members are added. */
   onClose: () => void;
 };
 
@@ -46,7 +46,7 @@ export const ChannelAddMembersFormHeader = ({ onClose }: ChannelAddMembersFormHe
       await submit();
       onClose();
     } catch {
-      // failure notification already surfaced by the channel action
+      // The channel action already surfaces a failure notification.
     } finally {
       setAddingMembers(false);
     }
@@ -57,7 +57,10 @@ export const ChannelAddMembersFormHeader = ({ onClose }: ChannelAddMembersFormHe
       onClose={handleClose}
       rightAction={
         <Button
-          accessibilityLabel={t('a11y/Confirm add members')}
+          accessibilityLabel={t(
+            'channelDetails.addMembers.confirm.accessibilityLabel',
+            'Confirm add members',
+          )}
           accessibilityRole='button'
           accessibilityState={{ busy: addingMembers, disabled: !confirmEnabled }}
           disabled={!confirmEnabled}
@@ -70,7 +73,7 @@ export const ChannelAddMembersFormHeader = ({ onClose }: ChannelAddMembersFormHe
           style={confirmButtonOverride}
         />
       }
-      title={t('Add Members')}
+      title={t('channelDetails.addMembers.title', 'Add Members')}
     />
   );
 };

@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { Dimensions, ScaledSize } from 'react-native';
 
 /**
- * A custom hook that provides functions to calculate dimensions based on
- * a percentage of the screen height (vh) and viewport width (vw). It
- * dynamically updates dimensions on changes in device orientation.
+ * Returns `vh` and `vw` helpers that convert a percentage of the screen height or width to points,
+ * updating when the screen dimensions change.
+ *
+ * @param rounded Rounds the results to whole points. Defaults to false.
  *
  * @deprecated These are percentages of the *screen*, not of the window the app is laid out in. The
  * two diverge once the window is resizable (Split View, fold/unfold, Android multi-window): we
@@ -13,7 +14,7 @@ import { Dimensions, ScaledSize } from 'react-native';
  * Use {@link useViewport}, the same API measured against the window, or `onLayout` on your own view
  * inside a component that does not fill the window.
  *
- * @returns {Object} An object containing functions vh and vw.
+ * @returns An object with the `vh` and `vw` functions.
  */
 export const useScreenDimensions = (rounded?: boolean) => {
   const [screenDimensions, setScreenDimensions] = useState(() => Dimensions.get('screen'));
@@ -30,10 +31,8 @@ export const useScreenDimensions = (rounded?: boolean) => {
     };
     const subscription = Dimensions.addEventListener('change', handleChange);
 
-    // We might have missed an update between calling `get` in render and
-    // `addEventListener` in this handler, so we set it here. If there was
-    // no change, React will filter out this update as a no-op.
-    // pattern ref: react-native-repo/packages/react-native/Libraries/Utilities/useWindowDimensions.js
+    // An update may have landed between `get` in render and `addEventListener`, so re-read here.
+    // An unchanged value is a no-op for React.
     handleChange({ screen: Dimensions.get('screen') });
 
     return () => {

@@ -19,6 +19,15 @@ describe('generateMarkdownText', () => {
     ],
     ['Hi @getstream.io getstream.io', 'Hi @getstream.io [getstream.io](http://getstream.io)'],
     ['Hi <Stream>', 'Hi \\<Stream>'],
+    [
+      'getstream.io and https://example.com',
+      '[getstream.io](http://getstream.io) and [https://example.com](https://example.com)',
+    ],
+    ['  see getstream.io  ', 'see [getstream.io](http://getstream.io)'],
+    [
+      'getstream.io and getstream.io/chat',
+      '[getstream.io](http://getstream.io) and [getstream.io/chat](http://getstream.io/chat)',
+    ],
   ])('Returns the generated markdown text for %p and %p', (text, expected) => {
     const result = generateMarkdownText(text);
     expect(result).toBe(expected);

@@ -77,15 +77,13 @@ export const AutoCompleteSuggestionList = () => {
 
   const loadMore = useStableCallback(() => suggestions?.searchSource.search());
 
-  // Polite announcement when the suggestion list appears. Different label per
-  // trigger type so the user knows whether they're looking at mentions,
-  // commands, or emoji without having to swipe in to find out.
+  // Polite announcement when the list appears, with a label per trigger type.
   const announceLabelKey =
     triggerType === 'command'
-      ? 'a11y/Command suggestions available'
+      ? 'autoCompleteInput.suggestions.commandsAvailable.accessibilityLabel'
       : triggerType === 'emoji'
-        ? 'a11y/Emoji suggestions available'
-        : 'a11y/Mention suggestions available';
+        ? 'autoCompleteInput.suggestions.emojisAvailable.accessibilityLabel'
+        : 'autoCompleteInput.suggestions.mentionsAvailable.accessibilityLabel';
   const announceLabel = useA11yLabel(announceLabelKey);
   useAnnounceOnShow(!!(showList && triggerType), announceLabel);
 

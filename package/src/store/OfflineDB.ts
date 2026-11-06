@@ -18,10 +18,7 @@ export class OfflineDB extends AbstractOfflineDB {
     maxSyncEventsLimit,
   }: {
     client: StreamChat;
-    /**
-     * Supplies the SQLCipher key the offline database is opened with. See
-     * {@link SqliteClient.getEncryptionKey} for the stability requirement.
-     */
+    /** Supplies the SQLCipher key. See {@link SqliteClient.getEncryptionKey}. */
     getEncryptionKey?: () => Promise<string | undefined>;
     maxSyncEventsLimit?: number | false;
   }) {
@@ -29,9 +26,8 @@ export class OfflineDB extends AbstractOfflineDB {
       client,
       syncMaxEventCount: maxSyncEventsLimit === false ? undefined : maxSyncEventsLimit,
     });
-    // Assigned unconditionally: SqliteClient holds this statically, so leaving a
-    // previous instance's getter in place would keep encrypting after the caller
-    // stopped asking for it.
+    // Assigned even when undefined: `SqliteClient` holds it statically, so an earlier instance's
+    // getter would otherwise keep encrypting.
     SqliteClient.getEncryptionKey = getEncryptionKey;
   }
 
@@ -39,13 +35,11 @@ export class OfflineDB extends AbstractOfflineDB {
 
   upsertChannels = api.upsertChannels;
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   upsertUserSyncStatus = ({ userId, lastSyncedAt, execute }: DBUpsertUserSyncStatusType) =>
-    api.upsertUserSyncStatus({ currentUserId: userId, execute, lastSyncedAt });
+    api.upsertUserSyncStatus({ execute, lastSyncedAt, userId });
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   upsertAppSettings = ({ appSettings, userId, execute }: DBUpsertAppSettingsType) =>
-    api.upsertAppSettings({ appSettings, currentUserId: userId, execute });
+    api.upsertAppSettings({ appSettings, execute, userId });
 
   upsertPoll = api.upsertPoll;
 
@@ -65,22 +59,22 @@ export class OfflineDB extends AbstractOfflineDB {
 
   updateMessage = api.updateMessage;
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
   getChannels = ({ cids, userId }: DBGetChannelsType) =>
-    api.getChannels({ channelIds: cids, currentUserId: userId });
+    api.getChannels({ channelIds: cids, userId });
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getChannelsForQuery = ({ userId, filters, options, sort }: DBGetChannelsForQueryType) =>
-    api.getChannelsForFilterSort({ currentUserId: userId, filters, options, sort });
+  getChannelsForQuery = ({ userId, options }: DBGetChannelsForQueryType) =>
+    api.getChannelsForFilterSort({
+      filters: options?.filter_conditions,
+      options,
+      sort: options?.sort,
+      userId,
+    });
 
   getAllChannelCids = api.getAllChannelIds;
 
-  // TODO: Rename currentUserId -> userId in the next major version as it is technically breaking.
-  getLastSyncedAt = ({ userId }: DBGetLastSyncedAtType) =>
-    api.getLastSyncedAt({ currentUserId: userId });
+  getLastSyncedAt = ({ userId }: DBGetLastSyncedAtType) => api.getLastSyncedAt({ userId });
 
-  getAppSettings = ({ userId }: DBGetAppSettingsType) =>
-    api.getAppSettings({ currentUserId: userId });
+  getAppSettings = ({ userId }: DBGetAppSettingsType) => api.getAppSettings({ userId });
 
   getReactions = api.getReactionsForFilterSort;
 
@@ -117,12 +111,8 @@ export class OfflineDB extends AbstractOfflineDB {
   executeSqlBatch = SqliteClient.executeSqlBatch;
 
   /**
-   * Why the most recent {@link initializeDB} failed, if it did.
-   *
-   * `AbstractOfflineDB.init` catches whatever `initializeDB` throws and does not
-   * re-throw it, so a caller has no way to see the reason. Recording it here on the
-   * way out gives the caller something to read back once `init` has settled. Kept on
-   * the instance rather than a static so two clients cannot overwrite each other.
+   * Why the most recent {@link initializeDB} failed, if it did. `AbstractOfflineDB.init` swallows
+   * the error, so this is how a caller reads it back once `init` has settled.
    */
   initializationError: SqliteClientError | undefined;
 

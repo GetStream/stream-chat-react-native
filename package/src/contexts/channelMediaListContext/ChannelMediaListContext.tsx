@@ -31,8 +31,8 @@ export const ChannelMediaListProvider = ({
       'attachments.type': { $in: ['image', 'video'] },
       type: undefined,
     };
-    // Newest media first so the grid reads top-to-bottom from most recent.
-    source.messageSearchSort = { created_at: -1 };
+    // Newest first.
+    source.messageSearchSort = [{ field: 'created_at', direction: -1 }];
     source.activate();
     return source;
   });

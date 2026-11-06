@@ -19,7 +19,7 @@ const renderItem = (props: Partial<MediaItemProps> & { attachment: Attachment })
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
@@ -61,7 +61,9 @@ describe('MediaItem', () => {
 
   it('renders the duration badge for video attachments', () => {
     renderItem({
-      attachment: generateVideoAttachment({ duration: 8000 }),
+      attachment: generateVideoAttachment({
+        custom: { duration: 8000 } as unknown as Attachment['custom'],
+      }),
     });
 
     expect(screen.getByText('0:08')).toBeTruthy();

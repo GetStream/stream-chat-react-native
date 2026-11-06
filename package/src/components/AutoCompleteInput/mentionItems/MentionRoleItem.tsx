@@ -19,7 +19,9 @@ export const MentionRoleItem = ({ entity }: MentionRoleItemProps) => {
   return (
     <MentionItem leading={<EnhancedMentionIcon Icon={icons.Shield} />}>
       <EnhancedMentionContent
-        subtitle={t('Notify all {{ role }} members', { role: entity.name })}
+        subtitle={t('autoCompleteInput.mention.role.description', 'Notify all {{ role }} members', {
+          role: entity.name,
+        })}
         testID='mentions-item-name'
         title={`@${entity.name}`}
       />

@@ -2,7 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-import { FileReference, LocalAudioAttachment, LocalVoiceRecordingAttachment } from 'stream-chat';
+import {
+  FileReference,
+  LocalAudioAttachment,
+  LocalVoiceRecordingAttachment,
+  resolveAttachmentFullByteSize,
+} from 'stream-chat';
 
 import { AttachmentRemoveControl } from './AttachmentRemoveControl';
 import {
@@ -14,7 +19,7 @@ import {
 import { AudioAttachment } from '../../../../components/Attachment/Audio';
 import { useTheme } from '../../../../contexts';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
+import { usePendingUploadsEnabled } from '../../../../contexts/messageInputContext/hooks/usePendingUploadsEnabled';
 import { primitives } from '../../../../theme';
 import { UploadAttachmentPreviewProps } from '../../../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../../../utils/utils';
@@ -30,19 +35,16 @@ export const AudioAttachmentUploadPreview = ({
   removeAttachments,
 }: AudioAttachmentUploadPreviewProps) => {
   const styles = useStyles();
-  const { allowSendBeforeAttachmentsUpload } = useMessageInputContext();
+  const pendingUploadsEnabled = usePendingUploadsEnabled();
   const indicatorType = getIndicatorTypeForFileState(
     attachment.localMetadata.uploadState,
-    !!allowSendBeforeAttachmentsUpload,
+    pendingUploadsEnabled,
   );
   const messageComposer = useMessageComposer();
   const isDraft = messageComposer.draftId;
   const isEditing = messageComposer.editedMessage;
-  const assetUrl =
-    (isDraft || isEditing
-      ? attachment.asset_url
-      : (attachment.localMetadata.file as FileReference).uri) ??
-    (attachment.localMetadata.file as FileReference).uri;
+  const fileUri = (attachment.localMetadata.file as FileReference | undefined)?.uri;
+  const assetUrl = (isDraft || isEditing ? attachment.asset_url : fileUri) ?? fileUri;
 
   const finalAttachment = useMemo(
     () => ({
@@ -67,7 +69,7 @@ export const AudioAttachmentUploadPreview = ({
         <FileUploadInProgressIndicator
           localId={attachment.localMetadata.id}
           sourceUrl={assetUrl}
-          totalBytes={attachment.file_size}
+          totalBytes={resolveAttachmentFullByteSize(attachment)}
         />
       );
     }
@@ -78,7 +80,7 @@ export const AudioAttachmentUploadPreview = ({
       return <FileUploadNotSupportedIndicator localMetadata={attachment.localMetadata} />;
     }
     return null;
-  }, [assetUrl, attachment.file_size, attachment.localMetadata, indicatorType, onRetryHandler]);
+  }, [assetUrl, attachment, indicatorType, onRetryHandler]);
 
   return (
     <View style={styles.wrapper} testID={'audio-attachment-upload-preview'}>

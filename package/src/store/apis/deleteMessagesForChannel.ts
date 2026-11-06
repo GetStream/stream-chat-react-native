@@ -1,3 +1,6 @@
+import { nowNs } from 'stream-chat';
+import type { TimestampNS } from 'stream-chat';
+
 import { SqliteClient } from '../SqliteClient';
 
 export const deleteMessagesForChannel = async ({
@@ -6,10 +9,12 @@ export const deleteMessagesForChannel = async ({
   execute = true,
 }: {
   cid: string;
-  truncated_at?: string;
+  /** Unix nanoseconds, as the API sends it. */
+  truncated_at?: TimestampNS;
   execute?: boolean;
 }) => {
-  const timestamp = truncated_at ? new Date(truncated_at).toISOString() : new Date().toISOString();
+  // `createdAt` holds unix nanoseconds, so the cutoff is one too and the comparison is numeric.
+  const timestamp = truncated_at ?? nowNs();
   const query: [string, (string | number)[]] = [
     `DELETE FROM messages WHERE cid = ? AND createdAt <= ?`,
     [cid, timestamp],

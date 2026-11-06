@@ -1,4 +1,4 @@
-import { StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
 
 export type SignalState = {
   signal: boolean;

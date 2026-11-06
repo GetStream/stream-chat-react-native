@@ -1,11 +1,10 @@
 import type { ImageResizeMode } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import { type Attachment, isLocalUploadAttachment } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
 import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/ChatConfigContext';
-import type { DefaultAttachmentData } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
@@ -28,13 +27,14 @@ export function buildThumbnail({
 }: BuildThumbnailProps): Thumbnail {
   const { original_height: originalImageHeight, original_width: originalImageWidth } = image;
 
-  // Only resize if the original image is larger than the thumbnail container size.
+  // Resizes only when the original image is larger than the thumbnail container.
   const shouldResize =
     originalImageHeight && originalImageWidth
       ? originalImageHeight + originalImageWidth > height + width
       : true;
+  // Falls back to the local preview while the upload is in flight (see `getUrlOfImageAttachment`).
   const imageUrl = getUrlOfImageAttachment(image) as string;
-  const localId = (image as Attachment & DefaultAttachmentData).localId;
+  const localId = isLocalUploadAttachment(image) ? image.localMetadata.id : undefined;
 
   return {
     flex,

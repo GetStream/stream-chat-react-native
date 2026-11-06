@@ -12,7 +12,9 @@ export const SendMessageDisallowedIndicator = () => {
 
   return (
     <View style={styles.container} testID='send-message-disallowed-indicator'>
-      <Text style={styles.text}>{t("You can't send messages in this channel")}</Text>
+      <Text style={styles.text}>
+        {t('messageInput.sendMessageDisallowed.text', "You can't send messages in this channel")}
+      </Text>
     </View>
   );
 };

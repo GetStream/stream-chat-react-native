@@ -20,49 +20,25 @@ import {
 import type { ViewRef } from '../../types/react-native-compat';
 
 type PortalWhileClosingViewProps = {
-  /**
-   * Content that should render in place normally and teleport to a closing portal host
-   * while the message overlay is closing.
-   */
+  /** Content that renders in place and teleports to the closing portal host during close. */
   children: ReactNode;
-  /**
-   * Name of the closing `PortalHost` in `MessageOverlayHostLayer`.
-   * This key is also used in the closing layout registry.
-   */
+  /** Name of the closing `PortalHost` in `MessageOverlayHostLayer` and the layout registry key. */
   portalHostName: string;
-  /**
-   * Stable portal instance name used by `react-native-teleport` to move this content
-   * between the in-place tree and the closing host.
-   */
+  /** Stable `react-native-teleport` portal name that moves the content to the closing host. */
   portalName: string;
 };
 
 /**
- * Keeps wrapped UI above the message overlay during close animation by teleporting it to a closing portal host.
+ * Keeps wrapped UI above the message overlay while it closes by teleporting it to a closing portal
+ * host, so the animated message does not pass over fixed UI such as the composer or header.
  *
- * Why this is needed:
+ * Children render in place normally. The layout is measured with `measureInWindow` and registered
+ * under `portalHostName`; only entries with a valid measurement can take a host slot. While the
+ * overlay is `closing`, the children teleport to the matching host and a placeholder keeps their
+ * space in the layout.
  *
- * When the overlay closes, the animated message can visually pass over fixed UI (for example composer/header).
- * This wrapper moves that UI into the overlay host layer for the closing phase, so stacking stays correct.
- *
- * To use it, simply wrap any view that should remain on top while the overlay is closing, and pass a `portalHostName`
- * and a `portalName`. Once the wrapped view has a valid measured layout, it can participate in the closing host layer.
- *
- * Behavior:
- * - renders children in place during normal operation
- * - registers absolute layout for `portalHostName` once a valid measurement exists
- * - while overlay state is `closing`, teleports children to the matching closing host
- * - renders a local placeholder while closing to preserve original layout space
- *
- * Stack presence only starts after first valid measurement. That prevents unmeasured entries from taking over a host
- * slot and rendering with incomplete geometry.
- *
- * Note: As the `PortalWhileClosingView` relies heavily on being able to calculate the layout and positioning
- * properties of its children automatically, make sure that you do not wrap absolutely positioned views with
- * it as positioning parameters specifically will not be calculated correctly as the absolute position of
- * the immediate child will be towards its immediate parent (which is our `Portal` view). Instead, wrap its
- * children directly (the non-absolutely positioned ones). Since we use `measureInWindow` to get a hold of
- * the initial measurements, we'll always have the correct position of the relevant content.
+ * Wrap non-absolutely positioned views only: an absolutely positioned child is positioned against
+ * the `Portal` view, so its measured position would be wrong.
  *
  * @param props.children content to render and teleport while closing
  * @param props.portalHostName closing host slot name used for layout registration and portal target
@@ -143,7 +119,7 @@ const useSyncingApi = (
         setClosingPortalLayout(portalHostName, registrationId, rect);
       })
       .catch(() => {
-        // the container isn't measurable yet; the next layout/effect pass will retry
+        // Not measurable yet; the next layout or effect pass retries.
       });
   });
 

@@ -27,9 +27,9 @@ export const AITypingIndicatorView = ({
   const channel = channelFromProps || channelFromContext;
   const { aiState } = useAIState(channel);
   const { announceTypingIndicator, enabled } = useAccessibilityContext();
-  const allowedStates = {
-    [AIStates.Thinking]: t('Thinking...'),
-    [AIStates.Generating]: t('Generating...'),
+  const allowedStates: Record<string, string> = {
+    [AIStates.Thinking]: t('aiTypingIndicator.thinking.label', 'Thinking...'),
+    [AIStates.Generating]: t('aiTypingIndicator.generating.label', 'Generating...'),
   };
 
   const styles = useStyles();

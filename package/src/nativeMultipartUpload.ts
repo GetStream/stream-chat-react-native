@@ -37,7 +37,7 @@ export type NativeMultipartUploaderProgressConfig = {
 export type NativeMultipartUploadProgressConfig = NativeMultipartUploaderProgressConfig & {
   /**
    * Maximum progress percentage reported while the native request body is still being sent.
-   * Completion is represented by the upload request resolving and the upload indicator being removed.
+   * Completion is signaled by the upload request resolving.
    *
    * @default 90
    */
@@ -132,7 +132,7 @@ const createCanceledError = (): NativeMultipartCanceledError => {
   const error = new Error('Request aborted') as NativeMultipartCanceledError;
   error.name = 'CanceledError';
   error.code = CANCELED_ERROR_CODE;
-  // eslint-disable-next-line no-underscore-dangle -- Axios marks cancellation with this legacy field, and callers still use axios.isCancel.
+  // eslint-disable-next-line no-underscore-dangle -- sets the `__CANCEL__` flag that `axios.isCancel` checks, so callers see a cancellation.
   error.__CANCEL__ = true;
   return error;
 };
@@ -250,9 +250,9 @@ export const createNativeMultipartUploader = (
     return undefined;
   }
 
-  // Annotated with the SDK's own structural emitter type: React Native 0.87 made
-  // `NativeEventEmitter` generic over an event -> args map, so the inferred union of
-  // `options.eventEmitter` and a raw `NativeEventEmitter` no longer accepts a typed listener.
+  // Typed with the SDK's structural emitter type: from React Native 0.87 `NativeEventEmitter` is
+  // generic over an event map, so the inferred union with `options.eventEmitter` rejects typed
+  // listeners.
   const multipartUploadEventEmitter: NativeMultipartUploadEventEmitter =
     options.eventEmitter ??
     (new NativeEventEmitter(nativeModule) as unknown as NativeMultipartUploadEventEmitter);

@@ -5,14 +5,15 @@ import type { Schema } from '../schema';
 import type { PreparedQueries, TableColumnNames, TableColumnValue } from '../types';
 
 /**
- * Creates a simple select query for sqlite.
+ * Creates a prepared `SELECT` query for `fields` (defaults to `['*']`). In `whereCondition` an
+ * array value matches with `IN`, a key with an `undefined` value is skipped, and the conditions are
+ * joined with AND.
  *
- * @param {string} table Table name
- * @param {Array} fields Array of columns which need to be selected e.g., ['*'] or ['id', 'name']
- * @param {Object} whereCondition Where condition for select query.
- *  e.g., { id: 'vishal', cid: ['messaging:id1', 'messaging:id2'] }.
- *  All the conditions will be joined with AND in final query.
- * @returns {string} Final select query
+ * @param table The table name.
+ * @param fields The columns to select. Defaults to `['*']`.
+ * @param whereCondition Column values to match, for example `{ id: 'a', cid: ['b', 'c'] }`.
+ * @param orderBy Column sort directions, `1` for ascending and `-1` for descending.
+ * @returns The prepared query as `[sql, params]`.
  */
 export const createSelectQuery = <T extends keyof Schema>(
   table: T,

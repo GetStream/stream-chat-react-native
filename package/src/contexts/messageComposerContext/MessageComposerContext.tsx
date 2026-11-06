@@ -1,6 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
-import { LocalMessage } from 'stream-chat';
+import { LocalMessage, MessageComposer, MessageComposerState } from 'stream-chat';
 
 import {
   MessageComposerAPIContextValue,
@@ -9,7 +9,8 @@ import {
 
 import { ChannelProps } from '../../components';
 import { useStableCallback } from '../../hooks/useStableCallback';
-import { useCreateMessageComposer } from '../messageInputContext/hooks/useCreateMessageComposer';
+import { useStateStore } from '../../hooks/useStateStore';
+import { useChatContext } from '../chatContext/ChatContext';
 import { ThreadContextValue } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -17,11 +18,12 @@ import { isTestEnvironment } from '../utils/isTestEnvironment';
 export type MessageComposerContextValue = {
   channel: ChannelProps['channel'];
   thread: ThreadContextValue['thread'];
-  threadInstance: ThreadContextValue['threadInstance'];
   /**
-   * Variable that tracks the editing state.
-   * It is defined with message type if the editing state is true, else its undefined.
+   * The composer in use: the edit composer while a message is being edited, otherwise the thread's
+   * or the channel's own.
    */
+  messageComposer: MessageComposer;
+  /** The message being edited, if any. */
   editing?: LocalMessage;
 };
 
@@ -30,28 +32,66 @@ export const MessageComposerContext = React.createContext(
 );
 
 type Props = React.PropsWithChildren<{
-  value: Pick<MessageComposerContextValue, 'channel' | 'threadInstance' | 'thread'>;
+  value: Pick<MessageComposerContextValue, 'channel' | 'thread'>;
 }>;
 
+const editedMessageSelector = (state: MessageComposerState) => ({
+  editedMessage: state.editedMessage,
+});
+
 export const MessageComposerProvider = ({ children, value }: Props) => {
-  const [editing, setEditing] = useState<LocalMessage | undefined>(undefined);
+  const { client } = useChatContext();
+  const { channel, thread } = value;
+  const [editComposer, setEditComposer] = useState<MessageComposer | undefined>(undefined);
+
+  const messageComposer = editComposer ?? thread?.messageComposer ?? channel.messageComposer;
+
+  // Submitting or clearing the edit composer clears its edited message, which ends the edit.
+  const { editedMessage } = useStateStore(editComposer?.state, editedMessageSelector) ?? {};
+  useEffect(() => {
+    if (editComposer && !editedMessage) {
+      setEditComposer(undefined);
+    }
+  }, [editComposer, editedMessage]);
+
+  useEffect(() => messageComposer.registerSubscriptions(), [messageComposer]);
 
   const setEditingState: MessageComposerAPIContextValue['setEditingState'] = useStableCallback(
     (message) => {
-      setEditing(message);
+      if (!message) {
+        setEditComposer(undefined);
+        return;
+      }
+      const tag = MessageComposer.constructTag(message);
+      const cachedComposer = client.messageComposerCache.get(tag);
+      if (cachedComposer) {
+        // Starts from the message itself, not from whatever an earlier, abandoned edit left behind.
+        cachedComposer.initState({ composition: message });
+        setEditComposer(cachedComposer);
+        return;
+      }
+      const composer = new MessageComposer({
+        client,
+        composition: message,
+        compositionContext: message,
+      });
+      // The cache also keeps the composer's channel in the client's channel store.
+      client.messageComposerCache.add(tag, composer);
+      setEditComposer(composer);
     },
   );
 
   const clearEditingState: MessageComposerAPIContextValue['clearEditingState'] = useStableCallback(
-    () => setEditing(undefined),
+    () => setEditComposer(undefined),
   );
-
-  const messageComposerContextValue = useMemo(() => ({ editing, ...value }), [editing, value]);
-
-  const messageComposer = useCreateMessageComposer(messageComposerContextValue);
 
   const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
     messageComposer.setQuotedMessage(message),
+  );
+
+  const messageComposerContextValue = useMemo(
+    () => ({ channel, editing: editedMessage ?? undefined, messageComposer, thread }),
+    [channel, editedMessage, messageComposer, thread],
   );
 
   const messageComposerAPIContextValue = useMemo(

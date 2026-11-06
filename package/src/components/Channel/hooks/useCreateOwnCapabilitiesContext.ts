@@ -1,12 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, OwnCapabilitiesState } from 'stream-chat';
 
 import {
   allOwnCapabilities,
   OwnCapabilitiesContextValue,
   OwnCapability,
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useStateStore } from '../../../hooks/useStateStore';
+
+// TODO: Move own_capabilities as part of channel state rather than having to do
+//       stuff like this.
+const selector = (state: OwnCapabilitiesState) => ({
+  ownCapabilities: state.ownCapabilities.join(','),
+});
 
 export const useCreateOwnCapabilitiesContext = ({
   channel,
@@ -15,47 +22,26 @@ export const useCreateOwnCapabilitiesContext = ({
   channel: Channel;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
-  const [own_capabilities, setOwnCapabilites] = useState(
-    JSON.stringify(channel.data?.own_capabilities as Array<string>),
-  );
-  const overrideCapabilitiesStr = overrideCapabilities
-    ? JSON.stringify(Object.values(overrideCapabilities))
-    : null;
+  // Updated by the client on watch, query and `channel.updated`.
+  const { ownCapabilities } = useStateStore(channel.state, selector);
 
-  // Effect to watch for changes in channel.data?.own_capabilities and update the own_capabilities state accordingly.
-  useEffect(() => {
-    setOwnCapabilites(JSON.stringify(channel.data?.own_capabilities as Array<string>));
-  }, [channel.data?.own_capabilities]);
-
-  // Effect to listen to the `capabilities.changed` event.
-  useEffect(() => {
-    const listener = channel.on('capabilities.changed', (event) => {
-      if (event.own_capabilities) {
-        setOwnCapabilites(JSON.stringify(event.own_capabilities as Array<string>));
-      }
-    });
-
-    return () => {
-      listener.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const overrideCapabilitiesKey = overrideCapabilities
+    ? JSON.stringify(overrideCapabilities)
+    : undefined;
 
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
-    const capabilities = (own_capabilities || []) as Array<string>;
-    const ownCapabilitiesContext = Object.keys(allOwnCapabilities).reduce(
+    const capabilities = ownCapabilities.split(',');
+    return Object.keys(allOwnCapabilities).reduce(
       (result, capability) => ({
         ...result,
         [capability]:
           overrideCapabilities?.[capability as OwnCapability] ??
-          !!capabilities.includes(allOwnCapabilities[capability as OwnCapability]),
+          capabilities.includes(allOwnCapabilities[capability as OwnCapability]),
       }),
       {} as OwnCapabilitiesContextValue,
     );
-
-    return ownCapabilitiesContext;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, overrideCapabilitiesStr, own_capabilities]);
+  }, [overrideCapabilitiesKey, ownCapabilities]);
 
   return ownCapabilitiesContext;
 };

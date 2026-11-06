@@ -1,4 +1,4 @@
-import { UserResponse } from 'stream-chat';
+import { ClientUser } from 'stream-chat';
 
 export const STREAM_API_KEY = 'yjrt5yxw77ev';
 
@@ -18,7 +18,13 @@ export const USER_TOKENS: Record<string, string> = {
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9kb2xwaGUifQ.tLl-I8ADBhTKB-x5FB9jK4-am0dELLXgydM6VN9rTL8',
 };
 
-export const USERS: Record<string, UserResponse> = {
+/**
+ * Login fixtures, not server responses: these are the payloads handed to `connectUser`, so they
+ * carry only `id` / `name` / `image`. Annotated `ClientUser` (everything optional but `id`) rather
+ * than `UserResponse`, which since v10 requires the server-owned fields — `created_at`,
+ * `updated_at`, `banned`, `language`, `online`, … — that a client has no business inventing.
+ */
+export const USERS: Record<string, ClientUser> = {
   neil: {
     id: 'neil',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U01173D1D5J-0dead6eea6ea-512',

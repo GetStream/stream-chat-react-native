@@ -4,7 +4,7 @@ import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useChatContext } from 'stream-chat-react-native';
+import { useSettledWSConnectionHealth } from 'stream-chat-react-native';
 
 import { NetworkDownIndicator } from './NetworkDownIndicator';
 import { RoundButton } from './RoundButton';
@@ -34,7 +34,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
 
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
   const { chatClient } = useAppContext();
-  const { isOnline } = useChatContext();
+  const isOnline = useSettledWSConnectionHealth();
 
   return (
     <ScreenHeader

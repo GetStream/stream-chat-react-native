@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { StateStore } from 'stream-chat';
 import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
 import {
@@ -159,7 +159,7 @@ const tree = (searchSource: FakeSearchSource, props: { additionalFlatListProps?:
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}

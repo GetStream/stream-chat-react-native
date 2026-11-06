@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "@shopify/react-native-skia": ">=2.0.0",
-    "expo": ">=52.0.0",
+    "expo": ">=53.0.0",
     "expo-audio": "*",
     "expo-av": "*",
     "expo-clipboard": "*",
@@ -46,7 +46,7 @@
     "expo-media-library": "*",
     "expo-sharing": "*",
     "expo-video": "*",
-    "react-native": ">=0.76.0",
+    "react-native": ">=0.79.0",
     "victory-native": ">=41.0.0"
   },
   "peerDependenciesMeta": {

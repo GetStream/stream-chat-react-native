@@ -1,4 +1,4 @@
-import { DBDeleteMessageType, MessageLabel } from 'stream-chat';
+import { DBDeleteMessageType, MessageLabel, nowNs } from 'stream-chat';
 
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { SqliteClient } from '../SqliteClient';
@@ -11,7 +11,7 @@ export const softDeleteMessage = async ({
   const query = createUpdateQuery(
     'messages',
     {
-      deletedAt: deleteForMe ? undefined : new Date().toISOString(),
+      deletedAt: deleteForMe ? undefined : nowNs(),
       deletedForMe: deleteForMe,
       type: 'deleted' as MessageLabel,
     },

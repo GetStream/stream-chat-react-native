@@ -1,7 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
@@ -54,8 +53,8 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
   areEqual,
 ) as typeof InlineLoadingMoreRecentIndicatorWithContext;
 
-export const InlineLoadingMoreRecentIndicator = () => {
-  const { loadingMoreRecent } = usePaginatedMessageListContext();
-
-  return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />;
-};
+export const InlineLoadingMoreRecentIndicator = ({
+  loadingMoreRecent,
+}: InlineLoadingMoreRecentIndicatorPropsWithContext) => (
+  <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />
+);

@@ -1,17 +1,19 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useLayoutEffect } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LocalMessage, ThreadState, UserResponse } from 'stream-chat';
+import { Thread as ThreadInstance, ThreadState } from 'stream-chat';
 import {
+  DEFAULT_HIGHLIGHT_DURATION,
   AlsoSentToChannelHeaderPressPayload,
-  Channel,
   MessageActionsParams,
+  MessageComposer,
+  MessageFlashList,
+  MessageList,
   Thread,
-  ThreadType,
   useChatContext,
   useTheme,
   useTranslationContext,
@@ -24,6 +26,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import { useAppContext } from '../context/AppContext.ts';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
+import { useLeaveGoneChannel } from '../hooks/useLeaveGoneChannel';
 import { useLegacyColors } from '../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../types';
 import { channelMessageActions } from '../utils/messageActions.tsx';
@@ -52,18 +55,13 @@ type ThreadScreenProps = {
 };
 
 export type ThreadHeaderProps = {
-  thread: LocalMessage | ThreadType;
+  thread: ThreadInstance;
 };
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   const typing = useTypingString();
-  let subtitleText = ((thread as LocalMessage)?.user as UserResponse)?.name;
-  const { parentMessage } =
-    useStateStore((thread as ThreadType)?.threadInstance?.state, selector) || {};
-
-  if (subtitleText == null) {
-    subtitleText = (parentMessage?.user as UserResponse)?.name;
-  }
+  const { parentMessage } = useStateStore(thread.state, selector);
+  const subtitleText = parentMessage?.user?.name;
 
   useCreateDraftFocusEffect();
 
@@ -77,6 +75,26 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
 
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route }) => {
   const { channel, thread, targetedMessageId: targetedMessageIdFromParams } = route.params;
+
+  /**
+   * Targeting a reply. Jumping is the paginator's job, so the caller does it. This screen is a
+   * thread, so the target lives in the THREAD's reply paginator, not the channel's.
+   *
+   * `useLayoutEffect`, not `useEffect`: React runs layout effects before passive ones, and the
+   * message list picks its initial anchor in a passive effect — so the jump lands first and there
+   * is no scroll-then-jump.
+   */
+  useLayoutEffect(() => {
+    if (!targetedMessageIdFromParams) {
+      return;
+    }
+    thread.messagePaginator
+      .jumpToMessage(targetedMessageIdFromParams, {
+        focusReason: 'jump-to-message',
+        focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+      })
+      .catch((error: unknown) => console.warn('Jump to reply failed:', error));
+  }, [thread, targetedMessageIdFromParams]);
   const {
     theme: { semantics },
   } = useTheme();
@@ -87,8 +105,9 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
   const { messageInputFloating, messageListImplementation } = useAppContext();
 
   const { setInputRef } = useScreenReaderComposerFocusEffect();
+  useLeaveGoneChannel(channel);
 
-  const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
+  const onPressMessage: NonNullable<React.ComponentProps<typeof Thread>['onPressMessage']> = (
     payload,
   ) => {
     const { message, defaultHandler, emitter } = payload;
@@ -153,27 +172,23 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
       onAccessibilityEscape={() => navigation.goBack()}
       style={[styles.container, { backgroundColor: white }]}
     >
-      <Channel
+      <Thread
         audioRecordingEnabled={true}
-        channel={channel}
         setInputRef={setInputRef}
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
         thread={thread}
-        threadList
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-        messageId={targetedMessageIdFromParams}
+        onThreadDismount={onThreadDismount}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ThreadHeader thread={thread} />
         </PortalWhileClosingView>
-        <Thread
-          onThreadDismount={onThreadDismount}
-          shouldUseFlashList={messageListImplementation === 'flashlist'}
-        />
-      </Channel>
+        {messageListImplementation === 'flashlist' ? <MessageFlashList /> : <MessageList />}
+        <MessageComposer />
+      </Thread>
     </SafeAreaView>
   );
 };

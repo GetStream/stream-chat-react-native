@@ -1,38 +1,41 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Profiler, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 import { Pressable, StyleSheet } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { LocalMessage, Channel as StreamChatChannel } from 'stream-chat';
+import type { LocalMessage, Channel as StreamChatChannel, StreamChat, Thread } from 'stream-chat';
 import {
+  AITypingIndicatorView,
   AlsoSentToChannelHeaderPressPayload,
   Channel,
+  ChannelAvatar,
+  DEFAULT_HIGHLIGHT_DURATION,
+  MessageActionsParams,
   MessageComposer,
-  MessageList,
   MessageFlashList,
-  ThreadContextValue,
+  MessageList,
+  PortalWhileClosingView,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
-  useChatContext,
   useTheme,
-  AITypingIndicatorView,
   useTranslationContext,
-  MessageActionsParams,
-  ChannelAvatar,
-  PortalWhileClosingView,
+  useSettledWSConnectionHealth,
 } from 'stream-chat-react-native';
-
-import { ThreadType } from 'stream-chat-react-native-core';
 
 import { MessageInfoBottomSheet } from '../components/MessageInfoBottomSheet.tsx';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 import { ScreenHeader } from '../components/ScreenHeader';
+import {
+  useWebSocketBenchmarkTelemetry,
+  WebSocketEventPromptDialog,
+} from '../components/WebSocketEventPromptDialog';
 import { useAppContext } from '../context/AppContext';
 import { useStreamChatContext } from '../context/StreamChatContext.tsx';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
+import { useLeaveGoneChannel } from '../hooks/useLeaveGoneChannel';
 import type { StreamThemeWithColors } from '../theme/AppTheme';
 
 import type { StackNavigatorParamList } from '../types';
@@ -59,7 +62,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-  const { isOnline } = useChatContext();
+  const isOnline = useSettledWSConnectionHealth();
   const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
 
@@ -113,6 +116,61 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   );
 };
 
+type MessageListWithBenchmarkToolsProps = {
+  channel: StreamChatChannel;
+  children: React.ReactNode;
+  client: StreamChat;
+  messageListImplementation: string;
+  messageListMode: string;
+  messageListPruning?: number;
+};
+
+const MessageListWithBenchmarkTools = ({
+  channel,
+  children,
+  client,
+  messageListImplementation,
+  messageListMode,
+  messageListPruning,
+}: MessageListWithBenchmarkToolsProps) => {
+  const websocketBenchmarkTelemetry = useWebSocketBenchmarkTelemetry();
+  const { recordMessageListChange } = websocketBenchmarkTelemetry;
+
+  useEffect(() => {
+    const unsubscribe = channel.messagePaginator.state.subscribe((nextState, previousState) => {
+      if (!previousState || nextState.items === previousState.items) {
+        return;
+      }
+
+      recordMessageListChange({
+        nextLength: nextState.items?.length ?? 0,
+        previousLength: previousState.items?.length ?? 0,
+      });
+    });
+
+    return unsubscribe;
+  }, [channel, recordMessageListChange]);
+
+  return (
+    <>
+      <Profiler
+        id={`SampleAppMessageList:${messageListImplementation}`}
+        onRender={websocketBenchmarkTelemetry.onMessageListRender}
+      >
+        {children}
+      </Profiler>
+      <WebSocketEventPromptDialog
+        channel={channel}
+        client={client}
+        messageListImplementation={messageListImplementation}
+        messageListMode={messageListMode}
+        messageListPruning={messageListPruning}
+        telemetry={websocketBenchmarkTelemetry}
+      />
+    </>
+  );
+};
+
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route }) => {
   const { channel: channelFromProp, channelId, messageId } = route.params;
@@ -122,6 +180,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     messageListMode,
     messageListPruning,
     messageInputFloating,
+    perfBenchmarkingEnabled,
   } = useAppContext();
   const {
     theme: { semantics, colors },
@@ -132,8 +191,28 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   const [selectedMessage, setSelectedMessage] = useState<LocalMessage | undefined>(undefined);
 
   const [channel, setChannel] = useState<StreamChatChannel | undefined>(channelFromProp);
+  useLeaveGoneChannel(channel);
 
-  const [selectedThread, setSelectedThread] = useState<ThreadContextValue['thread']>();
+  useLayoutEffect(() => {
+    if (!channel || !messageId) {
+      return;
+    }
+    channel.messagePaginator
+      .jumpToMessage(messageId, {
+        focusReason: 'jump-to-message',
+        focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+      })
+      .catch((error: unknown) => console.warn('Jump to message failed:', error));
+  }, [channel, messageId]);
+
+  /**
+   * Message-list pruning is state-layer configuration now, not a `<Channel>` prop: the paginator
+   * bounds its own loaded window. Set on the instance so the secret-menu toggle applies to the open
+   * channel without a reload; `undefined` restores an unbounded list.
+   */
+  useEffect(() => {
+    channel?.messagePaginator.updateConfig({ maxLoadedItems: messageListPruning });
+  }, [channel, messageListPruning]);
 
   useEffect(() => {
     const initChannel = async () => {
@@ -155,10 +234,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     initChannel();
   }, [channelFromProp, channelId, chatClient]);
 
-  useFocusEffect(() => {
-    setSelectedThread(undefined);
-  });
-
   const { setInputRef } = useScreenReaderComposerFocusEffect();
 
   const onPressMessage: NonNullable<React.ComponentProps<typeof Channel>['onPressMessage']> = (
@@ -173,8 +248,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   };
 
   const onThreadSelect = useCallback(
-    (thread: LocalMessage | null) => {
-      if (!thread || !channel) {
+    (thread: Thread) => {
+      if (!channel) {
         return;
       }
 
@@ -182,7 +257,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         navigation.setParams({ messageId: undefined });
       }
 
-      setSelectedThread(thread);
       setThread(thread);
       navigation.navigate('ThreadScreen', {
         channel,
@@ -194,8 +268,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
   );
 
   const onAlsoSentToChannelHeaderPress = useCallback(
-    ({ parentMessage, targetedMessageId }: AlsoSentToChannelHeaderPressPayload) => {
-      if (!channel || !parentMessage) {
+    ({ targetedMessageId, thread }: AlsoSentToChannelHeaderPressPayload) => {
+      if (!channel || !thread) {
         return;
       }
 
@@ -203,12 +277,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         navigation.setParams({ messageId: undefined });
       }
 
-      setSelectedThread(parentMessage);
-      setThread(parentMessage);
+      setThread(thread);
       const params: StackNavigatorParamList['ThreadScreen'] = {
         channel,
         targetedMessageId,
-        thread: parentMessage,
+        thread,
       };
       const hasThreadInStack = navigation.getState().routes.some((stackRoute) => {
         if (stackRoute.name !== 'ThreadScreen') {
@@ -217,11 +290,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         const routeParams = stackRoute.params as
           | StackNavigatorParamList['ThreadScreen']
           | undefined;
-        const routeThreadId =
-          (routeParams?.thread as LocalMessage)?.id ??
-          (routeParams?.thread as ThreadType)?.thread?.id;
         const routeChannelId = routeParams?.channel?.id;
-        return routeThreadId === parentMessage.id && routeChannelId === channel.id;
+        return routeParams?.thread.id === thread.id && routeChannelId === channel.id;
       });
 
       if (hasThreadInStack) {
@@ -264,6 +334,33 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     return null;
   }
 
+  const messageList =
+    messageListImplementation === 'flashlist' ? (
+      <MessageFlashList
+        onThreadSelect={onThreadSelect}
+        isLiveStreaming={messageListMode === 'livestream'}
+      />
+    ) : (
+      <MessageList
+        onThreadSelect={onThreadSelect}
+        isLiveStreaming={messageListMode === 'livestream'}
+      />
+    );
+
+  const messageListElement = perfBenchmarkingEnabled ? (
+    <MessageListWithBenchmarkTools
+      channel={channel}
+      client={chatClient}
+      messageListImplementation={messageListImplementation}
+      messageListMode={messageListMode}
+      messageListPruning={messageListPruning}
+    >
+      {messageList}
+    </MessageListWithBenchmarkTools>
+  ) : (
+    messageList
+  );
+
   return (
     <SafeAreaView
       collapsable={false}
@@ -277,28 +374,19 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         setInputRef={setInputRef}
         messageInputFloating={messageInputFloating}
         onPressMessage={onPressMessage}
-        initialScrollToFirstUnreadMessage
+        // Not while deep-linking: opening at the first unread and jumping to a specific message are
+        // two different answers to "where should this list start", and `<Channel>` cannot see a jump
+        // that is still in flight — `jumpToMessage` only emits its focus signal once the query lands.
+        // `<Channel messageId>` used to encode this precedence internally; the caller states it now.
+        initialScrollToFirstUnreadMessage={!messageId}
         keyboardVerticalOffset={0}
         messageActions={messageActions}
-        messageId={messageId}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
-        thread={selectedThread}
-        maximumMessageLimit={messageListPruning}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />
         </PortalWhileClosingView>
-        {messageListImplementation === 'flashlist' ? (
-          <MessageFlashList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        ) : (
-          <MessageList
-            onThreadSelect={onThreadSelect}
-            isLiveStreaming={messageListMode === 'livestream'}
-          />
-        )}
+        {messageListElement}
         <AITypingIndicatorView channel={channel} />
         <MessageComposer />
         {modalVisible && (

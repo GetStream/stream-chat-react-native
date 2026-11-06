@@ -5,6 +5,7 @@ import { render } from '@testing-library/react-native';
 import type { StreamChat } from 'stream-chat';
 
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { MessageUserReactionsAvatar } from '../MessageUserReactionsAvatar';
@@ -14,7 +15,7 @@ describe('MessageUserReactionsAvatar', () => {
   let chatClient: StreamChat;
 
   beforeEach(async () => {
-    chatClient = await getTestClientWithUser({ id: 'me' });
+    chatClient = await getTestClientWithUser(generateUser({ id: 'me' }));
   });
 
   it('should render Avatar with correct image, name, and default size', () => {

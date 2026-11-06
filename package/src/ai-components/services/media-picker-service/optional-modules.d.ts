@@ -1,6 +1,6 @@
-// The image picker libraries are optional peer dependencies (`react-native-image-picker` for React
-// Native CLI apps, `expo-image-picker` for Expo apps) and are not installed in this package. Only
-// the asset shapes the media picker services read are declared here.
+// Optional peer dependencies that are not installed in this package: `react-native-image-picker`
+// (React Native CLI) and `expo-image-picker` (Expo). Only the asset shapes the media picker
+// services read are declared.
 
 declare module 'react-native-image-picker' {
   export type Asset = {

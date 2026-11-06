@@ -34,7 +34,7 @@ export const ModalHeader = ({
     <View style={[styles.header, headerOverride]}>
       <View style={styles.side}>
         <Button
-          accessibilityLabelKey='a11y/Close'
+          accessibilityLabelKey='common.close.accessibilityLabel'
           iconOnly
           LeadingIcon={icons.Cross}
           onPress={onClose}

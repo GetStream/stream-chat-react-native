@@ -28,9 +28,7 @@ export type LoadingProps = {
   loadingText?: string;
 };
 
-/**
- * UI Component for LoadingIndicator
- */
+/** Spinner with a loading text chosen by `listType`; `loadingText` overrides it. */
 export const LoadingIndicator = (props: LoadingProps) => {
   const { listType, loadingText } = props;
 
@@ -42,13 +40,21 @@ export const LoadingIndicator = (props: LoadingProps) => {
 
   switch (listType) {
     case 'channel':
-      return <LoadingIndicatorWrapper text={t('Loading channels...')} />;
+      return (
+        <LoadingIndicatorWrapper
+          text={t('indicators.loading.channels.text', 'Loading channels...')}
+        />
+      );
     case 'message':
-      return <LoadingIndicatorWrapper text={t('Loading messages...')} />;
+      return (
+        <LoadingIndicatorWrapper
+          text={t('indicators.loading.messages.text', 'Loading messages...')}
+        />
+      );
     case 'threads':
       return <LoadingIndicatorWrapper text={undefined} />;
     default:
-      return <LoadingIndicatorWrapper text={t('Loading...')} />;
+      return <LoadingIndicatorWrapper text={t('common.loading.text', 'Loading...')} />;
   }
 };
 

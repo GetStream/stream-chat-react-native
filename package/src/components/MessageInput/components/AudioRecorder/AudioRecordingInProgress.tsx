@@ -18,9 +18,7 @@ type AudioRecordingInProgressPropsWithContext = Pick<
   'audioRecorderManager'
 > &
   Pick<AudioRecorderManagerState, 'duration' | 'waveformData'> & {
-    /**
-     * Maximum number of waveform lines that should be rendered in the UI.
-     */
+    /** Maximum number of waveform lines rendered. Defaults to 60. */
     maxDataPointsDrawn?: number;
   };
 
@@ -41,7 +39,7 @@ const AudioRecordingInProgressWithContext = (props: AudioRecordingInProgressProp
 
   return (
     <View style={[styles.container, container]}>
-      {/* `durationMillis` is for Expo apps, `currentPosition` is for Native CLI apps. */}
+      {/* Mic icon and elapsed recording time. */}
       <View style={styles.micContainer}>
         <icons.Mic height={20} width={20} stroke={semantics.accentError} />
         <Text style={[styles.durationText, durationText]}>
@@ -66,9 +64,7 @@ const audioRecorderSelector = (state: AudioRecorderManagerState) => ({
   waveformData: state.waveformData,
 });
 
-/**
- * Component displayed when the audio is in the recording state.
- */
+/** Displayed while audio is being recorded. */
 export const AudioRecordingInProgress = (props: AudioRecordingInProgressProps) => {
   const { audioRecorderManager } = useMessageInputContext();
 

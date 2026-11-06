@@ -3,19 +3,12 @@ import React, { useMemo } from 'react';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { getDateString } from '../../utils/i18n/getDateString';
+import { getDateString } from '../../i18n/utils';
 
-/**
- * Props for the StickyHeader component.
- */
 export type StickyHeaderProps = {
-  /**
-   * Date to be displayed in the sticky header.
-   */
+  /** Date shown in the header. Nothing renders without it. */
   date?: Date;
-  /**
-   * The formatted date string to be displayed in the sticky header.
-   */
+  /** Text shown in place of the string formatted from `date`. */
   dateString?: string | number;
 };
 
@@ -29,10 +22,10 @@ export const StickyHeader = ({ date, dateString }: StickyHeaderProps) => {
     }
 
     return getDateString({
-      date,
+      messageCreatedAt: date,
       t,
       tDateTimeParser,
-      timestampTranslationKey: 'timestamp/StickyHeader',
+      timestampTranslationKey: 'timestamp.StickyHeader',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
@@ -41,5 +34,5 @@ export const StickyHeader = ({ date, dateString }: StickyHeaderProps) => {
     return null;
   }
 
-  return <DateHeader dateString={stickyHeaderDateString} />;
+  return <DateHeader dateString={stickyHeaderDateString ?? undefined} />;
 };

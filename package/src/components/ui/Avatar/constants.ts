@@ -67,8 +67,8 @@ const onlineIndicatorSizes: Record<
   },
 };
 
-// Anchors the presence dot on the avatar's circular edge at 45°:
-// offset = avatarWidth / 2 * (1 - Math.SQRT1_2) - indicatorDiameter / 2  (rounded to px)
+// Centers the presence dot on the avatar's circular edge at 45 degrees:
+// offset = avatarWidth / 2 * (1 - Math.SQRT1_2) - indicatorDiameter / 2, rounded to px.
 const indicatorPositions = (Object.keys(avatarSizes) as UserAvatarProps['size'][]).reduce(
   (acc, size) => {
     const avatarDiameter = avatarSizes[size].width;

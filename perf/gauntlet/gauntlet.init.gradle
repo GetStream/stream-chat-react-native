@@ -1,0 +1,15 @@
+// Points the React Native gradle plugin's JS bundling at a chosen SampleApp tree (GAUNTLET_APP) through the
+// gauntlet Metro config, so ONE native project produces the release APK for either side of a comparison.
+// Only valid when both sides have identical native dependencies (build.sh checks this).
+allprojects { p ->
+  p.afterEvaluate {
+    def r = p.extensions.findByName('react')
+    if (r != null) {
+      def app = System.getenv('GAUNTLET_APP')
+      r.bundleConfig.set(new File(System.getenv('GAUNTLET_DIR') + '/metro.gauntlet.config.js'))
+      r.root.set(new File(app))
+      r.entryFile.set(new File(app + '/index.js'))
+      r.cliFile.set(new File(app + '/node_modules/react-native/cli.js'))
+    }
+  }
+}

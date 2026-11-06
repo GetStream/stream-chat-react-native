@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { render, screen, waitFor } from '@testing-library/react-native';
+import type { UserResponse } from 'stream-chat';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
@@ -24,7 +25,7 @@ describe('<Reply/>', () => {
     const oldEnvironment = process.env;
     process.env.NODE_ENV = 'not_test';
 
-    const chatClient = await getTestClientWithUser({ id: 'neil' });
+    const chatClient = await getTestClientWithUser({ id: 'neil' } as UserResponse);
 
     const mockedChannel = generateChannelResponse();
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
@@ -83,11 +84,11 @@ describe('<Reply/>', () => {
         quotedMessageUser,
       }: { isMyMessage: boolean; quotedMessageUser: { id: string; name?: string } },
     ) => {
-      const quotedMessage = generateMessage({ user: quotedMessageUser });
+      const quotedMessage = generateMessage({ user: quotedMessageUser as UserResponse });
       const message = generateMessage({
         quoted_message: quotedMessage,
         quoted_message_id: quotedMessage.id,
-        user: isMyMessage ? { id: 'neil' } : generateUser(),
+        user: isMyMessage ? ({ id: 'neil' } as UserResponse) : generateUser(),
       });
 
       render(
@@ -140,7 +141,7 @@ describe('<Reply/>', () => {
 
       // `mode='edit'` supplies the message through props and leaves the
       // composer's quoted message empty - you can only ever edit your own message.
-      const editedMessage = generateMessage({ user: { id: 'neil' } });
+      const editedMessage = generateMessage({ user: { id: 'neil' } as UserResponse });
 
       render(
         <GestureHandlerRootView>

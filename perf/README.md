@@ -86,3 +86,8 @@ For A/B comparisons, run the same scenario on both branches and diff the `Native
 - Keep captured `.cpuprofile` files in `perf/profiles/` (gitignored).
 - Name files descriptively: `baseline.cpuprofile`, `step-8.cpuprofile`, etc.
 - Profiles must be captured in dev mode (Metro) so function names are intact. Release builds are minified — desymbolicate with the matching source map if you need to analyze one.
+
+## Full gauntlet
+
+For a complete base-vs-head comparison of every major flow in release builds (5-7 hours), use `perf/gauntlet/`
+and the `perf-gauntlet` skill (`.claude/skills/perf-gauntlet/SKILL.md`).

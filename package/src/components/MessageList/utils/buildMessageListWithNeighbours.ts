@@ -6,12 +6,23 @@ export type MessageListItemWithNeighbours = {
   message: LocalMessage;
 };
 
+/**
+ * The stable identity of a message row, used as both the list render key and the neighbour-cache
+ * key. The two must agree: otherwise the cache stores a row under one key while the list renders it
+ * under another, and memoization never hits.
+ *
+ * @param item The message of the row.
+ * @param index The position of the row, used when the message has neither an ID nor a timestamp.
+ * @returns The row key.
+ */
 export const getMessageListItemCacheKey = (item: LocalMessage, index: number) => {
   if (item.id) {
     return item.id;
   }
-  if (item.created_at) {
-    return typeof item.created_at === 'string' ? item.created_at : item.created_at.toISOString();
+  // Nullish check: `created_at` is in unix nanoseconds and `0` is valid. The index fallback shifts
+  // as pages load.
+  if (item.created_at != null) {
+    return String(item.created_at);
   }
   return `index-${index}`;
 };

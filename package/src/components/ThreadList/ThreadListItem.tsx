@@ -3,8 +3,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   AttachmentManagerState,
+  convertTimestampToDate,
   DraftMessage,
   LocalMessage,
+  MessagePaginatorAggregateState,
   TextComposerState,
   Thread,
   ThreadState,
@@ -18,8 +20,8 @@ import {
 } from '../../contexts/threadsContext/ThreadListItemContext';
 import { useThreadsContext } from '../../contexts/threadsContext/ThreadsContext';
 import { useStateStore } from '../../hooks';
+import { getDateString } from '../../i18n/utils';
 import { primitives } from '../../theme';
-import { getDateString } from '../../utils/i18n/getDateString';
 import { useChannelPreviewDisplayPresence } from '../ChannelPreview/hooks';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { BadgeNotification, UserAvatarStack } from '../ui';
@@ -44,6 +46,11 @@ const textComposerStateSelector = (state: TextComposerState) => ({
 
 const attachmentManagerStateSelector = (state: AttachmentManagerState) => ({
   attachments: state.attachments,
+});
+
+// The newest reply, also when the loaded page of replies is not the newest one.
+const lastReplySelector = (state: MessagePaginatorAggregateState) => ({
+  lastReply: state.latestMessage ?? undefined,
 });
 
 export const ThreadListItemComponent = () => {
@@ -75,10 +82,7 @@ export const ThreadListItemComponent = () => {
       <Pressable
         onPress={() => {
           if (onThreadSelect) {
-            onThreadSelect(
-              { thread: parentMessage as LocalMessage, threadInstance: thread },
-              channel,
-            );
+            onThreadSelect(thread);
           }
         }}
         style={({ pressed }) => [
@@ -115,8 +119,8 @@ export const ThreadListItemComponent = () => {
             />
             <Text style={styles.messageRepliesText}>
               {parentMessage?.reply_count === 1
-                ? t('1 Reply')
-                : t('{{ replyCount }} Replies', {
+                ? t('message.replies.one.label', '1 Reply')
+                : t('message.replies.many.label', '{{ replyCount }} Replies', {
                     replyCount: parentMessage?.reply_count,
                   })}
             </Text>
@@ -137,7 +141,7 @@ export const ThreadListItemComponent = () => {
 export const ThreadListItem = (props: ThreadListItemProps) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { thread, timestampTranslationKey = 'timestamp/ThreadListItem' } = props;
+  const { thread, timestampTranslationKey = 'timestamp.ThreadListItem' } = props;
   const { ThreadListItem: ThreadListItemOverride } = useComponentsContext();
   const { text: draftText } = useStateStore(
     thread.messageComposer.textComposer.state,
@@ -153,18 +157,19 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
       ({
         channel: nextValue.channel,
         deletedAt: nextValue.deletedAt,
-        lastReply: nextValue.replies.at(-1),
         ownUnreadMessageCount:
-          (client.userID && nextValue.read[client.userID]?.unreadMessageCount) || 0,
+          (client.userId && nextValue.read[client.userId]?.unreadMessageCount) || 0,
         parentMessage: nextValue.parentMessage,
       }) as const,
     [client],
   );
 
-  const { channel, deletedAt, lastReply, ownUnreadMessageCount, parentMessage } = useStateStore(
+  const { channel, deletedAt, ownUnreadMessageCount, parentMessage } = useStateStore(
     thread.state,
     selector,
   );
+
+  const { lastReply } = useStateStore(thread.messagePaginator.aggregateState, lastReplySelector);
 
   const timestamp = lastReply?.created_at;
 
@@ -184,6 +189,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
 
     return {
       attachments,
+      custom: {},
       id: thread.messageComposer.id,
       text: draftText ?? '',
     };
@@ -193,7 +199,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: timestamp,
+        messageCreatedAt: convertTimestampToDate(timestamp),
         t,
         tDateTimeParser,
         timestampTranslationKey,
@@ -203,7 +209,7 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
   const deletedAtDateString = useMemo(
     () =>
       getDateString({
-        date: deletedAt as Date | undefined,
+        messageCreatedAt: convertTimestampToDate(deletedAt),
         t,
         tDateTimeParser,
         timestampTranslationKey,
@@ -215,8 +221,9 @@ export const ThreadListItem = (props: ThreadListItemProps) => {
     <ThreadListItemProvider
       value={{
         channel,
-        dateString,
-        deletedAtDateString,
+        // `getDateString` returns `null` for "nothing renderable"; the context takes `undefined`.
+        dateString: dateString ?? undefined,
+        deletedAtDateString: deletedAtDateString ?? undefined,
         draftMessage,
         lastReply,
         ownUnreadMessageCount,

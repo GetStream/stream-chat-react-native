@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef } from 'react';
 
-import { useChatContext } from '../contexts/chatContext/ChatContext';
+import { useNetworkConnectionState } from '../components/Chat/hooks/useNetworkConnectionState';
 
 type ImageState = {
   isLoadingImage: boolean;
@@ -50,18 +50,18 @@ export const useLoadingImage = () => {
   const setLoadingImageErrorRef = useRef((isLoadingImageError: boolean) =>
     dispatch({ isLoadingImageError, type: 'setLoadingImageError' }),
   );
-  const { isOnline } = useChatContext();
+  const isNetworkOnline = useNetworkConnectionState()?.isOnline;
 
-  // storing the value of isLoadingImageError in a ref to avoid passing as a dep to useEffect
+  // A ref keeps `isLoadingImageError` out of the effect's dependencies.
   const hasImageLoadedErroredRef = useRef(isLoadingImageError);
   hasImageLoadedErroredRef.current = isLoadingImageError;
 
   useEffect(() => {
-    if (isOnline && hasImageLoadedErroredRef.current) {
-      // if there was an error previously, reload the image automatically when user comes back online
+    if (isNetworkOnline && hasImageLoadedErroredRef.current) {
+      // Retry a failed image automatically when the network comes back.
       onReloadImageRef.current();
     }
-  }, [isOnline]);
+  }, [isNetworkOnline]);
 
   return {
     isLoadingImage,

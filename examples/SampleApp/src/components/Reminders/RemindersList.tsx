@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-import { ReminderResponse } from 'stream-chat';
+import { ReminderResponseData } from 'stream-chat';
 import { useChatContext, useTheme, useQueryReminders } from 'stream-chat-react-native';
 
 import { ReminderItem } from './ReminderItem';
@@ -29,7 +29,7 @@ type TabItemType = {
   title: string;
 };
 
-const renderItem = ({ item }: { item: ReminderResponse }) => <ReminderItem {...item} />;
+const renderItem = ({ item }: { item: ReminderResponseData }) => <ReminderItem {...item} />;
 
 export const RemindersList = () => {
   const [selectedTab, setSelectedTab] = useState<TabItemType>(tabs[0]);
@@ -41,8 +41,12 @@ export const RemindersList = () => {
 
   useEffect(() => {
     client.reminders.paginator.filters = {};
-    client.reminders.paginator.sort = { remind_at: 1 };
-  }, [client.reminders.paginator]);
+    // v10 sort shape: `SortParamRequest[]`, not the v9 `{ field: direction }` object.
+    client.reminders.paginator.sort = [{ direction: 1, field: 'remind_at' }];
+    // The paginator does not self-load, so without this the list stays empty until a filter chip
+    // is tapped — `onChangeTab` was the only caller of `queryNextReminders`.
+    client.reminders.queryNextReminders();
+  }, [client.reminders, client.reminders.paginator]);
 
   const onChangeTab = useCallback(
     async (tab: TabItemType) => {
@@ -51,11 +55,11 @@ export const RemindersList = () => {
         client.reminders.paginator.filters = {};
       } else if (tab.key === 'overdue') {
         client.reminders.paginator.filters = {
-          remind_at: { $lte: new Date().toISOString() },
+          remind_at: { $lte: new Date() },
         };
       } else if (tab.key === 'upcoming') {
         client.reminders.paginator.filters = {
-          remind_at: { $gt: new Date().toISOString() },
+          remind_at: { $gt: new Date() },
         };
       } else if (tab.key === 'scheduled') {
         client.reminders.paginator.filters = {

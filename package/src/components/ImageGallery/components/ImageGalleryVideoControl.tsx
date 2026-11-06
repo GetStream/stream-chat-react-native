@@ -38,9 +38,9 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
 
   const videoDuration = getDurationLabelFromDuration(duration);
 
-  const progressValueInSeconds = progress * duration;
+  const progressValueInMilliseconds = progress * duration;
 
-  const progressDuration = getDurationLabelFromDuration(progressValueInSeconds);
+  const progressDuration = getDurationLabelFromDuration(progressValueInMilliseconds);
 
   const { icons } = useComponentsContext();
   const {
@@ -71,12 +71,10 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
     await videoPlayer.changePlaybackRate();
   };
 
-  // Remember whether playback was ongoing so it can be resumed once the user
-  // finishes scrubbing.
+  // Whether playback was ongoing, so it resumes when scrubbing ends.
   const wasPlayingBeforeSeek = useRef(false);
 
-  // Pause while scrubbing so the incoming progress updates don't fight the
-  // user's finger on the seek bar.
+  // Pauses while scrubbing so progress updates do not fight the seek bar.
   const handleStartDrag = useStableCallback(() => {
     wasPlayingBeforeSeek.current = videoPlayer.isPlaying;
     videoPlayer.pause();
@@ -93,7 +91,7 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
     <View style={[styles.container, container]}>
       <View style={styles.leftContainer}>
         <Button
-          accessibilityLabelKey='a11y/Play Pause Button'
+          accessibilityLabelKey='imageGallery.videoControl.playPause.accessibilityLabel'
           variant='secondary'
           type='ghost'
           size='md'
@@ -117,7 +115,6 @@ export const ImageGalleryVideoControl = React.memo((props: ImageGalleryVideoCont
           onStartDrag={handleStartDrag}
           progress={progress}
           testID={'progress-control'}
-          width={180}
         />
       </View>
 

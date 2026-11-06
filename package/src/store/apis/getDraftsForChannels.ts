@@ -10,18 +10,17 @@ import { TableRow } from '../types';
 
 export const getDraftForChannels = async ({
   channelIds,
-  currentUserId,
+  userId,
 }: {
   channelIds: string[];
-  currentUserId: string;
+  userId: string;
 }) => {
   SqliteClient.logger?.('info', 'getDraftsForChannel', { channelIds });
 
   const draftRowsWithMessage = await selectDraftMessageFromDraftForChannels(channelIds);
 
-  /**
-   * Filter out drafts without a parent ID, as we will not show them in the channel.
-   * The above `createSelectQuery` was not able to filter out drafts without a parent ID.
+  /*
+   * Keeps only drafts without a parent ID: thread drafts are not shown in the channel.
    * TODO: Fix the query to filter out drafts without a parent ID. This can be a bit faster.
    */
   const rowsWithoutParentID = draftRowsWithMessage.filter((row) => row.parentId === null);
@@ -43,7 +42,7 @@ export const getDraftForChannels = async ({
 
     cidVsDrafts[row.cid] = mapStorableToDraft({
       channelRow: channelRows[0] as unknown as TableRow<'channels'>,
-      currentUserId,
+      userId,
       draftRow: row,
       pollRow: polls[0],
       quotedMessageRow,

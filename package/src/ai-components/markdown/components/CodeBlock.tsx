@@ -64,7 +64,7 @@ export const CodeBlock = React.memo(({ styles, node }: MarkdownComponentProps) =
         return <Chart spec={parsed} />;
       }
     } catch (_e) {
-      /* do nothing */
+      // Not a renderable chart: fall back to the code block below.
     }
   }
 
@@ -75,7 +75,7 @@ export const CodeBlock = React.memo(({ styles, node }: MarkdownComponentProps) =
         return <Chart spec={parsed} />;
       }
     } catch (_e) {
-      /* do nothing */
+      // Not a renderable chart: fall back to the code block below.
     }
   }
 

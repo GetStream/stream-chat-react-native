@@ -19,17 +19,15 @@ export type ChannelMemberItemSize = 'sm' | 'lg';
 export type ChannelMemberItemProps = {
   member: ChannelMemberResponse;
   /**
-   * Override the roles shown next to the member. Receives `{ channel, defaultRoleLabels, member, t }`
-   * and returns an array of `{ key, label }` (or an empty array to render none). Defaults to the
-   * built-in Owner / Admin / Moderator logic, returning every role that applies.
+   * Overrides the roles shown next to the member. Receives
+   * `{ channel, defaultRoleLabels, member, t }` and returns `{ key, label }` roles, or an empty
+   * array for none. Defaults to the Owner, Admin and Moderator roles that apply.
    */
   getMemberRoles?: GetMemberRoles;
   onPress?: (member: ChannelMemberResponse) => void;
   /**
-   * Visual size of the row.
-   * - `'sm'` (default) renders the compact list row with a small avatar, regular-weight name, and a trailing role label.
-   * - `'lg'` renders a profile-style header with a larger avatar, semibold name, larger status, and no role label.
-   *   Useful for sheet / modal headers (e.g. the per-member actions bottom sheet).
+   * Size of the row. `'sm'` is the compact list row with a trailing role label. `'lg'` is a
+   * profile-style header with a larger avatar and no role label. Defaults to `'sm'`.
    */
   size?: ChannelMemberItemSize;
   testID?: string;
@@ -62,12 +60,12 @@ export const ChannelMemberItem = ({
   if (!user) return null;
 
   const isLarge = size === 'lg';
-  const isCurrentUser = !!client?.userID && user.id === client.userID;
-  const displayName = isCurrentUser ? t('You') : (user.name ?? user.id);
+  const isCurrentUser = !!client?.userId && user.id === client.userId;
+  const displayName = isCurrentUser ? t('common.you.label', 'You') : (user.name ?? user.id);
   const accessibilityLabel = composeAccessibilityLabel(
     displayName,
     roles.map((role) => role.label).join(', ') || undefined,
-    isMuted ? t('Muted') : undefined,
+    isMuted ? t('channelDetails.muted.accessibilityLabel', 'Muted') : undefined,
     statusLine,
   );
 

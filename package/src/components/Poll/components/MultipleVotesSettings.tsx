@@ -42,7 +42,7 @@ const MaxVotesTextInput = () => {
 
   const onChangeTextHandler = useCallback(
     async (newText: string) => {
-      await updateFields({ max_votes_allowed: newText });
+      await updateFields({ data: { max_votes_allowed: newText } });
     },
     [updateFields],
   );
@@ -119,14 +119,14 @@ export const MultipleVotesSettings = () => {
   const decrementMaxVotes = useStableCallback(async () => {
     const numericValue = Number(pollComposer.state.getLatestValue().data.max_votes_allowed.trim());
     if (Number.isInteger(numericValue)) {
-      await updateFields({ max_votes_allowed: String(numericValue - 1) });
+      await updateFields({ data: { max_votes_allowed: String(numericValue - 1) } });
     }
   });
 
   const incrementMaxVotes = useStableCallback(async () => {
     const numericValue = Number(pollComposer.state.getLatestValue().data.max_votes_allowed.trim());
     if (Number.isInteger(numericValue)) {
-      await updateFields({ max_votes_allowed: String(numericValue + 1) });
+      await updateFields({ data: { max_votes_allowed: String(numericValue + 1) } });
     }
   });
 
@@ -134,7 +134,9 @@ export const MultipleVotesSettings = () => {
     const currentValue = pollComposer.state.getLatestValue().data.max_votes_allowed;
     setAllowMaxVotesPerPerson(value);
     await updateFields({
-      max_votes_allowed: value ? (currentValue === '' ? '2' : currentValue) : '',
+      data: {
+        max_votes_allowed: value ? (currentValue === '' ? '2' : currentValue) : '',
+      },
     });
   });
 
@@ -147,9 +149,11 @@ export const MultipleVotesSettings = () => {
     >
       <View style={[styles.optionCard, multipleAnswers.optionCard]}>
         <View style={[styles.optionCardContent, multipleAnswers.optionCardContent]}>
-          <Text style={[styles.title, multipleAnswers.title]}>{t('Limit votes per person')}</Text>
+          <Text style={[styles.title, multipleAnswers.title]}>
+            {t('poll.createPoll.maxVotes.label', 'Limit votes per person')}
+          </Text>
           <Text style={[styles.description, multipleAnswers.description]}>
-            {t('Choose between 2–10 options')}
+            {t('poll.createPoll.maxVotes.description', 'Choose between 2–10 options')}
           </Text>
         </View>
         <Switch
@@ -165,7 +169,7 @@ export const MultipleVotesSettings = () => {
           style={[styles.row, multipleAnswers.row]}
         >
           <Button
-            accessibilityLabelKey='a11y/Decrease maximum votes'
+            accessibilityLabelKey='poll.createPoll.maxVotes.decrease.accessibilityLabel'
             variant='secondary'
             type='outline'
             size='md'
@@ -178,7 +182,7 @@ export const MultipleVotesSettings = () => {
           />
           <MaxVotesTextInput />
           <Button
-            accessibilityLabelKey='a11y/Increase maximum votes'
+            accessibilityLabelKey='poll.createPoll.maxVotes.increase.accessibilityLabel'
             variant='secondary'
             type='outline'
             size='md'

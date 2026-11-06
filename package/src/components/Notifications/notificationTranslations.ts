@@ -1,5 +1,13 @@
-import type { TFunction } from 'i18next';
-import type { Notification } from 'stream-chat';
+import { CORE_NOTIFICATION_TYPE } from 'stream-chat';
+import type { CoreNotificationType, Notification } from 'stream-chat';
+
+import type { StreamTFunction } from '../../i18n/types';
+import { asDynamicKey } from '../../i18n/utils';
+
+type NotificationTranslator = (options: {
+  notification: Notification;
+  t: StreamTFunction;
+}) => string;
 
 const normalizeReason = (notification?: Notification) => {
   const reason = notification?.metadata?.reason;
@@ -17,12 +25,12 @@ const withReasonFallback = ({
   fallbackTranslationKey: string;
   notification?: Notification;
   reasonTranslationKey: string;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const reason = normalizeReason(notification);
-  if (!reason) return t(fallbackTranslationKey);
+  if (!reason) return t(asDynamicKey(fallbackTranslationKey));
 
-  return t(reasonTranslationKey, { reason });
+  return t(asDynamicKey(reasonTranslationKey), { reason });
 };
 
 const translateAttachmentUploadBlocked = ({
@@ -30,14 +38,23 @@ const translateAttachmentUploadBlocked = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const rawReason = notification?.metadata?.reason;
-  let reason = t('unsupported file type');
-  if (typeof rawReason !== 'string') reason = t('unknown error');
-  if (rawReason === 'size_limit') reason = t('size limit');
+  let reason = t(
+    'notifications.attachmentUploadBlocked.reason.unsupportedFileType.text',
+    'unsupported file type',
+  );
+  if (typeof rawReason !== 'string')
+    reason = t('notifications.attachmentUploadBlocked.reason.unknownError.text', 'unknown error');
+  if (rawReason === 'size_limit')
+    reason = t('notifications.attachmentUploadBlocked.reason.sizeLimit.text', 'size limit');
 
-  return t('Attachment upload blocked due to {{reason}}', { reason });
+  return t(
+    'notifications.attachmentUploadBlocked.error',
+    'Attachment upload blocked due to {{reason}}',
+    { reason },
+  );
 };
 
 const translateAttachmentUploadFailed = ({
@@ -45,12 +62,12 @@ const translateAttachmentUploadFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
-    fallbackTranslationKey: 'Error uploading attachment',
+    fallbackTranslationKey: 'notifications.attachmentUploadFailed.error',
     notification,
-    reasonTranslationKey: 'Attachment upload failed due to {{reason}}',
+    reasonTranslationKey: 'notifications.attachmentUploadFailed.withReason.error',
     t,
   });
 
@@ -59,12 +76,12 @@ const translatePollCreateFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
-    fallbackTranslationKey: 'Failed to create the poll',
+    fallbackTranslationKey: 'notifications.pollCreateFailed.error',
     notification,
-    reasonTranslationKey: 'Failed to create the poll due to {{reason}}',
+    reasonTranslationKey: 'notifications.pollCreateFailed.withReason.error',
     t,
   });
 
@@ -73,12 +90,12 @@ const translatePollEndFailed = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) =>
   withReasonFallback({
-    fallbackTranslationKey: 'Failed to end the poll',
+    fallbackTranslationKey: 'poll.endVote.error',
     notification,
-    reasonTranslationKey: 'Failed to end the poll due to {{reason}}',
+    reasonTranslationKey: 'notifications.pollEndFailed.withReason.error',
     t,
   });
 
@@ -87,44 +104,86 @@ const translateCommandDisabled = ({
   t,
 }: {
   notification?: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const reason = normalizeReason(notification);
 
   if (reason === 'editing') {
-    return t('Command not available while editing');
+    return t(
+      'notifications.commandUnavailable.whileEditing.error',
+      'Command not available while editing',
+    );
   }
 
   if (reason === 'quoted_message') {
-    return t('Command not available while replying');
+    return t(
+      'notifications.commandUnavailable.whileReplying.error',
+      'Command not available while replying',
+    );
   }
 
-  return t(notification?.message || 'Command not available');
+  return t('notifications.commandUnavailable.error', 'Command not available');
 };
 
-const notificationTranslatorsByType: Record<
-  string,
-  (options: { notification: Notification; t: TFunction }) => string
-> = {
-  'api:attachment:upload:failed': translateAttachmentUploadFailed,
-  'api:location:create:failed': ({ t }) => t('Failed to share location'),
-  'api:location:share:failed': ({ t }) => t('Failed to share location'),
-  'api:poll:create:failed': translatePollCreateFailed,
+/**
+ * A translator for every notification `stream-chat` itself emits.
+ *
+ * `Record<CoreNotificationType, ...>` makes a new core identifier fail to compile until it is
+ * mapped, and rejects an entry for one that does not exist.
+ *
+ * The translation keys are literal strings at the call site: integrators' dictionaries use them,
+ * and `build-translations` cannot see a key resolved from a map.
+ */
+const coreNotificationTranslators: Record<CoreNotificationType, NotificationTranslator> = {
+  [CORE_NOTIFICATION_TYPE.attachmentFileMissing]: ({ t }) =>
+    t('notifications.attachmentFileMissing.error', 'File is required for upload attachment'),
+  [CORE_NOTIFICATION_TYPE.attachmentIdMissing]: ({ t }) =>
+    t('notifications.attachmentIdMissing.error', 'Local upload attachment missing local id'),
+  [CORE_NOTIFICATION_TYPE.attachmentUploadBlocked]: translateAttachmentUploadBlocked,
+  [CORE_NOTIFICATION_TYPE.attachmentUploadFailed]: translateAttachmentUploadFailed,
+  [CORE_NOTIFICATION_TYPE.attachmentUploadInProgress]: ({ t }) =>
+    t('notifications.attachmentUploadInProgress.error', 'Wait until all attachments have uploaded'),
+  [CORE_NOTIFICATION_TYPE.commandDisabled]: translateCommandDisabled,
+  [CORE_NOTIFICATION_TYPE.commandNotReady]: ({ t }) =>
+    t('notifications.commandNotReady.error', 'Command not ready to be sent'),
+  [CORE_NOTIFICATION_TYPE.locationCreateFailed]: ({ t }) =>
+    t('notifications.locationShareFailed.error', 'Failed to share location'),
+  [CORE_NOTIFICATION_TYPE.messageJumpFailed]: ({ t }) =>
+    t('notifications.messageJumpFailed.error', 'Failed to jump to the message'),
+  [CORE_NOTIFICATION_TYPE.messageJumpToLatestFailed]: ({ t }) =>
+    t('notifications.messageJumpToLatestFailed.error', 'Failed to jump to the latest message'),
+  // The composer's send and update failures.
+  [CORE_NOTIFICATION_TYPE.messageSendFailed]: ({ t }) =>
+    t('common.sendMessageFailed.error', 'Send message request failed'),
+  [CORE_NOTIFICATION_TYPE.messageUpdateFailed]: ({ t }) =>
+    t('common.editMessageFailed.error', 'Edit message request failed'),
+  [CORE_NOTIFICATION_TYPE.pollCastVoteLimit]: ({ t }) =>
+    t(
+      'notifications.voteLimitReached.error',
+      'Reached the vote limit. Remove an existing vote first.',
+    ),
+  [CORE_NOTIFICATION_TYPE.pollCreateFailed]: translatePollCreateFailed,
+};
+
+/**
+ * Translators for notifications this SDK emits itself, which core does not know about.
+ *
+ * Not exhaustiveness-checked, as there is no union to check against, so keep it to identifiers that
+ * are actually emitted.
+ */
+const sdkNotificationTranslators: Record<string, NotificationTranslator> = {
   'api:poll:end:failed': translatePollEndFailed,
-  'api:poll:end:success': ({ t }) => t('Poll ended'),
-  'api:reply:search:failed': ({ t }) => t('Thread has not been found'),
+  'api:poll:end:success': ({ t }) => t('notifications.pollEnded.text', 'Poll ended'),
   'browser:audio:playback:error': ({ notification, t }) =>
-    notification.message ? t(notification.message) : t('Error reproducing the recording'),
-  'browser:location:get:failed': ({ t }) => t('Failed to retrieve location'),
-  'channel:jumpToFirstUnread:failed': ({ t }) => t('Failed to jump to the first unread message'),
-  'validation:attachment:file:missing': ({ t }) => t('File is required for upload attachment'),
-  'validation:attachment:id:missing': ({ t }) => t('Local upload attachment missing local id'),
-  'validation:attachment:upload:blocked': translateAttachmentUploadBlocked,
-  'validation:attachment:upload:in-progress': ({ t }) =>
-    t('Wait until all attachments have uploaded'),
-  'validation:command:disabled': translateCommandDisabled,
-  'validation:poll:castVote:limit': ({ t }) =>
-    t('Reached the vote limit. Remove an existing vote first.'),
+    notification.message ||
+    t('notifications.recordingPlaybackFailed.error', 'Error reproducing the recording'),
+  'channel:jumpToFirstUnread:failed': ({ t }) =>
+    t('channel.jumpToFirstUnreadFailed.error', 'Failed to jump to the first unread message'),
+};
+
+const notificationTranslatorsByType: Record<string, NotificationTranslator> = {
+  ...coreNotificationTranslators,
+  ...sdkNotificationTranslators,
 };
 
 export const getNotificationDisplayMessage = ({
@@ -132,11 +191,13 @@ export const getNotificationDisplayMessage = ({
   t,
 }: {
   notification: Notification;
-  t: TFunction;
+  t: StreamTFunction;
 }) => {
   const translator = notification.type
     ? notificationTranslatorsByType[notification.type]
     : undefined;
 
-  return translator ? translator({ notification, t }) : t(notification.message);
+  // An unrecognized identifier renders `message` verbatim. It is untranslated English, but a newer
+  // core or an integrator's own identifier must not produce an empty toast.
+  return translator ? translator({ notification, t }) : notification.message;
 };

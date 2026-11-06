@@ -14,6 +14,7 @@ import {
   generateImageAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { useFileAttachmentListSections } from '../hooks/useFileAttachmentListSections';
 
@@ -21,7 +22,7 @@ let translators: TranslationContextValue;
 
 beforeAll(async () => {
   const i18nInstance = new Streami18n();
-  translators = (await i18nInstance.getTranslators()) as unknown as TranslationContextValue;
+  translators = (await i18nInstance.init()) as unknown as TranslationContextValue;
 });
 
 const wrapper = ({ children }: PropsWithChildren) => (
@@ -35,7 +36,7 @@ const messageAt = (
 ): MessageResponse =>
   generateMessage({
     attachments: attachments as never,
-    created_at: new Date(createdAt),
+    created_at: convertDateToTimestamp(createdAt),
     id,
   }) as unknown as MessageResponse;
 
@@ -130,11 +131,14 @@ describe('useFileAttachmentListSections', () => {
     ]);
   });
 
-  it('formats the section title via the timestamp/FileAttachmentListSection translation key', () => {
+  it('formats the section title via the timestamp.FileAttachmentListSection translation key', () => {
     const customTranslators = {
-      t: jest.fn((key: string) =>
-        key === 'timestamp/FileAttachmentListSection' ? 'CUSTOM TITLE' : key,
-      ),
+      t: jest.fn((key: string, defaultValue?: unknown) => {
+        if (key === 'timestamp.FileAttachmentListSection') {
+          return 'CUSTOM TITLE';
+        }
+        return typeof defaultValue === 'string' ? defaultValue : key;
+      }),
       tDateTimeParser: translators.tDateTimeParser,
       userLanguage: 'en',
     } as unknown as TranslationContextValue;
@@ -152,7 +156,7 @@ describe('useFileAttachmentListSections', () => {
     // The MMMM YYYY format lives in the translation string itself, so the hook only forwards
     // the timestamp to `t` — it does not pass a `format` option.
     expect(customTranslators.t).toHaveBeenCalledWith(
-      'timestamp/FileAttachmentListSection',
+      'timestamp.FileAttachmentListSection',
       expect.objectContaining({ timestamp: expect.any(Date) }),
     );
   });

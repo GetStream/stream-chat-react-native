@@ -11,22 +11,21 @@ import type { TableRow, TableRowJoinedUser } from '../types';
 
 export const getChannelMessages = async ({
   channelIds,
-  currentUserId,
+  userId,
   messageLimit,
 }: {
   channelIds: string[];
-  currentUserId: string;
+  userId: string;
   messageLimit?: number;
 }) => {
   SqliteClient.logger?.('info', 'getChannelMessages', {
     channelIds,
-    currentUserId,
+    userId,
     messageLimit,
   });
   const messageRows = await selectMessagesForChannels(channelIds, messageLimit);
   const messageIds = messageRows.map(({ id }) => id);
 
-  // Populate the message reactions.
   const reactionRows = await selectReactionsForMessages(messageIds, null);
   const messageIdVsReactions: Record<string, TableRowJoinedUser<'reactions'>[]> = {};
   reactionRows.forEach((reaction) => {
@@ -36,7 +35,6 @@ export const getChannelMessages = async ({
     messageIdVsReactions[reaction.messageId].push(reaction);
   });
 
-  // Populate the polls.
   const messageIdsVsPolls: Record<string, TableRow<'poll'>> = {};
   const pollsById: Record<string, TableRow<'poll'>> = {};
   const messagesWithPolls = messageRows.filter((message) => !!message.poll_id);
@@ -77,7 +75,6 @@ export const getChannelMessages = async ({
     messageIdsVsLocations[location.messageId] = location;
   });
 
-  // Populate the messages.
   const cidVsMessages: Record<string, MessageResponse[]> = {};
   messageRows.forEach((m) => {
     if (!cidVsMessages[m.cid]) {
@@ -86,7 +83,7 @@ export const getChannelMessages = async ({
 
     cidVsMessages[m.cid].push(
       mapStorableToMessage({
-        currentUserId,
+        userId,
         messageRow: m,
         pollRow: messageIdsVsPolls[m.poll_id],
         reactionRows: messageIdVsReactions[m.id],

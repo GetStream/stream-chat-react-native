@@ -1,14 +1,11 @@
 import { useCallback } from 'react';
 
 import {
-  APIResponse,
-  CastVoteAPIResponse,
-  PollAnswer,
-  PollOption,
+  PollOptionResponseData,
+  PollResponse,
   PollState,
-  PollVote,
-  TranslatedField,
-  UpdatePollAPIResponse,
+  PollVoteResponse,
+  PollVoteResponseData,
   UserResponse,
   VotingVisibility,
 } from 'stream-chat';
@@ -25,42 +22,42 @@ export type UsePollStateSelectorReturnType = {
   createdBy: UserResponse | null;
   enforceUniqueVote: boolean;
   isClosed: boolean | undefined;
-  latestVotesByOption: Record<string, PollVote[]>;
+  latestVotesByOption: Record<string, PollVoteResponseData[]>;
   maxVotedOptionIds: string[];
   maxVotesAllowed: number;
   name: string;
-  nameI18n: TranslatedField | undefined;
-  options: PollOption[];
-  ownAnswer: PollAnswer | undefined;
-  ownVotesByOptionId: Record<string, PollVote>;
+  nameI18n: Record<string, string> | undefined;
+  options: PollOptionResponseData[];
+  ownAnswer: PollVoteResponseData | undefined;
+  ownVotesByOptionId: Record<string, PollVoteResponseData>;
   voteCountsByOption: Record<string, number>;
   votingVisibility: VotingVisibility | undefined;
   voteCount: number;
 };
 
 export type UsePollStateReturnType = UsePollStateSelectorReturnType & {
-  addComment: (answerText: string) => Promise<APIResponse & CastVoteAPIResponse>;
+  addComment: (answerText: string) => Promise<PollVoteResponse>;
   addOption: (optionText: string) => Promise<void>;
-  endVote: () => Promise<(APIResponse & UpdatePollAPIResponse) | undefined>;
+  endVote: () => Promise<PollResponse | undefined>;
 };
 
 const selector = (nextValue: PollState): UsePollStateSelectorReturnType => ({
   allowAnswers: nextValue.allow_answers,
   allowUserSuggestedOptions: nextValue.allow_user_suggested_options,
   answersCount: nextValue.answers_count,
-  createdBy: nextValue.created_by,
+  createdBy: nextValue.created_by ?? null,
   enforceUniqueVote: nextValue.enforce_unique_vote,
   isClosed: nextValue.is_closed,
   latestVotesByOption: nextValue.latest_votes_by_option,
   maxVotedOptionIds: nextValue.maxVotedOptionIds,
-  maxVotesAllowed: nextValue.max_votes_allowed,
+  maxVotesAllowed: nextValue.max_votes_allowed ?? 0,
   name: nextValue.name,
   nameI18n: nextValue.name_i18n,
   options: nextValue.options,
   ownAnswer: nextValue.ownAnswer,
   ownVotesByOptionId: nextValue.ownVotesByOptionId,
   voteCountsByOption: nextValue.vote_counts_by_option,
-  votingVisibility: nextValue.voting_visibility,
+  votingVisibility: nextValue.voting_visibility as VotingVisibility,
   voteCount: nextValue.vote_count,
 });
 

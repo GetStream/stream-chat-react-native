@@ -3,9 +3,7 @@ import React from 'react';
 import { Button } from '../../../../components/ui';
 import { useCooldownRemaining } from '../../hooks/useCooldownRemaining';
 
-/**
- * Renders an amount of seconds left for a cooldown to finish.
- **/
+/** Shows the seconds left of the channel cooldown. */
 export const CooldownTimer = () => {
   const seconds = useCooldownRemaining();
 

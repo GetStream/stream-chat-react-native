@@ -1,19 +1,16 @@
-import { Channel, EventTypes, Mute, StreamChat } from 'stream-chat';
+import type { UserMuteResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
-import { useSyncClientEvents } from '../../../hooks/useSyncClientEvents';
+import { useStateStore } from '../../../hooks/useStateStore';
 
-const selector = (client: StreamChat) => client.mutedUsers;
-const keys: EventTypes[] = ['health.check', 'notification.mutes_updated'];
+const selector = (state: { mutedUsers: UserMuteResponse[] }) => ({ mutedUsers: state.mutedUsers });
 
-export function useMutedUsers(): Array<Mute>;
 /**
+ * Returns the current user's muted users from `client.mutedUsersStore`, updating reactively.
  *
- * @param @deprecated _channel - This parameter is deprecated because it is no longer necessary. It is kept for backwards compatibility only.
- * @returns
+ * @returns The user mutes.
  */
-export function useMutedUsers(_channel: Channel): Array<Mute> | undefined;
-export function useMutedUsers(_channel?: Channel): Array<Mute> {
+export function useMutedUsers(): UserMuteResponse[] {
   const { client } = useChatContext();
-  return useSyncClientEvents({ client, selector, stateChangeEventKeys: keys });
+  return useStateStore(client?.mutedUsersStore, selector)?.mutedUsers ?? [];
 }

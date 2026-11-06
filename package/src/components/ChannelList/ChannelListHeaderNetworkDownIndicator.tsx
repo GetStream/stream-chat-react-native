@@ -11,7 +11,7 @@ export const ChannelListHeaderNetworkDownIndicator = () => {
 
   return (
     <View style={styles.container} testID='network-down-indicator'>
-      <Text style={styles.errorText}>{t('Reconnecting...')}</Text>
+      <Text style={styles.errorText}>{t('common.reconnecting.text', 'Reconnecting...')}</Text>
     </View>
   );
 };

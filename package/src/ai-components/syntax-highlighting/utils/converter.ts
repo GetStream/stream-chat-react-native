@@ -4,10 +4,10 @@ import type { ConvertOpts, CSSP } from '../types';
 
 const EM_DEFAULT = 16;
 
-// React Native's strict TypeScript API declares style properties as readonly.
+// Style properties are readonly in React Native's strict TypeScript API.
 type MutableTextStyle = { -readonly [K in keyof TextStyle]: TextStyle[K] };
 
-/** Parse CSS lengths like 14, "14", "14px", "1.25em", "0.875rem" */
+/** Parses a CSS length such as 14, "14px", "1.25em" or "0.875rem" into a number. */
 const len = (v: unknown, { baseFontSize, rootFontSize }: ConvertOpts): number | undefined => {
   if (v == null) return undefined;
   if (typeof v === 'number') return v;
@@ -27,43 +27,35 @@ const len = (v: unknown, { baseFontSize, rootFontSize }: ConvertOpts): number | 
     const root = rootFontSize ?? baseFontSize ?? EM_DEFAULT;
     return Number.isFinite(n) ? n * root : undefined;
   }
-  // plain number-like string
   const n = Number(s);
   return Number.isFinite(n) ? n : undefined;
 };
 
-/** Font shorthand: e.g. "italic small-caps 700 14px/20px Menlo, monospace" */
+/** Parses a CSS `font` shorthand such as "italic small-caps 700 14px/20px Menlo, monospace". */
 const parseFontShorthand = (v: string, opts: ConvertOpts) => {
   const out: MutableTextStyle = {};
   const parts = v.split(/\s+/);
-  // Very light parser: pick out style, weight, size[/lineHeight], and family
-  // Strategy:
-  // - style: "normal|italic"
-  // - weight: "normal|bold|100..900"
-  // - when we hit a token like "14px" or "14px/20px" → size & optional lineHeight
-  // - everything after size token is font family (may contain commas/spaces)
+  // Reads in order: style, small-caps, weight, size[/lineHeight], then the family (everything after
+  // the size token, which may contain commas and spaces).
   let i = 0;
 
-  // style
   if (parts[i] === 'italic' || parts[i] === 'normal') {
     if (parts[i] !== 'normal') out.fontStyle = 'italic';
     i++;
   }
 
-  // (skip small-caps if present; RN uses fontVariant which is separate)
+  // RN models `small-caps` as `fontVariant`.
   if (parts[i] === 'small-caps') {
     out.fontVariant = ['small-caps'];
     i++;
   }
 
-  // weight
   if (/^(normal|bold|[1-9]00)$/.test(parts[i] ?? '')) {
     const token = parts[i]!;
     out.fontWeight = (token === 'normal' ? undefined : token) as TextStyle['fontWeight'];
     i++;
   }
 
-  // size[/lineHeight]
   const sizeToken = parts[i];
   if (
     sizeToken &&
@@ -79,10 +71,9 @@ const parseFontShorthand = (v: string, opts: ConvertOpts) => {
     i++;
   }
 
-  // family
   const family = parts.slice(i).join(' ').replace(/^,|,$/g, '').trim();
   if (family) {
-    // basic cleanup: take first family; strip quotes
+    // Only the first family is kept, without quotes.
     const first = family
       .split(',')[0]
       ?.trim()
@@ -93,7 +84,13 @@ const parseFontShorthand = (v: string, opts: ConvertOpts) => {
   return out;
 };
 
-/** map CSS (web) to RN TextStyle */
+/**
+ * Converts web CSS properties to an RN `TextStyle`.
+ *
+ * @param css The CSS properties to convert.
+ * @param options Font size bases for `em` and `rem` units.
+ * @returns The equivalent `TextStyle`.
+ */
 export const cssToRNTextStyle = (css: Partial<CSSP>, options: ConvertOpts = {}): TextStyle => {
   const opts: ConvertOpts = {
     baseFontSize: options.baseFontSize ?? EM_DEFAULT,
@@ -102,7 +99,6 @@ export const cssToRNTextStyle = (css: Partial<CSSP>, options: ConvertOpts = {}):
 
   const out: MutableTextStyle = {};
 
-  // Simple 1:1 or unit-converted mappings
   if (css.color) out.color = String(css.color);
 
   if (css.fontFamily) out.fontFamily = String(css.fontFamily);
@@ -130,7 +126,7 @@ export const cssToRNTextStyle = (css: Partial<CSSP>, options: ConvertOpts = {}):
     Object.assign(out, parseFontShorthand(css.font, opts));
   }
 
-  // Simulating the closest we can get to a CSS overflow-like functionality
+  // Maps the CSS overflow values to the closest RN `overflow`.
   const overflowLike = css.overflow ?? css.overflowX ?? css.overflowY;
   if (typeof overflowLike === 'string') {
     out.overflow =

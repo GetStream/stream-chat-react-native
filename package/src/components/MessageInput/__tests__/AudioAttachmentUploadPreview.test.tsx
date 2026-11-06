@@ -165,9 +165,30 @@ describe('AudioAttachmentUploadPreview render', () => {
     });
   });
 
+  it('should render AudioAttachmentUploadPreview for an attachment without a local file', async () => {
+    const attachments = [
+      generateAudioAttachment({
+        localMetadata: {
+          id: 'audio-attachment',
+          uploadState: FileState.FINISHED,
+        },
+      }),
+    ];
+
+    act(() => {
+      channel.messageComposer.attachmentManager.upsertAttachments(attachments);
+    });
+
+    renderComponent({ channel, client, props: {} });
+
+    await waitFor(() => {
+      expect(screen.queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
+    });
+  });
+
   it('should render AudioAttachmentUploadPreview with all failed files', async () => {
-    const uploadAttachmentSpy = jest.fn();
-    channel.messageComposer.attachmentManager.uploadAttachment = uploadAttachmentSpy;
+    const uploadFileSpy = jest.fn();
+    channel.messageComposer.attachmentManager.uploadFile = uploadFileSpy;
     const attachments = [
       generateAudioAttachment({
         localMetadata: {
@@ -203,7 +224,7 @@ describe('AudioAttachmentUploadPreview render', () => {
       expect(queryAllByTestId('audio-attachment-upload-preview')).toHaveLength(1);
       expect(getByLabelText('audio-attachment-preview')).toBeDefined();
       expect(channel.messageComposer.attachmentManager.attachments).toHaveLength(1);
-      expect(uploadAttachmentSpy).toHaveBeenCalled();
+      expect(uploadFileSpy).toHaveBeenCalled();
     });
   });
 

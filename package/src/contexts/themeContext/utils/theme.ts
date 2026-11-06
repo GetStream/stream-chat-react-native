@@ -25,7 +25,6 @@ export const Colors = {
   bg_user: '#F7F7F8',
   black: '#000000',
   blue_alice: '#E9F2FF',
-  // border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
   code_block: '#DDDDDD',
   disabled: '#B4BBBA',
   grey: '#7A7A7A',
@@ -1210,7 +1209,7 @@ export type Theme = {
     thumb: ViewStyle;
     waveform: ViewStyle;
   };
-  semantics: typeof lightSemantics; // themed semantics have the same type
+  semantics: typeof lightSemantics;
 };
 
 export const defaultTheme: Theme = {
@@ -1874,7 +1873,7 @@ export const defaultTheme: Theme = {
       container: {},
       spacer: {
         height: BASE_AVATAR_SIZE,
-        width: BASE_AVATAR_SIZE, // same as BASE_AVATAR_SIZE
+        width: BASE_AVATAR_SIZE,
       },
     },
     card: {

@@ -5,14 +5,16 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => {
 };
 
 /**
- * Resolves "$token" references in `dictionary` by performing a DFS.
- * deps first, then node - i.e. a topological evaluation.
+ * Resolves `$token` references in `dictionary` depth first, dependencies before the token that uses
+ * them, so declaration order does not matter. Throws on a cycle or an unresolved reference.
+ *
+ * @param dictionary The semantic tokens, whose values may reference other tokens as `$token`.
+ * @returns The dictionary with every reference resolved.
  */
 export const resolveTokensTopologically = <T extends Theme['semantics']>(dictionary: T): T => {
   const resolvedMemo = new Map<string, unknown>();
 
-  // Used purely for cycle detection (even though we do not expect
-  // cycles we want to assert early to make sure we raise an alarm).
+  // Cycle detection: none are expected, but a cycle must fail loudly.
   const visiting = new Set<string>();
 
   const resolveValueDeep = (value: unknown): unknown => {
@@ -31,11 +33,7 @@ export const resolveTokensTopologically = <T extends Theme['semantics']>(diction
     return value;
   };
 
-  /**
-   * This is the topological sort part:
-   * - DFS into dependencies first
-   * - then memoize the current token
-   */
+  /** Resolves a token's dependencies first, then memoizes the token. */
   const dfs = (tokenKeyOrPath: string, originalRef: string): unknown => {
     const cacheKey = tokenKeyOrPath;
 
@@ -50,13 +48,10 @@ export const resolveTokensTopologically = <T extends Theme['semantics']>(diction
     const raw = dictionary[tokenKeyOrPath as keyof Theme['semantics']];
 
     if (raw === undefined) {
-      // is throwing maybe too strict here ?
       throw new Error(`Unresolved reference: "${originalRef}" (missing "${tokenKeyOrPath}")`);
     }
 
-    // resolve dependencies inside `raw` BEFORE finalizing this token
-    // so that we can throw if there's a cycle or the dep graph is not
-    // connected)
+    // Dependencies resolve before the token is memoized, so a cycle or a missing reference throws.
     const fullyResolved = resolveValueDeep(raw);
 
     resolvedMemo.set(cacheKey, fullyResolved);

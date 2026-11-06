@@ -32,7 +32,9 @@ const MessageReminderHeaderWithContext = (props: MessageReminderHeaderPropsWithC
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
       <icons.Bell height={16} width={16} stroke={styles.time.color} />
       <Text style={styles.label}>
-        {isReminderTimeLeft ? t('Reminder set') : t('Reminder overdue')}
+        {isReminderTimeLeft
+          ? t('message.reminderSet.text', 'Reminder set')
+          : t('message.reminderOverdue.text', 'Reminder overdue')}
       </Text>
       <Text
         accessibilityElementsHidden
@@ -42,7 +44,7 @@ const MessageReminderHeaderWithContext = (props: MessageReminderHeaderPropsWithC
         ·
       </Text>
       <Text style={styles.time}>
-        {t('duration/Message reminder', {
+        {t('duration.messageReminder', {
           milliseconds: timeLeftMs,
         })}
       </Text>

@@ -1,4 +1,5 @@
-import { Notification, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { Notification } from 'stream-chat';
 
 export type InAppNotificationsState = {
   notifications: Notification[];
@@ -17,7 +18,6 @@ export const openInAppNotification = (notification: Notification) => {
   }
   const { notifications } = inAppNotificationsStore.getLatestValue();
 
-  // Prevent duplicate notifications
   if (notifications.some((n) => n.id === notification.id)) {
     console.warn('Notification with the same id already exists!');
     return;

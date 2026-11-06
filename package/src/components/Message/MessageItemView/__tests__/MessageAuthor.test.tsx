@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import type { StreamChat } from 'stream-chat';
+import type { StreamChat, UserResponse } from 'stream-chat';
 
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
@@ -19,7 +19,7 @@ describe('MessageAuthor', () => {
   let chatClient: StreamChat;
 
   beforeEach(async () => {
-    chatClient = await getTestClientWithUser({ id: 'me' });
+    chatClient = await getTestClientWithUser({ id: 'me' } as UserResponse);
   });
 
   it('should render message author', async () => {

@@ -26,31 +26,27 @@ type TimeoutByPriority = {
 /** Tri-state for gesture-alternative toggles. */
 export type A11yMode = 'auto' | 'always' | 'never';
 
-/**
- * Resolved predicate stored on the context - consumers call `(message)` and
- * receive the boolean directly.
- */
+/** Resolved predicate stored on the context: consumers call it with a message. */
 export type HasInteractiveAccessibilityContent = (message: LocalMessage) => boolean;
 
 /**
- * Integrator facing override shape. Receives the SDK's baseline boolean as the
- * second argument so overrides can extend rather than replace:
+ * Integrator override. Receives the SDK's baseline boolean as the second argument, so an override
+ * can extend it:
  *
  * ```
  *   hasInteractiveAccessibilityContent: (message, defaultValue) =>
  *     defaultValue || !!message.my_custom_field
  * ```
  *
- * To replace fully, ignore the second argument. Must be stable across renders
- * an unstable function will rerender every Message context consumer on every
- * downstream render.
+ * To replace the baseline, ignore the second argument. Must be stable across renders: an unstable
+ * function re-renders every message context consumer.
  */
 export type HasInteractiveAccessibilityContentConfig = (
   message: LocalMessage,
   defaultValue: boolean,
 ) => boolean;
 
-/** SDK baseline — true when the message renders interactive children. */
+/** SDK baseline: true when the message renders interactive children. */
 const defaultHasInteractiveAccessibilityContent: HasInteractiveAccessibilityContent = (message) =>
   !!(
     message.poll_id ||
@@ -61,36 +57,36 @@ const defaultHasInteractiveAccessibilityContent: HasInteractiveAccessibilityCont
 
 export type AccessibilityConfig = {
   /**
-   * Master toggle. Default FALSE — integrators must opt in. When false, the SDK
-   * behaves exactly as it does today; no a11y attributes are added, no announcer
-   * mounts, no listeners attached.
+   * Master toggle. Defaults to false, so integrators opt in. When false, no accessibility
+   * attributes are added, no announcer mounts and no listeners attach.
    */
   enabled?: boolean;
-  /** For testing — force "screen reader on" UI even when no SR is active. */
+  /** For testing: forces the screen reader UI even when no screen reader is active. */
   forceScreenReaderMode?: boolean;
-  /** Announce new messages via the announcer. Default true (when enabled). */
+  /** Announces new messages. Defaults to true. */
   announceNewMessages?: boolean;
-  /** Announce typing indicator. Default false (noisy on mobile). */
+  /** Announces the typing indicator. Defaults to false, as it is noisy on mobile. */
   announceTypingIndicator?: boolean;
-  /** Announce connection state (offline/online). Default true. */
+  /** Announces connection state changes. Defaults to true. */
   announceConnectionState?: boolean;
-  /** Audio recorder gesture-alternative. 'auto' (default), 'always', 'never'. */
+  /** Gesture alternative for the audio recorder. Defaults to `'auto'`. */
   audioRecorderTapMode?: A11yMode;
-  /** Image gallery gesture-alternative. 'auto' (default), 'always', 'never'. */
+  /** Gesture alternative for the image gallery. Defaults to `'auto'`. */
   imageGalleryScreenReaderMode?: A11yMode;
-  /** Message actions trigger. 'long-press' (no alt button), 'auto' (default — show button when SR is on), 'always-button'. */
+  /**
+   * How message actions open: `'long-press'` (no extra button), `'always-button'`, or `'auto'`
+   * (a button while a screen reader is on). Defaults to `'auto'`.
+   */
   messageActionsTrigger?: 'long-press' | 'auto' | 'always-button';
   /**
-   * Override the SDK's "this message has interactive children" decision.
-   * Will control what it means for a message to have interactive content.
-   * This affects the way we mark the message bubble as accessible and whether
-   * we let the children handle it on their own or whether we want the bubble to
-   * handle everything. See {@link HasInteractiveAccessibilityContentConfig}.
+   * Overrides whether a message counts as having interactive children, which decides if the
+   * children or the bubble handle accessibility.
+   * See {@link HasInteractiveAccessibilityContentConfig}.
    */
   hasInteractiveAccessibilityContent?: HasInteractiveAccessibilityContentConfig;
 };
 
-/** Fully-resolved config — every field is populated with its default. */
+/** Fully resolved config: every field is populated with its default. */
 export type ResolvedAccessibilityConfig = Required<
   Omit<AccessibilityConfig, 'hasInteractiveAccessibilityContent'>
 > & {

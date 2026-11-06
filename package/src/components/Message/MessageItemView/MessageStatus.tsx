@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { ChannelConfig } from 'stream-chat';
+
 import { useA11yLabel } from '../../../a11y/hooks/useA11yLabel';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -9,18 +11,35 @@ import {
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 import { MessageStatusTypes } from '../../../utils/utils';
 import { HiddenA11yText } from '../../Accessibility/HiddenA11yText';
+import { useIsMessageDeliveredToOthers } from '../hooks/useIsMessageDeliveredToOthers';
+import { useIsMessageReadByOthers } from '../hooks/useIsMessageReadByOthers';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
-export type MessageStatusPropsWithContext = Pick<
-  MessageContextValue,
-  'deliveredToCount' | 'message' | 'readBy'
->;
+const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
+  readEventsEnabled: readEvents.enabled,
+});
+
+export type MessageStatusPropsWithContext = Pick<MessageContextValue, 'message'> & {
+  /** Whether the message reached at least one other member. */
+  delivered: boolean;
+  /** Whether at least one other member read the message. */
+  read: boolean;
+  /**
+   * Whether the channel has read events. Without them only the sending status shows, as in the
+   * channel preview.
+   * @default true
+   */
+  readEventsEnabled?: boolean;
+};
 
 const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
-  const { deliveredToCount, message, readBy } = props;
+  const { message, readEventsEnabled = true } = props;
+  const delivered = readEventsEnabled && props.delivered;
+  const read = readEventsEnabled && props.read;
 
   const styles = useStyles();
   const { icons } = useComponentsContext();
@@ -33,13 +52,9 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
     },
   } = useTheme();
 
-  const hasReadByGreaterThanOne = typeof readBy === 'number' && readBy > 1;
-
-  // Variables to determine the status of the message
-  const read = hasReadByGreaterThanOne || readBy === true;
-  const delivered = deliveredToCount > 1;
   const sending = message.status === MessageStatusTypes.SENDING;
   const sent =
+    readEventsEnabled &&
     message.status === MessageStatusTypes.RECEIVED &&
     !delivered &&
     !read &&
@@ -47,17 +62,21 @@ const MessageStatusWithContext = (props: MessageStatusPropsWithContext) => {
 
   const accessibilityLabel = useA11yLabel(
     read
-      ? 'a11y/Read'
+      ? 'message.status.read.accessibilityLabel'
       : delivered
-        ? 'a11y/Delivered'
+        ? 'message.status.delivered.accessibilityLabel'
         : sending
-          ? 'a11y/Sending'
+          ? 'message.status.sending.accessibilityLabel'
           : sent
-            ? 'a11y/Sent'
+            ? 'message.status.sent.accessibilityLabel'
             : '',
   );
 
-  if (message.status === MessageStatusTypes.FAILED || message.type === 'error') {
+  if (
+    message.status === MessageStatusTypes.FAILED ||
+    message.type === 'error' ||
+    message.type === 'deleted'
+  ) {
     return null;
   }
 
@@ -111,16 +130,31 @@ const areEqual = (
   prevProps: MessageStatusPropsWithContext,
   nextProps: MessageStatusPropsWithContext,
 ) => {
-  const { deliveredToCount: prevDeliveredBy, message: prevMessage, readBy: prevReadBy } = prevProps;
-  const { deliveredToCount: nextDeliveredBy, message: nextMessage, readBy: nextReadBy } = nextProps;
+  const {
+    delivered: prevDelivered,
+    message: prevMessage,
+    read: prevRead,
+    readEventsEnabled: prevReadEventsEnabled,
+  } = prevProps;
+  const {
+    delivered: nextDelivered,
+    message: nextMessage,
+    read: nextRead,
+    readEventsEnabled: nextReadEventsEnabled,
+  } = nextProps;
 
-  const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
-  if (!deliveredByEqual) {
+  const readEventsEnabledEqual = prevReadEventsEnabled === nextReadEventsEnabled;
+  if (!readEventsEnabledEqual) {
     return false;
   }
 
-  const readByEqual = prevReadBy === nextReadBy;
-  if (!readByEqual) {
+  const deliveredEqual = prevDelivered === nextDelivered;
+  if (!deliveredEqual) {
+    return false;
+  }
+
+  const readEqual = prevRead === nextRead;
+  if (!readEqual) {
     return false;
   }
 
@@ -141,21 +175,19 @@ const MemoizedMessageStatus = React.memo(
 export type MessageStatusProps = Partial<MessageStatusPropsWithContext>;
 
 export const MessageStatus = (props: MessageStatusProps) => {
+  const { message: contextMessage } = useMessageContext();
+  const message = props.message ?? contextMessage;
   const { channel } = useChannelContext();
-  const { deliveredToCount, message, readBy } = useMessageContext();
-
-  const channelMembersCount = Object.keys(channel?.state.members).length;
+  const readByOthers = useIsMessageReadByOthers({ message });
+  const deliveredToOthers = useIsMessageDeliveredToOthers({ message });
+  const { readEventsEnabled } = useStateStore(channel?.configState, readEventsSelector) ?? {};
 
   return (
     <MemoizedMessageStatus
-      {...{
-        channel,
-        channelMembersCount,
-        deliveredToCount,
-        message,
-        readBy,
-      }}
-      {...props}
+      delivered={props.delivered ?? deliveredToOthers}
+      message={message}
+      read={props.read ?? readByOthers}
+      readEventsEnabled={props.readEventsEnabled ?? readEventsEnabled}
     />
   );
 };
@@ -170,12 +202,6 @@ const useStyles = () => {
 
   return useMemo(() => {
     return StyleSheet.create({
-      readByCount: {
-        color: shouldUseOverlayStyles ? semantics.textOnAccent : semantics.accentPrimary,
-        fontSize: primitives.typographyFontSizeXs,
-        fontWeight: primitives.typographyFontWeightRegular,
-        lineHeight: primitives.typographyLineHeightTight,
-      },
       container: {
         alignItems: 'center',
         flexDirection: 'row',

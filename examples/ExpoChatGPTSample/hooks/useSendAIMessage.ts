@@ -6,8 +6,8 @@ export type AIMessage = Parameters<ComposerViewProps['onSendMessage']>[0];
 
 /**
  * Sends a message to the AI channel through the channel's composer, with its attachments. Shared
- * by the composer and voice mode, so both go through `preSendMessageRequest` (which starts the
- * agent on the first message).
+ * by the composer and voice mode, so both go through the client's `sendMessageRequest` handler
+ * (which starts the agent on the first message).
  */
 export const useSendAIMessage = () => {
   const messageComposer = useMessageComposer();

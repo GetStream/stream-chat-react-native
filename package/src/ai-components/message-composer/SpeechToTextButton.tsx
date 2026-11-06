@@ -20,10 +20,7 @@ type SpeechToTextButtonProps = {
   options?: DictationStartOptions;
 };
 
-/**
- * Renders nothing when the native dictation module is not part of the build (see
- * `isDictationAvailable`), so that pressing the button can never reach a missing module.
- */
+/** Renders nothing when the native dictation module is not part of the build. */
 export const SpeechToTextButton = (props: SpeechToTextButtonProps) => {
   if (!isDictationAvailable()) {
     warnIfDictationUnavailable();

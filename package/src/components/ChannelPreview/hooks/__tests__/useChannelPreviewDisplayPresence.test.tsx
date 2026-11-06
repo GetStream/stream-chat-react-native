@@ -18,7 +18,7 @@ describe('useChannelPreviewDisplayPresence', () => {
     jest.clearAllMocks();
     chatClient = await getTestClientWithUser({
       id: currentUserId,
-      userID: currentUserId,
+      userId: currentUserId,
     } as unknown as Parameters<typeof getTestClientWithUser>[0]);
 
     // Create mock channel

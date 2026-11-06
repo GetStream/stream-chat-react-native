@@ -19,10 +19,13 @@ const accessibilityActivateActions: NonNullable<ViewProps['accessibilityActions'
 ];
 
 /**
- * Adds the standard screen-reader `activate` action for labeled pressables when
- * SDK accessibility is enabled. Some Android pressable implementations don't
- * reliably map TalkBack double-tap to `onPress`, so this bridges the generated
- * accessibility action back to the existing press handler.
+ * Returns the screen-reader `activate` accessibility action for a pressable, wired to `onPress`.
+ * Some Android pressables do not map the TalkBack double-tap to `onPress`.
+ *
+ * @param params.onPress Press handler invoked on `activate`.
+ * @param params.shouldHandleActivate Opts the pressable in. Defaults to false.
+ * @returns The action props to spread on the pressable, or `undefined` when accessibility is
+ * disabled, the opt-in is off or there is no `onPress`.
  */
 export const useAccessibilityActivateAction = <TPressEvent>({
   onPress,

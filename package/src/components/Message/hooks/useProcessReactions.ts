@@ -1,6 +1,6 @@
 import { ComponentType, useMemo } from 'react';
 
-import { ReactionGroupResponse, ReactionResponse } from 'stream-chat';
+import { convertTimestampToDate, ReactionGroupResponse, ReactionResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts';
 import {
@@ -23,11 +23,11 @@ export type ReactionSummary = {
 export type ReactionsComparator = (a: ReactionSummary, b: ReactionSummary) => number;
 
 export type MessageReactionsData = {
-  /** An array of the reaction objects to display in the list */
+  /** Reactions to display in the list. */
   latest_reactions?: ReactionResponse[];
-  /** An array of the own reaction objects to distinguish own reactions visually */
+  /** Own reactions, to tell them apart visually. */
   own_reactions?: ReactionResponse[] | null;
-  /** An object containing summary for each reaction type on a message */
+  /** Summary of each reaction type on the message. */
   reaction_groups?: Record<string, ReactionGroupResponse> | null;
 };
 
@@ -77,7 +77,11 @@ const getLatestReactedUserNames = (reactionType: string, latestReactions?: React
     : [];
 
 /**
- * Custom hook to process reactions data from message and return a list of reactions with additional info.
+ * Turns the reaction data of a message into a sorted list of reactions with extra info.
+ *
+ * @param props The reaction data of the message, plus optional `sortReactions` and
+ * `supportedReactions` overrides.
+ * @returns `existingReactions` (sorted), `hasReactions` and `totalReactionCount`.
  */
 export const useProcessReactions = (props: UseProcessReactionsParams) => {
   const { supportedReactions: contextSupportedReactions } = useMessagesContext();
@@ -105,11 +109,11 @@ export const useProcessReactions = (props: UseProcessReactionsParams) => {
 
         return {
           count,
-          firstReactionAt: first_reaction_at ? new Date(first_reaction_at) : null,
+          firstReactionAt: convertTimestampToDate(first_reaction_at) ?? null,
           Icon: getEmojiByReactionType(reactionType, supportedReactions),
-          lastReactionAt: last_reaction_at ? new Date(last_reaction_at) : null,
+          lastReactionAt: convertTimestampToDate(last_reaction_at) ?? null,
           latestReactedUserNames,
-          own: isOwnReaction(reactionType, own_reactions, latest_reactions, client.userID),
+          own: isOwnReaction(reactionType, own_reactions, latest_reactions, client.userId),
           type: reactionType,
           unlistedReactedUserCount: count - latestReactedUserNames.length,
         };
@@ -122,7 +126,7 @@ export const useProcessReactions = (props: UseProcessReactionsParams) => {
       totalReactionCount: unsortedReactions.reduce((total, { count }) => total + count, 0),
     };
   }, [
-    client.userID,
+    client.userId,
     reaction_groups,
     own_reactions,
     latest_reactions,

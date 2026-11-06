@@ -31,7 +31,6 @@ export const flattenNodesToTextAndColorRanges = ({
 
     const { type, tagName, value, properties } = node;
 
-    // leaf node
     if (type === 'text') {
       if (value == null || value === '') return;
       const chunk = String(value);
@@ -45,7 +44,6 @@ export const flattenNodesToTextAndColorRanges = ({
       return;
     }
 
-    // node with children
     if (tagName) {
       const baseStyle =
         properties && properties.className
@@ -56,9 +54,7 @@ export const flattenNodesToTextAndColorRanges = ({
             )
           : { ...startingStyle, color: defaultColor };
 
-      // we take the node's color if present, then its inherited color
-      // if present and finally the block's default color if all else
-      // fails.
+      // Color precedence: the node's own, then the inherited one, then the block's default.
       const effectiveColor =
         (baseStyle as { color?: string | number }).color ?? inheritedColor ?? defaultColor;
 
@@ -70,7 +66,6 @@ export const flattenNodesToTextAndColorRanges = ({
       return;
     }
 
-    // fallback
     if (value != null) {
       const chunk = String(value);
       const start = text.length;
@@ -82,20 +77,17 @@ export const flattenNodesToTextAndColorRanges = ({
     }
   };
 
-  // Recursively flatten nodes
   const nodeArray = Array.isArray(nodes) ? nodes : [nodes];
   for (let i = 0; i < nodeArray.length; i++) {
     walk(nodeArray[i], defaultColor);
   }
 
-  // Merge adjacent ranges with same color and convert them to integers
+  // Merges adjacent ranges of the same color and converts colors to integers.
   rawRanges.sort((a, b) => a.start - b.start);
   const merged: ColorRange[] = [];
   for (let i = 0; i < rawRanges.length; i++) {
     const r = rawRanges[i]!;
-    // in case the color is malformed for some reason, use the defaultColor
-    // as this one should always be non-nullish.
-    const colorInt = processColor(r.color)!; // ?? processColor(defaultColor))!;
+    const colorInt = processColor(r.color)!;
 
     if (!merged.length) {
       merged.push({ start: r.start, end: r.end, color: colorInt });
@@ -131,12 +123,12 @@ export const flattenRowsToTextAndColorRanges = (
     const offset = fullText.length;
     fullText += text;
 
-    // Add newline between rows (no color)
+    // Rows are joined by an uncolored newline.
     if (rowIndex < rows.length - 1) {
       fullText += '\n';
     }
 
-    // Shift ranges by current offset & push
+    // Shift the row ranges by its offset in the full text.
     for (const r of ranges) {
       fullRanges.push({
         start: r.start + offset,

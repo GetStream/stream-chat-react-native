@@ -1,7 +1,6 @@
 /**
- * This sub-library is a port/took inspiration from https://github.com/conorhastings/react-native-syntax-highlighter.
- * We create our own since we don't want the version of https://github.com/react-syntax-highlighter/react-syntax-highlighter
- * to be pinned to version 6 but rather use whatever we see fit.
+ * Adapted from https://github.com/conorhastings/react-native-syntax-highlighter.
+ * Maintained here so the `react-syntax-highlighter` dependency can be upgraded independently.
  */
 
 export * from './SyntaxHighlighter';

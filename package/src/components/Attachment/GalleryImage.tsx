@@ -29,8 +29,8 @@ export const GalleryImageWithContext = (props: GalleryImageWithContextProps) => 
     ...rest
   } = props;
 
-  // Caching image components such as FastImage will not work with local images.
-  // This for the case of local uris, we use the default Image component.
+  // Caching image components such as FastImage do not work with local images, so local URIs use
+  // the default `Image`.
   if (!isLocalUrl(uri)) {
     return (
       <ImageComponent

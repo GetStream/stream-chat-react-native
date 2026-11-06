@@ -11,9 +11,7 @@ export type MediaUploadProgressOverlayProps = {
   testID?: string;
 };
 
-/**
- * Full-cover upload overlay for image and video thumbnails.
- */
+/** Full-cover upload overlay for image and video thumbnails. */
 export const MediaUploadProgressOverlay = ({
   progress,
   size = 18,

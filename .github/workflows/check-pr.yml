@@ -5,6 +5,9 @@ on:
     branches:
       - develop
       - main
+      # The v10 integration branch. Without it, no PR stacked onto V10 runs build, lint, typecheck or
+      # tests — every gate is manual for the whole release.
+      - V10
       - 'v[0-9]+.[0-9]+.[0-9]+*beta*'
     types: [opened, synchronize]
 

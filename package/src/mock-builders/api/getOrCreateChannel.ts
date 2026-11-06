@@ -4,7 +4,7 @@ import type {
   DraftResponse,
   LocalMessage,
   MessageResponse,
-  ReadResponse,
+  ReadStateResponse,
 } from 'stream-chat';
 
 import { mockedApiResponse, type MockedApiResponse } from './utils';
@@ -20,7 +20,7 @@ export type GetOrCreateChannelApiParams = {
   members?: Partial<ChannelMemberResponse>[];
   messages?: MockMessage[];
   pinnedMessages?: MockMessage[];
-  read?: Partial<ReadResponse>[];
+  read?: Partial<ReadStateResponse>[];
 };
 
 /**

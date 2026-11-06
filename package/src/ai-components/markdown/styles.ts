@@ -58,7 +58,7 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     codeBlockLineNumberCell: {
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
       color: colors.grey,
-      paddingVertical: 1, // should be (codeBlock.lineHeight - this.fontSize) / 2
+      paddingVertical: 1, // (codeBlock.lineHeight - fontSize) / 2
       fontSize: 12,
     },
     codeBlockHeaderContainer: {

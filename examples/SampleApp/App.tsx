@@ -18,7 +18,6 @@ import {
   createTextComposerEmojiMiddleware,
   LiveLocationManagerProvider,
   OverlayProvider,
-  setupCommandUIMiddlewares,
   SqliteClient,
   Streami18n,
   ThemeProvider,
@@ -35,12 +34,14 @@ import {
   MessageListImplementationConfigItem,
   MessageListModeConfigItem,
   MessageListPruningConfigItem,
+  PERF_BENCHMARKING_MODE_STORAGE_KEY,
 } from './src/components/SecretMenu.tsx';
 import { AppContext } from './src/context/AppContext';
 import { StreamChatProvider } from './src/context/StreamChatContext';
 import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
+import { restoreSavedLanguage, streami18n } from './src/i18n';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
 import { ChannelDetailsScreen } from './src/screens/ChannelDetailsScreen.tsx';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
@@ -101,7 +102,8 @@ const RTL_STORAGE_KEY = '@stream-rn-sampleapp-rtl-enabled';
 const accessibilityConfig = { enabled: true };
 
 const App = () => {
-  const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
+  const { channelListPaginator, chatClient, isConnecting, loginUser, logout, switchUser } =
+    useChatClient();
   const [rtlEnabled, setRtlEnabled] = useState<boolean | undefined>(undefined);
   const [messageListImplementation, setMessageListImplementation] = useState<
     MessageListImplementationConfigItem['id'] | undefined
@@ -118,9 +120,11 @@ const App = () => {
   const [messageOverlayBackdrop, setMessageOverlayBackdrop] = useState<
     MessageOverlayBackdropConfigItem['value'] | undefined
   >(undefined);
+  const [perfBenchmarkingEnabled, setPerfBenchmarkingEnabledState] = useState<boolean | undefined>(
+    undefined,
+  );
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
-  const streami18n = new Streami18n();
   const componentOverrides = useSampleAppComponentOverrides(messageOverlayBackdrop);
 
   const setRTLEnabled = React.useCallback(async (enabled: boolean) => {
@@ -185,6 +189,8 @@ const App = () => {
 
       setRtlEnabled(nextRTLEnabled);
 
+      await restoreSavedLanguage();
+
       const messageListImplementationStoredValue = await AsyncStore.getItem(
         '@stream-rn-sampleapp-messagelist-implementation',
         { id: 'flatlist' },
@@ -205,6 +211,10 @@ const App = () => {
         '@stream-rn-sampleapp-message-overlay-backdrop',
         { value: 'default' },
       );
+      const perfBenchmarkingModeStoredValue = await AsyncStore.getItem(
+        PERF_BENCHMARKING_MODE_STORAGE_KEY,
+        { value: false },
+      );
       setMessageListImplementation(
         messageListImplementationStoredValue?.id as MessageListImplementationConfigItem['id'],
       );
@@ -218,6 +228,7 @@ const App = () => {
       setMessageOverlayBackdrop(
         messageOverlayBackdropStoredValue?.value as MessageOverlayBackdropConfigItem['value'],
       );
+      setPerfBenchmarkingEnabledState(!!perfBenchmarkingModeStoredValue?.value);
     };
     getAppConfig();
     return () => {
@@ -230,18 +241,11 @@ const App = () => {
     if (!chatClient) {
       return;
     }
-    chatClient.setMessageComposerSetupFunction(({ composer }) => {
-      composer.updateConfig({
-        drafts: {
-          enabled: true,
-        },
-        linkPreviews: {
-          enabled: true,
-        },
-      });
-
-      setupCommandUIMiddlewares(composer);
-
+    // Only behaviour lives here. `setMessageComposerSetupFunction` is deprecated in favour of
+    // `config.setSetupFunction`, and the plain values this used to set (`drafts`, `linkPreviews`) moved
+    // to the declarative `client.config.set()` call in `useChatClient`, next to where the client is
+    // created. A setup function is re-run on every configuration cycle, which is what middleware needs.
+    chatClient.config.setSetupFunction('messageComposer', ({ composer }) => {
       composer.textComposer.middlewareExecutor.insert({
         middleware: [
           createTextComposerEmojiMiddleware({
@@ -254,7 +258,12 @@ const App = () => {
     });
   }, [chatClient]);
 
-  if (rtlEnabled === undefined || !messageListImplementation || !messageListMode) {
+  if (
+    rtlEnabled === undefined ||
+    perfBenchmarkingEnabled === undefined ||
+    !messageListImplementation ||
+    !messageListMode
+  ) {
     return;
   }
 
@@ -285,10 +294,12 @@ const App = () => {
               >
                 <AppContext.Provider
                   value={{
+                    channelListPaginator,
                     chatClient,
                     loginUser,
                     logout,
                     switchUser,
+                    perfBenchmarkingEnabled,
                     rtlEnabled,
                     setRTLEnabled,
                     messageListImplementation,
@@ -329,7 +340,7 @@ const DrawerNavigator: React.FC = () => (
   </LiveLocationManagerProvider>
 );
 
-const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
+const isMessageAIGenerated = (message: LocalMessage) => !!message.custom?.ai_generated;
 
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat;

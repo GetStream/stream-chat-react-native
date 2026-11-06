@@ -3,7 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
 
-import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import {
   Alignment,
@@ -14,6 +15,7 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
+import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
@@ -23,28 +25,25 @@ type MessageFooterComponentProps = {
   formattedDate?: string | Date;
 };
 
+// The sender name is shown only in group channels, so a channel of 2 members counts as a DM.
+// `memberCount` changes far less often than the `members` map (presence, watchers, adds/removes).
+const isDirectChannelSelector = (state: { memberCount: number }) => ({
+  isDirectChannel: state.memberCount === 2,
+});
+
 type MessageFooterPropsWithContext = Pick<
   MessageContextValue,
-  | 'alignment'
-  | 'members'
-  | 'message'
-  | 'showMessageStatus'
-  | 'lastGroupMessage'
-  | 'isMessageAIGenerated'
+  'alignment' | 'message' | 'showMessageStatus' | 'lastGroupMessage'
 > &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
-  const {
-    alignment,
-    date,
-    formattedDate,
-    isMessageAIGenerated,
-    lastGroupMessage,
-    members,
-    message,
-    showMessageStatus,
-  } = props;
+  const { alignment, date, formattedDate, lastGroupMessage, message, showMessageStatus } = props;
+  const { channel } = useChannelContext();
+  const { isMessageAIGenerated } = useChatContext();
+  const { isDirectChannel } = useStateStore(channel.state, isDirectChannelSelector) ?? {
+    isDirectChannel: false,
+  };
   const { MessageStatus, MessageTimestamp } = useComponentsContext();
   const styles = useStyles();
 
@@ -75,14 +74,16 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
       style={[styles.container, container]}
       testID='message-status-time'
     >
-      {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
+      {!isDirectChannel && alignment === 'left' && message.user?.name ? (
         <Text numberOfLines={1} ellipsizeMode='tail' style={[styles.name, name]}>
           {message.user.name}
         </Text>
       ) : null}
       {showMessageStatus ? <MessageStatus /> : null}
       <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
-      {isEdited ? <Text style={[styles.editedText, editedText]}>{t('Edited')}</Text> : null}
+      {isEdited ? (
+        <Text style={[styles.editedText, editedText]}>{t('message.edited.text', 'Edited')}</Text>
+      ) : null}
     </View>
   );
 };
@@ -96,7 +97,6 @@ const areEqual = (
     date: prevDate,
     formattedDate: prevFormattedDate,
     lastGroupMessage: prevLastGroupMessage,
-    members: prevMembers,
     message: prevMessage,
     showMessageStatus: prevShowMessageStatus,
   } = prevProps;
@@ -105,18 +105,12 @@ const areEqual = (
     date: nextDate,
     formattedDate: nextFormattedDate,
     lastGroupMessage: nextLastGroupMessage,
-    members: nextMembers,
     message: nextMessage,
     showMessageStatus: nextShowMessageStatus,
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) {
-    return false;
-  }
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) {
     return false;
   }
 
@@ -162,26 +156,22 @@ const MemoizedMessageFooter = React.memo(
   areEqual,
 ) as typeof MessageFooterWithContext;
 
-export type MessageFooterProps = Partial<Pick<ChannelContextValue, 'members'>> &
-  MessageFooterComponentProps & {
-    alignment?: Alignment;
-    lastGroupMessage?: boolean;
-    message?: LocalMessage;
-    otherAttachments?: Attachment[];
-    showMessageStatus?: boolean;
-  };
+export type MessageFooterProps = MessageFooterComponentProps & {
+  alignment?: Alignment;
+  lastGroupMessage?: boolean;
+  message?: LocalMessage;
+  otherAttachments?: Attachment[];
+  showMessageStatus?: boolean;
+};
 
 export const MessageFooter = (props: MessageFooterProps) => {
-  const { alignment, isMessageAIGenerated, lastGroupMessage, members, message, showMessageStatus } =
-    useMessageContext();
+  const { alignment, lastGroupMessage, message, showMessageStatus } = useMessageContext();
 
   return (
     <MemoizedMessageFooter
       {...{
         alignment,
-        isMessageAIGenerated,
         lastGroupMessage,
-        members,
         message,
         showMessageStatus,
       }}

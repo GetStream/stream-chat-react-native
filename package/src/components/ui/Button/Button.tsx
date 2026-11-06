@@ -36,51 +36,28 @@ const getButtonAccessibilityState = ({
 };
 
 export type ButtonProps = PressableProps & {
-  /**
-   * Translation key used for the button's accessibility label when SDK
-   * accessibility is enabled. Prefer this for SDK-owned icon-only buttons.
-   */
+  /** Translation key of the accessibility label, resolved only with SDK accessibility enabled. */
   accessibilityLabelKey?: string;
-  /**
-   * Optional interpolation params for `accessibilityLabelKey`.
-   */
+  /** Interpolation params for `accessibilityLabelKey`. */
   accessibilityLabelParams?: Record<string, unknown>;
-  /**
-   * The style of the button.
-   */
+  /** Color variant of the button. */
   variant: 'primary' | 'secondary' | 'destructive';
-  /**
-   * The type of the button.
-   */
+  /** Fill style of the button. */
   type: 'solid' | 'outline' | 'ghost' | 'liquidGlass';
-  /**
-   * The size of the button.
-   */
+  /** Size of the button. Defaults to `'md'`. */
   size?: 'sm' | 'md' | 'lg';
-  /**
-   * Whether the button is selected.
-   */
+  /** Whether the button is selected. Defaults to false. */
   selected?: boolean;
-  /**
-   * The icon to display on the leading side of the button.
-   */
+  /** Icon on the leading side. Swaps with `TrailingIcon` in RTL. */
   LeadingIcon?: IconRenderer;
-  /**
-   * The content to display on the center of the button.
-   */
+  /** Content in the center. Strings are wrapped in a styled `Text`. */
   label?: React.ReactNode;
-  /**
-   * The icon to display on the trailing side of the button.
-   */
+  /** Icon on the trailing side. Swaps with `LeadingIcon` in RTL. */
   TrailingIcon?: IconRenderer;
-  /**
-   * Whether the button is only an icon.
-   */
+  /** Renders only an icon (`LeadingIcon`, else `TrailingIcon`). Defaults to false. */
   iconOnly?: boolean;
 
-  /**
-   * The style of the button.
-   */
+  /** Style of the button's outer container. */
   style?: StyleProp<ViewStyle>;
 };
 

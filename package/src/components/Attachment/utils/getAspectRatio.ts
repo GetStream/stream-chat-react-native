@@ -3,10 +3,11 @@ import type { Attachment } from 'stream-chat';
 import { FileTypes } from '../../../types/types';
 
 /**
- * Returns the aspect ratio of an image attachment.
+ * Returns the aspect ratio (width / height) of an image attachment or video thumbnail.
  *
- * @param image Image attachment.
- * @returns {number}
+ * @param attachment Image attachment or video thumbnail.
+ * @returns The aspect ratio, or 1 when the original size is unknown.
+ * @throws When the attachment is not an image or a video.
  */
 export function getAspectRatio(attachment: Attachment) {
   if (!(attachment.type === FileTypes.Image || attachment.type === FileTypes.Video)) {

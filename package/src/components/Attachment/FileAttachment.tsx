@@ -1,7 +1,12 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import {
+  type Attachment,
+  getAttachmentPreviewUrl,
+  isLocalUploadAttachment,
+  resolveAttachmentFullByteSize,
+} from 'stream-chat';
 
 import { AttachmentFileUploadProgressIndicator } from './AttachmentFileUploadProgressIndicator';
 import { openUrlSafely } from './utils/openUrlSafely';
@@ -18,14 +23,13 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { DefaultAttachmentData } from '../../types/types';
 
 export type FileAttachmentPropsWithContext = Pick<
   MessageContextValue,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<MessagesContextValue, 'additionalPressableProps'> & {
-    /** The attachment to render */
+    /** The attachment to render. */
     attachment: Attachment;
     attachmentIconSize?: FileIconProps['size'];
     // TODO: Think we really need a way to style the file preview using props if we have theme.
@@ -52,7 +56,7 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
   } = props;
   const { FilePreview } = useComponentsContext();
 
-  const localId = (attachment as DefaultAttachmentData).localId;
+  const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
 
   const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
@@ -98,8 +102,12 @@ const FileAttachmentWithContext = (props: FileAttachmentPropsWithContext) => {
           indicator={
             <AttachmentFileUploadProgressIndicator
               localId={localId}
-              sourceUrl={attachment.asset_url ?? attachment.originalFile?.uri}
-              totalBytes={attachment.file_size}
+              sourceUrl={getAttachmentPreviewUrl(
+                attachment,
+                attachment.asset_url,
+                attachment.image_url,
+              )}
+              totalBytes={resolveAttachmentFullByteSize(attachment)}
             />
           }
           styles={stylesProp}

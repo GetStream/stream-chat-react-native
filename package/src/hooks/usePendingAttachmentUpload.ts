@@ -7,11 +7,11 @@ import { useStateStore } from './useStateStore';
 import { useChatContext } from '../contexts/chatContext/ChatContext';
 
 export type PendingAttachmentUpload = {
-  /** True when `client.uploadManager` has an in-flight upload for this attachment local id. */
+  /** Whether `client.uploadManager` has an in-flight upload for this attachment local ID. */
   isUploading: boolean;
   /**
-   * Upload percent **0–100** from `client.uploadManager` (same scale as `attachmentManager`
-   * `onProgress` / `localMetadata.uploadProgress`). `undefined` when not computable or not uploading.
+   * Upload progress from `client.uploadManager` as a percentage from 0 to 100, the same scale as
+   * `localMetadata.uploadProgress`. `undefined` when not uploading or not computable.
    */
   uploadProgress: number | undefined;
 };
@@ -32,7 +32,11 @@ const COMPLETION_READY_PROGRESS = 90;
 const now = () => Date.now();
 
 /**
- * Subscribes to `client.uploadManager` for the pending attachment identified by `localId`.
+ * Subscribes to `client.uploadManager` for the pending attachment identified by `localId`. An
+ * upload that finished after reaching 90% keeps reporting `isUploading` at 100% for 350 ms.
+ *
+ * @param localId The local ID of the attachment. Without it the upload is reported as idle.
+ * @returns The upload state of the attachment.
  */
 export function usePendingAttachmentUpload(localId: string | undefined): PendingAttachmentUpload {
   const { client } = useChatContext();

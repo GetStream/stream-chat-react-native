@@ -1,4 +1,4 @@
-import { DraftMessage } from 'stream-chat';
+import { DraftMessage, MessageLabel } from 'stream-chat';
 
 import { TableRow } from '../types';
 
@@ -40,6 +40,6 @@ export const mapDraftMessageToStorable = ({
     showInChannel: show_in_channel,
     silent,
     text,
-    type,
+    type: type as MessageLabel | undefined,
   };
 };

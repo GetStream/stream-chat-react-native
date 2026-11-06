@@ -5,7 +5,7 @@ import { Alert, AlertButton, Pressable, StyleSheet, Text, View } from 'react-nat
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { ReminderResponse } from 'stream-chat';
+import { ReminderResponseData } from 'stream-chat';
 import {
   Delete,
   useMessagePreviewText,
@@ -21,13 +21,13 @@ import { useLegacyColors } from '../../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../../types';
 
 export const ReminderItem = (
-  item: ReminderResponse & { onDeleteHandler?: (id: string) => void },
+  item: ReminderResponseData & { onDeleteHandler?: (id: string) => void },
 ) => {
   const { channel, message } = item;
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const { client } = useChatContext();
   const { t } = useTranslationContext();
-  const channelName = channel?.name ? channel.name : 'Channel';
+  const channelName = channel?.custom?.name ? channel.custom.name : 'Channel';
   const {
     theme: { semantics },
   } = useTheme();
@@ -40,7 +40,7 @@ export const ReminderItem = (
       const resultChannel = client.channel(channel?.type, channel?.id);
       await resultChannel?.watch();
 
-      if (message.parent_id) {
+      if (message?.parent_id) {
         // TODO: Handle thread navigation
       } else {
         navigation.navigate('ChannelScreen', { channel: resultChannel });
@@ -66,12 +66,12 @@ export const ReminderItem = (
 
   const updateButtons = useMemo(() => {
     const buttons: AlertButton[] = client.reminders.scheduledOffsetsMs.map((offsetMs) => ({
-      text: t('duration/Remind Me', { milliseconds: offsetMs }),
+      text: t('duration.remindMe', { milliseconds: offsetMs }),
       onPress: async () => {
-        await client.reminders.upsertReminder({
-          messageId: item.message_id,
-          remind_at: new Date(new Date().getTime() + offsetMs).toISOString(),
-        });
+        await client.reminders.upsertReminder(
+          { message_id: item.message_id },
+          { remind_at: new Date(Date.now() + offsetMs) },
+        );
       },
       style: 'default',
     }));
@@ -79,10 +79,10 @@ export const ReminderItem = (
     buttons.push({
       text: 'Clear Due Date',
       onPress: async () => {
-        await client.reminders.upsertReminder({
-          messageId: item.message_id,
-          remind_at: null,
-        });
+        await client.reminders.upsertReminder(
+          { message_id: item.message_id },
+          { remind_at: undefined },
+        );
       },
       style: 'default',
     });

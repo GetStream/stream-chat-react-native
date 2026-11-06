@@ -24,7 +24,6 @@ export type MessageRepliesPropsWithContext = Pick<
   | 'onPressIn'
   | 'onOpenThread'
   | 'preventPress'
-  | 'threadList'
 > &
   Pick<TranslationContextValue, 't'>;
 
@@ -39,7 +38,6 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
     onPressIn,
     preventPress,
     t,
-    threadList,
   } = props;
   const { icons, MessageRepliesAvatars } = useComponentsContext();
 
@@ -69,20 +67,25 @@ const MessageRepliesWithContext = (props: MessageRepliesPropsWithContext) => {
       <icons.ReplyConnectorRight height={48} width={16} stroke={connectorStroke} />
     );
 
-  if (threadList || !message.reply_count) {
+  if (!message.reply_count) {
     return null;
   }
 
   const replyCountLabel =
     message.reply_count === 1
-      ? t('1 Reply')
-      : t('{{ replyCount }} Replies', { replyCount: message.reply_count });
+      ? t('message.replies.one.label', '1 Reply')
+      : t('message.replies.many.label', '{{ replyCount }} Replies', {
+          replyCount: message.reply_count,
+        });
 
   return (
     <View style={[styles.container, container]}>
       {alignment === 'left' ? connector : null}
       <Pressable
-        accessibilityHint={t('a11y/Double tap to view thread')}
+        accessibilityHint={t(
+          'message.replies.viewHint.accessibilityLabel',
+          'Double tap to view thread',
+        )}
         accessibilityLabel={replyCountLabel}
         accessibilityRole='button'
         disabled={preventPress}
@@ -131,23 +134,8 @@ const areEqual = (
   prevProps: MessageRepliesPropsWithContext,
   nextProps: MessageRepliesPropsWithContext,
 ) => {
-  const {
-    message: prevMessage,
-    onOpenThread: prevOnOpenThread,
-    t: prevT,
-    threadList: prevThreadList,
-  } = prevProps;
-  const {
-    message: nextMessage,
-    onOpenThread: nextOnOpenThread,
-    t: nextT,
-    threadList: nextThreadList,
-  } = nextProps;
-
-  const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) {
-    return false;
-  }
+  const { message: prevMessage, onOpenThread: prevOnOpenThread, t: prevT } = prevProps;
+  const { message: nextMessage, onOpenThread: nextOnOpenThread, t: nextT } = nextProps;
 
   const messageReplyCountEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!messageReplyCountEqual) {
@@ -184,7 +172,6 @@ export const MessageReplies = (props: MessageRepliesProps) => {
     onPress,
     onPressIn,
     preventPress,
-    threadList,
   } = useMessageContext();
   const { t } = useTranslationContext();
 
@@ -200,7 +187,6 @@ export const MessageReplies = (props: MessageRepliesProps) => {
         onPressIn,
         preventPress,
         t,
-        threadList,
       }}
       {...props}
     />
@@ -220,7 +206,7 @@ const useStyles = () => {
         flexDirection: 'row',
         alignItems: 'center',
         gap: primitives.spacingXs,
-        marginTop: -primitives.spacingMd, // Pulling the replies container up to hide the stick in the message content
+        marginTop: -primitives.spacingMd, // Pulls up to hide the stick in the message content
       },
       content: {
         alignSelf: 'flex-end',

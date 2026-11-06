@@ -27,7 +27,7 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
         <View style={[styles.container, channelContainer]}>
           <icons.MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
           <Text style={[styles.channelTitle, channelTitle]} testID='empty-channel-state-title'>
-            {t('No conversations yet')}
+            {t('indicators.emptyState.noConversations.text', 'No conversations yet')}
           </Text>
         </View>
       );
@@ -35,20 +35,24 @@ export const EmptyStateIndicator = ({ listType }: EmptyStateProps) => {
       return (
         <View style={[styles.container, messageContainer]}>
           <icons.MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
-          <Text style={[styles.messageTitle, messageTitle]}>{t('No chats here yet…')}</Text>
+          <Text style={[styles.messageTitle, messageTitle]}>
+            {t('indicators.emptyState.noChats.text', 'No chats here yet…')}
+          </Text>
         </View>
       );
     case 'threads':
       return (
         <View style={styles.container}>
           <icons.MessageBubbleEmpty height={27} stroke={semantics.textTertiary} width={25} />
-          <Text style={styles.threadText}>{t('Reply to a message to start a thread')}</Text>
+          <Text style={styles.threadText}>
+            {t('indicators.emptyState.noThreads.text', 'Reply to a message to start a thread')}
+          </Text>
         </View>
       );
     default:
       return (
         <Text style={[{ color: semantics.textSecondary }, messageContainer]}>
-          {t('No items exist')}
+          {t('indicators.emptyState.noItems.text', 'No items exist')}
         </Text>
       );
   }

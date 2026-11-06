@@ -4,8 +4,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
-import type { ChannelSort } from 'stream-chat';
-
 import type { Channel as ChannelClass } from 'stream-chat';
 import {
   ChannelList,
@@ -17,17 +15,7 @@ import {
   WithComponents,
 } from 'stream-chat-expo';
 
-import { chatUserId } from '../chatConfig';
-
 import { createChannel, useAppContext } from '../contexts/AppContext';
-
-const filters = {
-  members: {
-    $in: [chatUserId],
-  },
-};
-
-const sort: ChannelSort = { last_updated: -1 };
 
 const ChannelPreview = (props: ChannelPreviewProps) => {
   const channel = props.channel;
@@ -45,7 +33,7 @@ const ChannelPreview = (props: ChannelPreviewProps) => {
       onPress={onPress}
     >
       <Text style={styles.previewText} numberOfLines={1}>
-        {channel.data?.name ?? channel.cid}
+        {channel.data?.custom?.name ?? channel.cid}
       </Text>
     </Pressable>
   );
@@ -53,7 +41,7 @@ const ChannelPreview = (props: ChannelPreviewProps) => {
 
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   const { client } = useChatContext();
-  const { setChannel } = useAppContext();
+  const { channelListPaginator, setChannel } = useAppContext();
 
   const onSelect = useStableCallback((channel: ChannelClass) => {
     setChannel(channel);
@@ -74,7 +62,9 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
         </Pressable>
       </View>
       <WithComponents overrides={{ ChannelPreview }}>
-        <ChannelList filters={filters} sort={sort} onSelect={onSelect} />
+        {channelListPaginator ? (
+          <ChannelList onSelect={onSelect} paginator={channelListPaginator} />
+        ) : null}
       </WithComponents>
     </SafeAreaView>
   );

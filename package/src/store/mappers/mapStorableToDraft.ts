@@ -4,17 +4,18 @@ import { mapStorableToChannel } from './mapStorableToChannel';
 import { mapStorableToDraftMessage } from './mapStorableToDraftMessage';
 
 import { mapStorableToMessage } from './mapStorableToMessage';
+import { mapStorableToRequiredTimestamp } from './mapStorableToTimestamp';
 
 import type { TableRow, TableRowJoinedDraftMessage, TableRowJoinedUser } from '../types';
 
 export const mapStorableToDraft = ({
-  currentUserId,
+  userId,
   draftRow,
   channelRow,
   pollRow,
   quotedMessageRow,
 }: {
-  currentUserId: string;
+  userId: string;
   draftRow: TableRowJoinedDraftMessage<'draft'>;
   channelRow: TableRow<'channels'>;
   pollRow: TableRow<'poll'>;
@@ -27,13 +28,13 @@ export const mapStorableToDraft = ({
   const channel = mapStorableToChannel(channelRow);
 
   const quotedMessage = quotedMessageRow
-    ? mapStorableToMessage({ currentUserId, messageRow: quotedMessageRow, pollRow })
+    ? mapStorableToMessage({ userId, messageRow: quotedMessageRow, pollRow })
     : undefined;
 
   return {
     channel: channel.channel,
     channel_cid: cid,
-    created_at: createdAt,
+    created_at: mapStorableToRequiredTimestamp(createdAt),
     message,
     parent_id: parentId,
     quoted_message: quotedMessage,

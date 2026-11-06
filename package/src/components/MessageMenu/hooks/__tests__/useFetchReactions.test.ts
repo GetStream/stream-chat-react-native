@@ -1,9 +1,18 @@
-import { ReactionResponse } from 'stream-chat';
+import React, { PropsWithChildren } from 'react';
 
+import { act, renderHook, waitFor } from '@testing-library/react-native';
+
+import { LocalMessage, ReactionResponse, StreamChat } from 'stream-chat';
+
+import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
+import { generateMessage } from '../../../../mock-builders/generator/message';
+import { generateReaction } from '../../../../mock-builders/generator/reaction';
+import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import {
   reconcileUpdatedReactionInList,
   removeReactionFromList,
   upsertReactionInList,
+  useFetchReactions,
 } from '../useFetchReactions';
 
 const makeReaction = (
@@ -52,5 +61,102 @@ describe('useFetchReactions helpers', () => {
     });
 
     expect(result).toEqual([]);
+  });
+});
+
+describe('useFetchReactions', () => {
+  let client: StreamChat;
+  let queryReactions: jest.SpyInstance;
+  const message = generateMessage({ id: 'message-1' }) as unknown as LocalMessage;
+  const fetched = generateReaction({ message_id: 'message-1', type: 'like' });
+
+  const wrapper = ({ children }: PropsWithChildren) =>
+    React.createElement(ChatProvider, { value: { client } as never }, children);
+
+  const renderUseFetchReactions = () =>
+    renderHook((props: { message: LocalMessage }) => useFetchReactions(props), {
+      initialProps: { message },
+      wrapper,
+    });
+
+  beforeEach(async () => {
+    client = await getTestClientWithUser({ id: 'me' });
+    queryReactions = jest
+      .spyOn(client, 'queryReactionsAndHydrate')
+      .mockResolvedValue({ duration: '1ms', reactions: [fetched] } as never);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('queries through the offline-hydrating client method', async () => {
+    const { result } = renderUseFetchReactions();
+
+    await waitFor(() => expect(result.current.reactions).toEqual([fetched]));
+    expect(queryReactions).toHaveBeenCalledWith({ id: 'message-1' }, expect.anything());
+  });
+
+  it('applies reaction events for its own message only', async () => {
+    const { result } = renderUseFetchReactions();
+    await waitFor(() => expect(result.current.reactions).toEqual([fetched]));
+
+    const otherMessageReaction = generateReaction({ message_id: 'message-2', type: 'love' });
+    const ownMessageReaction = generateReaction({ message_id: 'message-1', type: 'love' });
+
+    act(() => {
+      client.dispatchEvent({ reaction: otherMessageReaction, type: 'reaction.new' } as never);
+    });
+    expect(result.current.reactions).toEqual([fetched]);
+
+    act(() => {
+      client.dispatchEvent({ reaction: ownMessageReaction, type: 'reaction.new' } as never);
+    });
+    expect(result.current.reactions).toEqual([ownMessageReaction, fetched]);
+
+    act(() => {
+      client.dispatchEvent({
+        reaction: { ...fetched, message_id: 'message-2' },
+        type: 'reaction.deleted',
+      } as never);
+    });
+    expect(result.current.reactions).toEqual([ownMessageReaction, fetched]);
+  });
+
+  it('applies offline reactions queried for its own message only', async () => {
+    const { result } = renderUseFetchReactions();
+    await waitFor(() => expect(result.current.reactions).toEqual([fetched]));
+
+    const otherMessageReaction = generateReaction({ message_id: 'message-2', type: 'love' });
+    const ownMessageReaction = generateReaction({ message_id: 'message-1', type: 'love' });
+
+    act(() => {
+      client.dispatchEvent({
+        offlineReactions: [otherMessageReaction],
+        type: 'offline_reactions.queried',
+      });
+    });
+    expect(result.current.reactions).toEqual([fetched]);
+
+    act(() => {
+      client.dispatchEvent({
+        offlineReactions: [ownMessageReaction],
+        type: 'offline_reactions.queried',
+      });
+    });
+    expect(result.current.reactions).toEqual([ownMessageReaction]);
+  });
+
+  it('does not refetch when the message object changes', async () => {
+    const { rerender, result } = renderUseFetchReactions();
+    await waitFor(() => expect(result.current.reactions).toEqual([fetched]));
+
+    rerender({ message: { ...message, reaction_groups: { like: { count: 2 } } } as never });
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(queryReactions).toHaveBeenCalledTimes(1);
+    expect(result.current.reactions).toEqual([fetched]);
   });
 });

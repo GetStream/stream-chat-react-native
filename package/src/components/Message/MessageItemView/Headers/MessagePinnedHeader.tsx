@@ -31,8 +31,10 @@ export const MessagePinnedHeader = (props: MessagePinnedHeaderProps) => {
     <View accessibilityLabel='Message Pinned Header' style={styles.container}>
       <icons.Pin height={16} width={16} stroke={styles.label.color} />
       <Text style={styles.label}>
-        {t('Pinned by')}{' '}
-        {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
+        {t('message.pinnedBy.text', 'Pinned by')}{' '}
+        {message?.pinned_by?.id === client?.user?.id
+          ? t('common.you.label', 'You')
+          : message?.pinned_by?.name}
       </Text>
     </View>
   );

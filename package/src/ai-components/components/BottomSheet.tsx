@@ -75,7 +75,7 @@ export function BottomSheet({ children }: Props) {
           : next;
     })
     .onEnd((e) => {
-      // very basic momentum bias
+      // Snap to the nearest end, biased by the release velocity.
       const projected = e.translationY + e.velocityY * 0.15;
       const nearest = projected >= bottomSheetHeight * 0.5 ? maxTranslateY : bottomSheetY;
       translateY.value = withTiming(nearest, SPRING, (finished) => {

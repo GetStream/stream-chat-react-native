@@ -1,23 +1,11 @@
-import { default as Dayjs } from 'dayjs';
-import 'dayjs/locale/nl';
-import localeData from 'dayjs/plugin/localeData';
-import moment, { type Moment } from 'moment-timezone';
+import { addOrUpdateDayjsLocale } from '@stream-io/i18n';
+import type { CalendarFormats } from '@stream-io/i18n';
+import Dayjs from 'dayjs';
+import 'dayjs/locale/de';
 
-import frTranslations from '../../i18n/fr.json';
-import nlTranslations from '../../i18n/nl.json';
-import { Streami18n } from '../i18n/Streami18n';
-
-Dayjs.extend(localeData);
-
-const customDayjsLocaleConfig = {
-  months:
-    'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
-  monthsShort: 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
-  ordinal: '%d.',
-  weekdays: 'sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur'.split('_'),
-  weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
-  weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
-};
+import { runtimeDefaults } from '../../i18n/runtimeDefaults';
+import { getDateString } from '../../i18n/utils';
+import { englishCalendarFormats, Streami18n } from '../i18n/Streami18n';
 
 describe('Jest Timezone', () => {
   it('global config should set the timezone to UTC', () => {
@@ -25,273 +13,278 @@ describe('Jest Timezone', () => {
   });
 });
 
-describe('Streami18n instance - default', () => {
-  const streami18nOptions = { logger: () => {} };
-  const streami18n = new Streami18n(streami18nOptions);
+describe('runtimeDefaults', () => {
+  it('carries per-key calendarFormats for exactly the two documented keys', () => {
+    // A per-key `calendarFormats` replaces the dayjs locale's calendar wholesale, so
+    // `dayjsLocaleConfigForLanguage` never reaches these two — they have to be overridden key by
+    // key. Adding a third silently strands English day words in a translated app, so it has to
+    // fail here first and be documented.
+    const withCalendarFormats = Object.entries(runtimeDefaults)
+      .filter(([, value]) => value.includes('calendarFormats:'))
+      .map(([key]) => key)
+      .sort();
 
-  it('should provide default english translator', async () => {
-    const { t: _t } = await streami18n.getTranslators();
-    const text = Date.now().toString();
-
-    expect(_t(text)).toBe(text);
+    expect(withCalendarFormats).toStrictEqual([
+      'timestamp.ChannelPreviewStatus',
+      'timestamp.ThreadListItem',
+    ]);
   });
 
-  it('should provide dayjs with default en locale', async () => {
-    const { tDateTimeParser } = await streami18n.getTranslators();
-    expect(tDateTimeParser() instanceof Dayjs).toBe(true);
-    expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('en');
-  });
-});
+  it('holds English inside a formatter expression for exactly the three documented keys', () => {
+    // The broader version of the guard above. A bundled formatter value can hide English in two
+    // places: inside a `calendarFormats` bracket literal (`[Yesterday]`), or as prose sitting
+    // beside the interpolation (`Last seen {{ … }}`). Either way `dayjsLocaleConfigForLanguage`
+    // cannot reach it and the key has to be overridden by hand, so the set has to stay closed.
+    // A formatter value pipes through a named formatter. Matched by substring rather than a
+    // balanced-brace regex, because `calendarFormats:` embeds a JSON object and the inner braces
+    // defeat the obvious pattern.
+    const isFormatterExpression = (value: string) => value.includes('{{') && value.includes('|');
 
-describe('Streami18n instance - with built-in language', () => {
-  describe('datetime translations enabled', () => {
-    const streami18nOptions = { language: 'nl' };
-    const streami18n = new Streami18n(streami18nOptions);
-    it('should provide dutch translator', async () => {
-      const { t: _t } = await streami18n.getTranslators();
-      for (const key in nlTranslations) {
-        const value = nlTranslations[key as keyof typeof nlTranslations];
-        const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
-        const hasTemplateInValue =
-          typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
-        if (hasTemplateInKey || hasTemplateInValue || key.indexOf('duration/') > -1) {
-          continue;
-        }
+    const englishInsideFormatter = Object.entries(runtimeDefaults)
+      // Only formatter values. Ordinary bundled prose like 'Avatar of {{name}}' is translated by
+      // overriding the key like any other string; these are format specs that happen to embed copy.
+      .filter(([, value]) => isFormatterExpression(value))
+      .filter(([, value]) => {
+        const outsideInterpolation = value.replace(/\{\{[^}]*\}\}/g, '');
+        const insideBrackets = [...value.matchAll(/\[([A-Za-z][^\]]*)\]/g)].map((m) => m[1]);
+        return /[A-Za-z]/.test(outsideInterpolation) || insideBrackets.length > 0;
+      })
+      .map(([key]) => key)
+      .sort();
 
-        expect(_t(key)).toBe(nlTranslations[key as keyof typeof nlTranslations]);
-      }
-    });
-    it('should provide dayjs with `nl` locale', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
-      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
-      expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('nl');
-    });
+    expect(englishInsideFormatter).toStrictEqual([
+      'timestamp.ChannelPreviewStatus',
+      'timestamp.ThreadListItem',
+      'timestamp.UserActivityStatus',
+    ]);
   });
 
-  describe('datetime translations disabled', () => {
-    const streami18nOptions = {
-      disableDateTimeTranslations: true,
-      language: 'nl',
-    };
-    const streami18n = new Streami18n(streami18nOptions);
+  it.each([
+    ['avatar.channel.group.accessibilityLabel', 'Channel with 1 member'],
+    ['channelPreview.unreadCount.accessibilityLabel', '1 unread message'],
+    ['message.reactionList.more.accessibilityLabel', 'and 1 more reaction'],
+    ['messageList.scrollToBottom.withCount.accessibilityLabel', 'Scroll to bottom, 1 new message'],
+  ])('uses the singular of %s for a count of 1', async (key, singular) => {
+    const { t } = await new Streami18n().init();
 
-    it('should provide dutch translator', async () => {
-      const { t: _t } = await streami18n.getTranslators();
-      for (const key in nlTranslations) {
-        const value = nlTranslations[key as keyof typeof nlTranslations];
-        const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
-        const hasTemplateInValue =
-          typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
-        if (hasTemplateInKey || hasTemplateInValue || key.indexOf('duration/') > -1) {
-          continue;
-        }
-
-        expect(_t(key)).toBe(nlTranslations[key as keyof typeof nlTranslations]);
-      }
-    });
-
-    it('should provide dayjs with default `en` locale', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
-      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
-      expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('en');
-    });
-  });
-
-  describe('custom dayjs locale config', () => {
-    const streami18nOptions = {
-      dayjsLocaleConfigForLanguage: customDayjsLocaleConfig,
-      language: 'nl',
-    };
-    const streami18n = new Streami18n(
-      streami18nOptions as unknown as ConstructorParameters<typeof Streami18n>[0],
-    );
-
-    it('should provide dayjs with given custom locale config', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
-      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
-      const localeConfig = (tDateTimeParser() as Dayjs.Dayjs).localeData() as unknown as Record<
-        string,
-        unknown
-      >;
-      for (const key in streami18nOptions.dayjsLocaleConfigForLanguage) {
-        if (typeof localeConfig[key] === 'function') {
-          expect((localeConfig[key] as () => unknown)()).toStrictEqual(
-            customDayjsLocaleConfig[key as keyof typeof customDayjsLocaleConfig],
-          );
-        } else {
-          expect(localeConfig[key]).toStrictEqual(
-            customDayjsLocaleConfig[key as keyof typeof customDayjsLocaleConfig],
-          );
-        }
-      }
-    });
+    expect(t(key as never, { count: 1 })).toBe(singular);
   });
 });
 
-describe('Streami18n instance - with custom translations', () => {
-  describe('datetime translations enabled', () => {
-    const textKey1 = 'this is text one';
-    const textValue1 = '这是文字一';
-    const textKey2 = 'this is text two';
-    const textValue2 = '这是文字二';
-    const translations = {
-      [textKey1]: textValue1,
-      [textKey2]: textValue2,
-    };
-    const streami18nOptions = {
-      language: 'zh',
-      translationsForLanguage: translations,
-    };
-    const streami18n = new Streami18n(
-      streami18nOptions as unknown as ConstructorParameters<typeof Streami18n>[0],
-    );
+describe('English calendar wording', () => {
+  // Every `timestamp.*` key formatted with `calendar: true` and no `calendarFormats` of its own. The
+  // other two calendar keys carry their own formats and so never read the locale.
+  const CALENDAR_KEYS = [
+    'timestamp.ImageGalleryHeader',
+    'timestamp.InlineDateSeparator',
+    'timestamp.MessageSystem',
+    'timestamp.StickyHeader',
+  ] as const;
 
-    it('should provide given (chinese in this case) translator', async () => {
-      const { t: _t } = await streami18n.getTranslators();
-
-      expect(_t(textKey1)).toBe(textValue1);
-
-      expect(_t(textKey2)).toBe(textValue2);
-    });
-
-    it('should provide dayjs with default `en` locale', async () => {
-      const { tDateTimeParser } = await streami18n.getTranslators();
-      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
-      expect((tDateTimeParser() as Dayjs.Dayjs).locale()).toBe('en');
-    });
-  });
-});
-
-describe('registerTranslation - register new language `mr` (Marathi)', () => {
-  const streami18nOptions = {
-    disableDateTimeTranslations: false,
-    language: 'en',
+  /**
+   * Noon, so the calendar bucket a date falls into does not depend on the wall clock: dayjs measures
+   * the difference from the start of today, and ±12h can never cross into the neighbouring bucket.
+   */
+  const noonOffsetByDays = (days: number) => {
+    const date = new Date();
+    date.setUTCHours(12, 0, 0, 0);
+    date.setUTCDate(date.getUTCDate() + days);
+    return date;
   };
-  const streami18n = new Streami18n(streami18nOptions);
-  const languageCode = 'mr';
-  const translations = {
-    text1: 'अनुवादित मजकूर 1',
-    text2: 'अनुवादित मजकूर 2',
-  };
-  streami18n.registerTranslation(
-    languageCode,
-    translations as unknown as Parameters<typeof streami18n.registerTranslation>[1],
-    customDayjsLocaleConfig as unknown as Parameters<typeof streami18n.registerTranslation>[2],
-  );
 
-  streami18n.setLanguage('mr');
+  /** Spelled out through `Intl` rather than dayjs, so the expectation is independent of the subject. */
+  const weekdayName = (date: Date, locale = 'en') =>
+    new Intl.DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'long' }).format(date);
 
-  it('should add Marathi translations object to list of translations', () => {
-    expect(streami18n.getTranslations()).toHaveProperty(languageCode, {
-      translation: translations,
-    });
+  let t: Streami18n['t'];
+  let tDateTimeParser: Streami18n['tDateTimeParser'];
+
+  const render = (key: string, date: Date) =>
+    getDateString({ messageCreatedAt: date, t, tDateTimeParser, timestampTranslationKey: key });
+
+  beforeAll(async () => {
+    const i18n = new Streami18n({ logger: () => {} });
+    ({ t, tDateTimeParser } = await i18n.init());
   });
 
-  it('should register dayjs locale config for Marathi translations', async () => {
-    const { tDateTimeParser } = await streami18n.getTranslators();
-    expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+  it.each(CALENDAR_KEYS)('%s renders the day alone, with no time appended', (key) => {
+    // The regression these guard: dayjs's own calendar defaults are `[Today at] h:mm A`,
+    // `[Last] dddd [at] h:mm A` and so on, which is what renders when the `en` locale carries no
+    // calendar config.
+    expect(render(key, noonOffsetByDays(0))).toBe('Today');
+    expect(render(key, noonOffsetByDays(-1))).toBe('Yesterday');
+    expect(render(key, noonOffsetByDays(1))).toBe('Tomorrow');
 
-    const localeConfig = (tDateTimeParser() as Dayjs.Dayjs).localeData() as unknown as Record<
-      string,
-      unknown
-    >;
-    for (const key in customDayjsLocaleConfig) {
-      if (typeof localeConfig[key] === 'function') {
-        expect((localeConfig[key] as () => unknown)()).toStrictEqual(
-          customDayjsLocaleConfig[key as keyof typeof customDayjsLocaleConfig],
-        );
-      } else {
-        expect(localeConfig[key]).toStrictEqual(
-          customDayjsLocaleConfig[key as keyof typeof customDayjsLocaleConfig],
-        );
-      }
-    }
+    const lastWeek = noonOffsetByDays(-3);
+    expect(render(key, lastWeek)).toBe(weekdayName(lastWeek));
   });
-});
 
-describe('setLanguage - switch to french', () => {
-  const streami18nOptions = {};
-  const streami18n = new Streami18n(streami18nOptions);
+  describe('is a default, not an override', () => {
+    // Each of these writes to the shared dayjs `en` locale, so it is put back afterwards. Applying all
+    // six slots is a full reset: `updateLocale` replaces the `calendar` key wholesale.
+    afterEach(() => {
+      addOrUpdateDayjsLocale('en', { calendar: englishCalendarFormats });
+    });
 
-  it('should provide french translator', async () => {
-    await streami18n.setLanguage('fr');
+    // Read off `init()` rather than written as `Streami18nState`: the bare type defaults its catalog to
+    // `AnyTranslationCatalog`, and `t` is contravariant in its options, so the concrete one does not
+    // assign to it.
+    const stickyHeader = (
+      { t, tDateTimeParser }: Awaited<ReturnType<Streami18n['init']>>,
+      date: Date,
+    ) =>
+      getDateString({
+        messageCreatedAt: date,
+        t,
+        tDateTimeParser,
+        timestampTranslationKey: 'timestamp.StickyHeader',
+      });
 
-    const { t: _t } = await streami18n.getTranslators();
-    for (const key in frTranslations) {
-      // Skip keys with template strings or duration keys
-      const value = frTranslations[key as keyof typeof frTranslations];
-      const hasTemplateInKey = key.indexOf('{{') > -1 && key.indexOf('}}') > -1;
-      const hasTemplateInValue =
-        typeof value === 'string' && value.indexOf('{{') > -1 && value.indexOf('}}') > -1;
-      if (hasTemplateInKey || hasTemplateInValue || key.indexOf('duration/') > -1) {
-        continue;
-      }
+    it('yields to a config the app registered on dayjs itself', async () => {
+      // What the v10 migration guide suggests for an app bringing its own `DateTimeParser`, and what
+      // this SDK used to do at module scope. It runs before the constructor, so it has to survive it.
+      addOrUpdateDayjsLocale('en', { calendar: { sameDay: '[Right now]' } as CalendarFormats });
 
-      expect(_t(key)).toBe(frTranslations[key as keyof typeof frTranslations]);
-    }
-  });
-});
+      const state = await new Streami18n({ logger: () => {} }).init();
 
-describe('Streami18n timezone', () => {
-  describe.each([['moment', moment]])('%s', (moduleName, module) => {
-    it('is by default the local timezone', () => {
-      const streamI18n = new Streami18n({ DateTimeParser: module });
-      const date = new Date();
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).toBe(
-        date.getHours().toString(),
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('Right now');
+      // Slots the app left alone still get the bundled wording rather than dayjs's defaults.
+      expect(stickyHeader(state, noonOffsetByDays(-1))).toBe('Yesterday');
+    });
+
+    it('yields to dayjsLocaleConfigForLanguage, per slot', async () => {
+      const state = await new Streami18n({
+        dayjsLocaleConfigForLanguage: { calendar: { sameDay: '[Right now]' } as CalendarFormats },
+        logger: () => {},
+      }).init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('Right now');
+      expect(stickyHeader(state, noonOffsetByDays(-1))).toBe('Yesterday');
+    });
+
+    it('does not reach a language with its own dayjs locale and calendar config', async () => {
+      const state = await new Streami18n({
+        dayjsLocaleConfigForLanguage: {
+          calendar: {
+            lastDay: '[gestern]',
+            lastWeek: 'dddd',
+            nextDay: '[morgen]',
+            nextWeek: 'dddd [um] LT',
+            sameDay: '[heute]',
+            sameElse: 'L',
+          },
+        },
+        language: 'de',
+        logger: () => {},
+      }).init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('heute');
+      expect(stickyHeader(state, noonOffsetByDays(-1))).toBe('gestern');
+      expect(stickyHeader(state, noonOffsetByDays(-3))).toBe(
+        weekdayName(noonOffsetByDays(-3), 'de'),
       );
     });
 
-    it('can be set to different timezone on init', () => {
-      const streamI18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
-      const date = new Date();
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).not.toBe(
-        date.getHours().toString(),
+    it('yields to registerTranslation, before init', async () => {
+      const i18n = new Streami18n({ logger: () => {} });
+      i18n.registerTranslation(
+        'en',
+        {},
+        { calendar: { sameDay: '[Right now]' } as CalendarFormats },
       );
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).not.toBe(
-        (date.getUTCHours() - 2).toString(),
-      );
+
+      const state = await i18n.init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('Right now');
+      expect(stickyHeader(state, noonOffsetByDays(-1))).toBe('Yesterday');
     });
 
-    it('is ignored if datetime parser does not support timezones', () => {
-      const mutableModule = module as unknown as { tz: unknown };
-      const tz = mutableModule.tz;
-      delete (mutableModule as { tz?: unknown }).tz;
+    it('yields to a config applied on the parser after construction', async () => {
+      const state = await new Streami18n({ logger: () => {} }).init();
+      addOrUpdateDayjsLocale('en', { calendar: { sameDay: '[Right now]' } as CalendarFormats });
 
-      const streamI18n = new Streami18n({ DateTimeParser: module, timezone: 'Europe/Prague' });
-      const date = new Date();
-      expect((streamI18n.tDateTimeParser(date) as Moment).format('H')).toBe(
-        date.getHours().toString(),
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('Right now');
+    });
+
+    it('yields to a preconfigured DateTimeParser the integrator brought', async () => {
+      // The `DateTimeParser` route: we write to *their* module's registry, so their own `en` calendar
+      // has to be read off that module rather than assumed absent.
+      addOrUpdateDayjsLocale(
+        'en',
+        { calendar: { sameDay: '[Right now]' } as CalendarFormats },
+        Dayjs,
       );
 
-      mutableModule.tz = tz;
+      const state = await new Streami18n({ DateTimeParser: Dayjs, logger: () => {} }).init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('Right now');
+      expect(stickyHeader(state, noonOffsetByDays(-1))).toBe('Yesterday');
     });
-    describe('formatters property', () => {
-      it('contains the default timestampFormatter', () => {
-        expect(new Streami18n().formatters.timestampFormatter).toBeDefined();
-      });
-      it('allows to override the default timestampFormatter', async () => {
-        const i18n = new Streami18n({
-          formatters: { timestampFormatter: () => () => 'custom' },
-          translationsForLanguage: { abc: '{{ value | timestampFormatter }}' } as Record<
-            string,
-            string
-          >,
-        });
-        await (i18n as unknown as { init: () => Promise<void> }).init();
-        expect(i18n.t('abc')).toBe('custom');
-      });
-      it('allows to add new custom formatter', async () => {
-        const i18n = new Streami18n({
-          formatters: { customFormatter: () => () => 'custom' },
-          translationsForLanguage: { abc: '{{ value | customFormatter }}' } as Record<
-            string,
-            string
-          >,
-        });
-        await (i18n as unknown as { init: () => Promise<void> }).init();
-        expect(i18n.t('abc')).toBe('custom');
-      });
+
+    it('does not touch a key that carries its own calendarFormats', async () => {
+      // A per-key `calendarFormats` replaces the locale's calendar wholesale, so this route bypasses
+      // the dayjs locale entirely — including anything we put there.
+      const state = await new Streami18n({
+        logger: () => {},
+        translationsForLanguage: {
+          'timestamp.StickyHeader':
+            '{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {"lastDay":"[Mine: lastDay]", "lastWeek":"dddd", "nextDay":"[Mine: nextDay]", "nextWeek":"dddd", "sameDay":"[Mine: sameDay]", "sameElse":"L"}) }}',
+        },
+      }).init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('Mine: sameDay');
+      expect(stickyHeader(state, noonOffsetByDays(-1))).toBe('Mine: lastDay');
+    });
+
+    it('does not touch a replaced timestampFormatter', async () => {
+      const state = await new Streami18n({
+        formatters: { timestampFormatter: () => () => 'from my own formatter' },
+        logger: () => {},
+      }).init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).toBe('from my own formatter');
+    });
+
+    it('survives setLanguage in both directions', async () => {
+      const i18n = new Streami18n({ logger: () => {} });
+      i18n.registerTranslation(
+        'de',
+        {},
+        {
+          calendar: {
+            lastDay: '[gestern]',
+            lastWeek: 'dddd',
+            nextDay: '[morgen]',
+            nextWeek: 'dddd [um] LT',
+            sameDay: '[heute]',
+            sameElse: 'L',
+          },
+        },
+      );
+      await i18n.init();
+
+      expect(stickyHeader(i18n.state.getLatestValue(), noonOffsetByDays(0))).toBe('Today');
+
+      await i18n.setLanguage('de');
+      expect(stickyHeader(i18n.state.getLatestValue(), noonOffsetByDays(0))).toBe('heute');
+
+      // Back to English: our block is still there, and the German one did not overwrite it.
+      await i18n.setLanguage('en');
+      expect(stickyHeader(i18n.state.getLatestValue(), noonOffsetByDays(0))).toBe('Today');
+    });
+
+    it('does not leak into a language whose dayjs locale carries no calendar config', async () => {
+      // No dayjs locale file defines `calendar`, so this app gets the plugin's own English scaffolding
+      // around German day names — the case core logs a warning for. The point here is only that the
+      // scaffolding is dayjs's and not ours: the SDK's `en` block must not stand in for a missing `de`
+      // one, because that would be the SDK forcing English on a translated app.
+      const state = await new Streami18n({ language: 'de', logger: () => {} }).init();
+
+      expect(stickyHeader(state, noonOffsetByDays(0))).not.toBe('Today');
+      expect(stickyHeader(state, noonOffsetByDays(-1))).not.toBe('Yesterday');
+      expect(stickyHeader(state, noonOffsetByDays(-3))).toContain(
+        weekdayName(noonOffsetByDays(-3), 'de'),
+      );
     });
   });
 });

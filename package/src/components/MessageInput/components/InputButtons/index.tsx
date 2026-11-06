@@ -77,15 +77,23 @@ const areEqual = (
 ) => {
   const {
     hasCameraPicker: prevHasCameraPicker,
+    hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
+    uploadFile: prevUploadFile,
   } = prevProps;
 
   const {
     hasCameraPicker: nextHasCameraPicker,
+    hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
+    uploadFile: nextUploadFile,
   } = nextProps;
+
+  if (prevHasCommands !== nextHasCommands || prevUploadFile !== nextUploadFile) {
+    return false;
+  }
 
   if (prevHasCameraPicker !== nextHasCameraPicker) {
     return false;

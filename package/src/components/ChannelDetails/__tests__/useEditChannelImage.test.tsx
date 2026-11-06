@@ -25,7 +25,7 @@ const wrap = ({ compressImageQuality }: { compressImageQuality?: number }) => {
   const Wrapper = ({ children }: PropsWithChildren) => (
     <TranslationProvider
       value={{
-        t: ((key: string) => key) as never,
+        t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
         tDateTimeParser: ((input: unknown) => input) as never,
         userLanguage: 'en',
       }}
@@ -88,7 +88,7 @@ describe('useEditChannelImage', () => {
       expect(Alert.alert).toHaveBeenCalledTimes(1);
       expect(Alert.alert).toHaveBeenCalledWith(
         'Allow camera access in device settings',
-        'Device camera is used to take photos or videos.',
+        'The camera is used to take the channel image.',
         expect.any(Array),
       );
       expect(returned).toBeUndefined();
@@ -202,7 +202,7 @@ describe('useEditChannelImage', () => {
       expect(Alert.alert).toHaveBeenCalledTimes(1);
       expect(Alert.alert).toHaveBeenCalledWith(
         'Allow access to your Gallery',
-        'Device gallery permissions is used to take photos or videos.',
+        'Gallery access is used to choose the channel image.',
         expect.any(Array),
       );
       expect(returned).toBeUndefined();

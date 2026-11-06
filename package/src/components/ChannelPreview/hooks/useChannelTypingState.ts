@@ -1,48 +1,20 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Channel } from 'stream-chat';
 
-import { Channel, Event, UserResponse } from 'stream-chat';
-
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useChannelTypingUsers } from '../../MessageList/hooks/useTypingUsers';
 
 type UseChannelTypingStateProps = {
   channel: Channel;
 };
 
-// Listen to the typing.start and typing.stop events and update the typing state
+/**
+ * The users typing in a channel preview row. The channel is a parameter because the row renders
+ * outside a `<Channel>` provider.
+ *
+ * @param params.channel The channel being previewed.
+ * @returns The typing users as `usersTyping`.
+ */
 export const useChannelTypingState = ({ channel }: UseChannelTypingStateProps) => {
-  const { client } = useChatContext();
-  const [usersTyping, setUsersTyping] = useState<UserResponse[]>([]);
-
-  const handleTypingStart = useCallback(
-    (event: Event) => {
-      if (channel.cid !== event.cid || event.user?.id === client?.user?.id) return;
-      setUsersTyping((prev) => {
-        if (!event.user) return prev;
-        if (prev.some((user) => user.id === event.user?.id)) return prev;
-        return [...prev, event.user];
-      });
-    },
-    [channel.cid, client?.user?.id],
-  );
-
-  const handleTypingStop = useCallback(
-    (event: Event) => {
-      if (channel.cid !== event.cid || event.user?.id === client?.user?.id) return;
-      setUsersTyping((prev) => prev.filter((user) => user.id !== event.user?.id));
-    },
-    [channel.cid, client?.user?.id],
-  );
-
-  useEffect(() => {
-    const listeners = [
-      channel.on('typing.start', handleTypingStart),
-      channel.on('typing.stop', handleTypingStop),
-    ];
-
-    return () => {
-      listeners.forEach((listener) => listener.unsubscribe());
-    };
-  }, [channel, handleTypingStart, handleTypingStop]);
+  const usersTyping = useChannelTypingUsers(channel);
 
   return { usersTyping };
 };

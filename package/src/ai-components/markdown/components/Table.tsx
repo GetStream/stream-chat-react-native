@@ -18,9 +18,8 @@ export const Table = ({ node, output, styles, state }: MarkdownComponentProps) =
 );
 
 const transpose = (matrix: SingleASTNode[][]) =>
-  // TS gets confused because it considers the matrix to be potentially ragged,
-  // while the markdown parser can never output a ragged matrix of AST nodes
-  // when parsing a table. Hence, we use the forced type coercion.
+  // TS treats the matrix as potentially ragged, but the markdown parser never outputs a ragged
+  // table, so the non-null assertion is safe.
   (matrix[0] ?? []).map((_, colIndex) => matrix.map((row) => row[colIndex]!));
 
 const MarkdownTable = ({ node, output, state, styles }: MarkdownOutputProps) => {

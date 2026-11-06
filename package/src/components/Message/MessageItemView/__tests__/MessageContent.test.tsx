@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
-import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
@@ -124,15 +123,13 @@ describe('MessageContent', () => {
     );
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents overrides={{ MessageHeader: ContextMessageHeader }}>
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -150,15 +147,13 @@ describe('MessageContent', () => {
     );
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents overrides={{ MessageFooter: ContextMessageFooter }}>
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -172,20 +167,18 @@ describe('MessageContent', () => {
     const message = generateMessage({ user });
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentBottomView: () => <View testID='message-content-bottom-view' />,
-              MessageContentTopView: () => <View testID='message-content-top-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentBottomView: () => <View testID='message-content-bottom-view' />,
+            MessageContentTopView: () => <View testID='message-content-top-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -200,20 +193,18 @@ describe('MessageContent', () => {
     const message = generateMessage({ user });
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
-              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={message} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+            MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -229,20 +220,18 @@ describe('MessageContent', () => {
     const rightAlignedMessage = generateMessage({ user });
 
     const { rerender } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
-              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={leftAlignedMessage} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+            MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={leftAlignedMessage} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -254,20 +243,18 @@ describe('MessageContent', () => {
     expect(contentRowStyle?.flexDirection).toBe('row');
 
     rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <WithComponents
-            overrides={{
-              MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
-              MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
-            }}
-          >
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} message={rightAlignedMessage} />
-            </Channel>
-          </WithComponents>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <WithComponents
+          overrides={{
+            MessageContentLeadingView: () => <View testID='message-content-leading-view' />,
+            MessageContentTrailingView: () => <View testID='message-content-trailing-view' />,
+          }}
+        >
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} message={rightAlignedMessage} />
+          </Channel>
+        </WithComponents>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -296,8 +283,8 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
       ],
       user,
     });
@@ -395,6 +382,73 @@ describe('MessageContent', () => {
     expect(contentContainerStyle.paddingBottom).toBeGreaterThan(0);
   });
 
+  describe('pressing a quote', () => {
+    const renderQuote = ({
+      quotedMessage,
+    }: {
+      quotedMessage: ReturnType<typeof generateMessage>;
+    }) => {
+      const goToMessage = jest.fn();
+      render(
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <Message
+              goToMessage={goToMessage}
+              groupStyles={['bottom']}
+              message={generateMessage({ quoted_message: quotedMessage, user })}
+            />
+          </Channel>
+        </Chat>,
+      );
+      return { goToMessage };
+    };
+
+    const threadOnlyReply = () => {
+      const parentMessage = generateMessage({ cid: channel.cid, user });
+      const thread = chatClient.threads.ensure({ channel, parentMessage });
+      const reply = generateMessage({ parent_id: parentMessage.id, text: 'quoted message', user });
+      return { reply, thread };
+    };
+
+    it('passes the quoted message to goToMessage when the quote is pressed', async () => {
+      const quotedMessage = generateMessage({ text: 'quoted message', user });
+      const { goToMessage } = renderQuote({ quotedMessage });
+
+      fireEvent.press(await screen.findByText('quoted message'));
+
+      await waitFor(() =>
+        expect(goToMessage).toHaveBeenCalledWith(
+          quotedMessage.id,
+          expect.objectContaining({ id: quotedMessage.id }),
+        ),
+      );
+    });
+
+    it('opens the thread from the header of a reply also sent to the channel', async () => {
+      const onAlsoSentToChannelHeaderPress = jest.fn();
+      const { reply, thread } = threadOnlyReply();
+      render(
+        <Chat client={chatClient}>
+          <Channel
+            channel={channel}
+            onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+          >
+            <Message groupStyles={['bottom']} message={{ ...reply, show_in_channel: true }} />
+          </Channel>
+        </Chat>,
+      );
+
+      fireEvent.press(await screen.findByText('View'));
+
+      await waitFor(() =>
+        expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({
+          targetedMessageId: reply.id,
+          thread,
+        }),
+      );
+    });
+  });
+
   it('does not render the quoted reply for an ephemeral giphy preview', async () => {
     const user = generateUser();
     const message = generateMessage({
@@ -426,9 +480,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { title: 'file', type: 'file' },
-        { title: 'audio', type: 'audio' },
-        { title: 'video', type: 'video' },
+        { custom: {}, title: 'file', type: 'file' },
+        { custom: {}, title: 'audio', type: 'audio' },
+        { custom: {}, title: 'video', type: 'video' },
       ],
       user,
     });
@@ -469,8 +523,8 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
       ],
       text: 'a caption',
       user,
@@ -495,8 +549,8 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({
       attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-        { image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
+        { custom: {}, image_url: 'https://i.imgur.com/iNaC3K7.jpg', type: 'image' },
       ],
       text: 'a caption',
       user,
@@ -572,13 +626,11 @@ describe('MessageContent', () => {
     });
 
     render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <Message groupStyles={['bottom']} message={message} />
+        </Channel>
+      </Chat>,
     );
 
     await waitFor(() => {

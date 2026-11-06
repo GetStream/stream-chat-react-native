@@ -1,14 +1,13 @@
-import { UserResponse } from 'stream-chat';
+import { EventPayload, TypingUsersState, UserResponse } from 'stream-chat';
 
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
 
-type FilterTypingUsersParams = Pick<TypingContextValue, 'typing'> &
-  Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'thread'>;
+type FilterTypingUsersParams = { threadId?: string; typing: TypingUsersState['typing'] } & Pick<
+  ChatContextValue,
+  'client'
+>;
 
-export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersParams) => {
+export const filterTypingUsers = ({ client, threadId, typing }: FilterTypingUsersParams) => {
   const nonSelfUsers: UserResponse[] = [];
 
   if (!client || !client.user || !typing) {
@@ -18,24 +17,25 @@ export const filterTypingUsers = ({ client, thread, typing }: FilterTypingUsersP
   const typingKeys = Object.keys(typing);
 
   typingKeys.forEach((typingKey) => {
-    if (!typing[typingKey]) {
+    const typingEvent = typing[typingKey] as EventPayload<'typing.start' | 'typing.stop'>;
+    if (!typingEvent) {
       return;
     }
 
-    /** removes own typing events */
-    if (client.user?.id === typing[typingKey].user?.id) {
+    // Skip own typing events.
+    if (client.user?.id === typingEvent.user?.id) {
       return;
     }
 
-    const isRegularEvent = !typing[typingKey].parent_id && !thread?.id;
-    const isCurrentThreadEvent = typing[typingKey].parent_id === thread?.id;
+    const isRegularEvent = !typingEvent.parent_id && !threadId;
+    const isCurrentThreadEvent = typingEvent.parent_id === threadId;
 
-    /** filters different threads events */
+    // Skip events of other threads.
     if (!isRegularEvent && !isCurrentThreadEvent) {
       return;
     }
 
-    const user = typing[typingKey].user;
+    const user = typingEvent.user;
     if (user) {
       nonSelfUsers.push(user);
     }

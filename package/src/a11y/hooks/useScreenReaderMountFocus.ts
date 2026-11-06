@@ -7,9 +7,10 @@ import {
 } from './useSetAccessibilityFocus';
 
 /**
- * Moves the screen reader cursor onto `target` as it mounts (and refires once the
- * screen reader state resolves, since that is detected asynchronously). Like
- * {@link useSetAccessibilityFocus}, it only moves accessibility focus.
+ * Moves the screen reader cursor onto `target` on mount, and again once the asynchronously detected
+ * screen reader state resolves. Like {@link useSetAccessibilityFocus}, it only moves focus.
+ *
+ * @param target The ref or native node handle to focus.
  */
 export const useScreenReaderMountFocus = (target: AccessibilityFocusTarget) => {
   const setAccessibilityFocus = useSetAccessibilityFocus();

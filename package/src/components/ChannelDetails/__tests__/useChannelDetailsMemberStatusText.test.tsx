@@ -26,17 +26,36 @@ jest.mock('../../ChannelList/hooks/useChannelOnlineMemberCount', () => ({
   useChannelOnlineMemberCount: jest.fn(),
 }));
 
-const t = ((key: string, options?: Record<string, unknown>) => {
+// Mirrors i18next enough for these assertions: the inline `defaultValue` (a bare second argument,
+// or `defaultValue_one` / `defaultValue_other` selected by `count`) is the template, falling back
+// to the key, and `{{…}}` placeholders are filled from the options.
+const t = ((
+  key: string,
+  defaultValueOrOptions?: string | Record<string, unknown>,
+  maybeOptions?: Record<string, unknown>,
+) => {
+  const options = typeof defaultValueOrOptions === 'string' ? maybeOptions : defaultValueOrOptions;
+  let template = typeof defaultValueOrOptions === 'string' ? defaultValueOrOptions : key;
+
   if (options && typeof options === 'object') {
-    return Object.entries(options).reduce((acc, [k, v]) => acc.replace(`{{${k}}}`, String(v)), key);
+    const pluralDefault =
+      options.count === 1 ? options.defaultValue_one : options.defaultValue_other;
+    if (typeof pluralDefault === 'string') {
+      template = pluralDefault;
+    }
+    return Object.entries(options).reduce(
+      (acc, [k, v]) => acc.replace(`{{${k}}}`, String(v)),
+      template,
+    );
   }
-  return key;
+
+  return template;
 }) as never;
 
 const OWN_USER_ID = 'own-user';
 const channel = {
   cid: 'messaging:test',
-  getClient: () => ({ userID: OWN_USER_ID }),
+  getClient: () => ({ userId: OWN_USER_ID }),
 } as unknown as Channel;
 
 const renderStatusText = () => {

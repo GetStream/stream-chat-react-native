@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import type { Channel, ChannelMuteStatus } from 'stream-chat';
 
-import type { Channel } from 'stream-chat';
-
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 
 const defaultMuteStatus = {
   createdAt: null,
@@ -10,37 +8,15 @@ const defaultMuteStatus = {
   muted: false,
 };
 
-export const useIsChannelMuted = (channel: Channel) => {
-  const { client } = useChatContext();
+const selector = (state: { muteStatus: ChannelMuteStatus }) => ({
+  muteStatus: state.muteStatus,
+});
 
-  const [muted, setMuted] = useState(() => channel.muteStatus());
-
-  useEffect(() => {
-    const handleEvent = () => {
-      const newMuteStatus = channel.muteStatus();
-      if (
-        newMuteStatus.muted === muted.muted &&
-        newMuteStatus.createdAt?.getTime?.() === muted.createdAt?.getTime?.() &&
-        newMuteStatus.expiresAt?.getTime?.() === muted.expiresAt?.getTime?.()
-      ) {
-        return;
-      }
-
-      setMuted(channel.muteStatus());
-    };
-
-    const listeners = [
-      client.on('notification.channel_mutes_updated', handleEvent),
-      client.on('health.check', (event) => {
-        if (event.me) {
-          handleEvent();
-        }
-      }),
-    ];
-    return () => {
-      listeners.forEach((listener) => listener.unsubscribe());
-    };
-  }, [channel, client, muted]);
-
-  return muted ?? defaultMuteStatus;
-};
+/**
+ * The channel's mute status, read reactively from `channel.state.muteStatus`.
+ *
+ * @param channel The channel to read.
+ * @returns The mute status, which reads as unmuted until the state reports otherwise.
+ */
+export const useIsChannelMuted = (channel: Channel) =>
+  useStateStore(channel?.state, selector)?.muteStatus ?? defaultMuteStatus;

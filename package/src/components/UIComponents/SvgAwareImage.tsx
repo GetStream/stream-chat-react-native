@@ -13,11 +13,8 @@ const getSourceUri = (source: ImageProps['source']): string | undefined => {
 };
 
 /**
- * Default `ImageComponent` for the SDK. Behaves exactly like RN's `Image` for
- * raster sources, but transparently renders SVG URIs (`.svg`, `image/svg+xml`
- * data URIs) via `SvgUri` from `react-native-svg`. Integrators who override
- * `ImageComponent` with a custom image library (e.g. FastImage) are
- * responsible for SVG handling in their override.
+ * Default `ImageComponent`: RN's `Image` for raster sources, `SvgUri` from `react-native-svg` for
+ * SVG URIs (`.svg` or `image/svg+xml` data URIs). A custom `ImageComponent` must handle SVG itself.
  */
 export const SvgAwareImage = (props: ImageProps) => {
   const uri = getSourceUri(props.source);

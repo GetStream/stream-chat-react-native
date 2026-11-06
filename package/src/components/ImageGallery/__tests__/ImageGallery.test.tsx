@@ -115,6 +115,32 @@ describe('ImageGallery', () => {
     });
   });
 
+  it('renders a labelled placeholder for a video outside the playback window', async () => {
+    render(
+      <ImageGalleryComponent
+        message={generateMessage({
+          // Index 2 is inside the pager window but outside the video window (`shouldRender < 2`).
+          attachments: [
+            generateImageAttachment(),
+            generateImageAttachment(),
+            generateVideoAttachment({ type: 'video' }),
+          ],
+        })}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryAllByLabelText('Image Gallery Video Placeholder', {
+          includeHiddenElements: true,
+        }),
+      ).toHaveLength(1);
+    });
+    expect(
+      screen.queryAllByLabelText('Image Gallery Video', { includeHiddenElements: true }),
+    ).toHaveLength(0);
+  });
+
   it('keeps the pager in ltr coordinates when rtl is enabled', async () => {
     setRTL(true);
 

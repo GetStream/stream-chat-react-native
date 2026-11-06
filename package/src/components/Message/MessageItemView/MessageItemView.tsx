@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 
+import { convertTimestampToDate } from 'stream-chat';
+
 import { SwipableMessageWrapper } from './MessageBubble';
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -14,6 +16,10 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../../contexts/threadContext/ThreadContext';
 
 import { useStableCallback } from '../../../hooks/useStableCallback';
 
@@ -72,7 +78,7 @@ const useStyles = ({ alignment }: { alignment: Alignment }) => {
           ...bubbleWrapper,
         },
         repliesContainer: {
-          marginTop: -primitives.spacingXxs, // Reducing the margin to account the gap added in the content container
+          marginTop: -primitives.spacingXxs, // Offsets the gap added by the content container
           zIndex: 0,
           ...repliesContainer,
         },
@@ -113,9 +119,8 @@ export type MessageItemViewPropsWithContext = Pick<
   | 'setQuotedMessage'
   | 'lastGroupMessage'
   | 'contextMenuAnchorRef'
-  | 'members'
-  | 'threadList'
 > &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<
     MessagesContextValue,
     | 'customMessageSwipeAction'
@@ -145,7 +150,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     reactionListPosition,
     reactionListType,
     setQuotedMessage,
-    threadList,
+    thread,
   } = props;
   const {
     MessageAuthor,
@@ -211,11 +216,17 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
     setQuotedMessage(message);
   });
 
+  // Hoisted: `MessageFooter` and `MessageDeleted` memoize on `prevDate === nextDate`.
+  const messageCreatedAt = useMemo(
+    () => convertTimestampToDate(message.created_at),
+    [message.created_at],
+  );
+
   const itemViewContent = (
     <View pointerEvents='box-none' style={styles.baseContainer} testID='message-item-view-wrapper'>
       {alignment === 'left' ? <MessageAuthor /> : null}
       {isMessageTypeDeleted ? (
-        <MessageDeleted date={message.created_at} groupStyle={groupStyle} />
+        <MessageDeleted date={messageCreatedAt} groupStyle={groupStyle} />
       ) : (
         <View
           style={[
@@ -247,7 +258,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
             </View>
           </View>
 
-          {!threadList && !!message.reply_count ? (
+          {!thread && !!message.reply_count ? (
             <View style={styles.repliesContainer}>
               <MessageReplies />
             </View>
@@ -256,7 +267,7 @@ const MessageItemViewWithContext = (props: MessageItemViewPropsWithContext) => {
           {reactionListPosition === 'bottom' && ReactionListBottom ? (
             <ReactionListBottom type={reactionListType} />
           ) : null}
-          <MessageFooter date={message.created_at} />
+          <MessageFooter date={messageCreatedAt} />
         </View>
       )}
       {MessageSpacer ? <MessageSpacer /> : null}
@@ -287,7 +298,6 @@ const areEqual = (
     onlyEmojis: prevOnlyEmojis,
     otherAttachments: prevOtherAttachments,
     lastGroupMessage: prevLastGroupMessage,
-    members: prevMembers,
   } = prevProps;
   const {
     channel: nextChannel,
@@ -297,7 +307,6 @@ const areEqual = (
     onlyEmojis: nextOnlyEmojis,
     otherAttachments: nextOtherAttachments,
     lastGroupMessage: nextLastGroupMessage,
-    members: nextMembers,
   } = nextProps;
 
   const groupStylesEqual = prevGroupStyles === nextGroupStyles;
@@ -307,11 +316,6 @@ const areEqual = (
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) {
-    return false;
-  }
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) {
     return false;
   }
 
@@ -329,8 +333,7 @@ const areEqual = (
     return false;
   }
 
-  const channelEqual = prevChannel?.state.messages.length === nextChannel?.state.messages.length;
-  if (!channelEqual) {
+  if (prevChannel !== nextChannel) {
     return false;
   }
 
@@ -400,10 +403,7 @@ const MemoizedMessageItemView = React.memo(
 
 export type MessageItemViewProps = Partial<MessageItemViewPropsWithContext>;
 
-/**
- *
- * Message UI component
- */
+/** Renders the UI of a message. */
 export const MessageItemView = (props: MessageItemViewProps) => {
   const {
     alignment,
@@ -417,9 +417,8 @@ export const MessageItemView = (props: MessageItemViewProps) => {
     otherAttachments,
     setQuotedMessage,
     lastGroupMessage,
-    members,
-    threadList,
   } = useMessageContext();
+  const { thread } = useThreadContext();
 
   const {
     customMessageSwipeAction,
@@ -452,8 +451,7 @@ export const MessageItemView = (props: MessageItemViewProps) => {
         reactionListType,
         setQuotedMessage,
         lastGroupMessage,
-        members,
-        threadList,
+        thread,
       }}
       {...props}
     />

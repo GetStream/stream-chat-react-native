@@ -17,6 +17,7 @@ import { generateLocalFileUploadAttachmentData } from '../../../mock-builders/at
 
 import { generateMessage } from '../../../mock-builders/generator/message';
 
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
 import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
@@ -114,19 +115,46 @@ describe('SendMessageDisallowedIndicator', () => {
       expect(queryByTestId('send-message-disallowed-indicator')).toBeNull();
     });
 
+    // Own capabilities are read from `channel.state`, so the change is driven through the store.
     act(() => {
-      client.dispatchEvent({
-        cid: channel.data!.cid,
-        own_capabilities: channel.data!.own_capabilities!.filter(
+      channel.state.partialNext({
+        ownCapabilities: channel.data!.own_capabilities!.filter(
           (capability) => capability !== 'send-message',
         ),
-        type: 'capabilities.changed',
       });
     });
 
     await waitFor(() => {
       expect(queryByTestId('send-message-disallowed-indicator')).toBeTruthy();
     });
+  });
+
+  it('renders the SendMessageDisallowedIndicator once capabilities without send-message arrive', async () => {
+    // A channel opened before its query landed: neither initialized nor holding capabilities yet.
+    const data = channel.data!;
+    act(() => {
+      channel.initialized = false;
+      channel.data = { ...data, own_capabilities: undefined };
+    });
+
+    renderComponent({ channelProps: { channel, initializeOnMount: false }, client, props: {} });
+    await waitFor(() =>
+      expect(screen.queryByTestId('send-message-disallowed-indicator')).toBeNull(),
+    );
+
+    // The query response publishes the capabilities before the channel is marked initialized.
+    act(() => {
+      channel.data = {
+        ...data,
+        own_capabilities: data.own_capabilities!.filter(
+          (capability) => capability !== 'send-message',
+        ),
+      };
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('send-message-disallowed-indicator')).toBeTruthy(),
+    );
   });
 
   it('should not render the SendMessageDisallowedIndicator if the channel is frozen and the send-message capability is present', async () => {
@@ -159,7 +187,9 @@ describe('SendMessageDisallowedIndicator', () => {
           ),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
-        cid: channel.data!.cid,
+        cid: channel.cid,
+        created_at: convertDateToTimestamp(),
+        custom: {},
         type: 'channel.updated',
       });
     });
@@ -195,12 +225,10 @@ describe("SendMessageDisallowedIndicator's edited state", () => {
     });
 
     act(() => {
-      chatClient.dispatchEvent({
-        cid: customChannel.data!.cid,
-        own_capabilities: customChannel.data!.own_capabilities!.filter(
+      customChannel.state.partialNext({
+        ownCapabilities: customChannel.data!.own_capabilities!.filter(
           (capability: string) => capability !== 'send-message',
         ),
-        type: 'capabilities.changed',
       });
     });
 

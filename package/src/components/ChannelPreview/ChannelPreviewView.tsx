@@ -22,20 +22,18 @@ export type ChannelPreviewViewPropsWithContext = Pick<ChannelPreviewProps, 'chan
     'maxUnreadCount' | 'onSelect' | 'mutedStatusPosition' | 'pinnedStatusPosition'
   > & {
     /**
-     * Formatter function for date of latest message.
-     * @param date Message date
-     * @returns Formatted date string
+     * Formats the date of the latest message. Defaults to the `timestamp.ChannelPreviewStatus`
+     * translation: the time today, "Yesterday", the weekday within the last week, else the date.
      *
-     * By default today's date is shown in 'HH:mm A' format and other dates
-     * are displayed in 'DD/MM/YY' format. props.latestMessage.created_at is the
-     * default formatted date. This default logic is part of ChannelPreview component.
+     * @param date The date of the latest message.
+     * @returns The formatted date string.
      */
     formatLatestMessageDate?: (date: Date) => string;
     /** If the channel is muted. */
     muted?: boolean;
     /** If the channel is pinned for the current user. */
     pinned?: boolean;
-    /** Number of unread messages on the channel */
+    /** Number of unread messages on the channel. */
     unread?: number;
     lastMessage?: LastMessageType;
   };
@@ -79,7 +77,7 @@ const ChannelPreviewViewWithContext = (props: ChannelPreviewViewPropsWithContext
   } = useTheme();
   const styles = useStyles();
   const swipeRegistry = useSwipeRegistryContext();
-  const accessibilityHint = useA11yLabel('a11y/Double tap to open');
+  const accessibilityHint = useA11yLabel('channelPreview.doubleTapToOpen.accessibilityLabel');
 
   const onPress = useStableCallback(() => {
     if (swipeRegistry?.hasOpen()) {
@@ -160,17 +158,13 @@ const MemoizedChannelPreviewViewWithContext = React.memo(
   ChannelPreviewViewWithContext,
 ) as typeof ChannelPreviewViewWithContext;
 
-/**
- * This UI component displays an individual preview item for each channel in a list. It also receives all props
- * from the ChannelPreview component.
- */
+/** Displays one channel row in the channel list. */
 export const ChannelPreviewView = (props: ChannelPreviewViewProps) => {
-  const { forceUpdate, maxUnreadCount, onSelect, mutedStatusPosition, pinnedStatusPosition } =
+  const { maxUnreadCount, onSelect, mutedStatusPosition, pinnedStatusPosition } =
     useChannelsContext();
   return (
     <MemoizedChannelPreviewViewWithContext
       {...{
-        forceUpdate,
         maxUnreadCount,
         onSelect,
         mutedStatusPosition,

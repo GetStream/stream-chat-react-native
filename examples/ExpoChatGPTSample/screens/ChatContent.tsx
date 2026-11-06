@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useHeaderHeight } from 'expo-router/react-navigation';
 
-import type { LocalMessage } from 'stream-chat';
 import type { MessageProps } from 'stream-chat-expo';
 import {
   AIStates,
@@ -18,7 +17,6 @@ import {
   useAIState,
   useChannelContext,
   useMessageContext,
-  useStableCallback,
   useTheme,
   WithComponents,
 } from 'stream-chat-expo';
@@ -33,12 +31,11 @@ import { bottomSheetOptions } from '../bottomSheetOptions';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { useSendAIMessage } from '../hooks/useSendAIMessage';
-import { startAI, summarize } from '../http/requests';
 
 const CustomMessage = (props: MessageProps) => {
   const { theme } = useTheme();
   const { message } = props;
-  const isFromBot = message.ai_generated;
+  const isFromBot = message.custom?.ai_generated;
   const hasPendingAttachments = useMemo(
     () =>
       (message.attachments ?? []).some(
@@ -98,7 +95,7 @@ const CustomComposerView = () => {
 
   const stopGenerating = useCallback(() => channel?.stopAIResponse(), [channel]);
 
-  const isGenerating = [AIStates.Thinking, AIStates.Generating].includes(aiState);
+  const isGenerating = aiState === AIStates.Thinking || aiState === AIStates.Generating;
 
   const safeAreaInsets = useSafeAreaInsets();
   const insets = useMemo(
@@ -170,34 +167,6 @@ export const ChatContent = () => {
   // (without it, Android keeps the composer behind the keyboard).
   const headerHeight = useHeaderHeight();
 
-  const preSendMessageRequest = useStableCallback(
-    async ({ localMessage }: { localMessage: LocalMessage }) => {
-      if (!channel) {
-        return;
-      }
-
-      if (!channel.initialized) {
-        await channel.watch({
-          created_by_id: localMessage.user_id,
-        });
-        summarize(localMessage.text ?? '').then((response) => {
-          // `post` resolves to undefined when the request fails; the channel then keeps its id.
-          const summary = (response as { summary?: string } | undefined)?.summary;
-          if (summary) {
-            channel.update({ name: summary });
-          }
-        });
-      }
-
-      if (
-        !Object.keys(channel.state.watchers).some((watcher) => watcher.startsWith('ai-bot')) &&
-        channel.id
-      ) {
-        await startAI(channel.id);
-      }
-    },
-  );
-
   if (!channel) {
     return null;
   }
@@ -223,9 +192,7 @@ export const ChatContent = () => {
           channel={channel}
           initializeOnMount={false}
           keyboardVerticalOffset={headerHeight}
-          preSendMessageRequest={preSendMessageRequest}
           enableSwipeToReply={false}
-          allowSendBeforeAttachmentsUpload={true}
         >
           <MessageList additionalFlatListProps={additionalFlatListProps} />
           <CustomAITypingIndicatorView />

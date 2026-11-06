@@ -34,18 +34,9 @@ import {
 } from '../../hooks/useFileAttachmentListSections';
 
 export type FileAttachmentListProps = {
-  /**
-   * Besides the existing default behavior of the file attachment list, you can attach
-   * additional props to the underlying React Native SectionList.
-   *
-   * See https://reactnative.dev/docs/sectionlist#props for the full list.
-   */
+  /** Additional props passed to the underlying `SectionList`. */
   additionalSectionListProps?: Partial<SectionListProps<FileAttachmentTile, FileAttachmentSection>>;
-  /**
-   * A custom `MessageSearchSource` used to query and paginate the file/audio
-   * attachments. Overrides the source the provider creates by default
-   * (pre-configured to fetch file/audio attachments, newest first).
-   */
+  /** Overrides the default `MessageSearchSource` (file and audio attachments, newest first). */
   searchSource?: MessageSearchSource;
 };
 
@@ -102,7 +93,7 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
       return;
     }
     addNotification({
-      message: t('Failed to load files'),
+      message: t('channelDetails.fileAttachmentList.load.error', 'Failed to load files'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -129,7 +120,7 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
   );
 
   const loadMore = useCallback(() => {
-    // hasNext is true by default, !!messages prevents calling search on initial load
+    // `hasNext` starts true, so `messages` is checked to avoid searching on the initial load.
     if (hasNext && !!messages) {
       searchSource.search();
     }
@@ -141,8 +132,11 @@ const FileAttachmentListContent = ({ additionalSectionListProps }: FileAttachmen
     ) : (
       <EmptyList
         icon={icons.Folder}
-        subtitle={t('Share a file to see it here')}
-        title={t('No files')}
+        subtitle={t(
+          'channelDetails.fileAttachmentList.empty.description',
+          'Share a file to see it here',
+        )}
+        title={t('channelDetails.fileAttachmentList.empty.title', 'No files')}
       />
     );
 

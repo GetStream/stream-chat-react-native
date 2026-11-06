@@ -8,7 +8,7 @@ import { ChatConfigContextValue } from '../../../../contexts/chatConfigContext/C
 
 import { getAspectRatio } from '../getAspectRatio';
 
-/** function to move item to the front of the array */
+/** Returns a copy of `array` with `item` first, or `array` itself when `item` is absent. */
 function moveToFront<T>(array: T[], item: T): T[] {
   const index = array.indexOf(item);
   if (index === -1) {
@@ -28,15 +28,13 @@ export function buildGalleryOfThreeImages({
   images: Attachment[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
-  // Find the most ladscape and most portrait image.
+  // Finds the most landscape and the most portrait image.
   const { landscapeImage, landscapeImageAspectRatio, portraitImage, portraitImageAspectRatio } =
     images.reduce(
       (acc, image) => {
         const aspectRatio = getAspectRatio(image);
         const o = { ...acc };
 
-        // Following nested if conditions can be combined, but have been kept
-        // separate intentionally for the sake of readability.
         if (aspectRatio > 1) {
           if (!o.landscapeImage || aspectRatio > o.landscapeImageAspectRatio) {
             o.landscapeImage = image;
@@ -62,17 +60,9 @@ export function buildGalleryOfThreeImages({
       },
     );
 
-  // Check weather landscape image gets preference or portrait, by comparing aspect ratio.
+  // The more extreme of the two images, by aspect ratio, leads the layout.
   if (landscapeImageAspectRatio > 1 / portraitImageAspectRatio) {
-    /**
-     * -----------
-     * |         |
-     * |         |
-     * |---------|
-     * |    |    |
-     * |    |    |
-     * -----------
-     */
+    // The landscape image on top, the other two side by side below.
     return buildThumbnailGrid({
       grid: [[1], [1, 1]],
       images: landscapeImage ? moveToFront(images, landscapeImage) : images,
@@ -81,15 +71,7 @@ export function buildGalleryOfThreeImages({
       sizeConfig,
     });
   } else {
-    /**
-     * -----------
-     * |    |    |
-     * |    |    |
-     * |    |----|
-     * |    |    |
-     * |    |    |
-     * -----------
-     */
+    // The portrait image on the left, the other two stacked on the right.
     return buildThumbnailGrid({
       grid: [[1], [1, 1]],
       images: portraitImage ? moveToFront(images, portraitImage) : images,

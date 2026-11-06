@@ -4,12 +4,16 @@ import { FlatList } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { act, cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
+import type {
+  Channel as ChannelType,
+  ChannelOwnCapability,
+  LocalMessage,
+  StreamChat,
+} from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { sendMessageApi } from '../../../mock-builders/api/sendMessage';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -75,7 +79,7 @@ describe('Own capabilities', () => {
   const generateChannelWithCapabilities = async (capabilities: string[] = []) => {
     const c = generateChannelResponse({
       channel: {
-        own_capabilities: capabilities,
+        own_capabilities: capabilities as ChannelOwnCapability[],
       },
       messages: [sentMessage, receivedMessage],
     });
@@ -402,15 +406,10 @@ describe('Own capabilities', () => {
       allOwnCapabilities.sendMessage,
       allOwnCapabilities.sendLinks,
     ]);
-    const mockFn = jest.fn();
-    const { queryByTestId } = render(
-      getComponent({
-        doSendMessageRequest: (() => {
-          mockFn();
-          return sendMessageApi();
-        }) as unknown as React.ComponentProps<typeof Channel>['doSendMessageRequest'],
-      }),
-    );
+    // The LLC's default send goes through `channel.sendMessage`.
+    const sendMessage = jest.fn().mockResolvedValue({});
+    channel.sendMessage = sendMessage;
+    const { queryByTestId } = render(getComponent());
 
     await act(async () => {
       const text = 'Awesome repository https://github.com/GetStream/stream-chat-react-native';
@@ -427,6 +426,6 @@ describe('Own capabilities', () => {
       fireEvent(queryByTestId('send-button')!, 'onPress');
     });
 
-    await waitFor(() => expect(mockFn).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(1));
   });
 });

@@ -4,13 +4,13 @@ import { TurboModuleRegistry } from 'react-native';
 /**
  * Codegen spec of the native dictation module.
  *
- * This file is duplicated (byte for byte) in `package/native-package/src/native/NativeAIDictation.ts`
- * and `package/expo-package/src/native/NativeAIDictation.ts`, which are the copies codegen reads.
- * `yarn validate-entry-isolation` fails if they drift apart.
+ * Duplicated byte for byte in `package/native-package/src/native/NativeAIDictation.ts` and
+ * `package/expo-package/src/native/NativeAIDictation.ts`, the copies codegen reads;
+ * `yarn validate-entry-isolation` fails when they drift apart.
  *
- * Events are delivered through `addListener`/`removeListeners` and a `NativeEventEmitter` (see
- * `../native/AIDictation.ts`) rather than codegen `EventEmitter` properties, since the latter are
- * not understood by the codegen of every React Native version the SDK supports (>= 0.76).
+ * Events go through `addListener`/`removeListeners` and a `NativeEventEmitter` (see
+ * `../native/AIDictation.ts`), because codegen `EventEmitter` properties are not understood by
+ * every React Native version the SDK supports.
  */
 
 export type DictationStartOptions = {
@@ -42,7 +42,6 @@ export interface Spec extends TurboModule {
   removeListeners(count: number): void;
 }
 
-// `get` rather than `getEnforcing`: the module is only compiled in when dictation is enabled
-// (always on Android, opt-in on iOS), and importing the AI entry point
-// must not throw when it is absent.
+// `get` returns null when absent: the module is only compiled in when dictation is enabled (always
+// on Android, opt-in on iOS), and importing the AI entry point must not throw without it.
 export default TurboModuleRegistry.get<Spec>('AIDictation');

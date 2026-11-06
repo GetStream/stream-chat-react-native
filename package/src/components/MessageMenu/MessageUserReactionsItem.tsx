@@ -14,13 +14,9 @@ import type { Reaction } from '../../types/types';
 import { ReactionData } from '../../utils/utils';
 
 export type MessageUserReactionsItemProps = {
-  /**
-   * The reaction object
-   */
+  /** The reaction to show. */
   reaction: Reaction;
-  /**
-   * An array of supported reactions
-   */
+  /** Supported reactions, used to look up the icon of the reaction type. */
   supportedReactions: ReactionData[];
 };
 
@@ -40,7 +36,7 @@ export const MessageUserReactionsItem = ({
   const styles = useStyles();
 
   const { client } = useChatContext();
-  const isOwnReaction = client.userID === id;
+  const isOwnReaction = client.userId === id;
   const { t } = useTranslationContext();
 
   const { handleReaction } = useMessageContext();
@@ -63,11 +59,11 @@ export const MessageUserReactionsItem = ({
       <MessageUserReactionsAvatar reaction={reaction} size={'md'} />
       <View style={[styles.avatarNameContainer, avatarNameContainer]}>
         <Text numberOfLines={1} style={[styles.avatarName, avatarName]}>
-          {isOwnReaction ? t('You') : name}
+          {isOwnReaction ? t('common.you.label', 'You') : name}
         </Text>
         {isOwnReaction ? (
           <Text numberOfLines={1} style={[styles.avatarSubtitle, null]}>
-            {t('Tap to remove')}
+            {t('messageMenu.userReactions.tapToRemove.description', 'Tap to remove')}
           </Text>
         ) : null}
       </View>

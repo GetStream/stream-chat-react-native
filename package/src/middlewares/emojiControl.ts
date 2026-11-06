@@ -34,21 +34,19 @@ class EmojiSearchSource<T extends TextComposerSuggestion<Emoji>> extends BaseSea
     }
     const emojis = (await this.emojiSearchIndex.search(searchQuery)) ?? [];
 
-    // emojiIndex.search sometimes returns undefined values, so filter those out first
+    // emojiIndex.search sometimes returns undefined values, so filter those out first. An emoji with
+    // no native glyph, on itself or its first skin, has nothing to insert and is skipped too.
     return {
       items: emojis
         .filter(Boolean)
-        .slice(0, 7)
-        .map(({ emoticons = [], id, name, native, skins = [] }) => {
-          const [firstSkin] = skins;
-
-          return {
-            emoticons,
-            id,
-            name,
-            native: native ?? firstSkin.native,
-          };
-        }) as T[],
+        .map(({ emoticons = [], id, name, native, skins = [] }) => ({
+          emoticons,
+          id,
+          name,
+          native: native ?? skins[0]?.native,
+        }))
+        .filter(({ native }) => !!native)
+        .slice(0, 7) as T[],
       next: null, // todo: generate cursor
     };
   }
@@ -72,21 +70,12 @@ export type EmojiMiddleware<T extends Emoji = Emoji> = Middleware<
 >;
 
 /**
- * TextComposer middleware for mentions
- * Usage:
+ * Creates the TextComposer middleware that suggests emoji after the trigger character.
  *
- *  const textComposer = new TextComposer(options);
- *
- *  textComposer.use(new createTextComposerEmojiMiddleware(emojiSearchIndex, {
- *   minChars: 2
- *  }));
- *
- * @param emojiSearchIndex
- * @param {{
- *     minChars: number;
- *     trigger: string;
- *   }} options
- * @returns
+ * @param params.emojiSearchIndex Index searched for emoji matching the typed token.
+ * @param params.options Overrides for `minChars` and `trigger`. Defaults to
+ * `{ minChars: 1, trigger: ':' }`.
+ * @returns The emoji middleware.
  */
 export const createTextComposerEmojiMiddleware = ({
   emojiSearchIndex,
@@ -144,9 +133,7 @@ export const createTextComposerEmojiMiddleware = ({
               return null;
             }
 
-            const [firstSkin] = emoji.skins ?? [];
-
-            return emoji.native ?? firstSkin.native;
+            return emoji.native ?? emoji.skins?.[0]?.native ?? null;
           },
           text: state.text,
         });
@@ -154,7 +141,7 @@ export const createTextComposerEmojiMiddleware = ({
         if (textWithReplacedWord !== state.text) {
           return complete({
             ...state,
-            suggestions: undefined, // to prevent the TextComposerMiddlewareExecutor to run the first page query
+            suggestions: undefined, // Prevents the executor from running the first page query
             text: textWithReplacedWord,
           });
         }
@@ -183,7 +170,7 @@ export const createTextComposerEmojiMiddleware = ({
             text: state.text,
             trigger: finalOptions.trigger,
           }),
-          suggestions: undefined, // Clear suggestions after selection
+          suggestions: undefined,
         });
       },
     },

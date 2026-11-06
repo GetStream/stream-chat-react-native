@@ -1,5 +1,4 @@
 /* eslint-disable no-bitwise -- FNV-1a hashing and xorshift PRNG are bitwise by definition */
-// hashing and rng
 export const hashLabel = (raw: string) => {
   const s = raw.trim().toLowerCase().normalize('NFKC');
   let h = 2166136261 >>> 0; // FNV-1a
@@ -20,7 +19,6 @@ export const xorshift32 = (seed: number) => {
   };
 };
 
-// color utils
 export const hslToHex = (h: number, s = 68, l = 52) => {
   const S = s / 100,
     L = l / 100;
@@ -51,7 +49,8 @@ export const hslToHex = (h: number, s = 68, l = 52) => {
   return `#${r}${g}${b}`;
 };
 
-// ensure hues not closer than MIN_SEP degrees within the same chart
+// Derives a stable color from `label`. Its hue is nudged away from `usedHues` (by at least
+// `minSep` degrees, over at most 48 attempts) and then appended to `usedHues`.
 export const colorFromLabel = (
   label: string,
   usedHues: number[],
@@ -61,10 +60,9 @@ export const colorFromLabel = (
   const seed = hashLabel(label);
   const rand = xorshift32(seed);
 
-  // base hue from RNG (looks random, but stable)
+  // Seeded by the label, so the base hue is stable.
   let hue = Math.floor(rand() * 360);
 
-  // nudge away from already used hues in THIS chart
   let attempts = 0;
   const tooClose = (h: number) =>
     usedHues.some((u) => {

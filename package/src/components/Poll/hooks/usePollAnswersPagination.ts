@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
-import type { PollAnswer, PollAnswersQueryParams } from 'stream-chat';
+import type { PollAnswersQueryParams, PollVoteResponseData } from 'stream-chat';
 import { isVoteAnswer } from 'stream-chat';
 
 import { useChatContext, usePollContext } from '../../../contexts';
@@ -17,23 +17,17 @@ export type UsePollAnswersReturnType = {
   loading: boolean;
   loadMore: () => void;
   next: string | null | undefined;
-  pollAnswers: PollAnswer[];
+  pollAnswers: PollVoteResponseData[];
 };
 
 /**
- * A hook that queries answers for a given Poll and returns them in a paginated fashion.
- * Should be used instead of the latest_answers property within the reactive state in the
- * event that we need more than the top 10 answers. The returned property pollAnswers will
- * automatically be updated and trigger a state change when paginating further.
+ * Queries the answers of the poll in context page by page, for when `latest_answers` in the poll
+ * state does not hold enough of them. `pollAnswers` stays in sync with answer events for the poll.
  *
- * @param loadFirstPage {boolean} Signifies whether the first page should be automatically loaded whenever
- * the hook is first called.
- * @param paginationParams {PollAnswersQueryParams} The pagination params we might want to use for our custom
- * needs when invoking the hook.
- *
- * @returns {UsePollAnswersReturnType} An object containing all of the needed pagination values as well as the
- * answers.
- **/
+ * @param params.loadFirstPage Loads the first page on mount. Defaults to true.
+ * @param params.paginationParams Filter, sort and options merged into every query.
+ * @returns The loaded answers with the pagination state and `loadMore`.
+ */
 export const usePollAnswersPagination = ({
   loadFirstPage = true,
   paginationParams,
@@ -41,7 +35,7 @@ export const usePollAnswersPagination = ({
   const { poll } = usePollContext();
   const { client } = useChatContext();
 
-  const [pollAnswers, setPollAnswers] = useState<PollAnswer[]>([]);
+  const [pollAnswers, setPollAnswers] = useState<PollVoteResponseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
   const cursorRef = useRef<string | null>(undefined);
@@ -59,7 +53,7 @@ export const usePollAnswersPagination = ({
       const { next: newNext, votes: answers } = await poll.queryAnswers({
         filter: paginationParams?.filter,
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
-        sort: { updated_at: -1, ...paginationParams?.sort },
+        sort: [{ direction: -1, field: 'updated_at' }, ...(paginationParams?.sort ?? [])],
       });
       cursorRef.current = newNext || null;
       setPollAnswers((prev) => uniqBy([...prev, ...answers], 'id'));
@@ -78,14 +72,14 @@ export const usePollAnswersPagination = ({
   }, [loadFirstPage, loadMore, pollAnswers]);
 
   useEffect(() => {
-    const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
+    const castedListeners = (['poll.vote_casted', 'poll.vote_changed'] as const).map((eventName) =>
       client.on(eventName, (event) => {
         if (event.poll?.id && event.poll.id !== poll.id) {
           return;
         }
         const vote = event.poll_vote;
         if (vote && isVoteAnswer(vote)) {
-          setPollAnswers([vote, ...pollAnswers.filter((answer) => answer.id !== vote.id)]);
+          setPollAnswers((prev) => [vote, ...prev.filter((answer) => answer.id !== vote.id)]);
         }
       }),
     );
@@ -96,7 +90,7 @@ export const usePollAnswersPagination = ({
       }
       const vote = event.poll_vote;
       if (vote && isVoteAnswer(vote)) {
-        setPollAnswers(pollAnswers.filter((item) => item.id !== vote.id));
+        setPollAnswers((prev) => prev.filter((item) => item.id !== vote.id));
       }
     });
 
@@ -104,7 +98,7 @@ export const usePollAnswersPagination = ({
       castedListeners.forEach((listener) => listener.unsubscribe());
       removedListener.unsubscribe();
     };
-  }, [client, poll, pollAnswers]);
+  }, [client, poll]);
 
   return {
     error,

@@ -6,10 +6,12 @@ export const resampleWaveformData = (waveformData: number[], amplitudesCount: nu
       : upSample(waveformData, amplitudesCount);
 
 /**
- * The downSample function uses the Largest-Triangle-Three-Buckets (LTTB) algorithm.
- * See the thesis Downsampling Time Series for Visual Representation by Sveinn Steinarsson for more (https://skemman.is/bitstream/1946/15343/3/SS_MSthesis.pdf)
- * @param data
- * @param targetOutputSize
+ * Downsamples `data` with the Largest-Triangle-Three-Buckets (LTTB) algorithm, keeping the first
+ * and last points. See https://skemman.is/bitstream/1946/15343/3/SS_MSthesis.pdf
+ *
+ * @param data The values to downsample.
+ * @param targetOutputSize The number of values to return.
+ * @returns The downsampled values, or `data` itself when it already fits the target.
  */
 export function downSample(data: number[], targetOutputSize: number): number[] {
   if (data.length <= targetOutputSize || targetOutputSize === 0) {
@@ -21,7 +23,7 @@ export function downSample(data: number[], targetOutputSize: number): number[] {
   }
 
   const result: number[] = [];
-  // bucket size adjusted due to the fact that the first and the last item in the original data array is kept in target output
+  // Excludes the first and last items, which are always kept.
   const bucketSize = (data.length - 2) / (targetOutputSize - 2);
   let lastSelectedPointIndex = 0;
   result.push(data[lastSelectedPointIndex]); // Always add the first point

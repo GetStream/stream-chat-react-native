@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { render, screen } from '@testing-library/react-native';
+import { StateStore } from '@stream-io/state-store';
+import { act, render, screen } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
@@ -8,11 +9,11 @@ import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import * as useChannelImageModule from '../../../../hooks/useChannelImage';
 import * as useChannelNameModule from '../../../../hooks/useChannelName';
-import * as useChannelMembersStateModule from '../../../ChannelList/hooks/useChannelMembersState';
 import * as useChannelPreviewDisplayPresenceModule from '../../../ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 import { ChannelAvatar } from '../ChannelAvatar';
 
 const avatarCalls: Array<{ imageUrl?: string }> = [];
+let avatarGroupRenders = 0;
 jest.mock('../Avatar', () => {
   const RN = jest.requireActual('react-native');
   const ReactActual = jest.requireActual('react');
@@ -28,7 +29,10 @@ jest.mock('../AvatarGroup', () => {
   const RN = jest.requireActual('react-native');
   const ReactActual = jest.requireActual('react');
   return {
-    UserAvatarGroup: () => ReactActual.createElement(RN.View, { testID: 'user-avatar-group' }),
+    UserAvatarGroup: () => {
+      avatarGroupRenders += 1;
+      return ReactActual.createElement(RN.View, { testID: 'user-avatar-group' });
+    },
   };
 });
 
@@ -42,21 +46,25 @@ jest.mock('../UserAvatar', () => {
 
 const OWN_USER_ID = 'me';
 
-const buildChannel = (): Channel =>
+const buildMembers = (...ids: string[]) =>
+  Object.fromEntries(ids.map((id) => [id, { user: { id } }]));
+
+const buildChannel = (members: Record<string, unknown> = {}): Channel =>
   ({
     cid: 'messaging:test',
     data: {},
     on: () => ({ unsubscribe: () => undefined }),
+    state: new StateStore({ members }),
   }) as unknown as Channel;
 
-const buildMembers = (...ids: string[]) =>
-  Object.fromEntries(ids.map((id) => [id, { user: { id } }]));
-
-const renderAvatar = (props: Partial<React.ComponentProps<typeof ChannelAvatar>> = {}) =>
+const renderAvatar = (
+  props: Partial<React.ComponentProps<typeof ChannelAvatar>> = {},
+  channel: Channel = buildChannel(),
+) =>
   render(
     <ThemeProvider theme={defaultTheme}>
       <ChatProvider value={{ client: { user: { id: OWN_USER_ID } } } as never}>
-        <ChannelAvatar channel={buildChannel()} {...props} />
+        <ChannelAvatar channel={channel} {...props} />
       </ChatProvider>
     </ThemeProvider>,
   );
@@ -64,12 +72,12 @@ const renderAvatar = (props: Partial<React.ComponentProps<typeof ChannelAvatar>>
 describe('ChannelAvatar', () => {
   beforeEach(() => {
     avatarCalls.length = 0;
+    avatarGroupRenders = 0;
     jest
       .spyOn(useChannelPreviewDisplayPresenceModule, 'useChannelPreviewDisplayPresence')
       .mockReturnValue(false);
     jest.spyOn(useChannelNameModule, 'useChannelName').mockReturnValue('Channel Name');
     jest.spyOn(useChannelImageModule, 'useChannelImage').mockReturnValue(undefined);
-    jest.spyOn(useChannelMembersStateModule, 'useChannelMembersState').mockReturnValue({});
   });
 
   afterEach(() => {
@@ -89,22 +97,14 @@ describe('ChannelAvatar', () => {
     });
 
     it('falls back to the user-avatar group when there is no image and 2+ other members', () => {
-      jest
-        .spyOn(useChannelMembersStateModule, 'useChannelMembersState')
-        .mockReturnValue(buildMembers(OWN_USER_ID, 'a', 'b') as never);
-
-      renderAvatar();
+      renderAvatar({}, buildChannel(buildMembers(OWN_USER_ID, 'a', 'b')));
 
       expect(screen.getByTestId('user-avatar-group')).toBeTruthy();
       expect(screen.queryByTestId('avatar')).toBeNull();
     });
 
     it('falls back to a single user avatar when there is no image and at most one other member', () => {
-      jest
-        .spyOn(useChannelMembersStateModule, 'useChannelMembersState')
-        .mockReturnValue(buildMembers(OWN_USER_ID, 'a') as never);
-
-      renderAvatar();
+      renderAvatar({}, buildChannel(buildMembers(OWN_USER_ID, 'a')));
 
       expect(screen.getByTestId('user-avatar')).toBeTruthy();
       expect(screen.queryByTestId('avatar')).toBeNull();
@@ -137,14 +137,50 @@ describe('ChannelAvatar', () => {
       jest
         .spyOn(useChannelImageModule, 'useChannelImage')
         .mockReturnValue('https://example.com/live.png');
-      jest
-        .spyOn(useChannelMembersStateModule, 'useChannelMembersState')
-        .mockReturnValue(buildMembers(OWN_USER_ID, 'a', 'b') as never);
 
-      renderAvatar({ isPreview: true, previewUri: null });
+      renderAvatar(
+        { isPreview: true, previewUri: null },
+        buildChannel(buildMembers(OWN_USER_ID, 'a', 'b')),
+      );
 
       expect(screen.getByTestId('user-avatar-group')).toBeTruthy();
       expect(screen.queryByTestId('avatar')).toBeNull();
+    });
+  });
+
+  describe('member updates', () => {
+    const groupMembers = (online: boolean, name = 'A') => ({
+      [OWN_USER_ID]: { user: { id: OWN_USER_ID } },
+      a: { user: { id: 'a', name, online } },
+      b: { user: { id: 'b' } },
+    });
+
+    it('does not re-render the group when only a presence changes', () => {
+      const channel = buildChannel(groupMembers(false));
+      renderAvatar({}, channel);
+      const renders = avatarGroupRenders;
+
+      act(() => {
+        (channel.state as unknown as StateStore<Record<string, unknown>>).next({
+          members: groupMembers(true),
+        });
+      });
+
+      expect(avatarGroupRenders).toBe(renders);
+    });
+
+    it('re-renders the group when a shown member is renamed', () => {
+      const channel = buildChannel(groupMembers(false));
+      renderAvatar({}, channel);
+      const renders = avatarGroupRenders;
+
+      act(() => {
+        (channel.state as unknown as StateStore<Record<string, unknown>>).next({
+          members: groupMembers(false, 'Renamed'),
+        });
+      });
+
+      expect(avatarGroupRenders).toBe(renders + 1);
     });
   });
 });

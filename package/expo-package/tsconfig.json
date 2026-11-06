@@ -4,7 +4,7 @@
     // React Native 0.87's Strict TypeScript API removes types for `react-native/Libraries/*` deep
     // imports. `src/native/StreamShimmerViewNativeComponent.ts` must keep importing
     // `codegenNativeComponent` from its deep path at *runtime*: the root re-export only exists from
-    // React Native 0.80, and this package supports `>=0.76`. Opt this package (and only this
+    // React Native 0.80, and this package supports `>=0.79`. Opt this package (and only this
     // package - the core SDK is fully migrated to the Strict API) back into the legacy deep-import
     // types. Build-time only; it changes no emitted code and no public type.
     // TODO: drop this once the wrappers' minimum React Native is >= 0.80, and switch the import to

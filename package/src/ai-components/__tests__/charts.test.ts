@@ -97,7 +97,10 @@ describe('ai-components chart parsers', () => {
           }),
         ),
       ).toThrow();
-      expect(() => parseJsonChart('{ not json')).toThrow();
+    });
+
+    it('rejects invalid JSON with the same error as an unsupported chart', () => {
+      expect(() => parseJsonChart('{ not json')).toThrow('Unknown type of JSON formatted chart.');
     });
   });
 

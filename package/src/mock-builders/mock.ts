@@ -8,27 +8,36 @@ const token = 'dummy_token';
 
 type MockClientOptions = { disableAppSettings?: boolean };
 
+// `UserResponse` became strict in v10 (~10 required fields), but tests routinely
+// connect a mock user with just `{ id }`. Accept an id plus any subset of the
+// remaining user fields — only `.id` is ever read at runtime.
+type MockUser = Pick<UserResponse, 'id'> & Partial<UserResponse>;
+
 // Tests reach into private/internal StreamChat fields to set up a mocked
 // authenticated client without going through the real network handshake.
 type MockableStreamChat = StreamChat & {
-  connectionId?: string;
   user?: OwnUserResponse;
   _user?: OwnUserResponse;
   userToken?: string;
-  setUser?: (user: UserResponse) => Promise<void>;
   wsPromise?: Promise<unknown>;
   _setToken?: (...args: unknown[]) => unknown;
   _setupConnection?: (...args: unknown[]) => unknown;
 };
 
-export const setUser = (client: StreamChat, user: UserResponse): Promise<void> =>
+export const setUser = (client: StreamChat, user: MockUser): Promise<void> =>
   new Promise<void>((resolve) => {
     const c = client as MockableStreamChat;
-    c.connectionId = 'dumm_connection_id';
+    // `userID` is now a read-only getter derived from `user.id`, so setting `user` is enough. Set
+    // before the socket opens, as `connectUser()` does.
     c.user = { ...user, mutes: [] } as unknown as OwnUserResponse;
     c._user = { ...c.user };
-    c.userID = user.id;
     c.userToken = token;
+    // A connected client means a live socket with a connection id. The id lives on its own manager
+    // now, and `channel.watch()` / `client.queryChannels()` await it rather than degrading to
+    // `watch: false` — with no timeout — so a fixture that leaves it unset hangs every one of them
+    // until the test itself times out. The socket status goes with it: both halves of "connected".
+    client.connectionIdManager.resolveConnectionId('dummy_connection_id');
+    client.wsConnection._setStatus({ isHealthy: true });
     resolve();
   });
 
@@ -36,15 +45,16 @@ function mockClient(client: StreamChat, options: MockClientOptions = {}): Stream
   const { disableAppSettings = true } = options;
   const c = client as MockableStreamChat;
 
-  type WithPrivates = { _setToken: () => void; _setupConnection: () => void };
+  type WithPrivates = { _setToken: () => void; openConnection: () => void };
   const withPrivates = c as unknown as WithPrivates;
   jest.spyOn(withPrivates, '_setToken').mockImplementation();
-  jest.spyOn(withPrivates, '_setupConnection').mockImplementation();
+  // v10 renamed the private `_setupConnection` to the public `openConnection`.
+  jest.spyOn(withPrivates, 'openConnection').mockImplementation();
   c.tokenManager = {
     getToken: jest.fn(() => token),
     tokenReady: jest.fn(() => true),
   } as unknown as StreamChat['tokenManager'];
-  c.setUser = setUser.bind(null, client);
+  c.setUser = setUser.bind(null, client) as unknown as StreamChat['setUser'];
 
   if (disableAppSettings) {
     c.getAppSettings = jest.fn(() => ({})) as unknown as StreamChat['getAppSettings'];
@@ -57,7 +67,7 @@ export const getTestClient = (options: MockClientOptions = {}): StreamChat =>
   mockClient(new StreamChat(apiKey), options);
 
 export const getTestClientWithUser = async (
-  user: UserResponse,
+  user: MockUser,
   options: MockClientOptions = {},
 ): Promise<StreamChat> => {
   const { disableAppSettings = true } = options;

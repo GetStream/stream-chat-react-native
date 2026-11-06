@@ -17,7 +17,7 @@ const LoadingButtonIcon = ({ height, width }: { height?: number; width?: number 
 );
 
 export type ChannelEditDetailsFormHeaderProps = {
-  /** Called when the form is dismissed via the close button or after a successful save. */
+  /** Called when the form is dismissed with the close button or after a successful save. */
   onClose: () => void;
 };
 
@@ -37,7 +37,7 @@ export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsForm
       await submit();
       onClose();
     } catch {
-      // failure notification already surfaced by the channel action
+      // The channel action already surfaces a failure notification.
     } finally {
       setSaving(false);
     }
@@ -48,7 +48,10 @@ export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsForm
       onClose={onClose}
       rightAction={
         <Button
-          accessibilityLabel={t('a11y/Confirm edit channel')}
+          accessibilityLabel={t(
+            'channelDetails.editChannel.confirm.accessibilityLabel',
+            'Confirm edit channel',
+          )}
           accessibilityRole='button'
           accessibilityState={{ busy: saving, disabled: !confirmEnabled }}
           disabled={!confirmEnabled}
@@ -60,7 +63,7 @@ export const ChannelEditDetailsFormHeader = ({ onClose }: ChannelEditDetailsForm
           variant='primary'
         />
       }
-      title={t('Edit')}
+      title={t('channelDetails.editChannel.label', 'Edit')}
     />
   );
 };

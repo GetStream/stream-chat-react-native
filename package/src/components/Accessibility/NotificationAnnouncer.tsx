@@ -3,22 +3,20 @@ import { useEffect, useRef } from 'react';
 import { useAccessibilityAnnouncer } from './useAccessibilityAnnouncer';
 
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 /**
- * Mirrors stream-chat-react's `<NotificationAnnouncer />`. RN does not yet have a
- * unified Notification queue, so this component currently announces only
- * connection-state transitions (offline → online and back) gated on
- * `accessibility.announceConnectionState`. Per-channel error announcements can
- * be wired in by a future PR via `useChannelContext().error`.
- *
- * Renders nothing. Mount once inside `<Channel>` (or wherever the active chat
- * surface lives).
+ * Announces connection state transitions (connected, offline, reconnecting) to screen readers when
+ * `accessibility.announceConnectionState` is on. Renders nothing; mount once inside `<Channel>`.
  */
 export const NotificationAnnouncer = () => {
   const { announceConnectionState, enabled } = useAccessibilityContext();
-  const { connectionRecovering, isOnline } = useChatContext();
+  const isNetworkOnline = useNetworkConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
+  // Online means the WebSocket is healthy; the network state only picks the offline message.
+  const isOnline = !!isWSOnline;
   const announce = useAccessibilityAnnouncer();
   const { t } = useTranslationContext();
   const previousIsOnlineRef = useRef<boolean | null | undefined>(undefined);
@@ -33,11 +31,16 @@ export const NotificationAnnouncer = () => {
     previousIsOnlineRef.current = isOnline;
 
     if (isOnline) {
-      announce(t('a11y/Connected'), 'polite');
+      announce(t('a11y.connection.connected.accessibilityLabel', 'Connected'), 'polite');
     } else {
-      announce(connectionRecovering ? t('a11y/Reconnecting') : t('a11y/Offline'), 'assertive');
+      announce(
+        isNetworkOnline === false
+          ? t('a11y.connection.offline.accessibilityLabel', 'Offline')
+          : t('a11y.connection.reconnecting.accessibilityLabel', 'Reconnecting'),
+        'assertive',
+      );
     }
-  }, [announce, announceConnectionState, connectionRecovering, enabled, isOnline, t]);
+  }, [announce, announceConnectionState, enabled, isNetworkOnline, isOnline, t]);
 
   return null;
 };

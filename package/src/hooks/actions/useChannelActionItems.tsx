@@ -22,10 +22,8 @@ import { useChannelMembershipState } from '../useChannelMembershipState';
 import { useIsDirectChat } from '../useIsDirectChat';
 import { useStateStore } from '../useStateStore';
 
-// Lazily resolved to avoid a static import cycle with defaultComponents.ts
-// (defaultComponents → ChannelDetails*/ChannelPreview* → this file). Statically
-// importing defaultIcons corrupts module-init order; require it at call time
-// instead. Same pattern as ComponentsContext's getDefaults().
+// Required lazily: a static import of defaultComponents.ts would form a cycle
+// (defaultComponents -> ChannelDetails*/ChannelPreview* -> this file) and corrupt init order.
 let cachedDefaultIcons: IconsMap | undefined;
 const getDefaultIcons = (): IconsMap => {
   if (!cachedDefaultIcons) {
@@ -40,37 +38,22 @@ export type ChannelActionItem = ActionItem<
   'mute' | 'muteUser' | 'block' | 'leave' | 'deleteChannel' | 'pin' | string
 > & {
   /**
-   * Per item routing **within a channel preview interaction** (swipe row vs
-   * the sheet that opens from it). Only meaningful when the items are consumed
-   * from `<ChannelSwipableWrapper>`:
-   *
-   * - `'swipe'`: shown only in the swipe-row chips.
-   * - `'sheet'`: shown only in the swipe-triggered options sheet.
-   * - `'both'`: shown in both swipe row and sheet.
-   *
-   * The standalone Channel Details screen does **not** filter by `placement` -
-   * use {@link ChannelActionSurface} (`surface`) instead to vary items between
-   * the channel list and the Channel Details screen.
+   * Where the item shows in a channel preview: `'swipe'` (swipe-row chips only), `'sheet'` (the
+   * options sheet opened from the swipe row only) or `'both'`. Only `<ChannelSwipableWrapper>`
+   * reads it; the Channel Details screen does not, so use `surface` to vary items there.
    */
   placement: 'both' | 'sheet' | 'swipe';
 };
 
 /**
- * Identifies which top level UI surface is requesting channel action items.
- * Passed verbatim into {@link ChannelActionItemsParams} so the default builder
- * and any integrator supplied `getChannelActionItems` can branch on it - i.e.
- * to drop or relabel an item on a specific surface or to provide an entirely
- * different builder per surface.
+ * The UI surface requesting channel action items, passed through to `getChannelActionItems` so it
+ * can drop or relabel items per surface.
  *
- * - `'list'`: anything driven by a ChannelList interaction, the swipe row
- *   chips on a channel preview and the bottom sheet that opens from them.
- *   Subrouting between the swipe row and the sheet is handled by the per item
- *   {@link ChannelActionItem.placement} field.
- * - `'details'`: items for the standalone Channel Details screen.
+ * - `'list'`: ChannelList interactions, the swipe row of a channel preview and its options sheet
+ *   (routed between the two by {@link ChannelActionItem.placement}).
+ * - `'details'`: the standalone Channel Details screen.
  *
- * `surface` operates at the call site level (which UI is asking). It is
- * optional and when omitted, the default builder applies no surface specific
- * filtering and returns every item it would otherwise produce.
+ * When omitted, the default builder applies no surface filtering.
  */
 export type ChannelActionSurface = 'list' | 'details';
 
@@ -129,7 +112,7 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     t,
     channel,
   } = channelActionItemsParams;
-  const ownUserId = channel.getClient().userID;
+  const ownUserId = channel.getClient().userId;
 
   const actionItems: ChannelActionItem[] = [
     {
@@ -149,11 +132,11 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       id: 'mute',
       label: isDirectChat
         ? channelMuteActive
-          ? t('Unmute Chat')
-          : t('Mute Chat')
+          ? t('channel.unmuteChat.label', 'Unmute Chat')
+          : t('channel.muteChat.label', 'Mute Chat')
         : channelMuteActive
-          ? t('Unmute Group')
-          : t('Mute Group'),
+          ? t('channel.unmuteGroup.label', 'Unmute Group')
+          : t('channel.muteGroup.label', 'Mute Group'),
       placement: 'swipe',
       type: 'standard',
     },
@@ -166,11 +149,11 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       id: 'pin',
       label: isDirectChat
         ? isPinned
-          ? t('Unpin Chat')
-          : t('Pin Chat')
+          ? t('channel.unpinChat.label', 'Unpin Chat')
+          : t('channel.pinChat.label', 'Pin Chat')
         : isPinned
-          ? t('Unpin Group')
-          : t('Pin Group'),
+          ? t('channel.unpinGroup.label', 'Unpin Group')
+          : t('channel.pinGroup.label', 'Pin Group'),
       placement: 'sheet',
       type: 'standard',
     });
@@ -191,7 +174,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
           />
         ),
       id: 'muteUser',
-      label: userMuteActive ? t('Unmute User') : t('Mute User'),
+      label: userMuteActive
+        ? t('message.unmuteUser.label', 'Unmute User')
+        : t('message.muteUser.label', 'Mute User'),
       placement: 'sheet',
       type: 'standard',
     });
@@ -201,19 +186,22 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       const name = otherUser?.name || otherUser?.id || '';
 
       Alert.alert(
-        t('Block {{ name }}', { name }),
-        t("They won't be able to message or call you. You can unblock them later."),
+        t('message.blockUserConfirm.title', 'Block {{ name }}', { name }),
+        t(
+          'message.blockUserConfirm.text',
+          "They won't be able to message or call you. You can unblock them later.",
+        ),
         [
           {
             style: 'cancel',
-            text: t('Cancel'),
+            text: t('common.cancel.label', 'Cancel'),
           },
           {
             onPress: async () => {
               await blockUser(...args);
             },
             style: 'destructive',
-            text: t('Block'),
+            text: t('message.blockUserConfirm.label', 'Block'),
           },
         ],
       );
@@ -223,14 +211,16 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       action: isBlocked ? unblockUser : blockUserWithConfirmation,
       Icon: (props) => <ChannelActionsIcon Icon={icons.BlockUser} {...props} />,
       id: 'block',
-      label: isBlocked ? t('Unblock User') : t('Block User'),
+      label: isBlocked
+        ? t('message.unblockUser.label', 'Unblock User')
+        : t('message.blockUser.label', 'Block User'),
       placement: 'sheet',
       type: isBlocked ? 'standard' : 'destructive',
     });
   }
 
   const leaveWithConfirmation = (...args: Parameters<ChannelActionHandler>) => {
-    const channelName = channel.data?.name;
+    const channelName = channel.data?.custom?.name;
     let name: string;
     if (channelName) {
       name = channelName;
@@ -238,23 +228,29 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
       const otherUser = getOtherUserInDirectChannel(channel)?.user;
       name = otherUser?.name || otherUser?.id || '';
     } else {
-      name = t('group');
+      name = t('channel.leave.confirm.groupName.text', 'this group');
     }
 
     Alert.alert(
-      isDirectChat ? t('Leave Chat') : t('Leave Group'),
-      t("You'll stop receiving messages from {{ name }}. You can rejoin anytime.", { name }),
+      isDirectChat
+        ? t('channel.leaveChat.label', 'Leave Chat')
+        : t('channel.leaveGroup.label', 'Leave Group'),
+      t(
+        'channel.leave.confirm.text',
+        "You'll stop receiving messages from {{ name }}. You can rejoin anytime.",
+        { name },
+      ),
       [
         {
           style: 'cancel',
-          text: t('Cancel'),
+          text: t('common.cancel.label', 'Cancel'),
         },
         {
           onPress: async () => {
             await leave(...args);
           },
           style: 'destructive',
-          text: t('Leave'),
+          text: t('channel.leave.confirm.label', 'Leave'),
         },
       ],
     );
@@ -264,7 +260,9 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
     action: leaveWithConfirmation,
     Icon: (props) => <ChannelActionsIcon Icon={icons.ArrowBoxLeft} {...props} />,
     id: 'leave',
-    label: isDirectChat ? t('Leave Chat') : t('Leave Group'),
+    label: isDirectChat
+      ? t('channel.leaveChat.label', 'Leave Chat')
+      : t('channel.leaveGroup.label', 'Leave Group'),
     placement: 'sheet',
     type: 'destructive',
   });
@@ -272,28 +270,38 @@ export const buildDefaultChannelActionItems: BuildDefaultChannelActionItems = (
   if (channel.data?.created_by?.id === ownUserId) {
     actionItems.push({
       action: (...args: Parameters<ChannelActionHandler>) => {
-        const title = isDirectChat ? t('Delete chat') : t('Delete group');
+        const title = isDirectChat
+          ? t('channel.deleteChat.title', 'Delete chat')
+          : t('channel.deleteGroup.title', 'Delete group');
         const message = isDirectChat
-          ? t("Are you sure you want to delete this chat? This can't be undone.")
-          : t("Are you sure you want to delete this group? This can't be undone.");
+          ? t(
+              'channel.deleteChat.confirm.text',
+              "Are you sure you want to delete this chat? This can't be undone.",
+            )
+          : t(
+              'channel.deleteGroup.confirm.text',
+              "Are you sure you want to delete this group? This can't be undone.",
+            );
 
         Alert.alert(title, message, [
           {
             style: 'cancel',
-            text: t('Cancel'),
+            text: t('common.cancel.label', 'Cancel'),
           },
           {
             onPress: async () => {
               await deleteChannel(...args);
             },
             style: 'destructive',
-            text: t('Delete'),
+            text: t('message.deleteMessageConfirm.label', 'Delete'),
           },
         ]);
       },
       Icon: (props) => <ChannelActionsIcon Icon={icons.Delete} {...props} />,
       id: 'deleteChannel',
-      label: isDirectChat ? t('Delete Chat') : t('Delete Group'),
+      label: isDirectChat
+        ? t('channel.deleteChat.label', 'Delete Chat')
+        : t('channel.deleteGroup.label', 'Delete Group'),
       placement: 'sheet',
       type: 'destructive',
     });
@@ -328,8 +336,8 @@ export const useChannelActionItems = ({
   const membership = useChannelMembershipState(channel);
   const channelActions = useChannelActions(channel);
   const isDirectChat = useIsDirectChat(channel);
-  const isPinned = Boolean(membership?.pinned_at);
-  const isArchived = Boolean(membership?.archived_at);
+  const isPinned = membership?.pinned_at != null;
+  const isArchived = membership?.archived_at != null;
 
   const { muted: channelMuteActive } = useIsChannelMuted(channel);
   const otherUser = isDirectChat ? getOtherUserInDirectChannel(channel)?.user : undefined;

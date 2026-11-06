@@ -134,15 +134,17 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         return;
       }
 
-      const { users } = await chatClient.queryUsers(
-        filter,
-        { name: 1 },
-        {
+      // v10 collapses `queryUsers(filter, sort, options)` into one payload object, and sort is an
+      // array of `{ field, direction }` rather than a `{ field: direction }` map.
+      const { users } = await chatClient.queryUsers({
+        payload: {
+          filter_conditions: filter,
+          sort: [{ field: 'name', direction: 1 }],
           limit: 10,
           offset: offset.current,
           presence: true,
         },
-      );
+      });
 
       const usersWithoutClientUserId = users.filter((user) => user.id !== chatClient.userID);
 

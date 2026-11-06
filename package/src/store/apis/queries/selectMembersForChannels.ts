@@ -30,7 +30,7 @@ export const selectMembersForChannels = async (
     LEFT JOIN
       users b
     ON b.id = a.userId
-    WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
+    WHERE cid in (${questionMarks}) ORDER BY a.createdAt DESC`,
     cids,
   );
 

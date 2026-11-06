@@ -106,17 +106,12 @@ const UserMuteToggleRow = ({ item }: { item: ChannelActionItem }) => {
 
 export type ChannelDetailsActionsSectionProps = {
   /**
-   * Customize the list of action items rendered in the channel details actions section.
-   *
-   * Receives the default items the SDK produces for the current channel and returns the
-   * final list to render. Use this to filter, reorder, replace, or add items.
-   *
-   * The SDK still wires `onChannelDismiss` into the resulting `leave`, `deleteChannel`, and
-   * `block` items (matched by `id`) after this callback runs, so those actions continue to
-   * dismiss the screen on success regardless of how the items are customized.
+   * Receives the default action items for the channel and returns the list to render, to filter,
+   * reorder, replace or add items. `onChannelDismiss` is wired into the resulting `leave`,
+   * `deleteChannel` and `block` items (matched by `id`) after this callback runs.
    */
   getChannelActionItems?: GetChannelActionItems;
-  /** Fired after the channel is no longer available to the current user (delete, leave, or block actions). */
+  /** Fired once the channel is gone for the user (after delete, leave or block). */
   onChannelDismiss?: () => void;
 };
 

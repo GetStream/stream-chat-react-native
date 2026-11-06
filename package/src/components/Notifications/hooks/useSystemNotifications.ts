@@ -14,7 +14,12 @@ export type UseSystemNotificationsOptions = {
   filter?: UseSystemNotificationsFilter;
 };
 
-/** Subscribes to notifications tagged as system notifications. */
+/**
+ * Subscribes to notifications tagged as system notifications.
+ *
+ * @param options.filter Additional filter applied to system-tagged notifications.
+ * @returns The matching notifications.
+ */
 export const useSystemNotifications = (options?: UseSystemNotificationsOptions): Notification[] => {
   const { client } = useChatContext();
   const selector = useCallback(

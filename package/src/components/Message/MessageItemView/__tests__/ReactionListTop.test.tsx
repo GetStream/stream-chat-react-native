@@ -3,8 +3,6 @@ import React from 'react';
 import { cleanup, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
-import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
-
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
@@ -42,13 +40,11 @@ describe('ReactionListTop', () => {
 
     renderMessage = (options, channelProps) =>
       render(
-        <ChannelsStateProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} {...channelProps}>
-              <ReactionListTop {...options} />
-            </Channel>
-          </Chat>
-        </ChannelsStateProvider>,
+        <Chat client={chatClient}>
+          <Channel channel={channel} {...channelProps}>
+            <ReactionListTop {...options} />
+          </Channel>
+        </Chat>,
       );
   });
 

@@ -1,184 +1,38 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ChannelState } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
-import { MarkReadFunctionOptions } from '../../components/Channel/Channel';
-import {
-  ChannelUnreadStateStore,
-  ChannelUnreadStateStoreType,
-} from '../../state-store/channel-unread-state';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelContextValue = {
   /**
-   * Instance of channel object from stream-chat package.
-   *
-   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
-   *
-   * ```
-   * import { StreamChat, Channel } from 'stream-chat';
-   * import { Chat, Channel} from 'stream-chat-react-native';
-   *
-   * const client = StreamChat.getInstance('api_key');
-   * await client.connectUser('user_id', 'user_token');
-   * const channel = client.channel('messaging', 'channel_id');
-   * await channel.watch();
-   *
-   * <Chat client={client}>
-   *  <Channel channel={channel}>
-   *  </Channel>
-   * </Chat>
-   * ```
+   * The `stream-chat` channel instance.
    *
    * @overrideType Channel
    */
   channel: Channel;
-  /**
-   * When set to true, reactions will be limited to 1 per user. If user selects another reaction
-   * then his previous reaction will be removed and replaced with new one.
-   *
-   * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
-   */
+  /** Limits users to one reaction; picking another replaces the previous. Defaults to false. */
   enforceUniqueReaction: boolean;
-  error: boolean | Error;
   /**
-   * Render the inline date separator above a system message when that message is the first of
-   * its day. Off by default: without it a system message on a day boundary consumes the boundary
-   * and renders nothing, so that day gets no separator at all.
+   * Renders the inline date separator above a system message that is the first of its day.
+   * Defaults to false: a system message on a day boundary then renders no separator for that day.
    */
   allowDateSeparatorForSystemMessages: boolean;
-  /**
-   * Hide inline date separators on channel
-   */
+  /** Hides the inline date separators. Defaults to false. */
   hideDateSeparators: boolean;
   hideStickyDateHeader: boolean;
   /**
-   * Loads channel around a specific message
-   * @param limit - The number of messages to load around the message
-   * @param messageId - The message around which to load messages
-   * @param setTargetedMessage - Callback to set the targeted message
-   */
-  loadChannelAroundMessage: ({
-    limit,
-    messageId,
-    setTargetedMessage,
-  }: {
-    limit?: number;
-    messageId?: string;
-    setTargetedMessage?: (messageId: string) => void;
-  }) => Promise<void>;
-
-  /**
-   * Loads channel at first unread message.
-   * @param channelUnreadState - The unread state of the channel
-   * @param limit - The number of messages to load around the first unread message
-   * @param setChannelUnreadState - Callback to set the channel unread state
-   */
-  loadChannelAtFirstUnreadMessage: ({
-    channelUnreadState,
-    limit,
-    setTargetedMessage,
-  }: {
-    channelUnreadState?: ChannelUnreadStateStoreType['channelUnreadState'];
-    limit?: number;
-    setChannelUnreadState?: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
-    setTargetedMessage?: (messageId: string) => void;
-  }) => Promise<void>;
-
-  markRead: (options?: MarkReadFunctionOptions) => void;
-  /**
-   *
-   * ```json
-   * {
-   *   "thierry-123": {
-   *     "id": "thierry-123",
-   *     "role": "user",
-   *     "created_at": "2019-04-03T14:42:47.087869Z",
-   *     "updated_at": "2019-04-16T09:20:03.982283Z",
-   *     "last_active": "2019-04-16T11:23:51.168113408+02:00",
-   *     "online": true
-   *   },
-   *   "vishal-123": {
-   *     "id": "vishal-123",
-   *     "role": "user",
-   *     "created_at": "2019-05-03T14:42:47.087869Z",
-   *     "updated_at": "2019-05-16T09:20:03.982283Z",
-   *     "last_active": "2019-06-16T11:23:51.168113408+02:00",
-   *     "online": false
-   *   }
-   * }
-   * ```
-   */
-  members: ChannelState['members'];
-  read: ChannelState['read'];
-  reloadChannel: () => Promise<void>;
-  scrollToFirstUnreadThreshold: number;
-  setChannelUnreadState: (data: ChannelUnreadStateStoreType['channelUnreadState']) => void;
-  setTargetedMessage: (messageId?: string) => void;
-  /**
-   * Returns true when Channel is about to load an initial targeted message.
+   * Returns true when `Channel` is about to load an initial targeted message.
    *
    * @internal
    */
   hasPendingInitialTargetLoad?: () => boolean;
-  /**
-   * Abort controller for cancelling async requests made for uploading images/files
-   * Its a map of filename and AbortController
-   */
-  uploadAbortControllerRef: React.MutableRefObject<Map<string, AbortController>>;
-  channelUnreadStateStore: ChannelUnreadStateStore;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
-  /**
-   * Id of message, which is highlighted in the channel.
-   */
-  highlightedMessageId?: string;
-  isChannelActive?: boolean;
-  loading?: boolean;
-  /**
-   * Maximum time in milliseconds that should occur between messages
-   * to still consider them grouped together
-   */
+  /** Maximum time in milliseconds between messages that are still grouped together. */
   maxTimeBetweenGroupedMessages?: number;
-  /**
-   * The maximum number of messages that can be loaded into the state when new messages arrive.
-   * Any excess messages will be pruned from the back of the list (oldest first), unless we are
-   * currently near them within the viewport.
-   */
-  maximumMessageLimit?: number;
-  /**
-   * Id of message, around which Channel/MessageList gets loaded when opened.
-   * You will see a highlighted background for targetted message, when opened.
-   */
-  targetedMessage?: string;
-  threadList?: boolean;
-  watcherCount?: ChannelState['watcher_count'];
-  /**
-   *
-   * ```json
-   * {
-   *   "thierry-123": {
-   *     "id": "thierry-123",
-   *     "role": "user",
-   *     "created_at": "2019-04-03T14:42:47.087869Z",
-   *     "updated_at": "2019-04-16T09:20:03.982283Z",
-   *     "last_active": "2019-04-16T11:23:51.168113408+02:00",
-   *     "online": true
-   *   },
-   *   "vishal-123": {
-   *     "id": "vishal-123",
-   *     "role": "user",
-   *     "created_at": "2019-05-03T14:42:47.087869Z",
-   *     "updated_at": "2019-05-16T09:20:03.982283Z",
-   *     "last_active": "2019-06-16T11:23:51.168113408+02:00",
-   *     "online": false
-   *   }
-   * }
-   * ```
-   */
-  watchers?: ChannelState['watchers'];
 };
 
 export const ChannelContext = React.createContext(
@@ -201,7 +55,7 @@ export const useChannelContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useChannelContext hook was called outside of the ChannelContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel',
+      'The useChannelContext hook was called outside of the ChannelContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/react-native/core-components/channel/',
     );
   }
 

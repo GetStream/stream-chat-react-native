@@ -19,19 +19,11 @@ export function buildGalleryOfTwoImages({
   const aspectRatio1 = getAspectRatio(images[0]);
   const aspectRatio2 = getAspectRatio(images[1]);
 
-  // check if one image is landscape and other is portrait or vice versa
   const isLandscape1 = aspectRatio1 > 1;
   const isLandscape2 = aspectRatio2 > 1;
 
-  // Both the images are landscape
+  // Both landscape: stacked.
   if (isLandscape1 && isLandscape2) {
-    /**
-     * ----------
-     * |        |
-     * ----------
-     * |        |
-     * ----------
-     */
     return buildThumbnailGrid({
       grid: [[1], [1]],
       images,
@@ -41,16 +33,8 @@ export function buildGalleryOfTwoImages({
     });
   }
 
-  // Both the images are portrait
+  // Both portrait: side by side.
   if (!isLandscape1 && !isLandscape2) {
-    /**
-     * -----------
-     * |    |    |
-     * |    |    |
-     * |    |    |
-     * |    |    |
-     * -----------
-     */
     return buildThumbnailGrid({
       grid: [[1, 1]],
       images,

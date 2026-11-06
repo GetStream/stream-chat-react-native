@@ -16,6 +16,7 @@ import {
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { generateChannelState } from '../../../../mock-builders/generator/channelState';
 import { ChannelAddMembersButton } from '../../components/members/ChannelAddMembersButton';
 
 // Replace the modal wrapper with a lightweight probe that renders regardless of `visible`
@@ -38,7 +39,7 @@ const buildChannel = (overrides?: Partial<OwnCapabilitiesContextValue>): Channel
     cid: 'messaging:test',
     data: ownCapabilities ? { own_capabilities: ownCapabilities } : {},
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
+    state: generateChannelState({ ownCapabilities: ownCapabilities ?? [] }),
   } as unknown as Channel;
 };
 
@@ -74,7 +75,7 @@ const renderButton = ({
       <AccessibilityProvider value={{ enabled: true }}>
         <TranslationProvider
           value={{
-            t: ((key: string) => key) as never,
+            t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
             tDateTimeParser: ((input: unknown) => input) as never,
             userLanguage: 'en',
           }}

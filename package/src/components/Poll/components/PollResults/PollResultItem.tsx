@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LocalMessage, Poll, PollOption, PollVote as PollVoteClass } from 'stream-chat';
+import {
+  LocalMessage,
+  Poll,
+  PollOptionResponseData,
+  PollVoteResponseData as PollVoteClass,
+} from 'stream-chat';
 
 import { PollOptionFullResults } from './PollOptionFullResults';
 import { PollVote } from './PollVote';
@@ -21,14 +26,14 @@ import { PollModal } from '../PollModal';
 import { PollModalHeader } from '../PollModalHeader';
 
 export type ShowAllVotesButtonProps = {
-  option: PollOption;
+  option: PollOptionResponseData;
   onPress?: ({
     message,
     option,
     poll,
   }: {
     message: LocalMessage;
-    option: PollOption;
+    option: PollOptionResponseData;
     poll: Poll;
   }) => void;
 };
@@ -58,7 +63,10 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
       voteCountsByOption &&
       voteCountsByOption?.[option.id] > 5 ? (
         <View style={styles.inlineButton}>
-          <GenericPollButton onPress={onPressHandler} label={t('Show All')} />
+          <GenericPollButton
+            onPress={onPressHandler}
+            label={t('poll.results.showAll.label', 'Show All')}
+          />
         </View>
       ) : null}
       {showAllVotes ? (
@@ -67,7 +75,10 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
           onRequestClose={() => setShowAllVotes(false)}
           visible={showAllVotes}
         >
-          <PollModalHeader onPress={() => setShowAllVotes(false)} title={t('Votes')} />
+          <PollModalHeader
+            onPress={() => setShowAllVotes(false)}
+            title={t('poll.votes.title', 'Votes')}
+          />
           <PollOptionFullResults message={message} option={option} poll={poll} />
         </PollModal>
       ) : null}
@@ -76,7 +87,7 @@ export const ShowAllVotesButton = (props: ShowAllVotesButtonProps) => {
 };
 
 export type PollResultItemProps = {
-  option: PollOption;
+  option: PollOptionResponseData;
   index: number;
 };
 
@@ -104,12 +115,16 @@ export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
     <View style={[styles.container, container]}>
       <View style={styles.metaContainer}>
         <Text style={[styles.titleMeta, titleMeta]}>
-          {t('Option {{count}}', { count: index + 1 })}
+          {t('poll.results.optionNumber.text', 'Option {{count}}', { count: index + 1 })}
         </Text>
         <View style={[styles.headerContainer, headerContainer]}>
           <Text style={[styles.title, title]}>{translate(option.text, option.text_i18n)}</Text>
           <Text style={[styles.voteCount, voteCount]}>
-            {t('{{count}} votes', { count: voteCountsByOption[option.id] ?? 0 })}
+            {t('poll.votes.text', {
+              count: voteCountsByOption[option.id] ?? 0,
+              defaultValue_one: '{{count}} vote',
+              defaultValue_other: '{{count}} votes',
+            })}
           </Text>
         </View>
       </View>

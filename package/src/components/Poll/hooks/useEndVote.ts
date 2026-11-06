@@ -3,9 +3,10 @@ import { useStableCallback } from '../../../hooks';
 import { useNotificationApi } from '../../Notifications';
 
 /**
- * Returns a stable callback that closes the current poll and emits a success or
- * failure notification. Shared by `EndVoteButton` and the rotor accessibility
- * action so both paths produce identical side effects.
+ * Returns a stable callback that closes the current poll and emits a success or failure
+ * notification. Shared by the end vote button and its accessibility action.
+ *
+ * @returns An async callback that resolves with the close response and rethrows on failure.
  */
 export const useEndVote = () => {
   const { poll } = usePollContext();
@@ -16,14 +17,14 @@ export const useEndVote = () => {
     try {
       const response = await poll.close();
       addNotification({
-        message: t('Poll ended'),
+        message: t('notifications.pollEnded.text', 'Poll ended'),
         options: { severity: 'success', type: 'api:poll:end:success' },
         origin: { emitter: 'PollActions' },
       });
       return response;
     } catch (error) {
       addNotification({
-        message: t('Failed to end the poll'),
+        message: t('poll.endVote.error'),
         options: {
           ...(error instanceof Error ? { originalError: error } : {}),
           severity: 'error',

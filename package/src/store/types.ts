@@ -1,4 +1,4 @@
-import type { Channel, StreamChat } from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
 
 import type { Schema } from './schema';
 
@@ -13,7 +13,7 @@ export type TableRowJoinedDraftMessage<T extends Table> = Schema[T] & {
 };
 
 export type TableColumnNames<T extends Table> = keyof Schema[T];
-export type TableColumnValue = string | boolean | number | undefined;
+export type TableColumnValue = string | boolean | number | null | undefined;
 export type Scalar = string | number | boolean | null | ArrayBuffer | ArrayBufferView;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedQueries = [string] | [string, Array<any>];
@@ -33,7 +33,7 @@ export type PendingTask = {
   id?: number;
 } & (
   | {
-      payload: Parameters<Channel['sendReaction']>;
+      payload: Parameters<StreamChat['sendReaction']>;
       type: PendingTaskTypes['sendReaction'];
     }
   | {
@@ -41,7 +41,7 @@ export type PendingTask = {
       type: PendingTaskTypes['deleteMessage'];
     }
   | {
-      payload: Parameters<Channel['deleteReaction']>;
+      payload: Parameters<StreamChat['deleteReaction']>;
       type: PendingTaskTypes['deleteReaction'];
     }
 );

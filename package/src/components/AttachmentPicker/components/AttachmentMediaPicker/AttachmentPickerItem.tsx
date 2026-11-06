@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
-import { FileReference, isLocalImageAttachment, isLocalVideoAttachment } from 'stream-chat';
+import {
+  AttachmentManagerState,
+  FileReference,
+  isLocalImageAttachment,
+  isLocalVideoAttachment,
+  LocalAttachment,
+} from 'stream-chat';
 
 import { isIosLimited, type PhotoContentItemType } from './shared';
 
 import { useA11yLabel } from '../../../../a11y/hooks/useA11yLabel';
 import { useAttachmentPickerContext } from '../../../../contexts';
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
-import { useAttachmentManagerState } from '../../../../contexts/messageInputContext/hooks/useAttachmentManagerState';
 import { useMessageComposer } from '../../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
+import { useStateStore } from '../../../../hooks/useStateStore';
 import { useWindowContentWidth } from '../../../../hooks/useWindowContentWidth';
 import { NativeHandlers } from '../../../../native';
 import { primitives } from '../../../../theme';
@@ -25,22 +31,35 @@ type AttachmentPickerItemType = {
   asset: File;
 };
 
+/**
+ * Index of this cell's asset among the composer's attachments, or -1. Selected per cell, so upload
+ * progress re-renders no cell and a selection change only the cells whose index moved.
+ */
+const useSelectedIndex = (isAsset: (attachment: LocalAttachment) => boolean) => {
+  const { attachmentManager } = useMessageComposer();
+  const selector = useCallback(
+    (state: AttachmentManagerState) => ({ selectedIndex: state.attachments.findIndex(isAsset) }),
+    [isAsset],
+  );
+  return useStateStore(attachmentManager.state, selector).selectedIndex;
+};
+
 const AttachmentVideo = (props: AttachmentPickerItemType) => {
   const { asset } = props;
   const { numberOfAttachmentPickerImageColumns } = useAttachmentPickerContext();
   const { ImageOverlaySelectedComponent } = useComponentsContext();
   const contentWidth = useWindowContentWidth();
   const { t } = useTranslationContext();
-  const messageComposer = useMessageComposer();
+  const { attachmentManager } = useMessageComposer();
   const { uploadNewFile } = useMessageInputContext();
-  const { attachmentManager } = messageComposer;
-  const { attachments, availableUploadSlots } = useAttachmentManagerState();
-
-  const selectedIndex = attachments.findIndex((attachment) =>
-    isLocalVideoAttachment(attachment)
-      ? (attachment.localMetadata.file as FileReference).uri === asset.uri
-      : false,
+  const isAsset = useCallback(
+    (attachment: LocalAttachment) =>
+      isLocalVideoAttachment(attachment)
+        ? (attachment.localMetadata.file as FileReference | undefined)?.uri === asset.uri
+        : false,
+    [asset.uri],
   );
+  const selectedIndex = useSelectedIndex(isAsset);
 
   const {
     theme: {
@@ -53,17 +72,21 @@ const AttachmentVideo = (props: AttachmentPickerItemType) => {
 
   const size = contentWidth / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
-  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect video' : 'a11y/Select video');
+  const accessibilityLabel = useA11yLabel(
+    selected
+      ? 'attachmentPicker.video.deselect.accessibilityLabel'
+      : 'attachmentPicker.video.select.accessibilityLabel',
+  );
 
   const onPressVideo = async () => {
     if (selected) {
-      const attachment = attachments[selectedIndex];
+      const attachment = attachmentManager.attachments.find(isAsset);
       if (attachment) {
         attachmentManager.removeAttachments([attachment.localMetadata.id]);
       }
     } else {
-      if (!availableUploadSlots) {
-        Alert.alert(t('Maximum number of files reached'));
+      if (!attachmentManager.availableUploadSlots) {
+        Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
         return;
       }
       await uploadNewFile(asset);
@@ -108,28 +131,35 @@ const AttachmentImage = (props: AttachmentPickerItemType) => {
   const contentWidth = useWindowContentWidth();
   const { t } = useTranslationContext();
   const { uploadNewFile } = useMessageInputContext();
-  const messageComposer = useMessageComposer();
-  const { attachmentManager } = messageComposer;
-  const { attachments, availableUploadSlots } = useAttachmentManagerState();
-  const selectedIndex = attachments.findIndex((attachment) =>
-    isLocalImageAttachment(attachment) ? attachment.localMetadata.previewUri === asset.uri : false,
+  const { attachmentManager } = useMessageComposer();
+  const isAsset = useCallback(
+    (attachment: LocalAttachment) =>
+      isLocalImageAttachment(attachment)
+        ? attachment.localMetadata.previewUri === asset.uri
+        : false,
+    [asset.uri],
   );
+  const selectedIndex = useSelectedIndex(isAsset);
 
   const size = contentWidth / (numberOfAttachmentPickerImageColumns || 3) - 2;
   const selected = selectedIndex !== -1;
-  const accessibilityLabel = useA11yLabel(selected ? 'a11y/Deselect image' : 'a11y/Select image');
+  const accessibilityLabel = useA11yLabel(
+    selected
+      ? 'attachmentPicker.image.deselect.accessibilityLabel'
+      : 'attachmentPicker.image.select.accessibilityLabel',
+  );
 
   const { uri } = asset;
 
   const onPressImage = async () => {
     if (selected) {
-      const attachment = attachments[selectedIndex];
+      const attachment = attachmentManager.attachments.find(isAsset);
       if (attachment) {
         await attachmentManager.removeAttachments([attachment.localMetadata.id]);
       }
     } else {
-      if (!availableUploadSlots) {
-        Alert.alert(t('Maximum number of files reached'));
+      if (!attachmentManager.availableUploadSlots) {
+        Alert.alert(t('attachmentPicker.maxFiles.error', 'Maximum number of files reached'));
         return;
       }
       await uploadNewFile(asset);
@@ -179,7 +209,9 @@ const AttachmentIosLimited = () => {
       onPress={NativeHandlers.iOS14RefreshGallerySelection}
     >
       <icons.Plus width={20} height={20} stroke={styles.iosLimitedIcon.color} strokeWidth={1.5} />
-      <Text style={styles.iosLimitedText}>{t('Add more')}</Text>
+      <Text style={styles.iosLimitedText}>
+        {t('attachmentPicker.photoLibrary.addMore.label', 'Add more')}
+      </Text>
     </BottomSheetTouchableOpacity>
   );
 };
@@ -188,12 +220,8 @@ export const renderAttachmentPickerItem = ({ item }: { item: PhotoContentItemTyp
   if (isIosLimited(item)) {
     return <AttachmentIosLimited />;
   }
-  /**
-   * Expo Media Library - Result of asset type
-   * Native Android - Gives mime type(Eg: image/jpeg, video/mp4, etc.)
-   * Native iOS - Gives `image` or `video`
-   * Expo Android/iOS - Gives `photo` or `video`
-   **/
+  // `type` is a MIME type on native Android (such as `video/mp4`), `image` or `video` on native
+  // iOS, and `photo` or `video` with Expo.
   const isVideoType = item.type?.includes('video');
 
   if (isVideoType) {

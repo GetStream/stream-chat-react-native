@@ -6,7 +6,7 @@ import type { ReactTestInstance } from 'react-test-renderer';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { ReactionResponse } from 'stream-chat';
+import { LocalMessage, ReactionResponse } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import {
@@ -25,7 +25,20 @@ import { MessageUserReactions } from '../MessageUserReactions';
 import { MessageUserReactionsItemProps } from '../MessageUserReactionsItem';
 
 const mockTranslations = {
-  t: jest.fn((key) => key),
+  // Prose keys pass their English copy inline: a bare second argument, or — for plurals —
+  // `defaultValue_one` / `defaultValue_other` inside the options, selected by `count`.
+  t: jest.fn((key, d) => {
+    if (typeof d === 'string') {
+      return d;
+    }
+    if (d && typeof d === 'object') {
+      const pluralDefault = d.count === 1 ? d.defaultValue_one : d.defaultValue_other;
+      if (typeof pluralDefault === 'string') {
+        return pluralDefault;
+      }
+    }
+    return key;
+  }),
 };
 
 const mockSupportedReactions = [
@@ -37,7 +50,7 @@ const defaultProps = {
   message: {
     ...generateMessage(),
     reaction_groups: { like: { count: 1, sum_scores: 1 }, love: { count: 1, sum_scores: 1 } },
-  },
+  } as unknown as LocalMessage,
   supportedReactions: mockSupportedReactions,
 };
 
@@ -133,6 +146,23 @@ describe('MessageUserReactions when the supportedReactions are defined', () => {
     const reactionItems = getByText('1 like');
     expect(reactionItems).toBeDefined();
     expect(getByText('2 love')).toBeDefined();
+  });
+
+  it('counts reactions from reaction_groups, which optimistic reactions update', () => {
+    const { getByText } = renderComponent({
+      message: {
+        ...generateMessage(),
+        reaction_counts: { like: 1, love: 1 },
+        reaction_groups: { like: { count: 3, sum_scores: 3 }, love: { count: 2, sum_scores: 2 } },
+      },
+    });
+
+    expect(getByText('3')).toBeTruthy();
+    expect(getByText('2')).toBeTruthy();
+    expect(mockTranslations.t).toHaveBeenLastCalledWith(
+      'messageMenu.userReactions.title',
+      expect.objectContaining({ count: 5 }),
+    );
   });
 
   it('uses provided reactions when passed as a prop', () => {

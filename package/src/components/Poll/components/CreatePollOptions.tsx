@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+
 import {
   I18nManager,
   LayoutChangeEvent,
@@ -23,7 +24,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { PollComposerOption, PollComposerState } from 'stream-chat';
+import { POLL_COMPOSER_VALIDATION_CODE, PollComposerOption, PollComposerState } from 'stream-chat';
+import type { PollComposerValidationCode, PollComposerValidationError } from 'stream-chat';
 
 import { useCreatePollContentContext, useTheme, useTranslationContext } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
@@ -50,7 +52,7 @@ export type CreatePollOptionType = {
   optionsCount: number;
   currentOptionPositions: SharedValue<CurrentOptionPositionsCache>;
   draggedItemId: SharedValue<string | null>;
-  error?: string;
+  error?: PollComposerValidationError;
   handleChangeText: (newText: string, index: number) => void;
   handleBlur: () => void;
   index: number;
@@ -58,9 +60,9 @@ export type CreatePollOptionType = {
   optionId: string;
   onOptionLayout: (optionId: string, height: number) => void;
   /**
+   * Called after a reorder.
    *
-   * @param newOrder The inverse index object of the new options position after re-ordering.
-   * @returns
+   * @param newOrder The new inverse index cache (position to option ID).
    */
   onNewOrder: (newOrder: CurrentOptionPositionsCache['inverseIndexCache']) => void;
   onRemoveOption: (optionId: string) => void;
@@ -287,6 +289,22 @@ export const CreatePollOption = ({
   const { t } = useTranslationContext();
   const { icons } = useComponentsContext();
   const { createPollOptionGap = 8 } = useCreatePollContentContext();
+
+  // Keyed on `stream-chat`'s stable validation code; `error.message` is the fallback for an
+  // unrecognized code.
+  const knownValidationErrors = useMemo<Partial<Record<PollComposerValidationCode, string>>>(
+    () => ({
+      [POLL_COMPOSER_VALIDATION_CODE.optionDuplicate]: t(
+        'poll.createPoll.options.duplicate.error',
+        'Option already exists',
+      ),
+      [POLL_COMPOSER_VALIDATION_CODE.optionEmpty]: t(
+        'poll.createPoll.options.empty.error',
+        'Option is empty',
+      ),
+    }),
+    [t],
+  );
   const normalizedCreatePollOptionGap =
     Number.isFinite(createPollOptionGap) && createPollOptionGap > 0 ? createPollOptionGap : 0;
   const initialTop =
@@ -321,13 +339,10 @@ export const CreatePollOption = ({
     () => currentOptionPositions.value,
   );
 
-  // Target index computed during drag.
   const newIndex = useSharedValue<number | null>(null);
 
-  // Current dragged item's index in the live reorder cache.
   const currentIndex = useSharedValue<number | null>(null);
 
-  // Keep drag translation anchored to drag-start top.
   const dragStartTop = useSharedValue(0);
   const previousDragTop = useSharedValue(0);
 
@@ -347,13 +362,10 @@ export const CreatePollOption = ({
         return;
       }
 
-      // start dragging
       isDragging.value = withSpring(1);
 
-      // keep track of dragged item
       draggedItemId.value = optionId;
 
-      // capture drag start position/index
       currentIndex.value = currentPosition.updatedIndex;
       dragStartTop.value = currentPosition.updatedTop;
       previousDragTop.value = currentPosition.updatedTop;
@@ -374,14 +386,12 @@ export const CreatePollOption = ({
       const frameDeltaY = newTop - previousDragTop.value;
       previousDragTop.value = newTop;
 
-      // we add a small leeway to account for sharp animations which tend to bug out otherwise
+      // A small leeway past the bounds avoids glitches in sharp animations.
       if (newTop < -10 || newTop > maxBound + 10) {
-        // out of bounds, exit out of the animation early
         return;
       }
       top.value = newTop;
 
-      // calculate the new index where drag is headed to
       const draggedTop = newTop;
       const draggedBottom = newTop + draggedItemPosition.updatedHeight;
       newIndex.value = findTargetIndex(
@@ -430,7 +440,6 @@ export const CreatePollOption = ({
           : undefined;
       top.value = withSpring(currentDragTop ?? top.value);
 
-      // stop dragging
       isDragging.value = withDelay(200, withSpring(0));
       draggedItemId.value = null;
       currentIndex.value = null;
@@ -517,7 +526,7 @@ export const CreatePollOption = ({
         <TextInput
           onBlur={handleBlur}
           onChangeText={onChangeTextHandler}
-          placeholder={t('Add an option')}
+          placeholder={t('poll.createPoll.options.placeholder', 'Add an option')}
           placeholderTextColor={semantics.inputTextPlaceholder}
           style={[styles.optionInput, optionStyle.input]}
         />
@@ -533,7 +542,7 @@ export const CreatePollOption = ({
         >
           <icons.InfoTooltip height={20} width={20} fill={semantics.accentError} />
           <Text style={[styles.optionValidationError, optionStyle.validationErrorText]}>
-            {t(error)}
+            {knownValidationErrors[error.code] ?? error.message}
           </Text>
         </View>
       ) : null}
@@ -566,7 +575,9 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
   const updateOption = useCallback(
     (newText: string, index: number) => {
       pollComposer.updateFields({
-        options: { index, text: newText },
+        data: {
+          options: { index, text: newText },
+        },
       });
     },
     [pollComposer],
@@ -576,13 +587,12 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
     pollComposer.handleFieldBlur('options');
   }, [pollComposer]);
 
-  // used to know if drag is happening or not
+  // 1 while an option is being dragged.
   const isDragging = useSharedValue<0 | 1>(0);
 
-  // this will hold id for item which user started dragging
+  // ID of the option being dragged.
   const draggedItemId = useSharedValue<string | null>(null);
 
-  // holds the animated height of the option container
   const animatedOptionsContainerHeight = useSharedValue(currentOptionPositions.value.totalHeight);
 
   useAnimatedReaction(
@@ -632,7 +642,9 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
       }
 
       await pollComposer.updateFields({
-        options: reorderedPollOptions,
+        data: {
+          options: reorderedPollOptions,
+        },
       });
     },
     [pollComposer],
@@ -645,7 +657,9 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
         return;
       }
       pollComposer.updateFields({
-        options: latestOptions.filter((option) => option.id !== optionId),
+        data: {
+          options: latestOptions.filter((option) => option.id !== optionId),
+        },
       });
     },
     [pollComposer],
@@ -714,7 +728,7 @@ export const CreatePollOptions = ({ currentOptionPositions }: CreatePollOptionsP
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.title, title]}>{t('Options')}</Text>
+      <Text style={[styles.title, title]}>{t('poll.createPoll.options.label', 'Options')}</Text>
       <Animated.View layout={LinearTransition.duration(200)} style={animatedOptionsContainerStyle}>
         {options.map((option, index) => (
           <MemoizedCreatePollOption

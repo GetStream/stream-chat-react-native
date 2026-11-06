@@ -11,21 +11,14 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../theme';
 
 export type MessageActionListProps = {
-  /**
-   * Function to close the message actions bottom sheet
-   * @returns void
-   */
-  dismissOverlay?: () => void;
-  /**
-   * An array of message actions to render
-   */
+  /** The actions to render. */
   messageActions?: MessageActionType[];
 };
 
 export const MessageActionList = (props: MessageActionListProps) => {
   const { messageActions } = props;
   const { MessageActionListItem } = useComponentsContext();
-  const a11yLabel = useA11yLabel('a11y/Message actions');
+  const a11yLabel = useA11yLabel('messageMenu.actionList.accessibilityLabel');
   const {
     theme: {
       messageMenu: {
@@ -62,7 +55,7 @@ export const MessageActionList = (props: MessageActionListProps) => {
       {destructiveActions?.map((messageAction, index) => (
         <MessageActionListItem
           key={messageAction.title}
-          {...{ ...messageAction, index, length: standardActions.length }}
+          {...{ ...messageAction, index, length: destructiveActions.length }}
         />
       ))}
     </ScrollView>
