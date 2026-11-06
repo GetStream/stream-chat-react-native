@@ -1,5 +1,12 @@
 # Change Log
 
+## [9.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.12.0...v9.12.1) (2026-11-06)
+
+### Bug Fixes
+
+* bump stream-chat-js before v10 ([#3945](https://github.com/GetStream/stream-chat-react-native/issues/3945)) ([23327da](https://github.com/GetStream/stream-chat-react-native/commit/23327da97420a47e6c6b12023b7445ab19eb7276))
+* bump stream-chat-js before v10 ([#3945](https://github.com/GetStream/stream-chat-react-native/issues/3945)) ([9e1bf45](https://github.com/GetStream/stream-chat-react-native/commit/9e1bf454b8df81ebff05fee62fd97f0a13a10817))
+
 ## [9.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.3...v9.12.0) (2026-11-05)
 
 ### Features
