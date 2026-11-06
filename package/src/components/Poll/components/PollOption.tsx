@@ -221,6 +221,7 @@ export const VoteButton = ({ forceIncoming, onPress, option }: PollVoteButtonPro
       accessibilityRole={poll.data?.enforce_unique_vote ? 'radio' : 'checkbox'}
       accessibilityState={accessibilityState}
       onPress={onPressHandler}
+      testID={hasVote ? 'poll-vote-button-checked' : 'poll-vote-button'}
       style={({ pressed }) => [
         { opacity: pressed ? 0.5 : 1 },
         styles.voteContainer,

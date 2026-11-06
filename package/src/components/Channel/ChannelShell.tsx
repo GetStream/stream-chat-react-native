@@ -61,32 +61,44 @@ import { toUnicodeScalarString } from '../MessageMenu/utils/toUnicodeScalarStrin
 
 export const reactionData: ReactionData[] = [
   {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'👍'} size={size} />,
+    Icon: ({ size = 12, testID }: { size?: number; testID?: string }) => (
+      <Emoji item={'👍'} size={size} testID={testID} />
+    ),
     type: 'like',
     isMain: true,
   },
   {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😂'} size={size} />,
+    Icon: ({ size = 12, testID }: { size?: number; testID?: string }) => (
+      <Emoji item={'😂'} size={size} testID={testID} />
+    ),
     type: 'haha',
     isMain: true,
   },
   {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'❤️'} size={size} />,
+    Icon: ({ size = 12, testID }: { size?: number; testID?: string }) => (
+      <Emoji item={'❤️'} size={size} testID={testID} />
+    ),
     type: 'love',
     isMain: true,
   },
   {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😮'} size={size} />,
+    Icon: ({ size = 12, testID }: { size?: number; testID?: string }) => (
+      <Emoji item={'😮'} size={size} testID={testID} />
+    ),
     type: 'wow',
     isMain: true,
   },
   {
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={'😢'} size={size} />,
+    Icon: ({ size = 12, testID }: { size?: number; testID?: string }) => (
+      <Emoji item={'😢'} size={size} testID={testID} />
+    ),
     type: 'sad',
     isMain: true,
   },
   ...emojis.map((emoji) => ({
-    Icon: ({ size = 12 }: { size?: number }) => <Emoji item={emoji} size={size} />,
+    Icon: ({ size = 12, testID }: { size?: number; testID?: string }) => (
+      <Emoji item={emoji} size={size} testID={testID} />
+    ),
     type: toUnicodeScalarString(emoji),
   })),
 ];

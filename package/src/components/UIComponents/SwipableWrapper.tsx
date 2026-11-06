@@ -107,7 +107,11 @@ export const RightActions = ({
         const Content = item.Content;
         return (
           <Animated.View key={item.id} style={[styles.action, animatedActionWidthStyle]}>
-            <Pressable onPress={item.action} style={StyleSheet.absoluteFill}>
+            <Pressable
+              onPress={item.action}
+              style={StyleSheet.absoluteFill}
+              testID={`swipe-action-${item.id}`}
+            >
               <View style={item.contentContainerStyle}>
                 <Animated.View style={animatedIconScaleStyle}>
                   <Content />

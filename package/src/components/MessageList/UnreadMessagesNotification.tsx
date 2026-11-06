@@ -82,7 +82,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
   const styles = useStyles();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID='unread-messages-notification'>
       <View style={styles.leftButtonContainer}>
         <Button
           variant='secondary'
@@ -95,6 +95,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           }
           onPress={handleOnPress}
           size='md'
+          testID='unread-messages-notification-button'
         />
       </View>
       <View style={styles.rightButtonContainer}>
@@ -106,6 +107,7 @@ export const UnreadMessagesNotification = (props: UnreadMessagesNotificationProp
           LeadingIcon={icons.NewClose}
           onPress={handleClose}
           size='md'
+          testID='unread-messages-notification-dismiss-button'
         />
       </View>
     </View>

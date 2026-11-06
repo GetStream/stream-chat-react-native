@@ -14,11 +14,17 @@
 node_modules
 NEXT_RELEASE_CHANGELOG.md
 artifacts
+allure-results
+examples/E2ETestApp/allurectl
 e2e/.env
 *.log
 .DS_STORE
 *.db
 .idea
+# Eclipse / Buildship metadata (VS Code Java, Android Studio imports)
+.settings/
+.project
+.classpath
 
 # Testing
 examples/SampleApp/fastlane/fastlane.log

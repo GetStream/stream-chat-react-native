@@ -77,3 +77,8 @@ yarn-error.log
 # Detox e2e: mock server checkout cloned by `fastlane start_mock_server`, test artifacts
 /stream-chat-test-mock-server/
 /artifacts/
+# Impact analysis: per-test coverage, the map built from it, the selected tests
+/e2e-coverage/
+/e2e_coverage_map.json
+/e2e_selection.json
+/e2e_batch_selection.json

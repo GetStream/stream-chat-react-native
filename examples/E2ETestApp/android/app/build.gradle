@@ -50,6 +50,12 @@ react {
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
 
+    // E2E_COVERAGE=1 instruments the JS (babel.config.js). Passing it as a bundle argument keeps
+    // Gradle from reusing an uninstrumented bundle from its build cache, and the other way round.
+    if (System.getenv("E2E_COVERAGE") == "1") {
+        extraPackagerArgs = ["--reset-cache"]
+    }
+
     /* Autolinking */
     autolinkLibrariesWithApp()
 }

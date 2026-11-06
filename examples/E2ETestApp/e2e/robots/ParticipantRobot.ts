@@ -48,6 +48,14 @@ export class ParticipantRobot extends Robot {
     );
   }
 
+  sendSystemMessage(text: string): this {
+    return this.post('participant/message?system=true', text);
+  }
+
+  sendMessageInChannelNamed(text: string, channelName: string): this {
+    return this.post(`participant/message?channel_name=${encodeURIComponent(channelName)}`, text);
+  }
+
   /** Sends `count` messages named `${text}-1` through `${text}-${count}`, 300ms apart. */
   sendMultipleMessages(text: string, count: number): this {
     for (let index = 1; index <= count; index++) {
@@ -65,6 +73,13 @@ export class ParticipantRobot extends Robot {
 
   editMessage(text: string): this {
     return this.post('participant/message?action=edit', text);
+  }
+
+  editMessageInThread(text: string, alsoSendInChannel = false): this {
+    return this.post(
+      `participant/message?action=edit&thread=true&thread_and_channel=${alsoSendInChannel}`,
+      text,
+    );
   }
 
   deleteMessage(hard = false): this {
