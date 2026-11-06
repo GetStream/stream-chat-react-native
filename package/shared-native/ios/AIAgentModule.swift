@@ -13,13 +13,55 @@ public class AIAgentModule: NSObject {
     private var completion: ((String?, String?) -> Void)?
     private let anchor = PresentationAnchor()
 
-    /// This install's identifier, created on first use. The same key and form as StreamChatAI's,
-    /// so a native app moving to React Native keeps its id.
+    /// This install's identifier, created on first use. It is kept in a file left out of backups,
+    /// as on Android, so a phone restored from another's backup never answers tool calls meant
+    /// for that one. An id kept the way StreamChatAI keeps it, in UserDefaults, carries over, so a
+    /// native app moving to React Native keeps its id.
     @objc public static func installId() -> String {
-        if let saved = UserDefaults.standard.string(forKey: installIdKey) { return saved }
-        let created = "ios-" + UUID().uuidString
-        UserDefaults.standard.set(created, forKey: installIdKey)
-        return created
+        let file = installIdFile()
+        if let file, let saved = try? String(contentsOf: file, encoding: .utf8), !saved.isEmpty {
+            return saved
+        }
+        let id = UserDefaults.standard.string(forKey: installIdKey) ?? "ios-" + UUID().uuidString
+        guard let file, keep(id, in: file) else {
+            // Without the file, UserDefaults keeps it, backed up as it is.
+            UserDefaults.standard.set(id, forKey: installIdKey)
+            return id
+        }
+        // The backups from now on don't carry it.
+        UserDefaults.standard.removeObject(forKey: installIdKey)
+        return id
+    }
+
+    // Application Support/io.getstream.ai/install-id.
+    private static func installIdFile() -> URL? {
+        guard let support = try? FileManager.default.url(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        ) else { return nil }
+        return support.appendingPathComponent("io.getstream.ai", isDirectory: true)
+            .appendingPathComponent("install-id")
+    }
+
+    // Writes `id` to `file`, left out of backups. Whether it did.
+    private static func keep(_ id: String, in file: URL) -> Bool {
+        do {
+            try FileManager.default.createDirectory(
+                at: file.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try id.write(to: file, atomically: true, encoding: .utf8)
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            var excluded = file
+            try excluded.setResourceValues(values)
+            return true
+        } catch {
+            try? FileManager.default.removeItem(at: file)
+            return false
+        }
     }
 
     /// Opens `url` in a web authentication session. `completion` gets the URL the page handed

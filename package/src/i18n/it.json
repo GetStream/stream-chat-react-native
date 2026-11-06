@@ -501,5 +501,7 @@
   "Message copied to clipboard": "Messaggio copiato negli appunti",
   "Failed to copy message": "Impossibile copiare il messaggio",
   "Remove attachment": "Rimuovi allegato",
-  "Remove option: {{ option }}": "Rimuovi opzione: {{ option }}"
+  "Remove option: {{ option }}": "Rimuovi opzione: {{ option }}",
+  "Play": "Riproduci",
+  "Pause": "Pausa"
 }

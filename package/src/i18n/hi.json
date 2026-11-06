@@ -501,5 +501,7 @@
   "Message copied to clipboard": "संदेश क्लिपबोर्ड पर कॉपी किया गया",
   "Failed to copy message": "संदेश कॉपी करने में विफल रहा",
   "Remove attachment": "अटैचमेंट हटाएं",
-  "Remove option: {{ option }}": "विकल्प हटाएं: {{ option }}"
+  "Remove option: {{ option }}": "विकल्प हटाएं: {{ option }}",
+  "Play": "चलाएँ",
+  "Pause": "रोकें"
 }

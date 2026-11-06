@@ -1,6 +1,7 @@
-import React, { type ReactNode, useEffect, useRef, useState } from 'react';
+import React, { type ReactNode, useEffect } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { callStateOf, setCallState, useCallState } from './callStates';
 import { isAuthorizationExpired, isAwaitingAuthorization } from './parseMessageParts';
 import type { AIToolAuthorizationData, AIToolCallPart } from './types';
 
@@ -189,22 +190,20 @@ export const AIToolAuthorization = ({
   part,
 }: AIToolAuthorizationProps) => {
   const approver = useAIToolApprover(approverProp);
-  const [state, setState] = useState<AIToolAuthorizationState>(idle);
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
+  // Kept by call, not by view: a list that reuses or remounts the row keeps the sign-in going.
+  const key = `authorization:${part.id}`;
+  const state = useCallState(key, idle);
   const authorization = signInFor(part, approver);
   const authorizer = approver?.authorizer;
+  const isWaiting = !!authorization && !!authorizer;
+  // Once the call's step changes, there is nothing left to keep.
+  useEffect(() => {
+    if (!isWaiting) setCallState(key, idle, idle);
+  }, [isWaiting, key]);
+
   if (!authorization || !authorizer) return null;
 
-  const update = (next: AIToolAuthorizationState) => {
-    if (mounted.current) setState(next);
-  };
+  const update = (next: AIToolAuthorizationState) => setCallState(key, next, idle);
 
   const sendDecline = (signIn: AIToolAuthorizer) => {
     update({ ...idle, isDeclining: true });
@@ -212,8 +211,10 @@ export const AIToolAuthorization = ({
   };
 
   const connect = (signIn: AIToolAuthorizer) => {
-    if (state.isConnecting || state.isDeclining) return;
-    setState({ ...idle, isConnecting: true });
+    // Read where it stands now: a second tap in the same frame must not open it twice.
+    const now = callStateOf(key, idle);
+    if (now.isConnecting || now.isDeclining) return;
+    update({ ...idle, isConnecting: true });
     signIn.connect(part).then(
       // Your backend has the provider's answer before the sign-in comes back, and its change to
       // the step hides this. Until then it says it is connecting, unless the provider did not
@@ -227,7 +228,7 @@ export const AIToolAuthorization = ({
   };
 
   const decline = (signIn: AIToolAuthorizer) => {
-    if (state.isDeclining) return;
+    if (callStateOf(key, idle).isDeclining) return;
     sendDecline(signIn);
   };
 

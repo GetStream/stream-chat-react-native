@@ -501,5 +501,7 @@
   "Message copied to clipboard": "Сообщение скопировано в буфер обмена",
   "Failed to copy message": "Не удалось скопировать сообщение",
   "Remove attachment": "Удалить вложение",
-  "Remove option: {{ option }}": "Удалить параметр: {{ option }}"
+  "Remove option: {{ option }}": "Удалить параметр: {{ option }}",
+  "Play": "Воспроизвести",
+  "Pause": "Пауза"
 }

@@ -501,5 +501,7 @@
   "Message copied to clipboard": "Bericht gekopieerd naar klembord",
   "Failed to copy message": "Kopiëren van bericht mislukt",
   "Remove attachment": "Bijlage verwijderen",
-  "Remove option: {{ option }}": "Optie verwijderen: {{ option }}"
+  "Remove option: {{ option }}": "Optie verwijderen: {{ option }}",
+  "Play": "Afspelen",
+  "Pause": "Pauzeren"
 }

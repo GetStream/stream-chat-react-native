@@ -1,6 +1,7 @@
 import { type ReactNode, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import {
+  type AIConversationCanShowUI,
   type AIConversationEntry,
   type AIConversationTurn,
   AIPendingMessageTracker,
@@ -71,6 +72,8 @@ const firstStepOf = (turn: AIConversationTurn | undefined) => {
 
 export type UseConversationRowsOptions = {
   messages: AIMessage[];
+  /** Whether a reply's generated UI shows, so a reply that shows only UI has a row. */
+  canShowUI?: AIConversationCanShowUI;
   footer?: ReactNode;
   isThinking?: boolean;
   pendingMessage?: AIPendingMessage | null;
@@ -93,6 +96,7 @@ export type ConversationRows = {
  * so the list renders only the rows that changed. Knows nothing about the list itself.
  */
 export const useConversationRows = ({
+  canShowUI,
   footer,
   isThinking = false,
   messages,
@@ -102,11 +106,11 @@ export const useConversationRows = ({
   const [clock] = useState(() => new AIThinkingClock());
 
   const entries = useMemo(
-    () => tracker.entries(messages, pendingMessage),
-    [messages, pendingMessage, tracker],
+    () => tracker.entries(messages, pendingMessage, canShowUI),
+    [canShowUI, messages, pendingMessage, tracker],
   );
   // after `entries`, which matched the copies
-  const thinking = isThinking || tracker.isAwaitingReply(messages, pendingMessage);
+  const thinking = isThinking || tracker.isAwaitingReply(messages, pendingMessage, canShowUI);
   const turns = useMemo(() => turnsOf(entries), [entries]);
   const latest = turns[turns.length - 1];
   const latestHasReplies = (latest?.entries.length ?? 0) > 1;

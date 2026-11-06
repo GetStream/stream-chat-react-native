@@ -501,5 +501,7 @@
   "Message copied to clipboard": "메시지가 클립보드에 복사되었습니다",
   "Failed to copy message": "메시지 복사에 실패했습니다",
   "Remove attachment": "첨부 파일 삭제",
-  "Remove option: {{ option }}": "옵션 삭제: {{ option }}"
+  "Remove option: {{ option }}": "옵션 삭제: {{ option }}",
+  "Play": "재생",
+  "Pause": "일시정지"
 }

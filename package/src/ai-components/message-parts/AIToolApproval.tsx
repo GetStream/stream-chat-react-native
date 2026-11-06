@@ -1,6 +1,7 @@
-import React, { type ReactNode, useEffect, useRef, useState } from 'react';
+import React, { type ReactNode, useEffect } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { callStateOf, setCallState, useCallState } from './callStates';
 import { isAwaitingApproval } from './parseMessageParts';
 import type { AIToolApprovalData, AIToolCallPart } from './types';
 
@@ -138,29 +139,25 @@ export type AIToolApprovalProps = {
  */
 export const AIToolApproval = ({ approver: approverProp, children, part }: AIToolApprovalProps) => {
   const approver = useAIToolApprover(approverProp);
-  const [state, setState] = useState<AIToolApprovalState>(idle);
-  const mounted = useRef(true);
+  // Kept by call, not by view: a list that reuses or remounts the row keeps the answer sent.
+  const key = `approval:${part.id}`;
+  const state = useCallState(key, idle);
+  const isWaiting =
+    !!approver && !!part.approval && isAwaitingApproval(part, approver.userId, approver.clientId);
+  // Once the call's step changes, there is nothing left to keep.
   useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
+    if (!isWaiting) setCallState(key, idle, idle);
+  }, [isWaiting, key]);
 
-  if (
-    !approver ||
-    !part.approval ||
-    !isAwaitingApproval(part, approver.userId, approver.clientId)
-  ) {
-    return null;
-  }
+  if (!approver || !part.approval || !isWaiting) return null;
 
   const decide = (allowed: boolean) => {
-    if (state.isSending) return;
-    setState({ failed: false, isSending: true });
-    approver.decide(part, allowed).catch(() => {
-      if (mounted.current) setState({ failed: true, isSending: false });
-    });
+    // Read where it stands now: a second tap in the same frame must not answer twice.
+    if (callStateOf(key, idle).isSending) return;
+    setCallState(key, { failed: false, isSending: true }, idle);
+    approver
+      .decide(part, allowed)
+      .catch(() => setCallState(key, { failed: true, isSending: false }, idle));
   };
 
   return (

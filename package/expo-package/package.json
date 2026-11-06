@@ -22,6 +22,7 @@
     "react-native.config.js",
     "package.json",
     "ai-components",
+    "a2ui",
     "app.plugin.js",
     "plugin"
   ],

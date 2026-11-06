@@ -501,5 +501,7 @@
   "Message copied to clipboard": "Mensagem copiada para a área de transferência",
   "Failed to copy message": "Falha ao copiar a mensagem",
   "Remove attachment": "Remover anexo",
-  "Remove option: {{ option }}": "Remover opção: {{ option }}"
+  "Remove option: {{ option }}": "Remover opção: {{ option }}",
+  "Play": "Reproduzir",
+  "Pause": "Pausar"
 }

@@ -32,6 +32,9 @@ examples/E2ETestApp/artifacts/
 package/src/components/docs/
 package/src/theme/generated/
 
+# A2UI's conformance cases, kept as upstream wrote them
+package/__fixtures__/a2ui-conformance/
+
 # Workflow / tooling configs not owned by this project's Prettier
 .github/
 .husky/
