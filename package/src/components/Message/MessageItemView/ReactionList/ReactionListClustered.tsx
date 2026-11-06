@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
 
 import { ReactionListItemWrapper } from './ReactionListItemWrapper';
 
@@ -21,18 +21,18 @@ import { primitives } from '../../../../theme';
 import type { ReactionData } from '../../../../utils/utils';
 import { HiddenA11yText } from '../../../Accessibility/HiddenA11yText';
 
-type Props = Pick<IconProps, 'pathFill' | 'style'> & {
+type Props = Pick<IconProps, 'pathFill' | 'style' | 'testID'> & {
   size: number;
   type: string;
   supportedReactions?: ReactionData[];
 };
 
-const Icon = ({ size, style, supportedReactions, type }: Props) => {
+const Icon = ({ size, style, supportedReactions, testID, type }: Props) => {
   const { icons } = useComponentsContext();
   const ReactionIcon =
     supportedReactions?.find((reaction) => reaction.type === type)?.Icon || icons.Unknown;
 
-  return <ReactionIcon size={size} style={style} />;
+  return <ReactionIcon size={size} style={style} testID={testID} />;
 };
 
 export type ReactionListClusteredPropsWithContext = Partial<
@@ -123,15 +123,13 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
     >
       {reactions?.slice(0, 4).map((reaction) => (
         <Fragment key={reaction.type}>
-          {/* Identifies each reaction type for e2e tests; adds no layout of its own. */}
-          <View testID={`reaction-list-item-${reaction.type}`}>
-            <Icon
-              size={icon.size}
-              style={[styles.iconStyle, icon.style]}
-              supportedReactions={supportedReactions}
-              type={reaction.type}
-            />
-          </View>
+          <Icon
+            size={icon.size}
+            style={[styles.iconStyle, icon.style]}
+            supportedReactions={supportedReactions}
+            testID={`reaction-list-item-${reaction.type}`}
+            type={reaction.type}
+          />
           {reaction.own ? <HiddenA11yText label={youReacted} /> : null}
         </Fragment>
       ))}

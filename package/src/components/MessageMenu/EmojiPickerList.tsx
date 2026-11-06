@@ -17,10 +17,14 @@ const EMOJI_CELL_SIZE = 54;
 
 const emojiKeyExtractor = (item: string) => `unicode-${item}`;
 
-export const Emoji = ({ item, size }: { item: string; size: number }) => {
+export const Emoji = ({ item, size, testID }: { item: string; size: number; testID?: string }) => {
   const styles = useStyles();
   return (
-    <Text style={[styles.emojiText, { fontSize: size, lineHeight: size + 4 }]} numberOfLines={1}>
+    <Text
+      style={[styles.emojiText, { fontSize: size, lineHeight: size + 4 }]}
+      numberOfLines={1}
+      testID={testID}
+    >
       {item}
     </Text>
   );

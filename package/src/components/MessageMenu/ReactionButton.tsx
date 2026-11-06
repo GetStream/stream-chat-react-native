@@ -45,8 +45,9 @@ export const ReactionButton = (props: ReactionButtonProps) => {
   );
 
   return (
-    <View style={styles.reactionButton} testID={`reaction-button-${type}`}>
+    <View style={styles.reactionButton}>
       <Button
+        testID={`reaction-button-${type}`}
         variant={'secondary'}
         type={'outline'}
         iconOnly={!count}

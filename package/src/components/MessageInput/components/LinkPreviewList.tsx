@@ -90,8 +90,8 @@ export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
           ) : null}
         </View>
       </View>
-      <View style={styles.dismissWrapper} testID='composer-link-preview-dismiss'>
-        <AttachmentRemoveControl onPress={dismissPreview} />
+      <View style={styles.dismissWrapper}>
+        <AttachmentRemoveControl onPress={dismissPreview} testID='composer-link-preview-dismiss' />
       </View>
     </Animated.View>
   );

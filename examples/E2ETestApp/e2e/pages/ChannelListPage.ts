@@ -61,7 +61,7 @@ export const ChannelListPage = {
       get messageSender() {
         return by.id('channel-preview-sender');
       },
-      deliveryStatus(status: 'sending' | 'sent' | 'delivered' | 'read' | 'none') {
+      deliveryStatus(status: 'sending' | 'sent' | 'delivered' | 'read') {
         return by.id(`channel-preview-status-${status}`);
       },
       get anyDeliveryStatus() {

@@ -87,18 +87,6 @@ export const ChannelMessagePreviewDeliveryStatus = ({
             : 'message.status.sending.accessibilityLabel',
   );
 
-  // Which icon the row shows, for e2e tests (the icons themselves carry no identifier).
-  const statusTestID =
-    messageStatus === MessageStatusTypes.SENDING
-      ? 'channel-preview-status-sending'
-      : messageStatus === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
-        ? 'channel-preview-status-read'
-        : status === MessageDeliveryStatus.DELIVERED
-          ? 'channel-preview-status-delivered'
-          : status === MessageDeliveryStatus.SENT
-            ? 'channel-preview-status-sent'
-            : 'channel-preview-status-none';
-
   if (
     !channel.data?.custom?.name &&
     membersWithoutSelf.length === 1 &&
@@ -125,15 +113,22 @@ export const ChannelMessagePreviewDeliveryStatus = ({
 
   return (
     <CompositeAccessibilityProbe label={statusLabel}>
-      <View style={styles.container} testID={statusTestID}>
+      <View style={styles.container}>
         {messageStatus === MessageStatusTypes.SENDING ? (
-          <icons.Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
+          <icons.Time
+            stroke={semantics.chatTextTimestamp}
+            height={16}
+            width={16}
+            testID='channel-preview-status-sending'
+            {...timeIcon}
+          />
         ) : messageStatus === MessageStatusTypes.RECEIVED &&
           status === MessageDeliveryStatus.READ ? (
           <icons.CheckAll
             stroke={semantics.accentPrimary}
             height={16}
             width={16}
+            testID='channel-preview-status-read'
             {...checkAllIcon}
           />
         ) : status === MessageDeliveryStatus.DELIVERED ? (
@@ -141,10 +136,17 @@ export const ChannelMessagePreviewDeliveryStatus = ({
             stroke={semantics.chatTextTimestamp}
             height={16}
             width={16}
+            testID='channel-preview-status-delivered'
             {...checkAllIcon}
           />
         ) : status === MessageDeliveryStatus.SENT ? (
-          <icons.Check stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkIcon} />
+          <icons.Check
+            stroke={semantics.chatTextTimestamp}
+            height={16}
+            width={16}
+            testID='channel-preview-status-sent'
+            {...checkIcon}
+          />
         ) : null}
         <Text style={styles.text} testID='channel-preview-sender'>
           {t('common.you.label', 'You')}:
