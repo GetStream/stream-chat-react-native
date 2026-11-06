@@ -675,6 +675,8 @@ export const editMessageNow = async (newText: string, messageCellIndex = 0) => {
   const index = await indexFromBottom(MessageList.messageContents, messageCellIndex);
   await waitToAppearAndLongPress(MessageList.messageContents, { index });
   await waitToAppearAndClick(ContextMenu.action('editMessage'), { index: 0 });
+  // Typing before the composer enters edit mode sends the text as a new message.
+  await waitToAppear(Composer.editPreview);
   await typeIntoComposer(newText, true);
   await waitToAppearAndClick(Composer.sendButton);
 };

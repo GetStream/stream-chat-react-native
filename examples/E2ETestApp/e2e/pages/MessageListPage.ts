@@ -18,6 +18,9 @@ export const MessageListPage = {
     get sendButton() {
       return by.id('send-button');
     },
+    get editPreview() {
+      return by.id('reply-composer-preview');
+    },
     get attachmentsButton() {
       return by.id('attach-button');
     },
