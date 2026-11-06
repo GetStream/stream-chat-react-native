@@ -6,6 +6,7 @@ import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-nat
 
 import { useAppContext } from '../context/AppContext';
 import { useLegacyColors } from '../theme/useLegacyColors';
+import { DEFAULT_TOKEN_URL } from '../utils/tokenProvider';
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
@@ -147,7 +148,8 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
   const [userIdError, setUserIdError] = useState(false);
   const [userName, setUserName] = useState('');
   const [userToken, setUserToken] = useState('');
-  const [userTokenError, setUserTokenError] = useState(false);
+  const [tokenUrl, setTokenUrl] = useState(DEFAULT_TOKEN_URL);
+  const [tokenError, setTokenError] = useState(false);
 
   const isValidInput = () => {
     let isValid = true;
@@ -161,8 +163,9 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
       isValid = false;
     }
 
-    if (!userToken) {
-      setUserTokenError(true);
+    // Either credential will do: a static token wins, otherwise one is fetched from the token URL.
+    if (!userToken && !tokenUrl) {
+      setTokenError(true);
       isValid = false;
     }
 
@@ -201,13 +204,22 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                 value={userId}
               />
               <LabeledTextInput
-                error={userTokenError}
+                error={tokenError}
                 label='User Token'
                 onChangeText={(text) => {
-                  setUserTokenError(false);
+                  setTokenError(false);
                   setUserToken(text);
                 }}
                 value={userToken}
+              />
+              <LabeledTextInput
+                error={tokenError}
+                label='Token URL'
+                onChangeText={(text) => {
+                  setTokenError(false);
+                  setTokenUrl(text);
+                }}
+                value={tokenUrl}
               />
               <LabeledTextInput
                 label='Username (optional)'
@@ -228,8 +240,9 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                     await loginUser({
                       apiKey,
                       userId,
+                      tokenUrl: tokenUrl || undefined,
                       userName,
-                      userToken,
+                      userToken: userToken || undefined,
                     });
                   } catch (e) {
                     Alert.alert(

@@ -65,7 +65,8 @@ export const ChannelEditDetailsFormContent = () => {
     })();
   }, [pendingAction, pickImageFromNativePicker, sheetVisible, store, takePhoto]);
 
-  // `undefined` = untouched (show live channel image), `File` = picked uri, `null` = reset.
+  // `undefined` is untouched (shows the live channel image), a `File` is the picked image and
+  // `null` is a reset.
   const isPreview = updatedImage !== undefined;
   const previewUri = updatedImage ? updatedImage.uri : null;
 
@@ -80,8 +81,8 @@ export const ChannelEditDetailsFormContent = () => {
           size='2xl'
         />
         <Button
-          accessibilityLabelKey='a11y/Upload channel image'
-          label={t('Upload')}
+          accessibilityLabelKey='channelDetails.editChannel.upload.accessibilityLabel'
+          label={t('channelDetails.editChannel.upload.label', 'Upload')}
           onPress={openSheet}
           size='sm'
           style={[styles.uploadButton, uploadButtonOverride]}

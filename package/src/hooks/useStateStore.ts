@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import type { StateStore } from 'stream-chat';
+import type { StateStore } from '@stream-io/state-store';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 const noop = () => {};

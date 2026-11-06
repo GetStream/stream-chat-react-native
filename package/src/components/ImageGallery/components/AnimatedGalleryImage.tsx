@@ -75,23 +75,17 @@ export const AnimatedGalleryImage = React.memo(
       translateY,
     });
 
-    /**
-     * An empty view is rendered for images not close to the currently
-     * selected in order to maintain spacing while reducing the image
-     * load on memory.
-     */
+    // Slides far from the current one render an empty view that keeps the spacing and holds no
+    // image.
     if (!shouldRender) {
       return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
     }
 
     if (isSvg) {
-      // The outer Animated.View is sized at 8× screen so raster images stay
-      // crisp under pinch zoom (see useAnimatedGalleryStyle). rn-svg on
-      // Android rasterizes the SVG to a bitmap at its layout size and an
-      // 8x screen bitmap exceeds RecordingCanvas's per draw byte limit. The
-      // inner SvgAwareImage is sized at 1x screen with a counter scale of 8 so
-      // the bitmap stays small while the composed visible scale (1/8 × 8 === 1)
-      // is unchanged.
+      // The outer view is 8x screen so raster images stay crisp under pinch zoom (see
+      // `useAnimatedGalleryStyle`). On Android, rn-svg rasterizes at layout size and an 8x screen
+      // bitmap exceeds RecordingCanvas's per-draw byte limit, so the inner `SvgAwareImage` is 1x
+      // screen with a counter scale of 8, which leaves the visible scale unchanged.
       return (
         <Animated.View
           accessibilityLabel={accessibilityLabel}

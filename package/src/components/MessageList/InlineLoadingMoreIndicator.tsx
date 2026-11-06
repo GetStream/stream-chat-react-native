@@ -1,7 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({
@@ -53,8 +52,8 @@ const MemoizedInlineLoadingMoreIndicator = React.memo(
   areEqual,
 ) as typeof InlineLoadingMoreIndicatorWithContext;
 
-export const InlineLoadingMoreIndicator = () => {
-  const { loadingMore } = usePaginatedMessageListContext();
-
-  return <MemoizedInlineLoadingMoreIndicator loadingMore={loadingMore} />;
-};
+export const InlineLoadingMoreIndicator = ({
+  loadingMore,
+}: InlineLoadingMoreIndicatorPropsWithContext) => (
+  <MemoizedInlineLoadingMoreIndicator loadingMore={loadingMore} />
+);

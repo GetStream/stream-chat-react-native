@@ -32,11 +32,20 @@ export const sqliteMock = {
         rmSync(testDbName, { force: true });
       },
       execute: async (queryInput: string, params: unknown[]) => {
-        const query = queryInput.trim().toLowerCase();
+        const query = queryInput.trim();
+        // Lower-cased COPY, used only to classify the statement and to parse PRAGMA tokens. The query
+        // itself must be executed with its original casing: SQL keywords are case-insensitive, but
+        // string literals are not — and `selectMessagesForChannels` builds its result rows with
+        // `json_object('extraData', a.extraData, ...)`, whose keys are literals. Lower-casing the whole
+        // statement renamed every one of those keys (`extradata`, `createdAt` -> `createdat`, ...), so
+        // `mapStorableToMessage`'s destructuring silently produced `undefined` for every camelCase
+        // field — including the `extraData` blob that carries `status`. op-sqlite runs the SQL as
+        // written, so this only ever misled tests.
+        const classifier = query.toLowerCase();
 
         const stmt = db.prepare(query);
         let result: unknown[] = [];
-        if (query.indexOf('select') === 0) {
+        if (classifier.indexOf('select') === 0) {
           const modifiedParams = params?.map((p) => (typeof p === 'boolean' ? Number(p) : p)) || [];
           result = await new Promise((resolve) => resolve(stmt.all(modifiedParams)));
 
@@ -47,8 +56,8 @@ export const sqliteMock = {
           };
         }
 
-        if (query.indexOf('pragma') === 0) {
-          const pragmaQueryTokens = query.split(' ');
+        if (classifier.indexOf('pragma') === 0) {
+          const pragmaQueryTokens = classifier.split(' ');
           if (pragmaQueryTokens[2] === '=') {
             db.pragma(`${pragmaQueryTokens[1]} = ${pragmaQueryTokens[3]}`);
           } else {

@@ -7,9 +7,7 @@ import { getInitialsFromName } from '../../utils/utils';
 import { Avatar, AvatarProps } from '../ui';
 
 export type MessageUserReactionsAvatarProps = {
-  /**
-   * The reaction object
-   */
+  /** The reaction whose user's avatar is shown. */
   reaction: Reaction;
 } & Partial<Pick<AvatarProps, 'size'>>;
 

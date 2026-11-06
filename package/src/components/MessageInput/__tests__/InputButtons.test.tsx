@@ -87,6 +87,24 @@ describe('InputButtons', () => {
     });
   });
 
+  it('shows the attach button once the upload capability arrives after mount', async () => {
+    const capabilities = channel.state.getLatestValue().ownCapabilities;
+    act(() => {
+      channel.state.partialNext({
+        ownCapabilities: capabilities.filter((capability) => capability !== 'upload-file'),
+      });
+    });
+
+    renderComponent({ channelProps: { channel, hasCommands: false }, client, props: {} });
+    await waitFor(() => expect(screen.queryByTestId('attach-button')).toBeFalsy());
+
+    act(() => {
+      channel.state.partialNext({ ownCapabilities: [...capabilities, 'upload-file'] });
+    });
+
+    await waitFor(() => expect(screen.queryByTestId('attach-button')).toBeTruthy());
+  });
+
   it('should not show commands buttons when there is text in the textComposer', async () => {
     const props = {};
     const channelProps = {

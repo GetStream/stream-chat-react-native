@@ -1,63 +1,59 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Event, PaginatorState, ReminderFilters, ReminderResponse } from 'stream-chat';
+import { EventPayload, PaginatorState, ReminderFilters, ReminderResponseData } from 'stream-chat';
+
+import { nowNs } from 'stream-chat';
 
 import { useStateStore } from './useStateStore';
 
 import { useChatContext } from '../contexts/chatContext/ChatContext';
 
-const selector = (nextValue: PaginatorState<ReminderResponse>) =>
+const selector = (nextValue: PaginatorState<ReminderResponseData>) =>
   ({
     isLoading: nextValue.isLoading,
     items: nextValue.items,
   }) as const;
 
-// Utility to sort reminders by remind_at date in ascending order
-const sortRemindersByDate = (reminders: ReminderResponse[]) => {
+const sortRemindersByDate = (reminders: ReminderResponseData[]) => {
   return reminders.sort((a, b) => {
-    if (!a.remind_at || !b.remind_at) {
-      return 0; // If either remind_at is missing, keep original order
+    if (a.remind_at == null || b.remind_at == null) {
+      return 0; // Keep the original order when either remind_at is missing
     }
-    // Sort by remind_at date
-    return new Date(a.remind_at).getTime() - new Date(b.remind_at).getTime();
+    return a.remind_at - b.remind_at;
   });
 };
 
-// Utility functions to check reminder status
-const isReminderOverdue = (reminder?: ReminderResponse) => {
-  return reminder?.remind_at && new Date(reminder.remind_at) < new Date();
+const isReminderOverdue = (reminder?: ReminderResponseData) => {
+  return reminder?.remind_at != null && reminder.remind_at < nowNs();
 };
 
-const isReminderUpcoming = (reminder?: ReminderResponse) => {
-  return reminder?.remind_at && new Date(reminder.remind_at) > new Date();
+const isReminderUpcoming = (reminder?: ReminderResponseData) => {
+  return reminder?.remind_at != null && reminder.remind_at > nowNs();
 };
 
-// Utility to check if all reminders should be shown based on filters
 const showAllReminders = (filters?: ReminderFilters) => {
   return filters && Object.keys(filters).length === 0;
 };
 
 /**
- * Custom hook to query reminders from the Stream Chat client.
- * It handles fetching, updating, and deleting reminders, and provides
- * a way to refresh the list and load more reminders.
+ * Queries reminders from the client and keeps the list in sync with reminder events.
  *
- * @returns {Object} - Contains data, isLoading, onEndReached, onRefresh, and setData.
+ * @returns The reminders as `data`, `isLoading`, `loadNext` to fetch the next page and `setData`.
  */
 export const useQueryReminders = () => {
   const { client } = useChatContext();
   const { isLoading, items } = useStateStore(client.reminders.paginator.state, selector);
-  const [data, setData] = useState<ReminderResponse[]>(items ?? []);
-  // The deletion and updates are not handled by the paginator, so we need to cache them
-  // to avoid showing deleted or updated reminders in the list.
-  const deletedOrUpdatedRemindersCache = useRef<Record<string, ReminderResponse>>({});
+  const [data, setData] = useState<ReminderResponseData[]>(items ?? []);
+  // The paginator does not handle deletions and updates, so they are cached to keep stale
+  // reminders out of the list.
+  const deletedOrUpdatedRemindersCache = useRef<Record<string, ReminderResponseData>>({});
 
   useEffect(() => {
     setData((prevData) => {
       if (!items) {
         return prevData;
       }
-      const newData: ReminderResponse[] = [];
+      const newData: ReminderResponseData[] = [];
       items.forEach((reminder) => {
         if (prevData.includes(reminder)) {
           newData.push(reminder);
@@ -72,7 +68,7 @@ export const useQueryReminders = () => {
   }, [items, client.reminders.paginator.filters]);
 
   useEffect(() => {
-    const handleReminderDeleted = (event: Event) => {
+    const handleReminderDeleted = (event: EventPayload<'reminder.deleted'>) => {
       if (!event.reminder?.message_id) {
         return;
       }
@@ -82,7 +78,7 @@ export const useQueryReminders = () => {
       });
     };
 
-    const handleReminderCreated = (event: Event) => {
+    const handleReminderCreated = (event: EventPayload<'reminder.created'>) => {
       setData((prevData) => {
         if (!event.reminder) {
           return prevData;
@@ -92,22 +88,22 @@ export const useQueryReminders = () => {
       });
     };
 
-    const handleReminderUpdated = (event: Event) => {
+    const handleReminderUpdated = (event: EventPayload<'reminder.updated'>) => {
       const { reminder } = event;
       if (!reminder || showAllReminders(client.reminders.paginator.filters)) {
-        return; // No update needed if reminder is undefined or filters is empty
+        return; // Nothing to update without a reminder, or when the filters match everything
       }
       deletedOrUpdatedRemindersCache.current[reminder.message_id] = reminder;
       setData((prevData) => {
         const existingReminder = prevData.find((item) => item.message_id === reminder?.message_id);
         if (!existingReminder) {
-          return prevData; // No update needed if reminder not found
+          return prevData;
         }
 
-        if (existingReminder.remind_at && !event.reminder?.remind_at) {
+        if (existingReminder.remind_at != null && event.reminder?.remind_at == null) {
           return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
-        if (!existingReminder.remind_at && event.reminder?.remind_at) {
+        if (existingReminder.remind_at == null && event.reminder?.remind_at != null) {
           return prevData.filter((item) => item.message_id !== event.reminder?.message_id);
         }
         if (isReminderOverdue(existingReminder) && !isReminderOverdue(event.reminder)) {

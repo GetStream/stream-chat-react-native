@@ -20,7 +20,6 @@ export const useCreateMessageContext = ({
   alignment,
   channel,
   contextMenuAnchorRef,
-  deliveredToCount,
   dismissOverlay,
   files,
   goToMessage,
@@ -29,13 +28,13 @@ export const useCreateMessageContext = ({
   hasAttachmentActions,
   handleReaction,
   handleToggleReaction,
+  messageActionHandlers,
   hasReactions,
   messageHasOnlySingleAttachment,
   images,
-  isMessageAIGenerated,
   isMyMessage,
+  isVeryLastMessage,
   lastGroupMessage,
-  members,
   message,
   messageOverlayId,
   messageContentOrder,
@@ -51,12 +50,10 @@ export const useCreateMessageContext = ({
   registerMessageOverlayTarget,
   unregisterMessageOverlayTarget,
   reactions,
-  readBy,
   showAvatar,
   showMessageOverlay,
   showReactionsOverlay,
   showMessageStatus,
-  threadList,
   videos,
   setQuotedMessage,
 }: Omit<MessageContextValue, 'hasInteractiveAccessibilityContent'>) => {
@@ -64,17 +61,14 @@ export const useCreateMessageContext = ({
   const reactionsValue = reactions.map(({ count, own, type }) => `${own}${type}${count}`).join();
   const stringifiedMessage = stringifyMessage({ message });
 
-  const membersValue = JSON.stringify(members);
   const myMessageThemeString = useMemo(() => JSON.stringify(myMessageTheme), [myMessageTheme]);
 
   const stringifiedQuotedMessage = message.quoted_message
     ? stringifyMessage({ includeReactions: false, message: message.quoted_message })
     : '';
 
-  // Resolved here (not at each consumer) so the boolean lives on MessageContext
-  // and downstream components (MessageContent, MessageTextContainer) read it
-  // directly. The predicate's identity is stable in the default case; an
-  // integrator override is expected to be stable too (documented on the config).
+  // Resolved here so downstream components read the boolean from MessageContext. The predicate
+  // is expected to be stable, including an integrator override.
   const { hasInteractiveAccessibilityContent: hasInteractiveAccessibilityContentPredicate } =
     useAccessibilityContext();
   const hasInteractiveAccessibilityContent = hasInteractiveAccessibilityContentPredicate(message);
@@ -85,7 +79,6 @@ export const useCreateMessageContext = ({
       alignment,
       channel,
       contextMenuAnchorRef,
-      deliveredToCount,
       dismissOverlay,
       files,
       goToMessage,
@@ -94,14 +87,14 @@ export const useCreateMessageContext = ({
       hasAttachmentActions,
       handleReaction,
       handleToggleReaction,
+      messageActionHandlers,
       hasInteractiveAccessibilityContent,
       hasReactions,
       messageHasOnlySingleAttachment,
       images,
-      isMessageAIGenerated,
       isMyMessage,
+      isVeryLastMessage,
       lastGroupMessage,
-      members,
       message,
       messageOverlayId,
       messageContentOrder,
@@ -117,13 +110,11 @@ export const useCreateMessageContext = ({
       registerMessageOverlayTarget,
       unregisterMessageOverlayTarget,
       reactions,
-      readBy,
       setQuotedMessage,
       showAvatar,
       showMessageOverlay,
       showReactionsOverlay,
       showMessageStatus,
-      threadList,
       videos,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,18 +127,15 @@ export const useCreateMessageContext = ({
       hasInteractiveAccessibilityContent,
       hasReactions,
       messageHasOnlySingleAttachment,
+      isVeryLastMessage,
       lastGroupMessage,
-      membersValue,
       myMessageThemeString,
       messageOverlayId,
       reactionsValue,
       stringifiedMessage,
       stringifiedQuotedMessage,
-      readBy,
-      deliveredToCount,
       showAvatar,
       showMessageStatus,
-      threadList,
       preventPress,
       unregisterMessageOverlayTarget,
     ],

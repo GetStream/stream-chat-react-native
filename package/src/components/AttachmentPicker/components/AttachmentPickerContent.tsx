@@ -22,6 +22,7 @@ import {
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState, useStableCallback } from '../../../hooks';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
 import { CommandSuggestionItem } from '../../AutoCompleteInput/AutoCompleteSuggestionItem';
 
@@ -124,18 +125,18 @@ const useCommandPickerStyle = () => {
 
 export const AttachmentCommandPicker = () => {
   const { t } = useTranslationContext();
-  const messageComposer = useMessageComposer();
-  const [commands] = useState(() => {
-    const commandsSearchSource = new CommandSearchSource(messageComposer.channel);
-    const result = commandsSearchSource.query('');
-
-    return result.items;
-  });
+  const { channel } = useMessageComposer();
+  const commandSearchSource = useMemo(() => new CommandSearchSource(channel), [channel]);
+  const commandsSelector = useCallback(
+    () => ({ commands: commandSearchSource.query('').items }),
+    [commandSearchSource],
+  );
+  const { commands } = useStateStore(channel.configState, commandsSelector);
   const styles = useCommandPickerStyle();
 
   return (
     <>
-      <Text style={styles.title}>{t('Instant Commands')}</Text>
+      <Text style={styles.title}>{t('attachmentPicker.commands.title', 'Instant Commands')}</Text>
       <FlatList
         contentContainerStyle={styles.contentContainer}
         renderItem={renderItem}
@@ -162,8 +163,8 @@ export const AttachmentPollPicker = (props: AttachmentPickerContentProps) => {
       Icon={icons.PollThumbnail}
       onPress={openPollCreationModal}
       height={height}
-      buttonText={t('Create Poll')}
-      description={t('Create a poll and let everyone vote')}
+      buttonText={t('attachmentPicker.poll.label', 'Create Poll')}
+      description={t('attachmentPicker.poll.description', 'Create a poll and let everyone vote')}
     />
   );
 };
@@ -203,16 +204,23 @@ export const AttachmentCameraPicker = (
       Icon={icons.Camera}
       onPress={openSettings}
       height={height}
-      buttonText={t('Change in Settings')}
-      description={t('You have not granted access to your camera')}
+      buttonText={t('attachmentPicker.openSettings.label', 'Change in Settings')}
+      description={t(
+        'attachmentPicker.camera.denied.description',
+        'You have not granted access to your camera',
+      )}
     />
   ) : (
     <AttachmentPickerGenericContent
       Icon={videoOnly ? icons.VideoIcon : icons.Camera}
       onPress={openCameraPicker}
       height={height}
-      buttonText={t('Open Camera')}
-      description={t(videoOnly ? 'Take a video and share' : 'Take a photo and share')}
+      buttonText={t('attachmentPicker.camera.label', 'Open Camera')}
+      description={
+        videoOnly
+          ? t('attachmentPicker.camera.videoOnly.description', 'Take a video and share')
+          : t('attachmentPicker.camera.description', 'Take a photo and share')
+      }
     />
   );
 };
@@ -228,8 +236,8 @@ export const AttachmentFilePicker = (props: AttachmentPickerContentProps) => {
       Icon={icons.FilePickerIcon}
       onPress={pickFile}
       height={height}
-      buttonText={t('Open Files')}
-      description={t('Select files to share')}
+      buttonText={t('attachmentPicker.files.label', 'Open Files')}
+      description={t('attachmentPicker.files.description', 'Select files to share')}
     />
   );
 };

@@ -1,47 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 
-import { Event, LocalMessage, UserResponse } from 'stream-chat';
+import type { LocalMessage, UserResponse } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { useStableCallback } from '../../../hooks';
+import { useStateStore } from '../../../hooks/useStateStore';
+
+const EMPTY_READERS: UserResponse[] = [];
 
 export const useMessageReadData = ({ message }: { message?: LocalMessage }) => {
   const { channel } = useChannelContext();
-  const { client } = useChatContext();
+  const msgId = message?.id;
+  const createdAt = message?.created_at;
 
-  const messageIdRef = useRef<string>(message?.id);
+  const selector = useCallback(
+    () => ({
+      readBy:
+        msgId && typeof createdAt === 'number' && Number.isFinite(createdAt)
+          ? channel.messageReceiptsTracker.readersForMessage({ msgId, timestamp: createdAt })
+          : EMPTY_READERS,
+    }),
+    [channel, createdAt, msgId],
+  );
 
-  const calculate = useStableCallback(() => {
-    if (!message?.created_at) {
-      return [];
-    }
-    const messageRef = {
-      msgId: message.id,
-      timestampMs: new Date(message.created_at).getTime(),
-    };
-
-    return channel.messageReceiptsTracker.readersForMessage(messageRef);
-  });
-
-  const [readBy, setReadBy] = useState<UserResponse[]>(() => calculate());
-
-  if (!!messageIdRef.current && !!message?.id && messageIdRef.current !== message.id) {
-    setReadBy(calculate());
-    messageIdRef.current = message.id;
-  }
-
-  useEffect(() => {
-    const { unsubscribe } = channel.on('message.read', (event: Event) => {
-      /**
-       * An optimization to only re-calculate if the event is received by a different user.
-       */
-      if (event.user?.id !== client.user?.id) {
-        setReadBy(calculate());
-      }
-    });
-    return unsubscribe;
-  }, [channel, calculate, client.user?.id]);
+  const { readBy } = useStateStore(channel.messageReceiptsTracker.snapshotStore, selector);
 
   return readBy;
 };

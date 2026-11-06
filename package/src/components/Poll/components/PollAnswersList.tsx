@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, type FlatListProps, StyleSheet, Text, View } from 'react-native';
 
-import { PollAnswer, VotingVisibility } from 'stream-chat';
+import { convertTimestampToDate, PollVoteResponseData } from 'stream-chat';
 
 import { PollButtonProps } from './Button';
 import { PollInputDialog } from './PollInputDialog';
@@ -15,8 +15,8 @@ import {
   useTranslationContext,
 } from '../../../contexts';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
+import { getDateString } from '../../../i18n/utils';
 import { primitives } from '../../../theme';
-import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui';
 import { UserAvatar } from '../../ui/Avatar/UserAvatar';
 import { usePollAnswersPagination } from '../hooks/usePollAnswersPagination';
@@ -47,7 +47,11 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
         variant={'secondary'}
         type={'ghost'}
         size={'lg'}
-        label={ownAnswer ? t('Update your comment') : t('Add a comment')}
+        label={
+          ownAnswer
+            ? t('poll.updateComment.label', 'Update your comment')
+            : t('poll.addComment.label', 'Add a comment')
+        }
         onPress={onPressHandler}
       />
       {showAddCommentDialog ? (
@@ -55,8 +59,8 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
           closeDialog={() => setShowAddCommentDialog(false)}
           initialValue={ownAnswer?.answer_text ?? ''}
           onSubmit={addComment}
-          placeholder={t('Your comment')}
-          title={t('Add a comment')}
+          placeholder={t('poll.addComment.placeholder', 'Your comment')}
+          title={t('poll.addComment.label', 'Add a comment')}
           visible={showAddCommentDialog}
         />
       ) : null}
@@ -65,10 +69,10 @@ export const AnswerListAddCommentButton = (props: PollButtonProps) => {
 };
 
 export type PollAnswersListProps = PollContextValue & {
-  additionalFlatListProps?: Partial<FlatListProps<PollAnswer>>;
+  additionalFlatListProps?: Partial<FlatListProps<PollVoteResponseData>>;
 };
 
-export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
+export const PollAnswerListItem = ({ answer }: { answer: PollVoteResponseData }) => {
   const { client } = useChatContext();
   const { t, tDateTimeParser } = useTranslationContext();
   const { votingVisibility } = usePollState();
@@ -86,28 +90,28 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: answer.updated_at,
+        messageCreatedAt: convertTimestampToDate(answer.updated_at),
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/PollVote',
+        timestampTranslationKey: 'timestamp.PollVote',
       }),
     [answer.updated_at, t, tDateTimeParser],
   );
 
-  const isMyAnswer = client.userID === answer.user?.id;
+  const isMyAnswer = client.userId === answer.user?.id;
 
   const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous && !isMyAnswer,
+    () => votingVisibility === 'anonymous' && !isMyAnswer,
     [votingVisibility, isMyAnswer],
   );
 
-  const answerAuthorName = isMyAnswer ? t('You') : answer.user?.name;
+  const answerAuthorName = isMyAnswer ? t('common.you.label', 'You') : answer.user?.name;
 
   return (
     <View style={[styles.listItemWrapper, itemStyle.wrapper]}>
       <View style={[styles.listItemContainer, itemStyle.container]}>
         <Text style={[styles.listItemAnswerText, itemStyle.answerText]}>
-          {translate(answer.answer_text, answer.answer_text_i18n)}
+          {translate(answer.answer_text ?? '', answer.answer_text_i18n)}
         </Text>
         <View style={[styles.listItemInfoContainer, itemStyle.infoContainer]}>
           <View style={[styles.listItemUserInfoContainer, itemStyle.userInfoContainer]}>
@@ -115,7 +119,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
               <UserAvatar user={answer.user} size='sm' showBorder />
             ) : null}
             <Text style={styles.listItemInfoUserName}>
-              {isAnonymous ? t('Anonymous') : answerAuthorName}
+              {isAnonymous ? t('common.anonymousUser.label', 'Anonymous') : answerAuthorName}
             </Text>
             <Text style={styles.listItemInfoDate}>{dateString}</Text>
           </View>
@@ -126,7 +130,7 @@ export const PollAnswerListItem = ({ answer }: { answer: PollAnswer }) => {
   );
 };
 
-const renderPollAnswerListItem = ({ item }: { item: PollAnswer }) => (
+const renderPollAnswerListItem = ({ item }: { item: PollVoteResponseData }) => (
   <PollAnswerListItem answer={item} />
 );
 

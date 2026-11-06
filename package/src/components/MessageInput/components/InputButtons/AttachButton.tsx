@@ -17,7 +17,7 @@ import { Button } from '../../../ui/';
 type AttachButtonPropsWithContext = Pick<MessageInputContextValue, 'handleAttachButtonPress'> &
   Pick<AttachmentPickerContextValue, 'disableAttachmentPicker'> & {
     disabled?: boolean;
-    /** Function that opens attachment options bottom sheet */
+    /** Press handler that takes precedence over `handleAttachButtonPress` and the picker toggle. */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
     isAttachmentPickerOpen?: boolean;
   } & { toggleAttachmentPicker: () => void };
@@ -50,7 +50,9 @@ const AttachButtonWithContext = (props: AttachButtonPropsWithContext) => {
   return (
     <Button
       accessibilityLabelKey={
-        isAttachmentPickerOpen ? 'a11y/Close attachments' : 'a11y/Add attachment'
+        isAttachmentPickerOpen
+          ? 'messageInput.closeAttachments.accessibilityLabel'
+          : 'messageInput.addAttachment.accessibilityLabel'
       }
       variant='secondary'
       type='outline'
@@ -88,9 +90,7 @@ const MemoizedAttachButton = React.memo(
 
 export type AttachButtonProps = Partial<AttachButtonPropsWithContext>;
 
-/**
- * UI Component for attach button in MessageComposer component.
- */
+/** Attach button of the message composer. */
 export const AttachButton = (props: AttachButtonProps) => {
   const { disableAttachmentPicker } = useAttachmentPickerContext();
   const {

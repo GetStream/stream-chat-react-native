@@ -1,6 +1,5 @@
 import type { Theme } from '@react-navigation/native';
-import type { Channel, LocalMessage, SharedLocationResponse, UserResponse } from 'stream-chat';
-import type { ThreadType } from 'stream-chat-react-native';
+import type { Channel, SharedLocationResponseData, Thread, UserResponse } from 'stream-chat';
 
 export type DrawerNavigatorParamList = {
   HomeScreen: undefined;
@@ -23,7 +22,7 @@ export type StackNavigatorParamList = {
     channelId?: string;
     messageId?: string;
   };
-  MapScreen: SharedLocationResponse;
+  MapScreen: SharedLocationResponseData;
   ChannelDetailsScreen: {
     channel: Channel;
   };
@@ -33,7 +32,7 @@ export type StackNavigatorParamList = {
   NewGroupChannelAssignNameScreen: undefined;
   ThreadScreen: {
     channel: Channel;
-    thread: LocalMessage | ThreadType;
+    thread: Thread;
     targetedMessageId?: string;
   };
 };
@@ -74,7 +73,10 @@ export type AppTheme = Theme & {
 export type LoginConfig = {
   apiKey: string;
   userId: string;
-  userToken: string;
+  /** Static token. When omitted, tokens are fetched from `tokenUrl`. */
+  userToken?: string;
+  /** Token generator URL; `user_id` is appended. Defaults to `DEFAULT_TOKEN_URL`. */
+  tokenUrl?: string;
   userImage?: string;
   userName?: string;
 };

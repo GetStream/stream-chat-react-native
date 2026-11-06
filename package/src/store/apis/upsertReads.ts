@@ -1,4 +1,4 @@
-import type { ReadResponse } from 'stream-chat';
+import type { ReadStateResponse } from 'stream-chat';
 
 import { mapReadToStorable } from '../mappers/mapReadToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
@@ -12,7 +12,7 @@ export const upsertReads = async ({
   reads,
 }: {
   cid: string;
-  reads: ReadResponse[];
+  reads: ReadStateResponse[];
   execute?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

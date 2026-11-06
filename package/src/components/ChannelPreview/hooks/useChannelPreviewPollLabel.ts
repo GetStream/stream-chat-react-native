@@ -17,9 +17,10 @@ const selector = (nextValue: PollState) => ({
 });
 
 /**
- * Hook to get the label of the poll
- * @param pollId - The id of the poll
- * @returns The label of the poll
+ * The preview label for the latest vote on a poll, such as "You voted: Option".
+ *
+ * @param params.pollId ID of the poll.
+ * @returns The label, or `undefined` when the poll has no votes.
  */
 export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabelProps) => {
   const { client } = useChatContext();
@@ -33,7 +34,7 @@ export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabe
       latestVotesByOption
         ? Object.values(latestVotesByOption)
             .flatMap((votes) => votes?.[0] ?? [])
-            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .sort((a, b) => b.created_at - a.created_at)
         : [],
     [latestVotesByOption],
   );
@@ -47,9 +48,11 @@ export const useChannelPreviewPollLabel = ({ pollId }: UseChannelPreviewPollLabe
         ? (getTranslatedText(option.text_i18n, userLanguage) ?? option.text)
         : undefined;
       if (voteUser.id === client.user?.id) {
-        return t('You voted: {{ option }}', { option: optionText });
+        return t('channelPreview.pollVote.byYou.label', 'You voted: {{ option }}', {
+          option: optionText,
+        });
       } else {
-        return t('{{ user }} voted: {{ option }}', {
+        return t('channelPreview.pollVote.withUser.label', '{{ user }} voted: {{ option }}', {
           user: voteUser.name || voteUser.id,
           option: optionText,
         });

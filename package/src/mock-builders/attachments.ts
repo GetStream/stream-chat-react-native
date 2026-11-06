@@ -23,6 +23,7 @@ export const generateLocalFileUploadAttachmentData = (
   overrides?: Partial<LocalAttachmentData & { file: Partial<FileReference> }>,
   attachmentData?: Partial<Attachment>,
 ) => ({
+  custom: {},
   localMetadata: {
     ...generateLocalAttachmentData().localMetadata,
     ...overrides,
@@ -33,6 +34,7 @@ export const generateLocalFileUploadAttachmentData = (
 });
 
 export const generateImageAttachment = (a?: Partial<Attachment>): Attachment => ({
+  custom: {},
   fallback: generateRandomId() + '.png',
   image_url: 'https://' + generateRandomId() + '.png',
   type: 'image',
@@ -41,6 +43,7 @@ export const generateImageAttachment = (a?: Partial<Attachment>): Attachment => 
 
 export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'https://' + generateRandomId() + '.mp3',
+  custom: {},
   fallback: generateRandomId() + '.mp3',
   type: 'audio',
   ...a,
@@ -48,12 +51,14 @@ export const generateAudioAttachment = (a?: Partial<Attachment>): Attachment => 
 
 export const generateFileAttachment = (a?: Partial<Attachment>): Attachment => ({
   asset_url: 'https://' + generateRandomId() + '.xls',
+  custom: {},
   fallback: generateRandomId() + '.xls',
   type: 'file',
   ...a,
 });
 
 export const generateVideoAttachment = (a?: Partial<Attachment>): Attachment => ({
+  custom: {},
   fallback: generateRandomId() + '.mp4',
   image_url: 'https://' + generateRandomId() + '.mp4',
   type: 'video',

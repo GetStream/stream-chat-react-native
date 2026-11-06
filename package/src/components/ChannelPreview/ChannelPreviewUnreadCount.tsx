@@ -8,16 +8,17 @@ import { BadgeNotification } from '../ui/Badge';
 
 export type ChannelPreviewUnreadCountProps = Pick<ChannelsContextValue, 'maxUnreadCount'> &
   Pick<ChannelPreviewProps, 'channel'> & {
-    /**
-     * Number of unread messages on the channel
-     */
+    /** Number of unread messages on the channel. */
     unread?: number;
   };
 
 export const ChannelPreviewUnreadCount = (props: ChannelPreviewUnreadCountProps) => {
   const { maxUnreadCount, unread } = props;
   const labelParams = useMemo(() => ({ count: unread ?? 0 }), [unread]);
-  const accessibilityLabel = useA11yLabel('a11y/{{count}} unread messages', labelParams);
+  const accessibilityLabel = useA11yLabel(
+    'channelPreview.unreadCount.accessibilityLabel',
+    labelParams,
+  );
   if (!unread) {
     return null;
   }

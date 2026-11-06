@@ -13,16 +13,16 @@ export type GetResizedImageUrlParams = Pick<ChatConfigContextValue, 'resizableCD
 };
 
 /**
- * Any file or image upload done through stream's chat SDK or components get uploaded
- * to CloudFront CDN. Following function returns a url of resized image (to given width and height).
- * It can be used to avoid rendering heavy images on UI, for the sake of performance.
+ * Returns the URL of an image resized to the given size, to avoid rendering oversized images.
+ * URLs outside `resizableCDNHosts`, without the `oh` and `ow` query parameters, or when neither
+ * `height` nor `width` is given are returned unchanged.
  *
- * This function accepts an object with following properties:
- * - height: height of the resized image.
- * - url: url of the image.
- * - width: width of the resized image.
- *
- * @returns {string} Url of the image with given height and width.
+ * @param params.url The image URL.
+ * @param params.height Target height in layout units, converted to pixels.
+ * @param params.width Target width in layout units, converted to pixels.
+ * @param params.resize The resize mode. Defaults to 'clip'.
+ * @param params.resizableCDNHosts CDN hosts whose image URLs can be resized.
+ * @returns The resized image URL.
  */
 export function getResizedImageUrl({
   height,
@@ -37,9 +37,7 @@ export function getResizedImageUrl({
     const originalHeight = parsedUrl.searchParams.get('oh');
     const originalWidth = parsedUrl.searchParams.get('ow');
 
-    // If url is not within Stream's cloudfront CDN or any other configured resizableCDNHosts (which offers fast image resizing), then return the url as it is.
-    // Check for oh and ow parameters in the url, is just to differentiate between old and new CDN.
-    // In case of old CDN we don't want to do any kind of resizing.
+    // `oh` and `ow` only appear on the new CDN, which resizes; the old CDN must not be resized.
 
     const isResizableUrl =
       resizableCDNHosts?.some((rCDNh) => url.includes(rCDNh)) && originalHeight && originalWidth;
@@ -60,8 +58,7 @@ export function getResizedImageUrl({
 
     return parsedUrl.toString();
   } catch (error) {
-    // There is some issue with the url.
-    // Simply return the original url, there is no need to break the app for this.
+    // An unparsable URL is returned as is rather than breaking the render.
     console.warn(error);
 
     return url;

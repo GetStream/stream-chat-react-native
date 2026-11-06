@@ -8,11 +8,9 @@ export default (
 ) => {
   client.dispatchEvent(
     fromPartial<Event>({
-      channel,
       cid: channel.cid,
       type: 'typing.start',
       user,
-      user_id: user.id,
     }),
   );
 };

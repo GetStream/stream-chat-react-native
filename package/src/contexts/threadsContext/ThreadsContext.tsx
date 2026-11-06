@@ -2,9 +2,8 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { FlatListProps } from 'react-native';
 
-import { Channel, Thread } from 'stream-chat';
+import { Thread } from 'stream-chat';
 
-import { ThreadType } from '../threadContext/ThreadContext';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
@@ -16,7 +15,7 @@ export type ThreadsContextValue = {
   threads: Thread[];
   additionalFlatListProps?: Partial<FlatListProps<Thread>>;
   loadMore?: () => Promise<void>;
-  onThreadSelect?: (thread: ThreadType, channel: Channel) => void;
+  onThreadSelect?: (thread: Thread) => void;
 };
 
 export const ThreadsContext = React.createContext(

@@ -1,5 +1,6 @@
-// Add dots in between the title if it is too long and then append the remaining last characters.
-// Eg: "This is a very long title" => "This is a very long ti...le"
+// Shortens a title longer than `maxLength` (default 18) to `maxLength` characters, its head and tail
+// joined by an ellipsis: "This is a very long title" => "This is a...ong title". An odd
+// `maxLength` gives the tail the extra character.
 export const getTrimmedAttachmentTitle = (title?: string, maxLength?: number) => {
   const maxLengthValue = maxLength || 18;
   if (!title) return '';
@@ -10,8 +11,10 @@ export const getTrimmedAttachmentTitle = (title?: string, maxLength?: number) =>
     return title;
   }
 
-  const start = title.slice(0, maxLengthValue / 2);
-  const end = title.slice(title.length - maxLengthValue / 2);
+  const headLength = Math.floor(maxLengthValue / 2);
+  const tailLength = maxLengthValue - headLength;
+  const start = title.slice(0, headLength);
+  const end = title.slice(title.length - tailLength);
 
   return `${start}${ellipsis}${end}`;
 };

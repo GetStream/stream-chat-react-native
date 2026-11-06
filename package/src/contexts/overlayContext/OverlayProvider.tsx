@@ -26,22 +26,8 @@ import {
 } from '../translationContext/TranslationContext';
 
 /**
- * - The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
- *  Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well. Assuming [`React Navigation`](https://reactnavigation.org/) is being used, your highest level navigation stack should be wrapped in the provider:
- *
- *    ```js
- *    <NavigationContainer>
- *      <OverlayProvider>
- *        <Stack.Navigator>
- *          <Stack.Screen />
- *        </Stack.Navigator>
- *      </OverlayProvider>
- *    </NavigationContainer>
- *    ```
- *
- * - Don't forget to check our cookbook section of [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider)
- *
- * - Also check the [visual component guide](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#custom-components), to learn about component customizations.
+ * Hosts the message overlay and the full screen image gallery above the rest of the tree, so it
+ * must wrap the whole navigation stack (inside `NavigationContainer` with React Navigation).
  *
  * @example ./OverlayProvider.md
  */
@@ -61,7 +47,6 @@ export const OverlayProvider = (props: PropsWithChildren<OverlayProviderProps>) 
 
   const overlayOpacity = useSharedValue(0);
 
-  // Setup translators
   const translators = useStreami18n(i18nInstance);
 
   useEffect(() => {

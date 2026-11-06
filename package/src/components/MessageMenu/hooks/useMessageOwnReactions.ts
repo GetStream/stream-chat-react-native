@@ -10,9 +10,9 @@ export const useMessageOwnReactions = () => {
     const ownReactionTypes = message?.own_reactions?.map((reaction) => reaction.type) || [];
     const latestReactionTypesByCurrentUser =
       message?.latest_reactions
-        ?.filter((reaction) => reaction.user?.id === client.userID)
+        ?.filter((reaction) => reaction.user?.id === client.userId)
         .map((reaction) => reaction.type) || [];
 
     return Array.from(new Set([...ownReactionTypes, ...latestReactionTypesByCurrentUser]));
-  }, [client.userID, message?.latest_reactions, message?.own_reactions]);
+  }, [client.userId, message?.latest_reactions, message?.own_reactions]);
 };

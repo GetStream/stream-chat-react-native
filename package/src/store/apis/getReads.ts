@@ -1,4 +1,4 @@
-import type { ReadResponse } from 'stream-chat';
+import type { ReadStateResponse } from 'stream-chat';
 
 import { selectReadsForChannels } from './queries/selectReadsForChannels';
 
@@ -8,7 +8,7 @@ import { SqliteClient } from '../SqliteClient';
 export const getReads = async ({ channelIds }: { channelIds: string[] }) => {
   SqliteClient.logger?.('info', 'getReads', { channelIds });
   const reads = await selectReadsForChannels(channelIds);
-  const cidVsReads: Record<string, ReadResponse[]> = {};
+  const cidVsReads: Record<string, ReadStateResponse[]> = {};
 
   reads.forEach((read) => {
     if (!cidVsReads[read.cid]) {

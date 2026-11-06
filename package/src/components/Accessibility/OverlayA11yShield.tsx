@@ -21,21 +21,14 @@ const useShouldActivateTrap = (): boolean => {
 };
 
 /**
- * Android only accessibility focus trap for the OverlayProvider's children
- * tree. iOS handles modal focus traps natively via `accessibilityViewIsModal`
- * on each overlay's root, but Android has no equivalent prop - the only
- * JS side mechanism is to mark siblings as `'no-hide-descendants'`.
+ * Android accessibility focus trap for the overlay host's children. iOS traps focus natively with
+ * `accessibilityViewIsModal` on each overlay root; Android can only mark siblings as
+ * `'no-hide-descendants'`.
  *
- * The shield wraps `{children}` in a single View whose `importantForAccessibility`
- * flips to `'no-hide-descendants'` whenever any focus trapping overlay is
- * active (the full screen image/video gallery or the message context menu).
- * When closed, the wrapper is a transparent passthrough.
- *
- * In terms of rerendering, only the wrapper View commits new props on overlay state
- * transitions. The `{children}` element reference is stable across renders,
- * so React reconciliation does not rerender any component below the wrapper.
- *
- * On iOS the wrapper is skipped entirely.
+ * Wraps `{children}` in a View that sets `importantForAccessibility='no-hide-descendants'` while an
+ * overlay (the image or video gallery, or the message context menu) is open and an accessibility
+ * service runs. Only the wrapper re-renders on overlay changes, since the `children` element is
+ * stable. On iOS it renders only the children.
  */
 export function OverlayA11yShield({ children }: PropsWithChildren) {
   const shouldActivateTrap = useShouldActivateTrap();

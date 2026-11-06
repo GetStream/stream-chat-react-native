@@ -6,6 +6,7 @@ import {
   GROUP_CHANNEL_MEMBERS_MOCK,
   ONE_MEMBER_WITH_EMPTY_USER,
 } from '../../mock-builders/api/queryMembers';
+import { convertDateToTimestamp } from '../generator/time';
 
 // Test fixtures intentionally supply runtime-shaped values (Date objects for
 // date fields, custom `type` strings, a mock `Channel` instance for the
@@ -18,8 +19,8 @@ const mockUser = (data: Partial<UserResponse>) => fromPartial<UserResponse>(data
 
 const channelName = 'okechukwu';
 const CHANNEL = fromPartial<Channel>({
-  data: { name: channelName },
-  state: { messages: [] },
+  data: { custom: { name: channelName } },
+  state: {},
 });
 
 const CHANNEL_WITH_MESSAGES_TEXT = {
@@ -32,11 +33,11 @@ const CHANNEL_WITH_MESSAGES_TEXT = {
       cid: 'stridkncnng',
       command: 'giphy',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       id: 'ljkblk',
       text: 'jkbkbiubicbi',
-      type: 'MessageLabel',
+      type: 'regular',
       user: mockUser({ id: 'okechukwu' }),
     }),
     mockMessage({
@@ -46,11 +47,11 @@ const CHANNEL_WITH_MESSAGES_TEXT = {
       cid: 'stridodong',
       command: 'giphy',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       id: 'jbkjb',
       text: 'jkbkbiubicbi',
-      type: 'MessageLabel',
+      type: 'regular',
       user: mockUser({ id: 'okechukwu' }),
     }),
   ],
@@ -75,8 +76,8 @@ const CHANNEL_WITH_MESSAGE_COMMAND = {
       cid: 'stridkncnng',
       command: 'giphy',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       id: 'ljkblk',
       user: mockUser({ id: 'okechukwu' }),
     }),
@@ -87,8 +88,8 @@ const CHANNEL_WITH_MESSAGE_COMMAND = {
       cid: 'stridodong',
       command: 'giphy',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       id: 'jbkjb',
       user: mockUser({ id: 'okechukwu' }),
     }),
@@ -108,13 +109,15 @@ const CHANNEL_WITH_MESSAGES_ATTACHMENTS = {
           author_link: 'string',
           author_name: 'string',
           color: 'string',
+          custom: {
+            file_size: 25,
+            mime_type: 'string',
+          },
           fallback: 'string',
           fields: [],
-          file_size: 25,
           footer: 'string',
           footer_icon: 'string',
           image_url: 'string',
-          mime_type: 'string',
           og_scrape_url: 'string',
           original_height: 5,
           original_width: 4,
@@ -127,8 +130,8 @@ const CHANNEL_WITH_MESSAGES_ATTACHMENTS = {
         } as Attachment,
       ],
       channel: CHANNEL,
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       id: 'ljkblk',
       user: mockUser({ id: 'okechukwu' }),
     }),
@@ -143,23 +146,23 @@ const LATEST_MESSAGE = mockMessage({
   cid: 'string',
   command: 'giphy',
   command_info: { name: 'string' },
-  created_at: new Date('2021-02-12T12:12:35.862Z'),
-  deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+  created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+  deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
   id: 'string',
   text: 'jkbkbiubicbi',
-  type: 'MessageLabel',
+  type: 'regular',
   user: mockUser({ id: 'okechukwu' }),
 });
 
-const FORMATTED_MESSAGE: LocalMessage = {
-  created_at: new Date('2021-02-12T12:12:35.862282Z'),
-  deleted_at: null,
+const FORMATTED_MESSAGE = fromPartial<LocalMessage>({
+  created_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
+  deleted_at: undefined,
   id: '',
-  pinned_at: new Date('2021-02-12T12:12:35.862282Z'),
+  pinned_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
   status: 'received',
   type: 'regular',
-  updated_at: new Date('2021-02-12T12:12:35.862282Z'),
-};
+  updated_at: convertDateToTimestamp('2021-02-12T12:12:35.862282Z'),
+});
 
 const CHANNEL_WITH_MENTIONED_USERS = {
   members: ONE_MEMBER_WITH_EMPTY_USER,
@@ -169,8 +172,8 @@ const CHANNEL_WITH_MENTIONED_USERS = {
       attachments: [],
       cid: 'stridkncnng',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       mentioned_users: [
         { id: 'Max', name: 'Max' },
         { id: 'Ada', name: 'Ada' },
@@ -183,8 +186,8 @@ const CHANNEL_WITH_MENTIONED_USERS = {
       attachments: [],
       cid: 'stridodong',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       mentioned_users: [
         { id: 'Max', name: 'Max' },
         { id: 'Ada', name: 'Ada' },
@@ -203,8 +206,8 @@ const CHANNEL_WITH_EMPTY_MESSAGE = {
       attachments: [],
       cid: 'stridkncnng',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       mentioned_users: [
         { id: 'Max', name: 'Max' },
         { id: 'Ada', name: 'Ada' },
@@ -216,8 +219,8 @@ const CHANNEL_WITH_EMPTY_MESSAGE = {
       attachments: [],
       cid: 'stridodong',
       command_info: { name: 'string' },
-      created_at: new Date('2021-02-12T12:12:35.862Z'),
-      deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+      created_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
+      deleted_at: convertDateToTimestamp('2021-02-12T12:12:35.862Z'),
       mentioned_users: [
         { id: 'Max', name: 'Max' },
         { id: 'Ada', name: 'Ada' },

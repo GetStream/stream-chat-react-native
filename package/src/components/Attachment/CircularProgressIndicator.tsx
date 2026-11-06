@@ -16,9 +16,9 @@ const SPIN_DURATION_MS = 900;
 const PROGRESS_ANIMATION_DURATION_MS = 1200;
 
 export type CircularProgressIndicatorProps = {
-  /** Upload percent **0–100**. */
   backgroundColor: ColorValue;
   filledColor: ColorValue;
+  /** Upload progress as a percentage from 0 to 100. */
   progress: number;
   unfilledColor: ColorValue;
   size?: number;
@@ -27,9 +27,7 @@ export type CircularProgressIndicatorProps = {
   testID?: string;
 };
 
-/**
- * Circular upload progress ring (determinate) or rotating arc (indeterminate).
- */
+/** Circular upload progress ring (determinate) or rotating arc (indeterminate). */
 export const CircularProgressIndicator = ({
   backgroundColor,
   filledColor,

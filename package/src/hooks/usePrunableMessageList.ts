@@ -1,10 +1,10 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-import { Channel } from 'stream-chat';
+import type { MessagePaginator } from 'stream-chat';
 
 import { useStableCallback } from './useStableCallback';
+import { useStateStore } from './useStateStore';
 
-import { ChannelPropsWithContext } from '../components';
 import type { ViewToken } from '../types/react-native-compat';
 
 export type VisibleRangeConfig = { first: number; last: number; inverted: boolean };
@@ -13,7 +13,7 @@ export type ViewabilityChangedCallbackInput = {
   inverted: boolean;
 };
 
-// The number of messages from an edge we want to be viewing before we stop pruning
+// Distance in messages from an edge within which pruning is suspended: 20% of the cap.
 const calculateSafeGap = (maximumMessages: number) => 0.2 * maximumMessages;
 
 const isNearEnd = ({
@@ -32,19 +32,31 @@ const isNearEnd = ({
   return last >= maximumMessageLimit - 1 - safeGap;
 };
 
-export function usePrunableMessageList({
-  // setter to update the array used by the List
-  setMessages: rawSetMessages,
-  maximumMessageLimit,
-}: {
-  setMessages: (channel: Channel) => void;
-} & Pick<ChannelPropsWithContext, 'maximumMessageLimit'>) {
-  // Track visible index range (index in `channel.messages`)
+const maxLoadedItemsSelector = (state: { maxLoadedItems?: number }) => ({
+  maxLoadedItems: state.maxLoadedItems,
+});
+
+/**
+ * Tells the paginator when the message list may prune its oldest messages.
+ *
+ * The cap (`maxLoadedItems`) lives in `stream-chat`: set it with
+ * `channel.messagePaginator.updateConfig({ maxLoadedItems })` or
+ * `client.config.set({ channel: { messagePaginator: { maxLoadedItems } } })`. This hook owns
+ * whether pruning is safe: it tracks the visible range and suspends pruning while the user is near
+ * the pruned edge. The paginator reads that boolean on ingest and nothing subscribes to it, so
+ * scrolling costs no render.
+ *
+ * @param params.paginator The message paginator of the list.
+ * @returns The `maxLoadedItems` cap and the `viewabilityChangedCallback` to wire to the list.
+ */
+export function usePrunableMessageList({ paginator }: { paginator?: MessagePaginator }) {
   const visibleRangeConfigRef = useRef<VisibleRangeConfig>({ first: 0, inverted: true, last: -1 });
+
+  const { maxLoadedItems } = useStateStore(paginator?.configState, maxLoadedItemsSelector) ?? {};
 
   const viewabilityChangedCallback = useStableCallback(
     ({ viewableItems, inverted = true }: ViewabilityChangedCallbackInput) => {
-      if (!viewableItems?.length || maximumMessageLimit == null) return;
+      if (!viewableItems?.length || !maxLoadedItems) return;
       let first = Infinity;
       let last = -1;
       for (const v of viewableItems) {
@@ -52,27 +64,18 @@ export function usePrunableMessageList({
         if (v.index < first) first = v.index;
         if (v.index > last) last = v.index;
       }
-      if (first !== Infinity) visibleRangeConfigRef.current = { first, inverted, last };
+      if (first === Infinity) return;
+      const rangeConfig = { first, inverted, last };
+      visibleRangeConfigRef.current = rangeConfig;
+      paginator?.setPruningSuspended(
+        isNearEnd({ maximumMessageLimit: maxLoadedItems, rangeConfig }),
+      );
     },
   );
 
-  // Prune when length exceeds MAX, but only if the viewport is far from the back edge
-  const setMessages = useStableCallback((channel: Channel) => {
-    const rangeConfig = visibleRangeConfigRef.current;
+  // The paginator outlives this list, so a suspension must not: left set, the window would grow
+  // unbounded after the user navigated away.
+  useEffect(() => () => paginator?.setPruningSuspended(false), [paginator]);
 
-    if (
-      maximumMessageLimit == null ||
-      channel.state.messages.length <= maximumMessageLimit ||
-      isNearEnd({ maximumMessageLimit, rangeConfig })
-    ) {
-      rawSetMessages(channel);
-      return;
-    }
-
-    channel.state.pruneOldest(maximumMessageLimit);
-
-    rawSetMessages(channel);
-  });
-
-  return { setMessages, viewabilityChangedCallback };
+  return { maxLoadedItems, viewabilityChangedCallback };
 }

@@ -8,18 +8,19 @@ import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import { ChannelEditName } from '../components/ChannelEditName';
 
-const buildChannel = (overrides?: { name?: string }): Channel =>
-  ({
+const buildChannel = (overrides?: { name?: string }): Channel => {
+  const name = overrides && 'name' in overrides ? overrides.name : 'Original';
+  return {
     cid: 'messaging:test',
-    data: {
-      name: overrides && 'name' in overrides ? overrides.name : 'Original',
-    },
+    data: { custom: { name } },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
-  }) as unknown as Channel;
+    state: generateChannelState({ data: { custom: { name } } }),
+  } as unknown as Channel;
+};
 
 const renderComponent = ({ channel }: { channel: Channel }) => {
   const store = new EditChannelDetailsStore(channel);
@@ -27,14 +28,14 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
       >
         <ChatContext.Provider
           value={
-            { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
+            { client: { on: () => ({ unsubscribe: () => undefined }), userId: 'me' } } as never
           }
         >
           <ChannelEditDetailsContext.Provider value={{ store, submit: jest.fn() }}>

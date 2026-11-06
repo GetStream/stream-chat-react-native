@@ -1,8 +1,6 @@
 import type { LocalMessage, MessageResponse } from 'stream-chat';
 
-export const removeReservedFields = (
-  message: LocalMessage | MessageResponse,
-): LocalMessage | MessageResponse => {
+export const removeReservedFields = <T extends LocalMessage | MessageResponse>(message: T): T => {
   const retryMessage = { ...message };
   const reserved = [
     'cid',
@@ -21,7 +19,7 @@ export const removeReservedFields = (
     'type',
     'updated_at',
     'reply_count',
-  ] as (keyof typeof message)[];
+  ] as (keyof T)[];
 
   reserved.forEach((key) => {
     delete retryMessage[key];

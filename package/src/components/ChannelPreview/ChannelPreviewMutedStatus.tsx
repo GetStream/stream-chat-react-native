@@ -5,9 +5,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
 
-/**
- * This UI component displays an avatar for a particular channel.
- */
+/** The muted indicator of a channel preview. */
 export const ChannelPreviewMutedStatus = () => {
   const {
     theme: {
@@ -16,7 +14,7 @@ export const ChannelPreviewMutedStatus = () => {
     },
   } = useTheme();
   const { icons } = useComponentsContext();
-  const accessibilityLabel = useA11yLabel('a11y/Muted');
+  const accessibilityLabel = useA11yLabel('channelPreview.muted.accessibilityLabel');
 
   return (
     <CompositeAccessibilityProbe label={accessibilityLabel}>

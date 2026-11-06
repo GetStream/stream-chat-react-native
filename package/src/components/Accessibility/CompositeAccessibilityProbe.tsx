@@ -5,31 +5,19 @@ import { HiddenA11yText } from './HiddenA11yText';
 
 export type CompositeAccessibilityProbeProps = {
   /**
-   * The accessibility label that VoiceOver / TalkBack should announce for the
-   * wrapped content. When `undefined`, the probe is a no-op and the children
-   * render with no a11y modifications — use this to skip the wrapper when the
-   * SDK's a11y opt-in is off.
+   * Label that VoiceOver and TalkBack announce for the wrapped content. `undefined` renders the
+   * children unchanged.
    */
   label: string | undefined;
 };
 
 /**
- * Wraps decorative visual content with a single, cross platform stable
- * accessibility focus stop carrying the provided `label`.
+ * Gives decorative visual content (avatars, icons, composed graphics) a single screen reader focus
+ * stop that announces `label`, and hides the visual subtree from screen readers.
  *
- * iOS auto collapses descendants when a parent View is `accessible`, but on
- * Android `importantForAccessibility='no-hide-descendants'` on the parent
- * gets defeated by deeply nested descendants that set their own
- * `accessible={true}` (our SDK's `<Avatar>` does this). A zero size accessible
- * `<Text>` sidesteps that - Text is always accessible by default on both
- * platforms and carries the label cleanly, while the visual subtree is
- * marked decorative. More importantly, it's discoverable very very easily
- * by screen readers.
- *
- * Use this anywhere you have non-Text visual content (avatars, icons,
- * composed graphics) that should announce as a single semantic unit with a
- * curated label, rather than letting screen readers walk the visual tree
- * verbosely.
+ * The label lives on a visually hidden `<Text>` sibling because on Android a parent's
+ * `importantForAccessibility='no-hide-descendants'` is defeated by nested descendants that set
+ * `accessible` themselves, such as `<Avatar>`.
  */
 export const CompositeAccessibilityProbe = ({
   children,

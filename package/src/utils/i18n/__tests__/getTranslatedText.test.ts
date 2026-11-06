@@ -1,9 +1,7 @@
-import type { TranslatedField } from 'stream-chat';
-
 import { getTranslatedText } from '../getTranslatedText';
 
 describe('getTranslatedText', () => {
-  const i18n = { de_text: 'Wie geht es?', language: 'en' } as TranslatedField;
+  const i18n = { de_text: 'Wie geht es?', language: 'en' };
 
   it('returns the translation into the given language', () => {
     expect(getTranslatedText(i18n, 'de')).toBe('Wie geht es?');

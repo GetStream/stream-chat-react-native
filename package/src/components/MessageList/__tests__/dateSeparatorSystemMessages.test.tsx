@@ -3,11 +3,13 @@ import { View } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { Channel as ChannelType, LocalMessage } from 'stream-chat';
+import type { Channel as ChannelType, LocalMessage, TimestampNS } from 'stream-chat';
+import { nsToMs } from 'stream-chat';
 
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
-import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+import { useStateStore } from '../../../hooks/useStateStore';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -22,6 +24,7 @@ import { MessageList } from '../MessageList';
 
 const user = generateUser();
 const at = (day: number, hour: number) => new Date(Date.UTC(2026, 0, day, hour, 0, 0));
+const dayOf = (timestamp: TimestampNS) => new Date(nsToMs(timestamp)).toDateString();
 
 const message = (day: number, hour: number) =>
   generateMessage({ text: `message d${day} ${hour}h`, timestamp: at(day, hour), user });
@@ -54,10 +57,7 @@ const renderMessageList = async (
   await channel.watch();
 
   if (hasPrev !== undefined) {
-    const currentSet = channel.state.messageSets.find((set) => set.isCurrent);
-    if (currentSet) {
-      currentSet.pagination = { hasNext: false, hasPrev };
-    }
+    channel.messagePaginator.state.partialNext({ hasMoreTail: hasPrev });
   }
 
   const overrides = typeof components === 'function' ? components(channel) : components;
@@ -187,13 +187,16 @@ describe('a channel that writes a system message at every session boundary', () 
    * meaningful under it.
    *
    * The flag makes those days reachable - the separator is rendered on the marker, so the
-   * component override is invoked and can decide. The list is read from
-   * `PaginatedMessageListContext` rather than `channel.state` because that context value is
-   * memoized on a digest of the whole list, so the separator re-evaluates whenever the list
-   * changes, including for rows whose own neighbours did not.
+   * component override is invoked and can decide. The list is read from the channel's message
+   * paginator through `useStateStore`, so the separator re-evaluates whenever the list changes,
+   * including for rows whose own neighbours did not.
    */
   const SessionAwareDateSeparator = ({ date }: InlineDateSeparatorProps) => {
-    const { hasMore, messages } = usePaginatedMessageListContext();
+    const { channel } = useChannelContext();
+    const { hasMore, messages } = useStateStore(channel.messagePaginator.state, (state) => ({
+      hasMore: state.hasMoreTail,
+      messages: state.items ?? [],
+    }));
 
     if (!date) {
       return null;
@@ -201,11 +204,11 @@ describe('a channel that writes a system message at every session boundary', () 
 
     const day = date.toDateString();
     const hasRealMessage = messages.some(
-      (item: LocalMessage) => item.type !== 'system' && item.created_at.toDateString() === day,
+      (item: LocalMessage) => item.type !== 'system' && dayOf(item.created_at) === day,
     );
     // A day we have not finished loading may still gain a real message - keep it for now, or the
     // separator pops in mid-scroll once `loadMore` brings that day's messages in.
-    const dayIsPartiallyLoaded = day === messages[0]?.created_at.toDateString() && hasMore;
+    const dayIsPartiallyLoaded = !!messages[0] && day === dayOf(messages[0].created_at) && hasMore;
 
     if (!hasRealMessage && !dayIsPartiallyLoaded) {
       return null;
@@ -293,8 +296,8 @@ describe('reading the list from the channel instead of context', () => {
 
   /**
    * The same rule, written against the `channel` the integration already holds rather than the
-   * message list context. `hasMore` on `PaginatedMessageListContext` is set from
-   * `channel.state.messagePagination.hasPrev` at every call site, so the two are equivalent.
+   * paginator's store. The message list's `hasMore` is `channel.messagePaginator.hasMoreTail`, so
+   * the two are equivalent.
    */
   const channelBackedSeparator =
     (channel: ChannelType) =>
@@ -303,13 +306,15 @@ describe('reading the list from the channel instead of context', () => {
         return null;
       }
 
-      const { messages } = channel.state;
+      const messages = channel.messagePaginator.items ?? [];
       const day = date.toDateString();
       const hasRealMessage = messages.some(
-        (item) => item.type !== 'system' && item.created_at.toDateString() === day,
+        (item) => item.type !== 'system' && dayOf(item.created_at) === day,
       );
       const dayIsPartiallyLoaded =
-        day === messages[0]?.created_at.toDateString() && channel.state.messagePagination.hasPrev;
+        !!messages[0] &&
+        day === dayOf(messages[0].created_at) &&
+        channel.messagePaginator.hasMoreTail;
 
       if (!hasRealMessage && !dayIsPartiallyLoaded) {
         return null;

@@ -1,4 +1,4 @@
-/** i18next polyfill to handle intl format for pluralization. For more info see https://www.i18next.com/misc/json-format#i-18-next-json-v4 */
+// Polyfill for i18next pluralization: https://www.i18next.com/misc/json-format#i-18-next-json-v4
 import 'intl-pluralrules';
 import './polyfills';
 
@@ -20,25 +20,12 @@ export * from './middlewares';
 export * from './types/react-native-compat';
 export * from './types/types';
 
-export * from './utils/patchMessageTextCommand';
+export * from './utils/attachmentUrls';
 export * from './utils/i18n/Streami18n';
-export * from './utils/setupCommandUIMiddlewares';
+export * from './i18n';
 export * from './utils/createGenerateVideoThumbnails';
 export * from './utils/utils';
 export * from './nativeMultipartUpload';
-
-export { default as enTranslations } from './i18n/en.json';
-export { default as esTranslations } from './i18n/es.json';
-export { default as frTranslations } from './i18n/fr.json';
-export { default as heTranslations } from './i18n/he.json';
-export { default as hiTranslations } from './i18n/hi.json';
-export { default as itTranslations } from './i18n/it.json';
-export { default as jaTranslations } from './i18n/ja.json';
-export { default as koTranslations } from './i18n/ko.json';
-export { default as nlTranslations } from './i18n/nl.json';
-export { default as ptBRTranslations } from './i18n/pt-br.json';
-export { default as ruTranslations } from './i18n/ru.json';
-export { default as trTranslations } from './i18n/tr.json';
 
 export * from './state-store';
 export { SqliteClient, SqliteClientError, type SqliteClientErrorCode } from './store/SqliteClient';

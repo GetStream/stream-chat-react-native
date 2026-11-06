@@ -1,6 +1,6 @@
 import { LaunchArguments } from 'react-native-launch-arguments';
 
-import type { UserResponse } from 'stream-chat';
+import type { ClientUser } from 'stream-chat';
 
 /**
  * Launch arguments passed by the Detox suite (`e2e/support/StreamTestCase.ts`). The counterpart of
@@ -14,7 +14,7 @@ type E2ELaunchArguments = {
 export const mockServerUrl = LaunchArguments.value<E2ELaunchArguments>().MOCK_SERVER_URL;
 
 /** The app user every mock server fixture is recorded for. */
-export const appUser: UserResponse = {
+export const appUser: ClientUser = {
   id: 'luke_skywalker',
   image: 'https://vignette.wikia.nocookie.net/starwars/images/2/20/LukeTLJ.jpg',
   name: 'Luke Skywalker',

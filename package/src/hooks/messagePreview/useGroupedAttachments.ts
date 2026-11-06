@@ -8,6 +8,7 @@ import {
   isVideoAttachment,
   isFileAttachment,
   isVoiceRecordingAttachment,
+  VoiceRecordingAttachment,
 } from 'stream-chat';
 
 type GroupedAttachments = {
@@ -16,13 +17,15 @@ type GroupedAttachments = {
   images: Attachment[];
   videos: Attachment[];
   files: Attachment[];
-  voiceRecordings: Attachment[];
+  // Narrowed by `isVoiceRecordingAttachment` so consumers can read `.custom.duration`.
+  voiceRecordings: VoiceRecordingAttachment[];
 };
 
 /**
- * Hook to group attachments by type.
- * @param {Attachment[]} attachments
- * @returns {GroupedAttachments}
+ * Groups attachments by type. Attachments matching no group are dropped.
+ *
+ * @param attachments The attachments to group.
+ * @returns The attachments per type.
  */
 export const useGroupedAttachments = (attachments?: Attachment[]) => {
   return useMemo<GroupedAttachments>(() => {

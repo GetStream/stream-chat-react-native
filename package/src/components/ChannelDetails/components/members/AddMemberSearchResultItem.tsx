@@ -43,8 +43,14 @@ export const AddMemberSearchResultItem = ({ onPress, user }: AddMemberSearchResu
 
   const displayName = user.name ?? user.id;
   const accessibilityLabel = isAlreadyMember
-    ? t('a11y/{{name}} is already a member', { name: displayName })
-    : t('a11y/Select {{name}}', { name: displayName });
+    ? t(
+        'channelDetails.addMembers.alreadyMember.accessibilityLabel',
+        '{{name}} is already a member',
+        { name: displayName },
+      )
+    : t('channelDetails.addMembers.selectUser.accessibilityLabel', 'Select {{name}}', {
+        name: displayName,
+      });
 
   const avatar = <UserAvatar showOnlineIndicator={user.online} size='md' user={user} />;
   const name = (
@@ -75,7 +81,7 @@ export const AddMemberSearchResultItem = ({ onPress, user }: AddMemberSearchResu
             style={[styles.memberLabel, { color: semantics.textSecondary }, memberLabelOverride]}
             testID={`channel-add-members-row-${user.id}-member-label`}
           >
-            {t('Already a member')}
+            {t('channelDetails.addMembers.alreadyMember.text', 'Already a member')}
           </Text>
         </View>
       </View>

@@ -18,7 +18,7 @@ export const MessageSavedForLaterHeader = () => {
   return (
     <View accessibilityLabel='Message Saved For Later Header' style={styles.container}>
       <icons.Bookmark height={16} width={16} stroke={styles.label.color} />
-      <Text style={styles.label}>{t('Saved For Later')}</Text>
+      <Text style={styles.label}>{t('message.savedForLater.text', 'Saved For Later')}</Text>
     </View>
   );
 };

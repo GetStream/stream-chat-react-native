@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 
 import { StyleSheet, Text, View } from 'react-native';
 
-import { PollVote as PollVoteClass, VotingVisibility } from 'stream-chat';
+import { convertTimestampToDate, PollVoteResponseData as PollVoteClass } from 'stream-chat';
 
 import { useTheme, useTranslationContext } from '../../../../contexts';
+import { getDateString } from '../../../../i18n/utils';
 import { primitives } from '../../../../theme';
-import { getDateString } from '../../../../utils/i18n/getDateString';
 import { UserAvatar } from '../../../ui/Avatar/UserAvatar';
 
 import { usePollState } from '../../hooks/usePollState';
@@ -28,25 +28,24 @@ export const PollVote = ({ vote }: { vote: PollVoteClass }) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: vote.created_at,
+        messageCreatedAt: convertTimestampToDate(vote.created_at),
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/PollVote',
+        timestampTranslationKey: 'timestamp.PollVote',
       }),
     [vote.created_at, t, tDateTimeParser],
   );
 
-  const isAnonymous = useMemo(
-    () => votingVisibility === VotingVisibility.anonymous,
-    [votingVisibility],
-  );
+  const isAnonymous = useMemo(() => votingVisibility === 'anonymous', [votingVisibility]);
 
   return (
     <View style={[styles.voteContainer, container]}>
       <View style={styles.userContainer}>
         {!isAnonymous && vote.user ? <UserAvatar user={vote.user} size='md' showBorder /> : null}
         <Text style={[styles.voteUserName, userName]}>
-          {isAnonymous ? t('Anonymous') : (vote.user?.name ?? vote.user?.id)}
+          {isAnonymous
+            ? t('common.anonymousUser.label', 'Anonymous')
+            : (vote.user?.name ?? vote.user?.id)}
         </Text>
       </View>
       <Text style={[styles.voteDate, dateText]}>{dateString}</Text>

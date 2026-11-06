@@ -10,7 +10,12 @@ import Animated, {
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type UserResponse } from 'stream-chat';
+import {
+  type ChannelDataState,
+  type ChannelWatchState,
+  type MembersState,
+  type UserResponse,
+} from 'stream-chat';
 
 import { MicPositionProvider } from './contexts/MicPositionContext';
 
@@ -18,12 +23,7 @@ import { audioRecorderSelector } from './utils/audioRecorderSelectors';
 
 import { useScreenReaderMountFocus } from '../../a11y';
 
-import {
-  ChatContextValue,
-  useAttachmentPickerContext,
-  useChatContext,
-  useOwnCapabilitiesContext,
-} from '../../contexts';
+import { useAttachmentPickerContext, useOwnCapabilitiesContext } from '../../contexts';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -53,6 +53,7 @@ import { MessageInputHeightState } from '../../state-store/message-input-height-
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 import { type TextInputOverrideComponent } from '../AutoCompleteInput/AutoCompleteInput';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 import { PollModal } from '../Poll/components/PollModal';
 import { CreatePoll } from '../Poll/CreatePollContent';
 import { PortalWhileClosingView } from '../UIComponents/PortalWhileClosingView';
@@ -137,9 +138,13 @@ const useStyles = () => {
   }, [semantics]);
 };
 
-type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
-  Pick<ChannelContextValue, 'channel' | 'members' | 'watchers'> &
-  Pick<
+type MessageComposerPropsWithContext = { isOnline: boolean } & Pick<
+  ChannelContextValue,
+  'channel'
+> & {
+    members?: MembersState['members'];
+    watchers?: ChannelWatchState['watchers'];
+  } & Pick<
     MessageInputContextValue,
     | 'audioRecorderManager'
     | 'additionalTextInputProps'
@@ -165,7 +170,6 @@ type MessageComposerPropsWithContext = Pick<ChatContextValue, 'isOnline'> &
   Pick<AudioRecorderManagerState, 'micLocked'> & {
     editing: boolean;
     isKeyboardVisible: boolean;
-    threadList?: boolean;
     TextInputComponent?: TextInputOverrideComponent;
     isRecordingStateIdle?: boolean;
     recordingStatus?: string;
@@ -175,11 +179,17 @@ const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
   height: state.height,
 });
 
+// Capabilities arrive with the channel's data, from the server or the offline database.
+const capabilitiesKnownSelector = (state: ChannelDataState) => ({
+  capabilitiesKnown: Array.isArray(state.data?.own_capabilities),
+});
+
 const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const {
     additionalTextInputProps,
     asyncMessagesLockDistance,
     asyncMessagesSlideToCancelDistance,
+    channel,
     closeAttachmentPicker,
     closePollCreationDialog,
     createPollOptionGap,
@@ -233,7 +243,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     },
   } = useTheme();
 
-  // Close the attachment picker state when the component unmounts
+  // Closes the attachment picker on unmount.
   useEffect(
     () => () => {
       closeAttachmentPicker();
@@ -242,7 +252,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   );
 
   /**
-   * Effect to get the draft data for legacy thread composer and set it to message composer.
+   * Loads the draft of the legacy thread composer into the message composer.
    * TODO: This can be removed once we remove legacy thread composer.
    */
   useEffect(() => {
@@ -254,8 +264,9 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
   const getMembers = () => {
     const result: UserResponse[] = [];
-    if (members && Object.values(members).length) {
-      Object.values(members).forEach((member) => {
+    const channelMembers = members ?? channel.state.getLatestValue().members;
+    if (channelMembers && Object.values(channelMembers).length) {
+      Object.values(channelMembers).forEach((member) => {
         if (member.user) {
           result.push(member.user);
         }
@@ -268,7 +279,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
   const getUsers = () => {
     const users = [...getMembers(), ...getWatchers()];
 
-    // make sure we don't list users twice
+    // Deduplicate by user ID.
     const uniqueUsers: { [key: string]: UserResponse } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
@@ -282,14 +293,15 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
 
   const getWatchers = () => {
     const result: UserResponse[] = [];
-    if (watchers && Object.values(watchers).length) {
-      result.push(...Object.values(watchers));
+    const channelWatchers = watchers ?? channel.state.getLatestValue().watchers;
+    if (channelWatchers && Object.values(channelWatchers).length) {
+      result.push(...Object.values(channelWatchers));
     }
 
     return result;
   };
 
-  // immediately focus the screen reader to the input on mount if a11y is enabled.
+  // Moves screen reader focus to the input on mount when a screen reader is enabled.
   useScreenReaderMountFocus(inputBoxRef);
 
   const isFocused = inputBoxRef.current?.isFocused();
@@ -376,7 +388,6 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                       borderTopWidth: 1,
                       backgroundColor: semantics.backgroundCoreElevation1,
                       borderTopColor: semantics.borderCoreSubtle,
-                      // paddingBottom: BOTTOM_OFFSET,
                       paddingBottom:
                         selectedPicker && !isKeyboardVisible
                           ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
@@ -601,20 +612,13 @@ const MemoizedMessageComposer = React.memo(
 
 export type MessageComposerProps = Partial<MessageComposerPropsWithContext>;
 
-/**
- * UI Component for message composer
- * It's a consumer of
- * [Channel Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/),
- * [Chat Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/),
- * [MessageInput Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/message-input-context/),
- * [Suggestions Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/suggestions-context/), and
- * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
- */
+/** Message composer UI. */
 export const MessageComposer = (props: MessageComposerProps) => {
-  const { isOnline } = useChatContext();
+  const isOnline = useSettledWSConnectionHealth();
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { channel, members, watchers } = useChannelContext();
+  const { channel } = useChannelContext();
+  const { capabilitiesKnown } = useStateStore(channel.state, capabilitiesKnownSelector);
 
   const {
     audioRecorderManager,
@@ -648,11 +652,14 @@ export const MessageComposer = (props: MessageComposerProps) => {
 
   const { t } = useTranslationContext();
 
-  /**
-   * Disable the message input if the channel is frozen, or the user doesn't have the capability to send a message.
-   * Enable it in frozen mode, if it the input has editing state.
-   */
-  if (!ownCapabilities.sendMessage && !editing && SendMessageDisallowedIndicator) {
+  // Without the `sendMessage` capability (such as in a frozen channel) only the disallowed
+  // indicator is rendered, unless a message is being edited.
+  if (
+    capabilitiesKnown &&
+    !ownCapabilities.sendMessage &&
+    !editing &&
+    SendMessageDisallowedIndicator
+  ) {
     return <SendMessageDisallowedIndicator />;
   }
 
@@ -679,7 +686,6 @@ export const MessageComposer = (props: MessageComposerProps) => {
         inputBoxRef,
         isKeyboardVisible,
         isOnline,
-        members,
         messageInputFloating,
         messageInputHeightStore,
         openPollCreationDialog,
@@ -687,7 +693,6 @@ export const MessageComposer = (props: MessageComposerProps) => {
         showPollCreationDialog,
         t,
         uploadNewFile,
-        watchers,
       }}
       {...props}
     />

@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { render, screen } from '@testing-library/react-native';
 
 import Dayjs from 'dayjs';
-import { StateStore } from 'stream-chat';
 import type { MessageResponse, SearchSourceState } from 'stream-chat';
 
 import {
@@ -18,6 +18,7 @@ import {
 } from '../../../../../contexts/translationContext/TranslationContext';
 import { generateFileAttachment } from '../../../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../../../mock-builders/generator/time';
 import { Streami18n } from '../../../../../utils/i18n/Streami18n';
 import type { FileAttachmentItemProps } from '../../navigation-section/FileAttachmentItem';
 import { FileAttachmentList } from '../../navigation-section/FileAttachmentList';
@@ -120,7 +121,7 @@ const makeSearchSource = (
 });
 
 const fakeTranslators = {
-  t: ((key: string) => key) as never,
+  t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
   tDateTimeParser: ((input: unknown) => Dayjs(input as string)) as never,
   userLanguage: 'en',
 } as unknown as TranslationContextValue;
@@ -150,7 +151,7 @@ describe('FileAttachmentList', () => {
 
   beforeAll(async () => {
     const i18nInstance = new Streami18n();
-    realTranslators = (await i18nInstance.getTranslators()) as unknown as TranslationContextValue;
+    realTranslators = (await i18nInstance.init()) as unknown as TranslationContextValue;
   });
 
   beforeEach(() => {
@@ -191,12 +192,12 @@ describe('FileAttachmentList', () => {
   it('renders a row per attachment', () => {
     const messageA = generateMessage({
       attachments: [generateFileAttachment()] as never,
-      created_at: new Date('2026-03-15T00:00:00.000Z'),
+      created_at: convertDateToTimestamp('2026-03-15T00:00:00.000Z'),
       id: 'm-1',
     }) as unknown as MessageResponse;
     const messageB = generateMessage({
       attachments: [generateFileAttachment()] as never,
-      created_at: new Date('2026-03-16T00:00:00.000Z'),
+      created_at: convertDateToTimestamp('2026-03-16T00:00:00.000Z'),
       id: 'm-2',
     }) as unknown as MessageResponse;
 
@@ -211,12 +212,12 @@ describe('FileAttachmentList', () => {
   it('groups messages under month section headers in newest-first order', () => {
     const march = generateMessage({
       attachments: [generateFileAttachment()] as never,
-      created_at: new Date('2026-03-15T00:00:00.000Z'),
+      created_at: convertDateToTimestamp('2026-03-15T00:00:00.000Z'),
       id: 'm-mar',
     }) as unknown as MessageResponse;
     const february = generateMessage({
       attachments: [generateFileAttachment()] as never,
-      created_at: new Date('2026-02-10T00:00:00.000Z'),
+      created_at: convertDateToTimestamp('2026-02-10T00:00:00.000Z'),
       id: 'm-feb',
     }) as unknown as MessageResponse;
 

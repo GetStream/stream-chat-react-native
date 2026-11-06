@@ -45,7 +45,7 @@ export const getDraft = async ({
 
     return mapStorableToDraft({
       channelRow: channelRows[0] as unknown as TableRow<'channels'>,
-      currentUserId: userId,
+      userId,
       draftRow: draftRowWithMessage,
       pollRow: polls[0],
       quotedMessageRow: quotedMessageRows,

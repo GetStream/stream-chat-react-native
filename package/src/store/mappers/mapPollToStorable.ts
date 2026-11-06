@@ -1,10 +1,10 @@
-import type { PollResponse } from 'stream-chat';
+import type { PollResponseData } from 'stream-chat';
 
-import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+import { mapTimestampToStorable } from './mapTimestampToStorable';
 
 import type { TableRow } from '../types';
 
-export const mapPollToStorable = (poll: PollResponse): TableRow<'poll'> => {
+export const mapPollToStorable = (poll: PollResponseData): TableRow<'poll'> => {
   const {
     allow_answers,
     allow_user_suggested_options,
@@ -34,8 +34,8 @@ export const mapPollToStorable = (poll: PollResponse): TableRow<'poll'> => {
     allow_answers,
     allow_user_suggested_options,
     answers_count,
-    created_at: mapDateTimeToStorable(created_at),
-    created_by: JSON.stringify(created_by), // decouple the users from the actual poll
+    created_at: mapTimestampToStorable(created_at),
+    created_by: JSON.stringify(created_by), // stored as JSON to decouple the user from the poll
     created_by_id,
     description,
     // Always written (as `null` when absent): an upsert skips undefined columns, which would keep
@@ -46,12 +46,12 @@ export const mapPollToStorable = (poll: PollResponse): TableRow<'poll'> => {
     is_closed,
     latest_answers: JSON.stringify(latest_answers),
     latest_votes_by_option: JSON.stringify(latest_votes_by_option),
-    max_votes_allowed,
+    max_votes_allowed: max_votes_allowed ?? 1,
     name,
     name_i18n: JSON.stringify(name_i18n ?? null),
     options: JSON.stringify(options),
     own_votes: JSON.stringify(own_votes),
-    updated_at,
+    updated_at: mapTimestampToStorable(updated_at),
     vote_count,
     vote_counts_by_option: JSON.stringify(vote_counts_by_option),
     voting_visibility,

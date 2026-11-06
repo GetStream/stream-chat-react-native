@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 
 /**
- * Returns true if `uri` points to an SVG (either by `.svg` extension or by
- * `image/svg+xml` data-URI prefix). Exported as a pure function for non-React
- * callers; React components should prefer `useIsSvg` so the check is memoized
- * per URI.
+ * Whether `uri` points to an SVG, by `.svg` extension (ignoring query and fragment) or by
+ * `image/svg+xml` data URI. The non-hook form of `useIsSvg`.
+ *
+ * @param uri The URI to check.
+ * @returns True when the URI is an SVG.
  */
 export const isSvgUri = (uri: string | null | undefined): boolean => {
   if (typeof uri !== 'string' || uri.length === 0) {
@@ -19,10 +20,10 @@ export const isSvgUri = (uri: string | null | undefined): boolean => {
 };
 
 /**
- * Memoized variant of `isSvgUri`. Re-runs the string check only when `uri`
- * actually changes — useful in hot render paths like the gallery where the
- * surrounding component re-renders frequently (animated styles, swipe state)
- * but the URI is stable.
+ * Memoized `isSvgUri`, re-evaluated only when `uri` changes.
+ *
+ * @param uri The URI to check.
+ * @returns True when the URI is an SVG.
  */
 export const useIsSvg = (uri: string | null | undefined): boolean =>
   useMemo(() => isSvgUri(uri), [uri]);

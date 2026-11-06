@@ -17,9 +17,12 @@ import {
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { runtimeDefaults } from '../../../i18n/runtimeDefaults';
 import type { ChannelDetailsActionItemProps } from '../components/ChannelDetailsActionItem';
 import { ChannelDetailsNavigationSection } from '../components/ChannelDetailsNavigationSection';
 import type { GetChannelDetailsNavigationItems } from '../hooks/useChannelDetailsNavigationItems';
+
+type RuntimeDefaultKey = keyof typeof runtimeDefaults;
 
 const probeCalls: ChannelDetailsActionItemProps[] = [];
 
@@ -80,7 +83,12 @@ const renderSection = (
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          // Prose keys pass their English copy inline as the second argument; the navigation row
+          // labels are `runtimeDefaults` keys, resolved by name from the bundled catalog.
+          t: ((key: string, d?: unknown) =>
+            typeof d === 'string'
+              ? d
+              : (runtimeDefaults[key as RuntimeDefaultKey] ?? key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}

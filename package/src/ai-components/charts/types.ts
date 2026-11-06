@@ -1,13 +1,12 @@
 export type Dim = string;
 
 export type Datum = {
-  /** The categorical/temporal dimension (label, category, or time). */
+  /** The categorical or temporal dimension: a label, category or time. */
   dimension: Dim;
-  /** The numeric measure/value. */
   value: number;
-  /** Color for this datum; the renderer will fall back to series color. */
+  /** Color of this datum. In non-pie charts, datums sharing a color form one series. */
   color: string;
-  /** Optional series key for multi-series charts (e.g., region). */
+  /** Optional series key for multi-series charts. */
   series?: string;
 };
 

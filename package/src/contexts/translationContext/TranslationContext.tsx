@@ -1,23 +1,24 @@
 import React, { useContext } from 'react';
 
-import Dayjs from 'dayjs';
-
-import type { TranslationLanguages } from 'stream-chat';
-
 import { TranslatorFunctions } from './types';
 
-import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
+import { defaultDateTimeParser, defaultTranslatorFunction } from '../../i18n/utils';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
-export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
+export const DEFAULT_USER_LANGUAGE = 'en';
 
 export type TranslationContextValue = TranslatorFunctions & {
-  userLanguage: TranslationLanguages;
+  /**
+   * The language the SDK's own copy renders in. A plain `string` rather than `stream-chat`'s
+   * `TranslationLanguage` (the message auto-translation languages): any language with a registered
+   * dictionary is valid.
+   */
+  userLanguage: string;
 };
 
 const defaultTranslationContextValue: TranslationContextValue = {
   t: defaultTranslatorFunction,
-  tDateTimeParser: (input) => Dayjs(input),
+  tDateTimeParser: defaultDateTimeParser,
   userLanguage: DEFAULT_USER_LANGUAGE,
 };
 
@@ -38,7 +39,7 @@ export const useTranslationContext = () => {
 
   if (contextValue === defaultTranslationContextValue && !isTestEnvironment()) {
     throw new Error(
-      'The useTranslationContext hook was called outside the TranslationContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider)(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider',
+      'The useTranslationContext hook was called outside the TranslationContextProvider',
     );
   }
 

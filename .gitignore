@@ -32,3 +32,6 @@ index.android.bundle
 package/shared-native/.sync-state/
 
 .claude/worktrees
+
+# `yarn i18n:export` writes the joined catalog here on demand; it is not checked in.
+package/en.json

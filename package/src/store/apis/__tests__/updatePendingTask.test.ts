@@ -72,6 +72,8 @@ describe('updatePendingTask', () => {
     expect(JSON.parse(updatedRow.payload)[0].text).toBe('edited text');
     expect(updatedTask.id).toBe(originalTask.id);
     expect(updatedTask.type).toBe('send-message');
-    expect((updatedTask.payload as [{ text: string }, object])[0].text).toBe('edited text');
+    expect((updatedTask.payload as unknown as [{ text: string }, object])[0].text).toBe(
+      'edited text',
+    );
   });
 });

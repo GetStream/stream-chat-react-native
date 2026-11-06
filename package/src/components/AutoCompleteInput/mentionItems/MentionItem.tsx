@@ -5,19 +5,14 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../theme';
 
 export type MentionItemProps = PropsWithChildren<{
-  /**
-   * Leading visual rendered to the left of the row. UserAvatar for user
-   * mentions, an `EnhancedMentionIcon` for the rest.
-   */
+  /** Visual rendered before the content: a user avatar or an `EnhancedMentionIcon`. */
   leading?: ReactNode;
   testID?: string;
 }>;
 
 /**
- * Layout primitive for every mention-suggestion row: `[leading | content]`.
- * The per-type content (tokenized user name, or `EnhancedMentionContent` for
- * channel/here/role/user_group) is passed as children. Container and column
- * styles come from `theme.messageComposer.suggestions.mention`.
+ * Layout of a mention-suggestion row: the `leading` visual followed by the children as content.
+ * Styled through `theme.messageComposer.suggestions.mention`.
  */
 export const MentionItem = ({ children, leading, testID }: MentionItemProps) => {
   const {

@@ -1,4 +1,4 @@
-import type { Channel, StreamChat, UserResponse } from 'stream-chat';
+import type { Channel, ChannelConfigWithInfo, StreamChat, UserResponse } from 'stream-chat';
 
 import { getOrCreateChannelApi } from './getOrCreateChannel';
 import { useMockedApis } from './useMockedApis';
@@ -27,7 +27,18 @@ const initChannelFromData = async ({
   useMockedApis(client, [getOrCreateChannelApi(mockedChannelData)]);
   const channel = client.channel(mockedChannelData.type, mockedChannelData.id);
   await channel.watch();
-  jest.spyOn(channel, 'getConfig').mockImplementation(() => mockedChannelData.channel.config);
+  // Written into the client's store rather than stubbed onto the channel. `getConfig()` is gone, and its
+  // replacement `channel.serverConfig` is a getter over this store — `jest.spyOn` cannot stand in for an
+  // accessor. Going through the store also drives the channel's own derivation, so `channel.config` (where
+  // the server's gates are ANDed with anything registered through `client.config`) is correct too, which a
+  // stub would have left stale. Keyed by cid, matching the LLC: a channel's own `config_overrides` narrow
+  // its type's settings for that channel alone.
+  client.channelServerConfigsStore.partialNext({
+    configs: {
+      ...client.channelServerConfigs,
+      [channel.cid]: mockedChannelData.channel.config as ChannelConfigWithInfo,
+    },
+  });
   // jest
   //   .spyOn(channel, 'getDraft')
   //   .mockImplementation(() => generateMessageDraft({ channel_cid: channel.cid }));

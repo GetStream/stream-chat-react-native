@@ -1,12 +1,7 @@
-import { DraftFilters, DraftResponse, DraftSort, Pager, StateStore, StreamChat } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { DraftResponse, QueryDraftsRequest, StreamChat } from 'stream-chat';
 
 import { WithSubscriptions } from './WithSubscription';
-
-export type QueryDraftOptions = Pager & {
-  filter?: DraftFilters;
-  sort?: DraftSort;
-  user_id?: string;
-};
 
 const MAX_QUERY_DRAFTS_LIMIT = 25;
 
@@ -222,7 +217,7 @@ export class DraftsManager extends WithSubscriptions {
         ready: true,
       }));
     } catch (error) {
-      this.client.logger('error', (error as Error).message);
+      console.error('DraftsManager:', (error as Error).message);
       this.state.next((current) => ({
         ...current,
         pagination: {
@@ -233,7 +228,7 @@ export class DraftsManager extends WithSubscriptions {
     }
   };
 
-  public queryDrafts = async (options: QueryDraftOptions = {}) => {
+  public queryDrafts = async (options: QueryDraftsRequest = {}) => {
     const response = await this.client.queryDrafts({
       limit: MAX_QUERY_DRAFTS_LIMIT,
       ...options,
@@ -241,7 +236,7 @@ export class DraftsManager extends WithSubscriptions {
     return response;
   };
 
-  public loadNextPage = async (options: QueryDraftOptions = {}) => {
+  public loadNextPage = async (options: QueryDraftsRequest = {}) => {
     const { pagination } = this.state.getLatestValue();
 
     if (pagination.isLoadingNext || !pagination.nextCursor) {
@@ -266,7 +261,7 @@ export class DraftsManager extends WithSubscriptions {
         },
       }));
     } catch (error) {
-      this.client.logger('error', (error as Error).message);
+      console.error('DraftsManager:', (error as Error).message);
       this.state.next((current) => ({
         ...current,
         pagination: {

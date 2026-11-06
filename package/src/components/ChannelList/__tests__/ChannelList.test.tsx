@@ -10,20 +10,26 @@ import {
   waitFor,
   within,
 } from '@testing-library/react-native';
-import type { Channel as ChannelType, StreamChat } from 'stream-chat';
+import { ChannelPaginator } from 'stream-chat';
+import type {
+  Channel as ChannelType,
+  ChannelPaginatorOptions,
+  StreamChat,
+  UserResponse,
+} from 'stream-chat';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 import {
   useComponentsContext,
   WithComponents,
 } from '../../../contexts/componentsContext/ComponentsContext';
+import { useChannelName } from '../../../hooks/useChannelName';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import dispatchChannelHiddenEvent from '../../../mock-builders/event/channelHidden';
-import dispatchChannelTruncatedEvent from '../../../mock-builders/event/channelTruncated';
 import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
@@ -31,10 +37,10 @@ import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchNotificationAddedToChannelEvent from '../../../mock-builders/event/notificationAddedToChannel';
 import dispatchNotificationMessageNewEvent from '../../../mock-builders/event/notificationMessageNew';
 import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
-import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { getTestClientWithUser, setUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
 
@@ -51,12 +57,15 @@ jest.mock('../../ChannelPreview/ChannelSwipableWrapper', () => ({
  * Custom ChannelPreview component used via WithComponents to verify channel rendering.
  * Receives { channel, muted, unread, lastMessage } from ChannelPreview.
  */
-const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => (
-  <View accessibilityLabel='list-item' testID={channel.id}>
-    <Text>{(channel.data as { name?: string } | undefined)?.name}</Text>
-    <Text>{channel.state.messages[0]?.text}</Text>
-  </View>
-);
+const ChannelPreviewComponent = ({ channel }: { channel: ChannelType }) => {
+  const name = useChannelName(channel);
+  return (
+    <View accessibilityLabel='list-item' testID={channel.id}>
+      <Text>{name}</Text>
+      <Text>{channel.messagePaginator.latestMessage?.text}</Text>
+    </View>
+  );
+};
 
 /**
  * Probe that reads swipeActionsEnabled from ChannelsContext.
@@ -68,12 +77,9 @@ const SwipeActionsProbe = () => {
 };
 
 /**
- * Probe that reads refreshing from ChannelsContext.
+ * Probe that renders once the list has loaded.
  */
-const RefreshingProbe = () => {
-  const { refreshing } = useChannelsContext();
-  return <Text testID='refreshing'>{`${refreshing}`}</Text>;
-};
+const LoadedProbe = () => <Text testID='loaded'>loaded</Text>;
 
 /**
  * Probe that captures the context `refreshList` (the public, non-forced pull-to-refresh handler) so a
@@ -81,10 +87,12 @@ const RefreshingProbe = () => {
  */
 let capturedRefreshList: (() => void | Promise<void>) | undefined;
 const RefreshListProbe = () => {
-  const { refreshing, refreshList } = useChannelsContext();
+  const { refreshList } = useChannelsContext();
   capturedRefreshList = refreshList;
-  return <Text testID='refreshing'>{`${refreshing}`}</Text>;
+  return <Text testID='loaded'>loaded</Text>;
 };
+
+const isRefreshing = () => screen.getByTestId('channel-list-view').props.refreshing;
 
 const ChannelPreviewContent = ({ unread }: { unread?: number }) => (
   <Text testID='preview-unread'>{`${unread}`}</Text>
@@ -118,14 +126,27 @@ describe('ChannelList', () => {
   let testChannel1: ReturnType<typeof generateChannelResponse>;
   let testChannel2: ReturnType<typeof generateChannelResponse>;
   let testChannel3: ReturnType<typeof generateChannelResponse>;
-  const props: Partial<React.ComponentProps<typeof ChannelList>> = {
-    filters: {},
+  let props: React.ComponentProps<typeof ChannelList>;
+  let paginatorCount = 0;
+
+  // The app owns the list's paginator: it creates it and registers it on the channel manager.
+  const createPaginator = (options: Omit<ChannelPaginatorOptions, 'client'> = {}) => {
+    paginatorCount += 1;
+    const paginator = new ChannelPaginator({
+      client: chatClient,
+      filters: {},
+      id: `channels:test-${paginatorCount}`,
+      ...options,
+    });
+    chatClient.channelManager.insertPaginator({ paginator });
+    return paginator;
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
     expectedChannelDetailsBottomSheetOverride = undefined;
-    chatClient = await getTestClientWithUser({ id: 'dan' });
+    chatClient = await getTestClientWithUser({ id: 'dan' } as UserResponse);
+    props = { paginator: createPaginator() };
     testChannel1 = generateChannelResponse();
     testChannel2 = generateChannelResponse();
     testChannel3 = generateChannelResponse();
@@ -161,7 +182,7 @@ describe('ChannelList', () => {
     await waitFor(() => expect(getByTestId(testChannel1.channel.id)).toBeTruthy());
   });
 
-  it('should re-query channels when filters change', async () => {
+  it('should load a new paginator when the paginator prop changes', async () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     render(
@@ -184,7 +205,9 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={{ dummyFilter: true } as React.ComponentProps<typeof ChannelList>['filters']}
+            paginator={createPaginator({
+              filters: { dummyFilter: true } as ChannelPaginatorOptions['filters'],
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -195,7 +218,7 @@ describe('ChannelList', () => {
     });
   });
 
-  it('should re-query channels when predefined filter options change', async () => {
+  it('should query with the paginator request options and load a swapped-in paginator', async () => {
     const queryChannelsSpy = jest.spyOn(chatClient, 'queryChannels');
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
@@ -204,10 +227,12 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            options={{
-              filter_values: { user_id: 'dan' },
-              predefined_filter: 'user_messaging',
-            }}
+            paginator={createPaginator({
+              requestOptions: {
+                filter_values: { user_id: 'dan' },
+                predefined_filter: 'user_messaging',
+              },
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -217,16 +242,20 @@ describe('ChannelList', () => {
       expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy();
     });
 
+    // v10: the orchestrator's `ChannelPaginator` issues a single v10-shaped request object to
+    // `client.queryChannels(request)` (was the legacy `(filters, sort, options, ...)` positional form).
+    // `filter_values` / `predefined_filter` now travel inside that one request object. The trailing
+    // `undefined` is the optional per-request `requestOptions` (abort signal) arg the paginator threads
+    // through `queryChannelsAndHydrate` (LLC #1828); the channel list never passes one.
     expect(queryChannelsSpy).toHaveBeenNthCalledWith(
       1,
-      {},
-      expect.anything(),
       expect.objectContaining({
+        filter_conditions: {},
         filter_values: { user_id: 'dan' },
         offset: 0,
         predefined_filter: 'user_messaging',
       }),
-      expect.anything(),
+      undefined,
     );
 
     useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
@@ -236,10 +265,12 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            options={{
-              filter_values: { user_id: 'sara' },
-              predefined_filter: 'user_messaging',
-            }}
+            paginator={createPaginator({
+              requestOptions: {
+                filter_values: { user_id: 'sara' },
+                predefined_filter: 'user_messaging',
+              },
+            })}
           />
         </WithComponents>
       </Chat>,
@@ -252,72 +283,67 @@ describe('ChannelList', () => {
 
     expect(queryChannelsSpy).toHaveBeenNthCalledWith(
       2,
-      {},
-      expect.anything(),
       expect.objectContaining({
+        filter_conditions: {},
         filter_values: { user_id: 'sara' },
         offset: 0,
         predefined_filter: 'user_messaging',
       }),
-      expect.anything(),
+      undefined,
     );
   });
 
-  it('should update if filters are updated while awaiting api call', async () => {
+  it('should swap results when a paginator with other filters replaces the current one', async () => {
     const deferredCallForStaleFilter = new DeferredPromise();
     const deferredCallForFreshFilter = new DeferredPromise();
     const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
     const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
-    const createMockChannel = (id: string) => {
-      const channel = generateChannel({
-        data: { name: id },
-        id,
-        state: { latestMessages: [], members: {}, messages: [], setIsUpToDate: jest.fn() },
-      } as unknown as Parameters<typeof generateChannel>[0]) as unknown as {
-        countUnread: () => number;
-        messageComposer: { registerDraftEventSubscriptions: () => () => void };
-        muteStatus: () => { muted: boolean };
-        on: jest.Mock;
-      };
-      channel.countUnread = () => 0;
-      channel.muteStatus = () => ({ muted: false });
-      channel.on = jest.fn(() => ({ unsubscribe: jest.fn() }));
-      channel.messageComposer = {
-        registerDraftEventSubscriptions: jest.fn(() => jest.fn()),
-      };
-      return channel;
-    };
-    const staleChannel = [createMockChannel('stale-channel')];
-    const freshChannel = [createMockChannel('new-channel')];
+    // v10: the orchestrator hydrates REAL `Channel` instances from the `queryChannels` response, so the
+    // mock must resolve the actual response shape (`{ channels: ChannelResponse[] }`) rather than the
+    // hand-rolled channel stubs the legacy `setChannels` array accepted.
+    const staleChannel = generateChannelResponse({ id: 'stale-channel' });
+    const freshChannel = generateChannelResponse({ id: 'new-channel' });
     const spy = jest.spyOn(chatClient, 'queryChannels');
-    spy.mockImplementation(((filters: Parameters<typeof chatClient.queryChannels>[0] = {}) => {
-      if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
+    // v10: `client.queryChannels(request)` receives a single v10-shaped request object, so the filter to
+    // discriminate on now lives under `request.filter_conditions` (was the positional `filters` arg).
+    spy.mockImplementation(((request: Parameters<typeof chatClient.queryChannels>[0] = {}) => {
+      const filterConditions = request.filter_conditions ?? {};
+      if (Object.prototype.hasOwnProperty.call(filterConditions, 'new-filter')) {
         return deferredCallForFreshFilter.promise;
       }
       return deferredCallForStaleFilter.promise;
-    }) as typeof chatClient.queryChannels);
+    }) as unknown as typeof chatClient.queryChannels);
 
     const { rerender, queryByTestId } = render(
       <Chat client={chatClient}>
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={staleFilter as React.ComponentProps<typeof ChannelList>['filters']}
+            paginator={createPaginator({
+              filters: staleFilter as ChannelPaginatorOptions['filters'],
+            })}
           />
         </WithComponents>
       </Chat>,
     );
 
-    expect(spy).toHaveBeenNthCalledWith(
-      1,
-      staleFilter,
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    );
-
+    // The paginator issues its query asynchronously (on the post-render effect), so wait for the call
+    // instead of asserting synchronously as the legacy synchronous `queryChannels` allowed.
     await waitFor(() => {
-      expect(queryByTestId('channel-list-view')).toBeTruthy();
+      expect(spy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ filter_conditions: staleFilter }),
+        undefined,
+      );
+    });
+
+    // Settle the first paginator's query before swapping in the second one.
+    await act(async () => {
+      deferredCallForStaleFilter.resolve({ channels: [staleChannel] });
+      await deferredCallForStaleFilter.promise;
+    });
+    await waitFor(() => {
+      expect(queryByTestId('stale-channel')).toBeTruthy();
     });
 
     rerender(
@@ -325,27 +351,31 @@ describe('ChannelList', () => {
         <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
           <ChannelList
             {...props}
-            filters={freshFilter as React.ComponentProps<typeof ChannelList>['filters']}
+            paginator={createPaginator({
+              filters: freshFilter as ChannelPaginatorOptions['filters'],
+            })}
           />
         </WithComponents>
       </Chat>,
     );
 
-    expect(spy).toHaveBeenNthCalledWith(
-      2,
-      freshFilter,
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-    );
-
-    await act(() => {
-      deferredCallForStaleFilter.resolve(staleChannel);
-      deferredCallForFreshFilter.resolve(freshChannel);
-    });
+    // The new paginator loads its first page; its response is still awaiting at this point.
     await waitFor(() => {
-      expect(queryByTestId('channel-list-view')).toBeTruthy();
+      expect(spy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ filter_conditions: freshFilter }),
+        undefined,
+      );
+    });
+
+    await act(async () => {
+      deferredCallForFreshFilter.resolve({ channels: [freshChannel] });
+      await deferredCallForFreshFilter.promise;
+    });
+    // Once it resolves the list shows the new paginator's channels instead of the old ones.
+    await waitFor(() => {
       expect(queryByTestId('new-channel')).toBeTruthy();
+      expect(queryByTestId('stale-channel')).toBeNull();
     });
   });
 
@@ -481,19 +511,43 @@ describe('ChannelList', () => {
 
   describe('Event handling', () => {
     describe('message.new', () => {
+      // The message must carry the target channel's `cid`: v10's `MessageIntervalPaginator` filters
+      // ingested messages by `cid` (`buildMatchFilters`), so a message without one is dropped and never
+      // reaches the channel's `messagePaginator.anchoredHeadItems` that the preview reads.
       const sendNewMessageOnChannel3 = () => {
         const newMessage = generateMessage({
+          cid: testChannel3.channel.cid,
           user: generateUser(),
         });
         act(() => dispatchMessageNewEvent(chatClient, newMessage, testChannel3.channel));
         return newMessage;
       };
 
+      const getRenderedOrder = () =>
+        screen.getAllByLabelText('list-item').map((item) => item.props.testID);
+
+      // Settle the list to its loaded channels (past the skeleton→channels swap) before reading order.
+      const waitForRenderedChannels = async (length: number) => {
+        let order: string[] = [];
+        await waitFor(() => {
+          order = getRenderedOrder();
+          expect(order).toHaveLength(length);
+        });
+        return order;
+      };
+
       beforeEach(() => {
         useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2, testChannel3])]);
       });
 
-      it('should move channel to top of the list by default', async () => {
+      // v10 removed the implicit "float to top" on events: the `ChannelManager` no longer boosts a
+      // channel on `message.new`, so nothing relocates a channel except `sort` itself. (To force a
+      // channel to the top regardless of the sort an integrator now calls `paginator.boost(cid)`.)
+      // `ChannelList`'s default `sort` is `[]`, which the paginator reads as "unspecified" and
+      // resolves to the backend default — `last_message_at` descending — so the receiving channel does
+      // rise to the top here, on recency rather than on an event-driven boost. These mock channels
+      // carry no messages, so every other channel stays tied and keeps its cid order.
+      it('should float the channel to the top on a new message with the default sort', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
@@ -503,6 +557,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
+        const orderBefore = await waitForRenderedChannels(3);
 
         const newMessage = sendNewMessageOnChannel3();
 
@@ -510,14 +565,21 @@ describe('ChannelList', () => {
           expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
-
-        await waitFor(() => {
-          expect(within(items[0]).getByText(newMessage.text as string)).toBeTruthy();
-        });
+        // The new message renders inside the receiving channel's own row (its preview updated)…
+        expect(
+          within(screen.getByTestId(testChannel3.channel.id)).getByText(newMessage.text as string),
+        ).toBeTruthy();
+        // …and that channel is now the most recent one, so it leads the list while the rest hold
+        // their relative order.
+        expect(getRenderedOrder()).toEqual([
+          testChannel3.channel.id,
+          ...orderBefore.filter((id) => id !== testChannel3.channel.id),
+        ]);
       });
 
-      it('should add channel to top if channel is hidden from the list', async () => {
+      // The server unhides a channel on any new message without sending `channel.visible`, so a hidden
+      // channel comes back to the list with the new message, leading it as the most recent one.
+      it('should bring a hidden channel back to the list on a new message', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
@@ -527,31 +589,35 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => expect(screen.getByTestId('channel-list-view')).toBeTruthy());
+        const orderBefore = await waitForRenderedChannels(3);
+
         act(() => dispatchChannelHiddenEvent(chatClient, testChannel3.channel));
-
-        const newItems = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(newItems).toHaveLength(2);
+          expect(getRenderedOrder()).toHaveLength(2);
         });
 
         const newMessage = sendNewMessageOnChannel3();
 
         await waitFor(() => {
-          expect(screen.getByText(newMessage.text as string)).toBeTruthy();
+          expect(
+            within(screen.getByTestId(testChannel3.channel.id)).getByText(
+              newMessage.text as string,
+            ),
+          ).toBeTruthy();
         });
-
-        const items = screen.getAllByLabelText('list-item');
-
-        await waitFor(() => {
-          expect(within(items[0]).getByText(newMessage.text as string)).toBeTruthy();
-        });
+        expect(getRenderedOrder()).toEqual([
+          testChannel3.channel.id,
+          ...orderBefore.filter((id) => id !== testChannel3.channel.id),
+        ]);
       });
 
-      it('should not alter order if `lockChannelOrder` prop is true', async () => {
+      it('should not alter order if the paginator locks its item order', async () => {
         render(
           <Chat client={chatClient}>
             <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList lockChannelOrder={true} />
+              <ChannelList
+                paginator={createPaginator({ paginatorOptions: { lockItemOrder: true } })}
+              />
             </WithComponents>
           </Chat>,
         );
@@ -559,6 +625,7 @@ describe('ChannelList', () => {
         await waitFor(() => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
+        const orderBefore = await waitForRenderedChannels(3);
 
         const newMessage = sendNewMessageOnChannel3();
 
@@ -566,36 +633,11 @@ describe('ChannelList', () => {
           expect(screen.getByText(newMessage.text as string)).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
-
-        await waitFor(() => {
-          expect(within(items[2]).getByText(newMessage.text as string)).toBeTruthy();
-        });
-      });
-      it('should call the `onNewMessage` function prop, if provided', async () => {
-        const onNewMessage = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onNewMessage={onNewMessage} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchMessageNewEvent(
-            chatClient,
-            testChannel2.channel as unknown as Parameters<typeof dispatchMessageNewEvent>[1],
-          ),
-        );
-
-        await waitFor(() => {
-          expect(onNewMessage).toHaveBeenCalledTimes(1);
-        });
+        // Order is preserved and the new message renders in the receiving channel's row.
+        expect(getRenderedOrder()).toEqual(orderBefore);
+        expect(
+          within(screen.getByTestId(testChannel3.channel.id)).getByText(newMessage.text as string),
+        ).toBeTruthy();
       });
     });
 
@@ -627,53 +669,6 @@ describe('ChannelList', () => {
         const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
           expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
-        });
-      });
-
-      it('should call the `onNewMessage` function prop, if provided', async () => {
-        const onNewMessage = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onNewMessage={onNewMessage} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchMessageNewEvent(
-            chatClient,
-            testChannel2.channel as unknown as Parameters<typeof dispatchMessageNewEvent>[1],
-          ),
-        );
-
-        await waitFor(() => {
-          expect(onNewMessage).toHaveBeenCalledTimes(1);
-        });
-      });
-
-      it('should call the `onNewMessageNotification` function prop, if provided', async () => {
-        const onNewMessageNotification = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onNewMessageNotification={onNewMessageNotification} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel));
-
-        await waitFor(() => {
-          expect(onNewMessageNotification).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -711,27 +706,6 @@ describe('ChannelList', () => {
           expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
       });
-
-      it('should call the `onAddedToChannel` function prop, if provided', async () => {
-        const onAddedToChannel = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchNotificationAddedToChannelEvent(chatClient, testChannel3.channel));
-
-        await waitFor(() => {
-          expect(onAddedToChannel).toHaveBeenCalledTimes(1);
-        });
-      });
     });
 
     describe('notification.removed_from_channel', () => {
@@ -752,37 +726,21 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(items).toHaveLength(3);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(3);
         });
 
         act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
 
-        const newItems = screen.getAllByLabelText('list-item');
-        await waitFor(() => {
-          expect(newItems).toHaveLength(2);
+        // v10 routes the event through the `ChannelManager`'s async handler pipeline, so the removal
+        // lands after `act()` returns. Flush the pipeline (and the FlatList's deferred cell teardown)
+        // on a real timer, then re-query — asserting on a snapshot taken before this would see the old
+        // count.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
         });
-      });
-
-      it('should call the `onRemovedFromChannel` function prop, if provided', async () => {
-        const onRemovedFromChannel = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
-            </WithComponents>
-          </Chat>,
-        );
-
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
-
-        await waitFor(() => {
-          expect(onRemovedFromChannel).toHaveBeenCalledTimes(1);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(2);
         });
       });
     });
@@ -808,38 +766,12 @@ describe('ChannelList', () => {
         act(() =>
           dispatchChannelUpdatedEvent(chatClient, {
             ...testChannel2.channel,
-            name: 'updated',
+            custom: { name: 'updated' },
           }),
         );
 
         await waitFor(() => {
           expect(screen.getByText('updated')).toBeTruthy();
-        });
-      });
-
-      it('should call the `onChannelUpdated` function prop, if provided', async () => {
-        const onChannelUpdated = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
-            </WithComponents>
-          </Chat>,
-        );
-
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() =>
-          dispatchChannelUpdatedEvent(chatClient, {
-            ...testChannel2.channel,
-            name: 'updated',
-          }),
-        );
-
-        await waitFor(() => {
-          expect(onChannelUpdated).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -862,37 +794,19 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(items).toHaveLength(2);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(2);
         });
 
         act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
 
-        const newItems = screen.getAllByLabelText('list-item');
-        await waitFor(() => {
-          expect(newItems).toHaveLength(1);
+        // The `ChannelManager` removes the channel via its async handler pipeline; flush it (and the
+        // FlatList's deferred cell teardown) on a real timer before re-querying.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
         });
-      });
-
-      it('should call the `onChannelDeleted` function prop, if provided', async () => {
-        const onChannelDeleted = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
-            </WithComponents>
-          </Chat>,
-        );
-
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
-
-        await waitFor(() => {
-          expect(onChannelDeleted).toHaveBeenCalledTimes(1);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(1);
         });
       });
     });
@@ -915,37 +829,19 @@ describe('ChannelList', () => {
           expect(screen.getByTestId('channel-list-view')).toBeTruthy();
         });
 
-        const items = screen.getAllByLabelText('list-item');
         await waitFor(() => {
-          expect(items).toHaveLength(2);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(2);
         });
 
         act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
 
-        const newItems = screen.getAllByLabelText('list-item');
-        await waitFor(() => {
-          expect(newItems).toHaveLength(1);
+        // The `ChannelManager` drops the hidden channel via its async handler pipeline; flush it (and
+        // the FlatList's deferred cell teardown) on a real timer before re-querying.
+        await act(async () => {
+          await new Promise((resolve) => setTimeout(resolve, 0));
         });
-      });
-
-      it('should call the `onChannelHidden` function prop, if provided', async () => {
-        const onChannelHidden = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelHidden={onChannelHidden} />
-            </WithComponents>
-          </Chat>,
-        );
-
         await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
-
-        act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
-
-        await waitFor(() => {
-          expect(onChannelHidden).toHaveBeenCalledTimes(1);
+          expect(screen.getAllByLabelText('list-item')).toHaveLength(1);
         });
       });
     });
@@ -976,20 +872,24 @@ describe('ChannelList', () => {
     });
 
     describe('connection.changed', () => {
-      it('should force reconnection refreshes past the pull-to-refresh debounce while keeping them out of the refreshing UI', async () => {
-        // Regression guard: a reconnect is the sole trigger that re-watches channels on the fresh
-        // socket, so it must bypass the 5s pull-to-refresh throttle (`force`). Without the bypass a
-        // second reconnect landing inside the debounce window is dropped and its channels stay
-        // un-watched (frozen last message / unread) until the next reconnect > 5s later.
+      it('refreshes on every reconnect, however close together, without surfacing in the refreshing UI', async () => {
+        // Regression guard for a shipped freeze bug: a reconnect is the trigger that re-watches
+        // channels on the fresh socket, so dropping one leaves its channels un-watched and their
+        // per-channel state (last message / unread) frozen until the next reconnect or an app reload.
+        // The list reorders anyway off member-level `notification.message_new`, which is what made it
+        // look like the connection was fine.
+        //
+        // Recovery is now owned by `client.connectionRecovery`, which has no throttle at all — the
+        // 5s window this used to have to be forced past belongs to pull-to-refresh only and is no
+        // longer on the reconnect path. The behaviour asserted here is unchanged.
         useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const createChannelManagerSpy = jest.spyOn(chatClient, 'createChannelManager');
         // Freeze the clock at t=0 for the whole mount so `lastRefresh` is seeded to 0 regardless of
         // how many `Date.now()` calls the render makes.
         const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(0);
 
         render(
           <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: RefreshingProbe }}>
+            <WithComponents overrides={{ ChannelPreview: LoadedProbe }}>
               <ChannelList {...props} />
             </WithComponents>
           </Chat>,
@@ -997,15 +897,14 @@ describe('ChannelList', () => {
 
         // The probe only renders once the mount query populates the list.
         await waitFor(() => {
-          expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+          expect(screen.getByTestId('loaded')).toBeTruthy();
         });
+        expect(isRefreshing()).toBe(false);
 
         // Advance the clock 6s past mount so both reconnects observe t=6000.
         dateNowSpy.mockReturnValue(6000);
 
-        const channelManager = createChannelManagerSpy.mock.results[0]?.value as ReturnType<
-          typeof chatClient.createChannelManager
-        >;
+        const channelManager = chatClient.channelManager;
         // Spy (not replace) so reconnect queries still hydrate through the mocked axios response and
         // keep the list — and therefore the refreshing probe — mounted.
         const querySpy = jest.spyOn(chatClient, 'queryChannels');
@@ -1019,11 +918,13 @@ describe('ChannelList', () => {
         // Let query #1 settle so the ChannelManager's in-flight guard (isLoading) clears; otherwise it,
         // not the debounce, would be what drops the second query.
         await waitFor(() => {
-          expect(channelManager.state.getLatestValue().pagination.isLoading).toBe(false);
+          expect(
+            channelManager.state.getLatestValue().paginators[0].state.getLatestValue().isLoading,
+          ).toBe(false);
         });
 
-        // Reconnect #2 at t=6000, i.e. 0ms after reconnect #1 → inside the debounce window. It fires a
-        // fresh query only because reconnection refreshes are forced past the throttle.
+        // Reconnect #2 at t=6000, i.e. 0ms after reconnect #1 — well inside what used to be the
+        // debounce window. It must still fire a fresh query.
         act(() => dispatchConnectionChangedEvent(chatClient, false));
         act(() => dispatchConnectionChangedEvent(chatClient, true));
         await waitFor(() => {
@@ -1031,10 +932,12 @@ describe('ChannelList', () => {
         });
 
         // Background reconnection refreshes never surface in the pull-to-refresh UI.
-        expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+        expect(isRefreshing()).toBe(false);
 
         await waitFor(() => {
-          expect(channelManager.state.getLatestValue().pagination.isLoading).toBe(false);
+          expect(
+            channelManager.state.getLatestValue().paginators[0].state.getLatestValue().isLoading,
+          ).toBe(false);
         });
         dateNowSpy.mockRestore();
       });
@@ -1046,7 +949,6 @@ describe('ChannelList', () => {
         // 5s debounce must still hold — a second pull within the window of the last successful refresh
         // is a no-op and fires no query.
         useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const createChannelManagerSpy = jest.spyOn(chatClient, 'createChannelManager');
         const dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(0); // mount seeds `lastRefresh` to 0
 
         render(
@@ -1058,12 +960,11 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => {
-          expect(screen.getByTestId('refreshing').children[0]).toBe('false');
+          expect(screen.getByTestId('loaded')).toBeTruthy();
         });
+        expect(isRefreshing()).toBe(false);
 
-        const channelManager = createChannelManagerSpy.mock.results[0]?.value as ReturnType<
-          typeof chatClient.createChannelManager
-        >;
+        const channelManager = chatClient.channelManager;
         const querySpy = jest.spyOn(chatClient, 'queryChannels');
 
         // First pull at t=6000 (6s after mount → outside the window) fires a query.
@@ -1075,7 +976,9 @@ describe('ChannelList', () => {
           expect(querySpy).toHaveBeenCalledTimes(1);
         });
         await waitFor(() => {
-          expect(channelManager.state.getLatestValue().pagination.isLoading).toBe(false);
+          expect(
+            channelManager.state.getLatestValue().paginators[0].state.getLatestValue().isLoading,
+          ).toBe(false);
         });
 
         // Second pull at t=6000 (0ms later → inside the window) is throttled: no additional query.
@@ -1087,29 +990,242 @@ describe('ChannelList', () => {
         dateNowSpy.mockRestore();
       });
     });
+  });
 
-    describe('channel.truncated', () => {
-      it('should call the `onChannelTruncated` function prop, if provided', async () => {
-        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
-        const onChannelTruncated = jest.fn();
-        render(
-          <Chat client={chatClient}>
-            <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
-              <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
-            </WithComponents>
-          </Chat>,
-        );
+  describe('rows', () => {
+    const previewRenders: Record<string, number> = {};
+    const CountingPreview = ({ channel }: { channel: ChannelType }) => {
+      const id = channel.id ?? '';
+      previewRenders[id] = (previewRenders[id] ?? 0) + 1;
+      return <View accessibilityLabel='list-item' testID={id} />;
+    };
 
-        await waitFor(() => {
-          expect(screen.getByTestId('channel-list-view')).toBeTruthy();
-        });
+    it('re-renders only the row of the channel that received a message', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2, testChannel3])]);
 
-        act(() => dispatchChannelTruncatedEvent(chatClient, testChannel1.channel));
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: CountingPreview }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
 
-        await waitFor(() => {
-          expect(onChannelTruncated).toHaveBeenCalledTimes(1);
-        });
+      await waitFor(() => expect(screen.getAllByLabelText('list-item')).toHaveLength(3));
+      const [firstId, ...otherIds] = screen
+        .getAllByLabelText('list-item')
+        .map((item) => item.props.testID);
+      const firstChannel = [testChannel1, testChannel2, testChannel3].find(
+        ({ channel }) => channel.id === firstId,
+      )?.channel;
+      Object.keys(previewRenders).forEach((id) => {
+        previewRenders[id] = 0;
       });
+
+      act(() =>
+        dispatchMessageNewEvent(
+          chatClient,
+          generateMessage({ cid: firstChannel?.cid, user: generateUser() }),
+          firstChannel,
+        ),
+      );
+
+      await waitFor(() => expect(previewRenders[firstId]).toBeGreaterThan(0));
+      otherIds.forEach((id) => expect(previewRenders[id]).toBe(0));
+    });
+
+    it('selects with the latest onSelect', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+      const firstOnSelect = jest.fn();
+      const secondOnSelect = jest.fn();
+
+      render(
+        <Chat client={chatClient}>
+          <ChannelList {...props} onSelect={firstOnSelect} />
+        </Chat>,
+      );
+      await waitFor(() => expect(screen.getByTestId('channel-preview-button')).toBeTruthy());
+
+      screen.rerender(
+        <Chat client={chatClient}>
+          <ChannelList {...props} onSelect={secondOnSelect} />
+        </Chat>,
+      );
+      fireEvent.press(screen.getByTestId('channel-preview-button'));
+
+      expect(firstOnSelect).not.toHaveBeenCalled();
+      expect(secondOnSelect).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not load a next page before the first page', async () => {
+      jest.spyOn(chatClient, 'queryChannels').mockReturnValue(new Promise(() => {}));
+      let loadNextPage: (() => Promise<void>) | undefined;
+      const LoadNextPageProbe = () => {
+        loadNextPage = useChannelsContext().loadNextPage;
+        return null;
+      };
+      const executeQuery = jest.spyOn(ChannelPaginator.prototype, 'executeQuery');
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelListLoadingIndicator: LoadNextPageProbe }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+      // the mount query, which never resolves
+      await waitFor(() => expect(executeQuery).toHaveBeenCalledTimes(1));
+
+      await act(async () => {
+        await loadNextPage?.();
+      });
+
+      expect(executeQuery).toHaveBeenCalledTimes(1);
+      executeQuery.mockRestore();
+    });
+
+    it('keeps the footer loading indicator while a next page loads', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+      const paginator = createPaginator({ paginatorOptions: { pageSize: 1 } });
+      let loadNextPage: (() => Promise<void>) | undefined;
+      const LoadNextPageProbe = () => {
+        loadNextPage = useChannelsContext().loadNextPage;
+        return null;
+      };
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ListHeaderComponent: LoadNextPageProbe }}>
+            <ChannelList paginator={paginator} />
+          </WithComponents>
+        </Chat>,
+      );
+      await waitFor(() => expect(paginator.hasMoreTail).toBe(true));
+
+      useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+      const nextPage = new DeferredPromise<void>();
+      const queryChannels = chatClient.queryChannels.bind(chatClient);
+      jest.spyOn(chatClient, 'queryChannels').mockImplementation(async (...args) => {
+        await nextPage.promise;
+        return queryChannels(...args);
+      });
+      act(() => {
+        loadNextPage?.();
+      });
+      expect(screen.getByTestId('channel-list-footer-loading-indicator')).toBeTruthy();
+
+      // FlatList asks again when the footer changes the content length
+      await act(async () => {
+        await loadNextPage?.();
+      });
+      expect(screen.getByTestId('channel-list-footer-loading-indicator')).toBeTruthy();
+
+      await act(async () => {
+        nextPage.resolve();
+        await nextPage.promise;
+      });
+      await waitFor(() => expect(paginator.items).toHaveLength(2));
+      expect(screen.queryByTestId('channel-list-footer-loading-indicator')).toBeNull();
+    });
+
+    it('shows the channels it already has when it mounts again, without a query', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+      const { unmount } = render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+      await waitFor(() => expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy());
+      unmount();
+
+      const querySpy = jest.spyOn(chatClient, 'queryChannels');
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+
+      expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy();
+      expect(querySpy).not.toHaveBeenCalled();
+    });
+
+    it('loads the first page when an event put a channel in the list before it was ever queried', async () => {
+      const seededChannel = chatClient.channel(testChannel1.channel.type, testChannel1.channel.id);
+      // What `message.new` / `member.updated` do for a channel matching a list nobody queried yet.
+      chatClient.channelManager.ingestChannel(seededChannel);
+      expect(props.paginator.items?.map((channel) => channel.id)).toEqual([
+        testChannel1.channel.id,
+      ]);
+      expect(props.paginator.isInitialized).toBe(false);
+
+      useMockedApis(chatClient, [queryChannelsApi([testChannel2, testChannel1])]);
+      const querySpy = jest.spyOn(chatClient, 'queryChannels');
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+
+      // The seeded channel does not count as a loaded first page, so the list queries on mount.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      expect(querySpy).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(screen.getByTestId(testChannel2.channel.id)).toBeTruthy());
+      expect(props.paginator.isInitialized).toBe(true);
+    });
+
+    it('leaves the paginator registered and loaded when it unmounts', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+      const { unmount } = render(
+        <Chat client={chatClient}>
+          <ChannelList {...props} />
+        </Chat>,
+      );
+      await waitFor(() => expect(props.paginator.items?.length).toBe(1));
+      unmount();
+
+      expect(chatClient.channelManager.getPaginatorById(props.paginator.id)).toBe(props.paginator);
+      expect(props.paginator.items?.map((channel) => channel.id)).toEqual([
+        testChannel1.channel.id,
+      ]);
+    });
+
+    it('loads the list again once a user connects after a disconnect', async () => {
+      useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+
+      render(
+        <Chat client={chatClient}>
+          <WithComponents overrides={{ ChannelPreview: ChannelPreviewComponent }}>
+            <ChannelList {...props} />
+          </WithComponents>
+        </Chat>,
+      );
+      await waitFor(() => expect(screen.getByTestId(testChannel1.channel.id)).toBeTruthy());
+
+      const querySpy = jest.spyOn(chatClient, 'queryChannels');
+      await act(async () => {
+        await chatClient.disconnectUser();
+        // The mocked socket does not report its own close.
+        chatClient.wsConnection.state.partialNext({ isHealthy: false });
+      });
+
+      expect(screen.queryByTestId(testChannel1.channel.id)).toBeNull();
+      expect(querySpy).not.toHaveBeenCalled();
+
+      useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+      await act(() => setUser(chatClient, { id: 'dan' }));
+
+      await waitFor(() => expect(screen.getByTestId(testChannel2.channel.id)).toBeTruthy());
+      expect(querySpy).toHaveBeenCalledTimes(1);
     });
   });
 });

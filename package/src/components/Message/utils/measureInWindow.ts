@@ -10,29 +10,30 @@ import { isRN86OrGreater } from '../../../utils/react-native-constants';
 type MeasuredRect = { x: number; y: number; w: number; h: number };
 
 /**
- * On Android, `measureInWindow` historically did not account for the top inset, so we added it
- * ourselves. React Native 0.86 fixed this upstream as part of its edge-to-edge rework and now
- * returns topInset corrected window coordinates. On >= 0.86 adding it again double counts the
- * inset and offsets every measured view down by `insets.top`, so we only compensate on Android
- * running React Native below 0.86.
+ * Top inset to add to a measured `y`. Android `measureInWindow` excludes the top inset below React
+ * Native 0.86; from 0.86 the coordinates include it, and adding it again would shift every measured
+ * view down by `insets.top`.
  */
 const androidTopInsetCompensation = (insets: EdgeInsets): number =>
   Platform.OS === 'android' && !isRN86OrGreater ? insets.top : 0;
 
 /**
- * How many screen lengths away from the origin a measured coordinate may fall before we treat it as
- * bogus. Real targets (a view currently on screen) always measure well within one screen and the failure
- * mode we guard against is off by tens of screens, so a generous multiplier cleanly separates the two
- * with no risk of false positives on legitimate values.
+ * Screen lengths from the origin beyond which a measured coordinate is treated as bogus. On-screen
+ * targets measure within one screen and the failure is off by tens of screens, so 2 separates them.
  */
 const SCREEN_BOUND_MULTIPLIER = 2;
 
 /**
- * `measureInWindow` can return wildly out of bounds coordinates on Android when the native window has
- * been forced edge-to-edge behind React Native's back (i.e a library setting `FLAG_LAYOUT_NO_LIMITS`,
- * as `react-native-system-navigation-bar` does for a transparent nav bar) while RN's own edge-to-edge
- * (`edgeToEdgeEnabled`) is off. In that state the window relative measurement is corrupted and would
- * return a position of the View far offscreen.
+ * Whether a measured rect is unusable: non-finite values, a non-positive size, or coordinates more
+ * than `SCREEN_BOUND_MULTIPLIER` screens from the origin. On Android, `measureInWindow` returns far
+ * out of bounds coordinates when a library forces the window edge-to-edge (such as setting
+ * `FLAG_LAYOUT_NO_LIMITS` for a transparent nav bar) while `edgeToEdgeEnabled` is off.
+ *
+ * @param x Measured x coordinate.
+ * @param y Measured y coordinate.
+ * @param w Measured width.
+ * @param h Measured height.
+ * @returns Whether the measurement should be discarded.
  */
 export const isMeasuredRectBogus = (x: number, y: number, w: number, h: number): boolean => {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) {
@@ -43,7 +44,7 @@ export const isMeasuredRectBogus = (x: number, y: number, w: number, h: number):
   }
   const { width, height } = Dimensions.get('screen');
   if (width <= 0 || height <= 0) {
-    // can't reason about bounds, trust the measurement
+    // Without a screen size there is nothing to compare against.
     return false;
   }
   return (
@@ -69,10 +70,9 @@ export const measureInWindow = (
         return;
       }
 
-      // If `measureInWindow` returned an out of bounds rect, fallback to `measure()`, whose
-      // `pageX`/`pageY` are relative to the app root and are the same coordinate space as the window.
-      // They will stays correct when the window frame has been mutated out from under
-      // React Native.
+      // Falls back to `measure()` for a bogus rect: its `pageX`/`pageY` are relative to the app
+      // root, the same space as the window, and stay correct when the window frame was mutated
+      // behind React Native's back.
       if (typeof handle.measure !== 'function') {
         resolve({ h, w, x, y: y + androidTopInsetCompensation(insets) });
         return;

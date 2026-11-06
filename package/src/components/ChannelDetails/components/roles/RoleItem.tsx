@@ -8,15 +8,15 @@ import type { RoleLabel } from '../../hooks/members/useMemberRoles';
 
 export type RoleItemProps = {
   role: RoleLabel;
-  /** Style applied to the badge label, layered over the theme override. */
+  /** Style of the badge label, applied after the theme override. */
   textStyle?: StyleProp<TextStyle>;
-  /** Style applied to the badge container, layered over the theme override. */
+  /** Style of the badge container, applied after the theme override. */
   viewStyle?: StyleProp<ViewStyle>;
 };
 
 /**
- * Renders a single role badge (pill) next to a member row. `owner` roles use the accent
- * (blue) palette; every other role uses the neutral (grey) palette.
+ * A role badge shown next to a member row. The `owner` role uses the accent palette and every other
+ * role the neutral one.
  */
 export const RoleItem = ({ role, textStyle, viewStyle }: RoleItemProps) => {
   const {

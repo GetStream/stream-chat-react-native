@@ -2,24 +2,24 @@ import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const upsertUserSyncStatus = async ({
-  currentUserId,
+  userId,
   lastSyncedAt,
   execute = true,
 }: {
-  currentUserId: string;
+  userId: string;
   lastSyncedAt: string;
   execute?: boolean;
 }) => {
   const queries = [
     createUpsertQuery('userSyncStatus', {
       lastSyncedAt,
-      userId: currentUserId,
+      userId,
     }),
   ];
 
   SqliteClient.logger?.('info', 'upsertUserSyncStatus', {
     lastSyncedAt,
-    userId: currentUserId,
+    userId,
   });
 
   if (execute) {

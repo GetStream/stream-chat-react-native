@@ -10,7 +10,7 @@ import { primitives } from '../../theme';
 import { getDurationLabelFromDuration, getFileSizeDisplayText } from '../../utils/utils';
 
 export type FilePreviewProps = {
-  /** The attachment to render */
+  /** The attachment to render. */
   attachment: Attachment;
   attachmentIconSize?: FileIconProps['size'];
   // TODO: Think we really need a way to style the file preview using props if we have theme.
@@ -44,9 +44,12 @@ export const FilePreview = (props: FilePreviewProps) => {
     },
   } = useTheme();
 
+  // `duration` only exists on audio and voice recording attachments, under the untyped `custom`.
+  const duration = (attachment.custom as { duration?: number } | undefined)?.duration;
+
   return (
     <View style={[styles.container, container, stylesProp.container]}>
-      <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentIconSize} />
+      <FileAttachmentIcon mimeType={attachment.custom?.mime_type} size={attachmentIconSize} />
       <View style={[styles.details, details, stylesProp.details]}>
         <Text numberOfLines={titleNumberOfLines} style={[styles.title, title, stylesProp.title]}>
           {attachment.title}
@@ -55,9 +58,9 @@ export const FilePreview = (props: FilePreviewProps) => {
           indicator
         ) : (
           <Text style={[styles.size, fileSize, stylesProp.size]}>
-            {attachment.duration
-              ? getDurationLabelFromDuration(attachment.duration)
-              : getFileSizeDisplayText(attachment.file_size)}
+            {duration
+              ? getDurationLabelFromDuration(duration)
+              : getFileSizeDisplayText(attachment.custom?.file_size)}
           </Text>
         )}
       </View>

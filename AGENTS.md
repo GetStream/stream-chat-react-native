@@ -18,9 +18,9 @@ Targets iOS and Android.
 ## Tech & toolchain
 
 - **Languages:** TypeScript + React Native
-- **Runtime:** Node 24 (`.nvmrc` is `v24`; root `engines.node` is `>=20.19.4`; CI runs `24.x`)
+- **Runtime:** Node 24 (`.nvmrc` is `v24`; root `engines.node` is `>=22.13.0`; CI runs `24.x`)
 - **Package manager:** Yarn 4.15.0 (Berry). The binary lives at `.yarn/releases/yarn-4.15.0.cjs` and is activated via `yarnPath` in `.yarnrc.yml`. Any globally installed `yarn` (even the Homebrew classic 1.x) acts only as a launcher — no Corepack required.
-- **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/E2ETestApp`, `examples/ExpoMessaging`. **No Lerna.**
+- **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/E2ETestApp`, `examples/ExpoMessaging`, `examples/ExpoChatGPTSample`. **No Lerna.**
 - **Testing:** Jest with the `@react-native/jest-preset` + `@testing-library/react-native`.
 - **Build:** `react-native-builder-bob` → CommonJS (`lib/commonjs`), ESM (`lib/module`), types (`lib/typescript`)
 - **Lint/format:** ESLint 9 flat config + Prettier, strict (`--max-warnings 0`)
@@ -31,7 +31,7 @@ Targets iOS and Android.
 
 `.nvmrc` · `.yarnrc.yml` · `eslint.config.mjs` · `.prettierrc` / `.prettierignore` · `commitlint.config.js` · `configs/typescript-config/` (`base.json`, `library.json` — the shared presets `package/tsconfig.json` extends) · `.editorconfig` · `.husky/`
 
-Per-package: `package/tsconfig.json` (library) · `package/tsconfig.test.json` (tests) · `package/jest.config.js` · `package/babel.config.js` · `package/i18next.config.ts`
+Per-package: `package/tsconfig.json` (library) · `package/tsconfig.test.json` (tests) · `package/jest.config.js` · `package/babel.config.js`
 
 Respect repo-specific rules. Do not suppress lint rules broadly; justify and scope every exception with an inline comment.
 
@@ -41,7 +41,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
   - `native-package/` — bare RN wrapper (`stream-chat-react-native`)
   - `expo-package/` — Expo wrapper (`stream-chat-expo`)
   - `shared-native/{ios,android}` — native source shared by both wrappers; synced into them, never edited in place
-- `examples/` — `SampleApp` (full-featured), `E2ETestApp` (minimal app for the Detox e2e suite), `ExpoMessaging`
+- `examples/` — `SampleApp` (full-featured), `E2ETestApp` (minimal app for the Detox e2e suite), `ExpoMessaging`, `ExpoChatGPTSample` (AI components)
 - `configs/typescript-config/` — shared `tsconfig` presets
 - `ai-docs/` — agent-facing deep dives (see [References](#references))
 - `perf/` — on-device performance toolkit (see [Accessibility, RTL & performance](#accessibility-rtl--performance))
@@ -56,7 +56,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
 - `state-store/` — client-side stores on `useSyncExternalStore` with a selector pattern (audio player, video player, image gallery, message overlay, attachment picker, …)
 - `store/` — offline SQLite persistence: `OfflineDB.ts`, `SqliteClient.ts`, `schema.ts`, `mappers/`, `apis/`
 - `theme/` — theming system + `topologicalResolution.ts` + `generated/` tokens
-- `i18n/` — the 13 translation JSON files (the `Streami18n` wrapper class lives in `utils/i18n/`)
+- `i18n/` — the translation key layer: generated `keys.ts` catalog, `types.ts`, `runtimeDefaults.ts`, `utils.ts`. No locale JSON — the SDK ships English only. The runtime lives in `@stream-io/i18n`, shared with the React SDK; `utils/i18n/Streami18n.ts` is a thin subclass injecting this package's bundled data
 - `a11y/` — accessibility primitives (`a11yUtils.ts`, `hooks/`)
 - `middlewares/` — command UI middlewares (`attachments.ts`, `emojiControl.ts`)
 - `icons/` — SVG icon components
@@ -102,7 +102,8 @@ yarn workspace stream-chat-react-native-core validate-entry-isolation   # main a
 yarn eslint <path>            # eslint a single path
 
 # Translations
-yarn workspace stream-chat-react-native-core build-translations   # i18next-cli sync
+yarn workspace stream-chat-react-native-core build-translations   # regenerate src/i18n/keys.ts
+yarn workspace stream-chat-react-native-core i18n:export          # dump en.json for a translator
 
 # Shared native sync (after editing package/shared-native/)
 yarn workspace stream-chat-react-native-core shared-native:sync
@@ -122,16 +123,40 @@ yarn workspace sampleapp android
 ### Component hierarchy
 
 ```
-<OverlayProvider>            # gesture/overlay host, accessibility config
-  └─ <Chat client={client}>  # root: SDK metadata, offline DB, subscriptions
+<OverlayProvider>                  # gesture/overlay host, accessibility config
+  └─ <Chat client={client}>        # root: SDK metadata, offline DB, subscriptions
       ├─ <ChannelList>
-      └─ <Channel>           # state container: messages, threads, composer
-          ├─ <MessageList>
-          ├─ <MessageInput>
-          └─ <Thread>
+      ├─ <Channel channel={channel}> # a channel's main list: lifecycle + config providers
+      │   ├─ <MessageList>
+      │   └─ <MessageComposer>
+      └─ <Thread thread={thread}>  # a thread's replies, rendered next to <Channel>, not inside it
+          ├─ <MessageList>         # renders the parent message above the replies
+          └─ <MessageComposer>
 ```
 
-`<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), disables the JS client's `recoverStateOnReconnect` (the SDK handles recovery itself), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider` → `ChannelsStateProvider`.
+`<Channel>` and `<Thread>` share one provider shell (`components/Channel/ChannelShell.tsx`) and take
+the same configuration props; each owns only its own lifecycle. Only `<Thread>` provides
+`ThreadContext`, and `useThreadContext().thread` is `undefined` outside it, which is how a component
+knows it is not rendering a thread. Resolve the list's data with `useMessagePaginator()` /
+`useChannel()` rather than branching on a thread yourself.
+
+`<Chat>` is the entry point. It sets SDK metadata on the `stream-chat` client (identifier, device info), registers subscriptions for threads/polls/reminders (cleaned up on unmount), initializes `OfflineDB` when `enableOfflineSupport` is set, and wraps children in `ChatProvider` → `TranslationProvider` → `ThemeProvider`.
+
+**Reconnect recovery is owned by the JS client, not this SDK.** `client.connectionRecovery` re-queries
+every page each registered channel list has loaded, through the list's own query (up to 150 channels,
+`ChannelPaginator.recoverLoadedItems()`), drops the loaded channels no page returned, and reloads
+whichever channels are `active` (`<Channel>` marks its channel active on mount), then dispatches
+`connection.recovered`. `ChannelList`'s pull-to-refresh is separate and still re-queries only the first
+page. So do not add a
+`connection.changed` listener that re-queries a list or re-watches a channel — that duplicates it.
+Recovery is on by default and configured declaratively
+(`client.config.set({ client: { connectionRecovery: { enabled: false } } })` turns it off); the old
+`recoverStateOnReconnect` option is gone. It used to be switched off here because the client's old
+recovery was a single 30-channel query that ignored the lists' own filters. An open thread's replies
+are recovered too — the client reloads every `active` thread — so `<Channel>` no longer resyncs one
+itself. Exactly one thing deliberately stays UI-side: mark-read after the reload (`<Channel>` listens
+for `connection.recovered`), because it has to read the refreshed window and read policy is a UI
+decision.
 
 ### Context three-layer pattern
 
@@ -189,9 +214,9 @@ Native code shared by both wrappers lives in `package/shared-native/{ios,android
 
 ### AI components entry point
 
-`package/src/ai-components/` (ported 1:1 from the deprecated `@stream-io/chat-react-native-ai`) is reachable only through the `ai-components` subpath, implemented as physical folders (`package/ai-components/package.json`, `package/{native,expo}-package/ai-components/`) rather than an `exports` map, which would break deep imports. Metro does not tree-shake, so `bin/validate-entry-isolation.js` (run by `yarn lint`) enforces both directions:
+`package/src/ai-components/` (ported 1:1 from the deprecated `@stream-io/chat-react-native-ai`) is reachable only through the `ai-components` subpath, implemented as physical folders (`package/ai-components/package.json`, `package/{native,expo}-package/ai-components/`) rather than an `exports` map, which would break deep imports. Metro does not tree-shake, so `package/bin/validate-entry-isolation.js` (run by `yarn lint`) enforces both directions:
 
-- the main entry points must never reach `src/ai-components` or its dependencies (`react-syntax-highlighter`, `@khanacademy/simple-markdown`, `@stream-io/state-store`, `zod`, `victory-native`, Skia);
+- the main entry points must never reach `src/ai-components` or the AI-only packages (`react-syntax-highlighter`, `@khanacademy/simple-markdown`, `zod`, `victory-native`, Skia). `@stream-io/state-store` and `lodash` are shared: the main entry imports them too (the stores in `state-store/`, the Poll contexts);
 - the AI entry points may only reach `src/ai-components` plus an explicit allowlist (`src/native.ts`, the native shimmer). The wrappers' `ai-components/index.js` registers the native pieces the AI code needs itself and must never import the wrappers' `src/index.js`.
 
 Do not add AI slots to `DEFAULT_COMPONENTS`; core `require`s the defaults, which would break isolation. Skia and `victory-native` are optional peers (native libraries must be owned by the app); the JS-only AI dependencies are regular dependencies.
@@ -210,7 +235,7 @@ Native pieces live in `package/shared-native/`: the Android-only `PerfText` Fabr
 ### DO NOT
 
 1. **Edit generated or synced files** (see below) — regenerate them instead.
-2. **Add `channel` or `channel.state` to dependency arrays** — use `channel.cid`, which is stable.
+2. **Key on `channel.cid` where you mean the channel instance** — depend on `channel` itself. A disposed channel comes back as a new instance under the same cid, so anything bound to the instance (a context value holding it, a `useStateStore` subscription, a listener, `watch()`) must rebuild when `channel` changes. Use `cid` only when you mean the conversation.
 3. **Mutate `channel.state.messages` directly** — go through the `stream-chat` client's state API.
 4. **Inline a `useStateStore` selector** — define it at module scope.
 5. **Use unguarded web-only APIs in shared code** — it runs on Hermes, not a browser.
@@ -258,7 +283,7 @@ Tests use `render()` / `renderHook()` from `@testing-library/react-native`. Comp
 
 ## Build system
 
-`yarn build` runs `package`'s build: `rimraf lib` → `build-translations` (`i18next-cli sync`) → `bob build` → `copy-translations` (copies `src/i18n` into `lib/typescript/i18n`).
+`yarn build` runs `package`'s build: `rimraf lib` → `build-translations` (regenerates `src/i18n/keys.ts`) → `bob build`.
 
 `react-native-builder-bob` emits three targets from `src`:
 
@@ -280,11 +305,63 @@ Custom themes are passed as the `style` prop to `<Chat>`. `mergeThemes()` deep-m
 
 ## i18n
 
-- **13 locales** in `package/src/i18n/*.json`: `ar`, `en`, `es`, `fr`, `he`, `hi`, `it`, `ja`, `ko`, `nl`, `pt-br`, `ru`, `tr`
-- `Streami18n` (`package/src/utils/i18n/Streami18n.ts`) wraps i18next with per-locale calendar formats (`calendarFormats.ts`); access `t` via `useTranslationContext()`
-- Extraction: `yarn workspace stream-chat-react-native-core build-translations` (`i18next-cli sync`, configured in `package/i18next.config.ts`)
-- Validation: `validate-translations` runs inside `yarn lint` and in CI — **zero tolerance for empty translation values**
-- Adding a string: use `t()` → run `build-translations` → fill in every locale file
+**English only.** From v10 the SDK ships no locale files. Every UI string is a stable dotted key
+(`message.status.sent.text`) whose English copy is passed inline at the call site as i18next's
+`defaultValue`, so an untranslated key renders readable English rather than a raw dotted path.
+Integrators add languages additively — there is nothing in the SDK to fork or keep in sync.
+
+- `package/src/i18n/keys.ts` is **generated and type-only** — never hand-edit. It maps every key to
+  its English copy, and the i18n types derive `TranslationKey` / `StreamTFunction` from it, so a
+  typo'd or stale key is a compile error rather than a string that silently stops rendering.
+- The catalog has exactly two sources: inline defaults at the call sites, and
+  `package/src/i18n/runtimeDefaults.ts` — the only translation data that ships. `runtimeDefaults`
+  holds just the keys with no inline copy to fall back on: `timestamp.*` / `duration.*` formatter
+  expressions passed around as prop values, and keys built from a runtime value.
+- **The runtime is `@stream-io/i18n`**, shared with the React SDK — one `Streami18n`, one set of
+  formatters, one date layer. `package/src/utils/i18n/Streami18n.ts` is a ~30-line subclass that
+  injects this package's `runtimeDefaults` (core cannot import them: the catalog is generated from
+  *this* package's call sites). A behavioural fix belongs in `@stream-io/i18n`, not here — and note
+  it is a **regular dependency** here, as it is in the React SDK — an integrator never imports it
+  directly, they use the `Streami18n` this package re-exports. `dayjs` stays a direct dependency too,
+  because
+  this package uses it outside i18n (`utils.ts`, the audio recorder, the attachment picker); keep
+  both ranges at `^1.11.23` so they dedupe to one copy — dayjs locale registration is global state,
+  so two copies would mean locales registered on one are invisible to the other. Access `t` via
+  `useTranslationContext()`. `registerTranslation` **merges**, so a partial dictionary can never
+  knock out the bundled formatter keys.
+- **Reactivity is a `StateStore`,** not listeners. `i18n.state` publishes
+  `{ t, tDateTimeParser, language, initialized }`; `useStreami18n` subscribes with a module-scope
+  selector. `setLanguage()` returns `void` — the new `t` arrives through the store. There is no
+  `addOnLanguageChangeListener`, and `getTranslators()` is now `init()`. **Nothing is kept as a
+  deprecated alias** — v10 is a breaking release, so an old name is removed rather than carried with a
+  countdown on it. `relativeCompactDateFormatter` is gone the same way: use `timestampFormatter` with
+  `relativeCompact: true`, whose wording goes through `t()`.
+- `language.*` (ISO language names) and `relativeTime.*` are typed into the catalog but come from
+  core, which owns the code that renders them. Neither is declared in `runtimeDefaults`.
+- Notification copy is keyed on `stream-chat`'s `CORE_NOTIFICATION_TYPE`, in
+  `components/Notifications/notificationTranslations.ts`, as a `Record<CoreNotificationType, …>` — so
+  a new core identifier is a compile error until it is mapped. Never match on `notification.message`;
+  that is untranslated English whose wording is not part of core's contract. Poll field errors are
+  keyed the same way, on `POLL_COMPOSER_VALIDATION_CODE`.
+- **`dayjs` must resolve to exactly one copy.** Its range here has to stay identical to
+  `@stream-io/i18n`'s (`^1.11.23`) — a disagreeing pin installs a second copy, `instanceof Dayjs`
+  starts failing, and an integrator's `import 'dayjs/locale/de'` lands on an instance the SDK never
+  formats with. Do not declare `i18next` at all; it arrives through `@stream-io/i18n`.
+- Only the `en` dayjs locale is bundled, and **no dayjs locale defines `calendar`** (that field
+  belongs to the calendar plugin) — a new language needs both `import 'dayjs/locale/xx'` and a
+  `calendar` config, or relative dates render English scaffolding around translated day names.
+- Generation: `build-translations` runs `package/scripts/generate-i18n-keys.mts`, now a ~40-line
+  config shim over the generator in `@stream-io/i18n/codegen` (also shared with the React SDK). Four
+  hard-fail guards: conflicting inline copy, unresolvable key, shadowed key, strict prefix. The
+  external-string drift guard is gone with `externalStrings.ts`. The fixture tests live in
+  `@stream-io/i18n`'s own suite — there is no longer a `node --test` step here.
+- Validation: `validate-translations` runs inside `yarn lint` and in CI. It is a **drift gate** —
+  it regenerates `keys.ts` and fails if the result differs from what is committed.
+- Adding a string: call `t('some.dotted.key', 'English copy')` → run `build-translations` → commit
+  the regenerated `keys.ts`. Do not add locale files.
+- `i18n:export` writes a translator-facing `en.json`. It deliberately omits formatter expressions
+  and names the few that still carry English, which must be translated by overriding the key.
+- Worked example of adding a language: `examples/SampleApp/src/i18n/` (German + Italian + README).
 
 ## Offline DB
 
@@ -298,6 +375,7 @@ This repo ships three project skills — load the relevant one **before** touchi
 
 - `.claude/skills/accessibility` — VoiceOver/TalkBack work: interactive components, gestures, modals, lists, media controls, focus behavior, live announcements
 - `.claude/skills/rtl` — anything with a horizontal or directional axis: styles, positioning, flex, swipe gestures, animated transforms, icons, text alignment
+- `.claude/skills/perf-gauntlet` — the full multi-hour base-vs-head performance gauntlet (release builds with React's profiling renderer, every major flow on FlatList and FlashList, per-component mount/re-render numbers, session-level statistics). Harness in `perf/gauntlet/`.
 - `.claude/skills/perf-benchmarking` — on-device measurement: Hermes CPU profiles, render profiling, deterministic call counting, memory/jank capture. Drives `examples/SampleApp` on a connected Android device via the `perf/` toolkit (`scenario-lib.sh`, `capture-hermes-profile.js`, `analyze-react-profile.js`, `analyze-cpuprofile.js`, `android-heap-dump.sh`; see `perf/README.md`).
 
 Accessibility is **opt-in** — see `ai-docs/accessibility.md` for the full contract. New interactive UI should reuse the primitives in `package/src/a11y/`.
@@ -406,8 +484,8 @@ Never commit API keys or real user data. Example code must use obvious placehold
 
 ## References
 
-- **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9 migration reference — load this instead of the prose upgrade guide for agent-driven migrations), `ai-docs/accessibility.md` (opt-in a11y layer)
-- **Repo skills:** `.claude/skills/{accessibility,rtl,perf-benchmarking}`, `perf/README.md`
+- **Agent deep dives:** `ai-docs/ai-migration.md` (v8 → v9) and `ai-docs/ai-migration-v9-to-v10.md` (v9 → v10) — load these instead of the prose upgrade guides for agent-driven migrations; `ai-docs/accessibility.md` (opt-in a11y layer); `ai-docs/i18n-v10-migration.md` + `ai-docs/i18n-v10-key-map.json` (English-only i18n, and the reviewed old-key → dotted-key map)
+- **Repo skills:** `.claude/skills/{accessibility,rtl,perf-benchmarking,perf-gauntlet}`, `perf/README.md`, `perf/gauntlet/README.md`
 - **Contributing / process:** `CONTRIBUTING.md`, `RELEASE_PROCESS.md`, `PULL_REQUEST_TEMPLATE.md`, `SECURITY.md`
 - **Component docs:** https://getstream.io/chat/docs/sdk/reactnative/
 - **Stream Chat API:** https://getstream.io/chat/docs/javascript/

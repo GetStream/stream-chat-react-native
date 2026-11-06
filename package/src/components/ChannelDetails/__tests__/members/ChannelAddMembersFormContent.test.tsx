@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { StateStore } from 'stream-chat';
 import type { SearchSourceState, UserResponse } from 'stream-chat';
 
 import { ChannelAddMembersContext } from '../../../../contexts/channelAddMembersContext/ChannelAddMembersContext';
@@ -92,7 +92,7 @@ const tree = (
   <ThemeProvider theme={defaultTheme}>
     <TranslationProvider
       value={{
-        t: ((key: string) => key) as never,
+        t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
         tDateTimeParser: ((input: unknown) => input) as never,
         userLanguage: 'en',
       }}

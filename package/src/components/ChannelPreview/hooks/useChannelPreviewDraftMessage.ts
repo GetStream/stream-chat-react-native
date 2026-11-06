@@ -17,9 +17,10 @@ export type UseChannelPreviewDraftMessageProps = {
 };
 
 /**
- * Hook to get the draft message for a channel preview.
- * @param {UseChannelPreviewDraftMessageProps} param0
- * @returns {DraftMessage | undefined}
+ * The channel's message composer content as a draft message.
+ *
+ * @param params.channel The channel being previewed.
+ * @returns The draft, or `undefined` when the composer is empty or has no text and no attachments.
  */
 export const useChannelPreviewDraftMessage = ({ channel }: UseChannelPreviewDraftMessageProps) => {
   const { text: draftText } = useStateStore(
@@ -32,19 +33,22 @@ export const useChannelPreviewDraftMessage = ({ channel }: UseChannelPreviewDraf
     stateSelector,
   );
 
-  const draftMessage: DraftMessage | undefined = useMemo(
-    () =>
-      !channel.messageComposer.compositionIsEmpty
-        ? attachments && draftText
-          ? {
-              attachments,
-              id: channel.messageComposer.id,
-              text: draftText,
-            }
-          : undefined
-        : undefined,
-    [channel.messageComposer, attachments, draftText],
-  );
+  const draftMessage = useMemo<DraftMessage | undefined>(() => {
+    if (channel.messageComposer.compositionIsEmpty) {
+      return undefined;
+    }
+
+    if (!draftText && !attachments?.length) {
+      return undefined;
+    }
+
+    return {
+      attachments,
+      custom: {},
+      id: channel.messageComposer.id,
+      text: draftText ?? '',
+    };
+  }, [channel.messageComposer, attachments, draftText]);
 
   return draftMessage;
 };

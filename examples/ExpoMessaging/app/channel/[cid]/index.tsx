@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -8,9 +8,9 @@ import type { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
   ChannelAvatar,
+  DEFAULT_HIGHLIGHT_DURATION,
   MessageComposer,
   MessageList,
-  ThreadContextValue,
   useChannelPreviewDisplayName,
   useChatContext,
 } from 'stream-chat-expo';
@@ -41,10 +41,27 @@ export default function ChannelScreen() {
     initChannel();
   }, [navigateThroughPushNotification, channelId, client]);
 
-  const { setThread, channel: channelContext, thread } = useContext(AppContext);
+  const { setThread, channel: channelContext } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   const channel = channelFromParams || channelContext;
+
+  /**
+   * Deep-link targeting. `<Channel>` has no `messageId` prop any more — jumping is the paginator's
+   * job, so the caller does it. `useLayoutEffect` because React runs layout effects before passive
+   * ones, and the message list picks its initial anchor in a passive effect.
+   */
+  useLayoutEffect(() => {
+    if (!channel || !messageId) {
+      return;
+    }
+    channel.messagePaginator
+      .jumpToMessage(messageId, {
+        focusReason: 'jump-to-message',
+        focusSignalTtlMs: DEFAULT_HIGHLIGHT_DURATION,
+      })
+      .catch((error: unknown) => console.warn('Jump to message failed:', error));
+  }, [channel, messageId]);
   const displayName = useChannelPreviewDisplayName(channel);
 
   const onOpenDetails = useCallback(() => {
@@ -106,13 +123,11 @@ export default function ChannelScreen() {
         onPressMessage={onPressMessage}
         keyboardVerticalOffset={headerHeight}
         topInset={headerHeight}
-        thread={thread}
-        messageId={messageId}
       >
         <MessageList
-          onThreadSelect={(thread: ThreadContextValue['thread']) => {
+          onThreadSelect={(thread) => {
             setThread(thread);
-            router.push(`/channel/${channel.cid}/thread/${thread?.cid ?? ''}`);
+            router.push(`/channel/${channel.cid}/thread/${thread.id}`);
           }}
         />
         <MessageComposer />

@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { Channel, Event, LocalMessage, MessageResponse } from 'stream-chat';
+import {
+  Channel,
+  LocalMessage,
+  MessageReceiptsSnapshot,
+  MessageResponse,
+  MsgRef,
+} from 'stream-chat';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useStateStore } from '../useStateStore';
 
 export enum MessageDeliveryStatus {
   NOT_SENT_BY_CURRENT_USER = 'not_sent_by_current_user',
@@ -13,91 +20,72 @@ export enum MessageDeliveryStatus {
 
 type MessageDeliveryStatusProps = {
   channel: Channel;
-  lastMessage: LocalMessage;
+  // Only `created_at`, `id` and `user` are read, so a plain `MessageResponse` is accepted too.
+  lastMessage: LocalMessage | MessageResponse;
   isReadEventsEnabled: boolean;
 };
 
+/** Whether a cursor has reached a message created at `createdAt`, even from a later message. */
+const hasCursorReached = (createdAt: number | undefined, cursor: MsgRef | null) =>
+  !!cursor && typeof createdAt === 'number' && Number.isFinite(createdAt)
+    ? createdAt <= cursor.timestamp
+    : false;
+
+/**
+ * Delivery and read status of the last message when it is the current user's, derived from the
+ * channel's `messageReceiptsTracker.snapshotStore`, the same store the in-list receipt hooks use.
+ *
+ * It compares the message against `lastReadRefByOthers` and `lastDeliveredRefByOthers`, the furthest
+ * points anyone else has reached, so a message stays read once another member reads past it.
+ *
+ * @param params.channel The channel the message belongs to.
+ * @param params.lastMessage The channel's last message.
+ * @param params.isReadEventsEnabled When false, the status is `NOT_SENT_BY_CURRENT_USER`. Defaults
+ * to true.
+ * @returns An object with the `status`, `undefined` when the message is not the current user's.
+ */
 export const useMessageDeliveryStatus = ({
   channel,
   lastMessage,
   isReadEventsEnabled = true,
 }: MessageDeliveryStatusProps) => {
   const { client } = useChatContext();
-  const [status, setStatus] = useState<MessageDeliveryStatus | undefined>(undefined);
+  const currentUserId = client.user?.id;
+  const createdAt = lastMessage?.created_at;
 
-  const isOwnMessage = useCallback(
-    (message: LocalMessage | MessageResponse) =>
-      client.user && message && message.user?.id === client.user.id,
-    [client],
+  const selector = useCallback(
+    (snapshot: MessageReceiptsSnapshot) => ({
+      isDelivered: hasCursorReached(createdAt, snapshot.lastDeliveredRefByOthers),
+      isRead: hasCursorReached(createdAt, snapshot.lastReadRefByOthers),
+    }),
+    [createdAt],
   );
 
-  useEffect(() => {
-    if (!lastMessage) {
-      setStatus(undefined);
-    }
+  const { isDelivered, isRead } = useStateStore(
+    channel.messageReceiptsTracker.snapshotStore,
+    selector,
+  );
 
+  const status = useMemo<MessageDeliveryStatus | undefined>(() => {
     if (!isReadEventsEnabled) {
-      setStatus(MessageDeliveryStatus.NOT_SENT_BY_CURRENT_USER);
-      return;
+      return MessageDeliveryStatus.NOT_SENT_BY_CURRENT_USER;
     }
 
-    if (!lastMessage?.created_at || !isOwnMessage(lastMessage)) {
-      return;
+    const isOwnMessage = !!currentUserId && lastMessage?.user?.id === currentUserId;
+    if (lastMessage?.created_at == null || !isOwnMessage) {
+      return undefined;
     }
 
-    const msgRef = {
-      msgId: lastMessage.id,
-      timestampMs: new Date(lastMessage.created_at).getTime(),
-    };
+    if (isRead) {
+      return MessageDeliveryStatus.READ;
+    }
 
-    const readerOfMessage = channel.messageReceiptsTracker.readersForMessage(msgRef);
-    const deliveredForMessage = channel.messageReceiptsTracker.deliveredForMessage(msgRef);
+    if (isDelivered) {
+      return MessageDeliveryStatus.DELIVERED;
+    }
 
-    setStatus(
-      readerOfMessage.length > 1 ||
-        (readerOfMessage.length === 1 && readerOfMessage[0].id !== client.user?.id)
-        ? MessageDeliveryStatus.READ
-        : deliveredForMessage.length > 1 ||
-            (deliveredForMessage.length === 1 && deliveredForMessage[0].id !== client.user?.id)
-          ? MessageDeliveryStatus.DELIVERED
-          : MessageDeliveryStatus.SENT,
-    );
-  }, [channel, client.user?.id, isOwnMessage, isReadEventsEnabled, lastMessage]);
-
-  useEffect(() => {
-    const handleMessageNew = (event: Event) => {
-      // the last message is not mine, so do not show the delivery status
-      if (event.message && !isOwnMessage(event.message)) {
-        return setStatus(undefined);
-      }
-      return setStatus(MessageDeliveryStatus.SENT);
-    };
-    const { unsubscribe } = channel.on('message.new', handleMessageNew);
-    return unsubscribe;
-  }, [channel, isOwnMessage]);
-
-  useEffect(() => {
-    if (!isOwnMessage(lastMessage)) return;
-    const handleMessageDelivered = (event: Event) => {
-      if (
-        event.user?.id !== client.user?.id &&
-        lastMessage &&
-        lastMessage.id === event.last_delivered_message_id
-      )
-        setStatus(MessageDeliveryStatus.DELIVERED);
-    };
-
-    const handleMarkRead = (event: Event) => {
-      if (event.user?.id !== client.user?.id) setStatus(MessageDeliveryStatus.READ);
-    };
-
-    const listeners = [
-      channel.on('message.delivered', handleMessageDelivered),
-      channel.on('message.read', handleMarkRead),
-    ];
-
-    return () => listeners.forEach((l) => l.unsubscribe());
-  }, [channel, client, isOwnMessage, lastMessage]);
+    return MessageDeliveryStatus.SENT;
+  }, [currentUserId, isDelivered, isReadEventsEnabled, isRead, lastMessage]);
 
   return { status };
 };

@@ -1,15 +1,17 @@
 import type {
   ChannelMemberResponse,
+  ChannelOwnCapability,
   ChannelResponse,
   LocalMessage,
   MessageResponse,
-  ReadResponse,
+  ReadStateResponse,
 } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
 
+import { convertDateToTimestamp } from './time';
 import { generateUser, getUserDefaults } from './user';
 
-const defaultCapabilities = [
+const defaultCapabilities: ChannelOwnCapability[] = [
   'ban-channel-members',
   'delete-any-message',
   'delete-own-message',
@@ -29,8 +31,8 @@ const defaultCapabilities = [
 ];
 
 const defaultConfig = {
-  automod: 'disabled',
-  automod_behavior: 'flag',
+  automod: 'disabled' as const,
+  automod_behavior: 'flag' as const,
   commands: [
     {
       args: '[text]',
@@ -40,7 +42,7 @@ const defaultConfig = {
     },
   ],
   connect_events: true,
-  created_at: '2020-04-24T11:36:43.859020368Z',
+  created_at: convertDateToTimestamp('2020-04-24T11:36:43.859020368Z'),
   max_message_length: 5000,
   message_retention: 'infinite',
   mutes: true,
@@ -51,7 +53,7 @@ const defaultConfig = {
   replies: true,
   search: true,
   typing_events: true,
-  updated_at: '2020-04-24T11:36:43.859022903Z',
+  updated_at: convertDateToTimestamp('2020-04-24T11:36:43.859022903Z'),
   uploads: true,
   url_enrichment: true,
 };
@@ -78,17 +80,19 @@ const getChannelDefaults = (opts: GeneratedChannelIdType = {}): GeneratedChannel
   return {
     channel: {
       cid: `${type}:${id}`,
+      // The mock config intentionally only supplies a subset of `ChannelConfigWithInfo`;
+      // cast to the declared `channel.config` type (which intersects it) for tests.
       config: {
         ...defaultConfig,
         name: type,
-      },
-      created_at: '2020-04-28T11:20:48.578147Z',
+      } as GeneratedChannel['channel']['config'],
+      created_at: convertDateToTimestamp('2020-04-28T11:20:48.578147Z'),
       created_by: getUserDefaults(),
       frozen: false,
       id,
       own_capabilities: defaultCapabilities,
       type,
-      updated_at: '2020-04-28T11:20:48.578147Z',
+      updated_at: convertDateToTimestamp('2020-04-28T11:20:48.578147Z'),
     },
     cid: `${type}:${id}`,
     id,
@@ -120,7 +124,7 @@ export type GeneratedChannelResponseCustomValues = {
   id?: string;
   messages?: ChannelResponseMessage[];
   members?: Partial<ChannelMemberResponse>[];
-  read?: Partial<ReadResponse>[];
+  read?: Partial<ReadStateResponse>[];
   type?: string;
 };
 

@@ -4,6 +4,7 @@ import { act, renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import type { File } from '../../../types/types';
 import { useChannelActions } from '../useChannelActions';
 
@@ -14,10 +15,36 @@ const imageFile: File = {
   uri: 'file:///tmp/avatar.png',
 };
 
+// Prose keys pass their English copy inline: a bare second argument, or — for plurals —
+// `defaultValue_one` / `defaultValue_other` inside the options, selected by `count`. Without a
+// provider the context default (`defaultTranslatorFunction`) resolves bare defaults but not the
+// plural shape, so the notification messages asserted below need a real translator.
+const t = ((key: string, defaultValueOrOptions?: string | Record<string, unknown>) => {
+  if (typeof defaultValueOrOptions === 'string') {
+    return defaultValueOrOptions;
+  }
+  if (defaultValueOrOptions) {
+    const pluralDefault =
+      defaultValueOrOptions.count === 1
+        ? defaultValueOrOptions.defaultValue_one
+        : defaultValueOrOptions.defaultValue_other;
+    if (typeof pluralDefault === 'string') {
+      return pluralDefault;
+    }
+  }
+  return key;
+}) as never;
+
 const createWrapper =
   (client: unknown) =>
   ({ children }: PropsWithChildren) => (
-    <ChatProvider value={{ client } as never}>{children}</ChatProvider>
+    <ChatProvider value={{ client } as never}>
+      <TranslationProvider
+        value={{ t, tDateTimeParser: ((input: unknown) => input) as never, userLanguage: 'en' }}
+      >
+        {children}
+      </TranslationProvider>
+    </ChatProvider>
   );
 
 const createClient = () => ({
@@ -28,10 +55,10 @@ const createClient = () => ({
     startTimeout: jest.fn(),
   },
   muteUser: jest.fn(),
-  unBlockUser: jest.fn(),
+  unblockUser: jest.fn(),
   unmuteUser: jest.fn(),
   uploadImage: jest.fn().mockResolvedValue({ file: 'https://cdn.example.com/uploaded.png' }),
-  userID: 'current-user-id',
+  userId: 'current-user-id',
 });
 
 const createChannel = (client: ReturnType<typeof createClient>) =>
@@ -246,7 +273,7 @@ describe('useChannelActions', () => {
       await result.current.addMembers(['u-1', 'u-2']);
     });
 
-    expect(channel.addMembers).toHaveBeenCalledWith(['u-1', 'u-2']);
+    expect(channel.addMembers).toHaveBeenCalledWith({ members: ['u-1', 'u-2'] });
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: '{{count}} members added',
       options: {
@@ -299,7 +326,7 @@ describe('useChannelActions', () => {
       await result.current.addMembers(['u-1'], { onSuccess });
     });
 
-    expect(channel.addMembers).toHaveBeenCalledWith(['u-1']);
+    expect(channel.addMembers).toHaveBeenCalledWith({ members: ['u-1'] });
     expect(onSuccess).toHaveBeenCalledTimes(1);
   });
 
@@ -330,7 +357,7 @@ describe('useChannelActions', () => {
       await result.current.removeMembers(['u-1', 'u-2']);
     });
 
-    expect(channel.removeMembers).toHaveBeenCalledWith(['u-1', 'u-2']);
+    expect(channel.removeMembers).toHaveBeenCalledWith({ members: ['u-1', 'u-2'] });
     expect(client.notifications.add).toHaveBeenCalledWith({
       message: '{{count}} members removed',
       options: {
@@ -509,11 +536,9 @@ describe('useChannelActions', () => {
       await result.current.updateImage(imageFile);
     });
 
-    expect(client.uploadImage).toHaveBeenCalledWith(
-      'file:///tmp/avatar.png',
-      'avatar.png',
-      'image/png',
-    );
+    expect(client.uploadImage).toHaveBeenCalledWith({
+      file: { name: 'avatar.png', type: 'image/png', uri: 'file:///tmp/avatar.png' },
+    });
     expect(channel.updatePartial).toHaveBeenCalledWith({
       set: { image: 'https://cdn.example.com/uploaded.png' },
     });

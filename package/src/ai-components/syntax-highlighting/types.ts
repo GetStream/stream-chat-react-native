@@ -17,10 +17,9 @@ export type NativeSyntaxHighlighterProps = SyntaxHighlighterProps & ExtraSyntaxH
 
 export type CSSP = React.CSSProperties;
 
-/** Options for unit conversion */
 export type ConvertOpts = {
-  /** base for `em` (defaults to 16) */
+  /** Base for `em` units. Defaults to 16. */
   baseFontSize?: number;
-  /** root base for `rem` (defaults to baseFontSize) */
+  /** Base for `rem` units. Defaults to `baseFontSize`. */
   rootFontSize?: number;
 };

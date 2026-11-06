@@ -9,17 +9,14 @@ type Options = {
 };
 
 /**
- * Announces `message` once each time `visible` flips from false to true.
- * Resets when `visible` flips back to false, so the next show re-announces —
- * unlike `useAnnounceOnStateChange`, which announces on string change and
- * dedupes consecutive identical strings.
+ * Announces `message` each time `visible` flips from false to true, for transient surfaces such as
+ * modals and bottom sheets. Hiding the surface re-arms the announcement. Does nothing while
+ * `message` is `undefined`.
  *
- * Use this for transient surfaces that appear and disappear repeatedly within
- * a session (modals, autocomplete pickers, bottom sheets) where the user
- * benefits from hearing the affordance on every reappearance.
- *
- * When `message` is undefined (typically because `useA11yLabel` returned
- * undefined — a11y disabled or key missing), the hook is a no-op.
+ * @param visible Whether the surface is shown.
+ * @param message Text to announce.
+ * @param params.delayMs Delay before announcing. Defaults to 500.
+ * @param params.priority Announcement priority. Defaults to `polite`.
  */
 export const useAnnounceOnShow = (
   visible: boolean,

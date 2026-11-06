@@ -27,7 +27,7 @@ const buildMember = (
     user: generateUser({ id: 'alice', name: 'Alice', ...(overrides.user ?? {}) }),
   });
 
-const t = ((key: string) => key) as never;
+const t = ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never;
 
 const renderRoles = (
   member: ChannelMemberResponse,

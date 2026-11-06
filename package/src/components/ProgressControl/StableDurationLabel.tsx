@@ -18,10 +18,8 @@ type StableDurationLabelProps = {
 };
 
 /**
- * Renders a duration label with a layout-stable width.
- *
- * It reserves space using an invisible max-width label, then absolutely positions
- * the live value on top so playback updates do not cause parent relayout.
+ * Renders a duration label with a stable width: an invisible `reserveLabel` takes the space and
+ * `label` is positioned over it, so updating `label` does not re-lay out the parent.
  */
 export const StableDurationLabel = React.memo(
   ({

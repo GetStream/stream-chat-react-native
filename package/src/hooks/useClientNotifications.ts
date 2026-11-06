@@ -9,9 +9,9 @@ const selector = (state: NotificationManagerState) => ({
 });
 
 /**
- * This hook is used to get the notifications from the client.
- * @returns {Object} - An object containing the notifications.
- * @returns {Notification[]} notifications - The notifications.
+ * Returns the notifications held by the client's notification manager.
+ *
+ * @returns An object with the `notifications`.
  */
 export const useClientNotifications = () => {
   const { client } = useChatContext();

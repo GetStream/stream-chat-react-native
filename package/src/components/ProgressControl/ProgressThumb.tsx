@@ -9,13 +9,9 @@ export const PROGRESS_THUMB_WIDTH = 12;
 export const PROGRESS_THUMB_HEIGHT = 12;
 
 export type ProgressControlThumbProps = {
-  /**
-   * If true, the underlying attachment is playing.
-   */
+  /** Whether the underlying attachment is playing. */
   isPlaying: boolean;
-  /**
-   * The style of the progress control thumb.
-   */
+  /** Style of the thumb. */
   style?: StyleProp<ViewStyle>;
 };
 

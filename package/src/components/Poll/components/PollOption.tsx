@@ -4,7 +4,11 @@ import { Pressable, ScrollViewProps, StyleSheet, Text, View } from 'react-native
 
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { PollOption as PollOptionClass, PollVote, UserResponse } from 'stream-chat';
+import {
+  PollOptionResponseData as PollOptionClass,
+  PollVoteResponseData,
+  UserResponse,
+} from 'stream-chat';
 
 import { PollVoteButtonProps } from './Button';
 
@@ -64,7 +68,7 @@ export const PollAllOptionsContent = ({
       {...additionalScrollViewProps}
     >
       <View style={[styles.allOptionsTitleContainer, titleContainer]}>
-        <Text style={styles.allOptionsTitleMeta}>{t('Question')}</Text>
+        <Text style={styles.allOptionsTitleMeta}>{t('poll.question.label', 'Question')}</Text>
         <Text style={[styles.allOptionsTitleText, titleText]}>{translate(name, nameI18n)}</Text>
       </View>
       <View style={[styles.allOptionsListContainer, listContainer]}>
@@ -96,8 +100,8 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
   const { t } = useTranslationContext();
   const translate = usePollTextTranslation();
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
-  // `forceIncoming` is set on the full-options surface, which is a neutral card
-  // rather than a bubble - so it wins over poll ownership.
+  // `forceIncoming` marks the full-options surface, a neutral card rather than a bubble, so it wins
+  // over poll ownership.
   const isIncoming = !isPollCreatedByClient || !!forceIncoming;
   const styles = useStyles({ isIncoming });
 
@@ -137,7 +141,9 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
           <View style={[styles.votesContainer, votesContainer]}>
             {relevantVotes.length > 0 ? (
               <UserAvatarStack
-                users={relevantVotes.map((vote: PollVote) => vote.user as UserResponse)}
+                users={relevantVotes
+                  .map((vote: PollVoteResponseData) => vote.user)
+                  .filter((user): user is UserResponse => Boolean(user))}
                 overlap={0.2}
                 maxVisible={3}
                 avatarSize='xs'
@@ -145,7 +151,11 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
             ) : null}
 
             <Text
-              accessibilityLabel={t('{{count}} votes', { count: votes })}
+              accessibilityLabel={t('poll.votes.text', {
+                count: votes,
+                defaultValue_one: '{{count}} vote',
+                defaultValue_other: '{{count}} votes',
+              })}
               style={[styles.votesText, votesText]}
             >
               {votes}

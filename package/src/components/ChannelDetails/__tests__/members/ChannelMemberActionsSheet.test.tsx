@@ -65,7 +65,7 @@ const renderSheet = ({
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
@@ -76,7 +76,7 @@ const renderSheet = ({
               client: {
                 mutedUsers: [],
                 on: () => ({ unsubscribe: () => undefined }),
-                userID: 'me',
+                userId: 'me',
               },
             } as never
           }
@@ -156,14 +156,14 @@ describe('ChannelMemberActionsSheet', () => {
       <ChatContext.Provider
         value={
           {
-            client: { userID: 'me', mutedUsers: [], on: () => ({ unsubscribe: () => undefined }) },
+            client: { userId: 'me', mutedUsers: [], on: () => ({ unsubscribe: () => undefined }) },
           } as never
         }
       >
         <ThemeProvider theme={defaultTheme}>
           <TranslationProvider
             value={{
-              t: ((key: string) => key) as never,
+              t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
               tDateTimeParser: ((input: unknown) => input) as never,
               userLanguage: 'en',
             }}

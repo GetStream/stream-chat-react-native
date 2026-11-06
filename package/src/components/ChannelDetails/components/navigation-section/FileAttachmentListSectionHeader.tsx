@@ -5,7 +5,7 @@ import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { primitives } from '../../../../theme';
 
 export type FileAttachmentListSectionHeaderProps = {
-  /** The already-formatted section title (e.g. "March 2026"). */
+  /** The formatted section title, such as "March 2026". */
   title: string;
 };
 

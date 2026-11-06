@@ -6,22 +6,16 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
+import { getDateString } from '../../../i18n/utils';
 import { primitives } from '../../../theme';
-import { getDateString } from '../../../utils/i18n/getDateString';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 export type MessageTimestampProps = Partial<Pick<TranslationContextValue, 'tDateTimeParser'>> & {
-  /**
-   * Already Formatted date
-   */
+  /** The already formatted date. */
   formattedDate?: string | Date;
-  /**
-   * The timestamp of the message.
-   */
+  /** The timestamp of the message. */
   timestamp?: string | Date;
-  /*
-   * Lookup key in the language corresponding translations sheet to perform date formatting
-   */
+  /** Translation key of the date format. */
   timestampTranslationKey?: string;
 };
 
@@ -30,7 +24,7 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
     formattedDate,
     tDateTimeParser: propsTDateTimeParser,
     timestamp,
-    timestampTranslationKey = 'timestamp/MessageTimestamp',
+    timestampTranslationKey = 'timestamp.MessageTimestamp',
   } = props;
   const { t, tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
   const tDateTimeParser = propsTDateTimeParser || contextTDateTimeParser;
@@ -39,7 +33,7 @@ export const MessageTimestamp = (props: MessageTimestampProps) => {
   const dateString = useMemo(
     () =>
       getDateString({
-        date: timestamp,
+        messageCreatedAt: timestamp,
         t,
         tDateTimeParser,
         timestampTranslationKey,

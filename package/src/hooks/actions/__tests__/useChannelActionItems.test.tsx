@@ -1,7 +1,7 @@
 import { Alert, AlertButton } from 'react-native';
 
 import { renderHook } from '@testing-library/react-native';
-import type { Channel, Mute } from 'stream-chat';
+import type { Channel, UserMuteResponse } from 'stream-chat';
 
 import * as useMutedUsersModule from '../../../components/ChannelList/hooks/useMutedUsers';
 import * as useIsChannelMutedModule from '../../../components/ChannelPreview/hooks/useIsChannelMuted';
@@ -58,7 +58,7 @@ const createChannelMock = (params?: {
         getLatestValue: () => ({ userIds: blockedUserIds }),
         subscribeWithSelector: () => () => {},
       },
-      userID: ownUserId,
+      userId: ownUserId,
     }),
     state: {
       members: {
@@ -76,11 +76,12 @@ describe('useChannelActionItems', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest
-      .spyOn(TranslationContext, 'useTranslationContext')
-      .mockImplementation(
-        () => ({ t: (value: string) => value }) as unknown as TranslationContextValue,
-      );
+    jest.spyOn(TranslationContext, 'useTranslationContext').mockImplementation(
+      () =>
+        ({
+          t: (value: string, d?: unknown) => (typeof d === 'string' ? d : value),
+        }) as unknown as TranslationContextValue,
+    );
     jest.spyOn(useChannelMembershipStateModule, 'useChannelMembershipState').mockReturnValue({
       archived_at: undefined,
       pinned_at: undefined,
@@ -90,7 +91,7 @@ describe('useChannelActionItems', () => {
       expiresAt: null,
       muted: false,
     });
-    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
     jest.spyOn(useIsDirectChatModule, 'useIsDirectChat').mockReturnValue(false);
     jest.spyOn(useChannelActionsModule, 'useChannelActions').mockReturnValue(channelActions);
   });
@@ -155,7 +156,7 @@ describe('useChannelActionItems', () => {
       expiresAt: null,
       muted: true,
     });
-    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as Mute[]);
+    jest.spyOn(useMutedUsersModule, 'useMutedUsers').mockReturnValue([] as UserMuteResponse[]);
 
     const { result } = renderHook(() => useChannelActionItems({ channel, surface: 'list' }));
 
@@ -249,7 +250,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
     const actionItems = getChannelActionItems({
@@ -263,7 +265,8 @@ describe('getChannelActionItems', () => {
         isPinned: false,
         surface: 'list',
         icons: defaultIcons,
-        t: ((value: string) => value) as TranslationContextValue['t'],
+        t: ((value: string, d?: unknown) =>
+          typeof d === 'string' ? d : value) as TranslationContextValue['t'],
         userMuteActive: false,
       },
       defaultItems,
@@ -296,7 +299,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
 
@@ -345,7 +349,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -363,7 +368,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -382,7 +388,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -408,7 +415,8 @@ describe('getChannelActionItems', () => {
       isPinned: true,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -430,7 +438,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -450,7 +459,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'details',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -468,7 +478,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -485,7 +496,8 @@ describe('getChannelActionItems', () => {
       isDirectChat: false,
       isPinned: false,
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 
@@ -504,7 +516,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: true,
     });
 
@@ -531,7 +544,8 @@ describe('getChannelActionItems', () => {
       isPinned: false,
       surface: 'list',
       icons: defaultIcons,
-      t: ((value: string) => value) as TranslationContextValue['t'],
+      t: ((value: string, d?: unknown) =>
+        typeof d === 'string' ? d : value) as TranslationContextValue['t'],
       userMuteActive: false,
     });
 

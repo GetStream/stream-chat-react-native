@@ -1,46 +1,60 @@
 import React from 'react';
 
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react-native';
+import type {
+  Channel as ChannelType,
+  MessageResponse,
+  StreamChat,
+  UserResponse,
+} from 'stream-chat';
+import { asTimestampNS, Thread as ThreadClass } from 'stream-chat';
 import { v5 as uuidv5 } from 'uuid';
 
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchConnectionChanged from '../../../mock-builders/event/connectionChanged';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
-import { generateStaticUser } from '../../../mock-builders/generator/user';
+import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
-import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
+import { MessageComposer } from '../../MessageInput/MessageComposer';
+import { MessageList } from '../../MessageList/MessageList';
 import { Thread } from '../Thread';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 
 const renderComponent = ({
   chatClient,
-  channel,
   props,
   thread,
 }: {
-  channel: ChannelType;
   chatClient: StreamChat;
   props?: Partial<React.ComponentProps<typeof Thread>>;
-  thread: LocalMessage;
+  thread: ThreadClass;
 }) => {
   return render(
     <OverlayProvider>
       <Chat client={chatClient}>
-        <Channel channel={channel} thread={thread} threadList>
-          <Thread {...props} />
-        </Channel>
+        <Thread thread={thread} {...props}>
+          <MessageList />
+          <MessageComposer />
+        </Thread>
       </Chat>
     </OverlayProvider>,
   );
@@ -65,9 +79,6 @@ describe('Thread', () => {
     const cid = 'messaging:test-channel';
     const thread = generateMessage({ cid, text: 'Thread Message Text' });
     const parent_id = thread.id;
-    const props = {
-      thread,
-    };
 
     const threadResponses = [
       generateMessage({ cid, parent_id, text: 'Response Message Text' }),
@@ -75,11 +86,19 @@ describe('Thread', () => {
       generateMessage({ cid, parent_id }),
     ];
 
-    channel.state.addMessagesSorted(
-      threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
-    );
+    // Replies are sourced from the thread instance's reply paginator now, so seed a Thread with the
+    // replies (mirroring how the constructor seeds from `latest_replies`) instead of writing to the
+    // removed channel.state message store. `setItems` publishes the first, complete reply page.
+    const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage: thread });
+    threadInstance.messagePaginator.setItems({
+      valueOrFactory: threadResponses.map((reply) =>
+        channel.state.formatMessage(reply as unknown as MessageResponse),
+      ),
+      isFirstPage: true,
+      isLastPage: true,
+    });
 
-    renderComponent({ channel, chatClient, props, thread });
+    renderComponent({ chatClient, thread: threadInstance });
 
     const { getAllByText, getByText, queryByText } = screen;
 
@@ -97,7 +116,7 @@ describe('Thread', () => {
     const user2 = generateStaticUser(3);
     const thread = generateStaticMessage(
       'Message3',
-      { cid, user: user2 },
+      { cid, reply_count: 3, user: user2 },
       '2020-05-05T14:50:00.000Z',
     );
     const parent_id = thread.id;
@@ -133,45 +152,40 @@ describe('Thread', () => {
       ],
     });
 
-    const chatClient = await getTestClientWithUser({ id: 'testID2' });
+    const chatClient = await getTestClientWithUser({ id: 'testID2' } as UserResponse);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.query();
 
-    channel.state.addMessagesSorted(
-      threadResponses as unknown as Parameters<typeof channel.state.addMessagesSorted>[0],
-    );
-
-    let setChannelUnreadState:
-      | React.ContextType<typeof ChannelContext>['setChannelUnreadState']
-      | undefined;
+    const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage: thread });
+    threadInstance.messagePaginator.setItems({
+      valueOrFactory: threadResponses.map((reply) =>
+        channel.state.formatMessage(reply as unknown as MessageResponse),
+      ),
+      isFirstPage: true,
+      isLastPage: true,
+    });
 
     const { getByText, toJSON } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <AttachmentPickerProvider
-            value={
-              {
-                closePicker: jest.fn(),
-                openPicker: jest.fn(),
-              } as unknown as React.ComponentProps<typeof AttachmentPickerProvider>['value']
-            }
+      <Chat client={chatClient} i18nInstance={i18nInstance}>
+        <AttachmentPickerProvider
+          value={
+            {
+              closePicker: jest.fn(),
+              openPicker: jest.fn(),
+            } as unknown as React.ComponentProps<typeof AttachmentPickerProvider>['value']
+          }
+        >
+          <ImageGalleryProvider
+            value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
           >
-            <ImageGalleryProvider
-              value={{} as React.ComponentProps<typeof ImageGalleryProvider>['value']}
-            >
-              <Channel channel={channel} thread={thread} threadList>
-                <ChannelContext.Consumer>
-                  {(c) => {
-                    setChannelUnreadState = c.setChannelUnreadState;
-                    return <Thread />;
-                  }}
-                </ChannelContext.Consumer>
-              </Channel>
-            </ImageGalleryProvider>
-          </AttachmentPickerProvider>
-        </Chat>
-      </ChannelsStateProvider>,
+            <Thread thread={threadInstance}>
+              <MessageList />
+              <MessageComposer />
+            </Thread>
+          </ImageGalleryProvider>
+        </AttachmentPickerProvider>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -180,7 +194,14 @@ describe('Thread', () => {
       expect(getByText('Message6')).toBeTruthy();
     });
 
-    act(() => setChannelUnreadState!(undefined));
+    act(() => {
+      channel.messagePaginator.unreadStateSnapshot.next({
+        firstUnreadMessageId: null,
+        lastReadAt: null,
+        lastReadMessageId: null,
+        unreadCount: 0,
+      });
+    });
 
     const snapshot = toJSON() as unknown as {
       children: Array<{
@@ -191,6 +212,508 @@ describe('Thread', () => {
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  // Metadata (parent, read state, participants) comes with a queried page. A thread `ensure` builds for a
+  // parent that has replies has only that parent, so it starts stale and reloads once on open; one that
+  // already has its data doesn't.
+  // An activation that is never released keeps the thread active for the session, so recovery
+  // keeps reloading it and it keeps being read automatically.
+  it.each([
+    ['shows', true],
+    ['does not show', false],
+  ])(
+    '%s the delivery status of the parent message when it is the current user’s',
+    async (_, isOwn) => {
+      const parentMessage = generateMessage({
+        cid: channel.cid,
+        status: 'received',
+        text: 'Parent Message Text',
+        ...(isOwn ? { user: generateUser({ id: chatClient.userId }) } : {}),
+      });
+      const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+      // A thread with its replies loaded is not reloaded on open (see "metadata reload on open").
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: [
+          channel.state.formatMessage(
+            generateMessage({
+              cid: channel.cid,
+              parent_id: parentMessage.id,
+            }) as unknown as MessageResponse,
+          ),
+        ],
+        isFirstPage: true,
+        isLastPage: true,
+      });
+
+      renderComponent({ chatClient, thread: threadInstance });
+
+      const header = await screen.findByTestId('thread-footer-component');
+      expect(within(header).getByText('Parent Message Text')).toBeTruthy();
+      expect(within(header).queryByTestId('message-status-sent')).toBe(
+        isOwn ? within(header).getByTestId('message-status-sent') : null,
+      );
+    },
+  );
+
+  it('releases its activation of the thread on unmount', async () => {
+    const parentMessage = generateMessage({ cid: 'messaging:test-channel', text: 'Parent' });
+    const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+    jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+    const { unmount } = renderComponent({ chatClient, thread: threadInstance });
+    await waitFor(() => expect(threadInstance.state.getLatestValue().active).toBe(true));
+
+    unmount();
+    expect(threadInstance.state.getLatestValue().active).toBe(false);
+  });
+
+  describe('metadata reload on open', () => {
+    const openThread = (threadInstance: ThreadClass) => {
+      const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockResolvedValue(undefined);
+      renderComponent({ chatClient, thread: threadInstance });
+      return { reload, toTail };
+    };
+
+    it('reloads a thread ensure built from its parent message', async () => {
+      const parentMessage = generateMessage({
+        cid: 'messaging:test-channel',
+        reply_count: 1,
+        text: 'Parent',
+      });
+      const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+      const { reload } = openThread(threadInstance);
+
+      await waitFor(() => expect(reload).toHaveBeenCalled());
+    });
+
+    it('does not fetch the first reply page while that reload is in flight, only if it fails', async () => {
+      const parentMessage = generateMessage({
+        cid: 'messaging:test-channel',
+        reply_count: 1,
+        text: 'Parent',
+      });
+      const threadInstance = chatClient.threads.ensure({ channel, parentMessage });
+      let failReload: () => void = () => undefined;
+      jest.spyOn(threadInstance, 'reload').mockImplementation(async () => {
+        threadInstance.state.partialNext({ isLoading: true });
+        await new Promise<void>((resolve) => (failReload = resolve));
+        threadInstance.state.partialNext({ isLoading: false });
+      });
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockResolvedValue(undefined);
+      renderComponent({ chatClient, thread: threadInstance });
+
+      await waitFor(() => expect(threadInstance.reload).toHaveBeenCalled());
+      expect(toTail).not.toHaveBeenCalled();
+
+      // The reload ended without seeding replies (a failure): the first page is fetched instead.
+      await act(async () => {
+        failReload();
+        await Promise.resolve();
+      });
+      await waitFor(() => expect(toTail).toHaveBeenCalled());
+    });
+
+    it('does not reload a thread that already has its data', async () => {
+      const parentMessage = generateMessage({
+        cid: 'messaging:test-channel',
+        reply_count: 1,
+        text: 'Parent',
+      });
+      const threadInstance = new ThreadClass({ channel, client: chatClient, parentMessage });
+      // the thread list's query hydrates what it lists, so a listed thread isn't stale
+      threadInstance.state.partialNext({ isStateStale: false });
+      act(() => {
+        chatClient.threads.paginator.setItems({
+          isFirstPage: true,
+          isLastPage: true,
+          valueOrFactory: [threadInstance],
+        });
+      });
+      const { reload, toTail } = openThread(threadInstance);
+
+      // The first-page fetch runs from the same mount, so its call marks the effects as settled.
+      await waitFor(() => expect(toTail).toHaveBeenCalled());
+      expect(reload).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reply query errors', () => {
+    const makeThread = () => {
+      const cid = 'messaging:test-channel';
+      const parentMessage = generateMessage({ cid, text: 'Parent' });
+      const threadInstance = new ThreadClass({
+        channel,
+        client: chatClient,
+        parentMessage,
+      });
+      return threadInstance;
+    };
+
+    it('renders the error indicator when the reply query failed and nothing loaded', async () => {
+      const threadInstance = makeThread();
+      // A failed first page leaves `items` undefined, and the error belongs to the THREAD's paginator.
+      jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockRejectedValue(new Error('replies boom'));
+      act(() => {
+        threadInstance.messagePaginator.state.partialNext({
+          lastQueryError: new Error('replies boom'),
+        });
+      });
+
+      renderComponent({ chatClient, thread: threadInstance });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading-error')).toBeTruthy();
+      });
+      // The thread's own copy, not the channel's "Error loading messages for this channel...".
+      expect(screen.getByTestId('loading-error')).toHaveTextContent('Error loading replies...');
+    });
+
+    it('retries the reply query — and only the reply query — from the indicator', async () => {
+      const threadInstance = makeThread();
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockRejectedValue(new Error('replies boom'));
+      const channelToTail = jest.spyOn(channel.messagePaginator, 'toTail');
+      act(() => {
+        threadInstance.messagePaginator.state.partialNext({
+          lastQueryError: new Error('replies boom'),
+        });
+      });
+
+      renderComponent({ chatClient, thread: threadInstance });
+
+      const indicator = await waitFor(() => screen.getByTestId('loading-error'));
+      // Clear AFTER mount: the mount's own first-page fetch is not what this asserts.
+      toTail.mockClear();
+      channelToTail.mockClear();
+
+      await act(async () => {
+        fireEvent.press(indicator);
+        await Promise.resolve();
+      });
+
+      expect(toTail).toHaveBeenCalledTimes(1);
+      expect(channelToTail).not.toHaveBeenCalled();
+    });
+
+    it('does not refetch in a loop while the query is failing', async () => {
+      const threadInstance = makeThread();
+      // The first-page effect reruns whenever `isLoading` settles back to false. Without the
+      // `lastQueryError` guard it would refetch forever and the indicator could never stay up.
+      const toTail = jest
+        .spyOn(threadInstance.messagePaginator, 'toTail')
+        .mockImplementation(() => {
+          threadInstance.messagePaginator.state.partialNext({
+            isLoading: false,
+            lastQueryError: new Error('replies boom'),
+          });
+          return Promise.resolve();
+        });
+
+      renderComponent({ chatClient, thread: threadInstance });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading-error')).toBeTruthy();
+      });
+      expect(toTail).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the reply list when a later query fails but replies are already loaded', async () => {
+      const threadInstance = makeThread();
+      act(() => {
+        threadInstance.messagePaginator.setItems({
+          valueOrFactory: [
+            channel.state.formatMessage(
+              generateMessage({
+                cid: 'messaging:test-channel',
+                parent_id: threadInstance.id,
+                text: 'Loaded reply',
+              }) as unknown as MessageResponse,
+            ),
+          ],
+          isFirstPage: true,
+          isLastPage: true,
+        });
+        threadInstance.messagePaginator.state.partialNext({
+          lastQueryError: new Error('replies boom'),
+        });
+      });
+
+      renderComponent({ chatClient, thread: threadInstance });
+
+      await waitFor(() => {
+        expect(screen.getByText('Loaded reply')).toBeTruthy();
+      });
+      expect(screen.queryByTestId('loading-error')).toBeNull();
+    });
+  });
+});
+
+describe('Thread lifecycle', () => {
+  const user = generateUser({ id: 'id', name: 'name' });
+  let chatClient: StreamChat;
+
+  const openThread = (threadInstance: ThreadClass, children?: React.ReactNode) =>
+    render(
+      <Chat client={chatClient}>
+        <Thread thread={threadInstance}>{children}</Thread>
+      </Chat>,
+    );
+
+  const watchChannel = async (
+    overrides: Partial<Parameters<typeof generateChannelResponse>[0]> = {},
+  ) => {
+    const mockedChannel = generateChannelResponse({
+      messages: [generateMessage({})],
+      ...overrides,
+    });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await testChannel.watch();
+    return testChannel;
+  };
+
+  beforeEach(async () => {
+    chatClient = await getTestClientWithUser(user);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  it('exposes its thread to its children through the thread context', async () => {
+    const testChannel = await watchChannel();
+    const threadInstance = new ThreadClass({
+      channel: testChannel,
+      client: chatClient,
+      parentMessage: testChannel.state.formatMessage(generateMessage({ user })),
+    });
+    jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+    const seen = jest.fn();
+    const Probe = () => {
+      seen(useThreadContext().thread);
+      return null;
+    };
+
+    openThread(threadInstance, <Probe />);
+
+    await waitFor(() => expect(seen).toHaveBeenCalledWith(threadInstance));
+  });
+
+  // Regression guard for the reconnect refresh of an OPEN THREAD's replies, which runs entirely in
+  // `client.connectionRecovery`; this component's only part is marking the thread active.
+  //
+  // Asserted end to end on purpose: a thread constructed directly (not through
+  // `client.threads.ensure`) reaches the LLC's thread store only through `threadInstance.activate()`.
+  // Drop that effect and recovery silently skips the thread with nothing else failing.
+  it('reloads an open thread on reconnect', async () => {
+    const testChannel = await watchChannel();
+    const threadInstance = new ThreadClass({
+      channel: testChannel,
+      client: chatClient,
+      parentMessage: testChannel.state.formatMessage(generateMessage({ user })),
+    });
+    const reload = jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+    // Seed loaded-but-empty replies so the mount-time metadata reload and first-page fetch are
+    // skipped, keeping the spy clean for the reconnect-driven call.
+    act(() => threadInstance.messagePaginator.state.partialNext({ items: [], isLoading: false }));
+
+    openThread(threadInstance);
+
+    // Activation registers the instance without putting it in the thread list. (Cleared anyway so
+    // this can only pass on a reconnect-driven call.)
+    await waitFor(() => {
+      expect(chatClient.threads.get(threadInstance.id)).toBe(threadInstance);
+      expect(threadInstance.state.getLatestValue().active).toBe(true);
+    });
+    expect(chatClient.threads.paginator.getItem(threadInstance.id)).toBeUndefined();
+    reload.mockClear();
+
+    act(() => dispatchConnectionChanged(chatClient, false));
+    act(() => dispatchConnectionChanged(chatClient));
+
+    await waitFor(() => expect(reload).toHaveBeenCalled());
+  });
+
+  // Reads are the LLC's job: the thread's active auto-read marks it once its read state says it has
+  // unread replies. `<Thread>` makes no mark-read call of its own.
+  describe('read on open', () => {
+    const setup = async () => {
+      const testChannel = await watchChannel();
+      const markRead = jest
+        .spyOn(testChannel, 'markRead')
+        .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+      const parentMessage = testChannel.state.formatMessage(
+        generateMessage({ reply_count: 3, user }),
+      );
+      const readState = (unreadMessageCount: number) => ({
+        [chatClient.userId as string]: {
+          lastReadAt: 1,
+          unreadMessageCount,
+          user: { id: chatClient.userId as string },
+        },
+      });
+      return { markRead, parentMessage, readState, testChannel };
+    };
+
+    it('marks a thread with unread replies read exactly once, and a read one not at all', async () => {
+      const { markRead, parentMessage, readState, testChannel } = await setup();
+      const read = new ThreadClass({ channel: testChannel, client: chatClient, parentMessage });
+      read.state.partialNext({ read: readState(0) } as never);
+      jest.spyOn(read, 'reload').mockResolvedValue(undefined);
+      const { unmount } = openThread(read);
+      await waitFor(() => expect(read.state.getLatestValue().active).toBe(true));
+      expect(markRead).not.toHaveBeenCalled();
+      unmount();
+
+      const unread = new ThreadClass({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage: { ...parentMessage, id: `${parentMessage.id}-2` },
+      });
+      unread.state.partialNext({ read: readState(2) } as never);
+      jest.spyOn(unread, 'reload').mockResolvedValue(undefined);
+      openThread(unread);
+
+      await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: unread.id }));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(markRead).toHaveBeenCalledTimes(1);
+    });
+
+    it('marks a thread ensure() built read once its reload brings the read state', async () => {
+      const { markRead, parentMessage, readState, testChannel } = await setup();
+      const threadInstance = chatClient.threads.ensure({ channel: testChannel, parentMessage });
+      jest.spyOn(threadInstance, 'reload').mockImplementation(() => {
+        threadInstance.state.partialNext({ isStateStale: false, read: readState(2) } as never);
+        return Promise.resolve();
+      });
+
+      openThread(threadInstance);
+
+      await waitFor(() => expect(markRead).toHaveBeenCalledWith({ thread_id: threadInstance.id }));
+      expect(markRead).toHaveBeenCalledTimes(1);
+    });
+
+    // Opening a thread used to run the channel's own open sequence, which marked the CHANNEL read.
+    it('does not mark the channel read when a thread of an unread channel opens', async () => {
+      const otherUser = generateUser();
+      const testChannel = await watchChannel({
+        members: [generateMember({ user }), generateMember({ user: otherUser })],
+        messages: [generateMessage({ user: otherUser }), generateMessage({ user: otherUser })],
+        read: [{ last_read: asTimestampNS(1), unread_messages: 2, user }],
+      });
+      const markRead = jest
+        .spyOn(testChannel, 'markRead')
+        .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+      const threadInstance = new ThreadClass({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage: testChannel.state.formatMessage(generateMessage({ user: otherUser })),
+      });
+      jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+      jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+
+      openThread(threadInstance, <MessageList />);
+
+      await waitFor(() => expect(threadInstance.state.getLatestValue().active).toBe(true));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(markRead.mock.calls.every(([options]) => options?.thread_id)).toBe(true);
+    });
+  });
+
+  describe('reopening a thread left on an older page', () => {
+    const OLDER_PAGE_START = new Date('2020-01-01T00:00:00.000Z').getTime();
+
+    // A thread whose newest replies are loaded, but whose list shows an older page, as it does
+    // after a jump to a quoted or searched reply.
+    const setUpThreadOnOlderPage = async () => {
+      const testChannel = await watchChannel();
+      const parentMessage = testChannel.state.formatMessage(generateMessage({ user }));
+      const threadInstance = new ThreadClass({
+        channel: testChannel,
+        client: chatClient,
+        parentMessage,
+      });
+      jest.spyOn(threadInstance, 'reload').mockResolvedValue(undefined);
+      jest.spyOn(threadInstance.messagePaginator, 'toTail').mockResolvedValue(undefined);
+
+      threadInstance.messagePaginator.setItems({
+        valueOrFactory: Array.from({ length: 10 }, (_, i) =>
+          generateMessage({ id: `newest-${i}`, parent_id: parentMessage.id }),
+        ),
+        isFirstPage: true,
+        isLastPage: true,
+      });
+      threadInstance.messagePaginator.ingestPage({
+        page: Array.from({ length: 5 }, (_, i) =>
+          generateMessage({
+            id: `older-${i}`,
+            parent_id: parentMessage.id,
+            timestamp: OLDER_PAGE_START + i * 1000,
+          }),
+        ),
+        policy: 'strict-overlap-only',
+        setActive: true,
+      });
+      expect(threadInstance.messagePaginator.isActiveIntervalAtHead).toBe(false);
+
+      return threadInstance;
+    };
+
+    it('shows the newest replies again', async () => {
+      const threadInstance = await setUpThreadOnOlderPage();
+
+      openThread(threadInstance);
+
+      await waitFor(() =>
+        expect(threadInstance.messagePaginator.isActiveIntervalAtHead).toBe(true),
+      );
+      expect(threadInstance.messagePaginator.items?.map((reply) => reply.id)).toContain('newest-9');
+    });
+
+    it('keeps a jump the integrator already made to a loaded reply', async () => {
+      const threadInstance = await setUpThreadOnOlderPage();
+      // A deep link from the screen: the target is loaded, so the jump lands at once.
+      await threadInstance.messagePaginator.jumpToMessage('older-2', {
+        focusReason: 'jump-to-message',
+      });
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        threadInstance.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      openThread(threadInstance);
+
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+      expect(threadInstance.messagePaginator.isActiveIntervalAtHead).toBe(false);
+      expect(
+        threadInstance.messagePaginator.messageFocusSignal.getLatestValue().signal?.messageId,
+      ).toBe('older-2');
+    });
+
+    it('leaves a jump that is still in flight alone', async () => {
+      const threadInstance = await setUpThreadOnOlderPage();
+      // A deep link to a reply that is not loaded: its query is in flight.
+      jest.spyOn(threadInstance.messagePaginator, 'isLoading', 'get').mockReturnValue(true);
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        threadInstance.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      openThread(threadInstance);
+
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,9 +1,10 @@
 import React from 'react';
 
+import { StateStore } from '@stream-io/state-store';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import Dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import type { Channel, ChannelMemberResponse } from 'stream-chat';
+import { type Channel, type ChannelMemberResponse } from 'stream-chat';
 
 import { ThemeProvider } from '../../../../contexts';
 import { ChannelDetailsContextProvider } from '../../../../contexts/channelDetailsContext/channelDetailsContext';
@@ -11,6 +12,7 @@ import { ChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMember } from '../../../../mock-builders/generator/member';
+import { convertDateToTimestamp } from '../../../../mock-builders/generator/time';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { ChannelMemberItem } from '../../components/members/ChannelMemberItem';
 import type { GetMemberRoles } from '../../hooks/members/useMemberRoles';
@@ -49,11 +51,18 @@ const renderRow = ({
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string, options?: Record<string, unknown>) => {
-            if (key === 'timestamp/UserActivityStatus' && options && 'timestamp' in options) {
+          t: ((
+            key: string,
+            defaultValueOrOptions?: string | Record<string, unknown>,
+            maybeOptions?: Record<string, unknown>,
+          ) => {
+            const options =
+              typeof defaultValueOrOptions === 'string' ? maybeOptions : defaultValueOrOptions;
+            if (key === 'timestamp.UserActivityStatus' && options && 'timestamp' in options) {
               return `Last seen ${Dayjs(options.timestamp as Date).fromNow()}`;
             }
-            return key;
+            // Prose keys pass their English copy inline as the second argument.
+            return typeof defaultValueOrOptions === 'string' ? defaultValueOrOptions : key;
           }) as never,
           tDateTimeParser: (input) => Dayjs(input),
           userLanguage: 'en',
@@ -63,9 +72,10 @@ const renderRow = ({
           value={
             {
               client: {
-                mutedUsers,
+                // `useMutedUsers` reads the mutes reactively off `client.mutedUsersStore`.
+                mutedUsersStore: new StateStore({ mutedUsers }),
                 on: () => ({ unsubscribe: () => undefined }),
-                userID: currentUserId,
+                userId: currentUserId,
               },
             } as never
           }
@@ -152,7 +162,7 @@ describe('ChannelMemberItem activity status', () => {
 
   it('shows a "Last seen ..." string for an offline member with last_active', () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-05-13T12:00:00Z'));
-    const tenMinutesAgo = new Date('2026-05-13T11:50:00Z').toISOString();
+    const tenMinutesAgo = convertDateToTimestamp('2026-05-13T11:50:00Z');
 
     renderRow({ member: memberFor({ last_active: tenMinutesAgo, online: false }) });
 

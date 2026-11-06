@@ -15,7 +15,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { primitives } from '../../theme';
 
 export type UnsupportedAttachmentProps = Partial<Pick<MessageContextValue, 'isMyMessage'>> & {
-  /** The attachment to render */
+  /** The attachment to render. */
   attachment: Attachment;
   attachmentIconSize?: FileIconProps['size'];
 };
@@ -38,10 +38,10 @@ export const UnsupportedAttachment = (props: UnsupportedAttachmentProps) => {
 
   return (
     <View style={[styles.container, container]}>
-      <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentIconSize} />
+      <FileAttachmentIcon mimeType={attachment.custom?.mime_type} size={attachmentIconSize} />
       <View style={[styles.details, details]}>
         <Text numberOfLines={2} style={[styles.title, title]}>
-          {attachment.title ?? t('Unsupported Attachment')}
+          {attachment.title ?? t('attachment.unsupported.title', 'Unsupported Attachment')}
         </Text>
       </View>
     </View>

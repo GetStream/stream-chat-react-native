@@ -10,7 +10,7 @@ describe('Button accessibilityLabelKey', () => {
     render(
       <OverlayProvider accessibility={{ enabled: true }}>
         <Button
-          accessibilityLabelKey='a11y/Add attachment'
+          accessibilityLabelKey='messageInput.addAttachment.accessibilityLabel'
           iconOnly
           onPress={jest.fn()}
           size='md'

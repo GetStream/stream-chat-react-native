@@ -75,7 +75,7 @@ export const PollInputDialog = ({
               <Button
                 variant={'primary'}
                 type={'solid'}
-                label={t('Send')}
+                label={t('poll.inputDialog.send.label', 'Send')}
                 size='lg'
                 onPress={() => {
                   onSubmit(dialogInput);
@@ -87,7 +87,7 @@ export const PollInputDialog = ({
               <Button
                 variant={'secondary'}
                 type={'outline'}
-                label={t('Cancel')}
+                label={t('common.cancel.label', 'Cancel')}
                 size='lg'
                 onPress={closeDialog}
                 style={styles.button}

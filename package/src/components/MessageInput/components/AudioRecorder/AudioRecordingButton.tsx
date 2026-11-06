@@ -40,17 +40,11 @@ export type AudioRecordingButtonPropsWithContext = Pick<
   | 'uploadVoiceRecording'
 > &
   Pick<AudioRecorderManagerState, 'recording' | 'status'> & {
-    /**
-     * Size of the mic button.
-     */
+    /** Size of the mic button. */
     buttonSize?: number;
-    /**
-     * Handler to determine what should happen on long press of the mic button.
-     */
+    /** Called on long press of the mic button. */
     handleLongPress?: () => void;
-    /**
-     * Handler to determine what should happen on press of the mic button.
-     */
+    /** Called on press of the mic button. */
     handlePress?: () => void;
     cancellableDuration: boolean;
   };
@@ -60,9 +54,7 @@ const buttonStylesConfig: ButtonStylesConfig = {
   type: 'ghost',
 };
 
-/**
- * Component to display the mic button on the Message Input.
- */
+/** Mic button of the message input. */
 export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonPropsWithContext) => {
   const {
     audioRecorderManager,
@@ -86,7 +78,9 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
   const pressed = useSharedValue(false);
 
   const { t } = useTranslationContext();
-  const startVoiceRecordingAccessibilityLabel = useA11yLabel('a11y/Start voice recording');
+  const startVoiceRecordingAccessibilityLabel = useA11yLabel(
+    'messageInput.audioRecorder.start.accessibilityLabel',
+  );
   const {
     theme: {
       messageComposer: { micButtonContainer },
@@ -103,7 +97,10 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
     if (!recording) {
       NativeHandlers.triggerHaptic('notificationError');
       addNotification({
-        message: 'Hold to record. Release to save.',
+        message: t(
+          'messageInput.audioRecorder.holdToRecord.text',
+          'Hold to record. Release to save.',
+        ),
         options: {
           severity: 'info',
           type: 'validation:audio:recording:hold-required',
@@ -126,14 +123,17 @@ export const AudioRecordingButtonWithContext = (props: AudioRecordingButtonProps
       const permissionsGranted = await startVoiceRecording();
       if (!permissionsGranted) {
         addNotification({
-          message: 'Please allow Audio permissions in settings.',
+          message: t(
+            'messageInput.audioRecorder.permissionDenied.text',
+            'Please allow Audio permissions in settings.',
+          ),
           options: {
             actions: [
               {
                 handler: () => {
                   Linking.openSettings();
                 },
-                label: t('Open Settings'),
+                label: t('common.openSettings.label', 'Open Settings'),
               },
             ],
             duration: 0,

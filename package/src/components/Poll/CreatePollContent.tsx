@@ -4,7 +4,8 @@ import { StyleSheet, Switch, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { LinearTransition, useSharedValue } from 'react-native-reanimated';
 
-import { PollComposerState, StateStore, VotingVisibility } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import { PollComposerState } from 'stream-chat';
 
 import { CreatePollOptions, CurrentOptionPositionsCache } from './components';
 
@@ -52,7 +53,7 @@ export const CreatePollContent = () => {
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
-  // positions and index lookup map
+  // Option positions and the index lookup map.
   // TODO: Please rethink the structure of this, bidirectional data flow is not great
   const currentOptionPositions = useSharedValue<CurrentOptionPositionsCache>({
     inverseIndexCache: {},
@@ -80,8 +81,8 @@ export const CreatePollContent = () => {
           currentPositions.positionCache[option.id] !== undefined,
       );
 
-    // Avoid overwriting freshly measured heights/tops from CreatePollOptions onLayout.
-    // We only need this effect when options ids/order introduced missing cache entries.
+    // Skip when the cache matches the options, so heights and tops measured by the `onLayout` of
+    // `CreatePollOptions` are kept.
     if (isCacheAlignedWithOptions) {
       return;
     }
@@ -120,7 +121,9 @@ export const CreatePollContent = () => {
     async (value: boolean) => {
       setIsAnonymousPoll(value);
       await pollComposer.updateFields({
-        voting_visibility: value ? VotingVisibility.anonymous : VotingVisibility.public,
+        data: {
+          voting_visibility: value ? 'anonymous' : 'public',
+        },
       });
     },
     [pollComposer],
@@ -129,7 +132,7 @@ export const CreatePollContent = () => {
   const onAllowUserSuggestedOptionsChangeHandler = useCallback(
     async (value: boolean) => {
       setAllowUserSuggestedOptions(value);
-      await pollComposer.updateFields({ allow_user_suggested_options: value });
+      await pollComposer.updateFields({ data: { allow_user_suggested_options: value } });
     },
     [pollComposer],
   );
@@ -137,7 +140,7 @@ export const CreatePollContent = () => {
   const onAllowAnswersChangeHandler = useCallback(
     async (value: boolean) => {
       setAllowAnswers(value);
-      await pollComposer.updateFields({ allow_answers: value });
+      await pollComposer.updateFields({ data: { allow_answers: value } });
     },
     [pollComposer],
   );
@@ -165,9 +168,11 @@ export const CreatePollContent = () => {
           >
             <View style={[styles.optionCard, anonymousPoll.wrapper]}>
               <View style={[styles.optionCardContent, anonymousPoll.optionCardContent]}>
-                <Text style={[styles.title, anonymousPoll.title]}>{t('Anonymous voting')}</Text>
+                <Text style={[styles.title, anonymousPoll.title]}>
+                  {t('poll.createPoll.anonymousVoting.label', 'Anonymous voting')}
+                </Text>
                 <Text style={[styles.description, anonymousPoll.description]}>
-                  {t('Hide who voted')}
+                  {t('poll.createPoll.anonymousVoting.description', 'Hide who voted')}
                 </Text>
               </View>
 
@@ -179,9 +184,11 @@ export const CreatePollContent = () => {
             </View>
             <View style={[styles.optionCard, suggestOption.wrapper]}>
               <View style={[styles.optionCardContent, suggestOption.optionCardContent]}>
-                <Text style={[styles.title, suggestOption.title]}>{t('Suggest an option')}</Text>
+                <Text style={[styles.title, suggestOption.title]}>
+                  {t('poll.suggestOption.label', 'Suggest an option')}
+                </Text>
                 <Text style={[styles.description, suggestOption.description]}>
-                  {t('Let others add options')}
+                  {t('poll.suggestOption.description', 'Let others add options')}
                 </Text>
               </View>
 
@@ -193,9 +200,11 @@ export const CreatePollContent = () => {
             </View>
             <View style={[styles.optionCard, addComment.wrapper]}>
               <View style={[styles.optionCardContent, addComment.optionCardContent]}>
-                <Text style={[styles.title, addComment.title]}>{t('Add a comment')}</Text>
+                <Text style={[styles.title, addComment.title]}>
+                  {t('poll.addComment.label', 'Add a comment')}
+                </Text>
                 <Text style={[styles.description, addComment.description]}>
-                  {t('Add a comment to the poll')}
+                  {t('poll.addComment.description', 'Add a comment to the poll')}
                 </Text>
               </View>
 
@@ -232,7 +241,7 @@ export const CreatePoll = ({
       return;
     }
 
-    // Let the modal render once with exit animations disabled before we dismiss it.
+    // Let the modal render once with exit animations disabled before it is dismissed.
     modalStateStore.partialNext({ isClosing: true });
     closeFrameRef.current = requestAnimationFrame(() => {
       closeFrameRef.current = null;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { LocalMessage, Poll, PollOption } from 'stream-chat';
+import { LocalMessage, Poll, PollOptionResponseData } from 'stream-chat';
 
 import { Button, ButtonProps } from '../../ui';
 
@@ -11,11 +11,11 @@ export type PollButtonProps = {
 
 export type PollVoteButtonProps = {
   /**
-   * Render with the incoming chat tokens regardless of poll ownership. Set on
-   * surfaces that are not a message bubble, such as the full-options list.
+   * Renders with the incoming chat tokens regardless of poll ownership. Set it outside a message
+   * bubble, such as in the full-options list.
    */
   forceIncoming?: boolean;
-  option: PollOption;
+  option: PollOptionResponseData;
   style?: StyleProp<ViewStyle>;
 } & Pick<PollButtonProps, 'onPress'>;
 

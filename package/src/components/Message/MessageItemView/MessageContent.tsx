@@ -64,8 +64,6 @@ export type MessageContentPropsWithContext = Pick<
   | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
-  | 'threadList'
-  | 'isMessageAIGenerated'
 > &
   Pick<
     MessagesContextValue,
@@ -75,35 +73,22 @@ export type MessageContentPropsWithContext = Pick<
     | 'myMessageTheme'
   > &
   Pick<TranslationContextValue, 't'> & {
-    /**
-     * Background color for the message content
-     */
+    /** Background color of the message content. */
     backgroundColor?: ColorValue;
-    /**
-     * If the message is the very last message in the message list
-     */
+    /** Whether the message is the very last one in the message list. */
     isVeryLastMessage?: boolean;
-    /**
-     * If the message has no border radius
-     */
+    /** Removes the border width of the bubble. */
     noBorder?: boolean;
-    /**
-     * If the message is grouped in a single or bottom container
-     */
+    /** Whether the message is the single or bottom one of its group. Defaults to false. */
     messageGroupedSingleOrBottom?: boolean;
 
-    /**
-     * If the message has a single file
-     */
+    /** Whether the message has a single file. */
     isSingleFile?: boolean;
     hidePaddingTop?: boolean;
     hidePaddingHorizontal?: boolean;
     hidePaddingBottom?: boolean;
   };
 
-/**
- * Child of MessageItemView that displays a message's content
- */
 const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const {
     additionalPressableProps,
@@ -113,7 +98,6 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     groupStyles,
     goToMessage,
     hasInteractiveAccessibilityContent,
-    isMessageAIGenerated,
     isMyMessage,
     isVeryLastMessage,
     message,
@@ -129,10 +113,12 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     hidePaddingHorizontal,
     hidePaddingBottom,
   } = props;
-  const { client } = useChatContext();
-  const accessibilityHint = useA11yLabel('a11y/Double tap and hold to activate contextual menu');
+  const { client, isMessageAIGenerated } = useChatContext();
+  const accessibilityHint = useA11yLabel('message.content.contextMenuHint.accessibilityLabel');
   const a11ySenderLabel = useA11yLabel(
-    isMyMessage ? 'a11y/Message from you' : 'a11y/Message from {{sender}}',
+    isMyMessage
+      ? 'message.content.fromYou.accessibilityLabel'
+      : 'message.content.fromSender.accessibilityLabel',
     isMyMessage ? undefined : { sender: message.user?.name || message.user?.id || '' },
   );
   const {
@@ -177,10 +163,8 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
-  // Merged background-color + border-radius object passed directly into the
-  // bubble's style array (no spread at the call site). Theme-defined radii
-  // override the group-position-computed defaults; theme-undefined radii are
-  // omitted so they don't override the computed defaults.
+  // Background color and border radii of the bubble. Theme-defined radii override the radii
+  // computed from the group position; undefined theme radii are omitted so they do not.
   const bubbleColorAndRadius = useMemo<ViewStyle>(() => {
     // enum('top', 'middle', 'bottom', 'single')
     const groupPosition = groupStyles?.[0];
@@ -197,8 +181,8 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
       }
     }
 
-    // Built in one literal rather than by mutation: React Native 0.87 types style objects as
-    // `Readonly`, so assigning onto an already-typed `ViewStyle` no longer compiles.
+    // Built as one literal: React Native types style objects as `Readonly`, so assigning onto a
+    // typed `ViewStyle` does not compile.
     const style: ViewStyle = {
       backgroundColor,
       borderBottomLeftRadius: borderBottomLeftRadius ?? computedBottomLeftRadius,
@@ -227,9 +211,8 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
   const messageTextContainerStyles = useMemo(() => {
     return {
       textContainer: {
-        // Cancel the container's 8px inter-item gap so only the caption's own
-        // paragraph marginTop shows. Skip for the first item: there is no gap to
-        // cancel
+        // Cancels the container's inter-item `gap` so only the caption's own paragraph `marginTop`
+        // shows. Not used for the first item, which has no gap above it.
         marginTop: -gap,
       },
     };
@@ -271,14 +254,15 @@ const MessageContentWithContext = (props: MessageContentPropsWithContext) => {
 
                       if (onPress) {
                         onPress({
-                          defaultHandler: () => goToMessage(message.quoted_message!.id),
+                          defaultHandler: () =>
+                            goToMessage(message.quoted_message!.id, message.quoted_message!),
                           emitter: 'messageContent',
                           event,
                         });
                         return;
                       }
 
-                      goToMessage(message.quoted_message.id);
+                      goToMessage(message.quoted_message.id, message.quoted_message);
                     }}
                     onPressIn={(event) => {
                       if (onPressIn) {
@@ -602,9 +586,7 @@ const MemoizedMessageContent = React.memo(
 
 export type MessageContentProps = Partial<MessageContentPropsWithContext>;
 
-/**
- * Child of MessageItemView that displays a message's content
- */
+/** Displays the content of a message inside `MessageItemView`. */
 export const MessageContent = (props: MessageContentProps) => {
   const {
     alignment,
@@ -613,7 +595,6 @@ export const MessageContent = (props: MessageContentProps) => {
     groupStyles,
     hasInteractiveAccessibilityContent,
     images,
-    isMessageAIGenerated,
     isMyMessage,
     message,
     messageContentOrder,
@@ -622,7 +603,6 @@ export const MessageContent = (props: MessageContentProps) => {
     onPressIn,
     otherAttachments,
     preventPress,
-    threadList,
     videos,
   } = useMessageContext();
   const {
@@ -679,7 +659,6 @@ export const MessageContent = (props: MessageContentProps) => {
         groupStyles,
         hasInteractiveAccessibilityContent,
         isAttachmentEqual,
-        isMessageAIGenerated,
         isMyMessage,
         message,
         messageContentOrder,
@@ -690,7 +669,6 @@ export const MessageContent = (props: MessageContentProps) => {
         otherAttachments,
         preventPress,
         t,
-        threadList,
         hidePaddingTop,
         hidePaddingHorizontal,
         hidePaddingBottom,

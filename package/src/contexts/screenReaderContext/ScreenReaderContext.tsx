@@ -4,7 +4,7 @@ import { AccessibilityInfo } from 'react-native';
 import { useAccessibilityContext } from '../accessibilityContext/AccessibilityContext';
 
 export type ScreenReaderContextValue = {
-  /** True when an OS screen reader (VoiceOver / TalkBack) is currently active. */
+  /** Whether an OS screen reader (VoiceOver or TalkBack) is active. */
   enabled: boolean;
 };
 
@@ -15,12 +15,8 @@ export const ScreenReaderContext = React.createContext<ScreenReaderContextValue>
 );
 
 /**
- * Owns the single, app wide screen reader subscription. One `isScreenReaderEnabled()`
- * query and one `screenReaderChanged` listener for the whole tree; every consumer reads
- * the resulting boolean from context instead of attaching its own listener per mount.
- *
- * Gated on the AccessibilityContext `enabled` flag: when the SDK's a11y is opted out, no
- * query is made and no listener is attached.
+ * Owns the app-wide screen reader subscription, so consumers read one boolean from context instead
+ * of each attaching a listener. Nothing is queried or subscribed while the SDK's a11y is disabled.
  */
 export const ScreenReaderProvider = ({ children }: PropsWithChildren) => {
   const { enabled: a11yEnabled } = useAccessibilityContext();
@@ -38,7 +34,7 @@ export const ScreenReaderProvider = ({ children }: PropsWithChildren) => {
         if (!cancelled) setScreenReaderEnabled(value);
       })
       .catch(() => {
-        // Some platforms / environments may not implement this; fall back to false.
+        // Some platforms do not implement this; stay at false.
       });
 
     const subscription = AccessibilityInfo.addEventListener(

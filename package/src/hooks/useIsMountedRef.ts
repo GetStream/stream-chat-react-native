@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Returns mount status of component. This hook can be used for purpose of avoiding any
- * setState calls (within async operation) after component gets unmounted.
+ * Returns a ref that turns false once the component unmounts, to skip state updates in async work.
  *
  * @example
  * ```
@@ -10,19 +9,16 @@ import { useEffect, useRef } from 'react';
  * const [dummyValue, setDummyValue] = useState(false);
  *
  * useEffect(() => {
- *  someAsyncOperation().then(() => {
- *    if (isMounted.current) setDummyValue(true);
- *  })
- * })
+ *   someAsyncOperation().then(() => {
+ *     if (isMounted.current) setDummyValue(true);
+ *   });
+ * }, []);
  * ```
  *
- * @returns isMounted {Object} Mount status ref for the component.
+ * @returns A ref whose `current` is true until the component unmounts.
  */
 export const useIsMountedRef = () => {
-  // Initial value has been set to true, since this hook exist only for sole purpose of
-  // avoiding any setState calls (within async operation) after component gets unmounted.
-  // Basically we don't need to know about state change from component being initialized -> mounted.
-  // We only need a state change from initialized or mounted state -> unmounted state.
+  // Starts true: only the transition to unmounted matters, not the one from initialized to mounted.
   const isMounted = useRef(true);
 
   useEffect(

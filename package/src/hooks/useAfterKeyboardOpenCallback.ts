@@ -6,18 +6,18 @@ import { useStableCallback } from './useStableCallback';
 import { useMessageInputContext } from '../contexts/messageInputContext/MessageInputContext';
 
 /**
- * A utility hook that returns a stable callback which focuses the message input
- * and invokes the callback once the keyboard is open.
+ * Returns a stable callback that focuses the message input and runs `callback` once the keyboard is
+ * open.
  *
- * @param callback - callback we want to run once the keyboard is ready
- * @returns A stable callback that will wait for the keyboard to be open before executing.
+ * @param callback Runs once the keyboard is open.
+ * @returns A stable callback that waits for the keyboard before running `callback`.
  */
 export const useAfterKeyboardOpenCallback = <T extends unknown[]>(
   callback: (...args: T) => void,
 ) => {
   const { inputBoxRef } = useMessageInputContext();
   const keyboardSubscriptionRef = useRef<EventSubscription | undefined>(undefined);
-  // This callback runs from a keyboard event listener, so it must stay fresh across rerenders.
+  // Runs from a keyboard event listener, so it must read the latest callback across re-renders.
   const stableCallback = useStableCallback(callback);
 
   /** Clears the pending keyboard listener, if any. */

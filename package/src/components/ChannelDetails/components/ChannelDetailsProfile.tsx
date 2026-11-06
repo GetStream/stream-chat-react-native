@@ -41,7 +41,7 @@ export const ChannelDetailsProfile = () => {
         <View
           accessibilityLabel={composeAccessibilityLabel(
             displayName,
-            muted ? t('Muted') : undefined,
+            muted ? t('channelDetails.muted.accessibilityLabel', 'Muted') : undefined,
           )}
           accessibilityRole='header'
           accessible

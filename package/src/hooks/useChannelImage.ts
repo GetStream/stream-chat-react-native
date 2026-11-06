@@ -1,12 +1,20 @@
-import { Channel, EventTypes } from 'stream-chat';
+import { Channel } from 'stream-chat';
 
-import { useSelectedChannelState } from './useSelectedChannelState';
+import { useStateStore } from './useStateStore';
 
-const selector = (channel: Channel) => channel.data?.image;
-const keys: EventTypes[] = ['channel.updated'];
+const selector = (state: { data: Channel['data'] }) => ({
+  image: state.data?.custom?.image,
+});
 
+/**
+ * Returns the channel's image, read reactively from `channel.state` (updates on `channel.updated`).
+ *
+ * @param channel The channel to read from.
+ * @returns The channel image.
+ */
 export function useChannelImage(channel: Channel): string | undefined;
+/** Same as above, for a channel that may be undefined. */
 export function useChannelImage(channel?: Channel): string | undefined;
 export function useChannelImage(channel?: Channel) {
-  return useSelectedChannelState({ channel, selector, stateChangeEventKeys: keys });
+  return useStateStore(channel?.state, selector)?.image;
 }

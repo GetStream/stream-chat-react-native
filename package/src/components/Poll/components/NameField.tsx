@@ -12,7 +12,7 @@ export const NameField = () => {
 
   const onChangeText = useCallback(
     async (newText: string) => {
-      await updateFields({ name: newText });
+      await updateFields({ data: { name: newText } });
     },
     [updateFields],
   );
@@ -23,8 +23,8 @@ export const NameField = () => {
 
   return (
     <Input
-      title={t('Questions')}
-      placeholder={t('Ask a question')}
+      title={t('poll.createPoll.question.label', 'Questions')}
+      placeholder={t('poll.createPoll.question.placeholder', 'Ask a question')}
       variant='outline'
       onChangeText={onChangeText}
       onBlur={onBlur}

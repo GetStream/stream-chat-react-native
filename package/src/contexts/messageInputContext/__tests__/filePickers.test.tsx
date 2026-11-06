@@ -32,15 +32,7 @@ const Wrapper = ({
 }) => {
   return (
     <Chat client={client}>
-      <ChannelProvider
-        value={
-          {
-            uploadAbortControllerRef: {
-              current: new Map(),
-            },
-          } as ChannelContextValue
-        }
-      >
+      <ChannelProvider value={{} as ChannelContextValue}>
         <AttachmentPickerProvider
           value={
             { disableAttachmentPicker: true } as unknown as React.ComponentProps<
@@ -203,6 +195,11 @@ describe("MessageInputContext's pickAndUploadImageFromNativePicker", () => {
     });
 
     expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Allow access to your Gallery',
+      'Gallery access is used to share photos and videos.',
+      expect.any(Array),
+    );
   });
 
   it.each([
@@ -343,6 +340,11 @@ describe("MessageInputContext's takeAndUploadImage", () => {
     });
 
     expect(Alert.alert).toHaveBeenCalledTimes(1);
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Allow camera access in device settings',
+      'The camera is used to take photos and videos.',
+      expect.any(Array),
+    );
   });
 
   it.each([

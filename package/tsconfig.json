@@ -1,7 +1,17 @@
 {
   "extends": "@stream-io/typescript-config/library.json",
   "compilerOptions": {
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@stream-io/state-store": [
+        "./node_modules/@stream-io/state-store",
+        "../node_modules/@stream-io/state-store"
+      ],
+      "@stream-io/state-store/*": [
+        "./node_modules/@stream-io/state-store/*",
+        "../node_modules/@stream-io/state-store/*"
+      ]
+    }
   },
   "include": ["./src/**/*"],
   "exclude": [

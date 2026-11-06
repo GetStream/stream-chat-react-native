@@ -1,35 +1,31 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { primitives } from '../../theme';
+import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
 
 export const NetworkDownIndicator = () => {
-  const { error } = useChannelContext();
-  const { isOnline } = useChatContext();
+  const isNetworkOnline = useNetworkConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
   const styles = useStyles();
   const { t } = useTranslationContext();
 
-  const indicatorText = useMemo(() => {
-    if (!isOnline) {
-      return t('Reconnecting...');
-    } else if (error) {
-      return t('Error loading messages for this channel...');
-    }
-    return '';
-  }, [error, isOnline, t]);
+  const hasNoNetwork = isNetworkOnline === false;
 
-  if (!indicatorText) {
+  if (!hasNoNetwork && isWSOnline) {
     return null;
   }
 
   return (
     <View style={styles.container} testID='error-notification'>
-      <Text style={styles.errorText}>{indicatorText}</Text>
+      <Text style={styles.errorText}>
+        {hasNoNetwork
+          ? t('common.waitingForNetwork.text', 'Waiting for network...')
+          : t('common.reconnecting.text', 'Reconnecting...')}
+      </Text>
     </View>
   );
 };

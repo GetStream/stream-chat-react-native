@@ -1,4 +1,4 @@
-import { Unsubscribe } from 'stream-chat';
+import { Unsubscribe } from '@stream-io/state-store';
 
 /**
  * @private

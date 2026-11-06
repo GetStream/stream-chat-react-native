@@ -3,11 +3,14 @@ import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import {
+  getAttachmentPreviewUrl,
   isAudioAttachment,
   isFileAttachment,
   isImageAttachment,
+  isLocalUploadAttachment,
   isVideoAttachment,
   isVoiceRecordingAttachment,
+  resolveAttachmentFullByteSize,
   type Attachment as AttachmentType,
   type LocalMessage,
 } from 'stream-chat';
@@ -30,7 +33,6 @@ import { usePendingAttachmentUpload } from '../../hooks/usePendingAttachmentUplo
 import { isSoundPackageAvailable, isVideoPlayerAvailable } from '../../native';
 
 import { primitives } from '../../theme';
-import type { DefaultAttachmentData } from '../../types/types';
 import { FileTypes } from '../../types/types';
 import { isLocalUrl } from '../../utils/utils';
 
@@ -41,13 +43,9 @@ export type AttachmentPropsWithContext = Pick<
   'isAttachmentEqual' | 'myMessageTheme' | 'urlPreviewType'
 > &
   Pick<MessageContextValue, 'message'> & {
-    /**
-     * The attachment to render
-     */
+    /** The attachment to render. */
     attachment: AttachmentType;
-    /**
-     * The index of the attachment in the message
-     */
+    /** The index of the attachment in the message. */
     index?: number;
   };
 
@@ -79,7 +77,7 @@ const AttachmentWithContext = (props: AttachmentPropsWithContext) => {
     return <Gallery images={[attachment]} />;
   }
 
-  // The `!attachment.og_scrape_url` is added for cases, where the url preview is not an image but a video.
+  // URL previews (`og_scrape_url`) whose media is a video are excluded.
   if (isVideoAttachment(attachment) && !attachment.og_scrape_url) {
     return isVideoPlayerAvailable() ? (
       <Gallery videos={[attachment]} />
@@ -122,7 +120,9 @@ const areEqual = (prevProps: AttachmentPropsWithContext, nextProps: AttachmentPr
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url &&
-    prevAttachment.type === nextAttachment.type;
+    prevAttachment.type === nextAttachment.type &&
+    getAttachmentPreviewUrl(prevAttachment, prevAttachment.asset_url, prevAttachment.image_url) ===
+      getAttachmentPreviewUrl(nextAttachment, nextAttachment.asset_url, nextAttachment.image_url);
   if (!attachmentEqual) {
     return false;
   }
@@ -147,9 +147,7 @@ const MemoizedAttachment = React.memo(
 
 export type AttachmentProps = Partial<AttachmentPropsWithContext>;
 
-/**
- * Attachment - The message attachment
- */
+/** Renders a single message attachment according to its type. */
 export const Attachment = (props: AttachmentProps) => {
   const { attachment } = props;
 
@@ -189,15 +187,15 @@ const MessageAudioAttachment = ({
   index,
   message,
 }: MessageAudioAttachmentProps) => {
-  const localId = (attachment as DefaultAttachmentData).localId;
-  const sourceUrl = attachment.asset_url ?? attachment.originalFile?.uri;
-  const shouldTrackPendingUpload = !!localId && !!sourceUrl && isLocalUrl(sourceUrl);
+  const localId = isLocalUploadAttachment(attachment) ? attachment.localMetadata.id : undefined;
+  const sourceUrl = getAttachmentPreviewUrl(attachment, attachment.asset_url, attachment.image_url);
+  const shouldTrackPendingUpload = !!localId && isLocalUrl(sourceUrl);
   const pendingUpload = usePendingAttachmentUpload(shouldTrackPendingUpload ? localId : undefined);
   const indicator = pendingUpload.isUploading ? (
     <AttachmentFileUploadProgressIndicator
       localId={localId}
       sourceUrl={sourceUrl}
-      totalBytes={attachment.file_size}
+      totalBytes={resolveAttachmentFullByteSize(attachment)}
     />
   ) : undefined;
 

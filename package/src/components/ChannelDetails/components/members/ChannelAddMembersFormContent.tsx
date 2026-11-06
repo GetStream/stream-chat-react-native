@@ -18,12 +18,7 @@ import { EmptySearchResult } from '../../../UIComponents/EmptySearchResult';
 import { SearchInput } from '../../../UIComponents/SearchInput';
 
 export type ChannelAddMembersFormContentProps = {
-  /**
-   * Besides the existing default behavior of the user list, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * See https://reactnative.dev/docs/flatlist#props for the full list.
-   */
+  /** Additional props passed to the underlying `FlatList`. */
   additionalFlatListProps?: Partial<FlatListProps<UserResponse>>;
 };
 
@@ -68,7 +63,7 @@ export const ChannelAddMembersFormContent = ({
       return;
     }
     addNotification({
-      message: t('Failed to load users'),
+      message: t('channelDetails.addMembers.load.error', 'Failed to load users'),
       options: {
         ...getNotificationErrorOptions(error),
         severity: 'error',
@@ -93,7 +88,7 @@ export const ChannelAddMembersFormContent = ({
   );
 
   const loadMore = useCallback(() => {
-    // hasNext true by default, !!users prevents calling search on initial load
+    // `hasNext` starts true, so `users` is checked to avoid searching on the initial load.
     if (hasNext && !!users) {
       searchSource.search();
     }
@@ -102,7 +97,7 @@ export const ChannelAddMembersFormContent = ({
   const emptyState = loading ? (
     <UserListLoadingSkeleton />
   ) : (
-    <EmptySearchResult label={t('No user found')} />
+    <EmptySearchResult label={t('channelDetails.addMembers.noUserFound.label', 'No user found')} />
   );
 
   const loadingMoreIndicator = <>{loading && users && users.length > 0 && <ActivityIndicator />}</>;
@@ -110,7 +105,10 @@ export const ChannelAddMembersFormContent = ({
   return (
     <View style={[styles.container, addMembers.container]}>
       <SearchInput
-        accessibilityLabel={t('a11y/Search users to add')}
+        accessibilityLabel={t(
+          'channelDetails.addMembers.search.accessibilityLabel',
+          'Search users to add',
+        )}
         onChangeText={(text) => searchSource.search(text)}
       />
 

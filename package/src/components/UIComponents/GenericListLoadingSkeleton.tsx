@@ -9,7 +9,7 @@ import { primitives } from '../../theme';
 
 const ROW_COUNT = 4;
 
-// `memberListSkeleton` and `userListSkeleton` share an identical shape.
+// `memberListSkeleton` and `userListSkeleton` share this shape.
 export type ListLoadingSkeletonTheme = Theme['memberListSkeleton'];
 
 export type GenericListLoadingSkeletonProps = {

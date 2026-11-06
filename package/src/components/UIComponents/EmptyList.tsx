@@ -6,17 +6,11 @@ import { IconProps } from '../../icons/utils/base';
 import { primitives } from '../../theme';
 
 export type EmptyListProps = {
-  /**
-   * Icon component to render. Its size and color are set by `EmptyList`.
-   */
+  /** Icon component to render. Its size and color are set by `EmptyList`. */
   icon: React.ComponentType<IconProps>;
-  /**
-   * Title text shown below the icon.
-   */
+  /** Title text shown below the icon. */
   title: string;
-  /**
-   * Optional supporting text shown below the title.
-   */
+  /** Supporting text shown below the title. */
   subtitle?: string;
 };
 

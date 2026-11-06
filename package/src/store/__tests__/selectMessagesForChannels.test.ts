@@ -1,5 +1,3 @@
-import type { ChannelAPIResponse } from 'stream-chat';
-
 import { generateChannelResponse } from '../../mock-builders/generator/channel';
 import { generateMessage } from '../../mock-builders/generator/message';
 import { BetterSqlite } from '../../test-utils/BetterSqlite';
@@ -24,11 +22,11 @@ describe('selectMessagesForChannels', () => {
     const channelResponse = generateChannelResponse({ members: [], messages: [] });
     cid = channelResponse.channel.cid as string;
     messages = Array.from({ length: 30 }, (_, i) =>
-      generateMessage({ cid, timestamp: new Date(Date.UTC(2020, 0, 1, 0, i)) }),
+      generateMessage({ cid, timestamp: Date.UTC(2020, 0, 1, 0, i) }),
     );
     channelResponse.messages = messages as unknown as typeof channelResponse.messages;
     await upsertChannels({
-      channels: [channelResponse] as unknown as ChannelAPIResponse[],
+      channels: [channelResponse] as unknown as Parameters<typeof upsertChannels>[0]['channels'],
       isLatestMessagesSet: true,
     });
   });
@@ -54,8 +52,8 @@ describe('selectMessagesForChannels', () => {
   it('applies the limit that getChannels is given', async () => {
     const [channel] = await getChannels({
       channelIds: [cid],
-      currentUserId: 'some-user',
       messageLimit: 10,
+      userId: 'some-user',
     });
 
     expect(ids(channel.messages)).toEqual(ids(messages.slice(-10)));

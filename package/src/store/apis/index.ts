@@ -2,7 +2,6 @@ export * from './deleteChannel';
 export * from './deleteMember';
 export * from './deleteMessage';
 export * from './deleteMessagesForChannel';
-export * from './deleteReactions';
 export * from './getAllChannelIds';
 export * from './getAppSettings';
 export * from './getChannelMessages';

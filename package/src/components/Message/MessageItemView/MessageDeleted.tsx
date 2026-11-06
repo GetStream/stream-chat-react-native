@@ -55,7 +55,9 @@ const MessageDeletedWithContext = (props: MessageDeletedPropsWithContext) => {
         ]}
       >
         <icons.CircleBan height={16} width={16} stroke={semantics.textSecondary} />
-        <Text style={[styles.deletedText, deletedText]}>{t('Message deleted')}</Text>
+        <Text style={[styles.deletedText, deletedText]}>
+          {t('message.deleted.text', 'Message deleted')}
+        </Text>
       </View>
       <MessageFooter date={date} />
     </View>

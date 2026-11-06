@@ -14,21 +14,20 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../../hooks/useStateStore';
 
+import { getDateString } from '../../../i18n/utils';
 import { ImageGalleryState } from '../../../state-store/image-gallery-state-store';
 import { primitives } from '../../../theme';
-import { getDateString } from '../../../utils/i18n/getDateString';
 import { Button } from '../../ui/Button/Button';
 import { SafeAreaView } from '../../UIComponents/SafeAreaViewWrapper';
 
-// Never called - it exists only so `ReturnType` below can name the animated component's type.
+// Never called: it only lets `ReturnType` below name the animated component's type.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in type position only
 const createAnimatedSafeAreaViewType = () => Animated.createAnimatedComponent(SafeAreaView);
 
 /**
- * A frame-aware wrapper, matching `ImageGalleryFooter`. `SafeAreaView` compares the window inset
- * against its own measured frame, so a nested instance contributes nothing once an ancestor has
- * already narrowed the subtree - unlike `useSafeAreaInsets`, which is window-global and would
- * double-pad this header inside `ChannelDetailsModal`, which insets its own root.
+ * Animated `SafeAreaView`, as in `ImageGalleryFooter`. It compares the window inset against its own
+ * frame, so a nested instance adds no padding when an ancestor has already inset the subtree.
+ * `useSafeAreaInsets` is window-global and would double-pad inside `ChannelDetailsModal`.
  *
  * `createAnimatedComponent` is guarded because a stripped-down Reanimated mock may not provide it.
  */
@@ -54,10 +53,10 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
   const date = useMemo(
     () =>
       getDateString({
-        date: asset?.created_at,
+        messageCreatedAt: asset?.created_at,
         t,
         tDateTimeParser,
-        timestampTranslationKey: 'timestamp/ImageGalleryHeader',
+        timestampTranslationKey: 'timestamp.ImageGalleryHeader',
       }),
     [asset?.created_at, t, tDateTimeParser],
   );
@@ -93,7 +92,7 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
         <View style={styles.innerContainer}>
           <View style={styles.leftContainer}>
             <Button
-              accessibilityLabelKey='a11y/Hide Overlay'
+              accessibilityLabelKey='imageGallery.header.hideOverlay.accessibilityLabel'
               variant='secondary'
               type='ghost'
               size='md'
@@ -104,7 +103,9 @@ export const ImageGalleryHeader = (props: ImageGalleryHeaderProps) => {
           </View>
           <View style={styles.centerContainer} accessibilityLabel='Center element'>
             <Text style={styles.userName}>
-              {asset?.user?.name || asset?.user?.id || t('Unknown User')}
+              {asset?.user?.name ||
+                asset?.user?.id ||
+                t('common.unknownUser.label', 'Unknown User')}
             </Text>
             {date ? <Text style={styles.date}>{date}</Text> : null}
           </View>

@@ -4,7 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, StreamChat } from 'stream-chat';
+import type { Channel as ChannelType, StreamChat, Thread as ThreadInstance } from 'stream-chat';
 
 import type { ComponentOverrides } from '../../../../contexts/componentsContext/ComponentsContext';
 import { WithComponents } from '../../../../contexts/componentsContext/ComponentsContext';
@@ -22,6 +22,7 @@ import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { MessageComposer } from '../../../MessageInput/MessageComposer';
+import { Thread } from '../../../Thread/Thread';
 import { useShouldUseOverlayStyles } from '../../hooks/useShouldUseOverlayStyles';
 import { Message } from '../../Message';
 import { MessageOverlayWrapper } from '../../MessageOverlayWrapper';
@@ -61,7 +62,10 @@ describe('Message', () => {
   let renderMessage: (
     options: Omit<React.ComponentProps<typeof Message>, 'groupStyles'> &
       Partial<Pick<React.ComponentProps<typeof Message>, 'groupStyles'>>,
-    channelProps?: Partial<React.ComponentProps<typeof Channel>>,
+    channelProps?: Partial<React.ComponentProps<typeof Channel>> & {
+      /** Renders the message inside `<Thread thread>` instead of `<Channel>`. */
+      thread?: ThreadInstance;
+    },
     componentOverrides?: ComponentOverrides,
   ) => ReturnType<typeof render>;
 
@@ -79,8 +83,24 @@ describe('Message', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.channel.id);
 
-    renderMessage = (options, channelProps, componentOverrides) =>
-      render(
+    renderMessage = (options, channelProps, componentOverrides) => {
+      const { thread, ...listProps } = channelProps ?? {};
+      const content = (
+        <>
+          <Message groupStyles={['bottom']} {...options} />
+          <MessageComposer />
+        </>
+      );
+      const container = thread ? (
+        <Thread thread={thread} {...listProps}>
+          {content}
+        </Thread>
+      ) : (
+        <Channel channel={channel} {...listProps}>
+          {content}
+        </Channel>
+      );
+      return render(
         <SafeAreaProvider>
           <OverlayProvider>
             <MessageListItemProvider
@@ -95,23 +115,16 @@ describe('Message', () => {
             >
               <Chat client={chatClient}>
                 {componentOverrides ? (
-                  <WithComponents overrides={componentOverrides}>
-                    <Channel channel={channel} {...channelProps}>
-                      <Message groupStyles={['bottom']} {...options} />
-                      <MessageComposer />
-                    </Channel>
-                  </WithComponents>
+                  <WithComponents overrides={componentOverrides}>{container}</WithComponents>
                 ) : (
-                  <Channel channel={channel} {...channelProps}>
-                    <Message groupStyles={['bottom']} {...options} />
-                    <MessageComposer />
-                  </Channel>
+                  container
                 )}
               </Chat>
             </MessageListItemProvider>
           </OverlayProvider>
         </SafeAreaProvider>,
       );
+    };
   });
 
   afterEach(() => {
@@ -149,6 +162,114 @@ describe('Message', () => {
     await waitFor(() => {
       expect(onLongPressMessage).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('opens the thread with the registered thread instance of the parent message', async () => {
+    const message = channel.state.formatMessage(generateMessage({ reply_count: 2, user }));
+    const onThreadSelect = jest.fn();
+
+    const { getByTestId } = renderMessage({ message, onThreadSelect });
+
+    await waitFor(() => expect(getByTestId('message-replies')).toBeTruthy());
+    fireEvent.press(getByTestId('message-replies'));
+
+    expect(onThreadSelect).toHaveBeenCalledTimes(1);
+    const thread = onThreadSelect.mock.calls[0][0];
+    expect(thread.id).toBe(message.id);
+    expect(thread.channel).toBe(channel);
+    expect(chatClient.threads.get(message.id)).toBe(thread);
+  });
+
+  it('passes the thread of the parent message when "View" is pressed on a reply in the channel', async () => {
+    const parentMessage = generateMessage({ reply_count: 1, user });
+    const reply = channel.state.formatMessage(
+      generateMessage({ parent_id: parentMessage.id, show_in_channel: true, user }),
+    );
+    const getMessagesById = jest
+      .spyOn(channel, 'getMessagesById')
+      .mockResolvedValue({ messages: [parentMessage] } as unknown as Awaited<
+        ReturnType<typeof channel.getMessagesById>
+      >);
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const { getByText } = renderMessage({ message: reply }, { onAlsoSentToChannelHeaderPress });
+
+    await waitFor(() => expect(getByText('Replied to a thread')).toBeTruthy());
+    fireEvent.press(getByText('View'));
+
+    await waitFor(() => expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledTimes(1));
+    expect(getMessagesById).toHaveBeenCalledWith([parentMessage.id]);
+    const { targetedMessageId, thread } = onAlsoSentToChannelHeaderPress.mock.calls[0][0];
+    expect(targetedMessageId).toBe(reply.id);
+    expect(thread.id).toBe(parentMessage.id);
+    expect(thread.channel).toBe(channel);
+    expect(chatClient.threads.get(parentMessage.id)).toBe(thread);
+  });
+
+  it('reuses the registered thread of the parent without fetching it', async () => {
+    const parentMessage = channel.state.formatMessage(generateMessage({ reply_count: 1, user }));
+    const registeredThread = chatClient.threads.ensure({ channel, parentMessage });
+    const reply = channel.state.formatMessage(
+      generateMessage({ parent_id: parentMessage.id, show_in_channel: true, user }),
+    );
+    const getMessagesById = jest.spyOn(channel, 'getMessagesById');
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const { getByText } = renderMessage({ message: reply }, { onAlsoSentToChannelHeaderPress });
+
+    await waitFor(() => expect(getByText('Replied to a thread')).toBeTruthy());
+    fireEvent.press(getByText('View'));
+
+    await waitFor(() =>
+      expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({
+        targetedMessageId: reply.id,
+        thread: registeredThread,
+      }),
+    );
+    expect(getMessagesById).not.toHaveBeenCalled();
+  });
+
+  it('builds the thread from a loaded parent without fetching it', async () => {
+    const parentMessage = channel.state.formatMessage(generateMessage({ reply_count: 1, user }));
+    chatClient.messageStore.upsert(parentMessage);
+    const reply = channel.state.formatMessage(
+      generateMessage({ parent_id: parentMessage.id, show_in_channel: true, user }),
+    );
+    const getMessagesById = jest.spyOn(channel, 'getMessagesById');
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const { getByText } = renderMessage({ message: reply }, { onAlsoSentToChannelHeaderPress });
+
+    await waitFor(() => expect(getByText('Replied to a thread')).toBeTruthy());
+    expect(chatClient.threads.get(parentMessage.id)).toBeUndefined();
+    fireEvent.press(getByText('View'));
+
+    await waitFor(() => expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledTimes(1));
+    expect(getMessagesById).not.toHaveBeenCalled();
+    const { thread } = onAlsoSentToChannelHeaderPress.mock.calls[0][0];
+    expect(thread.id).toBe(parentMessage.id);
+    expect(chatClient.threads.get(parentMessage.id)).toBe(thread);
+  });
+
+  it('passes only the targeted message when "View" is pressed on a reply in the thread', async () => {
+    const parentMessage = channel.state.formatMessage(generateMessage({ reply_count: 1, user }));
+    const thread = chatClient.threads.ensure({ channel, parentMessage });
+    const reply = channel.state.formatMessage(
+      generateMessage({ parent_id: parentMessage.id, show_in_channel: true, user }),
+    );
+    const getMessagesById = jest.spyOn(channel, 'getMessagesById');
+    const onAlsoSentToChannelHeaderPress = jest.fn();
+
+    const { getByText } = renderMessage(
+      { message: reply },
+      { onAlsoSentToChannelHeaderPress, thread },
+    );
+
+    await waitFor(() => expect(getByText('Also sent in channel')).toBeTruthy());
+    fireEvent.press(getByText('View'));
+
+    expect(onAlsoSentToChannelHeaderPress).toHaveBeenCalledWith({ targetedMessageId: reply.id });
+    expect(getMessagesById).not.toHaveBeenCalled();
   });
 
   it('teleports a custom overlay target without applying overlay styles to siblings', async () => {

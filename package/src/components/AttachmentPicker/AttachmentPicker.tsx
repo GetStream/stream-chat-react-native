@@ -101,10 +101,7 @@ export const AttachmentPicker = () => {
     windowHeight - topInset - attachmentPickerBottomSheetHeight - bottomInset,
   );
 
-  /**
-   * Snap points changing cause a rerender of the position,
-   * this is an issue if you are calling close on the bottom sheet.
-   */
+  // A new snap points array re-renders the sheet position, which breaks closing the sheet.
   const snapPoints = useMemo(() => [initialSnapPoint], [initialSnapPoint]);
 
   const onAttachmentPickerSelectionBarLayout = useStableCallback((e: LayoutChangeEvent) => {
@@ -124,10 +121,7 @@ export const AttachmentPicker = () => {
 
   const animatedIndex = useSharedValue(currentIndex);
 
-  // This is required to prevent the attachment picker from getting out of sync
-  // with the rest of the state. While there are more prudent fixes, this is about
-  // as much as we can do now without refactoring the entire state layer for the
-  // picker. When we do that, this can be removed completely.
+  // Keeps the picker store in sync with the sheet index (-1 closed, 0 open).
   const reactToIndex = useStableCallback((index: number) => {
     if (index === -1) {
       attachmentPickerStore.setSelectedPicker(undefined);

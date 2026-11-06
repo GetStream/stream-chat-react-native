@@ -1,33 +1,40 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 
+import { useOwnUnreadCount } from './hooks/useOwnUnreadCount';
+
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { primitives } from '../../theme';
 import { BadgeNotification } from '../ui';
 import { Button } from '../ui/Button';
 
-export const SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY = 'a11y/Scroll to bottom';
+export const SCROLL_TO_BOTTOM_ACCESSIBILITY_LABEL_KEY =
+  'messageList.scrollToBottom.accessibilityLabel';
 export const SCROLL_TO_BOTTOM_WITH_COUNT_ACCESSIBILITY_LABEL_KEY =
-  'a11y/Scroll to bottom, {{count}} new messages';
+  'messageList.scrollToBottom.withCount.accessibilityLabel';
 
 export type ScrollToBottomButtonProps = {
-  /** onPress handler */
+  /** Called when the button is pressed. */
   onPress: () => void;
-  /** If we should show the notification or not */
+  /** Whether the button is rendered. Defaults to true. */
   showNotification?: boolean;
-  unreadCount?: number;
 };
 
 export const ScrollToBottomButton = (props: ScrollToBottomButtonProps) => {
-  const { onPress, showNotification = true, unreadCount } = props;
+  const { onPress, showNotification = true } = props;
+  const { channel } = useChannelContext();
+  const { thread } = useThreadContext();
   const {
     theme: { semantics },
   } = useTheme();
   const { icons } = useComponentsContext();
-  const accessibilityLabelParams = React.useMemo(
+  const unreadCount = useOwnUnreadCount(thread ? undefined : channel);
+  const accessibilityLabelParams = useMemo(
     () => (unreadCount ? { count: unreadCount } : undefined),
     [unreadCount],
   );

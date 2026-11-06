@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
 
 /**
- * A custom hook that provides a boolean value indicating whether the keyboard is visible.
- * @returns A boolean value indicating whether the keyboard is visible.
+ * Tracks whether the keyboard is visible.
+ *
+ * @returns True while the keyboard is visible.
  */
 export const useKeyboardVisibility = () => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { act, render, screen } from '@testing-library/react-native';
 import dayjs from 'dayjs';
-import { Poll, PollAnswer, PollResponse, StreamChat, TranslationLanguages } from 'stream-chat';
+import { Poll, PollResponseData, PollVoteResponseData, StreamChat } from 'stream-chat';
 
 import {
   ChatProvider,
@@ -33,20 +33,20 @@ const pollResponse = {
   ],
   vote_count: 0,
   vote_counts_by_option: {},
-} as unknown as PollResponse;
+} as unknown as PollResponseData;
 
 const answer = {
   answer_text: 'Green, actually',
   answer_text_i18n: { es_text: 'Verde, en realidad', language: 'en' },
-  created_at: '2026-10-27T10:00:00.000Z',
+  created_at: new Date('2026-10-27T10:00:00.000Z').getTime(),
   id: 'answer-id',
   is_answer: true,
   poll_id: POLL_ID,
-  updated_at: '2026-10-27T10:00:00.000Z',
+  updated_at: new Date('2026-10-27T10:00:00.000Z').getTime(),
   user: { id: 'other-user', name: 'Other' },
-} as unknown as PollAnswer;
+} as unknown as PollVoteResponseData;
 
-const setup = (userLanguage: TranslationLanguages) => {
+const setup = (userLanguage: string) => {
   const client = { user: { id: 'own-user' }, userID: 'own-user' } as unknown as StreamChat;
   const poll = new Poll({ client, poll: pollResponse });
   const [red, blue] = poll.data.options;
@@ -73,7 +73,7 @@ const setup = (userLanguage: TranslationLanguages) => {
   return { poll };
 };
 
-const renderDialogs = (userLanguage: TranslationLanguages) => {
+const renderDialogs = (userLanguage: string) => {
   const client = { user: { id: 'own-user' }, userID: 'own-user' } as unknown as StreamChat;
   const poll = new Poll({ client, poll: pollResponse });
 

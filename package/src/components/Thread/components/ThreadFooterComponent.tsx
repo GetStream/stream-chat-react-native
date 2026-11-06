@@ -13,19 +13,22 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { useStateStore } from '../../../hooks';
 import { primitives } from '../../../theme';
 
-type ThreadFooterComponentPropsWithContext = Pick<
-  ThreadContextValue,
-  'parentMessagePreventPress' | 'thread' | 'threadInstance'
->;
+type ThreadFooterComponentPropsWithContext = Pick<ThreadContextValue, 'thread'> & {
+  /** Whether pressing the parent message is disabled. Defaults to true. */
+  parentMessagePreventPress?: boolean;
+};
+
+const loadingSelector = (state: { isLoading: boolean }) => ({ isLoading: state.isLoading });
 
 export const InlineLoadingMoreThreadIndicator = () => {
-  const { threadLoadingMore } = useThreadContext();
+  const { thread } = useThreadContext();
   const {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
+  const { isLoading } = useStateStore(thread?.messagePaginator?.state, loadingSelector) ?? {};
 
-  if (!threadLoadingMore) {
+  if (!isLoading) {
     return null;
   }
 
@@ -38,19 +41,23 @@ export const InlineLoadingMoreThreadIndicator = () => {
 
 const selector = (nextValue: ThreadState) =>
   ({
+    parentMessage: nextValue.parentMessage,
     replyCount: nextValue.replyCount,
   }) as const;
 
 const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithContext) => {
-  const { parentMessagePreventPress, thread, threadInstance } = props;
+  const { parentMessagePreventPress = true, thread } = props;
   const { Message } = useComponentsContext();
   const { t } = useTranslationContext();
 
   const styles = useStyles();
 
-  const { replyCount = thread?.reply_count } = useStateStore(threadInstance?.state, selector) ?? {};
+  // Read from the thread state so the header updates when the parent message or its reply count
+  // changes.
+  const { parentMessage, replyCount = parentMessage?.reply_count } =
+    useStateStore(thread?.state, selector) ?? {};
 
-  if (!thread) {
+  if (!parentMessage) {
     return null;
   }
 
@@ -58,16 +65,14 @@ const ThreadFooterComponentWithContext = (props: ThreadFooterComponentPropsWithC
     <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
       <Message
         groupStyles={['single']}
-        message={thread}
+        message={parentMessage}
         preventPress={parentMessagePreventPress}
-        readBy={0}
-        threadList
       />
       <View style={styles.newThread}>
         <Text style={styles.text}>
           {replyCount === 1
-            ? t('1 Reply')
-            : t('{{ replyCount }} Replies', {
+            ? t('message.replies.one.label', '1 Reply')
+            : t('message.replies.many.label', '{{ replyCount }} Replies', {
                 replyCount,
               })}
         </Text>
@@ -81,49 +86,16 @@ const areEqual = (
   prevProps: ThreadFooterComponentPropsWithContext,
   nextProps: ThreadFooterComponentPropsWithContext,
 ) => {
-  const {
-    parentMessagePreventPress: prevParentMessagePreventPress,
-    thread: prevThread,
-    threadInstance: prevThreadInstance,
-  } = prevProps;
-  const {
-    parentMessagePreventPress: nextParentMessagePreventPress,
-    thread: nextThread,
-    threadInstance: nextThreadInstance,
-  } = nextProps;
+  // The parent message and reply count come from `thread.state`, so only the prevent-press flag
+  // and the thread identity gate re-renders.
+  const { parentMessagePreventPress: prevParentMessagePreventPress, thread: prevThread } =
+    prevProps;
+  const { parentMessagePreventPress: nextParentMessagePreventPress, thread: nextThread } =
+    nextProps;
 
-  if (prevParentMessagePreventPress !== nextParentMessagePreventPress) {
-    return false;
-  }
-
-  const threadEqual =
-    prevThread?.id === nextThread?.id &&
-    prevThread?.text === nextThread?.text &&
-    prevThread?.reply_count === nextThread?.reply_count;
-
-  if (!threadEqual) {
-    return false;
-  }
-
-  if (prevThreadInstance !== nextThreadInstance) {
-    return false;
-  }
-
-  const latestReactionsEqual =
-    prevThread &&
-    nextThread &&
-    Array.isArray(prevThread.latest_reactions) &&
-    Array.isArray(nextThread.latest_reactions)
-      ? prevThread.latest_reactions.length === nextThread.latest_reactions.length &&
-        prevThread.latest_reactions.every(
-          ({ type }, index) => type === nextThread.latest_reactions?.[index].type,
-        )
-      : prevThread?.latest_reactions === nextThread?.latest_reactions;
-  if (!latestReactionsEqual) {
-    return false;
-  }
-
-  return true;
+  return (
+    prevParentMessagePreventPress === nextParentMessagePreventPress && prevThread === nextThread
+  );
 };
 
 const MemoizedThreadFooter = React.memo(
@@ -132,24 +104,13 @@ const MemoizedThreadFooter = React.memo(
 ) as typeof ThreadFooterComponentWithContext;
 
 export type ThreadFooterComponentProps = Partial<
-  Pick<ThreadContextValue, 'parentMessagePreventPress' | 'thread'>
+  Pick<ThreadFooterComponentPropsWithContext, 'parentMessagePreventPress'>
 >;
 
 export const ThreadFooterComponent = (props: ThreadFooterComponentProps) => {
-  const { parentMessagePreventPress, thread, threadInstance, threadLoadingMore } =
-    useThreadContext();
+  const { thread } = useThreadContext();
 
-  return (
-    <MemoizedThreadFooter
-      {...{
-        parentMessagePreventPress,
-        thread,
-        threadInstance,
-        threadLoadingMore,
-      }}
-      {...props}
-    />
-  );
+  return <MemoizedThreadFooter thread={thread} {...props} />;
 };
 
 const useStyles = () => {

@@ -16,10 +16,8 @@ import { IconProps } from '../../icons';
 import { useChannelOwnCapabilities } from '../useChannelOwnCapabilities';
 import { useStateStore } from '../useStateStore';
 
-// Lazily resolved to avoid a static import cycle with defaultComponents.ts
-// (defaultComponents → ChannelDetails*/ChannelPreview* → this file). Statically
-// importing defaultIcons corrupts module-init order; require it at call time
-// instead. Same pattern as ComponentsContext's getDefaults().
+// Required lazily: a static import of defaultComponents.ts would form a cycle
+// (defaultComponents -> ChannelDetails*/ChannelPreview* -> this file) and corrupt init order.
 let cachedDefaultIcons: IconsMap | undefined;
 const getDefaultIcons = (): IconsMap => {
   if (!cachedDefaultIcons) {
@@ -81,8 +79,7 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
 
   const actionItems: ChannelMemberActionItem[] = [];
 
-  // Muting or blocking yourself is meaningless, so these actions are only
-  // added for other members.
+  // Muting or blocking yourself is meaningless, so these actions are only for other members.
   if (!isCurrentUser) {
     actionItems.push(
       {
@@ -99,7 +96,9 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
             />
           ),
         id: 'muteUser',
-        label: userMuteActive ? t('Unmute User') : t('Mute User'),
+        label: userMuteActive
+          ? t('message.unmuteUser.label', 'Unmute User')
+          : t('message.muteUser.label', 'Mute User'),
         type: 'standard',
       },
       {
@@ -109,26 +108,31 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
               const name = member.user?.name || member.user?.id || '';
 
               Alert.alert(
-                t('Block {{ name }}', { name }),
-                t("They won't be able to message or call you. You can unblock them later."),
+                t('message.blockUserConfirm.title', 'Block {{ name }}', { name }),
+                t(
+                  'message.blockUserConfirm.text',
+                  "They won't be able to message or call you. You can unblock them later.",
+                ),
                 [
                   {
                     style: 'cancel',
-                    text: t('Cancel'),
+                    text: t('common.cancel.label', 'Cancel'),
                   },
                   {
                     onPress: async () => {
                       await blockUser(...args);
                     },
                     style: 'destructive',
-                    text: t('Block'),
+                    text: t('message.blockUserConfirm.label', 'Block'),
                   },
                 ],
               );
             },
         Icon: (props) => <ChannelMemberActionsIcon Icon={icons.BlockUser} {...props} />,
         id: 'block',
-        label: isBlocked ? t('Unblock User') : t('Block User'),
+        label: isBlocked
+          ? t('message.unblockUser.label', 'Unblock User')
+          : t('message.blockUser.label', 'Block User'),
         type: isBlocked ? 'standard' : 'destructive',
       },
     );
@@ -141,23 +145,26 @@ export const buildDefaultChannelMemberActionItems: BuildDefaultChannelMemberActi
             return;
           }
           Alert.alert(
-            t('Remove User'),
-            t('Are you sure you want to remove this member from the channel?'),
+            t('channel.removeUser.label', 'Remove User'),
+            t(
+              'channel.removeUser.confirm.text',
+              'Are you sure you want to remove this member from the channel?',
+            ),
             [
-              { style: 'cancel', text: t('Cancel') },
+              { style: 'cancel', text: t('common.cancel.label', 'Cancel') },
               {
                 onPress: async () => {
                   await removeMembers([memberId]);
                 },
                 style: 'destructive',
-                text: t('Remove'),
+                text: t('channel.removeUser.confirm.label', 'Remove'),
               },
             ],
           );
         },
         Icon: (props) => <ChannelMemberActionsIcon Icon={icons.UserDelete} {...props} />,
         id: 'removeMember',
-        label: t('Remove User'),
+        label: t('channel.removeUser.label', 'Remove User'),
         type: 'destructive',
       });
     }
@@ -204,7 +211,7 @@ export const useChannelMemberActionItems = ({
 
   const isBlocked = blockedUserIds.includes(member.user?.id ?? '');
 
-  const isCurrentUser = member.user?.id === channel.getClient().userID;
+  const isCurrentUser = member.user?.id === channel.getClient().userId;
 
   const channelMemberActionItemsParams = useMemo<ChannelMemberActionItemsParams>(
     () => ({

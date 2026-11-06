@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-// RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
-// See https://github.com/software-mansion/react-native-gesture-handler/issues/598
+import React, { useMemo } from 'react';
+// The gesture handler's FlatList breaks pull-to-refresh on Android.
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import type { Channel } from 'stream-chat';
@@ -9,23 +8,46 @@ import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { useDebugContext } from '../../contexts/debugContext/DebugContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { useStableCallback } from '../../hooks';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
+import { useNetworkConnectionState } from '../Chat/hooks/useNetworkConnectionState';
+import { useSettledWSConnectionHealth } from '../Chat/hooks/useWSConnectionState';
+
+/** The list's query state, passed down by `ChannelList`. */
+export type ChannelListState = {
+  /** Whether the first page of channels has loaded. */
+  channelListInitialized: boolean;
+  /** The channels to render. */
+  channels: Channel[] | null;
+  /** Whether another page of channels can be loaded. */
+  hasNextPage: boolean;
+  /** Whether the initial channels query is loading, which shows the loading indicator. */
+  loadingChannels: boolean;
+  /** Whether the next page is loading, which shows `ChannelListFooterLoadingIndicator`. */
+  loadingNextPage: boolean;
+  /** Whether a pull-to-refresh is in progress, shown as a spinner at the top of the list. */
+  refreshing: boolean;
+  /** Error of the channels query, if any. */
+  error?: Error;
+};
 
 export type ChannelListViewPropsWithContext = Omit<
   ChannelsContextValue,
-  'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect'
->;
+  'maxUnreadCount' | 'numberOfSkeletons' | 'onSelect' | 'paginator'
+> &
+  ChannelListState;
 
-const StatusIndicator = () => {
-  const { isOnline } = useChatContext();
+const StatusIndicator = ({
+  error,
+  loadingChannels,
+  refreshList,
+}: Pick<ChannelListViewPropsWithContext, 'error' | 'loadingChannels' | 'refreshList'>) => {
+  const isNetworkOnline = useNetworkConnectionState()?.isOnline;
+  const isWSOnline = useSettledWSConnectionHealth();
   const styles = useStyles();
-  const { error, loadingChannels, refreshList } = useChannelsContext();
   const { ChannelListHeaderErrorIndicator, ChannelListHeaderNetworkDownIndicator } =
     useComponentsContext();
 
@@ -33,7 +55,9 @@ const StatusIndicator = () => {
     return null;
   }
 
-  if (!isOnline) {
+  // `=== false` for the network, as an unknown status must not read as offline. The socket status
+  // is always a boolean.
+  if (isNetworkOnline === false || !isWSOnline) {
     return (
       <View style={styles.statusIndicator}>
         <ChannelListHeaderNetworkDownIndicator />
@@ -54,13 +78,11 @@ const renderItem = ({ item }: { item: Channel }) => <ChannelPreview channel={ite
 const keyExtractor = (item: Channel) => item.cid;
 
 const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
-  const onEndReachedCalledDuringCurrentScrollRef = useRef<boolean>(false);
   const {
     additionalFlatListProps,
     channelListInitialized,
     channels,
     error,
-    forceUpdate,
     hasNextPage,
     loadingChannels,
     loadingNextPage,
@@ -79,42 +101,11 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
     ChannelListLoadingIndicator: LoadingIndicator,
   } = useComponentsContext();
 
-  /**
-   * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
-   * we set the loading state one cycle behind to ensure the channels are set before the
-   * change to loadingChannels is registered.
-   */
-  const [loading, setLoading] = useState(true);
-  const debugRef = useDebugContext();
   const styles = useStyles();
 
-  useEffect(() => {
-    if (!!loadingChannels !== loading) {
-      setLoading(!!loadingChannels);
-    }
-  }, [loading, loadingChannels]);
-
-  const isDebugModeEnabled = __DEV__ && debugRef && debugRef.current;
-
-  if (isDebugModeEnabled) {
-    if (debugRef.current.setEventType) {
-      debugRef.current.setEventType('send');
-    }
-    if (debugRef.current.setSendEventParams) {
-      debugRef.current.setSendEventParams({
-        action: 'Channels',
-        data: channels?.map((channel) => ({
-          data: channel.data,
-          members: channel.state.members,
-        })),
-      });
-    }
-  }
-
   const onEndReached = useStableCallback(() => {
-    if (!onEndReachedCalledDuringCurrentScrollRef.current && hasNextPage) {
+    if (hasNextPage) {
       loadNextPage();
-      onEndReachedCalledDuringCurrentScrollRef.current = true;
     }
   });
 
@@ -134,50 +125,44 @@ const ChannelListViewWithContext = (props: ChannelListViewPropsWithContext) => {
       <FlatList
         contentContainerStyle={styles.flatListContentContainer}
         data={channels ?? undefined}
-        extraData={forceUpdate}
         keyExtractor={keyExtractor}
         ListEmptyComponent={
-          loading ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
+          loadingChannels ? <LoadingIndicator /> : <EmptyStateIndicator listType='channel' />
         }
         ListFooterComponent={loadingNextPage ? <ChannelListFooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListHeaderComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
-        onMomentumScrollBegin={() => (onEndReachedCalledDuringCurrentScrollRef.current = false)}
         onRefresh={refreshList}
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={renderItem}
+        // Rows subscribe to their own channel, so a list update re-renders only the changed cells.
+        strictMode
         style={styles.flatList}
         testID='channel-list-view'
         {...additionalFlatListProps}
       />
-      <StatusIndicator />
+      <StatusIndicator error={error} loadingChannels={loadingChannels} refreshList={refreshList} />
     </>
   );
 };
 
-export type ChannelListViewProps = Partial<ChannelListViewPropsWithContext>;
+export type ChannelListViewProps = Partial<
+  Omit<ChannelListViewPropsWithContext, keyof ChannelListState>
+> &
+  ChannelListState;
 
 /**
- * This UI component displays the preview list of channels and handles Channel navigation. It
- * receives all props from the ChannelList component.
+ * The preview list of channels, rendered by `ChannelList` with its state.
  *
  * @example ./ChannelListView.md
  */
 export const ChannelListView = (props: ChannelListViewProps) => {
   const {
     additionalFlatListProps,
-    channelListInitialized,
-    channels,
-    error,
-    forceUpdate,
-    hasNextPage,
-    loadingChannels,
-    loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
-    refreshing,
     refreshList,
     reloadList,
     setFlatListRef,
@@ -187,16 +172,8 @@ export const ChannelListView = (props: ChannelListViewProps) => {
     <ChannelListViewWithContext
       {...{
         additionalFlatListProps,
-        channelListInitialized,
-        channels,
-        error,
-        forceUpdate,
-        hasNextPage,
-        loadingChannels,
-        loadingNextPage,
         loadMoreThreshold,
         loadNextPage,
-        refreshing,
         refreshList,
         reloadList,
         setFlatListRef,

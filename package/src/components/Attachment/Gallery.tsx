@@ -40,6 +40,7 @@ import { isVideoPlayerAvailable } from '../../native';
 import { primitives } from '../../theme';
 import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
+import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { getUrlWithoutParams } from '../../utils/utils';
 
 export type GalleryPropsWithContext = Pick<ImageGalleryContextValue, 'imageGalleryStateStore'> &
@@ -103,9 +104,10 @@ const GalleryWithContext = (props: GalleryPropsWithContext) => {
     minWidth,
   };
   const imagesAndVideos = [...(images || []), ...(videos || [])];
+  const galleryItemKey = (i: Attachment) => `${getUrlOfImageAttachment(i)}${i.thumb_url}`;
   const imagesAndVideosValue = `${images?.length}${videos?.length}${images
-    ?.map((i) => `${i.image_url}${i.thumb_url}`)
-    .join('')}${videos?.map((i) => `${i.image_url}${i.thumb_url}`).join('')}`;
+    ?.map(galleryItemKey)
+    .join('')}${videos?.map(galleryItemKey).join('')}`;
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
@@ -240,9 +242,13 @@ const GalleryThumbnail = ({
   const styles = useStyles();
   const isVideo = thumbnail.type === FileTypes.Video;
   const thumbnailAccessibilityLabel = useA11yLabel(
-    isVideo ? 'a11y/Gallery Video' : 'a11y/Gallery Image',
+    isVideo
+      ? 'attachment.gallery.video.accessibilityLabel'
+      : 'attachment.gallery.image.accessibilityLabel',
   );
-  const thumbnailAccessibilityHint = useA11yLabel('a11y/Double tap to open');
+  const thumbnailAccessibilityHint = useA11yLabel(
+    'attachment.gallery.doubleTapToOpen.accessibilityLabel',
+  );
   const thumbnailRef = useRef<ViewRef>(null);
   const openImageViewer = () => {
     if (!message) {
@@ -256,11 +262,11 @@ const GalleryThumbnail = ({
     setOverlay('gallery');
   };
   const defaultOnPress = () => {
-    // If the url is defined then only try to open the file.
+    // Only opens when the thumbnail has a URL.
     if (thumbnail.url) {
       if (thumbnail.type === FileTypes.Video && !isVideoPlayerAvailable()) {
-        // This condition is kinda unreachable, since we render videos as file attachment if the video
-        // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
+        // Normally unreachable, since videos render as file attachments without a video library;
+        // kept as a safeguard for customizations.
         openUrlSafely(thumbnail.url);
       } else {
         openImageViewer();
@@ -331,7 +337,13 @@ const GalleryThumbnail = ({
           ]}
         >
           <Text style={[styles.moreImagesText, moreImagesText]}>
-            {String(t('+{{count}}', { count: imagesAndVideos.length - 4 }))}
+            {String(
+              t('attachment.gallery.moreImages.label', {
+                count: imagesAndVideos.length - 4,
+                defaultValue_one: '+{{count}}',
+                defaultValue_other: '+{{count}}',
+              }),
+            )}
           </Text>
         </View>
       ) : null}
@@ -413,9 +425,7 @@ const areEqual = (prevProps: GalleryPropsWithContext, nextProps: GalleryPropsWit
 };
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 export type GalleryProps = Partial<GalleryPropsWithContext>;
-/**
- * UI component for card in attachments.
- */
+/** Renders image and video attachments as a grid of thumbnails. */
 export const Gallery = (props: GalleryProps) => {
   const {
     alignment: propAlignment,

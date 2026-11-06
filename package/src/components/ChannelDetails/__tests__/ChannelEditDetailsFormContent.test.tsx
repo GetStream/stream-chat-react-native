@@ -15,6 +15,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { generateFileReference } from '../../../mock-builders/attachments';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { NativeHandlers } from '../../../native';
 import { EditChannelDetailsStore } from '../../../state-store/edit-channel-details-store';
 import { ChannelEditDetailsFormContent } from '../components/ChannelEditDetailsFormContent';
@@ -47,16 +48,18 @@ const SheetProbe = (props: ChannelEditImageSheetProps) => {
   );
 };
 
-const buildChannel = (overrides?: { image?: string; name?: string }): Channel =>
-  ({
+const buildChannel = (overrides?: { image?: string; name?: string }): Channel => {
+  const custom = {
+    name: overrides && 'name' in overrides ? overrides.name : 'Original',
+    ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
+  };
+  return {
     cid: 'messaging:test',
-    data: {
-      name: overrides && 'name' in overrides ? overrides.name : 'Original',
-      ...(overrides && 'image' in overrides ? { image: overrides.image } : {}),
-    },
+    data: { custom },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
-  }) as unknown as Channel;
+    state: generateChannelState({ data: { custom } }),
+  } as unknown as Channel;
+};
 
 // The avatar renders its image through the default `SvgAwareImage`, which for a
 // raster URI is a plain RN `Image`. Read back the displayed `uri` (or undefined
@@ -70,14 +73,14 @@ const renderComponent = ({ channel }: { channel: Channel }) => {
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
       >
         <ChatContext.Provider
           value={
-            { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
+            { client: { on: () => ({ unsubscribe: () => undefined }), userId: 'me' } } as never
           }
         >
           <ChannelDetailsContextProvider channel={channel}>
@@ -118,14 +121,14 @@ describe('ChannelEditDetailsFormContent', () => {
       <ThemeProvider theme={defaultTheme}>
         <TranslationProvider
           value={{
-            t: ((key: string) => key) as never,
+            t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
             tDateTimeParser: ((input: unknown) => input) as never,
             userLanguage: 'en',
           }}
         >
           <ChatContext.Provider
             value={
-              { client: { on: () => ({ unsubscribe: () => undefined }), userID: 'me' } } as never
+              { client: { on: () => ({ unsubscribe: () => undefined }), userId: 'me' } } as never
             }
           >
             <ChannelDetailsContextProvider channel={buildChannel()}>

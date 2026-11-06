@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { LocalMessage, MessageResponse } from 'stream-chat';
+import { ChannelConfig, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { ChannelPreviewProps } from './ChannelPreview';
 
@@ -11,9 +11,14 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { MessageDeliveryStatus, useMessageDeliveryStatus } from '../../hooks';
+import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
 import { CompositeAccessibilityProbe } from '../Accessibility/CompositeAccessibilityProbe';
+
+const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
+  readEventsEnabled: readEvents.enabled,
+});
 
 export type ChannelMessagePreviewDeliveryStatusProps = Pick<ChannelPreviewProps, 'channel'> & {
   message: MessageResponse | LocalMessage;
@@ -26,7 +31,10 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
-  const channelConfigExists = typeof channel?.getConfig === 'function';
+  // The resolved configuration, which combines `read_events` with anything registered through
+  // `client.config.set({ channel: { readEvents } })`. Absent on partial channel mocks.
+  const configState = channel?.configState;
+  const { readEventsEnabled } = useStateStore(configState, readEventsSelector) ?? {};
   const styles = useStyles();
   const {
     theme: {
@@ -48,35 +56,42 @@ export const ChannelMessagePreviewDeliveryStatus = ({
   }, [message, client.user?.id]);
 
   const readEvents = useMemo(() => {
-    if (!channelConfigExists) {
+    if (!configState) {
       return true;
     }
-    const read_events = !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
+    const read_events = !channel.pendingDisposal && !!channel?.id && readEventsEnabled;
     if (typeof read_events !== 'boolean') {
       return true;
     }
     return read_events;
-  }, [channelConfigExists, channel]);
+  }, [configState, readEventsEnabled, channel]);
+
+  // `status` exists only on local messages (`LocalMessage`), so it is read through an `in` guard.
+  const messageStatus = 'status' in message ? message.status : undefined;
 
   const { status } = useMessageDeliveryStatus({
     channel,
-    lastMessage: message as LocalMessage,
+    lastMessage: message,
     isReadEventsEnabled: readEvents,
   });
 
   const statusLabel = useA11yLabel(
-    message.status === MessageStatusTypes.SENDING
-      ? 'a11y/Sending'
-      : message.status === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
-        ? 'a11y/Read, sent by you'
+    messageStatus === MessageStatusTypes.SENDING
+      ? 'message.status.sending.accessibilityLabel'
+      : messageStatus === MessageStatusTypes.RECEIVED && status === MessageDeliveryStatus.READ
+        ? 'channelPreview.deliveryStatus.read.accessibilityLabel'
         : status === MessageDeliveryStatus.DELIVERED
-          ? 'a11y/Delivered, sent by you'
+          ? 'channelPreview.deliveryStatus.delivered.accessibilityLabel'
           : status === MessageDeliveryStatus.SENT
-            ? 'a11y/Sent by you'
-            : 'a11y/Sending',
+            ? 'channelPreview.deliveryStatus.sent.accessibilityLabel'
+            : 'message.status.sending.accessibilityLabel',
   );
 
-  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
+  if (
+    !channel.data?.custom?.name &&
+    membersWithoutSelf.length === 1 &&
+    !isLastMessageByCurrentUser
+  ) {
     return null;
   }
 
@@ -88,12 +103,20 @@ export const ChannelMessagePreviewDeliveryStatus = ({
     );
   }
 
+  if (message.type === 'deleted') {
+    return (
+      <Text style={styles.text} testID='channel-preview-sender'>
+        {t('common.you.label', 'You')}:
+      </Text>
+    );
+  }
+
   return (
     <CompositeAccessibilityProbe label={statusLabel}>
       <View style={styles.container}>
-        {message.status === MessageStatusTypes.SENDING ? (
+        {messageStatus === MessageStatusTypes.SENDING ? (
           <icons.Time stroke={semantics.chatTextTimestamp} height={16} width={16} {...timeIcon} />
-        ) : message.status === MessageStatusTypes.RECEIVED &&
+        ) : messageStatus === MessageStatusTypes.RECEIVED &&
           status === MessageDeliveryStatus.READ ? (
           <icons.CheckAll
             stroke={semantics.accentPrimary}
@@ -112,7 +135,7 @@ export const ChannelMessagePreviewDeliveryStatus = ({
           <icons.Check stroke={semantics.chatTextTimestamp} height={16} width={16} {...checkIcon} />
         ) : null}
         <Text style={styles.text} testID='channel-preview-sender'>
-          {t('You')}:
+          {t('common.you.label', 'You')}:
         </Text>
       </View>
     </CompositeAccessibilityProbe>

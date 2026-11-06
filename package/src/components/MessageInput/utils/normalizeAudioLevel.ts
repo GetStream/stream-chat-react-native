@@ -1,5 +1,9 @@
 /**
- * Utility function to normalize the audio level.
+ * Maps an audio level between `lowerBound` and 0 to the range 0 to 1.
+ *
+ * @param value The audio level. An undefined value counts as the loudest level.
+ * @param lowerBound The level that maps to 0. Quieter levels also map to 0.
+ * @returns The normalized level.
  */
 export const normalizeAudioLevel = (value: number, lowerBound: number) => {
   // For Native CLI, the lower bound is around -50

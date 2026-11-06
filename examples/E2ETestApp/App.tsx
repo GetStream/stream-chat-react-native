@@ -3,7 +3,12 @@ import { BackHandler, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Channel as ChannelType, ChannelFilters, ChannelSort, StreamChat } from 'stream-chat';
+import {
+  ChannelPaginator,
+  Channel as ChannelType,
+  SortParamRequest,
+  StreamChat,
+} from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -17,7 +22,7 @@ import { apiKey, appUser, appUserToken, mockServerUrl } from './src/config';
 
 // Same opt-in as the SampleApp, so the e2e suite sees the same accessibility tree.
 const accessibility = { enabled: true };
-const sort: ChannelSort = { last_message_at: -1 };
+const sort: SortParamRequest[] = [{ direction: -1, field: 'last_message_at' }];
 
 /** Lists the mock server's app user, like the SampleApp's user selector. */
 const LoginScreen = ({ onLogin }: { onLogin: () => void }) => (
@@ -76,17 +81,34 @@ const ChannelScreen = ({ channel, onBack }: { channel: ChannelType; onBack: () =
 
 const ChatScreens = ({ client }: { client: StreamChat }) => {
   const [channel, setChannel] = useState<ChannelType>();
-  const filters = useMemo<ChannelFilters>(
-    () => ({ members: { $in: [client.userID ?? appUser.id] } }),
-    [client.userID],
+  // The app owns the channel list's paginator, for as long as the connected client lives.
+  const channelListPaginator = useMemo(
+    () =>
+      new ChannelPaginator({
+        client,
+        filters: { members: { $in: [client.userID ?? appUser.id] } },
+        id: 'channel-list',
+        requestOptions: { state: true, watch: true },
+        sort,
+      }),
+    [client],
   );
+
+  useEffect(() => {
+    client.channelManager.insertPaginator({ paginator: channelListPaginator });
+    return () => {
+      client.channelManager.removePaginator(channelListPaginator);
+      channelListPaginator.dispose();
+    };
+  }, [channelListPaginator, client]);
+
   const closeChannel = useCallback(() => setChannel(undefined), []);
 
   return (
     <Chat client={client}>
       {/* The list stays mounted under the channel, as in a navigation stack. */}
       <SafeAreaView edges={['top']} style={styles.container}>
-        <ChannelList filters={filters} onSelect={setChannel} sort={sort} />
+        <ChannelList onSelect={setChannel} paginator={channelListPaginator} />
       </SafeAreaView>
       {channel ? <ChannelScreen channel={channel} onBack={closeChannel} /> : null}
     </Chat>
@@ -97,7 +119,9 @@ const App = () => {
   const [client, setClient] = useState<StreamChat>();
 
   const login = useCallback(async () => {
-    const chatClient = StreamChat.getInstance(apiKey, { baseURL: mockServerUrl, timeout: 6000 });
+    const chatClient = StreamChat.getInstance(apiKey, {
+      client: { axiosRequestConfig: { timeout: 6000 }, baseURL: mockServerUrl },
+    });
     await chatClient.connectUser(appUser, appUserToken);
     setClient(chatClient);
   }, []);

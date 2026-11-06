@@ -1,39 +1,43 @@
 import React, { type ComponentProps, useContext, useEffect } from 'react';
-import { View } from 'react-native';
+import { AppState, AppStateStatus, View } from 'react-native';
 
-import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat as StreamChatType } from 'stream-chat';
-import { StreamChat } from 'stream-chat';
+import { asTimestampNS, ChannelWatchStatus, StreamChat } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import {
   MessagesContext,
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
 
+import {
+  OwnCapabilitiesContext,
+  type OwnCapabilitiesContextValue,
+} from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
+import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
 import dispatchConnectionChanged from '../../../mock-builders/event/connectionChanged';
+import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
+import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import { convertDateToTimestamp } from '../../../mock-builders/generator/time';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
+import { MessageList } from '../../MessageList/MessageList';
 import { Channel } from '../Channel';
-import {
-  channelInitialState,
-  useChannelDataState,
-  useChannelMessageDataState,
-} from '../hooks/useChannelDataState';
-import * as MessageListPaginationHooks from '../hooks/useMessageListPagination';
+import * as CreateChannelContext from '../hooks/useCreateChannelContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -84,14 +88,12 @@ const renderComponent = (
   context: React.Context<unknown> = ChannelContext as React.Context<unknown>,
 ) =>
   render(
-    <ChannelsStateProvider>
-      <Chat client={chatClient}>
-        <Channel {...(props as React.ComponentProps<typeof Channel>)}>
-          {props.children}
-          <CallbackEffectWithContext {...{ callback, context }} />
-        </Channel>
-      </Chat>
-    </ChannelsStateProvider>,
+    <Chat client={chatClient}>
+      <Channel {...(props as React.ComponentProps<typeof Channel>)}>
+        {props.children}
+        <CallbackEffectWithContext {...{ callback, context }} />
+      </Channel>
+    </Chat>,
   );
 
 describe('Channel', () => {
@@ -108,8 +110,11 @@ describe('Channel', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.channel.id);
     channel.cid = mockedChannel.channel.cid as string;
-    const getConfigSpy = jest.fn();
-    channel.getConfig = getConfigSpy;
+    // `channel.getConfig()` is gone; `serverConfig` is a getter over the client's store. Nothing here
+    // asserts on the value, so seeding an empty config for this cid is enough to stand in for the spy.
+    chatClient.channelServerConfigsStore.partialNext({
+      configs: { ...chatClient.channelServerConfigs, [channel.cid]: {} as never },
+    });
   });
 
   afterEach(() => {
@@ -142,13 +147,64 @@ describe('Channel', () => {
     await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
   });
 
+  it('does not watch, query or load a channel built from members', async () => {
+    const draft = chatClient.channel('messaging', {
+      members: [{ user_id: user.id }, { user_id: 'other' }],
+    } as never);
+    const watchSpy = jest.spyOn(draft, 'watch');
+    const querySpy = jest.spyOn(draft, 'query');
+    const seedSpy = jest.spyOn(draft.messagePaginator, 'reload');
+
+    renderComponent({ channel: draft });
+    // let the mount effect run to its end
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(draft.isProvisional).toBe(true);
+    expect(draft.initialized).toBe(false);
+    expect(watchSpy).not.toHaveBeenCalled();
+    expect(querySpy).not.toHaveBeenCalled();
+    expect(seedSpy).not.toHaveBeenCalled();
+  });
+
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
     const watchError = new Error('channel watch fail');
-    jest.spyOn(channel, 'watch').mockImplementationOnce(() => Promise.reject(watchError));
+    // Rejected persistently, at the API seam: an offline open fails the mount `watch()` AND the
+    // paginator seed that follows it, and it is the paginator's own failed query that records
+    // `lastQueryError` — the only error surface this component reads.
+    jest.spyOn(channel, 'getOrCreate').mockRejectedValue(watchError);
+    // No item window is seeded on purpose: a load that never succeeded leaves `items` undefined, and
+    // the LoadingErrorIndicator has to render for that as much as for an empty array.
 
     const { getByTestId } = renderComponent({ channel });
 
     await waitFor(() => expect(getByTestId('loading-error')).toBeTruthy());
+  });
+
+  it('still seeds the paginator when the mount watch fails, so the failure is recorded', async () => {
+    // `watch()` does not go through the paginator, so its throw records nothing. The seed is
+    // therefore NOT skipped on a failed watch: the paginator issues its own query, and that query's
+    // failure is what puts `lastQueryError` on the only error surface this component reads. Skip the
+    // seed and an offline cold open renders an empty list instead of the retry screen.
+    const watchError = new Error('channel watch fail');
+    const getOrCreate = jest.spyOn(channel, 'getOrCreate').mockRejectedValue(watchError);
+
+    renderComponent({ channel });
+
+    await waitFor(() =>
+      expect(channel.messagePaginator.state.getLatestValue().lastQueryError).toBe(watchError),
+    );
+    // Two calls, not one: the watch, then the paginator's own query. The second is the one that records.
+    expect(getOrCreate.mock.calls.length).toBeGreaterThanOrEqual(2);
+
+    // Clearing is the paginator's own job, which is what the error screen's retry relies on.
+    getOrCreate.mockRestore();
+    await act(async () => {
+      await channel.messagePaginator.reload();
+    });
+
+    expect(channel.messagePaginator.state.getLatestValue().lastQueryError).toBeUndefined();
   });
 
   it('should render children if a channel is set', async () => {
@@ -169,57 +225,35 @@ describe('Channel', () => {
     );
   });
 
-  it('should add an `on` handler to the channel on mount', async () => {
-    const channelOnSpy = jest.spyOn(channel, 'on');
-    renderComponent({ channel });
+  describe('connection.recovered', () => {
+    const renderAndRecover = async () => {
+      const markReadSpy = jest
+        .spyOn(chatClient.messageDeliveryReporter, 'throttledMarkRead')
+        .mockImplementation(() => undefined);
+      renderComponent({ channel });
+      await waitFor(() => expect(channel.initialized).toBe(true));
+      markReadSpy.mockClear();
 
-    await waitFor(() => expect(channelOnSpy).toHaveBeenCalledWith(expect.any(Function)));
-  });
+      act(() => {
+        chatClient.dispatchEvent({ type: 'connection.recovered' });
+      });
 
-  it('should be able to open threads', async () => {
-    const threadMessage = messages[0];
-    const hasThread = jest.fn();
-    // this renders Channel, calls openThread from a child context consumer with a message,
-    // and then calls hasThread with the thread id if it was set.
-    const { rerender } = renderComponent(
-      { channel },
-      (ctx) => {
-        const { openThread, thread } = ctx as {
-          openThread: (m: unknown) => void;
-          thread: { id: string } | null;
-        };
-        if (!thread) {
-          openThread(threadMessage);
-        } else {
-          hasThread(thread.id);
-        }
-      },
-      ThreadContext as React.Context<unknown>,
-    );
+      return markReadSpy;
+    };
 
-    rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <CallbackEffectWithContext
-              callback={(ctx) => {
-                const { openThread, thread } = ctx as {
-                  openThread: (m: unknown) => void;
-                  thread: { id: string } | null;
-                };
-                if (!thread) {
-                  openThread(threadMessage);
-                } else {
-                  hasThread(thread.id);
-                }
-              }}
-              context={ThreadContext as React.Context<unknown>}
-            />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
-    );
-    await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
+    it('marks the channel read after a recovery', async () => {
+      const markReadSpy = await renderAndRecover();
+
+      expect(markReadSpy).toHaveBeenCalledWith(channel);
+    });
+
+    it('does not mark the channel read when recovery is disabled', async () => {
+      chatClient.config.set({ client: { connectionRecovery: { enabled: false } } });
+
+      const markReadSpy = await renderAndRecover();
+
+      expect(markReadSpy).not.toHaveBeenCalled();
+    });
   });
 
   const queryChannelWithNewMessages = (newMessages: ReturnType<typeof generateMessage>[]) =>
@@ -227,7 +261,7 @@ describe('Channel', () => {
     getOrCreateChannelApi(
       generateChannelResponse({
         channel: {
-          config: channel.getConfig(),
+          config: channel.serverConfig,
           id: channel.id,
           type: channel.type,
         },
@@ -235,8 +269,8 @@ describe('Channel', () => {
       }),
     );
 
-  it('should call the channel query method to load more messages', async () => {
-    const channelQuerySpy = jest.spyOn(channel, 'query');
+  it('should request the channel state to load more messages', async () => {
+    const channelQuerySpy = jest.spyOn(channel, 'requestChannelState');
 
     const newMessages = [generateMessage()];
 
@@ -268,8 +302,6 @@ describe('Channel', () => {
       const mockContext = {
         channel,
         client: chatClient,
-        markRead: () => {},
-        watcherCount: 5,
       };
 
       render(
@@ -288,8 +320,6 @@ describe('Channel', () => {
         const ctx = context as unknown as typeof mockContext;
         expect(ctx.channel).toBeInstanceOf(Object);
         expect(ctx.client).toBeInstanceOf(StreamChat);
-        expect(ctx.markRead).toBeInstanceOf(Function);
-        expect(ctx.watcherCount).toBe(5);
       });
     });
   });
@@ -352,10 +382,7 @@ describe('Channel', () => {
       let context: ThreadContextValue | undefined;
 
       const mockContext = {
-        openThread: () => {},
-        thread: {},
-        threadHasMore: true,
-        threadLoadingMore: false,
+        allowThreadMessagesInChannel: true,
       };
 
       render(
@@ -371,12 +398,321 @@ describe('Channel', () => {
 
       await waitFor(() => {
         expect(context).toBeInstanceOf(Object);
-        expect(context!.openThread).toBeInstanceOf(Function);
-        expect(context!.thread).toBeInstanceOf(Object);
-        expect(context!.threadHasMore).toBe(true);
-        expect(context!.threadLoadingMore).toBe(false);
+        expect(context!.allowThreadMessagesInChannel).toBe(true);
       });
     });
+  });
+
+  // `activate()` returns the release for that one activation. A mount that never runs it leaves the
+  // channel active for the rest of the session, which nothing else would surface.
+  it('releases its activation when the channel prop changes and on unmount', async () => {
+    const otherChannel = chatClient.channel('messaging', 'other-channel');
+    const renderChannel = (target: ChannelType) => (
+      <Chat client={chatClient}>
+        <Channel channel={target} initializeOnMount={false} />
+      </Chat>
+    );
+
+    const { rerender, unmount } = render(renderChannel(channel));
+    await waitFor(() => expect(channel.active).toBe(true));
+
+    rerender(renderChannel(otherChannel));
+    await waitFor(() => expect(otherChannel.active).toBe(true));
+    expect(channel.active).toBe(false);
+
+    unmount();
+    expect(otherChannel.active).toBe(false);
+  });
+
+  // A channel created from members whose first query finds its real cid already stored (e.g. by
+  // `notification.added_to_channel`) gets no events from then on, so <Channel> moves to the stored one.
+  describe('when the channel is superseded by the stored instance', () => {
+    const setup = () => {
+      const otherUser = generateUser({ id: 'other' });
+      const draft = chatClient.channel('messaging', {
+        members: [{ user_id: user.id }, { user_id: otherUser.id }],
+      });
+      const stored = chatClient.channel('messaging', '!members-xyz');
+      useMockedApis(chatClient, [
+        getOrCreateChannelApi(
+          generateChannelResponse({
+            id: '!members-xyz',
+            members: [generateMember({ user }), generateMember({ user: otherUser })],
+            type: channelType,
+          }),
+        ),
+      ]);
+      let contextChannel: ChannelType | undefined;
+      renderComponent({ channel: draft, initializeOnMount: false }, (ctx) => {
+        contextChannel = (ctx as ChannelContextValue).channel;
+      });
+      return { draft, getContextChannel: () => contextChannel, stored };
+    };
+
+    it('renders the stored instance, with what was typed', async () => {
+      const { draft, getContextChannel, stored } = setup();
+      await waitFor(() => expect(draft.active).toBe(true));
+      draft.messageComposer.textComposer.setText('hello');
+
+      await act(async () => {
+        await draft.watch();
+      });
+
+      await waitFor(() => expect(getContextChannel()).toBe(stored));
+      expect(draft.supersededBy).toBe(stored);
+      expect(stored.active).toBe(true);
+      expect(draft.active).toBe(false);
+      expect(stored.messageComposer.textComposer.text).toBe('hello');
+    });
+
+    it('waits while the stored instance is open elsewhere and the composer holds a draft', async () => {
+      const { draft, getContextChannel, stored } = setup();
+      const releaseElsewhere = stored.activate();
+      await waitFor(() => expect(draft.active).toBe(true));
+      draft.messageComposer.textComposer.setText('hello');
+
+      await act(async () => {
+        await draft.watch();
+      });
+
+      expect(draft.supersededBy).toBe(stored);
+      expect(getContextChannel()).toBe(draft);
+
+      act(() => draft.messageComposer.clear());
+      await waitFor(() => expect(getContextChannel()).toBe(stored));
+      releaseElsewhere();
+    });
+  });
+
+  it('does not re-render while the message list queries', async () => {
+    // `Channel` subscribes to the paginator for `hasMessages` (what to show when a query errors).
+    // That selector must not carry `isLoading` with it: nothing here reads it, but `useStateStore`
+    // compares the selected keys, so it re-rendered Channel on every pagination, jump and reload.
+    const base = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const mockedChannel = generateChannelResponse({
+      channel: { cid: channelCid },
+      id: channelId,
+      members: [generateMember({ user })],
+      messages: Array.from({ length: 5 }, (_, i) =>
+        generateMessage({ timestamp: new Date(base + i * 1000) }),
+      ),
+      type: channelType,
+    });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel(channelType, channelId);
+    await channel.watch();
+
+    // `useCreateChannelContext` runs once per Channel render, so spying on it (without replacing it)
+    // is an exact render counter for the component itself — its children cannot supply one, since
+    // they are elements built by this test and do not re-render when Channel does.
+    const renderSpy = jest.spyOn(CreateChannelContext, 'useCreateChannelContext');
+
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={channel} />
+      </Chat>,
+    );
+
+    await waitFor(() => expect(renderSpy).toHaveBeenCalled());
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const rendersBefore = renderSpy.mock.calls.length;
+
+    await act(async () => {
+      channel.messagePaginator.state.partialNext({ isLoading: true });
+      await Promise.resolve();
+      channel.messagePaginator.state.partialNext({ isLoading: false });
+      await Promise.resolve();
+    });
+
+    // Guard against a vacuous pass: the flags really did move.
+    expect(channel.messagePaginator.state.getLatestValue().isLoading).toBe(false);
+    expect(renderSpy.mock.calls.length).toBe(rendersBefore);
+  });
+
+  it('does not re-render ChannelContext consumers while messages arrive', async () => {
+    // Everything per-message was taken off this context (messages, loading, highlightedMessageId,
+    // the load/reload callbacks). What is left changes on a channel or thread swap, not on traffic,
+    // so a consumer must render exactly once no matter how much is said in the channel.
+    const mockedChannel = generateChannelResponse({
+      channel: { cid: channelCid },
+      id: channelId,
+      members: [generateMember({ user })],
+      messages: [],
+      type: channelType,
+    });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel(channelType, channelId);
+    await channel.watch();
+
+    const seen: unknown[] = [];
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <ContextConsumer
+            context={ChannelContext as React.Context<unknown>}
+            fn={(ctx) => seen.push(ctx)}
+          />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => expect(seen.length).toBeGreaterThan(0));
+    const rendersBefore = seen.length;
+    const itemsBefore = channel.messagePaginator.state.getLatestValue().items?.length ?? 0;
+
+    // Time-ordered: `generateMessage` otherwise randomizes `created_at` into the past, and a message
+    // landing behind the loaded interval's lower bound is dropped rather than inserted.
+    const base = Date.now();
+    await act(async () => {
+      await Promise.resolve();
+      for (let i = 0; i < 5; i++) {
+        dispatchMessageNewEvent(
+          chatClient,
+          generateMessage({
+            cid: channelCid,
+            text: `incoming-${i}`,
+            timestamp: new Date(base + i * 1000),
+            user: generateUser(),
+          }),
+          channel.data,
+        );
+      }
+    });
+
+    // Guard against a vacuous pass: if the events never reached the paginator there was no traffic
+    // to be stable against. (`generateMessage` randomizes `created_at` into the past by default, and
+    // a message landing behind the loaded interval's lower bound is dropped rather than inserted.)
+    expect(channel.messagePaginator.state.getLatestValue().items?.length ?? 0).toBe(
+      itemsBefore + 5,
+    );
+
+    expect(seen.length).toBe(rendersBefore);
+    expect(new Set(seen).size).toBe(1);
+  });
+
+  it.each([
+    ['deleted', () => dispatchChannelDeletedEvent(chatClient, { cid: channel.cid })],
+    [
+      'left because the user was removed',
+      () => dispatchNotificationRemovedFromChannel(chatClient, { cid: channel.cid }),
+    ],
+  ])('keeps rendering its messages once the channel is %s', async (_label, dispose) => {
+    const { getByText } = renderComponent({ channel, children: <MessageList /> });
+    await waitFor(() => expect(getByText(messages[0].text as string)).toBeTruthy());
+
+    act(() => dispose());
+
+    expect(channel.pendingDisposal).toBe(true);
+    expect(getByText(messages[0].text as string)).toBeTruthy();
+  });
+
+  it('marks the channel context disabled when channel.updated freezes the channel', async () => {
+    const seen: ChannelContextValue[] = [];
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <ContextConsumer
+            context={ChannelContext as React.Context<unknown>}
+            fn={(ctx) => seen.push(ctx as ChannelContextValue)}
+          />
+        </Channel>
+      </Chat>,
+    );
+    await waitFor(() => expect(channel.initialized).toBe(true));
+    expect(seen.at(-1)?.disabled).toBe(false);
+
+    act(() => dispatchChannelUpdatedEvent(chatClient, { ...channel.data, frozen: true }));
+
+    await waitFor(() => expect(seen.at(-1)?.disabled).toBe(true));
+  });
+
+  it('does not re-render when channel.updated changes nothing it shows', async () => {
+    const renderSpy = jest.spyOn(CreateChannelContext, 'useCreateChannelContext');
+    render(
+      <Chat client={chatClient}>
+        <Channel channel={channel} />
+      </Chat>,
+    );
+    await waitFor(() => expect(channel.initialized).toBe(true));
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const rendersBefore = renderSpy.mock.calls.length;
+    const capabilitiesBefore = channel.state.getLatestValue().ownCapabilities;
+    const dataBefore = channel.data;
+
+    act(() => dispatchChannelUpdatedEvent(chatClient, { ...channel.data }));
+
+    // Guard against a vacuous pass: the update was applied. The capabilities did not change, so
+    // the client keeps their array.
+    expect(channel.data).not.toBe(dataBefore);
+    expect(channel.state.getLatestValue().ownCapabilities).toBe(capabilitiesBefore);
+    expect(renderSpy.mock.calls.length).toBe(rendersBefore);
+  });
+
+  it('rebuilds own capabilities when a different capability is overridden', async () => {
+    let capabilities: OwnCapabilitiesContextValue | undefined;
+    const renderChannel = (overrideOwnCapabilities: Partial<OwnCapabilitiesContextValue>) => (
+      <Chat client={chatClient}>
+        <Channel channel={channel} overrideOwnCapabilities={overrideOwnCapabilities}>
+          <ContextConsumer
+            context={OwnCapabilitiesContext as React.Context<unknown>}
+            fn={(ctx) => {
+              capabilities = ctx as OwnCapabilitiesContextValue;
+            }}
+          />
+        </Channel>
+      </Chat>
+    );
+
+    const { rerender } = render(renderChannel({ sendMessage: false }));
+    await waitFor(() => expect(capabilities?.sendMessage).toBe(false));
+    expect(capabilities?.uploadFile).toBe(true);
+
+    rerender(renderChannel({ uploadFile: false }));
+
+    await waitFor(() => expect(capabilities?.uploadFile).toBe(false));
+    expect(capabilities?.sendMessage).toBe(true);
+  });
+
+  it.each([
+    [true, 1],
+    [false, 0],
+  ])('when isTyping is %s, sends %i typing.stop on background', async (isTyping, sent) => {
+    const mockedChannel = generateChannelResponse({
+      channel: { cid: channelCid, own_capabilities: ['send-typing-events'] },
+      id: channelId,
+      members: [generateMember({ user })],
+      messages,
+      type: channelType,
+    });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    await channel.watch();
+    const sendEventSpy = jest.spyOn(channel, 'sendEvent').mockResolvedValue({} as never);
+    const addEventListenerSpy = jest.spyOn(AppState, 'addEventListener');
+
+    render(
+      <Chat client={chatClient} closeConnectionOnBackground={false}>
+        <Channel channel={channel} />
+      </Chat>,
+    );
+    await waitFor(() => expect(addEventListenerSpy).toHaveBeenCalled());
+
+    channel.isTyping = isTyping;
+    act(() => {
+      addEventListenerSpy.mock.calls.forEach(([, handler]) =>
+        (handler as (state: AppStateStatus) => void)('background'),
+      );
+    });
+
+    expect(sendEventSpy).toHaveBeenCalledTimes(sent);
+    if (sent) {
+      expect(sendEventSpy).toHaveBeenCalledWith({
+        event: { parent_id: undefined, type: 'typing.stop' },
+      });
+    }
   });
 });
 
@@ -409,21 +745,20 @@ describe('Channel initial load useEffect', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
     channel.offlineMode = true;
-    channel.state = {
-      ...channelInitialState,
-      messagePagination: {
-        hasPrev: true,
-      },
-    } as unknown as typeof channel.state;
+    // A DB-hydrated channel that hasn't been live-watched (initialized false) deterministically
+    // re-watches on mount; the paginator's isActiveIntervalAtHead heuristic is timing-dependent
+    // under mocked pagination, so drive the condition explicitly instead.
+    channel.initialized = false;
     const watchSpy = jest.fn();
     channel.watch = watchSpy;
 
-    renderComponent({ channel });
+    // markReadOnMount off so the mount's async read request can't fire late and leak past teardown.
+    renderComponent({ channel, markReadOnMount: false });
 
     await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
   });
 
-  it("should call channel.watch if channel is initialized and it's not in offline mode", async () => {
+  it('should call channel.watch on mount for a non-offline channel that needs (re)initialization', async () => {
     const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) }));
     const mockedChannel = generateChannelResponse({
       messages,
@@ -433,113 +768,245 @@ describe('Channel initial load useEffect', () => {
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    channel.state = {
-      ...channelInitialState,
+    // Seed 10 members reactively on the real StateStore (channel.state is no longer a plain object).
+    channel.state.partialNext({
       members: Object.fromEntries(
         Array.from({ length: 10 }, (_, i) => [i, generateMember({ user_id: String(i) })]),
       ),
-      messagePagination: {
-        hasPrev: true,
-      },
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) })),
-    } as unknown as typeof channel.state;
+    });
     const watchSpy = jest.fn();
 
     channel.offlineMode = false;
-    (channel as unknown as { initialied: boolean }).initialied = false;
+    // Force the mount re-watch deterministically (isActiveIntervalAtHead is timing-dependent under
+    // mocked pagination).
+    channel.initialized = false;
     channel.watch = watchSpy;
 
-    renderComponent({ channel });
-
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    const { result: channelState } = renderHook(() => useChannelDataState(channel));
+    // markReadOnMount off so the mount's async read request can't fire late and leak past teardown.
+    renderComponent({ channel, markReadOnMount: false });
 
     await waitFor(() => expect(watchSpy).toHaveBeenCalled());
-    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(10));
-    await waitFor(() => expect(Object.keys(channelState.current.state.members!)).toHaveLength(10));
+    // members now come reactively from channel.state (via the shim getter).
+    await waitFor(() => expect(Object.keys(channel.state.members)).toHaveLength(10));
   });
 
-  function getElementsAround<T extends object>(array: T[], key: keyof T, id: unknown) {
-    const index = array.findIndex((obj) => obj[key] === id);
+  describe('watch on mount for an initialized channel at the head', () => {
+    const mountLoadedChannel = async (watchStatus: ChannelWatchStatus) => {
+      const messages = Array.from({ length: 10 }, (_, i) => generateMessage({ id: String(i) }));
+      const mockedChannel = generateChannelResponse({ messages });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+      jest.spyOn(channel.messagePaginator, 'isActiveIntervalAtHead', 'get').mockReturnValue(true);
+      channel.watchStatus = watchStatus;
+      const watchSpy = jest.fn();
+      channel.watch = watchSpy;
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
 
-    if (index === -1) {
-      return [];
-    }
+      renderComponent({ channel, markReadOnMount: false });
+      // The seed runs after the watch decision, so the mount effect has made it by then.
+      await waitFor(() => expect(seedSpy).toHaveBeenCalled());
 
-    const start = Math.max(0, index - 12); // 12 before the index
-    const end = Math.min(array.length, index + 13); // 12 after the index
-    return array.slice(start, end);
-  }
+      return watchSpy;
+    };
 
-  it('should call the loadChannelAroundMessage when messageId is passed to a channel', async () => {
-    const messages = Array.from({ length: 105 }, (_, i) => generateMessage({ id: String(i) }));
-    const messageToSearch = messages[50];
-    const mockedChannel = generateChannelResponse({
-      messages,
+    it('watches a channel that was loaded without a watch, such as a search result', async () => {
+      const watchSpy = await mountLoadedChannel(ChannelWatchStatus.NotWatching);
+
+      expect(watchSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('does not watch a channel that is already watched', async () => {
+      const watchSpy = await mountLoadedChannel(ChannelWatchStatus.Watching);
+
+      expect(watchSpy).not.toHaveBeenCalled();
+    });
+
+    it('leaves a channel whose watch dropped with the connection to the connection recovery', async () => {
+      const watchSpy = await mountLoadedChannel(ChannelWatchStatus.WasWatching);
+
+      expect(watchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reopening a channel left on an older page', () => {
+    const OLDER_PAGE_START = new Date('2020-01-01T00:00:00.000Z').getTime();
+
+    // A watched channel whose newest messages are loaded, but whose list shows an older page, as it
+    // does after a jump to a quoted, pinned or searched message.
+    const setUpChannelOnOlderPage = async () => {
+      const newestMessages = Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ id: `newest-${i}` }),
+      );
+      const mockedChannel = generateChannelResponse({ messages: newestMessages });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+
+      const olderMessages = Array.from({ length: 5 }, (_, i) =>
+        generateMessage({ id: `older-${i}`, timestamp: OLDER_PAGE_START + i * 1000 }),
+      );
+      channel.messagePaginator.ingestPage({
+        page: olderMessages,
+        policy: 'strict-overlap-only',
+        setActive: true,
+      });
+      expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(false);
+
+      return channel;
+    };
+
+    it('shows the newest messages again', async () => {
+      const channel = await setUpChannelOnOlderPage();
+
+      renderComponent({ channel, markReadOnMount: false });
+
+      await waitFor(() => expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(true));
+      expect(channel.messagePaginator.items?.map((message) => message.id)).toContain('newest-9');
+    });
+
+    it('keeps a jump the integrator already made to a loaded message', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      // A deep link from the screen: the target is loaded, so the jump lands at once.
+      await channel.messagePaginator.jumpToMessage('older-2', { focusReason: 'jump-to-message' });
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      renderComponent({ channel, markReadOnMount: false });
+
+      await waitFor(() => expect(seedSpy).toHaveBeenCalled());
+      expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(false);
+      expect(channel.messagePaginator.messageFocusSignal.getLatestValue().signal?.messageId).toBe(
+        'older-2',
+      );
+    });
+
+    it('leaves a jump that is still in flight alone', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      // A deep link to a message that is not loaded: its query is in flight.
+      jest.spyOn(channel.messagePaginator, 'isLoading', 'get').mockReturnValue(true);
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        channel.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      renderComponent({ channel, markReadOnMount: false });
+
+      await waitFor(() => expect(seedSpy).toHaveBeenCalled());
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+    });
+
+    it('leaves the list alone when the app places its pages itself', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        channel.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      renderComponent({ channel, initializeOnMount: false, markReadOnMount: false });
+
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+      expect(channel.messagePaginator.isActiveIntervalAtHead).toBe(false);
+    });
+
+    it('leaves the jump to the first unread message to the initial load', async () => {
+      const channel = await setUpChannelOnOlderPage();
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => 3);
+      const jumpToTheFirstUnreadMessageSpy = jest
+        .spyOn(channel.messagePaginator, 'jumpToTheFirstUnreadMessage')
+        .mockResolvedValue(undefined as never);
+      const jumpToTheLatestMessageSpy = jest.spyOn(
+        channel.messagePaginator,
+        'jumpToTheLatestMessage',
+      );
+
+      renderComponent({
+        channel,
+        initialScrollToFirstUnreadMessage: true,
+        markReadOnMount: false,
+      });
+
+      await waitFor(() => expect(jumpToTheFirstUnreadMessageSpy).toHaveBeenCalledTimes(1));
+      expect(jumpToTheLatestMessageSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('message page size', () => {
+    const mountChannel = async () => {
+      const mockedChannel = generateChannelResponse({ messages: [] });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      // Force the mount watch, so waiting for it proves the effect got past the page-size write.
+      channel.initialized = false;
+      const watchSpy = jest.fn();
+      channel.watch = watchSpy;
+
+      renderComponent({ channel, markReadOnMount: false });
+      await waitFor(() => expect(watchSpy).toHaveBeenCalledTimes(1));
+
+      return channel;
+    };
+
+    it('applies the SDK default when nothing was registered through client.config', async () => {
+      const channel = await mountChannel();
+
+      expect(channel.messagePaginator.pageSize).toBe(25);
+    });
+
+    it('keeps a page size registered under channel.messagePaginator', async () => {
+      chatClient.config.set({ channel: { messagePaginator: { pageSize: 40 } } });
+
+      const channel = await mountChannel();
+
+      expect(channel.messagePaginator.pageSize).toBe(40);
+    });
+
+    it('keeps a page size registered under the general messagePaginator key', async () => {
+      chatClient.config.set({ messagePaginator: { pageSize: 15 } });
+
+      const channel = await mountChannel();
+
+      expect(channel.messagePaginator.pageSize).toBe(15);
+    });
+  });
+
+  it('leaves targeting to the caller — <Channel> no longer jumps on its own', async () => {
+    // The `messageId` prop is gone. Jumping is the paginator's job, so nothing here should issue a
+    // jump: the integrator calls `paginator.jumpToMessage(...)` themselves, from a `useLayoutEffect`
+    // or before mount. See 'does not override a jump the integrator made before mount' for the other
+    // half of the contract — that <Channel> then keeps its hands off it.
+    const messages = Array.from({ length: 105 }, (_, i) => generateMessage({ id: String(i) }));
+    const mockedChannel = generateChannelResponse({ messages });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
 
-    const loadMessageIntoState = jest.fn(() => {
-      const newMessages = getElementsAround(messages, 'id', messageToSearch.id);
-      channel.state.messages = newMessages;
-    });
+    const jumpToMessageSpy = jest
+      .spyOn(channel.messagePaginator, 'jumpToMessage')
+      .mockResolvedValue(undefined as never);
+    const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
 
-    channel.state = {
-      ...channelInitialState,
-      loadMessageIntoState,
-      messagePagination: {
-        hasNext: true,
-        hasPrev: true,
-      },
-      messages,
-    } as unknown as typeof channel.state;
+    renderComponent({ channel, markReadOnMount: false });
 
-    renderComponent({ channel, messageId: messageToSearch.id });
-
+    // Gate on the initial-load effect reaching its decision point, so the negative below is not
+    // just "it has not happened yet".
     await waitFor(() => {
-      expect(loadMessageIntoState).toHaveBeenCalledWith(messageToSearch.id, undefined, 25);
+      expect(seedSpy).toHaveBeenCalled();
     });
-
-    const { result: channelMessageState } = renderHook(() => useChannelMessageDataState(channel));
-    await waitFor(() => expect(channelMessageState.current.state.messages!).toHaveLength(25));
-    await waitFor(() =>
-      expect(
-        channelMessageState.current.state.messages!.find(
-          (message) => message.id === messageToSearch.id,
-        ),
-      ).toBeTruthy(),
-    );
+    expect(jumpToMessageSpy).not.toHaveBeenCalled();
   });
 
   describe('initialScrollToFirstUnreadMessage', () => {
     afterEach(() => {
-      // Clear all mocks after each test
+      // Clear all mocks after each test. Deliberately not restoreAllMocks: that would also drop the
+      // shared axios `request` mock, letting a still in-flight mount re-watch fall through to the
+      // real HTTP adapter after the environment is torn down ("require a file after the Jest
+      // environment has been torn down").
       jest.clearAllMocks();
-      // Restore all mocks to their original implementation
-      jest.restoreAllMocks();
       cleanup();
     });
-    const mockedHook = (
-      values: Partial<ReturnType<typeof MessageListPaginationHooks.useMessageListPagination>>,
-    ) =>
-      jest.spyOn(MessageListPaginationHooks, 'useMessageListPagination').mockImplementation(
-        () =>
-          ({
-            copyMessagesStateFromChannel: jest.fn(),
-            loadChannelAroundMessage: jest.fn(),
-            loadChannelAtFirstUnreadMessage: jest.fn(),
-            loadInitialMessagesStateFromChannel: jest.fn(),
-            loadLatestMessages: jest.fn(),
-            loadMore: jest.fn(),
-            loadMoreRecent: jest.fn(),
-            state: { ...channelInitialState },
-            ...values,
-          }) as unknown as ReturnType<typeof MessageListPaginationHooks.useMessageListPagination>,
-      );
-    it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is 0", async () => {
+    it("should not jump to the first unread message if channel's unread count is 0", async () => {
       const mockedChannel = generateChannelResponse({
         messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
       });
@@ -551,28 +1018,85 @@ describe('Channel initial load useEffect', () => {
       const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
-        last_read: new Date(),
+        last_read: convertDateToTimestamp(),
         user,
       } as unknown as (typeof channel.state.read)[string];
 
-      channel.state = {
-        ...channelInitialState,
-        read: read_data,
-      } as unknown as typeof channel.state;
+      channel.state.partialNext({ read: read_data });
       jest.spyOn(channel, 'countUnread').mockImplementation(() => 0);
 
-      const loadChannelAtFirstUnreadMessageFn = jest.fn();
+      const jumpToTheFirstUnreadMessageSpy = jest
+        .spyOn(channel.messagePaginator, 'jumpToTheFirstUnreadMessage')
+        .mockResolvedValue(undefined as never);
 
-      mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
-
-      renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
+      renderComponent({
+        channel,
+        initialScrollToFirstUnreadMessage: true,
+        // Skip the incidental mark-read-on-mount so its async read request can't fire a real
+        // HTTP call after this describe's afterEach restores the axios mock.
+        markReadOnMount: false,
+      });
 
       await waitFor(() => {
-        expect(loadChannelAtFirstUnreadMessageFn).not.toHaveBeenCalled();
+        expect(jumpToTheFirstUnreadMessageSpy).not.toHaveBeenCalled();
       });
     });
 
-    it("should call loadChannelAtFirstUnreadMessage if channel's unread count is greater than 0", async () => {
+    it('does not override a jump the integrator made before mount', async () => {
+      const messages = Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ id: `m${i}`, text: `message-${i}` }),
+      );
+      const mockedChannel = generateChannelResponse({ messages });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await channel.watch();
+
+      const user = generateUser();
+      const read_data: typeof channel.state.read = {};
+      read_data[chatClient.user!.id] = {
+        last_read: convertDateToTimestamp(),
+        unread_messages: 15,
+        user,
+      };
+      channel.state.partialNext({ read: read_data });
+      jest.spyOn(channel, 'countUnread').mockImplementation(() => 15);
+
+      const jumpToTheFirstUnreadMessageSpy = jest
+        .spyOn(channel.messagePaginator, 'jumpToTheFirstUnreadMessage')
+        .mockResolvedValue(undefined as never);
+      // `initChannel` always re-seeds the unread snapshot, and does so on the line BEFORE it decides
+      // whether to jump. Waiting on it is what makes the negative assertion below mean anything: a
+      // bare `waitFor(() => expect(spy).not.toHaveBeenCalled())` passes on the first tick, before the
+      // effect has run at all.
+      const seedSpy = jest.spyOn(channel.messagePaginator, 'seedUnreadSnapshot');
+
+      // THE INTEGRATOR'S OWN JUMP, before <Channel> mounts. No `messageId` prop is passed.
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: 'm4',
+        reason: 'jump-to-message',
+        ttlMs: 3000,
+      });
+
+      renderComponent({
+        channel,
+        initialScrollToFirstUnreadMessage: true,
+        markReadOnMount: false,
+      });
+
+      // Wait until the initial-load effect has actually reached its decision point.
+      await waitFor(() => {
+        expect(seedSpy).toHaveBeenCalled();
+      });
+
+      // Channel must NOT hijack the scroll to the first unread message...
+      expect(jumpToTheFirstUnreadMessageSpy).not.toHaveBeenCalled();
+      // ...and the integrator's target must still be the focused one.
+      expect(channel.messagePaginator.messageFocusSignal.getLatestValue().signal?.messageId).toBe(
+        'm4',
+      );
+    });
+
+    it("should jump to the first unread message if channel's unread count is greater than 0", async () => {
       const mockedChannel = generateChannelResponse({
         messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
       });
@@ -586,71 +1110,50 @@ describe('Channel initial load useEffect', () => {
       const read_data: typeof channel.state.read = {};
 
       read_data[chatClient.user!.id] = {
-        last_read: new Date(),
+        last_read: convertDateToTimestamp(),
         unread_messages: numberOfUnreadMessages,
         user,
       };
-      channel.state = {
-        ...channelInitialState,
-        read: read_data,
-      } as unknown as typeof channel.state;
+      channel.state.partialNext({ read: read_data });
 
       jest.spyOn(channel, 'countUnread').mockImplementation(() => numberOfUnreadMessages);
-      const loadChannelAtFirstUnreadMessageFn = jest.fn();
+      const jumpToTheFirstUnreadMessageSpy = jest
+        .spyOn(channel.messagePaginator, 'jumpToTheFirstUnreadMessage')
+        .mockResolvedValue(undefined as never);
 
-      mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
-
-      renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
-
-      await waitFor(() => {
-        expect(loadChannelAtFirstUnreadMessageFn).toHaveBeenCalled();
-      });
-    });
-
-    it("should not call loadChannelAtFirstUnreadMessage if channel's unread count is greater than 0 lesser than scrollToFirstUnreadThreshold", async () => {
-      const mockedChannel = generateChannelResponse({
-        messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+      renderComponent({
+        channel,
+        initialScrollToFirstUnreadMessage: true,
+        // Skip the incidental mark-read-on-mount so its async read request can't fire a real
+        // HTTP call after this describe's afterEach restores the axios mock.
+        markReadOnMount: false,
       });
 
-      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-      const channel = chatClient.channel('messaging', mockedChannel.channel.id);
-      await channel.watch();
-
-      const user = generateUser();
-      const numberOfUnreadMessages = 2;
-      const read_data: typeof channel.state.read = {};
-
-      read_data[chatClient.user!.id] = {
-        last_read: new Date(),
-        unread_messages: numberOfUnreadMessages,
-        user,
-      };
-      channel.state = {
-        ...channelInitialState,
-        read: read_data,
-      } as unknown as typeof channel.state;
-
-      jest.spyOn(channel, 'countUnread').mockImplementation(() => numberOfUnreadMessages);
-      const loadChannelAtFirstUnreadMessageFn = jest.fn();
-
-      mockedHook({ loadChannelAtFirstUnreadMessage: loadChannelAtFirstUnreadMessageFn });
-
-      renderComponent({ channel, initialScrollToFirstUnreadMessage: true });
-
       await waitFor(() => {
-        expect(loadChannelAtFirstUnreadMessageFn).not.toHaveBeenCalled();
+        expect(jumpToTheFirstUnreadMessageSpy).toHaveBeenCalled();
       });
     });
   });
 
-  it('should call resyncChannel when connection changed event is triggered', async () => {
+  it('reloads the channel on reconnect while preserving failed messages', async () => {
+    // The reload is issued by `client.connectionRecovery` now, not by this component — `<Channel>`
+    // only marks the channel active. Asserted end to end on purpose: what matters is that a reconnect
+    // still refreshes the open channel and still does not lose locally-unsent messages.
+    // Deterministic timestamps so the 10 loaded messages and the 10 offline-failed messages occupy
+    // adjacent, ordered positions in the paginator's active window.
+    const baseTime = 1600000000000;
     const mockedChannel = generateChannelResponse({
-      messages: Array.from({ length: 10 }, (_, i) => generateMessage({ text: `message-${i}` })),
+      messages: Array.from({ length: 10 }, (_, i) =>
+        generateMessage({ text: `message-${i}`, timestamp: new Date(baseTime + i * 1000) }),
+      ),
     });
 
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id);
     await channel.watch();
+
+    // Call through to the real reload so the resync actually reconciles (and we can assert it ran).
+    const seedSpy = jest.spyOn(channel, 'reload');
 
     renderComponent({ channel });
 
@@ -658,20 +1161,54 @@ describe('Channel initial load useEffect', () => {
       act(() => dispatchConnectionChanged(chatClient, false));
     });
 
-    await waitFor(() => {
-      channel.state.addMessagesSorted(
-        Array.from({ length: 10 }, (_, i) =>
-          generateMessage({ status: 'failed', text: `message-${i}` }),
-        ),
-      );
+    // Simulate 10 messages sent while offline that failed. They carry the channel cid (so they pass
+    // the paginator's cid match filter) and sit just after the loaded page.
+    act(() => {
+      Array.from({ length: 10 }, (_, i) =>
+        generateMessage({
+          cid: channel.cid,
+          status: 'failed',
+          text: `failed-message-${i}`,
+          timestamp: new Date(baseTime + 100000 + i * 1000),
+        }),
+      ).forEach((m) => channel.messagePaginator.ingestItem(channel.state.formatMessage(m)));
     });
 
     await waitFor(() => {
       act(() => dispatchConnectionChanged(chatClient));
     });
 
+    // The reload re-watches and reconciles, but preserves the failed (locally-unsent) messages —
+    // the 10 originals + 10 failed remain.
     await waitFor(() => {
-      expect(channel.state.messages.length).toBe(20);
+      expect(seedSpy).toHaveBeenCalled();
+      expect(channel.messagePaginator.anchoredHeadItems.length).toBe(20);
+    });
+  });
+
+  describe('read on open', () => {
+    it('still marks a channel with unread messages read when it is opened', async () => {
+      const otherUser = generateUser();
+      const mockedChannel = generateChannelResponse({
+        members: [generateMember({ user }), generateMember({ user: otherUser })],
+        messages: [generateMessage({ user: otherUser }), generateMessage({ user: otherUser })],
+        read: [{ last_read: asTimestampNS(1), unread_messages: 2, user }],
+      });
+      useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+      const testChannel = chatClient.channel('messaging', mockedChannel.channel.id);
+      await testChannel.watch();
+      const markRead = jest
+        .spyOn(testChannel, 'markRead')
+        .mockResolvedValue({} as Awaited<ReturnType<typeof testChannel.markRead>>);
+
+      render(
+        <Chat client={chatClient}>
+          <Channel channel={testChannel} />
+        </Chat>,
+      );
+
+      await waitFor(() => expect(markRead).toHaveBeenCalled());
+      expect(markRead.mock.calls.every(([options]) => !options?.thread_id)).toBe(true);
     });
   });
 });

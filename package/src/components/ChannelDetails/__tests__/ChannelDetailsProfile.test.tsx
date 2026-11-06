@@ -31,7 +31,7 @@ const buildChannel = () =>
   ({
     cid: 'messaging:test',
     data: {},
-    getClient: () => ({ userID: OWN_USER_ID }),
+    getClient: () => ({ userId: OWN_USER_ID }),
     on: () => ({ unsubscribe: () => undefined }),
   }) as unknown as Channel;
 
@@ -40,12 +40,12 @@ const renderProfile = ({ channel = buildChannel() }: { channel?: Channel } = {})
     <ThemeProvider theme={defaultTheme}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
       >
-        <ChatProvider value={{ client: { userID: OWN_USER_ID } } as never}>
+        <ChatProvider value={{ client: { userId: OWN_USER_ID } } as never}>
           <ChannelDetailsContextProvider channel={channel}>
             <ChannelDetailsProfile />
           </ChannelDetailsContextProvider>

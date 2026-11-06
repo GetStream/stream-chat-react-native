@@ -24,10 +24,8 @@ export type AutoCompleteSuggestionItemProps = {
 };
 
 /**
- * Default `@`-trigger row dispatcher. Routes a `MentionSuggestion` to the
- * per type component. Each per type component is its own export and can be
- * composed by integrators who override this dispatcher via
- * `ComponentsContext.MentionSuggestionItem`.
+ * Default `@`-trigger row dispatcher that renders a `MentionSuggestion` with the component for its
+ * mention type. Replaceable through `ComponentsContext.MentionSuggestionItem`.
  */
 export const MentionSuggestionItem = (item: MentionSuggestion) => {
   switch (item.mentionType) {
@@ -116,9 +114,8 @@ const SuggestionItem = ({
   item: TextComposerSuggestion;
   triggerType?: string;
 }) => {
-  // Resolve via context so integrators can swap the mention dispatcher alone
-  // (e.g. to render a custom @channel row) without re-implementing the
-  // emoji/command branches of AutoCompleteSuggestionItem.
+  // Read from context so the mention row can be replaced without touching the emoji and command
+  // rows.
   const { MentionSuggestionItem } = useComponentsContext();
   switch (triggerType) {
     case 'mention':

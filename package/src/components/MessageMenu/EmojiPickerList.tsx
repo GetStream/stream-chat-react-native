@@ -51,7 +51,7 @@ export const EmojiPickerList = ({
   renderFullInitially = true,
 }: {
   onSelectReaction: (unicode: string) => void;
-  // whether all of the items should be rendered initially or not
+  // Whether every emoji renders on the first pass. Defaults to true.
   renderFullInitially?: boolean;
 }) => {
   const styles = useStyles();
@@ -76,11 +76,8 @@ export const EmojiPickerList = ({
       keyExtractor={emojiKeyExtractor}
       numColumns={7}
       removeClippedSubviews={false}
-      // This is sort of needed in some instances, because when virtualization
-      // kicks in it messes with the animations, as more native views get their
-      // bindings to JS. For the reactions specifically it does not really
-      // matter as they aren't too heavy - but we should anyway revisit
-      // this in the future.
+      // Needed in some cases: virtualization interferes with the animations, as more native views
+      // get bound to JS. Reactions are light, so rendering them all up front is cheap.
       initialNumToRender={renderFullInitially ? emojis.length : undefined}
       renderItem={renderEmoji}
     />

@@ -5,10 +5,8 @@ import type { TranslationContextValue } from '../../../../contexts/translationCo
 import { useTranslationContext } from '../../../../contexts/translationContext/TranslationContext';
 
 /**
- * A single role shown next to a member row.
- *
- * - `key` is the raw role identifier (`'owner'`, `'admin'`, `'moderator'`, …).
- * - `label` is the translated, user-facing text.
+ * A role shown next to a member row. `key` is the role identifier (`'owner'`, `'admin'`,
+ * `'moderator'`, ...) and `label` the translated text.
  */
 export type RoleLabel = {
   key: string;
@@ -16,13 +14,10 @@ export type RoleLabel = {
 };
 
 /**
- * Override the roles shown next to each member in the channel details screen.
- *
- * Receives `defaultRoleLabels` — the roles the default implementation computed for this member —
- * so a custom implementation can reuse or extend them (e.g. `[...defaultRoleLabels, customRole]`),
- * and returns the list of roles to render (or an empty array to render none). The default
- * implementation marks members as `owner` (channel creator), `admin` (`user.role === 'admin'`)
- * and `moderator` (`channel_role === 'channel_moderator'`), returning every role that applies.
+ * Overrides the roles shown next to each member. Receives the `defaultRoleLabels` computed for the
+ * member, to reuse or extend, and returns the roles to render, or an empty array for none. The
+ * defaults are `owner` (channel creator), `admin` (`user.role === 'admin'`) and `moderator`
+ * (`channel_role === 'channel_moderator'`).
  */
 export type GetMemberRoles = (params: {
   channel: Channel;
@@ -32,10 +27,11 @@ export type GetMemberRoles = (params: {
 }) => RoleLabel[];
 
 /**
- * Resolves the trailing role badges for a channel member row in the channel details screen.
+ * Resolves the role badges of a channel member row, in the order Owner, Admin, Moderator.
  *
- * Returns every applicable role in the order Owner > Admin > Moderator. When a member matches
- * none of the rules (and no custom `getMemberRoles` is provided), returns an empty array.
+ * @param member The channel member.
+ * @param getMemberRoles Overrides the default roles.
+ * @returns The roles, or an empty array when none apply.
  */
 export const useMemberRoles = (
   member: ChannelMemberResponse,
@@ -47,13 +43,22 @@ export const useMemberRoles = (
   const defaultRoleLabels: RoleLabel[] = [];
   const userId = member.user?.id;
   if (userId && userId === channel?.data?.created_by?.id) {
-    defaultRoleLabels.push({ key: 'owner', label: t('Owner') });
+    defaultRoleLabels.push({
+      key: 'owner',
+      label: t('channelDetails.memberRoles.owner.label', 'Owner'),
+    });
   }
   if (member.user?.role === 'admin') {
-    defaultRoleLabels.push({ key: 'admin', label: t('Admin') });
+    defaultRoleLabels.push({
+      key: 'admin',
+      label: t('channelDetails.memberRoles.admin.label', 'Admin'),
+    });
   }
   if (member.channel_role === 'channel_moderator') {
-    defaultRoleLabels.push({ key: 'moderator', label: t('Moderator') });
+    defaultRoleLabels.push({
+      key: 'moderator',
+      label: t('channelDetails.memberRoles.moderator.label', 'Moderator'),
+    });
   }
 
   if (getMemberRoles) {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { LocalMessage } from 'stream-chat';
+import { nsToDate } from 'stream-chat';
 
 export const getDateSeparatorValue = ({
   hideDateSeparators,
@@ -15,18 +16,29 @@ export const getDateSeparatorValue = ({
     return undefined;
   }
 
-  const previousMessageDate = previousMessage?.created_at.toDateString();
-  const messageDate = message?.created_at.toDateString();
+  // Nullish check, as `0` is a valid timestamp (the epoch) and must not suppress the separator.
+  const previousMessageDate =
+    previousMessage?.created_at != null
+      ? nsToDate(previousMessage.created_at).toDateString()
+      : undefined;
+  const messageDate =
+    message?.created_at != null ? nsToDate(message.created_at).toDateString() : undefined;
 
   if (previousMessageDate !== messageDate) {
-    return message?.created_at;
+    // A `Date`, as the presentational separator components take `date?: Date`.
+    return message?.created_at != null ? nsToDate(message.created_at) : undefined;
   }
 
   return undefined;
 };
 
 /**
- * Hook to get whether a message should have a date separator above it
+ * Returns the date for a separator above the message, or `undefined` when none is needed.
+ *
+ * @param params.hideDateSeparators Suppresses every separator.
+ * @param params.message The message the separator sits above.
+ * @param params.previousMessage The message rendered before it.
+ * @returns The message's creation date when it falls on a different day than the previous message.
  */
 export const useMessageDateSeparator = ({
   hideDateSeparators,

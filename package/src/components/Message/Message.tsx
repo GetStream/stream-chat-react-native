@@ -11,24 +11,28 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from 'react-native-teleport';
 
-import type { Attachment, LocalMessage, MentionEntity, UserResponse } from 'stream-chat';
+import {
+  type Attachment,
+  getAttachmentPreviewUrl,
+  type LocalMessage,
+  type MentionEntity,
+  type Thread,
+  type UserResponse,
+} from 'stream-chat';
 
+import { useCreateMessageActionHandlers } from './hooks/useCreateMessageActionHandlers';
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
-import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
-import { useMessageActions } from './hooks/useMessageActions';
-import { useMessageDeliveredData } from './hooks/useMessageDeliveryData';
-import { useMessageReadData } from './hooks/useMessageReadData';
+import { MessageOperations, useMessageOperations } from './hooks/useMessageOperations';
 import { useProcessReactions } from './hooks/useProcessReactions';
 import { DEFAULT_MESSAGE_OVERLAY_TARGET_ID } from './messageOverlayConstants';
 import { MessageOverlayWrapper } from './MessageOverlayWrapper';
 import { measureInWindow } from './utils/measureInWindow';
-import { messageActions as defaultMessageActions } from './utils/messageActions';
 
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
   KeyboardContextValue,
@@ -43,14 +47,16 @@ import {
   MessageOverlayRuntimeProvider,
   MessageProvider,
 } from '../../contexts/messageContext/MessageContext';
-import { useMessageListItemContext } from '../../contexts/messageListItemContext/MessageListItemContext';
+import {
+  GoToMessage,
+  useMessageListItemContext,
+} from '../../contexts/messageListItemContext/MessageListItemContext';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -70,6 +76,7 @@ import {
 import { primitives } from '../../theme';
 import type { ViewRef } from '../../types/react-native-compat';
 import { FileTypes } from '../../types/types';
+import { getPlayableVideoUrl } from '../../utils/attachmentUrls';
 import {
   checkMessageEquality,
   generateRandomId,
@@ -80,6 +87,7 @@ import {
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
 import { dismissKeyboard } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { MessageActionListWithActions } from '../MessageMenu/MessageActionListWithActions';
 import { BottomSheetModal } from '../UIComponents';
 
 const createMessageOverlayId = (messageId?: string) =>
@@ -96,16 +104,9 @@ export type TouchableEmitter =
   | 'reactionList';
 
 export type TextMentionTouchableHandlerAdditionalInfo = {
-  /**
-   * The typed mention entity for the pressed mention (user / channel / here /
-   * role / user_group). Always populated by the default renderText pipeline;
-   * undefined only when a custom renderer doesn't resolve a match.
-   */
+  /** The pressed mention entity. Undefined when the pressed text matches no known mention. */
   mentionedEntity?: MentionEntity;
-  /**
-   * Back-compat: still populated when the mention is a user, so existing
-   * integrators reading `additionalInfo.user` keep working.
-   */
+  /** The pressed user, set only when the mention is a user. */
   user?: UserResponse;
 };
 
@@ -138,11 +139,7 @@ export type GalleryThumbnailTouchableHandlerPayload = {
 };
 
 export type ReactionListTouchableHandlerAdditionalInfo = {
-  /**
-   * The reaction type of the pressed reaction. Populated for presses that
-   * originate from a single reaction (segmented list item/clustered pill),
-   * undefined for the "+N more" overflow item.
-   */
+  /** Type of the pressed reaction. Undefined for the clustered list and the "+N more" item. */
   reactionType?: string;
 };
 
@@ -170,17 +167,11 @@ export type PressableHandlerPayload = {
 );
 
 export type MessagePressableHandlerPayload = PressableHandlerPayload & {
-  /**
-   * Set of action handler functions for various message actions. You can use these functions to perform any action when give interaction occurs.
-   */
+  /** Handlers of the message actions, to run an action from a custom handler. */
   actionHandlers?: MessageActionHandlers;
-  /**
-   * Additional message touchable handler info.
-   */
+  /** Extra info about the interaction. */
   additionalInfo?: Record<string, unknown>;
-  /**
-   * Message object, on which interaction occurred.
-   */
+  /** Message the interaction occurred on. */
   message?: LocalMessage;
 };
 
@@ -203,118 +194,73 @@ export type MessageActionHandlers = {
 
 export type MessagePropsWithContext = Pick<
   ChannelContextValue,
-  'channel' | 'enforceUniqueReaction' | 'members'
+  'channel' | 'enforceUniqueReaction'
 > &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<
-    Omit<
-      MessageContextValue,
-      | 'groupStyles'
-      | 'handleReaction'
-      | 'message'
-      | 'isMessageAIGenerated'
-      | 'deliveredToCount'
-      | 'readBy'
-    >
-  > &
+  Partial<Omit<MessageContextValue, 'groupStyles' | 'handleReaction' | 'message'>> &
+  Pick<MessageContextValue, 'groupStyles' | 'message'> &
   Pick<
-    MessageContextValue,
-    'groupStyles' | 'message' | 'isMessageAIGenerated' | 'readBy' | 'deliveredToCount'
+    MessageOperations,
+    | 'sendReaction'
+    | 'deleteMessage'
+    | 'removeMessage'
+    | 'deleteReaction'
+    | 'retrySendMessage'
+    | 'updateMessage'
   > &
   Pick<
     MessagesContextValue,
-    | 'sendReaction'
-    | 'deleteMessage'
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
-    | 'handleBan'
-    | 'handleCopy'
-    | 'handleDelete'
-    | 'handleDeleteForMe'
-    | 'handleEdit'
-    | 'handleFlag'
-    | 'handleMarkUnread'
-    | 'handleMute'
-    | 'handlePinMessage'
-    | 'handleQuotedReply'
     | 'handleReaction'
-    | 'handleRetry'
     | 'handleThreadReply'
-    | 'handleBlockUser'
     | 'isAttachmentEqual'
-    | 'messageActions'
     | 'messageOverlayTargetId'
     | 'messageContentOrder'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
-    | 'removeMessage'
-    | 'deleteReaction'
-    | 'retrySendMessage'
     | 'selectReaction'
-    | 'supportedReactions'
-    | 'updateMessage'
   > &
-  Pick<ThreadContextValue, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
-    chatContext: ChatContextValue;
     messagesContext: MessagesContextValue;
-    /**
-     * Whether or not users are able to long press messages.
-     */
+    /** Whether long pressing a message is enabled. Defaults to true. */
     enableLongPress?: boolean;
-    goToMessage?: (messageId: string) => void;
+    goToMessage?: GoToMessage;
     isTargetedMessage?: boolean;
     /**
-     * Handler to open the thread on message. This is callback for touch event for replies button.
+     * Called with the message's thread when its replies button is pressed.
      *
-     * @param message A message object to open the thread upon.
+     * @param thread The thread of the message, to render in a `<Thread thread={thread}>`.
      */
-    onThreadSelect?: (message: LocalMessage) => void;
+    onThreadSelect?: (thread: Thread) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
   } & Pick<MessageComposerAPIContextValue, 'setQuotedMessage' | 'setEditingState'>;
 
 /**
- * Since this component doesn't consume `messages` from `MessagesContext`,
- * we memoized and broke it up to prevent new messages from re-rendering
- * each individual Message component.
+ * Does not read `messages` from `MessagesContext`, so new messages do not re-render every Message.
  */
 const MessageWithContext = (props: MessagePropsWithContext) => {
   const [showMessageReactions, setShowMessageReactions] = useState<boolean>(false);
   const [selectedReaction, setSelectedReaction] = useState<string | undefined>(undefined);
   const [isBounceDialogOpen, setIsBounceDialogOpen] = useState(false);
+  const { client, isMessageAIGenerated } = useChatContext();
 
   const {
     channel,
-    chatContext,
     deleteMessage: deleteMessageFromContext,
     deleteReaction,
-    deliveredToCount,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
-    enforceUniqueReaction,
     forceAlignMessages = false,
     goToMessage,
     groupStyles = ['bottom'],
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
     handleReaction: handleReactionProp,
-    handleRetry,
     handleThreadReply,
-    handleBlockUser,
     isTargetedMessage,
-    members,
+    isVeryLastMessage = false,
     message,
-    messageActions: messageActionsProp = defaultMessageActions,
     messageOverlayTargetId = DEFAULT_MESSAGE_OVERLAY_TARGET_ID,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
@@ -322,7 +268,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     onPressInMessage: onPressInMessageProp,
     onPressMessage: onPressMessageProp,
     onThreadSelect,
-    openThread,
     preventPress,
     removeMessage,
     retrySendMessage,
@@ -332,15 +277,10 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     showAvatar,
     showMessageStatus,
     style,
-    supportedReactions,
-    t,
-    threadList = false,
     updateMessage,
-    readBy,
     setQuotedMessage,
   } = props;
   const {
-    MessageActionList,
     MessageBlocked,
     MessageBounce,
     MessageItemView,
@@ -349,14 +289,12 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   } = useComponentsContext();
   // TODO: V9: Reconsider using safe area insets in every message.
   const insets = useSafeAreaInsets();
-  const isMessageAIGenerated = messagesContext.isMessageAIGenerated;
   const isAIGenerated = useMemo(
     () => isMessageAIGenerated(message),
     [message, isMessageAIGenerated],
   );
   const messageOverlayId = useMemo(() => createMessageOverlayId(message.id), [message.id]);
   const isMessageTypeDeleted = message.type === 'deleted';
-  const { client } = chatContext;
 
   const rectRef = useRef<Rect>(undefined);
   const bubbleRect = useRef<Rect>(undefined);
@@ -408,7 +346,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
-  const isMyMessage = client && message && client.userID === message.user?.id;
+  const isMyMessage = client && message && client.userId === message.user?.id;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -431,15 +369,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       dismissKeyboard();
     }
     if (error) {
-      /**
-       * If its a Blocked message, we don't do anything as per specs.
-       */
+      // Blocked messages do nothing on press.
       if (isBlockedMessage(message)) {
         return;
       }
-      /**
-       * If its a Bounced message, we open the message bounced options modal.
-       */
+      // Bounced messages open the bounce options dialog.
       if (isBouncedMessage(message)) {
         setIsBounceDialogOpen(true);
         return;
@@ -460,20 +394,15 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
       : 'right'
     : alignment;
 
-  /**
-   * attachments contain files/images or other attachments
-   *
-   * if a URL attachment is present with a file/image then we
-   * show just the text and markdown should make the link
-   * clickable
-   */
+  // Groups attachments by kind. A file, playable video or image clears `other` (such as URL
+  // previews), so only the text remains and its markdown makes the link clickable.
   const attachments =
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
             if (cur.type === FileTypes.File) {
               acc.files.push(cur);
-              acc.other = []; // remove other attachments if a file exists
+              acc.other = [];
             } else if (
               cur.type === FileTypes.Video &&
               !cur.og_scrape_url &&
@@ -481,29 +410,26 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
             ) {
               acc.videos.push({
                 ...cur,
-                image_url: cur.asset_url,
+                image_url: getPlayableVideoUrl(cur),
                 thumb_url: cur.thumb_url,
                 type: FileTypes.Video,
               });
               acc.other = [];
             } else if (cur.type === FileTypes.Video && !cur.og_scrape_url) {
               acc.files.push(cur);
-              acc.other = []; // remove other attachments if a file exists
+              acc.other = [];
             } else if (cur.type === FileTypes.Audio || cur.type === FileTypes.VoiceRecording) {
               acc.files.push(cur);
             } else if (cur.type === FileTypes.Image && !cur.title_link && !cur.og_scrape_url) {
-              /**
-               * this next if is not combined with the above one for cases where we have
-               * an image with no url links at all falling back to being an attachment
-               */
-              if (cur.image_url || cur.thumb_url) {
+              // An image without a preview URL is neither collected nor added to `other`.
+              if (getAttachmentPreviewUrl(cur, cur.image_url, cur.thumb_url)) {
                 acc.images.push(cur);
-                acc.other = []; // remove other attachments if an image exists
+                acc.other = [];
               }
-              // only add other attachments if there are no files/images
             } else if (cur.type === FileTypes.Image && (cur.og_scrape_url || cur.title_link)) {
               acc.files.push(cur);
             } else if (!acc.files.length && !acc.images.length && !acc.videos.length) {
+              // Other attachments are kept only while there are no files, images or videos.
               acc.other.push(cur);
             }
 
@@ -522,9 +448,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
           other: [] as Attachment[],
           videos: [] as Attachment[],
         };
-  /**
-   * Check if any actions to prevent long press
-   */
+  // Attachment actions disable long press and the quoted reply content.
   const hasAttachmentActions =
     !isMessageTypeDeleted &&
     Array.isArray(message.attachments) &&
@@ -569,10 +493,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const onOpenThread = () => {
     if (onThreadSelect) {
-      onThreadSelect(message);
-    }
-    if (openThread) {
-      openThread(message);
+      onThreadSelect(client.threads.ensure({ channel, parentMessage: message }));
     }
   };
 
@@ -586,6 +507,17 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
+  const messageActionHandlers = useCreateMessageActionHandlers({
+    channel,
+    client,
+    deleteMessage: deleteMessageFromContext,
+    deleteReaction,
+    message,
+    retrySendMessage,
+    sendReaction,
+    setEditingState,
+    setQuotedMessage,
+  });
   const {
     handleCopyMessage,
     handleDeleteMessage,
@@ -599,99 +531,20 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleToggleMuteUser,
     handleTogglePinMessage,
     handleToggleReaction,
-  } = useMessageActionHandlers({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    enforceUniqueReaction,
-    message,
-    retrySendMessage,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
+  } = messageActionHandlers;
+
+  const onReaction = useStableCallback(async (reactionType: string) => {
+    if (handleReactionProp) {
+      handleReactionProp(message, reactionType);
+    }
+
+    await handleToggleReaction(reactionType);
   });
 
-  const {
-    banUser,
-    copyMessage,
-    deleteMessage,
-    deleteForMeMessage,
-    editMessage,
-    flagMessage,
-    handleReaction,
-    markUnread,
-    muteUser,
-    pinMessage,
-    quotedReply,
-    retry,
-    threadReply,
-    unpinMessage,
-    blockUser,
-  } = useMessageActions({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    dismissOverlay,
-    enforceUniqueReaction,
-    handleBan,
-    handleCopy,
-    handleDelete,
-    handleDeleteForMe,
-    handleEdit,
-    handleFlag,
-    handleMarkUnread,
-    handleMute,
-    handlePinMessage,
-    handleQuotedReply,
-    handleReaction: handleReactionProp,
-    handleRetry,
-    handleThreadReply,
-    handleBlockUser,
-    message,
-    onThreadSelect,
-    openThread,
-    removeMessage,
-    retrySendMessage,
-    selectReaction,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
-    t,
-    updateMessage,
-  });
-
-  const isThreadMessage = threadList || !!message.parent_id;
-
-  const messageActions =
-    typeof messageActionsProp !== 'function'
-      ? messageActionsProp
-      : messageActionsProp({
-          banUser,
-          copyMessage,
-          deleteForMeMessage,
-          deleteMessage,
-          dismissOverlay,
-          editMessage,
-          error: errorOrFailed,
-          flagMessage,
-          isMyMessage,
-          isThreadMessage,
-          markUnread,
-          message,
-          muteUser,
-          ownCapabilities,
-          pinMessage,
-          quotedReply,
-          retry,
-          threadReply,
-          unpinMessage,
-          updateMessage,
-          blockUser,
-        });
+  const handleReaction = useMemo(
+    () => (errorOrFailed ? undefined : selectReaction ? selectReaction(message) : onReaction),
+    [errorOrFailed, message, onReaction, selectReaction],
+  );
 
   const actionHandlers: MessageActionHandlers = {
     copyMessage: handleCopyMessage,
@@ -715,7 +568,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     if (hasAttachmentActions || isBlockedMessage(message) || !enableLongPress) {
       return;
     }
-    // If a message is bounced, on long press the message bounce options modal should open.
+    // Bounced messages open the bounce options dialog on long press.
     if (isBouncedMessage(message)) {
       setIsBounceDialogOpen(true);
       return;
@@ -735,7 +588,6 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     alignment,
     channel,
     contextMenuAnchorRef,
-    deliveredToCount,
     dismissOverlay,
     files: attachments.files,
     goToMessage,
@@ -746,11 +598,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     handleToggleReaction,
     hasReactions,
     images: attachments.images,
-    isMessageAIGenerated,
     isMyMessage,
+    isVeryLastMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
-    members,
     message: overlayActive ? frozenMessage.current : message,
+    messageActionHandlers,
     messageOverlayId,
     messageContentOrder,
     messageHasOnlySingleAttachment,
@@ -829,13 +681,11 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     registerMessageOverlayTarget,
     unregisterMessageOverlayTarget,
     reactions,
-    readBy,
     setQuotedMessage,
     showAvatar,
     showMessageOverlay,
     showReactionsOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
-    threadList,
     videos: attachments.videos,
   });
   const messageOverlayRuntimeContext = useMemo(
@@ -869,9 +719,8 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
     groupStyles?.[0] === 'bottom'
       ? groupStyles[0]
       : undefined;
-  const isVeryLastBubble =
-    messagesContext.enableMessageGroupingByUser &&
-    channel?.state.messages[channel.state.messages.length - 1]?.id === message.id;
+
+  const isVeryLastBubble = messagesContext.enableMessageGroupingByUser && isVeryLastMessage;
   const styles = useStyles({
     groupKey,
     highlightedMessage: (isTargetedMessage || message.pinned) && !isMessageTypeDeleted,
@@ -950,10 +799,7 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
                   });
                 }}
               >
-                <MessageActionList
-                  dismissOverlay={dismissOverlay}
-                  messageActions={messageActions}
-                />
+                <MessageActionListWithActions />
               </View>
             ) : null}
           </Portal>
@@ -968,49 +814,28 @@ const MessageWithContext = (props: MessagePropsWithContext) => {
 
 const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWithContext) => {
   const {
-    chatContext: { mutedUsers: prevMutedUsers },
-    deliveredToCount: prevDeliveredBy,
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
+    isVeryLastMessage: prevIsVeryLastMessage,
     messageOverlayTargetId: prevMessageOverlayTargetId,
-    members: prevMembers,
     message: prevMessage,
     messagesContext: prevMessagesContext,
     showUnreadUnderlay: prevShowUnreadUnderlay,
-    readBy: prevReadBy,
     t: prevT,
   } = prevProps;
   const {
-    chatContext: { mutedUsers: nextMutedUsers },
-    deliveredToCount: nextDeliveredBy,
     goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     isTargetedMessage: nextIsTargetedMessage,
+    isVeryLastMessage: nextIsVeryLastMessage,
     messageOverlayTargetId: nextMessageOverlayTargetId,
-    members: nextMembers,
     message: nextMessage,
     messagesContext: nextMessagesContext,
     showUnreadUnderlay: nextShowUnreadUnderlay,
-    readBy: nextReadBy,
     t: nextT,
   } = nextProps;
-
-  const deliveredByEqual = prevDeliveredBy === nextDeliveredBy;
-  if (!deliveredByEqual) {
-    return false;
-  }
-
-  const readByEqual = prevReadBy === nextReadBy;
-  if (!readByEqual) {
-    return false;
-  }
-
-  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) {
-    return false;
-  }
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) {
@@ -1026,6 +851,10 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
 
   const groupStylesEqual = prevGroupStyles === nextGroupStyles;
   if (!groupStylesEqual) {
+    return false;
+  }
+
+  if (prevIsVeryLastMessage !== nextIsVeryLastMessage) {
     return false;
   }
 
@@ -1099,14 +928,6 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
     return false;
   }
 
-  const mutedUserSame =
-    prevMutedUsers.length === nextMutedUsers.length ||
-    prevMutedUsers.some((mutedUser) => mutedUser.target.id === prevMessage.user?.id) ===
-      nextMutedUsers.some((mutedUser) => mutedUser.target.id === nextMessage.user?.id);
-  if (!mutedUserSame) {
-    return false;
-  }
-
   const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
   if (!showUnreadUnderlayEqual) {
     return false;
@@ -1152,36 +973,27 @@ export type MessageProps = Partial<
   Pick<MessagePropsWithContext, 'groupStyles' | 'message'>;
 
 /**
- * Message - A high level component which implements all the logic required for a message.
- * The actual rendering of the message is delegated via the "Message" property
+ * Implements the logic of a message and renders it through the `MessageItemView` component slot.
  *
  * @example ./Message.md
  */
 export const Message = (props: MessageProps) => {
-  const { message } = props;
-  const { channel, enforceUniqueReaction, members } = useChannelContext();
-  const chatContext = useChatContext();
+  const { channel, enforceUniqueReaction } = useChannelContext();
   const { dismissKeyboard } = useKeyboardContext();
   const messagesContext = useMessagesContext();
-  const { openThread } = useThreadContext();
+  const messageOperations = useMessageOperations();
   const { t } = useTranslationContext();
-  const readBy = useMessageReadData({ message });
-  const deliveredTo = useMessageDeliveredData({ message });
   const { setQuotedMessage, setEditingState } = useMessageComposerAPIContext();
 
   return (
     <MemoizedMessage
       {...messagesContext}
+      {...messageOperations}
       {...{
         channel,
-        chatContext,
-        deliveredToCount: deliveredTo.length,
         dismissKeyboard,
         enforceUniqueReaction,
-        members,
         messagesContext,
-        openThread,
-        readBy: readBy.length,
         setEditingState,
         setQuotedMessage,
         t,

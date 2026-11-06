@@ -13,8 +13,7 @@ export const AITypingIndicatorView = ({ text }: { text: string }) => {
   } = useTheme();
   const styles = useStyles();
 
-  // The native shimmer paints behind its children, so it is laid over the text instead: the
-  // highlight has to sweep across the glyphs, which a transparent background would otherwise hide.
+  // The native shimmer paints behind its children, so it overlays the text.
   return (
     <View style={styles.wrapper}>
       <Text style={styles.text}>{text}</Text>
@@ -35,7 +34,7 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
-        // The native highlight band is soft and wide, so it is kept fairly strong over the text.
+        // The native highlight band is soft and wide, so the opacity stays high.
         shimmer: { opacity: 0.8 },
         text: {
           fontSize: 16,

@@ -33,13 +33,13 @@ export const ChannelEditName = () => {
 
   return (
     <Input
-      accessibilityLabel={t('a11y/Channel name')}
+      accessibilityLabel={t('channelDetails.editChannel.name.accessibilityLabel', 'Channel name')}
       autoCapitalize='words'
       autoCorrect={false}
       containerStyle={nameInputOverride}
       helperText={false}
       onChangeText={handleNameChange}
-      placeholder={t('Channel name')}
+      placeholder={t('channelDetails.editChannel.name.placeholder', 'Channel name')}
       returnKeyType='done'
       testID='channel-edit-name-input'
       value={currentName}

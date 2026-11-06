@@ -40,6 +40,26 @@ describe('ai-components Markdown', () => {
     expect(onLink).toHaveBeenCalledWith('https://getstream.io');
   });
 
+  it('logs a rejected onLink without leaving an unhandled rejection', async () => {
+    const unhandled = jest.fn();
+    process.on('unhandledRejection', unhandled);
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const onLink = jest.fn().mockRejectedValue(new Error('cannot open'));
+
+    try {
+      renderMarkdown('[docs](https://getstream.io)', { onLink });
+      fireEvent.press(screen.getByText('docs'));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(onLink).toHaveBeenCalledWith('https://getstream.io');
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('cannot open'));
+      expect(unhandled).not.toHaveBeenCalled();
+    } finally {
+      process.off('unhandledRejection', unhandled);
+      logSpy.mockRestore();
+    }
+  });
+
   it('renders tables, block quotes, inline code and horizontal rules', () => {
     renderMarkdown('| a | b |\n|---|---|\n| 1 | 2 |\n\n> quoted\n\nuse `npm i`\n\n---\n\nafter');
 

@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ReminderResponse, ReminderState } from 'stream-chat';
+import { nsToDate, nsToMs, ReminderResponseData, ReminderState } from 'stream-chat';
 import {
+  asDynamicKey,
   useMessageReminder,
   useTheme,
   useTranslationContext,
@@ -14,7 +15,7 @@ const reminderStateSelector = (state: ReminderState) => ({
   timeLeftMs: state.timeLeftMs,
 });
 
-export const ReminderBanner = (item: ReminderResponse) => {
+export const ReminderBanner = (item: ReminderResponseData) => {
   useTheme();
   const { accent_blue, accent_red } = useLegacyColors();
   const { t } = useTranslationContext();
@@ -22,17 +23,19 @@ export const ReminderBanner = (item: ReminderResponse) => {
   const reminder = useMessageReminder(message_id);
   const { timeLeftMs } = useStateStore(reminder?.state, reminderStateSelector) ?? {};
   const stopRefreshBoundaryMs = reminder?.timer.stopRefreshBoundaryMs;
+  // `remindAt` is a unix-**nanosecond** wire timestamp while `stopRefreshBoundaryMs` is a
+  // millisecond duration, so the timestamp is converted before the two are added.
   const stopRefreshTimeStamp =
-    reminder?.remindAt && stopRefreshBoundaryMs
-      ? reminder?.remindAt.getTime() + stopRefreshBoundaryMs
+    reminder?.remindAt != null && stopRefreshBoundaryMs != null
+      ? nsToMs(reminder.remindAt) + stopRefreshBoundaryMs
       : undefined;
 
   const isBehindRefreshBoundary =
     !!stopRefreshTimeStamp && new Date().getTime() > stopRefreshTimeStamp;
 
-  if (!reminder?.remindAt) {
+  if (reminder?.remindAt == null) {
     return <Text style={styles.date}>🔖</Text>;
-  } else if (reminder.remindAt && timeLeftMs) {
+  } else if (timeLeftMs != null) {
     return (
       <View
         style={[
@@ -42,13 +45,13 @@ export const ReminderBanner = (item: ReminderResponse) => {
       >
         <Text style={styles.date}>
           {isBehindRefreshBoundary
-            ? t('Due since {{ dueSince }}', {
-                dueSince: t('timestamp/ReminderNotification', {
-                  timestamp: reminder.remindAt,
+            ? t(asDynamicKey('sampleApp.reminders.dueSince.text'), 'Due since {{ dueSince }}', {
+                dueSince: t('timestamp.reminderNotification', {
+                  timestamp: nsToDate(reminder.remindAt),
                 }),
               })
-            : t('Due {{ timeLeft }}', {
-                timeLeft: t('duration/Message reminder', {
+            : t(asDynamicKey('sampleApp.reminders.due.text'), 'Due {{ timeLeft }}', {
+                timeLeft: t('duration.messageReminder', {
                   milliseconds: timeLeftMs,
                 }),
               })}

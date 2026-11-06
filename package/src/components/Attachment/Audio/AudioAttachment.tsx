@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
 import {
+  getAttachmentPreviewUrl,
   isLocalVoiceRecordingAttachment,
   isVoiceRecordingAttachment,
   LocalMessage,
@@ -49,10 +50,8 @@ const getAudioDurationLabel = (durationInMilliseconds: number) => {
 };
 
 export type AudioAttachmentType = AudioConfig &
-  Pick<
-    StreamAudioAttachment | StreamVoiceRecordingAttachment,
-    'waveform_data' | 'asset_url' | 'title' | 'mime_type'
-  > & {
+  Pick<StreamAudioAttachment | StreamVoiceRecordingAttachment, 'asset_url' | 'title'> & {
+    custom: StreamVoiceRecordingAttachment['custom'];
     id: string;
     type: 'audio' | 'voiceRecording';
   };
@@ -62,14 +61,10 @@ export type AudioAttachmentProps = {
   message?: LocalMessage;
   hideProgressBar?: boolean;
   showTitle?: boolean;
-  /**
-   * If true, the speed settings button will be shown.
-   */
+  /** Shows the speed settings button. Defaults to false. */
   showSpeedSettings?: boolean;
   testID?: string;
-  /**
-   * If true, the audio attachment is in preview mode in the message input.
-   */
+  /** Whether the attachment is shown as a preview in the message input. Defaults to false. */
   isPreview?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   indicator?: React.ReactNode;
@@ -90,10 +85,7 @@ const audioPlayerSelector = (state: AudioPlayerState) => ({
   progress: state.progress,
 });
 
-/**
- * AudioAttachment
- * UI Component to preview the audio files
- */
+/** Previews and plays audio and voice recording attachments. */
 export const AudioAttachment = (props: AudioAttachmentProps) => {
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const styles = useStyles();
@@ -110,29 +102,30 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     indicator,
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
+  const waveformData = item.custom?.waveform_data;
 
   const audioPlayer = useAudioPlayer({
-    duration: item.duration ?? 0,
-    mimeType: item.mime_type ?? '',
+    duration: item.duration ?? item.custom?.duration ?? 0,
+    mimeType: item.custom?.mime_type ?? '',
     requester: isPreview
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,
     type: isVoiceRecording ? 'voiceRecording' : 'audio',
-    uri: item.asset_url ?? '',
+    uri: getAttachmentPreviewUrl(item, item.asset_url) ?? '',
   });
   const { duration, isPlaying, position, progress, currentPlaybackRate } = useStateStore(
     audioPlayer.state,
     audioPlayerSelector,
   );
 
-  // Initialize the player for native cli apps
+  // Initializes the player for native CLI apps.
   useEffect(() => {
     if (soundRef.current) {
       audioPlayer.initPlayer({ playerRef: soundRef.current });
     }
   }, [audioPlayer]);
 
-  // When a audio attachment in preview is removed, we need to remove the player from the pool
+  // A removed preview releases its player from the pool.
   useEffect(
     () => () => {
       if (isPreview) {
@@ -142,22 +135,22 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     [audioPlayer, isPreview],
   );
 
-  /** This is for Native CLI Apps */
+  /** Player callback for native CLI apps. */
   const handleLoad = (payload: VideoPayloadData) => {
-    // Voice recordings already carry the canonical duration in the attachment payload.
+    // Voice recordings carry the canonical duration in the attachment payload.
     if (isVoiceRecording) {
       return;
     }
     audioPlayer.duration = payload.duration * ONE_SECOND_IN_MILLISECONDS;
   };
 
-  /** This is for Native CLI Apps */
+  /** Player callback for native CLI apps. */
   const handleProgress = (data: VideoProgressData) => {
     const { currentTime } = data;
     audioPlayer.position = currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
 
-  /** This is for Native CLI Apps */
+  /** Player callback for native CLI apps. */
   const onSeek = (seekResponse: VideoSeekResponse) => {
     audioPlayer.position = seekResponse.currentTime * ONE_SECOND_IN_MILLISECONDS;
   };
@@ -265,13 +258,13 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             />
             {!hideProgressBar && (
               <View style={[styles.progressControlContainer, progressControlContainer]}>
-                {item.waveform_data ? (
+                {waveformData ? (
                   <WaveProgressBar
                     isPlaying={isPlaying}
                     onEndDrag={dragEnd}
                     onStartDrag={dragStart}
                     progress={progress}
-                    waveformData={item.waveform_data}
+                    waveformData={waveformData}
                   />
                 ) : (
                   <ProgressControl
@@ -296,7 +289,7 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
             rate={currentPlaybackRate}
             soundRef={soundRef as RefObject<SoundReturnType>}
             testID='sound-player'
-            uri={item.asset_url}
+            uri={getAttachmentPreviewUrl(item, item.asset_url)}
           />
         )}
       </View>

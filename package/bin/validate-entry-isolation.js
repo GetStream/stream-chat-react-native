@@ -25,12 +25,11 @@ const CORE_SRC = path.join(PACKAGE_DIR, 'src');
 const AI_SRC = path.join(CORE_SRC, 'ai-components');
 const WRAPPERS = ['native-package', 'expo-package'].map((name) => path.join(PACKAGE_DIR, name));
 
-// Third-party packages only the AI components may use. (`lodash` is not one of them: the main
-// entry point imports `lodash/*` modules too.)
+// Third-party packages only the AI components may use. (`lodash` and `@stream-io/state-store` are
+// not among them: the main entry point imports both too.)
 const AI_ONLY_PACKAGES = [
   '@khanacademy/simple-markdown',
   '@shopify/react-native-skia',
-  '@stream-io/state-store',
   'react-syntax-highlighter',
   'victory-native',
   'zod',

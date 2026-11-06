@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    maxWidth: '48%', // lets two items sit per row, tweak as needed
+    maxWidth: '48%', // Two items per row.
   },
   swatch: {
     borderRadius: 2,

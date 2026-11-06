@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { cleanup, render, waitFor } from '@testing-library/react-native';
-import type { Channel, QueryChannelsRequestType, StreamChat } from 'stream-chat';
+import { FlatList } from 'react-native';
+
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
+import { ChannelPaginator } from 'stream-chat';
+import type { Channel, ChannelPaginatorOptions, StreamChat, UserResponse } from 'stream-chat';
 
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChannelsProvider } from '../../../contexts/channelsContext/ChannelsContext';
-import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -18,30 +20,28 @@ let chatClient: StreamChat;
 let defaultChannels: Channel[];
 let queryChannelsResponse: Channel[];
 
-const queryChannelsOverride: QueryChannelsRequestType = () =>
-  Promise.resolve(queryChannelsResponse);
+const doRequest: NonNullable<ChannelPaginatorOptions['paginatorOptions']>['doRequest'] = () =>
+  Promise.resolve({ items: queryChannelsResponse });
 
 /**
  * Renders the full ChannelList (which now always uses ChannelListView internally).
  */
-const Component = () => (
-  <Chat client={chatClient}>
-    <ChatContext.Consumer>
-      {(context) => (
-        <ChatProvider value={{ ...context, isOnline: true }}>
-          <ChannelList
-            filters={{
-              members: {
-                $in: ['vishal', 'neil'],
-              },
-            }}
-            queryChannelsOverride={queryChannelsOverride}
-          />
-        </ChatProvider>
-      )}
-    </ChatContext.Consumer>
-  </Chat>
-);
+const Component = () => {
+  const [paginator] = useState(
+    () =>
+      new ChannelPaginator({
+        client: chatClient,
+        filters: { members: { $in: ['vishal', 'neil'] } },
+        paginatorOptions: { doRequest },
+      }),
+  );
+
+  return (
+    <Chat client={chatClient}>
+      <ChannelList paginator={paginator} />
+    </Chat>
+  );
+};
 
 const noop = () => {};
 
@@ -57,42 +57,36 @@ const ComponentWithContextOverrides = ({
   loadingChannels: boolean;
 }) => (
   <Chat client={chatClient}>
-    <ChatContext.Consumer>
-      {(context) => (
-        <ChatProvider value={{ ...context, isOnline: true }}>
-          <ChannelsProvider
-            value={
-              {
-                additionalFlatListProps: {},
-                channelListInitialized: !loadingChannels && !error,
-                channels: error ? null : [],
-                error: error ? new Error('test error') : undefined,
-                forceUpdate: 0,
-                hasNextPage: false,
-                loadingChannels,
-                loadingNextPage: false,
-                loadMoreThreshold: 0.1,
-                loadNextPage: noop,
-                maxUnreadCount: 255,
-                numberOfSkeletons: 8,
-                refreshing: false,
-                refreshList: noop,
-                reloadList: noop,
-                setFlatListRef: noop,
-              } as unknown as ChannelsContextValue
-            }
-          >
-            <ChannelListView />
-          </ChannelsProvider>
-        </ChatProvider>
-      )}
-    </ChatContext.Consumer>
+    <ChannelsProvider
+      value={
+        {
+          additionalFlatListProps: {},
+          loadMoreThreshold: 0.1,
+          loadNextPage: noop,
+          maxUnreadCount: 255,
+          numberOfSkeletons: 8,
+          refreshList: noop,
+          reloadList: noop,
+          setFlatListRef: noop,
+        } as unknown as ChannelsContextValue
+      }
+    >
+      <ChannelListView
+        channelListInitialized={!loadingChannels && !error}
+        channels={error ? null : []}
+        error={error ? new Error('test error') : undefined}
+        hasNextPage={false}
+        loadingChannels={loadingChannels}
+        loadingNextPage={false}
+        refreshing={false}
+      />
+    </ChannelsProvider>
   </Chat>
 );
 
 describe('ChannelListView', () => {
   beforeAll(async () => {
-    chatClient = await getTestClientWithUser({ id: 'vishal' });
+    chatClient = await getTestClientWithUser({ id: 'vishal' } as UserResponse);
     const c1 = generateChannelResponse();
     const c2 = generateChannelResponse();
     useMockedApis(chatClient, [getOrCreateChannelApi(c1)]);
@@ -132,6 +126,49 @@ describe('ChannelListView', () => {
     await waitFor(() => {
       expect(getByTestId('loading-error')).toBeTruthy();
     });
+  });
+
+  it('loads the next page every time the end is reached', () => {
+    const loadNextPage = jest.fn();
+    const Listing = ({ channels = null }: { channels?: Channel[] | null }) => (
+      <Chat client={chatClient}>
+        <ChannelsProvider
+          value={
+            {
+              additionalFlatListProps: {},
+              loadMoreThreshold: 0.1,
+              loadNextPage,
+              maxUnreadCount: 255,
+              numberOfSkeletons: 8,
+              refreshList: noop,
+              reloadList: noop,
+              setFlatListRef: noop,
+            } as unknown as ChannelsContextValue
+          }
+        >
+          <ChannelListView
+            channelListInitialized={channels !== null}
+            channels={channels}
+            hasNextPage={true}
+            loadingChannels={channels === null}
+            loadingNextPage={false}
+            refreshing={false}
+          />
+        </ChannelsProvider>
+      </Chat>
+    );
+
+    const { rerender, UNSAFE_getByType } = render(<Listing />);
+    const reachEnd = () =>
+      act(() => UNSAFE_getByType(FlatList).props.onEndReached({ distanceFromEnd: 0 }));
+    // An empty list reaches its end as soon as it mounts.
+    reachEnd();
+
+    rerender(<Listing channels={defaultChannels} />);
+    reachEnd();
+    // Reaching the end again within the same drag, after a page has arrived, loads the next one too.
+    reachEnd();
+    expect(loadNextPage).toHaveBeenCalledTimes(3);
   });
 
   it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {

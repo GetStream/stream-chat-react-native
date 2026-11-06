@@ -80,9 +80,14 @@ describe('AutoCompleteInput', () => {
   });
 
   it('should have the maxLength same as the one on the config of channel', async () => {
-    jest.spyOn(channel, 'getConfig').mockReturnValue({
-      max_message_length: 10,
-    } as unknown as ReturnType<typeof channel.getConfig>);
+    // `max_message_length` is a server upper bound on the composer's `text.maxLengthOnSend`, so it has
+    // to be written where the channel derives from — `getConfig()` is gone and `serverConfig` is a getter.
+    client.channelServerConfigsStore.partialNext({
+      configs: {
+        ...client.channelServerConfigs,
+        [channel.cid]: { max_message_length: 10 } as never,
+      },
+    });
     const channelProps = { channel };
     const props = {};
 
@@ -154,6 +159,10 @@ describe('AutoCompleteInput', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('auto-complete-text-input').props.value).toBe(text);
+      // onChangeText defers the textComposer sync via setTimeout(0); wait for it to fully settle
+      // before clearing, otherwise a still-pending flush re-syncs the display after clearState
+      // (an order-dependent flake that only surfaces when earlier tests shift the timing).
+      expect(channel.messageComposer.textComposer.text).toBe(text);
     });
 
     act(() => {

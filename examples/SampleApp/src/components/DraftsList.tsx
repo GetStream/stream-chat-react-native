@@ -3,12 +3,16 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
+// `fromNow` below comes from this plugin — both the runtime method and its type. Imported here
+// rather than relied on from whichever other module happened to extend dayjs first.
+import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   ChannelResponse,
+  convertTimestampToDate,
   DraftMessage,
   DraftResponse,
-  LocalMessage,
-  MessageResponseBase,
+  MessageResponse,
+  TimestampNS,
 } from 'stream-chat';
 import {
   useChatContext,
@@ -23,13 +27,16 @@ import { useLegacyColors } from '../theme/useLegacyColors';
 import type { StackNavigatorParamList } from '../types';
 import { DraftManagerState, DraftsManager } from '../utils/DraftsManager';
 
+dayjs.extend(relativeTime);
+
 export type DraftItemProps = {
   type?: 'channel' | 'thread';
   channel?: ChannelResponse;
-  date?: string;
+  /** Unix nanoseconds, as the API sends it. */
+  date?: TimestampNS;
   message: DraftMessage;
   // TODO: Fix the type for thread
-  thread?: MessageResponseBase;
+  thread?: MessageResponse;
 };
 
 export const DraftItem = ({ type, channel, date, message, thread }: DraftItemProps) => {
@@ -38,7 +45,7 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
   const navigation = useNavigation<NavigationProp<StackNavigatorParamList>>();
   const { client } = useChatContext();
   const messagePreviewText = useMessagePreviewText({ message });
-  const channelName = channel?.name ? channel.name : 'Channel';
+  const channelName = channel?.custom?.name ? channel.custom.name : 'Channel';
 
   const onNavigationHandler = async () => {
     if (channel?.type && channel.id) {
@@ -47,12 +54,7 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
 
       if (type === 'thread' && thread?.id) {
         navigation.navigate('ThreadScreen', {
-          // `thread` is a draft's `parent_message` (`MessageResponseBase`, with
-          // string timestamps). ThreadScreen consumes it as a thread root typed
-          // as `LocalMessage | ThreadType`; the shapes only differ in date field
-          // types, so a targeted cast preserves the existing behavior. See the
-          // `DraftItemProps.thread` TODO about tightening this type upstream.
-          thread: thread as unknown as LocalMessage,
+          thread: client.threads.ensure({ channel: resultChannel, parentMessage: thread }),
           channel: resultChannel,
         });
       } else if (type === 'channel') {
@@ -70,7 +72,9 @@ export const DraftItem = ({ type, channel, date, message, thread }: DraftItemPro
         <Text style={styles.name}>
           {type === 'channel' ? `# ${channelName}` : `Thread in # ${channelName}`}
         </Text>
-        <Text style={[styles.date, { color: grey }]}>{dayjs(date).fromNow()}</Text>
+        <Text style={[styles.date, { color: grey }]}>
+          {date === undefined ? '' : dayjs(convertTimestampToDate(date)).fromNow()}
+        </Text>
       </View>
       <View style={styles.content}>
         <View style={styles.icon}>

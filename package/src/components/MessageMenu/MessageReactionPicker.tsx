@@ -116,7 +116,7 @@ export const EmojiViewerButton = ({
     <>
       <View style={[styles.emojiViewerButton, emojiViewerButton]}>
         <Button
-          accessibilityLabelKey='a11y/Open more reactions'
+          accessibilityLabelKey='messageMenu.reactionPicker.moreReactions.accessibilityLabel'
           variant='secondary'
           type='outline'
           size='sm'
@@ -135,9 +135,7 @@ export const EmojiViewerButton = ({
   );
 };
 
-/**
- * MessageReactionPicker - A high level component which implements all the logic required for a message overlay reaction list
- */
+/** Renders the reaction picker of the message overlay. */
 export const MessageReactionPicker = (props: MessageReactionPickerProps) => {
   const { dismissOverlay, handleReaction } = props;
   const {

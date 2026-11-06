@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import type { Channel, EventTypes, StreamChat } from 'stream-chat';
+import type { Channel, EventType, StreamChat } from 'stream-chat';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 const noop = () => {};
@@ -9,13 +9,13 @@ export function useSyncClientEventsToChannel<O>(_: {
   channel: Channel;
   client: StreamChat;
   selector: (channel: Channel, client: StreamChat) => O;
-  stateChangeEventKeys?: EventTypes[];
+  stateChangeEventKeys?: EventType[];
 }): O;
 export function useSyncClientEventsToChannel<O>(_: {
   selector: (channel: Channel, client: StreamChat) => O;
   channel?: Channel | undefined;
   client?: StreamChat | undefined;
-  stateChangeEventKeys?: EventTypes[];
+  stateChangeEventKeys?: EventType[];
 }): O | undefined;
 export function useSyncClientEventsToChannel<O>({
   channel,
@@ -26,7 +26,7 @@ export function useSyncClientEventsToChannel<O>({
   selector: (channel: Channel, client: StreamChat) => O;
   channel?: Channel | undefined;
   client?: StreamChat;
-  stateChangeEventKeys?: EventTypes[];
+  stateChangeEventKeys?: EventType[];
 }): O | undefined {
   const subscribe = useCallback(
     (onStoreChange: (value: O) => void) => {
@@ -60,12 +60,12 @@ export function useSyncClientEventsToChannel<O>({
 export function useSyncClientEvents<O>(_: {
   client: StreamChat;
   selector: (client: StreamChat) => O;
-  stateChangeEventKeys: EventTypes[];
+  stateChangeEventKeys: EventType[];
 }): O;
 export function useSyncClientEvents<O>(_: {
   client?: StreamChat | undefined;
   selector: (client: StreamChat) => O;
-  stateChangeEventKeys: EventTypes[];
+  stateChangeEventKeys: EventType[];
 }): O | undefined;
 export function useSyncClientEvents<O>({
   client,
@@ -74,7 +74,7 @@ export function useSyncClientEvents<O>({
 }: {
   selector: (client: StreamChat) => O;
   client?: StreamChat;
-  stateChangeEventKeys: EventTypes[];
+  stateChangeEventKeys: EventType[];
 }): O | undefined {
   const subscribe = useCallback(
     (onStoreChange: (value: O) => void) => {

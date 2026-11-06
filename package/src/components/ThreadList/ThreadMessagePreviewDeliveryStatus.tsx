@@ -1,15 +1,21 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Channel, LocalMessage } from 'stream-chat';
+import { Channel, ChannelConfig, LocalMessage } from 'stream-chat';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { MessageDeliveryStatus, useMessageDeliveryStatus } from '../../hooks';
+import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { MessageStatusTypes } from '../../utils/utils';
+
+// Module scope so the selector stays referentially stable.
+const readEventsSelector = ({ readEvents }: ChannelConfig) => ({
+  readEventsEnabled: readEvents.enabled,
+});
 
 export type ThreadMessagePreviewDeliveryStatusProps = {
   channel: Channel;
@@ -23,7 +29,11 @@ export const ThreadMessagePreviewDeliveryStatus = ({
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
-  const channelConfigExists = typeof channel?.getConfig === 'function';
+  // `configState` is the resolved channel configuration, so `read_events` already accounts for
+  // `client.config.set({ channel: { readEvents } })`. Optional chaining covers partial channel
+  // mocks.
+  const configState = channel?.configState;
+  const { readEventsEnabled } = useStateStore(configState, readEventsSelector) ?? {};
   const styles = useStyles();
   const {
     theme: {
@@ -45,23 +55,27 @@ export const ThreadMessagePreviewDeliveryStatus = ({
   }, [message, client.user?.id]);
 
   const readEvents = useMemo(() => {
-    if (!channelConfigExists) {
+    if (!configState) {
       return true;
     }
-    const read_events = !channel.disconnected && !!channel?.id && channel.getConfig()?.read_events;
+    const read_events = !channel.pendingDisposal && !!channel?.id && readEventsEnabled;
     if (typeof read_events !== 'boolean') {
       return true;
     }
     return read_events;
-  }, [channelConfigExists, channel]);
+  }, [configState, readEventsEnabled, channel]);
 
   const { status } = useMessageDeliveryStatus({
     channel,
-    lastMessage: message as LocalMessage,
+    lastMessage: message,
     isReadEventsEnabled: readEvents,
   });
 
-  if (!channel.data?.name && membersWithoutSelf.length === 1 && !isLastMessageByCurrentUser) {
+  if (
+    !channel.data?.custom?.name &&
+    membersWithoutSelf.length === 1 &&
+    !isLastMessageByCurrentUser
+  ) {
     return null;
   }
 
@@ -86,7 +100,7 @@ export const ThreadMessagePreviewDeliveryStatus = ({
       ) : status === MessageDeliveryStatus.SENT ? (
         <icons.Check stroke={semantics.chatTextTimestamp} height={20} width={20} {...checkIcon} />
       ) : null}
-      <Text style={styles.text}>{t('You')}:</Text>
+      <Text style={styles.text}>{t('common.you.label', 'You')}:</Text>
     </View>
   );
 };

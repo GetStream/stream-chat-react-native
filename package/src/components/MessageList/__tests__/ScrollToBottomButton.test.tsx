@@ -1,10 +1,17 @@
 import React from 'react';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { nowNs } from 'stream-chat';
 
+import { AccessibilityProvider } from '../../../contexts/accessibilityContext/AccessibilityContext';
+import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
+import { ChatProvider } from '../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import { Streami18n } from '../../../utils/i18n/Streami18n';
 import { ScrollToBottomButton } from '../ScrollToBottomButton';
 
@@ -18,10 +25,10 @@ describe('ScrollToBottomButton', () => {
 
   it('should render nothing if showNotification is false', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={false} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -34,10 +41,10 @@ describe('ScrollToBottomButton', () => {
 
   it('should render if showNotification is true', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { queryByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -50,11 +57,11 @@ describe('ScrollToBottomButton', () => {
 
   it('should trigger onPress when pressed', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const onPress = jest.fn();
     const { getByTestId } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={onPress} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -64,13 +71,31 @@ describe('ScrollToBottomButton', () => {
   });
 
   it('should display the unread count', async () => {
-    const t = jest.fn((key: string) => key);
+    const t = jest.fn((key: string, d?: unknown) => (typeof d === 'string' ? d : key));
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
+    // The button reads OUR user's count from `channel.state` (a v10 reactive StateStore) via
+    // `useStateStore`, keyed by the chat client's `userId`. Seed the `read` slice with 3 unread
+    // for that user.
+    const channel = {
+      state: generateChannelState({
+        read: {
+          me: {
+            last_read: nowNs(),
+            unread_messages: 3,
+            user: { id: 'me' },
+          },
+        },
+      }),
+    };
     const { getByTestId, getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t } as unknown as TranslationContextValue}>
-          <ScrollToBottomButton onPress={() => null} showNotification={true} unreadCount={3} />
+          <ChatProvider value={{ client: { userId: 'me' } } as unknown as ChatContextValue}>
+            <ChannelProvider value={{ channel } as unknown as ChannelContextValue}>
+              <ScrollToBottomButton onPress={() => null} showNotification={true} />
+            </ChannelProvider>
+          </ChatProvider>
         </TranslationProvider>
       </ThemeProvider>,
     );
@@ -82,10 +107,10 @@ describe('ScrollToBottomButton', () => {
 
   it('should render the message notification and match snapshot', async () => {
     const i18nInstance = new Streami18n();
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const { toJSON } = render(
       <ThemeProvider>
-        <TranslationProvider value={translators as TranslationContextValue}>
+        <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
           <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
@@ -98,5 +123,32 @@ describe('ScrollToBottomButton', () => {
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
     });
+  });
+
+  it.each([
+    [1, 'Scroll to bottom, 1 new message'],
+    [3, 'Scroll to bottom, 3 new messages'],
+  ])('labels the button for %i unread messages as "%s"', async (unreadMessages, label) => {
+    const translators = await new Streami18n().init();
+    const channel = {
+      state: generateChannelState({
+        read: { me: { last_read: nowNs(), unread_messages: unreadMessages, user: { id: 'me' } } },
+      }),
+    };
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <AccessibilityProvider value={{ enabled: true }}>
+          <TranslationProvider value={{ ...translators, userLanguage: 'en' }}>
+            <ChatProvider value={{ client: { userId: 'me' } } as unknown as ChatContextValue}>
+              <ChannelProvider value={{ channel } as unknown as ChannelContextValue}>
+                <ScrollToBottomButton onPress={() => null} showNotification={true} />
+              </ChannelProvider>
+            </ChatProvider>
+          </TranslationProvider>
+        </AccessibilityProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByTestId('scroll-to-bottom-button').props.accessibilityLabel).toBe(label);
   });
 });

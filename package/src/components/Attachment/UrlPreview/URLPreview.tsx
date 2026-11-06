@@ -205,9 +205,7 @@ export type URLPreviewProps = Partial<URLPreviewPropsWithContext> & {
   attachment: Attachment;
 };
 
-/**
- * UI component for card in attachments.
- */
+/** Renders a URL preview card for a scraped link attachment. */
 export const URLPreview = (props: URLPreviewProps) => {
   const { ImageComponent } = useComponentsContext();
   const { message, onLongPress, onPress, onPressIn, preventPress } = useMessageContext();
@@ -215,7 +213,7 @@ export const URLPreview = (props: URLPreviewProps) => {
 
   return (
     <MemoizedURLPreview
-      key={`${message?.id}${message?.updated_at}`} // press listeners must change on message update, updating key ensures this
+      key={`${message?.id}${message?.updated_at}`} // remounts on update to refresh press listeners
       {...{
         additionalPressableProps,
         channelId: message.cid,

@@ -4,22 +4,13 @@ import { AccessibilityInfo, AppState, Platform } from 'react-native';
 import { useAccessibilityContext } from '../../contexts/accessibilityContext/AccessibilityContext';
 
 /**
- * Subscribes to Android accessibility service availability and returns the live state.
+ * Tracks whether any Android accessibility service is running (TalkBack, Switch Access, Voice
+ * Access and so on, not only screen readers).
  *
- * `AccessibilityInfo.isAccessibilityServiceEnabled` reports whether ANY a11y service is
- * running - TalkBack, Switch Access, Voice Access, Select to Speak, etc.  not just
- * screen readers. The signal is Android only; iOS doesn't expose it (and doesn't need to,
- * since the SDK's iOS overlay trap uses `accessibilityViewIsModal`).
+ * React Native emits no change event for this signal, so the state is refreshed on
+ * `screenReaderChanged` and when the app returns to the foreground.
  *
- * React Native does not emit a dedicated change event for this signal, so the hook
- * re-polls when the app returns to the foreground - which is the realistic path for a
- * user toggling Accessibility settings and coming back to the app. The most common
- * single service change (TalkBack on/off) is also covered by the `screenReaderChanged`
- * listener.
- *
- * Returns false on non-Android platforms without subscribing.
- * Returns false when the `AccessibilityContext` is disabled so consumers don't pay the
- * listener cost when the SDK's a11y is opted out.
+ * @returns Whether a service is running. Always false on iOS and when accessibility is disabled.
  */
 export const useAccessibilityServiceEnabled = (): boolean => {
   const { enabled } = useAccessibilityContext();
@@ -39,7 +30,7 @@ export const useAccessibilityServiceEnabled = (): boolean => {
           if (!cancelled) setIsEnabled(value);
         })
         .catch(() => {
-          // Older RN versions / certain environments may not implement this; fall back to false.
+          // The API may be unavailable in older RN versions; stay false.
         });
     };
 

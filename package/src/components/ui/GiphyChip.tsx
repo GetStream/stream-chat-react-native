@@ -27,7 +27,6 @@ export const GiphyChip = () => {
 
   const onPressHandler = () => {
     textComposer.clearCommand();
-    // messageComposer?.restore();
   };
 
   return (

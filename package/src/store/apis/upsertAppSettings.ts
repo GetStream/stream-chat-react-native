@@ -1,29 +1,29 @@
-import type { AppSettingsAPIResponse } from 'stream-chat';
+import type { GetApplicationResponse } from 'stream-chat';
 
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import { SqliteClient } from '../SqliteClient';
 
 export const upsertAppSettings = async ({
   appSettings,
-  currentUserId,
+  userId,
   execute = true,
 }: {
-  appSettings: AppSettingsAPIResponse;
-  currentUserId: string;
+  appSettings: GetApplicationResponse;
+  userId: string;
   execute?: boolean;
 }) => {
   const storableAppSettings = JSON.stringify(appSettings);
   const queries = [
     createUpsertQuery('userSyncStatus', {
       appSettings: storableAppSettings,
-      userId: currentUserId,
+      userId,
     }),
   ];
 
   SqliteClient.logger?.('info', 'upsertAppSettings', {
     appSettings: storableAppSettings,
     execute,
-    userId: currentUserId,
+    userId,
   });
 
   if (execute) {

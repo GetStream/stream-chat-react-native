@@ -10,6 +10,7 @@ import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useSwipeRegistryContext } from '../../contexts/swipeableContext/SwipeRegistryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -34,20 +35,31 @@ export type ChannelDetailsBottomSheetProps = {
 
 export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => {
   const styles = useStyles();
+  const { client } = useChatContext();
   const { t } = useTranslationContext();
   const members = useChannelMembersState(channel);
   const memberCount = useMemo(() => Object.keys(members).length, [members]);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
+  // The watcher count includes the current user, so a DM reads the other member's presence.
+  const isOtherMemberOnline = useMemo(
+    () =>
+      Object.values(members).some(
+        (member) => member.user?.id !== client.userId && member.user?.online,
+      ),
+    [client, members],
+  );
   const muted = useChannelMuteActive(channel);
   const displayedMemberCount = memberCount > 9 ? '9+' : `${memberCount}`;
   const displayedOnlineCount = onlineCount > 9 ? '9+' : `${onlineCount}`;
   const membersAndOnlineLabel = useMemo(
     () =>
-      t('{{memberCount}} members, {{onlineCount}} online', {
+      t('channelDetails.presence.membersOnline.label', {
         count: memberCount,
         memberCount: displayedMemberCount,
         onlineCount: displayedOnlineCount,
+        defaultValue_one: '{{memberCount}} member, {{onlineCount}} online',
+        defaultValue_other: '{{memberCount}} members, {{onlineCount}} online',
       }),
     [displayedMemberCount, displayedOnlineCount, memberCount, t],
   );
@@ -61,7 +73,11 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
           {muted ? <ChannelPreviewMutedStatus /> : null}
         </View>
         <Text style={styles.headerMeta}>
-          {isDirectChat ? (onlineCount === 1 ? t('Online') : t('Offline')) : membersAndOnlineLabel}
+          {isDirectChat
+            ? isOtherMemberOnline
+              ? t('common.presence.online.label', 'Online')
+              : t('common.presence.offline.label', 'Offline')
+            : membersAndOnlineLabel}
         </Text>
       </View>
     </View>

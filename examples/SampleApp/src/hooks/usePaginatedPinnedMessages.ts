@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { Channel, MessageResponse } from 'stream-chat';
+import type { Channel, SearchResultMessage } from 'stream-chat';
 
 import { useAppContext } from '../context/AppContext';
 
@@ -13,7 +13,7 @@ export const usePaginatedPinnedMessages = (channel: Channel) => {
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
+  const [messages, setMessages] = useState<SearchResultMessage[]>([]);
 
   const fetchPinnedMessages = async () => {
     if (queryInProgress.current) {
@@ -33,18 +33,21 @@ export const usePaginatedPinnedMessages = (channel: Channel) => {
         return;
       }
 
-      const res = await chatClient?.search(
-        {
-          cid: { $in: [channel.cid] },
-        },
-        { pinned: true },
-        {
+      // v10 collapses `search(filters, messageFilters, options)` into one payload object.
+      const res = await chatClient?.search({
+        payload: {
+          filter_conditions: {
+            cid: { $in: [channel.cid] },
+          },
+          message_filter_conditions: { pinned: true },
           limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
         },
-      );
+      });
 
-      const newMessages = res?.results.map((r) => r.message);
+      const newMessages = res?.results
+        .map((r) => r.message)
+        .filter((m): m is SearchResultMessage => m !== undefined);
 
       if (!newMessages) {
         queryInProgress.current = false;

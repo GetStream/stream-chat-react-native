@@ -12,7 +12,7 @@ let internalService = undefined;
 try {
   internalService = require('react-native-image-picker');
 } catch (_error) {
-  /* do nothing */
+  // `react-native-image-picker` is not installed.
 }
 
 class RNCLIMediaPickerService extends AbstractMediaPickerService {
@@ -96,7 +96,6 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
             size.height = height;
             size.width = width;
           } catch (e) {
-            // do nothing
             console.warn('Error while getting image size of picture captured from camera ', e);
           }
         } else {
@@ -122,10 +121,11 @@ class RNCLIMediaPickerService extends AbstractMediaPickerService {
       }
     } catch (e: unknown) {
       if (e instanceof Error) {
-        // on iOS: if it was in inactive state, then the user had just denied the permissions
+        // On iOS the permission dialog makes the app inactive, so an inactive state means the user
+        // just denied it; settings are offered only when the app is active.
         if (Platform.OS === 'ios' && AppState.currentState === 'active') {
           const cameraPermissionDeniedMsg = 'User did not grant camera permission.';
-          // Open settings when the user did not allow camera permissions
+          // Offer to open settings when camera permission was denied.
           if (e.message === cameraPermissionDeniedMsg) {
             return { askToOpenSettings: true, cancelled: true };
           }

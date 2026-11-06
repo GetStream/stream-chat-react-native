@@ -11,33 +11,19 @@ import { primitives } from '../../theme';
 import { resampleWaveformData } from '../MessageInput/utils/audioSampling';
 
 export type WaveProgressBarProps = {
-  /**
-   * If true, the underlying attachment is playing.
-   */
+  /** Whether the underlying attachment is playing. */
   isPlaying?: boolean;
-  /**
-   * The progress of the waveform in percentage
-   */
+  /** Playback progress as a fraction from 0 to 1. */
   progress: number;
-  /**
-   * The waveform data to be displayed
-   */
+  /** Waveform amplitudes, resampled to `amplitudesCount` bars. */
   waveformData: number[];
-  /**
-   * The number of amplitudes to display
-   */
+  /** Number of bars to draw. Defaults to as many as fit the measured width, at least 20. */
   amplitudesCount?: number;
-  /**
-   * The function to be called when the user ends dragging the waveform
-   */
+  /** Called with the progress when a drag ends. */
   onEndDrag?: (progress: number) => void;
-  /**
-   * The function to be called when the user is dragging the waveform
-   */
+  /** Called with the progress on every drag update. */
   onProgressDrag?: (progress: number) => void;
-  /**
-   * The function to be called when the user starts dragging the waveform
-   */
+  /** Called with the progress when a drag starts. */
   onStartDrag?: (progress: number) => void;
 };
 

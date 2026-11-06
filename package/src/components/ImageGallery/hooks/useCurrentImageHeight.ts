@@ -9,19 +9,14 @@ import type {
 import { FileTypes } from '../../../types/types';
 
 /**
- * Owns a SharedValue tracking the visible height of the currently selected
- * gallery asset and keeps it in lockstep with the gallery store's
- * currentIndex. Worklet consumers read `.value` on the UI thread.
+ * A SharedValue with the visible height of the currently selected asset, kept in sync with the
+ * gallery store's `currentIndex`. Worklets read `.value` on the UI thread.
  *
- * The store is subscribed via `subscribeWithSelector` (not `useStateStore`),
- * so currentIndex changes never go through React state so no rerender is
- * triggered in the calling component. The callback writes directly into the
- * SharedValue.
+ * The store is subscribed with `subscribeWithSelector`, not `useStateStore`, so an index change
+ * writes the SharedValue without re-rendering the caller.
  *
- * Sync path uses the attachment's intrinsic `original_height`/`original_width`
- * when present. Async fallback via `Image.getSize` handles assets that don't
- * carry dimensions; a token guards against the closure-race where the user
- * swipes past a slide before its dimensions resolve.
+ * The height comes from `original_height` and `original_width` when present, otherwise from
+ * `Image.getSize`, whose result is discarded when the user has already swiped to another slide.
  */
 export const useCurrentImageHeight = ({
   assets,
@@ -53,7 +48,7 @@ export const useCurrentImageHeight = ({
         Image.getSize(
           photo.uri,
           (width, height) => {
-            // Stale result, currentIndex moved on before getSize resolved.
+            // Stale result: `currentIndex` moved on before `getSize` resolved.
             if (currentToken !== latestToken) return;
             if (!width || !height) {
               currentImageHeight.value = fullWindowHeight;

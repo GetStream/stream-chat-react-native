@@ -13,13 +13,11 @@ export type MentionBroadcastItemProps = {
   entity: ChannelMentionSuggestion | HereMentionSuggestion;
 };
 
-// @channel and @here are literal SDK command keywords (matching mentioned_channel
-// and mentioned_here on the wire). The title is not localized; only the
-// description below it is.
+// `@channel` and `@here` are literal keywords, so only the description is localized.
 const TITLE = { channel: '@channel', here: '@here' } as const;
 const SUBTITLE_KEY = {
-  channel: 'mention/Channel Description',
-  here: 'mention/Here Description',
+  channel: 'autoCompleteInput.mention.channel.description',
+  here: 'autoCompleteInput.mention.here.description',
 } as const;
 
 export const MentionBroadcastItem = ({ entity }: MentionBroadcastItemProps) => {

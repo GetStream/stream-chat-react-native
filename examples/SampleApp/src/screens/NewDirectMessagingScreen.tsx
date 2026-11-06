@@ -194,26 +194,31 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
       const members = [chatClient.user.id, ...selectedUserIds];
 
-      // Check if the channel already exists.
-      const channels = await chatClient.queryChannels({
-        members,
-      });
+      // Check if the channel already exists. v10's `queryChannels` returns the raw API response;
+      // `queryChannelsAndHydrate` is the one that still resolves to `Channel[]`, and filters now
+      // live under `filter_conditions`.
+      const channels = await chatClient.queryChannelsAndHydrate(
+        // `$eq` on `members`, not `$in`: this asks "is there a channel with exactly this member
+        // set", which is what the `length === 1` check below relies on. A bare `{ members }` value
+        // meant `$eq` in v9, and `$in` would match any channel containing any one of them.
+        { filter_conditions: { members: { $eq: members } } },
+        // The empty `stateOptions` picks the overload that resolves to `Channel[]`; the one that
+        // takes `{ withResponse: true }` returns the whole response instead.
+        {},
+      );
 
       if (channels.length === 1) {
         // Channel already exist
         currentChannel.current = channels[0];
         isDraft.current = false;
       } else {
-        // Channel doesn't exist.
+        // Channel doesn't exist. `<Channel>` leaves a channel built from members alone, and the
+        // send button creates it with the first message.
         isDraft.current = true;
 
-        const channel = chatClient.channel('messaging', {
-          members,
+        currentChannel.current = chatClient.channel('messaging', {
+          members: members.map((user_id) => ({ user_id })),
         });
-
-        // Hack to trick channel component into accepting channel without watching it.
-        channel.initialized = true;
-        currentChannel.current = channel;
       }
 
       if (messageInputRef.current) {

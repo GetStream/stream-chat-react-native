@@ -1,92 +1,50 @@
 import React, { useMemo } from 'react';
 import { Alert } from 'react-native';
 
-import { LocalMessage } from 'stream-chat';
-
 import { useMessageActionHandlers } from './useMessageActionHandlers';
-
 import { useUserMuteActive } from './useUserMuteActive';
 
-import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
-import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
-import { MessageComposerAPIContextValue } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+import { useMessageContext } from '../../../contexts/messageContext/MessageContext';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../../hooks';
 
 import { removeReservedFields } from '../../../utils/removeReservedFields';
-import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageActionType } from '../../MessageMenu/MessageActionListItem';
 
-export type MessageActionsHookProps = Pick<
-  MessagesContextValue,
-  | 'deleteMessage'
-  | 'sendReaction'
-  | 'handleBan'
-  | 'handleCopy'
-  | 'handleDelete'
-  | 'handleDeleteForMe'
-  | 'handleEdit'
-  | 'handleFlag'
-  | 'handleQuotedReply'
-  | 'handleMarkUnread'
-  | 'handleMute'
-  | 'handlePinMessage'
-  | 'handleRetry'
-  | 'handleReaction'
-  | 'handleThreadReply'
-  | 'handleBlockUser'
-  | 'removeMessage'
-  | 'deleteReaction'
-  | 'retrySendMessage'
-  | 'selectReaction'
-  | 'supportedReactions'
-  | 'updateMessage'
-> &
-  Pick<ChannelContextValue, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue, 'client'> &
-  Pick<ThreadContextValue, 'openThread'> &
-  Pick<MessageContextValue, 'dismissOverlay' | 'message'> &
-  Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: LocalMessage) => void;
-  } & Pick<MessageComposerAPIContextValue, 'setEditingState' | 'setQuotedMessage'>;
-
-export const useMessageActions = ({
-  channel,
-  client,
-  deleteMessage: deleteMessageFromContext,
-  deleteReaction,
-  enforceUniqueReaction,
-  handleBan,
-  handleCopy,
-  handleDelete,
-  handleDeleteForMe,
-  handleEdit,
-  handleFlag,
-  handleMarkUnread,
-  handleMute,
-  handlePinMessage,
-  handleQuotedReply,
-  handleReaction: handleReactionProp,
-  handleRetry,
-  handleThreadReply,
-  handleBlockUser,
-  message,
-  onThreadSelect,
-  openThread,
-  retrySendMessage,
-  selectReaction,
-  sendReaction,
-  setEditingState,
-  supportedReactions,
-  t,
-  setQuotedMessage,
-}: MessageActionsHookProps) => {
+/**
+ * The default message actions (copy, edit, reply, pin, mute, delete, ...) for the message this
+ * component renders, keyed by action name. Call it inside a message, such as a custom message
+ * component or a custom `MessageActionList`. The SDK itself calls it only when a message's action
+ * menu opens.
+ *
+ * @returns The message actions, keyed by action name.
+ */
+export const useMessageActions = () => {
+  const { client } = useChatContext();
+  const { channel } = useChannelContext();
+  const { handleReaction, message, onThreadSelect } = useMessageContext();
+  const {
+    handleBan,
+    handleBlockUser,
+    handleCopy,
+    handleDelete,
+    handleDeleteForMe,
+    handleEdit,
+    handleFlag,
+    handleMarkUnread,
+    handleMute,
+    handlePinMessage,
+    handleQuotedReply,
+    handleRetry,
+    handleThreadReply,
+  } = useMessagesContext();
+  const { t } = useTranslationContext();
   const {
     theme: { semantics },
   } = useTheme();
@@ -103,30 +61,12 @@ export const useMessageActions = ({
     handleToggleBanUser,
     handleToggleMuteUser,
     handleTogglePinMessage,
-    handleToggleReaction,
     handleToggleBlockUser,
-  } = useMessageActionHandlers({
-    channel,
-    client,
-    deleteMessage: deleteMessageFromContext,
-    deleteReaction,
-    enforceUniqueReaction,
-    message,
-    retrySendMessage,
-    sendReaction,
-    setEditingState,
-    setQuotedMessage,
-    supportedReactions,
-  });
-
-  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
+  } = useMessageActionHandlers();
 
   const onOpenThread = useStableCallback(() => {
     if (onThreadSelect) {
-      onThreadSelect(message);
-    }
-    if (openThread) {
-      openThread(message);
+      onThreadSelect(client.threads.ensure({ channel, parentMessage: message }));
     }
   });
 
@@ -141,7 +81,6 @@ export const useMessageActions = ({
   });
 
   const onCopyMessage = useStableCallback(() => {
-    //
     if (handleCopy) {
       handleCopy(message);
     }
@@ -190,14 +129,6 @@ export const useMessageActions = ({
     handleTogglePinMessage();
   });
 
-  const onReaction = useStableCallback(async (reactionType: string) => {
-    if (handleReactionProp) {
-      handleReactionProp(message, reactionType);
-    }
-
-    await handleToggleReaction(reactionType);
-  });
-
   const onMuteUser = useStableCallback(async () => {
     if (message.user?.id) {
       if (handleMute) {
@@ -218,7 +149,7 @@ export const useMessageActions = ({
   const onRetry = useStableCallback(async () => {
     const messageWithoutReservedFields = removeReservedFields(message);
     if (handleRetry) {
-      handleRetry(messageWithoutReservedFields as LocalMessage);
+      handleRetry(messageWithoutReservedFields);
     }
 
     await handleResendMessage();
@@ -232,6 +163,7 @@ export const useMessageActions = ({
   });
 
   const isMuted = useUserMuteActive(message.user);
+  const isBanned = message.user?.banned;
   const isBlocked = new Set(client.blockedUsers.getLatestValue().userIds).has(
     message.user?.id ?? '',
   );
@@ -249,33 +181,35 @@ export const useMessageActions = ({
     const name = message.user?.name || message.user?.id || '';
 
     Alert.alert(
-      t('Block {{ name }}', { name }),
-      t("They won't be able to message or call you. You can unblock them later."),
+      t('message.blockUserConfirm.title', 'Block {{ name }}', { name }),
+      t(
+        'message.blockUserConfirm.text',
+        "They won't be able to message or call you. You can unblock them later.",
+      ),
       [
         {
           style: 'cancel',
-          text: t('Cancel'),
+          text: t('common.cancel.label', 'Cancel'),
         },
         {
           onPress: () => {
             handleToggleBlockUser(message.user);
           },
           style: 'destructive',
-          text: t('Block'),
+          text: t('message.blockUserConfirm.label', 'Block'),
         },
       ],
     );
   });
 
   return useMemo(() => {
-    const handleReaction =
-      !error && !selectReaction ? onReaction : !error ? selectReaction?.(message) : undefined;
-
     const banUser: MessageActionType = {
       action: onBanUser,
       actionType: 'banUser',
       icon: <icons.UserDelete width={20} height={20} stroke={semantics.accentError} />,
-      title: message.user?.banned ? t('Unban User') : t('Ban User'),
+      title: isBanned
+        ? t('message.unbanUser.label', 'Unban User')
+        : t('message.banUser.label', 'Ban User'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -284,7 +218,7 @@ export const useMessageActions = ({
       action: onCopyMessage,
       actionType: 'copyMessage',
       icon: <icons.Copy width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Copy Message'),
+      title: t('message.copyMessage.label', 'Copy Message'),
       type: 'standard',
     };
 
@@ -292,7 +226,7 @@ export const useMessageActions = ({
       action: onDeleteMessage,
       actionType: 'deleteMessage',
       icon: <icons.Delete stroke={semantics.accentError} width={20} height={20} />,
-      title: t('Delete Message'),
+      title: t('message.deleteMessage.label', 'Delete Message'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -301,7 +235,7 @@ export const useMessageActions = ({
       action: onDeleteForMeMessage,
       actionType: 'deleteForMeMessage',
       icon: <icons.Delete stroke={semantics.accentError} width={20} height={20} />,
-      title: t('Delete for me'),
+      title: t('message.deleteForMe.label', 'Delete for me'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -310,7 +244,7 @@ export const useMessageActions = ({
       action: onEditMessage,
       actionType: 'editMessage',
       icon: <icons.Edit width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Edit Message'),
+      title: t('message.editMessage.label', 'Edit Message'),
       type: 'standard',
     };
 
@@ -318,7 +252,7 @@ export const useMessageActions = ({
       action: onFlagMessage,
       actionType: 'flagMessage',
       icon: <icons.MessageFlag width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Flag Message'),
+      title: t('message.flagMessage.label', 'Flag Message'),
       type: 'standard',
     };
 
@@ -326,7 +260,7 @@ export const useMessageActions = ({
       action: onMarkUnread,
       actionType: 'markUnread',
       icon: <icons.UnreadIndicator width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Mark as Unread'),
+      title: t('message.markUnread.label', 'Mark as Unread'),
       type: 'standard',
     };
 
@@ -334,7 +268,7 @@ export const useMessageActions = ({
       action: onTogglePinMessage,
       actionType: 'pinMessage',
       icon: <icons.Pin width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Pin to Conversation'),
+      title: t('message.pinMessage.label', 'Pin to Conversation'),
       type: 'standard',
     };
 
@@ -342,7 +276,7 @@ export const useMessageActions = ({
       action: onTogglePinMessage,
       actionType: 'unpinMessage',
       icon: <icons.Unpin width={20} height={20} stroke={semantics.textSecondary} />,
-      title: t('Unpin from Conversation'),
+      title: t('message.unpinMessage.label', 'Unpin from Conversation'),
       type: 'standard',
     };
 
@@ -354,7 +288,9 @@ export const useMessageActions = ({
       ) : (
         <icons.Mute fill={semantics.textSecondary} height={20} width={20} />
       ),
-      title: isMuted ? t('Unmute User') : t('Mute User'),
+      title: isMuted
+        ? t('message.unmuteUser.label', 'Unmute User')
+        : t('message.muteUser.label', 'Mute User'),
       type: 'standard',
     };
 
@@ -362,7 +298,7 @@ export const useMessageActions = ({
       action: onQuotedReply,
       actionType: 'quotedReply',
       icon: <icons.CurveLineLeftUp stroke={semantics.textSecondary} height={20} width={20} />,
-      title: t('Reply'),
+      title: t('message.reply.label', 'Reply'),
       type: 'standard',
     };
 
@@ -370,7 +306,7 @@ export const useMessageActions = ({
       action: onRetry,
       actionType: 'retry',
       icon: <icons.Resend stroke={semantics.textSecondary} height={20} width={20} />,
-      title: t('Resend'),
+      title: t('message.resend.label', 'Resend'),
       type: 'standard',
     };
 
@@ -378,7 +314,7 @@ export const useMessageActions = ({
       action: onThreadReply,
       actionType: 'threadReply',
       icon: <icons.ThreadReply stroke={semantics.textSecondary} height={20} width={20} />,
-      title: t('Thread Reply'),
+      title: t('message.threadReply.label', 'Thread Reply'),
       type: 'standard',
     };
 
@@ -386,7 +322,9 @@ export const useMessageActions = ({
       action: onBlockUser,
       actionType: 'blockUser',
       icon: <icons.BlockUser stroke={semantics.accentError} height={20} width={20} />,
-      title: isBlocked ? t('Unblock User') : t('Block User'),
+      title: isBlocked
+        ? t('message.unblockUser.label', 'Unblock User')
+        : t('message.blockUser.label', 'Block User'),
       titleStyle: { color: semantics.accentError },
       type: 'destructive',
     };
@@ -409,11 +347,11 @@ export const useMessageActions = ({
       blockUser,
     };
   }, [
-    error,
+    handleReaction,
     icons,
+    isBanned,
     isBlocked,
     isMuted,
-    message,
     onBanUser,
     onBlockUser,
     onCopyMessage,
@@ -424,11 +362,9 @@ export const useMessageActions = ({
     onMarkUnread,
     onMuteUser,
     onQuotedReply,
-    onReaction,
     onRetry,
     onThreadReply,
     onTogglePinMessage,
-    selectReaction,
     semantics.accentError,
     semantics.textSecondary,
     t,

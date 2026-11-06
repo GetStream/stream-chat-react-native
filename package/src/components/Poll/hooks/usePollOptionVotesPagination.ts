@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
-import { isVoteAnswer, PollOption, PollOptionVotesQueryParams, PollVote } from 'stream-chat';
+import {
+  isVoteAnswer,
+  PollOptionResponseData,
+  PollOptionVotesQueryParams,
+  PollVoteResponseData,
+} from 'stream-chat';
 
 import { useChatContext, usePollContext } from '../../../contexts';
 
 export type UsePollOptionVotesPaginationParams = {
-  option: PollOption;
+  option: PollOptionResponseData;
   loadFirstPage?: boolean;
   paginationParams?: PollOptionVotesQueryParams;
 };
@@ -17,26 +22,18 @@ export type UsePollVotesReturnType = {
   loading: boolean;
   loadMore: () => void;
   next: string | null | undefined;
-  votes: PollVote[];
+  votes: PollVoteResponseData[];
 };
 
 /**
- * A hook that queries votes for a given Poll and returns them in a paginated fashion.
- * Should be used instead of the latestVotesByOption property within the reactive state in the
- * event that we need more than the top 10 votes for an option. The returned property votes will
- * automatically be updated and trigger a state change when paginating further. Querying for votes
- * can only be done on an option by option basis.
+ * Queries the votes of one poll option page by page, for when `latestVotesByOption` in the poll
+ * state does not hold enough of them. `votes` stays in sync with vote events for the option.
  *
- * @param option {PollOption} The option for which we want to load the votes.
- * @param loadFirstPage {boolean} Signifies whether the first page should be automatically loaded whenever
- * the hook is first called.
- * @param paginationParams {PollOptionVotesQueryParams} The pagination params we might want to use for our custom
- * needs when invoking the hook.
- *
- * @returns {UsePollVotesReturnType} An object containing all of the needed pagination values as well as the
- * answers.
- **/
-
+ * @param params.option The option to load the votes of.
+ * @param params.loadFirstPage Loads the first page on mount. Defaults to true.
+ * @param params.paginationParams Filter, sort and options merged into every query.
+ * @returns The loaded votes with the pagination state and `loadMore`.
+ */
 export const usePollOptionVotesPagination = ({
   loadFirstPage = true,
   option,
@@ -45,12 +42,13 @@ export const usePollOptionVotesPagination = ({
   const { poll } = usePollContext();
   const { client } = useChatContext();
 
-  const [votes, setVotes] = useState<PollVote[]>([]);
+  const [votes, setVotes] = useState<PollVoteResponseData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error>();
   const cursorRef = useRef<string | null>(undefined);
   const queryInProgress = useRef(false);
-  const optionFilter = useMemo(() => ({ option_id: option.id }), [option.id]);
+  const optionId = option.id;
+  const optionFilter = useMemo(() => ({ option_id: optionId }), [optionId]);
 
   const loadMore = useCallback(async () => {
     if (cursorRef.current === null || queryInProgress.current) {
@@ -64,7 +62,7 @@ export const usePollOptionVotesPagination = ({
       const { next: newNext, votes } = await poll.queryOptionVotes({
         filter: { ...optionFilter, ...paginationParams?.filter },
         options: !next ? paginationParams?.options : { ...paginationParams?.options, next },
-        sort: { created_at: -1, ...paginationParams?.sort },
+        sort: [{ direction: -1, field: 'created_at' }, ...(paginationParams?.sort ?? [])],
       });
       cursorRef.current = newNext || null;
       setVotes((prev) => uniqBy([...prev, ...votes], 'id'));
@@ -84,17 +82,17 @@ export const usePollOptionVotesPagination = ({
 
   // TODO: Possibly generalize these in a utility hook.
   useEffect(() => {
-    const castedListeners = ['poll.vote_casted', 'poll.vote_changed'].map((eventName) =>
+    const castedListeners = (['poll.vote_casted', 'poll.vote_changed'] as const).map((eventName) =>
       client.on(eventName, (event) => {
         if (event.poll?.id && event.poll.id !== poll.id) {
           return;
         }
         const vote = event.poll_vote;
         if (vote && !isVoteAnswer(vote)) {
-          if (vote.option_id === option.id) {
-            setVotes([vote, ...votes.filter((v) => v.id !== vote.id)]);
+          if (vote.option_id === optionId) {
+            setVotes((prev) => [vote, ...prev.filter((v) => v.id !== vote.id)]);
           } else if (eventName === 'poll.vote_changed') {
-            setVotes(votes.filter((v) => v.id !== vote.id));
+            setVotes((prev) => prev.filter((v) => v.id !== vote.id));
           }
         }
       }),
@@ -105,8 +103,8 @@ export const usePollOptionVotesPagination = ({
         return;
       }
       const vote = event.poll_vote;
-      if (vote && !isVoteAnswer(vote) && vote.option_id === option.id) {
-        setVotes(votes.filter((v) => v.id !== vote.id));
+      if (vote && !isVoteAnswer(vote) && vote.option_id === optionId) {
+        setVotes((prev) => prev.filter((v) => v.id !== vote.id));
       }
     });
 
@@ -114,7 +112,7 @@ export const usePollOptionVotesPagination = ({
       castedListeners.forEach((listener) => listener.unsubscribe());
       removedListener.unsubscribe();
     };
-  }, [client, option, poll, votes]);
+  }, [client, optionId, poll]);
 
   return {
     error,

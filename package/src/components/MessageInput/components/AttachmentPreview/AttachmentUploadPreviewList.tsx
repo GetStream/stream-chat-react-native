@@ -21,6 +21,7 @@ import {
   isVideoAttachment,
   LocalAttachment,
   LocalAudioAttachment,
+  LocalUploadAttachment,
   LocalVoiceRecordingAttachment,
 } from 'stream-chat';
 
@@ -83,10 +84,6 @@ const getIsAudioAttachmentPreview =
     isLocalVoiceRecordingAttachment(attachment) ||
     (soundPackageAvailable && isLocalAudioAttachment(attachment));
 
-/**
- * AttachmentUploadPreviewList
- * UI Component to preview the files set for upload
- */
 const UnMemoizedAttachmentUploadPreviewList = () => {
   const {
     AudioAttachmentUploadPreview,
@@ -296,6 +293,16 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
     [attachmentManager, dataRef, prepareForRemoval],
   );
 
+  // `uploadFile` does not check whether uploads are enabled, so a retry does not start one while
+  // they are off.
+  const handleRetry = useCallback(
+    (attachment: LocalUploadAttachment) => {
+      if (!attachmentManager.isUploadEnabled) return;
+      return attachmentManager.uploadFile(attachment);
+    },
+    [attachmentManager],
+  );
+
   useLayoutEffect(() => {
     const previousData = previousDataRef.current;
     const nextIds = new Set(data.map((attachment) => attachment.localMetadata.id));
@@ -350,7 +357,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <ImageAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -358,7 +365,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <AudioAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -367,7 +374,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
           return (
             <AudioAttachmentUploadPreview
               attachment={attachment}
-              handleRetry={attachmentManager.uploadAttachment}
+              handleRetry={handleRetry}
               removeAttachments={removeAttachments}
             />
           );
@@ -375,7 +382,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
           return (
             <FileAttachmentUploadPreview
               attachment={attachment}
-              handleRetry={attachmentManager.uploadAttachment}
+              handleRetry={handleRetry}
               removeAttachments={removeAttachments}
             />
           );
@@ -384,7 +391,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <VideoAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -392,7 +399,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
         return (
           <FileAttachmentUploadPreview
             attachment={attachment}
-            handleRetry={attachmentManager.uploadAttachment}
+            handleRetry={handleRetry}
             removeAttachments={removeAttachments}
           />
         );
@@ -403,7 +410,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
       FileAttachmentUploadPreview,
       ImageAttachmentUploadPreview,
       VideoAttachmentUploadPreview,
-      attachmentManager.uploadAttachment,
+      handleRetry,
       removeAttachments,
       soundPackageAvailable,
     ],
@@ -500,7 +507,7 @@ const UnMemoizedAttachmentUploadPreviewList = () => {
             <AttachmentPreviewCell key={attachment.localMetadata.id}>
               <AudioAttachmentUploadPreview
                 attachment={attachment}
-                handleRetry={attachmentManager.uploadAttachment}
+                handleRetry={handleRetry}
                 removeAttachments={removeAttachments}
               />
             </AttachmentPreviewCell>
@@ -562,10 +569,7 @@ const MemoizedAttachmentUploadPreviewListWithContext = React.memo(
   UnMemoizedAttachmentUploadPreviewList,
 );
 
-/**
- * AttachmentUploadPreviewList
- * UI Component to preview the files set for upload
- */
+/** Previews the attachments set for upload. */
 export const AttachmentUploadPreviewList = () => <MemoizedAttachmentUploadPreviewListWithContext />;
 
 const styles = StyleSheet.create({

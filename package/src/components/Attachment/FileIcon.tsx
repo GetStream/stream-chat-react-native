@@ -164,8 +164,7 @@ const audioFileTypes = [
   'audio/vorbis-config',
 ];
 
-// Partially based on:
-// https://stackoverflow.com/a/4212908/2570866
+// Partially based on https://stackoverflow.com/a/4212908/2570866
 
 const docMimeTypes = [
   // Microsoft Word
@@ -181,8 +180,7 @@ const docMimeTypes = [
   'application/vnd.oasis.opendocument.text-template',
   // .fodt
   'application/vnd.oasis.opendocument.text-flat-xml',
-  // .uot
-  // NOTE: firefox doesn't know mimetype so maybe ignore
+  // .uot has no entry: Firefox does not know its MIME type.
 
   // Microsoft Word
   // .docx
@@ -193,14 +191,6 @@ const docMimeTypes = [
   'application/vnd.ms-word.document.macroEnabled.12',
   // .dotm (no test)
   'application/vnd.ms-word.template.macroEnabled.12',
-
-  // LibreOffice/OpenOffice Writer
-  // .odt
-  'application/vnd.oasis.opendocument.text',
-  // .ott
-  'application/vnd.oasis.opendocument.text-template',
-  // .fodt
-  'application/vnd.oasis.opendocument.text-flat-xml',
 ];
 
 const excelMimeTypes = [
@@ -227,23 +217,22 @@ const excelMimeTypes = [
   // .xlam (no test)
   'application/vnd.ms-excel.addin.macroEnabled.12',
   // .xlsb (no test)
-  'application/vnd.ms-excel.addin.macroEnabled.12',
+  'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
 ];
 
 const powerpointMimeTypes = [
-  // Microsoft Word
+  // Microsoft PowerPoint
   // .ppt .pot .pps .ppa (no test for .ppa)
   'application/vnd.ms-powerpoint',
 
-  // LibreOffice/OpenOffice Writer
+  // LibreOffice/OpenOffice Impress
   // .odp
   'application/vnd.oasis.opendocument.presentation',
   // .otp
   'application/vnd.oasis.opendocument.presentation-template',
   // .fodp
   'application/vnd.oasis.opendocument.presentation-flat-xml',
-  // .uop
-  // NOTE: firefox doesn't know mimetype so maybe ignore
+  // .uop has no entry: Firefox does not know its MIME type.
 
   // .pptx
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
@@ -262,7 +251,7 @@ const powerpointMimeTypes = [
 ];
 
 const zipFileTypes = [
-  // .gzip
+  // .gzip .tar.gz
   'application/gzip',
   // .zip
   'application/zip',
@@ -271,8 +260,6 @@ const zipFileTypes = [
   'application/x-archive',
   // .tar
   'application/x-tar',
-  // .tar.gz
-  'application/gzip',
   // .tar.Z
   'application/x-compress',
   // .tar.bz2
@@ -327,7 +314,6 @@ const videoFileTypes = [
   'video/wmv',
   'video/yuv',
   'video/quicktime',
-  'video/webm',
   'video/x-flv',
 ];
 

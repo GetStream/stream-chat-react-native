@@ -93,7 +93,7 @@ Use `useAnnounceOnStateChange(message, { debounceMs, priority })` for transition
 
 Use `useAnnounceOnShow(visible, message, { delayMs, priority })` for **transient surfaces that appear and disappear repeatedly** (modals, sheets, autocomplete pickers). It announces on each `visible: false → true` transition and resets on hide, so the next show re-announces. The two announcer hooks are not interchangeable: `useAnnounceOnStateChange` dedupes on string equality (correct for "AI is typing" → "AI is generating"), while `useAnnounceOnShow` dedupes on visibility transition (correct for "Suggestions available" each time the picker reopens with the same label). Pair with `useA11yLabel('a11y/…')` for the message so the announcement is i18n'd and gated on the SDK's a11y opt-in.
 
-For incoming messages: use `useIncomingMessageAnnouncements({ channel, ownUserId, activeThreadId, threadList })`. It throttles to 1 announcement per second, batches multi-message bursts, and bounds memory at 500 announced ids.
+For incoming messages: use `useIncomingMessageAnnouncements({ channel, ownUserId, activeThreadId })` (set `activeThreadId` in a thread's list; there is no `threadList` flag). It throttles to 1 announcement per second, batches multi-message bursts, and bounds memory at 500 announced ids.
 
 ### 3) Modal / sheet focus trap
 

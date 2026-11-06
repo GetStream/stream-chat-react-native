@@ -1,31 +1,35 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
 
+import type { LocalMessage } from 'stream-chat';
+
 import { MessageListProps } from '../../components/MessageList/MessageList';
 
 import { Theme } from '../themeContext/utils/theme';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+/**
+ * Goes to a message, used when a quoted message is pressed.
+ *
+ * @param messageId The ID of the message to go to.
+ * @param message The message, when the caller has it (the pressed quote passes its quoted message).
+ */
+export type GoToMessage = (
+  messageId: string,
+  message?: NonNullable<LocalMessage['quoted_message']>,
+) => void;
+
 export type MessageListItemContextValue = {
-  /**
-   * Handler to go to a particular message when its quoted.
-   *
-   * @param messageId The id of the message to go to.
-   * @returns void
-   */
-  goToMessage: (messageId: string) => void;
-  /**
-   * Theme to use for the message list item
-   */
+  /** Goes to a message, used when a quoted message is pressed. */
+  goToMessage: GoToMessage;
+  /** The theme of the list items, with `myMessageTheme` merged in. */
   modifiedTheme: Theme;
-  /**
-   * Whether to group messages by user
-   */
+  /** Turns off grouping of consecutive messages by user. */
   noGroupByUser?: boolean;
   /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
+   * Called when the replies button is pressed.
    *
-   * @param message A message object to open the thread upon.
+   * @param thread The thread to open.
    */
   onThreadSelect: MessageListProps['onThreadSelect'];
   setNativeScrollability: (value: boolean) => void;
@@ -51,7 +55,7 @@ export const useMessageListItemContext = () => {
 
   if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
-      'The useMessageListItemContext hook was called outside of the MessageListItemContext provider. Make sure you have configured MessageListItem component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list',
+      'The useMessageListItemContext hook was called outside of the MessageListItemContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/react-native/ui-components/message-list/',
     );
   }
 

@@ -9,10 +9,7 @@ export type BadgeNotificationProps = {
   count: number;
   size: 'sm' | 'xs';
   testID?: string;
-  /**
-   * Optional accessibility label override. When provided, screen readers
-   * announce this string instead of the bare count.
-   */
+  /** Accessibility label announced in place of the bare count. */
   accessibilityLabel?: string;
 };
 

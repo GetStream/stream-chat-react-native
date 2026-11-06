@@ -8,12 +8,13 @@ import {
   AuthorizationStatus,
   FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
-import { StreamChat, PushProvider } from 'stream-chat';
+import { ChannelPaginator, StreamChat, PushProvider } from 'stream-chat';
 import { SqliteClient } from 'stream-chat-react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
 import AsyncStore from '../utils/AsyncStore';
+import { clearLastToken, getTokenOrProvider, SAMPLE_APP_API_KEY } from '../utils/tokenProvider';
 
 const messaging = getMessaging();
 
@@ -59,8 +60,30 @@ const requestAndroidPermission = async () => {
   return true;
 };
 
+// The query the channel list shows. With a predefined filter the server owns the filter and sort.
+const channelListRequestOptions = {
+  presence: true,
+  state: true,
+  watch: true,
+  message_limit: 25,
+  predefined_filter: 'basic_channel_list_filter',
+};
+
+// The app's single client. It lives at module level, so it outlives the components that use it.
+const getChatClient = (apiKey: string) =>
+  StreamChat.getInstance(apiKey, {
+    client: {
+      axiosRequestConfig: { timeout: 6000 },
+      // keeps the user when connecting fails offline, so the app opens on its offline data and
+      // reconnects once the network is back
+      persistUserOnConnectionFailure: true,
+    },
+    // logger: (type, msg) => console.log(type, msg)
+  });
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
+  const [channelListPaginator, setChannelListPaginator] = useState<ChannelPaginator | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const unsubscribePushListenersRef = useRef<() => void>(undefined);
@@ -72,10 +95,32 @@ export const useChatClient = () => {
   const loginUser = async (config: LoginConfig) => {
     // unsubscribe from previous push listeners
     unsubscribePushListenersRef.current?.();
-    const client = StreamChat.getInstance(config.apiKey, {
-      timeout: 6000,
-      // logger: (type, msg) => console.log(type, msg)
+    const client = getChatClient(config.apiKey);
+
+    // Declarative configuration for the instances the SDK builds for us. Registered here, at the
+    // client-creation site, rather than from a component effect: some configuration is read once when
+    // an instance is constructed, and channels are constructed by `client.channel()` — which can run
+    // before a component effect flushes. Behaviour that cannot be expressed as a value (middleware)
+    // stays in the `messageComposer` setup function in `App.tsx`.
+    //
+    // `linkPreviews.enabled` is deliberately not set: it defaults to `true` in v10 and is ANDed with
+    // the channel type's `url_enrichment`, so the server has the final say either way.
+    client.config.set({
+      messageComposer: {
+        drafts: { enabled: true },
+      },
     });
+
+    // The app owns the channel list's paginator. It lives as long as the user is connected, so the
+    // list keeps its channels when its screen unmounts, and is removed on logout.
+    const paginator = new ChannelPaginator({
+      client,
+      id: 'channel-list',
+      requestOptions: { ...channelListRequestOptions, filter_values: { user_id: config.userId } },
+    });
+    client.channelManager.insertPaginator({ paginator });
+    setChannelListPaginator(paginator);
+
     setChatClient(client);
 
     const user = {
@@ -83,7 +128,7 @@ export const useChatClient = () => {
       image: config.userImage,
       name: config.userName,
     };
-    await client.connectUser(user, config.userToken);
+    await client.connectUser(user, getTokenOrProvider(config));
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     const permissionAuthStatus = await messaging.hasPermission();
@@ -114,13 +159,23 @@ export const useChatClient = () => {
           ? providerNameOverride
           : (provider?.name ?? 'rn-fcm');
       const token = id === 'firebase' ? firebaseToken : (apnsToken ?? firebaseToken);
-      await client.addDevice(token, id as PushProvider, client.userID, name);
+      // v10 takes one request object and infers the user from the connection, so the `userID`
+      // argument v9 needed here is gone.
+      await client.createDevice({
+        id: token,
+        push_provider: id as PushProvider,
+        push_provider_name: name,
+      });
 
       // Listen to new FCM tokens and register them with stream chat server.
       const unsubscribeTokenRefresh = messaging.onTokenRefresh(async (newFirebaseToken) => {
         const newApnsToken = await messaging.getAPNSToken();
         const newToken = id === 'firebase' ? newFirebaseToken : (newApnsToken ?? firebaseToken);
-        await client.addDevice(newToken, id as PushProvider, client.userID, name);
+        await client.createDevice({
+          id: newToken,
+          push_provider: id as PushProvider,
+          push_provider_name: name,
+        });
       });
       // show notifications when on foreground
       const unsubscribeForegroundMessageReceive = messaging.onMessage(async (remoteMessage) => {
@@ -150,7 +205,7 @@ export const useChatClient = () => {
     try {
       if (userId) {
         await loginUser({
-          apiKey: 'yjrt5yxw77ev',
+          apiKey: SAMPLE_APP_API_KEY,
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
           userName: USERS[userId].name,
@@ -163,7 +218,18 @@ export const useChatClient = () => {
         );
 
         if (config) {
-          await loginUser(config);
+          const client = getChatClient(config.apiKey);
+          // The client is still connected as this user when the app mounts again on a running
+          // JS context (on Android, back on the root screen closes the activity but keeps the
+          // process). We do not want to login again in that case.
+          if (client.userID === config.userId) {
+            setChannelListPaginator(
+              client.channelManager.paginators.find((p) => p.id === 'channel-list') ?? null,
+            );
+            setChatClient(client);
+          } else {
+            await loginUser(config);
+          }
         }
       }
     } catch (e) {
@@ -173,8 +239,16 @@ export const useChatClient = () => {
   };
 
   const logout = async () => {
+    if (chatClient?.userID) await clearLastToken(chatClient.userID);
     await SqliteClient.resetDB();
     setChatClient(null);
+    setChannelListPaginator(null);
+    // `disconnectUser` empties the registered channel lists but keeps them registered, so the list
+    // that belonged to this user is removed here.
+    if (channelListPaginator) {
+      chatClient?.channelManager.removePaginator(channelListPaginator);
+      channelListPaginator.dispose();
+    }
     chatClient?.disconnectUser();
     await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
@@ -190,6 +264,7 @@ export const useChatClient = () => {
   }, []);
 
   return {
+    channelListPaginator,
     chatClient,
     isConnecting,
     loginUser,

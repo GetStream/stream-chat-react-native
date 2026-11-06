@@ -65,11 +65,11 @@ export const useVoiceConversation = (active: boolean) => {
 
   const latestReply = useStableCallback(() => {
     const seenIds = turn.current?.seenIds ?? new Set<string>();
-    const messages = channel?.state.latestMessages ?? [];
+    const messages = channel?.messagePaginator.items ?? [];
     for (let i = messages.length - 1; i >= 0; i--) {
       const message = messages[i];
       if (seenIds.has(message.id)) break;
-      if (message.ai_generated && message.text) return message.text;
+      if (message.custom?.ai_generated && message.text) return message.text;
     }
     return null;
   });
@@ -129,7 +129,7 @@ export const useVoiceConversation = (active: boolean) => {
     }
     turn.current = {
       sawWorking: false,
-      seenIds: new Set((channel?.state.latestMessages ?? []).map((message) => message.id)),
+      seenIds: new Set((channel?.messagePaginator.items ?? []).map((message) => message.id)),
     };
     setPhase('thinking');
     void send({ text });

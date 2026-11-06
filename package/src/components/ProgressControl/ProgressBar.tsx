@@ -15,7 +15,6 @@ export type ProgressBarProps = {
 export const ProgressBar = ({ progress, filledColor, emptyColor }: ProgressBarProps) => {
   const styles = useStyles();
 
-  // clamp for safety
   const value = Math.max(0, Math.min(progress, 1));
   const unfilledValue = 1 - value;
 

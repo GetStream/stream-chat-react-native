@@ -15,6 +15,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { useChannelActions } from '../../../hooks/actions/useChannelActions';
+import { generateChannelState } from '../../../mock-builders/generator/channelState';
 import {
   ChannelDetailsEditButton,
   ChannelDetailsEditButtonProps,
@@ -48,7 +49,7 @@ const buildChannel = (capabilities: string[] = []): Channel =>
     cid: 'messaging:test',
     data: { own_capabilities: capabilities },
     on: () => ({ unsubscribe: () => undefined }),
-    state: { members: {} },
+    state: generateChannelState({ ownCapabilities: capabilities }),
   }) as unknown as Channel;
 
 const Providers = ({ children }: PropsWithChildren) => (
@@ -56,13 +57,13 @@ const Providers = ({ children }: PropsWithChildren) => (
     <AccessibilityProvider value={{ enabled: true }}>
       <TranslationProvider
         value={{
-          t: ((key: string) => key) as never,
+          t: ((key: string, d?: unknown) => (typeof d === 'string' ? d : key)) as never,
           tDateTimeParser: ((input: unknown) => input) as never,
           userLanguage: 'en',
         }}
       >
         <ChatContext.Provider
-          value={{ client: { notifications: new NotificationManager(), userID: 'me' } } as never}
+          value={{ client: { notifications: new NotificationManager(), userId: 'me' } } as never}
         >
           {children}
         </ChatContext.Provider>

@@ -4,9 +4,11 @@ import {
   setBackgroundMessageHandler,
 } from '@react-native-firebase/messaging';
 import { getMessaging } from '@react-native-firebase/messaging';
-import { DeliveredMessageConfirmation, StreamChat } from 'stream-chat';
+import { DeliveredMessagePayload, StreamChat } from 'stream-chat';
 
 import AsyncStore from './AsyncStore';
+
+import { getTokenOrProvider } from './tokenProvider';
 
 import { LoginConfig } from '../types';
 
@@ -47,7 +49,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
     }
     const chatClient = StreamChat.getInstance(loginConfig.apiKey);
     // eslint-disable-next-line no-underscore-dangle -- stream-chat exposes _setToken as a public-but-underscore-prefixed method for background contexts
-    await chatClient._setToken({ id: loginConfig.userId }, loginConfig.userToken);
+    await chatClient._setToken({ id: loginConfig.userId }, getTokenOrProvider(loginConfig));
 
     const notification = remoteMessage.data;
 
@@ -59,7 +61,7 @@ setBackgroundMessageHandler(messaging, async (remoteMessage) => {
     ];
 
     await chatClient?.markChannelsDelivered({
-      latest_delivered_messages: deliverMessageConfirmation as DeliveredMessageConfirmation[],
+      latest_delivered_messages: deliverMessageConfirmation as DeliveredMessagePayload[],
     });
     // create the android channel to send the notification to
     const channelId = await notifee.createChannel({

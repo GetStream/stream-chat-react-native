@@ -101,13 +101,10 @@ const defaultMarkdownStyles: MarkdownStyle = {
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
   },
-  // Heading sizes are derived from the body font size (`typographyFontSizeMd`) so they
-  // scale with the integrator's typography settings. lineHeight = fontSize × 1.25 to
-  // give headings room to breathe. Both fields are required here: without lineHeight,
-  // the inherited `lineHeight: typographyLineHeightNormal` (20) from `styles.text` (set
-  // in renderText below) leaks into the heading's inner Text via the markdown library's
-  // text rule (`{...styles.text, ...state.style}`) and squishes larger heading fontSizes
-  // into a 20px line box.
+  // Heading sizes derive from the body font size (`typographyFontSizeMd`) and scale with it, with
+  // lineHeight = fontSize × 1.25. lineHeight is required: otherwise `styles.text`'s
+  // `typographyLineHeightNormal` leaks into the heading's inner Text through the markdown
+  // library's text rule (`{...styles.text, ...state.style}`) and squishes larger headings.
   heading1: {
     fontSize: primitives.typographyFontSizeMd * 2,
     lineHeight: primitives.typographyFontSizeMd * 2 * 1.25,
@@ -342,8 +339,8 @@ export const renderText = (params: RenderTextParams) => {
   let previousLink: string | undefined;
   const linkReact: ReactNodeOutput = (node, output, { ...state }) => {
     let url: string;
-    // Some long URLs with `&` separated parameters are trimmed and the url only until first param is taken.
-    // This is done because of internal link been taken from the original URL in react-native-markdown-package. So, we check for `withinLink` and take the previous full URL.
+    // Inside a link (`withinLink`), react-native-markdown-package passes a URL cut at its first `&`
+    // parameter, so the previous full URL is reused.
     if (state?.withinLink && previousLink) {
       url = previousLink;
     } else {
@@ -388,8 +385,7 @@ export const renderText = (params: RenderTextParams) => {
 
   const paragraphTextReact: ReactNodeOutput = (node, output, { ...state }) => {
     if (messageTextNumberOfLines !== undefined) {
-      // If we want to truncate the message text, lets only truncate the first paragraph
-      // and simply not render rest of the paragraphs.
+      // Truncation applies to the first paragraph only; the other paragraphs are not rendered.
       if (state.key === '0' || state.key === 0) {
         return (
           <Text key={state.key} numberOfLines={messageTextNumberOfLines} style={styles.paragraph}>
@@ -408,8 +404,8 @@ export const renderText = (params: RenderTextParams) => {
     );
   };
 
-  // Collect every mention type the server sent us into a single typed list so
-  // the markdown rule, the lookup, and the press payload all see the same shape.
+  // Every mention type of the message as one typed list, shared by the markdown rule, the lookup
+  // and the press payload.
   const {
     mentioned_channel,
     mentioned_group_ids,
@@ -447,10 +443,8 @@ export const renderText = (params: RenderTextParams) => {
     ),
   ];
 
-  // Lookup keyed by the rendered mention text (sans `@`), lowercased so we
-  // resolve case-insensitively. First-write-wins: if a user shares a name with
-  // a role/group, the user entity is preferred — same precedence the React SDK
-  // applies via insertion order in its plugin.
+  // Keyed by the lowercased mention text without the `@`, for case-insensitive lookup. The first
+  // entity wins, so a user is preferred over a role or group with the same name.
   const mentionLookup = new Map<string, MentionEntity>();
   for (const entity of mentionEntities) {
     const key = (entity.name ?? entity.id).toLowerCase();
@@ -566,13 +560,13 @@ export const renderText = (params: RenderTextParams) => {
       react: blockQuoteReact,
     },
     codeBlock: { react: codeBlockReact },
-    // do not render images, we will scrape them out of the message and show on attachment card component
+    // Images are not rendered inline; the attachment card shows them.
     image: { match: () => null },
     link: { react: linkReact },
     list: { react: listReact },
-    // Truncate long text content in the message overlay
+    // Truncates the text when `messageTextNumberOfLines` is set, such as in the message overlay.
     paragraph: messageTextNumberOfLines ? { react: paragraphTextReact } : {},
-    // we have no react rendering support for reflinks
+    // Reference links are not rendered.
     reflink: { match: () => null },
     sublist: { react: listReact },
     ...(mentionTokens
@@ -613,11 +607,8 @@ export interface ListOutputProps {
 }
 
 /**
- * For lists and sublists, the default behavior of the markdown library we use is
- * to always renumber any list, so all ordered lists start from 1.
- *
- * This custom rule overrides this behavior both for top level lists and sublists,
- * in order to start the numbering from the number of the first list item provided.
+ * Renders lists and sublists. Ordered lists start at the number of their first item, where the
+ * markdown library renumbers every list from 1.
  */
 export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => {
   let isSublist = state.withinList;

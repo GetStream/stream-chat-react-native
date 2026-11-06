@@ -12,11 +12,11 @@ import { primitives } from '../../../theme';
 import { Button } from '../../ui/Button/Button';
 
 export type ChannelDetailsNavHeaderProps = {
-  /** Content rendered on the trailing side of the header (e.g. the edit button). */
+  /** Content on the trailing side of the header, such as the edit button. */
   action?: React.ReactNode;
   /** Fired when the back button is pressed. The back button only renders when provided. */
   onBack?: () => void;
-  /** Override the auto-resolved screen title (1:1 → "Contact Info", group → "Group Info"). */
+  /** Overrides the default title ("Contact Info" for direct chats, "Group Info" for groups). */
   title?: string;
 };
 
@@ -39,7 +39,11 @@ export const ChannelDetailsNavHeader = ({
   const isDirect = useIsDirectChat(channel);
   const styles = useStyles();
 
-  const resolvedTitle = title ?? (isDirect ? t('Contact Info') : t('Group Info'));
+  const resolvedTitle =
+    title ??
+    (isDirect
+      ? t('channelDetails.header.contactInfo.title', 'Contact Info')
+      : t('channelDetails.header.groupInfo.title', 'Group Info'));
 
   return (
     <View
@@ -53,7 +57,7 @@ export const ChannelDetailsNavHeader = ({
       <View style={styles.sideContainer}>
         {onBack ? (
           <Button
-            accessibilityLabelKey='a11y/Back'
+            accessibilityLabelKey='channelDetails.header.back.accessibilityLabel'
             iconOnly
             LeadingIcon={icons.ChevronLeft}
             onPress={onBack}

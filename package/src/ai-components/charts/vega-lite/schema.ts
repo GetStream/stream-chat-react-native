@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/* primitives */
 export const VLType = z.enum(['quantitative', 'ordinal', 'nominal', 'temporal']);
 
 const FieldRef = z.object({
@@ -14,29 +13,13 @@ const ColorXY = z.object({
 });
 const ColorPie = z.object({ field: z.string(), type: VLType.optional() });
 
-/* we support only these currently */
-const MarkName = z.enum([
-  'bar',
-  'line',
-  'area',
-  'point',
-  'arc',
-  // 'rect',
-  // 'rule',
-  // 'text',
-  // 'tick',
-  // 'circle',
-  // 'square',
-  // 'trail',
-  // 'geoshape',
-  // 'image',
-]);
+// Supported mark types.
+const MarkName = z.enum(['bar', 'line', 'area', 'point', 'arc']);
 
 const MarkDef = z.looseObject({
   type: z.union([MarkName, z.string()]).optional(),
 });
 
-/* encodings */
 const XyEncoding = z.object({
   x: FieldRef,
   y: FieldRef,
@@ -48,7 +31,6 @@ const PieEncoding = z.object({
   color: ColorPie.optional(),
 });
 
-/* base spec */
 const BaseVL = z.object({
   archetype: z.literal('vegalite'),
   $schema: z.string().optional(),
@@ -61,7 +43,6 @@ const BaseVL = z.object({
   markName: MarkName,
 });
 
-/* branches (with explicit kind) */
 const VL_XY = BaseVL.extend({
   type: z.literal('xy'),
   encoding: XyEncoding,
@@ -97,7 +78,8 @@ const deriveMarkName = (o: any): string | undefined => {
 
 export const VegaLiteCore = z.discriminatedUnion('type', [VL_XY, VL_PIE]);
 
-/* final schema: preprocess to inject needed metadata, then discriminated union */
+// Injects `type` (`pie` for an `arc` mark or a `theta` encoding, else `xy`), `archetype` and
+// `markName`, then validates against the discriminated union.
 export const VegaLiteSchema = z.preprocess((raw) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON input, validated by the zod schema below
   const o: any = raw ?? {};

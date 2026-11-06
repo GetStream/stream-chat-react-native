@@ -22,7 +22,7 @@ describe('MessageSystem', () => {
   afterEach(cleanup);
 
   it('should render the message system', async () => {
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const message = generateMessage();
     const { queryByTestId } = render(
       <ThemeProvider
@@ -42,7 +42,7 @@ describe('MessageSystem', () => {
   });
 
   it('should match the snapshot for message system', async () => {
-    const translators = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.init();
     const user = generateStaticUser(0);
     const message = generateStaticMessage('Hello World', { user });
     render(

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import type { AxiosAdapter, AxiosProgressEvent, InternalAxiosRequestConfig } from 'axios';
 import type { StreamChat } from 'stream-chat';
 
@@ -24,11 +23,9 @@ type NativeMultipartAxiosRequestConfig = InternalAxiosRequestConfig & {
   uploadProgress?: (event: AxiosProgressEvent) => void;
 };
 
-type ResolvableAxiosAdapter = Parameters<typeof axios.getAdapter>[0];
-
 const DEFAULT_COMPLETION_PROGRESS_CAP = 90;
 
-const installedAdapters = new WeakSet<StreamChat>();
+const installedClients = new WeakSet<StreamChat>();
 
 const getFormDataEntries = (data: unknown): [string, FormDataPartValue][] | null => {
   if (!data || typeof data !== 'object') {
@@ -80,11 +77,8 @@ const getNativeProgressOptions = (
   return Object.keys(nativeProgressOptions).length ? nativeProgressOptions : undefined;
 };
 
-const createNativeMultipartRequest = (
-  client: StreamChat,
-  config: NativeMultipartAxiosRequestConfig,
-): NativeMultipartUploadRequest | null => {
-  const entries = getFormDataEntries(config.data);
+const getNativeMultipartParts = (data: unknown): NativeMultipartUploadRequest['parts'] | null => {
+  const entries = getFormDataEntries(data);
 
   if (!entries) {
     return null;
@@ -117,6 +111,19 @@ const createNativeMultipartRequest = (
   }
 
   if (!parts.some((part) => part.kind === 'file')) {
+    return null;
+  }
+
+  return parts;
+};
+
+const createNativeMultipartRequest = (
+  client: StreamChat,
+  config: NativeMultipartAxiosRequestConfig,
+): NativeMultipartUploadRequest | null => {
+  const parts = getNativeMultipartParts(config.data);
+
+  if (!parts) {
     return null;
   }
 
@@ -250,53 +257,55 @@ const nativeMultipartAxiosAdapter = async (
   };
 };
 
-const resolveAxiosAdapter = (adapter: ResolvableAxiosAdapter): AxiosAdapter =>
-  axios.getAdapter(adapter);
-
-const createNativeMultipartAwareAdapter = (
-  client: StreamChat,
-  fallbackAdapter: ResolvableAxiosAdapter,
-): AxiosAdapter => {
-  const resolvedFallbackAdapter = resolveAxiosAdapter(fallbackAdapter);
-
-  return (config) => {
+const createNativeMultipartAdapter =
+  (client: StreamChat): AxiosAdapter =>
+  (config) => {
+    // Built from the config the adapter receives, so it includes the changes made by request
+    // interceptors registered before this one (axios runs them after it) and `transformRequest`.
     const nativeMultipartRequest = createNativeMultipartRequest(
       client,
       config as NativeMultipartAxiosRequestConfig,
     );
 
     if (!nativeMultipartRequest) {
-      return resolvedFallbackAdapter(config);
+      return Promise.reject(
+        new Error(
+          'Native multipart upload: the request body changed after it was routed to the native uploader.',
+        ),
+      );
     }
 
     return nativeMultipartAxiosAdapter(nativeMultipartRequest, config);
   };
-};
 
-export const wrapAxiosAdapterWithNativeMultipart = (
-  client: StreamChat,
-  fallbackAdapter: ResolvableAxiosAdapter,
-): AxiosAdapter => {
-  if (!isNativeMultipartUploadAvailable()) {
-    return resolveAxiosAdapter(fallbackAdapter);
-  }
-
-  return createNativeMultipartAwareAdapter(client, fallbackAdapter);
-};
-
+/**
+ * Routes multipart file uploads through the native uploader by setting `adapter` on those requests
+ * only. Does nothing when native multipart upload is unavailable or the client is already set up.
+ *
+ * Uploads go native even when the app installed an axios adapter of its own, as they did in v9;
+ * every other request still goes through the app's adapter. `defaults.adapter` itself is not
+ * replaced: that would require importing axios here to resolve the fallback, and a copy different
+ * from `stream-chat`'s would fail every request with an `AxiosError` that `stream-chat` does not
+ * recognize.
+ *
+ * @param client The client to install the adapter on.
+ */
 export const installNativeMultipartAdapter = (client: StreamChat) => {
   if (!isNativeMultipartUploadAvailable()) {
     return;
   }
 
-  if (installedAdapters.has(client)) {
+  if (installedClients.has(client)) {
     return;
   }
 
-  const previousAdapter = client.axiosInstance.defaults.adapter;
-  client.axiosInstance.defaults.adapter = wrapAxiosAdapterWithNativeMultipart(
-    client,
-    previousAdapter,
-  );
-  installedAdapters.add(client);
+  const nativeMultipartAdapter = createNativeMultipartAdapter(client);
+  client.axiosInstance.interceptors.request.use((config) => {
+    if (getNativeMultipartParts(config.data)) {
+      config.adapter = nativeMultipartAdapter;
+    }
+
+    return config;
+  });
+  installedClients.add(client);
 };

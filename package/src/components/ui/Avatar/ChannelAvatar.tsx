@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { Channel, UserResponse } from 'stream-chat';
+import { Channel, ChannelMemberResponse, UserResponse } from 'stream-chat';
 
 import { Avatar } from './Avatar';
 
@@ -18,18 +18,17 @@ import { hashStringToNumber } from '../../../utils/utils';
 import { CompositeAccessibilityProbe } from '../../Accessibility/CompositeAccessibilityProbe';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
+const pickAvatarFields = (member: ChannelMemberResponse) => ({
+  id: member.user?.id,
+  image: member.user?.image,
+  name: member.user?.name,
+});
+
 export type ChannelAvatarProps = {
   channel: Channel;
-  /**
-   * When true, the avatar renders based on `previewUri` instead of the
-   * channel's stored image. Useful for previewing a pending image change before
-   * it is saved. Defaults to false.
-   */
+  /** Renders `previewUri` in place of the channel's stored image. Defaults to false. */
   isPreview?: boolean;
-  /**
-   * Image to display while in preview mode (`isPreview` is true). A `string`
-   * shows that image; `null` shows the no-image fallback (member/user avatar).
-   */
+  /** Image shown when `isPreview` is true. `null` shows the fallback member or user avatar. */
   previewUri?: string | null;
   showOnlineIndicator?: boolean;
   size?: 'lg' | 'xl' | '2xl';
@@ -59,9 +58,9 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const channelImage = useChannelImage(channel);
   const imageToDisplay = isPreview ? previewUri : channelImage;
 
-  const members = useChannelMembersState(channel);
+  const members = useChannelMembersState(channel, pickAvatarFields);
   const usersForGroup = useMemo(
-    () => Object.values(members).map((member) => member.user as UserResponse),
+    () => Object.values(members ?? {}).map((member) => member.user as UserResponse),
     [members],
   );
   const usersWithoutSelf = useMemo(
@@ -72,14 +71,16 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const channelName = useChannelName(channel) ?? channel.cid;
 
   const memberCount = Object.keys(members).length;
-  const isGroup = !!channel.data?.name || memberCount > 2;
+  const isGroup = !!channel.data?.custom?.name || memberCount > 2;
   const otherUserName = usersWithoutSelf[0]?.name || usersWithoutSelf[0]?.id;
   const labelParams = useMemo(
     () => ({ count: memberCount, name: otherUserName ?? '' }),
     [memberCount, otherUserName],
   );
   const accessibilityLabel = useA11yLabel(
-    isGroup ? 'a11y/Channel with {{count}} members' : 'a11y/Direct chat with {{name}}',
+    isGroup
+      ? 'avatar.channel.group.accessibilityLabel'
+      : 'avatar.channel.direct.accessibilityLabel',
     labelParams,
   );
 

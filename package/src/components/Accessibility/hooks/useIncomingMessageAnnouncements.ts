@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import type { Channel, Event, MessageResponse } from 'stream-chat';
+import type { Channel, EventPayload, LocalMessage, MessageResponse } from 'stream-chat';
 
 import { useAccessibilityContext } from '../../../contexts/accessibilityContext/AccessibilityContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -8,47 +8,52 @@ import { useAccessibilityAnnouncer } from '../useAccessibilityAnnouncer';
 
 const MESSAGE_ANNOUNCEMENT_THROTTLE_MS = 1000;
 
-const isAnnounceableIncomingMessage = (message: MessageResponse, ownUserId?: string): boolean => {
+const isAnnounceableIncomingMessage = (
+  message: MessageResponse | LocalMessage,
+  ownUserId?: string,
+): boolean => {
   const messageUserId = message.user?.id;
   if (!message.id || !messageUserId || messageUserId === ownUserId) return false;
+  // `status` only exists on `LocalMessage`, not on a bare `MessageResponse`.
+  const status = 'status' in message ? message.status : undefined;
   return (
     message.type !== 'deleted' &&
     message.type !== 'ephemeral' &&
     message.type !== 'error' &&
     message.type !== 'system' &&
-    message.status !== 'failed' &&
-    message.status !== 'sending'
+    status !== 'failed' &&
+    status !== 'sending'
   );
 };
 
 const getSenderName = (
   message: MessageResponse,
   t: ReturnType<typeof useTranslationContext>['t'],
-) => message.user?.name?.trim() || message.user?.id || t('Anonymous');
+) => message.user?.name?.trim() || message.user?.id || t('common.anonymousUser.label', 'Anonymous');
 
 export type UseIncomingMessageAnnouncementsParams = {
+  /** Set when the list is a thread's reply list: only that thread's replies are announced. */
   activeThreadId?: string;
   channel?: Channel;
   ownUserId?: string;
-  threadList?: boolean;
 };
 
 /**
- * Mirrors stream-chat-react's `useIncomingMessageAnnouncements`:
- *  - 1 message → "New message from {{user}}"
- *  - >1 messages within throttle window → "{{count}} new messages"
- *  - Throttled to one announcement per second
- *  - Bounded `announcedMessageIds` set so a long-running session does not leak.
+ * Announces new messages from other users to screen readers: "New message from {{user}}" for one,
+ * "{{count}} new messages" for several within the one second throttle window.
  *
- * Subscribes to `channel.on('message.new')`. When AccessibilityContext.enabled
- * is false OR `announceNewMessages` is false, the hook is a no-op (no
- * subscription is opened, no listener cost is paid).
+ * Does nothing, and opens no subscription, unless accessibility and `announceNewMessages` are
+ * enabled. Announced message IDs are tracked to skip duplicates and cleared past 500 entries.
+ *
+ * @param params.activeThreadId The open thread, if any. Only its replies are announced; without
+ * it only non-reply messages are.
+ * @param params.channel The channel whose `message.new` events are observed.
+ * @param params.ownUserId The current user's ID. Their own messages are not announced.
  */
 export const useIncomingMessageAnnouncements = ({
   activeThreadId,
   channel,
   ownUserId,
-  threadList = false,
 }: UseIncomingMessageAnnouncementsParams) => {
   const { announceNewMessages, enabled } = useAccessibilityContext();
   const announce = useAccessibilityAnnouncer();
@@ -67,12 +72,16 @@ export const useIncomingMessageAnnouncements = ({
 
     if (pending.count === 1) {
       announce(
-        t('a11y/New message from {{user}}', {
-          user: pending.firstSender || t('Anonymous'),
+        t('a11y.newMessage.withUser.accessibilityLabel', 'New message from {{user}}', {
+          user: pending.firstSender || t('common.anonymousUser.label', 'Anonymous'),
         }),
       );
     } else {
-      announce(t('a11y/{{count}} new messages', { count: pending.count }));
+      announce(
+        t('a11y.newMessages.withCount.accessibilityLabel', '{{count}} new messages', {
+          count: pending.count,
+        }),
+      );
     }
 
     pending.count = 0;
@@ -104,7 +113,7 @@ export const useIncomingMessageAnnouncements = ({
   useEffect(() => {
     if (!enabled || !announceNewMessages || !channel) return;
 
-    const handleMessageNew = (event: Event) => {
+    const handleMessageNew = (event: EventPayload<'message.new'>) => {
       const message = event.message;
       if (!message) return;
       if (
@@ -116,8 +125,8 @@ export const useIncomingMessageAnnouncements = ({
 
       const isReply = !!message.parent_id;
       const belongsToActiveThread = !!activeThreadId && message.parent_id === activeThreadId;
-      const shouldAnnounceInThreadList = threadList && belongsToActiveThread;
-      const shouldAnnounceInMainList = !threadList && !isReply;
+      const shouldAnnounceInThreadList = belongsToActiveThread;
+      const shouldAnnounceInMainList = !activeThreadId && !isReply;
       if (!shouldAnnounceInThreadList && !shouldAnnounceInMainList) return;
 
       if (announcedMessageIdsRef.current.has(message.id || '')) return;
@@ -144,14 +153,5 @@ export const useIncomingMessageAnnouncements = ({
         flushTimeoutRef.current = undefined;
       }
     };
-  }, [
-    activeThreadId,
-    announceNewMessages,
-    channel,
-    enabled,
-    ownUserId,
-    scheduleFlush,
-    t,
-    threadList,
-  ]);
+  }, [activeThreadId, announceNewMessages, channel, enabled, ownUserId, scheduleFlush, t]);
 };

@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { LocalMessage, ReactionResponse, ReactionSort } from 'stream-chat';
+import { LocalMessage, ReactionResponse, SortParamRequest } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useStableCallback } from '../../../hooks/useStableCallback';
 import { useNotificationApi } from '../../Notifications';
 
 export type UseFetchReactionParams = {
   limit?: number;
   message?: LocalMessage;
   reactionType?: string;
-  sort?: ReactionSort;
+  sort?: SortParamRequest[];
 };
 
 const isSameReaction = (left: ReactionResponse, right: ReactionResponse) =>
@@ -105,17 +106,30 @@ export const useFetchReactions = ({
 
   const sortString = useMemo(() => JSON.stringify(sort), [sort]);
 
+  const notifyFetchFailed = useStableCallback((error: unknown) => {
+    addNotification({
+      message: t('messageMenu.userReactions.fetchFailed.error', 'Error fetching reactions'),
+      options: {
+        ...(error instanceof Error ? { originalError: error } : {}),
+        severity: 'error',
+        type: 'api:message:reactions:fetch:failed',
+      },
+      origin: {
+        ...(message ? { context: { message } } : {}),
+        emitter: 'Reactions',
+      },
+    });
+  });
+
   const fetchReactions = useCallback(
     async (next: string | undefined) => {
       if (!messageId) {
         return;
       }
       try {
-        const response = await client.queryReactions(
-          messageId,
-          reactionType ? { type: reactionType } : {},
-          sort,
-          { limit, next },
+        const response = await client.queryReactionsAndHydrate(
+          { id: messageId },
+          { filter: reactionType ? { type: reactionType } : undefined, limit, next, sort },
         );
         if (response) {
           setNext(response.next);
@@ -126,21 +140,10 @@ export const useFetchReactions = ({
           setLoading(false);
         }
       } catch (error) {
-        addNotification({
-          message: t('Error fetching reactions'),
-          options: {
-            ...(error instanceof Error ? { originalError: error } : {}),
-            severity: 'error',
-            type: 'api:message:reactions:fetch:failed',
-          },
-          origin: {
-            ...(message ? { context: { message } } : {}),
-            emitter: 'Reactions',
-          },
-        });
+        notifyFetchFailed(error);
       }
     },
-    [addNotification, client, limit, message, messageId, reactionType, sort, t],
+    [client, limit, messageId, notifyFetchFailed, reactionType, sort],
   );
 
   const loadNextPage = useCallback(async () => {
@@ -160,7 +163,12 @@ export const useFetchReactions = ({
     listeners.push(
       client.on('offline_reactions.queried', (event) => {
         const { offlineReactions } = event;
-        if (offlineReactions) {
+        // The event does not say which message was queried.
+        const isForThisQuery = offlineReactions?.every(
+          (reaction) =>
+            reaction.message_id === messageId && (!reactionType || reaction.type === reactionType),
+        );
+        if (offlineReactions && isForThisQuery) {
           setReactions(offlineReactions);
           setLoading(false);
           setNext(undefined);
@@ -172,7 +180,7 @@ export const useFetchReactions = ({
       client.on('reaction.new', (event) => {
         const { reaction } = event;
 
-        if (reaction) {
+        if (reaction && reaction.message_id === messageId) {
           setReactions((prevReactions) =>
             upsertReactionInList({
               prevReactions,
@@ -188,7 +196,7 @@ export const useFetchReactions = ({
       client.on('reaction.updated', (event) => {
         const { reaction } = event;
 
-        if (reaction) {
+        if (reaction && reaction.message_id === messageId) {
           setReactions((prevReactions) =>
             reconcileUpdatedReactionInList({
               prevReactions,
@@ -204,7 +212,7 @@ export const useFetchReactions = ({
       client.on('reaction.deleted', (event) => {
         const { reaction } = event;
 
-        if (reaction) {
+        if (reaction && reaction.message_id === messageId) {
           setReactions((prevReactions) =>
             removeReactionFromList({
               prevReactions,
@@ -221,7 +229,7 @@ export const useFetchReactions = ({
         listener?.unsubscribe();
       });
     };
-  }, [client, reactionType]);
+  }, [client, messageId, reactionType]);
 
   return { loading, loadNextPage, reactions };
 };
