@@ -1,5 +1,6 @@
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 
+import type { AIIcons } from './icons';
 import type { MarkdownStyle } from './markdown';
 
 export const colors = {
@@ -117,6 +118,53 @@ export type Theme = {
       text?: TextStyle;
     };
   };
+  /**
+   * Icons of your own for the agent replies' views, by name, over `defaultAIIcons`. Kept as they
+   * are when themes merge.
+   */
+  icons?: Partial<AIIcons>;
+  /**
+   * The person's and the agent's messages, what they carry, and the actions under a reply.
+   * Optional, so a hand-built `Theme` without it keeps type-checking.
+   */
+  message?: {
+    /** The person's bubble. */
+    userMessageBackground?: string;
+    userMessageText?: string;
+    /** The icons of the actions under a reply. */
+    messageAction?: string;
+    /** A file's card, and the tile with its type's icon. */
+    attachmentBackground?: string;
+    attachmentBorder?: string;
+    attachmentIcon?: string;
+    attachmentIconBackground?: string;
+    attachmentName?: string;
+    attachmentDetails?: string;
+    /** What an image shows while it loads, or when it can't. */
+    attachmentImagePlaceholder?: string;
+    userMessage?: {
+      container?: ViewStyle;
+      attachments?: ViewStyle;
+      bubble?: ViewStyle;
+      text?: TextStyle;
+      editButton?: ViewStyle;
+    };
+    assistantMessage?: {
+      container?: ViewStyle;
+      attachments?: ViewStyle;
+    };
+    attachment?: {
+      image?: ImageStyle;
+      file?: ViewStyle;
+      fileIcon?: ViewStyle;
+      fileName?: TextStyle;
+      fileDetails?: TextStyle;
+    };
+    replyActions?: {
+      container?: ViewStyle;
+      button?: ViewStyle;
+    };
+  };
 };
 
 export const defaultTheme: Theme = {
@@ -226,5 +274,22 @@ export const defaultTheme: Theme = {
       failure: {},
     },
     unsupported: { container: {}, text: {} },
+  },
+  message: {
+    // StreamChatAI's and the Android AI SDK's defaults, from the shared design tokens.
+    userMessageBackground: '#EBEEF1',
+    userMessageText: '#1A1B25',
+    messageAction: '#414552',
+    attachmentBackground: '#FFFFFF',
+    attachmentBorder: '#D5DBE1',
+    attachmentIcon: '#FFFFFF',
+    attachmentIconBackground: '#005FFF',
+    attachmentName: '#1A1B25',
+    attachmentDetails: '#414552',
+    attachmentImagePlaceholder: '#F6F8FA',
+    userMessage: { container: {}, attachments: {}, bubble: {}, text: {}, editButton: {} },
+    assistantMessage: { container: {}, attachments: {} },
+    attachment: { image: {}, file: {}, fileIcon: {}, fileName: {}, fileDetails: {} },
+    replyActions: { container: {}, button: {} },
   },
 };

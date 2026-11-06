@@ -1,0 +1,134 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Pressable, Share, StyleSheet, View } from 'react-native';
+
+import { useAITranslation, useTheme } from '../contexts';
+import { type AIIcon, useAIIcons } from '../icons';
+import { setClipboardString } from '../services/clipboard-service';
+
+/** How the person rated a reply. */
+export type AIMessageRating = 'positive' | 'negative';
+
+export type AIReplyActionsProps = {
+  /** The reply's text, which copying and sharing hand on. */
+  text: string;
+  /** Rates the reply, or takes the rating back with `null`. Without it, no rating is offered. */
+  onRate?: (rating: AIMessageRating | null) => void;
+  /** Asks the agent for a new reply in its place. Without it, no regenerate button. */
+  onRegenerate?: () => void;
+  /** How the person rated the reply, if they did. */
+  rating?: AIMessageRating | null;
+};
+
+/** How long the copy button shows its check. */
+const COPIED_MS = 1500;
+
+type ActionProps = {
+  Icon: AIIcon;
+  label: string;
+  onPress: () => void;
+  selected?: boolean;
+};
+
+const Action = ({ Icon, label, onPress, selected }: ActionProps) => {
+  const {
+    theme: { colors, message },
+  } = useTheme();
+  const styles = message?.replyActions;
+  return (
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole='button'
+      accessibilityState={selected === undefined ? undefined : { selected }}
+      onPress={onPress}
+      style={({ pressed }) => [
+        defaultStyles.button,
+        { opacity: pressed ? 0.5 : 1 },
+        styles?.button,
+      ]}
+    >
+      <Icon color={message?.messageAction ?? colors.grey_dark} size={18} />
+    </Pressable>
+  );
+};
+
+/**
+ * The actions under a finished reply: copy (when the app has a clipboard module), share through
+ * the system's share sheet, regenerate, and a thumbs up or down rating. The counterpart of
+ * `AIReplyActionsView`.
+ */
+export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyActionsProps) => {
+  const { t } = useAITranslation();
+  const {
+    theme: { message },
+  } = useTheme();
+  const icons = useAIIcons();
+  const [isCopied, setIsCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const setString = setClipboardString;
+  const copy = setString
+    ? () => {
+        setString(text);
+        setIsCopied(true);
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => setIsCopied(false), COPIED_MS);
+      }
+    : undefined;
+
+  // The person closing the share sheet resolves too; there's nothing to do either way.
+  const share = () => {
+    Share.share({ message: text }).catch(() => undefined);
+  };
+
+  const positive = rating === 'positive';
+  const negative = rating === 'negative';
+
+  return (
+    <View
+      accessibilityLabel={t('Reply actions')}
+      accessibilityRole='toolbar'
+      style={[defaultStyles.container, message?.replyActions?.container]}
+      testID='ai-reply-actions'
+    >
+      {copy ? (
+        <Action
+          Icon={isCopied ? icons.Copied : icons.Copy}
+          label={isCopied ? t('Copied') : t('Copy')}
+          onPress={copy}
+        />
+      ) : null}
+      <Action Icon={icons.Share} label={t('Share')} onPress={share} />
+      {onRegenerate ? (
+        <Action Icon={icons.Regenerate} label={t('Regenerate')} onPress={onRegenerate} />
+      ) : null}
+      {onRate ? (
+        <>
+          <Action
+            Icon={positive ? icons.ThumbsUpFilled : icons.ThumbsUp}
+            label={t('Good response')}
+            onPress={() => onRate(positive ? null : 'positive')}
+            selected={positive}
+          />
+          <Action
+            Icon={negative ? icons.ThumbsDownFilled : icons.ThumbsDown}
+            label={t('Bad response')}
+            onPress={() => onRate(negative ? null : 'negative')}
+            selected={negative}
+          />
+        </>
+      ) : null}
+    </View>
+  );
+};
+
+const defaultStyles = StyleSheet.create({
+  // StreamChatAI's 40 buttons, 8 apart; the Android AI SDK's 18 icons.
+  button: {
+    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  container: { alignItems: 'center', flexDirection: 'row', gap: 8 },
+});

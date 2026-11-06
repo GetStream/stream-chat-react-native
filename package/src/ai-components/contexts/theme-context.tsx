@@ -26,15 +26,23 @@ export type ThemeContextValue = {
 
 export const mergeThemes = (params: MergedThemesParams) => {
   const { style, theme } = params;
+  // Icons are components, which the JSON copy below would drop and a deep merge would take apart,
+  // so they are carried over as they are.
+  const { icons: themeIcons, ...themeRest } = theme ?? {};
+  const { icons: styleIcons, ...styleRest } = style ?? {};
   // TODO: Use structured-clone here or something similar.
   const finalTheme = (
-    !theme || Object.keys(theme).length === 0
+    !theme || Object.keys(themeRest).length === 0
       ? JSON.parse(JSON.stringify(defaultTheme))
-      : JSON.parse(JSON.stringify(theme))
+      : JSON.parse(JSON.stringify(themeRest))
   ) as Theme;
 
   if (style) {
-    merge(finalTheme, style);
+    merge(finalTheme, styleRest);
+  }
+
+  if (themeIcons || styleIcons) {
+    finalTheme.icons = { ...themeIcons, ...styleIcons } as Theme['icons'];
   }
 
   return finalTheme;
