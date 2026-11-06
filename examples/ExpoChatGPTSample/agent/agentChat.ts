@@ -57,6 +57,16 @@ export class AgentChat {
     });
     this.stops.push(() => subscription.unsubscribe());
 
+    const recovered = this.channel
+      .getClient()
+      .on('connection.recovered', () => void this.watchLatest().catch(() => {}));
+    this.stops.push(() => recovered.unsubscribe());
+
+    await this.watchLatest();
+  }
+
+  /** Watches the channel again and takes its latest page, in place of what was loaded. */
+  private async watchLatest() {
     const watched = await this.channel.watch({ messages: { limit: PAGE_SIZE } });
     this.state.partialNext({
       hasOlderMessages: (watched.messages?.length ?? 0) >= PAGE_SIZE,

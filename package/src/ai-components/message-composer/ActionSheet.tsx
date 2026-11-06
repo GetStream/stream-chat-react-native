@@ -9,6 +9,7 @@ import { withCloseSheet } from './utils/withCloseSheet';
 import { useMessageComposerContext, useTheme } from '../contexts';
 import { Camera } from '../internal/icons/Camera';
 import { Picture } from '../internal/icons/Picture';
+import { primitives } from '../internal/tokens';
 import { sheetStoreApi, useComposerChatOption } from '../store';
 
 type BottomSheetContentProps = Pick<
@@ -180,7 +181,7 @@ const useStyles = () => {
         opacity: 0.7,
       },
       quickActionLabel: {
-        fontSize: 13,
+        fontSize: primitives.typographyFontSizeXs,
         fontWeight: '500',
         color: colors.black,
         marginTop: 4,
@@ -207,13 +208,13 @@ const useStyles = () => {
         flex: 1,
       },
       listTitle: {
-        fontSize: 15,
+        fontSize: primitives.typographyFontSizeSm,
         fontWeight: '500',
         color: colors.black,
       },
       listSubtitle: {
         marginTop: 2,
-        fontSize: 13,
+        fontSize: primitives.typographyFontSizeXs,
         color: colors.grey_dark,
       },
       divider: {

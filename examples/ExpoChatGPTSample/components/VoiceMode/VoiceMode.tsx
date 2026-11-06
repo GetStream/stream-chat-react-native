@@ -6,6 +6,7 @@ import Svg, { Line } from 'react-native-svg';
 import {
   StreamTheme,
   useDictationAudioLevel,
+  useTheme,
   type VoiceAgentState,
   VoiceGlow,
   VoiceWave,
@@ -63,8 +64,8 @@ const VoiceModeOverlay = ({ onClose }: { onClose: () => void }) => {
  * A static waveform icon. The button stays still: a live `VoiceGlow` here would redraw every frame
  * for as long as the chat is open.
  */
-const VoiceIcon = () => (
-  <Svg height={22} viewBox='0 0 22 22' width={22}>
+const VoiceIcon = ({ color, size }: { color: string; size: number }) => (
+  <Svg height={size} viewBox='0 0 22 22' width={size}>
     {[
       [3, 8, 14],
       [7, 4, 18],
@@ -74,7 +75,7 @@ const VoiceIcon = () => (
     ].map(([x, y1, y2]) => (
       <Line
         key={x}
-        stroke='#005fff'
+        stroke={color}
         strokeLinecap='round'
         strokeWidth={2.4}
         x1={x}
@@ -86,22 +87,31 @@ const VoiceIcon = () => (
   </Svg>
 );
 
-/** Opens a full-screen voice conversation with the AI agent. */
+/**
+ * Opens a full-screen voice conversation with the AI agent: a button after the composer, the size
+ * of the attach button before it.
+ */
 export const VoiceMode = () => {
   const [open, setOpen] = useState(false);
+  const {
+    theme: { composer },
+  } = useTheme();
+  const size = composer.inputPillHeight;
 
   return (
     <>
-      <View style={styles.entry}>
-        <Pressable
-          accessibilityLabel='Start voice mode'
-          accessibilityRole='button'
-          onPress={() => setOpen(true)}
-          style={styles.button}
-        >
-          <VoiceIcon />
-        </Pressable>
-      </View>
+      <Pressable
+        accessibilityLabel='Start voice mode'
+        accessibilityRole='button'
+        onPress={() => setOpen(true)}
+        style={({ pressed }) => [
+          styles.button,
+          { borderRadius: size / 2, height: size, width: size },
+          pressed && styles.buttonPressed,
+        ]}
+      >
+        <VoiceIcon color='#005fff' size={22} />
+      </Pressable>
       <Modal animationType='fade' onRequestClose={() => setOpen(false)} visible={open}>
         {open ? <VoiceModeOverlay onClose={() => setOpen(false)} /> : null}
       </Modal>
@@ -114,15 +124,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderColor: '#ececec',
-    borderRadius: 24,
     borderWidth: 1,
-    height: 48,
     justifyContent: 'center',
     overflow: 'hidden',
-    width: 48,
   },
+  buttonPressed: { opacity: 0.8 },
   close: { color: '#ffffff', fontSize: 22 },
-  entry: { alignItems: 'flex-end', paddingHorizontal: 16, paddingBottom: 8 },
   glow: { aspectRatio: 1, width: '100%' },
   glowContainer: { alignSelf: 'stretch', flex: 1, justifyContent: 'center' },
   header: { alignItems: 'flex-end', paddingHorizontal: 20 },

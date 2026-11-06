@@ -46,6 +46,18 @@ jest.mock('react-native-gesture-handler/lib/module/GestureHandlerRootViewContext
   const React = require('react');
   return { __esModule: true, default: React.createContext(true) };
 });
+// The AI conversation rides the keyboard with react-native-keyboard-controller, which ships a mock.
+jest.mock('react-native-keyboard-controller', () =>
+  require('react-native-keyboard-controller/jest'),
+);
+// The keyboard-aware list waits for its scroll view to report its insets before it shows its rows,
+// which the mocked scroll view never does. Under Jest it is the list it wraps; how it rides the
+// keyboard is checked on devices.
+jest.mock('@legendapp/list/keyboard', () => ({
+  ...jest.requireActual('@legendapp/list/keyboard'),
+  KeyboardAwareLegendList: jest.requireActual('@legendapp/list/reanimated').AnimatedLegendList,
+}));
+
 jest.mock('react-native-reanimated', () => {
   const RNReanimatedmock = require('react-native-reanimated/mock');
   // RNGH (>= 3.3) subscribes to SharedValue-backed gesture config on the UI runtime via

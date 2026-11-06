@@ -51,7 +51,8 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       fontWeight: '500',
       color: colors.black,
       paddingLeft: 8,
-      lineHeight: 14,
+      fontSize: primitives.typographyFontSizeXs,
+      lineHeight: primitives.typographyLineHeightTight,
     },
     codeBlockWrapper: {
       backgroundColor: colors.code_block,
@@ -69,8 +70,8 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     codeBlockLineNumberCell: {
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
       color: colors.grey,
-      paddingVertical: 1, // should be (codeBlock.lineHeight - this.fontSize) / 2
-      fontSize: 12,
+      fontSize: primitives.typographyFontSizeXs,
+      lineHeight: primitives.typographyLineHeightTight,
     },
     codeBlockHeaderContainer: {
       flexDirection: 'row',
@@ -78,7 +79,7 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       marginBottom: 8,
     },
     codeBlockHeaderTitle: {
-      fontSize: 12,
+      fontSize: primitives.typographyFontSizeXs,
       color: colors.grey,
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
     },

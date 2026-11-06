@@ -5,6 +5,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Drawer } from 'expo-router/drawer';
@@ -34,19 +35,24 @@ export default function Layout() {
   }
   return (
     <SafeAreaProvider>
-      <AppProvider client={chatClient}>
-        <StreamTheme>
-          <GestureHandlerRootView style={styles.container}>
-            <OverlayProvider>
-              <Chat client={chatClient} isMessageAIGenerated={isMessageAIGenerated}>
-                <Drawer drawerContent={MenuDrawer} screenOptions={{ drawerStyle: { width: 300 } }}>
-                  <Drawer.Screen name={'index'} />
-                </Drawer>
-              </Chat>
-            </OverlayProvider>
-          </GestureHandlerRootView>
-        </StreamTheme>
-      </AppProvider>
+      <KeyboardProvider>
+        <AppProvider client={chatClient}>
+          <StreamTheme>
+            <GestureHandlerRootView style={styles.container}>
+              <OverlayProvider>
+                <Chat client={chatClient} isMessageAIGenerated={isMessageAIGenerated}>
+                  <Drawer
+                    drawerContent={MenuDrawer}
+                    screenOptions={{ drawerStyle: { width: 300 } }}
+                  >
+                    <Drawer.Screen name={'index'} />
+                  </Drawer>
+                </Chat>
+              </OverlayProvider>
+            </GestureHandlerRootView>
+          </StreamTheme>
+        </AppProvider>
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 }

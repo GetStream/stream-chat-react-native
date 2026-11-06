@@ -6,13 +6,14 @@ import { parseMermaid } from '../../charts';
 import Chart from '../../charts/Chart';
 import { MarkdownReactiveScrollView } from '../../components';
 import { useStableCallback } from '../../internal/hooks/useStableCallback';
+import { primitives } from '../../internal/tokens';
 import { setClipboardString } from '../../services';
 import { SyntaxHighlighter } from '../../syntax-highlighting';
 import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const CodeBlockCopyButton = ({ onPress }: { onPress?: PressableProps['onPress'] }) => (
   <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })} onPress={onPress}>
-    <Text style={{ fontSize: 15 }}>{'\u29C9'}</Text>
+    <Text style={{ fontSize: primitives.typographyFontSizeSm }}>{'\u29C9'}</Text>
   </Pressable>
 );
 

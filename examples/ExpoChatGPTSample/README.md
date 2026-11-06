@@ -12,13 +12,18 @@ Ported from the `ExpoChatGPTSample` of the deprecated `@stream-io/chat-react-nat
 The agent runs on a [Vision-Agents](https://github.com/GetStream/Vision-Agents) router, which the app talks to through
 [`@stream-io/calypso`](https://www.npmjs.com/package/@stream-io/calypso) (`agent/`).
 
-- Each conversation is a router session, kept in an `agent` channel. `<Channel>` follows that channel as usual.
-- Asking goes through `session.responses.create`, not the chat composer. The router writes the question and the agent's
-  streamed reply into the channel, and titles the conversation itself.
-- The drawer lists the user's `agent` channels. `+` starts a new session, and one that is never asked anything is
-  deleted when you leave it.
-- The reply's steps (`ai_reasoning`, `ai_tool_call` attachments) are hidden for now. They get their own views in a
-  later change.
+- Each conversation is a router session, kept in an `agent` channel. The drawer lists the user's `agent` channels. `+`
+  starts a new session, and one that is never asked anything is deleted when you leave it.
+- The conversation is `AIConversation`, fed from `agent/agentChat.ts`: a small store that watches the channel, copies
+  its messages on every `message.*` event, loads older pages, and keeps each reply's full reasoning from its live
+  updates. There's no `<Channel>`, so the store also watches the channel again after `connection.recovered`, to pick up
+  what was written while the connection was down.
+- Asking goes through the session, not the chat composer. The router writes the question and the streamed reply into
+  the channel, the reply's steps as `ai_reasoning` and `ai_tool_call` attachments, and titles the conversation itself.
+  A plain question goes to `respond` with this install's id, so the agent can call the phone's tools
+  (`agent/deviceTools.ts`). A question with photos or "Think harder" goes to `responses.create`, which takes neither.
+- The keyboard is handled by the AI components through `react-native-keyboard-controller`; the app only wraps itself
+  in `KeyboardProvider`. The starters and the voice button sit in the composer's `header`, so they ride the keyboard.
 
 ## Running
 
@@ -37,3 +42,6 @@ yarn workspace expochatgptsample ios      # or: android
 
 `ios` and `android` sync the SDK's shared native code, run `expo prebuild` and build the app. The native `ios` and
 `android` folders are generated and not committed.
+
+On iOS, if the app crashes at launch in `dyld` with a missing symbol, reinstall the pods without Expo's
+precompiled modules: `cd ios && EXPO_USE_PRECOMPILED_MODULES=0 pod install`, then build again.

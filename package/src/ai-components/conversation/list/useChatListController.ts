@@ -1,8 +1,10 @@
 import { type RefObject, useCallback, useRef } from 'react';
 
+import { useKeyboardScrollToEnd } from '@legendapp/list/keyboard';
 import type { LegendListRef } from '@legendapp/list/react-native';
 
 import { useEndInView } from './useEndInView';
+import { useKeyboardFrame } from './useKeyboardOverlap';
 import { useLoadOlder } from './useLoadOlder';
 import { usePinnedAnchor } from './usePinnedAnchor';
 
@@ -37,8 +39,19 @@ export const useChatListController = <T>({
   // The list's positions leave its header out: the spinner while older messages load.
   const headerSize = useRef(0);
 
-  const { isEndInView, scheduleCheckEnd } = useEndInView({ bottomInset, headerSize, listRef });
-  const { anchoredEndSpace, contentFloor, onContainerLayout, onMetricsChange } = usePinnedAnchor({
+  // How far above the bottom of the screen the list ends, which the keyboard reaches past.
+  const keyboardOffset = useRef(0);
+  const checkEnd = useRef<() => void>(undefined);
+  const keyboard = useKeyboardFrame(() => checkEnd.current?.());
+  const { isEndInView, scheduleCheckEnd } = useEndInView({
+    bottomInset,
+    headerSize,
+    keyboard,
+    keyboardOffset,
+    listRef,
+  });
+  checkEnd.current = scheduleCheckEnd;
+  const { anchoredEndSpace, onMetricsChange } = usePinnedAnchor({
     anchorKey,
     data,
     headerSize,
@@ -48,25 +61,31 @@ export const useChatListController = <T>({
   });
   const loadOlder = useLoadOlder({ listRef, loadOlderMessages });
 
+  // Holds the keyboard's own adjustments of the list still while it scrolls, so they don't stop it
+  // short of the end above the keyboard.
+  const { freeze, scrollMessageToEnd } = useKeyboardScrollToEnd({ listRef });
   const scrollToEnd = useCallback(() => {
-    void listRef.current?.scrollToEnd({ animated: !reduceMotion });
-  }, [listRef, reduceMotion]);
+    void scrollMessageToEnd({ animated: !reduceMotion, closeKeyboard: false });
+  }, [reduceMotion, scrollMessageToEnd]);
 
   return {
-    /** The least height of the list's content, for its `contentContainerStyle`. */
-    contentFloor,
     isEndInView,
+    /** The keyboard, for views that ride it, such as the button back to the latest row. */
+    keyboard,
+    /** How far above the bottom of the screen the list ends; the list's view sets it. */
+    keyboardOffset,
     /** Whether older rows load as the list nears its start, so it shows that they are loading. */
     loadsOlder: !!loadOlder,
     listProps: {
       anchoredEndSpace,
+      freeze,
+      // The list growing or shrinking, such as under a taller composer, can bring its end in or out of view.
+      onLayout: scheduleCheckEnd,
       onItemSizeChanged: scheduleCheckEnd,
       onMetricsChange,
       onScroll: scheduleCheckEnd,
       ...loadOlder,
     },
-    /** For the view the list fills, which is there before the list is. */
-    onContainerLayout,
     scrollToEnd,
   };
 };

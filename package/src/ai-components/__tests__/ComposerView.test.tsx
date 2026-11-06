@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text } from 'react-native';
+import { Image, Pressable, Text } from 'react-native';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
@@ -192,6 +192,38 @@ describe('ai-components ComposerView', () => {
 
     fireEvent.press(screen.getByLabelText('Remove attachment'));
     expect(mediaPickerService.state.getLatestValue().assets).toEqual([]);
+  });
+});
+
+describe('ComposerView header', () => {
+  it('shows what it is given above the composer', () => {
+    render(
+      <StreamTheme>
+        <ComposerView
+          header={<Text>Starters</Text>}
+          onSendMessage={jest.fn(() => Promise.resolve())}
+        />
+      </StreamTheme>,
+    );
+    expect(screen.getByText('Starters')).toBeTruthy();
+  });
+});
+
+describe('ComposerView trailing', () => {
+  it('shows what it is given after the message box, and its presses reach it', () => {
+    const onTalk = jest.fn();
+    render(
+      <StreamTheme>
+        <ComposerView
+          onSendMessage={jest.fn(() => Promise.resolve())}
+          trailing={
+            <Pressable accessibilityLabel='Talk' accessibilityRole='button' onPress={onTalk} />
+          }
+        />
+      </StreamTheme>,
+    );
+    fireEvent.press(screen.getByRole('button', { name: 'Talk' }));
+    expect(onTalk).toHaveBeenCalledTimes(1);
   });
 });
 
