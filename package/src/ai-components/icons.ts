@@ -3,6 +3,7 @@ import { type ComponentType, useMemo } from 'react';
 import { useTheme } from './contexts/theme-context';
 import {
   ArchiveIcon,
+  ArrowDownIcon,
   AudioIcon,
   CancelledIcon,
   CheckIcon,
@@ -41,6 +42,8 @@ export type AIIcon = ComponentType<AIIconProps>;
 export const defaultAIIcons = {
   /** A file of an archive type, such as ZIP, on its attachment. */
   Archive: ArchiveIcon,
+  /** The button back to the latest message of a conversation. */
+  ArrowDown: ArrowDownIcon,
   /** An audio file, on its attachment. */
   Audio: AudioIcon,
   /** A tool call that was cancelled or declined. */

@@ -4134,6 +4134,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@legendapp/list@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "@legendapp/list@npm:3.7.1"
+  dependencies:
+    use-sync-external-store: "npm:^1.5.0"
+  peerDependencies:
+    react: "*"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/a445838e5b99a637fe88b0badc408dc2b9763e57e9e107c0122135359555521c126c44e50767754ec297ec2788874d9b9fec76ce3c90fad5444586e40addd303
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^0.2.11":
   version: 0.2.12
   resolution: "@napi-rs/wasm-runtime@npm:0.2.12"
@@ -20135,6 +20151,7 @@ __metadata:
     "@babel/runtime": "npm:^7.29.2"
     "@gorhom/bottom-sheet": "npm:^5.2.14"
     "@khanacademy/simple-markdown": "npm:^2.1.0"
+    "@legendapp/list": "npm:^3.7.1"
     "@op-engineering/op-sqlite": "npm:^18.2.5"
     "@react-native-community/netinfo": "npm:^12.0.1"
     "@react-native/babel-preset": "npm:0.88.0"

@@ -17,6 +17,7 @@ import { type DeepPartial, StreamTheme, useAITranslation, useTheme } from '../co
 import { useAIIcons } from '../icons';
 import { formatMinutesAndSeconds, useNow } from '../internal/format';
 import { Shimmer } from '../internal/Shimmer';
+import { primitives } from '../internal/tokens';
 import { Markdown } from '../markdown';
 import type { AIReasoningPart } from '../message-parts/types';
 import type { Theme } from '../theme';
@@ -285,7 +286,11 @@ export const AIReasoning = ({
     () => ({
       markdown: {
         paragraph: { marginBottom: 4, marginTop: 4 },
-        text: { color: colors.grey, fontSize: 14, lineHeight: 20 },
+        text: {
+          color: colors.grey,
+          fontSize: primitives.typographyFontSizeSm,
+          lineHeight: primitives.typographyLineHeightNormal,
+        },
       },
     }),
     [colors.grey],
@@ -372,6 +377,10 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   lead: { alignItems: 'center', flexDirection: 'row', gap: 6 },
-  summary: { flexShrink: 1, fontSize: 14 },
-  title: { fontSize: 14, fontVariant: ['tabular-nums'], fontWeight: '500' },
+  summary: { flexShrink: 1, fontSize: primitives.typographyFontSizeSm },
+  title: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '500',
+  },
 });

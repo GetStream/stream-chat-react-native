@@ -48,6 +48,7 @@ export type MarkdownState = State & {
   withinText?: boolean;
   withinQuote?: boolean;
   withinHeading?: boolean;
+  withinInlineCode?: boolean;
   withinLink?: boolean;
   withinList?: boolean;
   withinParagraphWithImage?: boolean;
