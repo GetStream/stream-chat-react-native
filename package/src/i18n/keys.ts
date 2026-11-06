@@ -17,6 +17,7 @@ export type TranslationCatalog = {
   'a11y.newMessages.withCount.accessibilityLabel': '{{count}} new messages';
   'aiTypingIndicator.generating.label': 'Generating...';
   'aiTypingIndicator.thinking.label': 'Thinking...';
+  'attachment.audio.played.label': 'Played';
   'attachment.gallery.doubleTapToOpen.accessibilityLabel': 'Double tap to open';
   'attachment.gallery.image.accessibilityLabel': 'Gallery image';
   'attachment.gallery.moreImages.label_one': '+{{count}}';
