@@ -1,5 +1,264 @@
 # Change Log
 
+## [10.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.12.1...v10.0.0) (2026-11-06)
+
+### ⚠ BREAKING CHANGES
+
+* for integrators who used the removed context fields,
+props and exports; every one is listed with its replacement in
+`ai-docs/ai-migration-v9-to-v10.md`.
+
+It is also part 1/2 of a larger cleanup pass in SCRN, which will come in
+a separate PR.
+
+## 🛠 Implementation details
+
+The work is split into one commit per area.
+
+### 1. Dead code (`8d149acd5`)
+
+- Removed code with no callers left since the v10 rewrite:
+`useSelectedChannelState`, `reduceMessagesToString`,
+`findInMessagesById`, `findInMessagesByDate`, `getLastReceivedMessage`,
+`DebugContext`, the unused `ChannelList` hook utils, and offline-store
+functions nothing called.
+- Removed context fields and props that were never read or never set
+(`isChannelActive`, `scrollToFirstUnreadThreshold`,
+`MessagesContext.quotedMessage`, `<Channel isOnline>` and others).
+- `useIsOnline` is renamed to `useConnectionLifecycle`, since it returns
+nothing in v10.
+- `useMutedChannels()` no longer takes an argument.
+- `OfflineStoreApis` uses `userId` instead of `currentUserId`.
+
+### 2. Message lists (`ce99291d3`)
+
+- `MessageList` and `MessageFlashList` page the paginator they render
+(the channel's, or the thread's in a thread list) and track their own
+loading flags. The `loadMore` / `loadMoreRecent` / `hasMore` props are
+gone.
+- The logic shared by both lists moved into hooks under
+`MessageList/hooks`.
+- Thread lists used to drive the channel's paginator for viewing-live
+state and the scroll-to-bottom jump. They now use the thread's. This
+fixes the "1 new messages" separator that stuck after returning from a
+thread.
+- A failed page no longer leaves that edge of the list unable to
+paginate.
+- Removing a message no longer scrolls `MessageList` to the bottom.
+
+### 3. `ChatContext` (`a04468e10`)
+
+- `ChatContext` holds only `client`, `getAppSettings` and
+`isMessageAIGenerated`. `channel`, `setActiveChannel`, `appSettings`,
+`mutedUsers` and `enableOfflineSupport` are removed.
+- The context no longer rebuilds on mute changes or on returning from
+the background, so its ~65 consumers no longer re-render then.
+- `getAppSettings()` follows `stream-chat-react`: it fetches once per
+user, falls back to the offline database, and does not cache a failure.
+- `<Chat>` follows the connected user reactively. It used to read
+`client.userID` during render, so the offline database could miss a user
+that connected after mount.
+
+### 4. `<Channel>` (`0a75ced25`)
+
+- `frozen` is read reactively, so `disabled` updates on freeze and
+unfreeze.
+- Contexts are keyed on the channel instance instead of its `cid`.
+- `<Channel>` no longer re-renders on channel updates that leave its
+capabilities unchanged, and `overrideOwnCapabilities` merges correctly.
+- `typing.stop` is sent on background only if the user was typing.
+- `<Channel>` keeps rendering a deleted channel, as in
+`stream-chat-react`. The app decides what to show from the channel's
+`pendingDisposal` state. The SampleApp does this in
+`useLeaveGoneChannel`.
+
+### 5. Composer (`5a7abceaa`)
+
+- Sending and editing go through `messageComposer.send()` / `update()`.
+The SDK's own send and edit wrappers are removed.
+- `<Channel preSendMessageRequest>` is replaced by the
+`sendMessageRequest` request handler.
+- Failures come from `client.notifications`, mapped to the same toast
+copy as before.
+- The composer is resolved once in `MessageComposerProvider`. Each
+`useMessageComposer()` call used to create its own subscriptions.
+- An edit composer is re-initialised from the message each time. This
+fixes text left over from a cancelled edit showing up in the next one.
+- `SendMessageDisallowedIndicator`, the commands button and the commands
+sheet follow capabilities and config that arrive after mount.
+- Attachment picker cells re-render only when their own selection
+changes, not on every upload progress tick.
+- The moderation command rewrite (`patchMessageTextCommand`) is removed,
+since the backend now resolves the target from the mentioned users.
+
+### 6. Channel list (`5cf121467`)
+
+- `ChannelsContext` holds the list's configuration and its
+`ChannelPaginator`. The query state (`channels`, `loadingChannels`,
+`refreshing`, ...) goes to `ChannelListView` as props. The memo key
+built from every channel's name, unread count and member presence is
+gone.
+- The list's `FlatList` sets `strictMode`. Channel rows now re-render
+only when their own channel changes, instead of all of them on every
+list update.
+- Config props (`onSelect`, `getChannelActionItems`, `maxUnreadCount`,
+...) take effect when changed at runtime.
+- A mounted list reloads after `disconnectUser()` once a user connects
+again. It used to stay on its skeleton.
+- Channel rows show drafts that only have attachments.
+
+### 7. Thread list (`71a373a53`)
+
+- A thread row reads its latest reply from
+`thread.messagePaginator.aggregateState`, as `stream-chat-react` does.
+It used to take the last reply of the loaded page, which is an older
+reply once the thread has been scrolled back.
+
+## 🎨 UI Changes
+
+/
+
+## 🧪 Testing
+/
+
+## ☑️ Checklist
+
+- [ ] I have signed the [Stream
+CLA](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform)
+(required)
+- [ ] PR targets the `V10` branch
+- [x] Documentation is updated (`ai-docs/ai-migration-v9-to-v10.md`,
+Part P)
+- [ ] New code is tested in main example apps, including all possible
+scenarios
+  - [ ] SampleApp iOS and Android
+  - [ ] Expo iOS and Android
+* adopt stream-chat's branded TimestampNS (#3822)
+* move send with pending attachments logic to LLC (#3821)
+* **i18n:** consume the shared runtime from @stream-io/i18n (#3801)
+* move to timestamps in response models
+* move to timestamps in response models
+* **i18n:** adopt the shared i18n layer from stream-chat/i18n (#3777)
+
+### Bug Fixes
+
+* adapt to removed stream-chat-js hand-written types ([#3783](https://github.com/GetStream/stream-chat-react-native/issues/3783)) ([da80439](https://github.com/GetStream/stream-chat-react-native/commit/da80439da2d20cf888a3ac45791fb81f70e10760))
+* also replied to channel message operations ([77e8592](https://github.com/GetStream/stream-chat-react-native/commit/77e859221d802cb36ac6d7e28042a014f1556ce6))
+* bump llc and fix tests ([0dd7dd1](https://github.com/GetStream/stream-chat-react-native/commit/0dd7dd1a6b229df5a9dc061904117aeaea45d9ba))
+* bump stream-chat-js to latest rc ([0470226](https://github.com/GetStream/stream-chat-react-native/commit/0470226fdfc41546e96a9b5f8612dfef7a8ea8eb))
+* channel list footer flicker on pagination ([a59a108](https://github.com/GetStream/stream-chat-react-native/commit/a59a108527b3825c3f7a9935f6ba0223b618f02a))
+* cold start while offline header ([3fa2305](https://github.com/GetStream/stream-chat-react-native/commit/3fa2305fa2e55531c2ec88d1e66b85353e56dc15))
+* consolidate llc versions and merge master ([#3906](https://github.com/GetStream/stream-chat-react-native/issues/3906)) ([91d63e7](https://github.com/GetStream/stream-chat-react-native/commit/91d63e77deb1f138e53294d03e4f09a386b346ae))
+* **core:** show an empty message preview when there is nothing to describe ([#3826](https://github.com/GetStream/stream-chat-react-native/issues/3826)) ([f1b117c](https://github.com/GetStream/stream-chat-react-native/commit/f1b117c3625cc748e5d5d5231851839c3a0a69aa)), closes [#3827](https://github.com/GetStream/stream-chat-react-native/issues/3827) [#3827](https://github.com/GetStream/stream-chat-react-native/issues/3827)
+* date values in unit tests ([41f14d3](https://github.com/GetStream/stream-chat-react-native/commit/41f14d38dcc5bedc83c83850ae84567cc2371d1f))
+* **deps:** bump [@stream-io](https://github.com/stream-io) toolkit packages to the .mjs/.cjs builds ([#3915](https://github.com/GetStream/stream-chat-react-native/issues/3915)) ([657fdf5](https://github.com/GetStream/stream-chat-react-native/commit/657fdf5cf6a4602846194b59eccb8c2c94fbb214)), closes [GetStream/js-toolkit#58](https://github.com/GetStream/js-toolkit/issues/58)
+* do not report offline if state is still unknown ([d13cc38](https://github.com/GetStream/stream-chat-react-native/commit/d13cc380fce89eec42947e30427eeb050be90ab1))
+* docs fixes ([#3891](https://github.com/GetStream/stream-chat-react-native/issues/3891)) ([5767715](https://github.com/GetStream/stream-chat-react-native/commit/57677154690b5c2d820c9ac1f28576767dc90eee))
+* don't import axios into RN SDK ([#3853](https://github.com/GetStream/stream-chat-react-native/issues/3853)) ([86500e5](https://github.com/GetStream/stream-chat-react-native/commit/86500e5b25496fe306da7957f6517d5ffdfb4411))
+* export missing hooks and update migration guide ([e127820](https://github.com/GetStream/stream-chat-react-native/commit/e1278207a14a22f79cf61a31aef75747eb6df6bc))
+* final consolidation with develop ([#3943](https://github.com/GetStream/stream-chat-react-native/issues/3943)) ([10a59a5](https://github.com/GetStream/stream-chat-react-native/commit/10a59a562d71ab78da9bbb1ca2f39ed40d7e73aa))
+* guard required timestamps from the offline store ([cdc393d](https://github.com/GetStream/stream-chat-react-native/commit/cdc393d4ba7b9308f0dd606696fc9ee9cdeefa35))
+* inline merge of message lists ([7a7ee70](https://github.com/GetStream/stream-chat-react-native/commit/7a7ee701c45aadb902318ce69b99f1ebcf2492e6))
+* issues found by the e2e tests and rc.33 compatibility ([#3935](https://github.com/GetStream/stream-chat-react-native/issues/3935)) ([b8485aa](https://github.com/GetStream/stream-chat-react-native/commit/b8485aaa6f6e5b15191cce88d5bad3dba78bb36f))
+* messagelist snapping on send ([4afa591](https://github.com/GetStream/stream-chat-react-native/commit/4afa591100fb7364d687ba266b156e826359ec25))
+* more review fixes ([1693793](https://github.com/GetStream/stream-chat-react-native/commit/1693793fc1d3b35d23dfb5d4fc9d55ff3711b318))
+* more review fixes ([7335d50](https://github.com/GetStream/stream-chat-react-native/commit/7335d5015dbbe9d2fb3231ed8678be7e91c48809))
+* more review fixes ([d24df71](https://github.com/GetStream/stream-chat-react-native/commit/d24df71160b50f7c1627bee767fa6dd2484a6ee9))
+* pagination past a certain page ([9ea3ec5](https://github.com/GetStream/stream-chat-react-native/commit/9ea3ec547a4bcee0b926023327e2ed0c0ca78fa3))
+* reaction optimistic updates ([c45d7fa](https://github.com/GetStream/stream-chat-react-native/commit/c45d7fa668e7dbfdc8b6cf407da0e4451458b825))
+* rely on paginator state and not replies ([36904be](https://github.com/GetStream/stream-chat-react-native/commit/36904be8cd10bbc1350ced6f4e3a30eaacff84b1))
+* remove more remnants of the old channel state/ ([8e14da1](https://github.com/GetStream/stream-chat-react-native/commit/8e14da14f4ea3dfa03f4745ebac636b9a36cd5e4))
+* respect a registered message page size and accept ClientUser in useCreateChatClient ([#3871](https://github.com/GetStream/stream-chat-react-native/issues/3871)) ([585c5a9](https://github.com/GetStream/stream-chat-react-native/commit/585c5a9513d2e3229678631d2939e5a5a1abcece)), closes [#3870](https://github.com/GetStream/stream-chat-react-native/issues/3870) [#3870](https://github.com/GetStream/stream-chat-react-native/issues/3870) [#3866](https://github.com/GetStream/stream-chat-react-native/issues/3866) [#3867](https://github.com/GetStream/stream-chat-react-native/issues/3867) [#3868](https://github.com/GetStream/stream-chat-react-native/issues/3868) [#3869](https://github.com/GetStream/stream-chat-react-native/issues/3869) [#3868](https://github.com/GetStream/stream-chat-react-native/issues/3868) [#3870](https://github.com/GetStream/stream-chat-react-native/issues/3870)
+* respect message_limit when querying the db ([#3908](https://github.com/GetStream/stream-chat-react-native/issues/3908)) ([cd9f539](https://github.com/GetStream/stream-chat-react-native/commit/cd9f53928f8a1b720ce685131a9e1f9aa67b2324)), closes [#3907](https://github.com/GetStream/stream-chat-react-native/issues/3907)
+* review fixes ([ad8dc9a](https://github.com/GetStream/stream-chat-react-native/commit/ad8dc9a61d825ceb5a17456fccf26d16a4e8d711))
+* scrollto edge cases ([18905dd](https://github.com/GetStream/stream-chat-react-native/commit/18905dd921765ca812c16acc9a77e98e7198c8e1))
+* select the pinned flag instead of the membership object ([#3910](https://github.com/GetStream/stream-chat-react-native/issues/3910)) ([194d01c](https://github.com/GetStream/stream-chat-react-native/commit/194d01c10a7fb3d6f8f453ab3a95406f16f0b184))
+* stability and perf fixes ([#3854](https://github.com/GetStream/stream-chat-react-native/issues/3854)) ([ebfac3a](https://github.com/GetStream/stream-chat-react-native/commit/ebfac3aefeb1d10ef7e6ac5e03b8197b7316e22a))
+* store predefined filters in db ([#3804](https://github.com/GetStream/stream-chat-react-native/issues/3804)) ([cce7b31](https://github.com/GetStream/stream-chat-react-native/commit/cce7b319db926b15189cd4039d7e57e0fe3b1318))
+* stream-chat rc.31 compatibility ([#3919](https://github.com/GetStream/stream-chat-react-native/issues/3919)) ([e7794a7](https://github.com/GetStream/stream-chat-react-native/commit/e7794a7816dc5f59cdf2b28d9b1cec6b77054437)), closes [GetStream/stream-chat-js#1982](https://github.com/GetStream/stream-chat-js/issues/1982) [GetStream/stream-chat-js#1985](https://github.com/GetStream/stream-chat-js/issues/1985) [GetStream/stream-chat-js#1986](https://github.com/GetStream/stream-chat-js/issues/1986) [GetStream/stream-chat-js#1987](https://github.com/GetStream/stream-chat-js/issues/1987) [GetStream/stream-chat-js#1982](https://github.com/GetStream/stream-chat-js/issues/1982) [GetStream/stream-chat-js#1986](https://github.com/GetStream/stream-chat-js/issues/1986)
+* thread connection recovery mechanism ([262e1c1](https://github.com/GetStream/stream-chat-react-native/commit/262e1c159e0c9412b6594c7f77b9bb1d3bde1536))
+* unified unread count state ([6ce7903](https://github.com/GetStream/stream-chat-react-native/commit/6ce7903959a499a7b11367b8656c4c55fb729ad9))
+* unread resolution ([34549a0](https://github.com/GetStream/stream-chat-react-native/commit/34549a03988781f63410fca4e0de73efcc16e2b7))
+* use throttled mark read version ([fa1bf4b](https://github.com/GetStream/stream-chat-react-native/commit/fa1bf4b7a3d6bb9af8d84855f1306ac0ef6373c7))
+* v10 in depth review hotfixes ([#3876](https://github.com/GetStream/stream-chat-react-native/issues/3876)) ([dc3cb90](https://github.com/GetStream/stream-chat-react-native/commit/dc3cb902e39dc5601bce626caf796a2118f8af45))
+* v10 issues found in the comment cleanup ([#3885](https://github.com/GetStream/stream-chat-react-native/issues/3885)) ([a121e6e](https://github.com/GetStream/stream-chat-react-native/commit/a121e6e7fc63a78ee0928e45a5e3e13d6de2b14b)), closes [#3884](https://github.com/GetStream/stream-chat-react-native/issues/3884) [#3884](https://github.com/GetStream/stream-chat-react-native/issues/3884) [#3241](https://github.com/GetStream/stream-chat-react-native/issues/3241) [#3884](https://github.com/GetStream/stream-chat-react-native/issues/3884)
+* v10 sdk regressions ([#3916](https://github.com/GetStream/stream-chat-react-native/issues/3916)) ([74884ff](https://github.com/GetStream/stream-chat-react-native/commit/74884ff553c60787de76eafe406b41dfe97f252f)), closes [GetStream/stream-chat-js#1975](https://github.com/GetStream/stream-chat-js/issues/1975)
+* wrongly migrated translations ([#3792](https://github.com/GetStream/stream-chat-react-native/issues/3792)) ([8ec4862](https://github.com/GetStream/stream-chat-react-native/commit/8ec4862e506d488709236aa7af98b0be7cdafa69))
+
+### Features
+
+* add mark read/unread ([8633abf](https://github.com/GetStream/stream-chat-react-native/commit/8633abf4a11586c9fb48a34cf6a8820f2294b2cc))
+* adopt stream-chat's branded TimestampNS ([#3822](https://github.com/GetStream/stream-chat-react-native/issues/3822)) ([23e7fdc](https://github.com/GetStream/stream-chat-react-native/commit/23e7fdc731b7ed17d9ff74b1726ca14bd009fbcd)), closes [GetStream/stream-chat-js#1884](https://github.com/GetStream/stream-chat-js/issues/1884) [GetStream/stream-chat-js#1884](https://github.com/GetStream/stream-chat-js/issues/1884) [#1881](https://github.com/GetStream/stream-chat-react-native/issues/1881)
+* adopt TS generator changes ([#3836](https://github.com/GetStream/stream-chat-react-native/issues/3836)) ([e2e1d05](https://github.com/GetStream/stream-chat-react-native/commit/e2e1d05544cda2ecab43b9973100c718a200f3b2))
+* **ai-components:** add VoiceGlow and VoiceWave voice-agent visualizations (V10) ([#3896](https://github.com/GetStream/stream-chat-react-native/issues/3896)) ([841e115](https://github.com/GetStream/stream-chat-react-native/commit/841e115068b9d237842f59c7ab974d223021d942)), closes [GetStream/stream-chat-react-native#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895) [#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895) [#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895) [#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895) [GetStream/getstream.io#810](https://github.com/GetStream/getstream.io/issues/810) [#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895) [#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895) [#3895](https://github.com/GetStream/stream-chat-react-native/issues/3895)
+* always rely on shared thread instance ([6236684](https://github.com/GetStream/stream-chat-react-native/commit/6236684ac0474ae11e750ce42fb017a0f0cf6513))
+* bump stream-chat and introduce new hooks ([87d7d71](https://github.com/GetStream/stream-chat-react-native/commit/87d7d71ea5434a103f0c786ffc2da55258840894))
+* bump stream-chat-js ([8d6314a](https://github.com/GetStream/stream-chat-react-native/commit/8d6314a59b6174d574ee85c86c72af30e2f59cf2))
+* channel state migration ([#3779](https://github.com/GetStream/stream-chat-react-native/issues/3779)) ([2273037](https://github.com/GetStream/stream-chat-react-native/commit/227303748244b857bebb82aa5ce0829304006122))
+* completely remove channel unread store and rely on LLC ([2b5d2c1](https://github.com/GetStream/stream-chat-react-native/commit/2b5d2c1515e039b46decee19f6ebffd93c0112b6))
+* destructive reconciliation ([#3771](https://github.com/GetStream/stream-chat-react-native/issues/3771)) ([e446537](https://github.com/GetStream/stream-chat-react-native/commit/e4465372ad313c4ebaaffe5a54535ce7298d9148))
+* fully migrate thread to thread instances ([05142b5](https://github.com/GetStream/stream-chat-react-native/commit/05142b5da4ad8f3bcf8714f53d739eb9e27da2e9))
+* highlighted messages ([718fee6](https://github.com/GetStream/stream-chat-react-native/commit/718fee6913700836fea94627c4de42b8d9f6e656))
+* **i18n:** port the v10 English-only translation architecture ([#3776](https://github.com/GetStream/stream-chat-react-native/issues/3776)) ([1a7daa2](https://github.com/GetStream/stream-chat-react-native/commit/1a7daa2e11926c3e8e8e0c7e1cfc26b89f9513c8))
+* include message action handlers ([3888d48](https://github.com/GetStream/stream-chat-react-native/commit/3888d4843a82e14136c52c15b8d05eff149b03f6))
+* llc driven connection recovery ([#3785](https://github.com/GetStream/stream-chat-react-native/issues/3785)) ([a83ca08](https://github.com/GetStream/stream-chat-react-native/commit/a83ca080aee6407f68d74fee48e1e166e419c1ce))
+* llc new state layer ([3e94338](https://github.com/GetStream/stream-chat-react-native/commit/3e9433837c8ad81e001d3ab7c0a493683ac3fb44))
+* message pruning ([f85cb3e](https://github.com/GetStream/stream-chat-react-native/commit/f85cb3e5e64b7cce08baacbbb6b11a4fa66ac49a))
+* message pruning ([e92e5d5](https://github.com/GetStream/stream-chat-react-native/commit/e92e5d5e87fd8539cd4dd3eca886fea33e4ffcbc))
+* migrate marking as read ([d3f824b](https://github.com/GetStream/stream-chat-react-native/commit/d3f824b723f6e61b37b0d33e4ceeba25deeab11d))
+* migrate to instance configuration api ([#3784](https://github.com/GetStream/stream-chat-react-native/issues/3784)) ([33aa520](https://github.com/GetStream/stream-chat-react-native/commit/33aa5202142235f74a5e52804eb6e00260ebfaef))
+* migrate to new channel orchestrator approach ([#3770](https://github.com/GetStream/stream-chat-react-native/issues/3770)) ([f61ac65](https://github.com/GetStream/stream-chat-react-native/commit/f61ac65013a7d57a688ae40416458344b223dd3a))
+* move message sending to llc state updates ([fc09564](https://github.com/GetStream/stream-chat-react-native/commit/fc09564c17c75869bd45b66ff6eb05bc61d4221b))
+* move send with pending attachments logic to LLC ([#3821](https://github.com/GetStream/stream-chat-react-native/issues/3821)) ([88490a5](https://github.com/GetStream/stream-chat-react-native/commit/88490a57bfc69c30e63e4f6e3855686bc3bd5a52))
+* move thread to reactive state fully ([e880cce](https://github.com/GetStream/stream-chat-react-native/commit/e880ccefccd4fec839fe0ce2abfbcf1b700d9146))
+* move to new upload API ([c959ac2](https://github.com/GetStream/stream-chat-react-native/commit/c959ac23304f2f7890147ef57fd9afd65d78c901))
+* move to new upload API ([0c12071](https://github.com/GetStream/stream-chat-react-native/commit/0c120718e405a8cfb9ca158e8be6021ae29e9b99))
+* move to timestamps in response models ([1ccd442](https://github.com/GetStream/stream-chat-react-native/commit/1ccd442c3cdf7dab4b0d9d8b9a5632efe5e4415c))
+* move to timestamps in response models ([6f51f35](https://github.com/GetStream/stream-chat-react-native/commit/6f51f35864812cfbfdb28d374d40fccfa32a4a4d))
+* network observer ([#3808](https://github.com/GetStream/stream-chat-react-native/issues/3808)) ([d0da7b6](https://github.com/GetStream/stream-chat-react-native/commit/d0da7b63e5bfc25d2afdc6c0a08a95430e8849ab))
+* openapi migration ([#3749](https://github.com/GetStream/stream-chat-react-native/issues/3749)) ([b7cee73](https://github.com/GetStream/stream-chat-react-native/commit/b7cee731292811dc162947a67d25a30d05e9aefd))
+* paginator refactor compatibility ([#3888](https://github.com/GetStream/stream-chat-react-native/issues/3888)) ([b94f396](https://github.com/GetStream/stream-chat-react-native/commit/b94f39698701a5690b78b44d0ac45c203674aad3)), closes [stream-chat-js#1926](https://github.com/GetStream/stream-chat-js/issues/1926)
+* port the client config instance changes to scrn ([#3855](https://github.com/GetStream/stream-chat-react-native/issues/3855)) ([7e79dc9](https://github.com/GetStream/stream-chat-react-native/commit/7e79dc95603204090e13d9af0d221e14f19b6583))
+* reactive channel preview data state ([#3740](https://github.com/GetStream/stream-chat-react-native/issues/3740)) ([d556a51](https://github.com/GetStream/stream-chat-react-native/commit/d556a5126a7790b88d2d0ec8b63abe01a234c721))
+* reactive message list first pass ([0872d91](https://github.com/GetStream/stream-chat-react-native/commit/0872d914e614f45355b278f846c3ec5aa939d69f))
+* remaining optimistic updates ([#3791](https://github.com/GetStream/stream-chat-react-native/issues/3791)) ([5a8926c](https://github.com/GetStream/stream-chat-react-native/commit/5a8926ca86c5f8d823969e8ae57e6da7674bb09c))
+* remove deprecated channel storage for messages ([#3738](https://github.com/GetStream/stream-chat-react-native/issues/3738)) ([ea334af](https://github.com/GetStream/stream-chat-react-native/commit/ea334afc0a40019f2b272b3dc3bb4a40aeacf896))
+* remove PaginatedMessageListContext ([5f83608](https://github.com/GetStream/stream-chat-react-native/commit/5f836086296ba3d10f27ca042eefb07043bd05ae))
+* **sampleapp:** use token provider in sample app instead of static t… ([#3834](https://github.com/GetStream/stream-chat-react-native/issues/3834)) ([9485da2](https://github.com/GetStream/stream-chat-react-native/commit/9485da2237e8cb59051892a0bdf4619609fd2e22))
+* stream-chat-react-native v10 ([30529ad](https://github.com/GetStream/stream-chat-react-native/commit/30529ad8f9ae1b51bd708d06248a0fed85021096))
+* thread paginator ([#3832](https://github.com/GetStream/stream-chat-react-native/issues/3832)) ([98b153b](https://github.com/GetStream/stream-chat-react-native/commit/98b153b81390e14edb804c6ac5c02fe5bbf89d5e))
+* thread state ([7550378](https://github.com/GetStream/stream-chat-react-native/commit/75503781e71e5c1fc218acd29411bba6cf249479))
+* UI sdk state cleanup in favor of llc ([#3848](https://github.com/GetStream/stream-chat-react-native/issues/3848)) ([d1a29fe](https://github.com/GetStream/stream-chat-react-native/commit/d1a29fef008756e5c69f7b8e199f96c901d424be))
+* update db schema to store dates as numbers ([f1adeac](https://github.com/GetStream/stream-chat-react-native/commit/f1adeacff11596acd75c3140e2c8200fe8ace7b4))
+* update stream-chat-js ([44b9381](https://github.com/GetStream/stream-chat-react-native/commit/44b9381540c100513e4adbe3e2668f181d95e654))
+* update stream-chat-js version ([f52c910](https://github.com/GetStream/stream-chat-react-native/commit/f52c91006a07f10abb6902880ab40bd8cf9700ce))
+* use stat stores ([9f10e37](https://github.com/GetStream/stream-chat-react-native/commit/9f10e373d91e5a9882858622beb0ade7ee5328dd))
+* use state directly instead of UI sdk state ([685fb30](https://github.com/GetStream/stream-chat-react-native/commit/685fb30802236029a733f573a72ecea40b572dc6))
+* v10 channel store migration ([#3847](https://github.com/GetStream/stream-chat-react-native/issues/3847)) ([ba3c336](https://github.com/GetStream/stream-chat-react-native/commit/ba3c336679e99b30a7efc4cf2d2c45c489de813b))
+
+### Chores
+
+* **deps:** bump stream-chat to 10.0.0 ([#3951](https://github.com/GetStream/stream-chat-react-native/issues/3951)) ([211725a](https://github.com/GetStream/stream-chat-react-native/commit/211725aeea2f928759625a370b857b761f963396))
+
+### Refactors
+
+* clean up channel hoc ([#3820](https://github.com/GetStream/stream-chat-react-native/issues/3820)) ([7b1dd48](https://github.com/GetStream/stream-chat-react-native/commit/7b1dd483fc6c793a4cc46e015684219cd8d31d79))
+* clean up channel lifecycle ([#3868](https://github.com/GetStream/stream-chat-react-native/issues/3868)) ([90d32a7](https://github.com/GetStream/stream-chat-react-native/commit/90d32a7737ac5e78fae1efd9c6198f91d9f2afa6))
+* delivery receipts v10 ([#3823](https://github.com/GetStream/stream-chat-react-native/issues/3823)) ([0f1c3c9](https://github.com/GetStream/stream-chat-react-native/commit/0f1c3c9e1373714c16ce8cb3c172c57769dfab8e)), closes [#1883](https://github.com/GetStream/stream-chat-react-native/issues/1883) [#1881](https://github.com/GetStream/stream-chat-react-native/issues/1881) [#1882](https://github.com/GetStream/stream-chat-react-native/issues/1882)
+* **i18n:** adopt the shared i18n layer from stream-chat/i18n ([#3777](https://github.com/GetStream/stream-chat-react-native/issues/3777)) ([99b8a94](https://github.com/GetStream/stream-chat-react-native/commit/99b8a947e8cdbedbb33d8ade9679f356ee3628d0)), closes [#3776](https://github.com/GetStream/stream-chat-react-native/issues/3776)
+* **i18n:** consume the shared runtime from @stream-io/i18n ([#3801](https://github.com/GetStream/stream-chat-react-native/issues/3801)) ([c5e848b](https://github.com/GetStream/stream-chat-react-native/commit/c5e848bdf9f87166619ae8cfff43fb4845108e5b))
+* miscellaneous cleanup v10 ([#3852](https://github.com/GetStream/stream-chat-react-native/issues/3852)) ([ee238ad](https://github.com/GetStream/stream-chat-react-native/commit/ee238ad8e20ccbad3eba6d0b6b430004370fc352))
+* separate thread from channel hoc ([#3867](https://github.com/GetStream/stream-chat-react-native/issues/3867)) ([c5b82ac](https://github.com/GetStream/stream-chat-react-native/commit/c5b82acb63664ada5a0989558eb564462d99502e))
+* simplify optimistic updates ([#3840](https://github.com/GetStream/stream-chat-react-native/issues/3840)) ([6c2513b](https://github.com/GetStream/stream-chat-react-native/commit/6c2513b0f27a680938283096c4a2723a2c2ba4ab))
+* stop creating sdk paginator ([#3869](https://github.com/GetStream/stream-chat-react-native/issues/3869)) ([2b3c00c](https://github.com/GetStream/stream-chat-react-native/commit/2b3c00ce8df73b90a765c6533f3f7ae5f95c1d88))
+* thread instance propagation ([#3861](https://github.com/GetStream/stream-chat-react-native/issues/3861)) ([43758fc](https://github.com/GetStream/stream-chat-react-native/commit/43758fcb98ad92c30b5cf6d57675ac843a5c3078))
+
+### Performance Improvements
+
+* do not load too many messages ([484fb49](https://github.com/GetStream/stream-chat-react-native/commit/484fb493d0b8b5980ec6457ec401abd16a81ec3f))
+* introduce delivery count hooks ([469ae4d](https://github.com/GetStream/stream-chat-react-native/commit/469ae4dc7dd0ce9dfc0505fa46c1ad4f479ee144))
+* message actions hook invocations ([#3866](https://github.com/GetStream/stream-chat-react-native/issues/3866)) ([7ae4793](https://github.com/GetStream/stream-chat-react-native/commit/7ae4793df25f2bd822ead8194f633483089699bb))
+
 ## [9.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.12.0...v9.12.1) (2026-11-06)
 
 ### Bug Fixes
