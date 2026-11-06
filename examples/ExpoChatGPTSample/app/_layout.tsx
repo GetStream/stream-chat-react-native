@@ -1,3 +1,5 @@
+import '../agent/polyfills';
+
 import React from 'react';
 
 import { StyleSheet } from 'react-native';
@@ -12,7 +14,8 @@ import { Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-expo';
 
 import { StreamTheme } from 'stream-chat-expo/ai-components';
 
-import { chatApiKey, chatUserId, chatUserName, chatUserToken } from '../chatConfig';
+import { streamToken } from '../agent/agents';
+import { AgentConfig } from '../agent/config';
 import { AppProvider } from '../contexts/AppContext';
 
 import { MenuDrawer } from '../screens/MenuDrawer';
@@ -21,9 +24,9 @@ const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
 export default function Layout() {
   const chatClient = useCreateChatClient({
-    apiKey: chatApiKey,
-    tokenOrProvider: chatUserToken,
-    userData: { id: chatUserId, name: chatUserName },
+    apiKey: AgentConfig.streamApiKey,
+    tokenOrProvider: streamToken,
+    userData: AgentConfig.user,
   });
 
   if (!chatClient) {

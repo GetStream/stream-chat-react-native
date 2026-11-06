@@ -4,9 +4,9 @@ import Dayjs from 'dayjs';
 
 import type { TranslationLanguages } from 'stream-chat';
 
-import { TranslatorFunctions } from './types';
+import type { TranslatorFunctions } from './types';
 
-import { defaultTranslatorFunction } from '../../utils/i18n/Streami18n';
+import { defaultTranslatorFunction } from '../../utils/i18n/utils';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';

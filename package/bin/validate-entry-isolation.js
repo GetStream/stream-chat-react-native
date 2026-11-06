@@ -40,6 +40,10 @@ const AI_ONLY_PACKAGES = [
 const AI_ALLOWED_FILES = [
   path.join(CORE_SRC, 'native.ts'),
   path.join(CORE_SRC, 'components/UIComponents/NativeShimmerView.tsx'),
+  // The chat SDK's translation context, which the AI components translate with (not Streami18n).
+  path.join(CORE_SRC, 'contexts/translationContext/TranslationContext.tsx'),
+  path.join(CORE_SRC, 'contexts/utils/isTestEnvironment.ts'),
+  path.join(CORE_SRC, 'utils/i18n/utils.ts'),
   ...WRAPPERS.flatMap((wrapper) => [
     path.join(wrapper, 'ai-components/index.js'),
     path.join(wrapper, 'src/optionalDependencies/NativeShimmerView.ts'),

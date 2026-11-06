@@ -14,6 +14,8 @@ import { calendarFormats } from './calendarFormats';
 import { predefinedFormatters } from './predefinedFormatters';
 import { CustomFormatters, PredefinedFormatters } from './types';
 
+import { defaultTranslatorFunction } from './utils';
+
 import type { TDateTimeParser } from '../../contexts/translationContext/types';
 import arTranslations from '../../i18n/ar.json';
 import enTranslations from '../../i18n/en.json';
@@ -370,7 +372,8 @@ const defaultStreami18nOptions = {
   logger: (msg?: string) => console.warn(msg),
 };
 
-export const defaultTranslatorFunction = ((key: string) => key) as TFunction;
+// Moved to ./utils, so the translation context doesn't import this file. Re-exported as before.
+export { defaultTranslatorFunction };
 
 export class Streami18n {
   i18nInstance: I18nInstance = i18n.createInstance();

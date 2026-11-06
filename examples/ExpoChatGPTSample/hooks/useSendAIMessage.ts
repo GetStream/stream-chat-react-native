@@ -1,35 +1,39 @@
-import { useMessageComposer, useMessageInputContext, useStableCallback } from 'stream-chat-expo';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+
+import { useStableCallback } from 'stream-chat-expo';
 
 import type { ComposerViewProps } from 'stream-chat-expo/ai-components';
 
+import { useAppContext } from '../contexts/AppContext';
+
 export type AIMessage = Parameters<ComposerViewProps['onSendMessage']>[0];
 
+// The router takes photos inline, so they are shrunk first.
+const MAX_IMAGE_WIDTH = 1280;
+
+const toDataUri = async (uri: string) => {
+  const { base64 } = await manipulateAsync(uri, [{ resize: { width: MAX_IMAGE_WIDTH } }], {
+    base64: true,
+    compress: 0.7,
+    format: SaveFormat.JPEG,
+  });
+  return `data:image/jpeg;base64,${base64}`;
+};
+
 /**
- * Sends a message to the AI channel through the channel's composer, with its attachments. Shared
- * by the composer and voice mode, so both go through `preSendMessageRequest` (which starts the
- * agent on the first message).
+ * Asks the agent, with the photos picked in the composer. The router writes the question and its
+ * reply into the conversation's channel. Shared by the composer and voice mode.
  */
 export const useSendAIMessage = () => {
-  const messageComposer = useMessageComposer();
-  const { sendMessage } = useMessageInputContext();
+  const { ask } = useAppContext();
 
   return useStableCallback(async ({ text, attachments }: AIMessage) => {
-    messageComposer.textComposer.setText(text);
-    if (attachments && attachments.length > 0) {
-      const localAttachments = await Promise.all(
-        attachments.map((asset) =>
-          messageComposer.attachmentManager.fileToLocalUploadAttachment({
-            ...asset,
-            // The picker can leave these out (e.g. some iOS photos have no file name).
-            name: asset.name ?? asset.uri.split('/').pop() ?? 'image',
-            size: asset.size ?? 0,
-            type: asset.type ?? 'image/jpeg',
-          }),
-        ),
-      );
-      messageComposer.attachmentManager.upsertAttachments(localAttachments);
-    }
-
-    await sendMessage();
+    const photos = (attachments ?? []).filter(
+      (asset) => !asset.type || asset.type.startsWith('image'),
+    );
+    const images = await Promise.all(
+      photos.map(async (asset) => ({ url: await toDataUri(asset.uri) })),
+    );
+    await ask(text, images);
   });
 };
