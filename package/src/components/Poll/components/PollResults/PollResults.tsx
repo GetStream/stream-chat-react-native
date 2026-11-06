@@ -14,6 +14,7 @@ import {
 import { useComponentsContext } from '../../../../contexts/componentsContext/ComponentsContext';
 import { primitives } from '../../../../theme';
 import { usePollState } from '../../hooks/usePollState';
+import { usePollTextTranslation } from '../../hooks/usePollTextTranslation';
 
 export type PollResultsProps = PollContextValue & {
   additionalScrollViewProps?: Partial<ScrollViewProps>;
@@ -22,7 +23,8 @@ export type PollResultsProps = PollContextValue & {
 export const PollResultsContent = ({
   additionalScrollViewProps,
 }: Pick<PollResultsProps, 'additionalScrollViewProps'>) => {
-  const { name, options, voteCountsByOption } = usePollState();
+  const { name, nameI18n, options, voteCountsByOption } = usePollState();
+  const translate = usePollTextTranslation();
 
   const sortedOptions = useMemo(
     () =>
@@ -51,7 +53,7 @@ export const PollResultsContent = ({
     >
       <View style={[styles.container, container]}>
         <Text style={[styles.titleMeta, titleMeta]}>{t('poll.question.label', 'Question')}</Text>
-        <Text style={[styles.title, title]}>{name}</Text>
+        <Text style={[styles.title, title]}>{translate(name, nameI18n)}</Text>
       </View>
       <View style={styles.resultsContainer}>
         {sortedOptions.map((option, index) => (

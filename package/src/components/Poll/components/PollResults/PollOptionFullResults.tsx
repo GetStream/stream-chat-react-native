@@ -16,6 +16,7 @@ import { useComponentsContext } from '../../../../contexts/componentsContext/Com
 import { primitives } from '../../../../theme';
 import { usePollOptionVotesPagination } from '../../hooks/usePollOptionVotesPagination';
 import { usePollState } from '../../hooks/usePollState';
+import { usePollTextTranslation } from '../../hooks/usePollTextTranslation';
 
 export type PollOptionFullResultsProps = PollContextValue & {
   option: PollOptionResponseData;
@@ -33,6 +34,8 @@ export const PollOptionFullResultsContent = ({
   const { t } = useTranslationContext();
   const { hasNextPage, loadMore, votes } = usePollOptionVotesPagination({ option });
   const { voteCountsByOption } = usePollState();
+  const translate = usePollTextTranslation();
+  const optionText = translate(option.text, option.text_i18n);
 
   const {
     theme: {
@@ -46,7 +49,7 @@ export const PollOptionFullResultsContent = ({
   const PollOptionFullResultsHeader = useCallback(
     () => (
       <View style={[styles.headerContainer, headerContainer]}>
-        <Text style={[styles.headerTitle, headerTitle]}>{option.text}</Text>
+        <Text style={[styles.headerTitle, headerTitle]}>{optionText}</Text>
         <Text style={[styles.headerText, headerText]}>
           {t('poll.votes.text', {
             count: voteCountsByOption[option.id] ?? 0,
@@ -61,7 +64,7 @@ export const PollOptionFullResultsContent = ({
       headerText,
       headerTitle,
       option.id,
-      option.text,
+      optionText,
       styles.headerContainer,
       styles.headerText,
       styles.headerTitle,

@@ -8,6 +8,7 @@ import { PollUIStateProvider } from './contexts/PollUIStateContext';
 
 import { useIsPollCreatedByCurrentUser } from './hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from './hooks/usePollState';
+import { usePollTextTranslation } from './hooks/usePollTextTranslation';
 
 import {
   PollContextProvider,
@@ -27,7 +28,8 @@ export type PollContentProps = Record<string, never>;
 export const PollHeader = () => {
   const styles = useStyles();
   const { t } = useTranslationContext();
-  const { enforceUniqueVote, isClosed, maxVotesAllowed, name } = usePollState();
+  const { enforceUniqueVote, isClosed, maxVotesAllowed, name, nameI18n } = usePollState();
+  const translate = usePollTextTranslation();
 
   const subtitle = useMemo(() => {
     if (isClosed) {
@@ -56,7 +58,7 @@ export const PollHeader = () => {
 
   return (
     <View accessible accessibilityRole='text' style={styles.headerContainer}>
-      <Text style={[styles.headerTitle, header.title]}>{name}</Text>
+      <Text style={[styles.headerTitle, header.title]}>{translate(name, nameI18n)}</Text>
       <Text style={[styles.headerSubtitle, header.subtitle]}>{subtitle}</Text>
     </View>
   );

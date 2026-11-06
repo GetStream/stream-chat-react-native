@@ -27,6 +27,7 @@ import { ProgressBar } from '../../ProgressControl/ProgressBar';
 import { UserAvatarStack } from '../../ui/Avatar/AvatarStack';
 import { useIsPollCreatedByCurrentUser } from '../hook/useIsPollCreatedByCurrentUser';
 import { usePollState } from '../hooks/usePollState';
+import { usePollTextTranslation } from '../hooks/usePollTextTranslation';
 import { usePollVoteToggle } from '../hooks/usePollVoteToggle';
 
 const pollVoteAccessibilityStates = {
@@ -48,7 +49,8 @@ export const PollAllOptionsContent = ({
   additionalScrollViewProps,
 }: Pick<PollAllOptionsContentProps, 'additionalScrollViewProps'>) => {
   const { t } = useTranslationContext();
-  const { name, options } = usePollState();
+  const { name, nameI18n, options } = usePollState();
+  const translate = usePollTextTranslation();
 
   const {
     theme: {
@@ -67,7 +69,7 @@ export const PollAllOptionsContent = ({
     >
       <View style={[styles.allOptionsTitleContainer, titleContainer]}>
         <Text style={styles.allOptionsTitleMeta}>{t('poll.question.label', 'Question')}</Text>
-        <Text style={[styles.allOptionsTitleText, titleText]}>{name}</Text>
+        <Text style={[styles.allOptionsTitleText, titleText]}>{translate(name, nameI18n)}</Text>
       </View>
       <View style={[styles.allOptionsListContainer, listContainer]}>
         {options?.map((option: PollOptionClass) => (
@@ -96,6 +98,7 @@ export const PollAllOptions = ({
 export const PollOption = ({ option, showProgressBar = true, forceIncoming }: PollOptionProps) => {
   const { latestVotesByOption, voteCountsByOption, voteCount } = usePollState();
   const { t } = useTranslationContext();
+  const translate = usePollTextTranslation();
   const isPollCreatedByClient = useIsPollCreatedByCurrentUser();
   // `forceIncoming` marks the full-options surface, a neutral card rather than a bubble, so it wins
   // over poll ownership.
@@ -133,7 +136,7 @@ export const PollOption = ({ option, showProgressBar = true, forceIncoming }: Po
       <View style={[styles.info, info]}>
         <View style={[styles.header, header]}>
           <Text ellipsizeMode='tail' numberOfLines={2} style={[styles.text, text]}>
-            {option.text}
+            {translate(option.text, option.text_i18n)}
           </Text>
           <View style={[styles.votesContainer, votesContainer]}>
             {relevantVotes.length > 0 ? (
@@ -196,6 +199,7 @@ export const VoteButton = ({ forceIncoming, onPress, option }: PollVoteButtonPro
   } = useTheme();
 
   const toggleVote = usePollVoteToggle();
+  const translate = usePollTextTranslation();
 
   const onPressHandler = useCallback(() => {
     if (onPress) {
@@ -213,7 +217,7 @@ export const VoteButton = ({ forceIncoming, onPress, option }: PollVoteButtonPro
 
   return ownCapabilities.castPollVote && !isClosed ? (
     <Pressable
-      accessibilityLabel={option.text}
+      accessibilityLabel={translate(option.text, option.text_i18n)}
       accessibilityRole={poll.data?.enforce_unique_vote ? 'radio' : 'checkbox'}
       accessibilityState={accessibilityState}
       onPress={onPressHandler}

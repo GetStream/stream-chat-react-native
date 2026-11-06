@@ -1,5 +1,26 @@
 # Change Log
 
+## [9.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.3...v9.12.0) (2026-11-05)
+
+### Features
+
+* poll translations ([#3917](https://github.com/GetStream/stream-chat-react-native/issues/3917)) ([2617c70](https://github.com/GetStream/stream-chat-react-native/commit/2617c7061337c71a7e4e265f7d2b5cec134b6ce8))
+* poll translations ([#3917](https://github.com/GetStream/stream-chat-react-native/issues/3917)) ([#3941](https://github.com/GetStream/stream-chat-react-native/issues/3941)) ([32e897f](https://github.com/GetStream/stream-chat-react-native/commit/32e897f8e78611c54fc2a43a7b28e0e7728e8267))
+
+## [9.11.3](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.2...v9.11.3) (2026-11-05)
+
+### Bug Fixes
+
+* babel 7.29.13 ternary parsing regression ([#3937](https://github.com/GetStream/stream-chat-react-native/issues/3937)) ([3544393](https://github.com/GetStream/stream-chat-react-native/commit/3544393cabfe5f762e95a87a7e94333aced577fe))
+* babel 7.29.13 ternary parsing regression ([#3937](https://github.com/GetStream/stream-chat-react-native/issues/3937)) ([dff0b73](https://github.com/GetStream/stream-chat-react-native/commit/dff0b736abb299514a2a9b51bd5926657984f6f6)), closes [babel/babel#18264](https://github.com/babel/babel/issues/18264)
+
+## [9.11.2](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.1...v9.11.2) (2026-11-04)
+
+### Bug Fixes
+
+* keep emoji intact in avatar initials ([#3927](https://github.com/GetStream/stream-chat-react-native/issues/3927)) ([2d12303](https://github.com/GetStream/stream-chat-react-native/commit/2d12303291aab93f09f6f00e757499be03cdb4da))
+* keep emoji intact in avatar initials ([#3927](https://github.com/GetStream/stream-chat-react-native/issues/3927)) ([fbf71ae](https://github.com/GetStream/stream-chat-react-native/commit/fbf71ae6ec71d9c7db0b6e6484f41871c607b4e8)), closes [#3922](https://github.com/GetStream/stream-chat-react-native/issues/3922)
+
 ## [9.11.1](https://github.com/GetStream/stream-chat-react-native/compare/v9.11.0...v9.11.1) (2026-10-29)
 
 ### Bug Fixes

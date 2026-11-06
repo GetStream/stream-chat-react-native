@@ -20,6 +20,7 @@ import {
 
 import { primitives } from '../../../../theme';
 import { usePollState } from '../../hooks/usePollState';
+import { usePollTextTranslation } from '../../hooks/usePollTextTranslation';
 import { GenericPollButton } from '../Button';
 import { PollModal } from '../PollModal';
 import { PollModalHeader } from '../PollModalHeader';
@@ -97,6 +98,7 @@ const PollResultsVoteItem = (vote: PollVoteClass) => (
 export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
   const { t } = useTranslationContext();
   const { latestVotesByOption, voteCountsByOption } = usePollState();
+  const translate = usePollTextTranslation();
 
   const {
     theme: {
@@ -116,7 +118,7 @@ export const PollResultsItem = ({ option, index }: PollResultItemProps) => {
           {t('poll.results.optionNumber.text', 'Option {{count}}', { count: index + 1 })}
         </Text>
         <View style={[styles.headerContainer, headerContainer]}>
-          <Text style={[styles.title, title]}>{option.text}</Text>
+          <Text style={[styles.title, title]}>{translate(option.text, option.text_i18n)}</Text>
           <Text style={[styles.voteCount, voteCount]}>
             {t('poll.votes.text', {
               count: voteCountsByOption[option.id] ?? 0,
