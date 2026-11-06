@@ -17,18 +17,26 @@ import { useTheme } from '../contexts';
 export const AIUIGenerated = ({
   children,
   isStreaming,
+  messageId,
   onError,
 }: {
   children: ReactNode;
   isStreaming: boolean;
+  messageId: string;
   onError: (error: unknown) => void;
 }) => {
   const {
     theme: { generatedUI },
   } = useTheme();
   return (
-    <AIUIEntranceStage isStreaming={isStreaming} style={[styles.generated, generatedUI?.container]}>
-      <AIUIErrorBoundary onError={onError}>{children}</AIUIErrorBoundary>
+    <AIUIEntranceStage
+      isStreaming={isStreaming}
+      resetKey={messageId}
+      style={[styles.generated, generatedUI?.container]}
+    >
+      <AIUIErrorBoundary onError={onError} resetKey={messageId}>
+        {children}
+      </AIUIErrorBoundary>
     </AIUIEntranceStage>
   );
 };
@@ -66,7 +74,7 @@ export const AIUIView = ({ document, host, messageId }: AIUIViewProps) => {
   return content === null ? null : (
     <AIUIGenerated
       isStreaming={document.isStreaming}
-      key={messageId}
+      messageId={messageId}
       onError={(error) => host.fail(messageId, error)}
     >
       {content}

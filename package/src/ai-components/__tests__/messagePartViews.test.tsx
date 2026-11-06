@@ -5,6 +5,8 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import {
   AIMessagePart,
+  type AIMessagePartData,
+  AIMessageParts,
   AIReasoning,
   AIThinking,
   AIToolApproval,
@@ -220,9 +222,75 @@ describe('AIReasoning', () => {
     expect(screen.getByText('The opening')).toBeTruthy();
   });
 
+  it('starts afresh for another step, as when a list reuses the view', () => {
+    const step = (id: string, preview: string) => ({
+      durationMs: 3000,
+      id,
+      preview,
+      status: 'completed',
+    });
+    const { rerender } = renderWithTheme(
+      <AIReasoning part={step('r1', 'First')} stepKey='m1:r1' />,
+    );
+    fireEvent.press(screen.getByRole('button', { name: /Thought for 3s/ }));
+    expect(screen.getByText('First')).toBeTruthy();
+
+    // The same step id in another message is another step: folded until its reader opens it.
+    rerender(<AIReasoning part={step('r1', 'Second')} stepKey='m2:r1' />);
+    expect(screen.getByRole('button', { expanded: false, name: /Thought for 3s/ })).toBeTruthy();
+    expect(screen.queryByText('Second')).toBeNull();
+
+    // While the step stays the same, what its reader chose stays too.
+    fireEvent.press(screen.getByRole('button', { name: /Thought for 3s/ }));
+    rerender(<AIReasoning part={step('r1', 'Second, longer')} stepKey='m2:r1' />);
+    expect(screen.getByText('Second, longer')).toBeTruthy();
+  });
+
+  it('keeps the chevron that turns for another step, folded', () => {
+    const step = (id: string, preview: string) => ({
+      durationMs: 3000,
+      id,
+      preview,
+      status: 'completed',
+    });
+    const turning = () =>
+      screen.UNSAFE_root.findAll(
+        (node) =>
+          typeof node.type !== 'string' &&
+          JSON.stringify(node.props?.style ?? '').includes('rotate'),
+      );
+    const { rerender } = renderWithTheme(
+      <AIReasoning part={step('r1', 'First')} stepKey='m1:r1' />,
+    );
+    expect(turning()).toHaveLength(0);
+    fireEvent.press(screen.getByRole('button', { name: /Thought for 3s/ }));
+    const [chevron] = turning();
+    expect(chevron).toBeTruthy();
+
+    rerender(<AIReasoning part={step('r1', 'Second')} stepKey='m2:r1' />);
+    expect(screen.getByRole('button', { expanded: false, name: /Thought for 3s/ })).toBeTruthy();
+    expect(screen.queryByText('Second')).toBeNull();
+    expect(turning()[0]).toBe(chevron);
+
+    // And it opens the other step as it did the first.
+    fireEvent.press(screen.getByRole('button', { name: /Thought for 3s/ }));
+    expect(screen.getByText('Second')).toBeTruthy();
+    expect(turning()[0]).toBe(chevron);
+  });
+
   it('says Thinking... for thinking that shows nothing yet', () => {
     renderWithTheme(<AIThinking />);
     expect(screen.getByRole('button', { expanded: false, name: 'Thinking...' })).toBeTruthy();
+  });
+
+  it('counts afresh for thinking that began later, in the same view', () => {
+    const { rerender } = renderWithTheme(<AIThinking since={Date.now() - 5000} />);
+    const view = screen.getByTestId('ai-reasoning');
+    expect(screen.getByRole('button', { name: 'Thinking... 5s' })).toBeTruthy();
+
+    rerender(<AIThinking since={Date.now()} />);
+    expect(screen.getByTestId('ai-reasoning')).toBe(view);
+    expect(screen.getByRole('button', { name: 'Thinking...' })).toBeTruthy();
   });
 
   it('turns the open chevron the other way in RTL', () => {
@@ -246,5 +314,30 @@ describe('AIReasoning', () => {
     } finally {
       setRTL(originalIsRTL);
     }
+  });
+});
+
+describe('AIMessageParts', () => {
+  const reasoning = (id: string, preview: string): AIMessagePartData => ({
+    id,
+    kind: 'ai_reasoning',
+    payload: {},
+    reasoning: { durationMs: 3000, id, preview, status: 'completed' },
+    version: 1,
+  });
+
+  it('updates its views for another message’s steps, each starting afresh', () => {
+    const { rerender } = renderWithTheme(
+      <AIMessageParts messageId='m1' parts={[reasoning('r1', 'First')]} />,
+    );
+    const view = screen.getByTestId('ai-reasoning');
+    fireEvent.press(screen.getByRole('button', { name: /Thought for 3s/ }));
+    expect(screen.getByText('First')).toBeTruthy();
+
+    rerender(<AIMessageParts messageId='m2' parts={[reasoning('r1', 'Second')]} />);
+    // The same view, not one built again, showing the other step folded.
+    expect(screen.getByTestId('ai-reasoning')).toBe(view);
+    expect(screen.getByRole('button', { expanded: false, name: /Thought for 3s/ })).toBeTruthy();
+    expect(screen.queryByText('Second')).toBeNull();
   });
 });

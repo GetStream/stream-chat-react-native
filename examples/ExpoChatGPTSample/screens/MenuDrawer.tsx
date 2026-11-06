@@ -15,7 +15,19 @@ type SessionRow = Schemas['Session'];
 
 const keyExtractor = (session: SessionRow) => session.id;
 
-/** The agent's conversations, newest first, as the router lists them. */
+// When the conversation was last answered, or else started. The router lists conversations by when
+// they were last touched, which opening one to read it does too, so a conversation looked at would
+// jump to the top. When the agent last answered moves only when it is used.
+const lastUsed = (session: SessionRow) =>
+  Date.parse(session.last_response_at ?? session.created_at ?? '') || 0;
+
+const byLastUsed = (sessions: readonly SessionRow[]) =>
+  [...sessions].sort((a, b) => lastUsed(b) - lastUsed(a));
+
+/**
+ * The agent's conversations, most recently used first. Only those kept in writing: a session that
+ * was only ever a call has no channel to read back.
+ */
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   const { conversationsVersion, openConversation, sessionId, startConversation } = useAppContext();
   const [sessions, setSessions] = useState<readonly SessionRow[]>([]);
@@ -23,9 +35,9 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
   useEffect(() => {
     let cancelled = false;
     agentSessions()
-      .query({ limit: 30 })
+      .query({ limit: 50 })
       .then((page) => {
-        if (!cancelled) setSessions(page.items);
+        if (!cancelled) setSessions(byLastUsed(page.items.filter((item) => item.conversation_id)));
       })
       .catch(() => undefined);
     return () => {
@@ -33,8 +45,8 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
     };
   }, [conversationsVersion]);
 
-  const onSelect = useStableCallback((id: string) => {
-    openConversation(id);
+  const onSelect = useStableCallback((session: SessionRow) => {
+    openConversation(session.id, session.conversation_id ?? undefined);
     navigation.closeDrawer();
   });
 
@@ -45,7 +57,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
 
   const renderItem = ({ item }: { item: SessionRow }) => (
     <Pressable
-      onPress={() => onSelect(item.id)}
+      onPress={() => onSelect(item)}
       style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]}
     >
       <Text numberOfLines={1} style={[styles.previewText, item.id === sessionId && styles.current]}>

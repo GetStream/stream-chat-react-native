@@ -51,6 +51,12 @@ const LoadingOlder = () => {
   );
 };
 
+// How far past what is visible rows are laid out, each way. Replies run from a line to several
+// screens, so a row the list reuses for another is placed by an estimate until it is measured: far
+// enough out, that happens off screen even in a fast fling, rather than as rows briefly showing
+// what they held before or overlapping. LegendList's default is 250.
+const DRAW_DISTANCE = 1000;
+
 const SCROLL_BUTTON_IN = new Keyframe({
   0: { opacity: 0, transform: [{ scale: 0.8 }] },
   100: { easing: Easing.inOut(Easing.ease), opacity: 1, transform: [{ scale: 1 }] },
@@ -152,6 +158,7 @@ export const AIChatList = <T,>({
         {...listProps}
         contentContainerStyle={contentContainerStyle}
         data={data}
+        drawDistance={DRAW_DISTANCE}
         getItemType={getItemType}
         initialScrollAtEnd
         keyboardOffset={offset}

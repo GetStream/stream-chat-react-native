@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type ConversationSnapshot, type Session, type UIAction } from '@stream-io/calypso';
-import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
+import type { LocalMessage, StreamChat } from 'stream-chat';
 import { useStableCallback, useStateStore } from 'stream-chat-expo';
 import {
   AIClientIdentity,
@@ -13,7 +13,13 @@ import {
   parseMessageParts,
 } from 'stream-chat-expo/ai-components';
 
-import { AgentChat, type AgentChatState, isAgentReply, isEmptyReply } from '../agent/agentChat';
+import {
+  AgentChat,
+  type AgentChatState,
+  isAgentReply,
+  isEmptyReply,
+  type OpenSession,
+} from '../agent/agentChat';
 import { agents, agentSessions, streamToken } from '../agent/agents';
 import { AgentConfig } from '../agent/config';
 import { createDeviceTools } from '../agent/deviceTools';
@@ -93,7 +99,7 @@ export type AppContextValue = {
   isThinking: boolean;
   /** The question on its way, until Stream's copy of it arrives. */
   pending: AIPendingMessage | undefined;
-  /** The open conversation's session id. */
+  /** The open conversation's session id, or `undefined` for a new one that wasn't asked anything. */
   sessionId: string | undefined;
   /**
    * Asks the agent, with photos by their local URIs, with more time to reason when
@@ -106,13 +112,16 @@ export type AppContextValue = {
     thinkHarder?: boolean,
     uiAction?: UIAction,
   ) => Promise<boolean>;
-  /** Carries on a conversation from the drawer, by its session id. */
-  openConversation: (sessionId: string) => void;
+  /**
+   * Carries on a conversation from the drawer, by its session id. Its messages show as soon as its
+   * channel, `type:id` as the router lists it, is read.
+   */
+  openConversation: (sessionId: string, conversationId?: string) => void;
   /** Rates a reply, or takes the rating back with null. */
   rate: (messageId: string, rating: AIMessageRating | null) => void;
   /** How the person rated replies, by message. Kept for this run only: the router takes no ratings yet. */
   ratings: Readonly<Record<string, AIMessageRating>>;
-  /** Starts a new conversation. */
+  /** Starts a new conversation. The router creates it with its first question. */
   startConversation: () => void;
   /** Stops the reply being written. What it wrote so far stays. */
   stop: () => void;
@@ -142,12 +151,26 @@ const userMessageCount = (messages: readonly LocalMessage[]) =>
   messages.filter((message) => !isAgentReply(message)).length;
 
 // What the provider follows of the messages: what decides whether the agent is thinking or busy,
-// and when a question's copy has arrived.
-const selector = ({ messages }: AgentChatState) => ({
+// and when a question's copy has arrived. And the session, once one is open.
+const selector = ({ messages, session }: AgentChatState) => ({
   last: messages[messages.length - 1] as LocalMessage | undefined,
   lastReply: [...messages].reverse().find(isAgentReply),
+  session,
   userMessages: userMessageCount(messages),
 });
+
+// Carries a conversation on, or creates one, with the phone's tools declared on it.
+const openSession: OpenSession = (sessionId) =>
+  sessionId
+    ? agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() })
+    : agentSessions().create({
+        modelOverwrites: { llm: AgentConfig.chatModel },
+        return_url: SIGN_IN_RETURN_URL,
+        tools: deviceTools.sessionTools(),
+      });
+
+let chats = 0;
+const newChat = (sessionId?: string) => new AgentChat(`chat-${++chats}`, sessionId, openSession);
 
 export const AppProvider = ({ client, children }: PropsWithChildren<{ client: StreamChat }>) => {
   const [chat, setChat] = useState<AgentChat>();
@@ -159,12 +182,11 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   // The newest message when something was last asked here, until it fails or is stopped.
   const [askedAfter, setAskedAfter] = useState<string>();
   const current = useRef<AgentChat | undefined>(undefined);
-  // The latest conversation asked to open: one that opens after it was asked for another is let go.
-  const openings = useRef(0);
   const askedRef = useRef<Asked | undefined>(undefined);
   askedRef.current = asked;
 
   const followed = useStateStore(chat?.state, selector);
+  const session = followed?.session;
 
   // Runs the calls of the latest reply that wait for this phone, each once.
   const lastReply = followed?.lastReply;
@@ -175,63 +197,36 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     );
   }, [lastReply]);
 
-  // Opening one conversation after another: the newest wins, and one that was never asked
-  // anything is deleted rather than left in the drawer. A conversation counts as asked from the
-  // moment the question goes, before Stream's copy of it arrives.
-  const letGo = (chat: AgentChat) => {
-    chat.close();
-    const unused = !chat.wasAsked && chat.state.getLatestValue().messages.length === 0;
-    return (unused ? chat.session.delete() : chat.session.close()).catch(() => {});
+  // Shows a conversation in place of the one before it, at once, and lets the one before go.
+  const show = (next: AgentChat) => {
+    const previous = current.current;
+    current.current = next;
+    setAsked(undefined);
+    setAskedAfter(undefined);
+    setFailure(undefined);
+    setChat(next);
+    void previous?.close().catch(() => {});
   };
 
-  const open = useStableCallback(async (opening: () => Promise<Session>, isNew: boolean) => {
-    const attempt = ++openings.current;
-    setFailure(undefined);
-    let session: Session | undefined;
-    try {
-      session = await opening();
-      const { channel } = await session.chat();
-      const next = new AgentChat(session, channel as Channel);
-      await next.follow();
-      if (attempt !== openings.current) {
-        // Another conversation was asked for while this one opened.
-        await letGo(next);
-        return;
-      }
-      const previous = current.current;
-      current.current = next;
-      setAsked(undefined);
-      setAskedAfter(undefined);
-      setChat(next);
-      if (previous && previous.session.id !== session.id) await letGo(previous);
-      setConversationsVersion((version) => version + 1);
-    } catch (error) {
-      // A new conversation that couldn't open was never asked anything: it isn't left in the drawer.
-      if (isNew) await session?.delete().catch(() => {});
-      if (attempt === openings.current) setFailure(messageOf(error));
-    }
-  });
+  // A new conversation is only shown: the router creates it with its first question, so one
+  // that is never asked anything isn't left in the drawer.
+  const startConversation = useStableCallback(() => show(newChat()));
 
-  const startConversation = useStableCallback(() => {
-    void open(
-      () =>
-        agentSessions().create({
-          modelOverwrites: { llm: AgentConfig.chatModel },
-          return_url: SIGN_IN_RETURN_URL,
-          tools: deviceTools.sessionTools(),
-        }),
-      true,
-    );
-  });
-
-  const openConversation = useStableCallback((sessionId: string) => {
-    if (sessionId === current.current?.session.id) {
+  const openConversation = useStableCallback((sessionId: string, conversationId?: string) => {
+    if (sessionId === current.current?.id) {
       return;
     }
-    void open(
-      () => agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() }),
-      false,
-    );
+    const next = newChat(sessionId);
+    show(next);
+    // The channel, when the drawer named it: reading it is quick, and carrying the session on,
+    // which waits for something to need it, would also mark the conversation active.
+    const [type, ...id] = (conversationId ?? '').split(':');
+    const following = conversationId
+      ? next.follow(client.channel(type || 'agent', id.join(':')))
+      : next.session();
+    void following.catch((error: unknown) => {
+      if (current.current === next) setFailure(messageOf(error));
+    });
   });
 
   const isResponding = agentState.kind === 'responding' || agentState.kind === 'working';
@@ -259,16 +254,23 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       setAsked(asking);
       setAskedAfter(messages[messages.length - 1]?.id ?? '');
       try {
-        const images = await Promise.all(
-          photos.map(async (uri) => ({ url: await toDataUri(uri) })),
-        );
-        await respond(opened.session, text, {
+        // A new conversation is created here, with its first question.
+        const wasNew = opened.id === undefined;
+        const [session, images] = await Promise.all([
+          opened.session(),
+          Promise.all(photos.map(async (uri) => ({ url: await toDataUri(uri) }))),
+        ]);
+        if (wasNew) setConversationsVersion((version) => version + 1);
+        await respond(session, text, {
           images,
           reasoningEffort: thinkHarder ? 'high' : undefined,
           uiAction,
         });
         return true;
       } catch (error) {
+        // A conversation created for this question, which it never reached, isn't left listed.
+        await opened.discardUnusedSession();
+        if (current.current !== opened) return false;
         setFailure(messageOf(error));
         setAskedAfter(undefined);
         if (askedRef.current === asking) setAsked(undefined);
@@ -287,11 +289,14 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
 
   const stop = useStableCallback(() => {
     setAskedAfter(undefined);
-    try {
-      current.current?.session.interrupt();
-    } catch {
-      // The reply finished first, which is what stopping it was for.
-    }
+    // A reply that was being written when the conversation was opened stops through its session,
+    // which opens for it.
+    void current.current
+      ?.session()
+      .then((opened) => opened.interrupt())
+      .catch(() => {
+        // The reply finished first, which is what stopping it was for.
+      });
   });
 
   const rate = useStableCallback((messageId: string, rating: AIMessageRating | null) =>
@@ -322,12 +327,12 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         ? false
         : isAwaitingReply;
 
-  // The open conversation: what the agent is doing, from the session's socket.
+  // The open conversation: what the agent is doing, from the session's socket, once one is open.
   useEffect(() => {
-    if (!chat) {
+    if (!session) {
+      setAgentState(IDLE);
       return;
     }
-    const { session } = chat;
     setAgentState(session.state.get());
     return session.state.subscribe(() => {
       const state = session.state.get();
@@ -335,28 +340,20 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       // The router titles a conversation as it goes.
       if (state.kind === 'idle') setConversationsVersion((version) => version + 1);
     });
-  }, [chat]);
+  }, [session]);
 
+  // Answers go over the session's socket, which opens for them in a conversation that was only
+  // read so far. Each throws when it can't send, so the card lets the person answer again.
   const approver = useMemo<AIToolApprover | undefined>(
     () =>
       chat
         ? {
             authorizer: createAuthSessionAuthorizer({
               callbackScheme: SIGN_IN_SCHEME,
-              decline: (call) =>
-                new Promise<void>((resolve) => {
-                  chat.session.declineLogin(call.id);
-                  resolve();
-                }),
+              decline: async (call) => (await chat.session()).declineLogin(call.id),
             }),
             clientId,
-            // Sends over the session's socket, and throws when it can't, so the card lets the
-            // person answer again.
-            decide: (call, allowed) =>
-              new Promise<void>((resolve) => {
-                answerApproval(chat.session, call.id, allowed);
-                resolve();
-              }),
+            decide: async (call, allowed) => answerApproval(await chat.session(), call.id, allowed),
             userId: AgentConfig.user.id,
           }
         : undefined,
@@ -383,6 +380,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   }, [client, startConversation]);
 
   const pending = asked?.message;
+  const sessionId = session?.id ?? chat?.id;
   const contextValue = useMemo(
     () => ({
       agentState,
@@ -397,7 +395,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       pending,
       rate,
       ratings,
-      sessionId: chat?.session.id,
+      sessionId,
       startConversation,
       stop,
     }),
@@ -414,6 +412,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       pending,
       rate,
       ratings,
+      sessionId,
       startConversation,
       stop,
     ],

@@ -3,10 +3,12 @@ import React, {
   type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { Platform, type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   ReduceMotion,
@@ -63,10 +65,27 @@ const START_BLUR = 8;
 const CAN_BLUR = Platform.OS === 'android' && Number(Platform.Version) >= 31;
 
 // Shows its content, bringing it in after the cascade's delay when it starts hidden.
-const useEntrance = (startsHidden: boolean, cascade: AIUICascade | undefined) => {
+const useEntrance = (
+  startsHidden: boolean,
+  cascade: AIUICascade | undefined,
+  resetKey?: unknown,
+) => {
   const reduceMotion = useReduceMotion();
-  const [hasShown, setHasShown] = useState(!startsHidden);
+  const [shownFor, setShownFor] = useState(resetKey);
+  const [hasShownState, setHasShown] = useState(!startsHidden);
+  const isReset = !Object.is(shownFor, resetKey);
+  if (isReset) {
+    setShownFor(resetKey);
+    setHasShown(!startsHidden);
+  }
+  const hasShown = isReset ? !startsHidden : hasShownState;
   const progress = useSharedValue(startsHidden ? 0 : 1);
+  const progressFor = useRef(resetKey);
+  useLayoutEffect(() => {
+    if (Object.is(progressFor.current, resetKey)) return;
+    progressFor.current = resetKey;
+    progress.value = startsHidden ? 0 : 1;
+  });
   useEffect(() => {
     if (hasShown) return;
     const delay = (cascade?.delay() ?? 0) * 1000;
@@ -96,17 +115,31 @@ const useEntrance = (startsHidden: boolean, cascade: AIUICascade | undefined) =>
 export const AIUIEntranceStage = ({
   children,
   isStreaming,
+  resetKey,
   style,
 }: {
   children: ReactNode;
   /** Whether the agent is writing the UI as it first shows. */
   isStreaming: boolean;
+  /**
+   * Which reply's UI it shows: when it changes, it shows the UI as one mounted for it would, as
+   * when a list reuses it for another reply.
+   */
+  resetKey?: unknown;
   style?: StyleProp<ViewStyle>;
 }) => {
-  const [cascade] = useState(() => new AIUICascade());
-  // UI written before it showed shows whole, its parts with it.
-  const [isLive] = useState(isStreaming);
-  const { hasShown, style: entrance } = useEntrance(isStreaming, cascade);
+  const [held, setHeld] = useState(() => ({
+    cascade: new AIUICascade(),
+    isLive: isStreaming,
+    resetKey,
+  }));
+  let shown = held;
+  if (!Object.is(held.resetKey, resetKey)) {
+    shown = { cascade: new AIUICascade(), isLive: isStreaming, resetKey };
+    setHeld(shown);
+  }
+  const { cascade, isLive } = shown;
+  const { hasShown, style: entrance } = useEntrance(isLive, cascade, resetKey);
   const stage = useMemo(
     () => ({ cascade, isCarried: !isLive || !hasShown }),
     [cascade, hasShown, isLive],
@@ -116,6 +149,16 @@ export const AIUIEntranceStage = ({
       <Animated.View style={[styles.entrance, entrance, style]}>{children}</Animated.View>
     </AIUIStageContext.Provider>
   );
+};
+
+/**
+ * Whether a part of a reply's generated UI comes in, as it was when the part mounted: a part
+ * that shows at once, such as one of a reply from history, can show in a plain view.
+ */
+export const useAIUIComesIn = () => {
+  const stage = useContext(AIUIStageContext);
+  const [comesIn] = useState(() => !!stage && !stage.isCarried);
+  return comesIn;
 };
 
 /**
@@ -150,6 +193,21 @@ export const useAIUIEntrance = () => {
  * Renderers give it to each part they place. Every app component has it.
  */
 export const AIUIEntrance = ({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}) => {
+  const comesIn = useAIUIComesIn();
+  return comesIn ? (
+    <EnteringPart style={style}>{children}</EnteringPart>
+  ) : (
+    <View style={[styles.entrance, style]}>{children}</View>
+  );
+};
+
+const EnteringPart = ({
   children,
   style,
 }: {

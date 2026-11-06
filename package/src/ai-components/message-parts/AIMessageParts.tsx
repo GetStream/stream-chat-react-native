@@ -21,6 +21,11 @@ export type AIMessagePartProps = {
   approver?: AIToolApprover;
   /** The whole of a reasoning step's thinking, when the app has it. */
   reasoningText?: (stepId: string) => string | undefined;
+  /**
+   * Which step this is, across a conversation, such as its message's id with the step's: a view
+   * shown for another step starts afresh. Defaults to the step's id.
+   */
+  stepKey?: string;
 };
 
 /**
@@ -28,7 +33,7 @@ export type AIMessagePartProps = {
  * question or sign-in when it waits for this person here), or a neutral line for a step this SDK can't
  * show. The counterpart of `AIMessagePartView`.
  */
-export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartProps) => {
+export const AIMessagePart = ({ approver, part, reasoningText, stepKey }: AIMessagePartProps) => {
   const { t } = useAITranslation();
   const {
     theme: { colors, messageParts },
@@ -36,7 +41,7 @@ export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartPr
   const { Info } = useAIIcons();
 
   if (part.reasoning) {
-    return <AIReasoning part={part.reasoning} reasoningText={reasoningText} />;
+    return <AIReasoning part={part.reasoning} reasoningText={reasoningText} stepKey={stepKey} />;
   }
   if (part.toolCall) {
     return (
@@ -59,16 +64,23 @@ export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartPr
   );
 };
 
-export type AIMessagePartsProps = Omit<AIMessagePartProps, 'part'> & {
+export type AIMessagePartsProps = Omit<AIMessagePartProps, 'part' | 'stepKey'> & {
   parts: AIMessagePartData[];
   /** Renders a step, instead of `AIMessagePart`. */
   children?: (part: AIMessagePartData) => ReactNode;
+  /**
+   * The message the steps are of. Step ids are only unique within a message: with it, a view
+   * reused for another message's steps, as when a list reuses a row, updates the views it has
+   * and starts each step afresh, rather than building them again.
+   */
+  messageId?: string;
 };
 
 /** The steps of a reply, in order. The counterpart of `AIMessagePartsView`. */
 export const AIMessageParts = ({
   approver,
   children,
+  messageId,
   parts,
   reasoningText,
 }: AIMessagePartsProps) => {
@@ -77,15 +89,25 @@ export const AIMessageParts = ({
   } = useTheme();
   return (
     <View style={[styles.parts, messageParts?.container]} testID='ai-message-parts'>
-      {parts.map((part) => (
-        <View key={part.id}>
-          {children ? (
-            children(part)
-          ) : (
-            <AIMessagePart approver={approver} part={part} reasoningText={reasoningText} />
-          )}
-        </View>
-      ))}
+      {parts.map((part, index) => {
+        const stepKey = messageId === undefined ? part.id : `${messageId}:${part.id}`;
+        // The default steps are kept by position and start afresh for another step themselves.
+        // Steps rendered by `children` keep their state by step, which only they can reset.
+        return (
+          <View key={children ? stepKey : index}>
+            {children ? (
+              children(part)
+            ) : (
+              <AIMessagePart
+                approver={approver}
+                part={part}
+                reasoningText={reasoningText}
+                stepKey={stepKey}
+              />
+            )}
+          </View>
+        );
+      })}
     </View>
   );
 };

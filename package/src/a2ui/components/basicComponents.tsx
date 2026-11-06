@@ -1,6 +1,6 @@
 // The basic catalog's components, drawn natively in StreamChatA2UI's look: its spacing, radii and
 // type, in the AI components' colors.
-import React, { createContext, useContext, useMemo, useRef, useState } from 'react';
+import React, { createContext, useContext, useMemo, useRef } from 'react';
 import {
   type DimensionValue,
   I18nManager,
@@ -35,6 +35,7 @@ import { primitives } from '../../ai-components/internal/tokens';
 import { Markdown } from '../../ai-components/markdown';
 import { A2UIEngineContext } from '../A2UIContexts';
 import { A2UIAxisContext, A2UIChild, A2UIChildren } from '../A2UISurface';
+import { useReplyState } from '../useReplyState';
 
 // Whether a Text is the label of a Button, where it shows as words rather than as Markdown.
 const A2UILabelContext = createContext<TextStyle | undefined>(undefined);
@@ -297,7 +298,7 @@ const Tabs = ({ props }: A2UIComponentProps) => {
   const theme = useA2UITheme();
   const palette = usePalette();
   const tabs = Array.isArray(props.tabs) ? props.tabs.filter(isRecord) : [];
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useReplyState(0);
   const current = tabs[Math.min(selected, tabs.length - 1)];
   return (
     <View style={styles.flex}>
@@ -342,7 +343,7 @@ const Tabs = ({ props }: A2UIComponentProps) => {
 const Modal = ({ props }: A2UIComponentProps) => {
   const { t } = useAITranslation();
   const palette = usePalette();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useReplyState(false);
   return (
     <>
       <Pressable accessibilityRole='button' onPress={() => setOpen(true)}>
@@ -557,7 +558,7 @@ const ChoicePicker = ({ props }: A2UIComponentProps) => {
   const theme = useA2UITheme();
   const { t } = useAITranslation();
   const palette = usePalette();
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useReplyState('');
   const single = textOf(props.variant) !== 'multipleSelection';
   const chips = textOf(props.displayStyle) === 'chips';
   const chosen = stringsOf(props.value);
