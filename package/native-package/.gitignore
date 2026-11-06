@@ -1,6 +1,7 @@
 # android
 android/build
 android/src/main/java/com/streamchatreactnative/shared
+android/src/agent-sign-in
 
 # ios
 ios/build

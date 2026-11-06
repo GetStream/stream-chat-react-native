@@ -111,6 +111,7 @@
     },
     "ios": {
       "modulesProvider": {
+        "AIAgent": "AIAgent",
         "StreamMultipartUploader": "StreamMultipartUploader",
         "StreamVideoThumbnail": "StreamVideoThumbnail"
       },
