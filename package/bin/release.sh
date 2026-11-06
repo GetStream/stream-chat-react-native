@@ -20,6 +20,13 @@ resolve_workspace_dep() {
     rm package.json.bak
 }
 
+# Core is published with `--tag <channel>` (see release/release.config.js), which npm passes to this
+# prepublishOnly hook as `npm_config_tag`. Publish the wrappers under the same dist-tag, so a
+# maintenance release (e.g. `v9-release`) never moves them to `latest`.
+if [[ -n "${npm_config_tag:-}" ]]; then
+    PACKAGE_TAG="$npm_config_tag"
+fi
+
 # If tag === version it means that its not a prerelease and shouuld set things to latest
 if [[ "${PACKAGE_TAG}" != "${PACKAGE_VERSION}" ]]; then
     cd native-package

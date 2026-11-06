@@ -5,9 +5,15 @@ on:
     branches:
       - main
       - develop
-  # Manual runs cut pre-release (RC) builds from the branch that defines them. GitHub reads this
-  # trigger from the default branch, so it has to live here even though develop never uses it.
+  # v9-release (the v9 maintenance branch) releases on manual runs only: Actions → Release → Run
+  # workflow → branch `v9-release`. GitHub reads this trigger from the default branch, but a run uses
+  # the workflow file of the branch it was started on, so the inputs and steps below are this branch's.
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: compute the release version, publish nothing'
+        type: boolean
+        default: true
 
 permissions:
   id-token: write # for OIDC / npm provenance if you use it
@@ -17,7 +23,7 @@ permissions:
 jobs:
   publish:
     # main and develop release on push only; a manual run there would cut an out-of-band release.
-    if: github.event_name == 'push' || github.ref == 'refs/heads/V10'
+    if: github.event_name == 'push' || github.ref == 'refs/heads/v9-release'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -54,13 +60,19 @@ jobs:
         run: yarn lint
 
       - name: Test
-        if: github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/v9-release'
         run: yarn test:coverage
 
       - name: Publish Next Release (develop)
         if: github.ref == 'refs/heads/develop'
         run: |
           GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
+
+      - name: Publish Maintenance Release (v9-release)
+        if: github.ref == 'refs/heads/v9-release'
+        run: yarn release-next
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
 
       - name: Publish Release (main)
         if: github.ref == 'refs/heads/main'
