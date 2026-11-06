@@ -2,6 +2,7 @@ import type { AIMessage, AIPendingMessage } from './types';
 
 import type { AIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
+import { isToolCallFinished } from '../message-parts/parseMessageParts';
 
 /** A row of the conversation: a message, or a message the person sent that is on its way. */
 export type AIConversationEntry = {
@@ -33,6 +34,32 @@ const showsNothing = (message: AIMessage, canShowUI: AIConversationCanShowUI) =>
   message.text === '' &&
   !message.parts?.length &&
   !message.attachments?.length &&
+  !(message.uiDocument && canShowUI(message.uiDocument));
+
+// Whether a step is over: a round of reasoning that stopped streaming, or a call that finished.
+// A step of a kind this SDK doesn't know counts as over, since it can't say otherwise.
+const isStepOver = ({ reasoning, toolCall }: NonNullable<AIMessage['parts']>[number]) =>
+  reasoning
+    ? reasoning.status !== 'streaming'
+    : toolCall
+      ? isToolCallFinished(toolCall.status)
+      : true;
+
+/**
+ * Whether the reply is being written, took steps that are all over, and shows no UI: once its
+ * answer stops growing, the agent is thinking again, between its steps. An agent's backend can
+ * write a round of reasoning as a step only once it is done, so nothing would show meanwhile. A
+ * step still going, such as a call waiting for the person, shows itself instead.
+ */
+export const hasFinishedSteps = (
+  message: AIMessage | undefined,
+  canShowUI: AIConversationCanShowUI = showsNoUI,
+): message is AIMessage =>
+  !!message &&
+  message.role !== 'user' &&
+  !!message.isGenerating &&
+  !!message.parts?.length &&
+  message.parts.every(isStepOver) &&
   !(message.uiDocument && canShowUI(message.uiDocument));
 
 /** Groups the rows into turns, each starting with one of the person's messages. */

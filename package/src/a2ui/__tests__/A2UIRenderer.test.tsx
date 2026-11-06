@@ -807,6 +807,118 @@ describe('video and audio in a reply’s UI', () => {
   });
 });
 
+describe('a reply’s UI shown in the views of another’s, as a list reuses them', () => {
+  const handlers = { ...NativeHandlers };
+
+  afterEach(() => {
+    NativeHandlers.Sound = handlers.Sound;
+    NativeHandlers.Video = handlers.Video;
+  });
+
+  const view = (ui: AIUIHost, lines: string[], messageId: string) => (
+    <StreamTheme>
+      <AIUIView document={documentOf(lines)} host={ui} messageId={messageId} />
+    </StreamTheme>
+  );
+
+  const media = surfaceOf([
+    { children: ['clip', 'note'], component: 'Column', id: 'root' },
+    { component: 'Video', id: 'clip', url: 'https://example.com/clip.mp4' },
+    { component: 'AudioPlayer', id: 'note', url: 'https://example.com/song.mp3' },
+  ]);
+
+  // Lets a player load and start, which it does asynchronously.
+  const loaded = () => act(() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
+
+  it('opens tabs on the first for another reply, in the same views', async () => {
+    const { ui } = setup();
+    const tabs = (first: string, second: string) =>
+      surfaceOf([
+        {
+          component: 'Tabs',
+          id: 'root',
+          tabs: [
+            { child: 'one', title: 'One' },
+            { child: 'two', title: 'Two' },
+          ],
+        },
+        { component: 'Text', id: 'one', text: first },
+        { component: 'Text', id: 'two', text: second },
+      ]);
+    const { rerender } = render(view(ui, tabs('Lake', 'Old town'), 'a1'));
+    const tabsView = await screen.findByTestId('a2ui-root');
+    fireEvent.press(screen.getByRole('tab', { name: 'Two' }));
+    expect(screen.getByText('Old town')).toBeTruthy();
+
+    rerender(view(ui, tabs('Bridge', 'Market'), 'a2'));
+    expect(await screen.findByText('Bridge')).toBeTruthy();
+    expect(screen.queryByText('Market')).toBeNull();
+    expect(screen.getByTestId('a2ui-root')).toBe(tabsView);
+  });
+
+  it('stops what played for another reply', async () => {
+    const stopAsync = jest.fn(() => Promise.resolve());
+    const unloadAsync = jest.fn(() => Promise.resolve());
+    const initializeSound = jest.fn(() =>
+      Promise.resolve({
+        pauseAsync: jest.fn(),
+        playAsync: jest.fn(),
+        stopAsync,
+        testID: 'sound',
+        unloadAsync,
+      }),
+    );
+    NativeHandlers.Sound = { initializeSound, Player: null };
+    NativeHandlers.Video = handlers.Video ?? (() => null);
+    const { ui } = setup();
+    const { rerender } = render(view(ui, media, 'a1'));
+    const [playVideo, playSound] = await screen.findAllByRole('button', { name: 'Play' });
+    fireEvent.press(playVideo);
+    fireEvent.press(playSound);
+    await loaded();
+    expect(screen.getByTestId('a2ui-video')).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: 'Pause' })).toHaveLength(2);
+
+    rerender(view(ui, media, 'a2'));
+    await loaded();
+    expect(stopAsync).toHaveBeenCalled();
+    expect(unloadAsync).toHaveBeenCalled();
+    expect(screen.queryByTestId('a2ui-video')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Pause' })).toBeNull();
+    expect(screen.getAllByRole('button', { name: 'Play' })).toHaveLength(2);
+  });
+
+  it('lets go of a recording that loads once it shows another reply', async () => {
+    const playAsync = jest.fn(() => Promise.resolve());
+    const stopAsync = jest.fn(() => Promise.resolve());
+    const unloadAsync = jest.fn(() => Promise.resolve());
+    type Loaded = Record<string, unknown> & { testID: string };
+    let finishLoading: (sound: Loaded) => void = () => undefined;
+    const initializeSound = jest.fn(
+      () =>
+        new Promise<Loaded>((resolve) => {
+          finishLoading = resolve;
+        }),
+    );
+    NativeHandlers.Sound = { initializeSound, Player: null };
+    const { ui } = setup();
+    const { rerender } = render(view(ui, media, 'a1'));
+    const buttons = await screen.findAllByRole('button', { name: 'Play' });
+    fireEvent.press(buttons[buttons.length - 1]);
+
+    rerender(view(ui, media, 'a2'));
+    await act(async () => {
+      finishLoading({ playAsync, stopAsync, testID: 'sound', unloadAsync });
+      await Promise.resolve();
+    });
+    await loaded();
+    expect(playAsync).not.toHaveBeenCalled();
+    expect(stopAsync).toHaveBeenCalled();
+    expect(unloadAsync).toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Pause' })).toBeNull();
+  });
+});
+
 describe('the media a reply’s UI loads', () => {
   it('tells public web links from others', () => {
     for (const url of [

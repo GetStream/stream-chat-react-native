@@ -1,7 +1,7 @@
 // A2UI's DateTimeInput: the date, the time or both, picked in a sheet of the app's own views, so
 // an app needs no native date picker. What the person picks is written at once; the sheet's Close
 // puts it away.
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   I18nManager,
   Modal,
@@ -17,6 +17,7 @@ import {
 import { useAITranslation } from '../../ai-components/contexts';
 import { primitives } from '../../ai-components/internal/tokens';
 import type { ScrollViewRef } from '../../types/react-native-compat';
+import { useReplyState } from '../useReplyState';
 
 /** A moment as the field reads and writes it: its day, and its time when it has one. */
 type Moment = {
@@ -162,10 +163,10 @@ export const DateTimeInputView = ({
   value,
 }: DateTimeInputViewProps) => {
   const { t, userLanguage } = useAITranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useReplyState(false);
   const moment = useMemo(() => parseMoment(value), [value]);
   const today = new Date();
-  const [shown, setShown] = useState(() => ({
+  const [shown, setShown] = useReplyState(() => ({
     month: moment.day?.month ?? today.getMonth(),
     year: moment.day?.year ?? today.getFullYear(),
   }));

@@ -65,6 +65,12 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
   const [isCopied, setIsCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
+  // A list that reuses this view for another reply: what was copied was the other reply.
+  const [replyText, setReplyText] = useState(text);
+  if (replyText !== text) {
+    setReplyText(text);
+    setIsCopied(false);
+  }
 
   const setString = setClipboardString;
   const copy = setString

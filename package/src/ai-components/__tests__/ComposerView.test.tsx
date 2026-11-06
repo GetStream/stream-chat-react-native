@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Pressable, Text } from 'react-native';
+import { KeyboardController } from 'react-native-keyboard-controller';
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
@@ -74,7 +75,12 @@ describe('ai-components ComposerView', () => {
       mediaPickerService,
     });
 
-    fireEvent.press(screen.getByText('+'));
+    await act(async () => {
+      fireEvent.press(screen.getByText('+'));
+      await flushPromises();
+    });
+    // Once the keyboard has closed, which a sheet opening over it leaves to stray events.
+    expect(KeyboardController.dismiss).toHaveBeenCalled();
     expect(sheetStore.getLatestValue().open).toBe(true);
     expect(screen.getByText('Camera')).toBeTruthy();
     expect(screen.getByText('Custom option')).toBeTruthy();
@@ -121,7 +127,10 @@ describe('ai-components ComposerView', () => {
     };
     const { onSendMessage } = renderComposer({ chatOptions: [think] });
 
-    fireEvent.press(screen.getByText('+'));
+    await act(async () => {
+      fireEvent.press(screen.getByText('+'));
+      await flushPromises();
+    });
     expect(screen.getByText('More time to reason before answering')).toBeTruthy();
     expect(screen.getByRole('radio', { checked: false })).toBeTruthy();
     await act(async () => {

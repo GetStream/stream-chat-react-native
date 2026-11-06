@@ -41,6 +41,9 @@ export type AIUIComponent = {
 /**
  * One of the app's components, with what its view reads from the agent's arguments. The view
  * gets them only once they fit the definition's parameters, so it can rely on their types.
+ *
+ * A conversation reuses its views: one scrolled out of sight shows another reply's UI next, so
+ * state the view keeps of its own has to start afresh for a new `context.messageId`.
  */
 export const defineAIUIComponent = <Arguments,>(
   definition: AIUIComponentDefinition,

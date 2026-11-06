@@ -70,7 +70,10 @@ const CustomComposerView = ({
 
 const EmptyState = () => <Text style={styles.emptyText}>What can I help with ?</Text>;
 
-const isEmptySelector = ({ messages }: AgentChatState) => ({ isEmpty: messages.length === 0 });
+// A conversation still loading isn't empty: it shows no starters meanwhile.
+const isEmptySelector = ({ isLoaded, messages }: AgentChatState) => ({
+  isEmpty: isLoaded && messages.length === 0,
+});
 
 /**
  * Starters, above the composer, until the conversation has a first question. One is asked with the
@@ -107,15 +110,16 @@ const ComposerArea = ({ chat, failure }: { chat: AgentChat; failure: string | un
   );
 };
 
-const conversationSelector = ({ hasOlderMessages, messages }: AgentChatState) => ({
+const conversationSelector = ({ hasOlderMessages, isLoaded, messages }: AgentChatState) => ({
   hasOlderMessages,
+  isLoaded,
   messages,
 });
 
 /** The open conversation, read from its channel by `AgentChat`. */
 const Conversation = ({ chat }: { chat: AgentChat }) => {
   const { agentState, approver, ask, isThinking, pending, rate, ratings } = useAppContext();
-  const { hasOlderMessages, messages } = useStateStore(chat.state, conversationSelector);
+  const { hasOlderMessages, isLoaded, messages } = useStateStore(chat.state, conversationSelector);
 
   // The UI the agent writes for its replies, in A2UI, with the trip planner's own components. One
   // host per conversation, for as long as it shows, so what a reply's UI holds survives scrolling.
@@ -164,7 +168,7 @@ const Conversation = ({ chat }: { chat: AgentChat }) => {
   return (
     <AIConversation
       approver={approver}
-      emptyContent={<EmptyState />}
+      emptyContent={isLoaded ? <EmptyState /> : <ActivityIndicator />}
       footer={footer}
       isThinking={isThinking}
       loadOlderMessages={hasOlderMessages ? chat.loadOlderMessages : undefined}
@@ -190,7 +194,7 @@ export const ChatContent = () => {
 
   return (
     <Animated.View
-      key={chat.session.id}
+      key={chat.key}
       style={[styles.wrapper, { paddingBottom: bottom }]}
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}

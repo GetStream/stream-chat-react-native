@@ -1,13 +1,14 @@
 import React, {
   createContext,
   memo,
+  type ReactNode,
   useCallback,
   useContext,
   useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react';
-import type { AccessibilityProps } from 'react-native';
+import { type AccessibilityProps, View as RNView, type ViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import {
@@ -28,7 +29,7 @@ import { A2UIEngineContext, A2UIReplyContext } from './A2UIContexts';
 import { keepSecretPath } from './secrets';
 
 import { AIUIComponentView } from '../ai-components/generative-ui/AIUIComponent';
-import { useAIUIEntrance } from '../ai-components/generative-ui/AIUIEntrance';
+import { useAIUIComesIn, useAIUIEntrance } from '../ai-components/generative-ui/AIUIEntrance';
 import { isRecord } from '../ai-components/generative-ui/AIUIHelpers';
 
 /** The value of an A2UI signal, following it. */
@@ -171,26 +172,41 @@ const A2UINode = memo(({ node }: { node: ComponentNode }) => {
   useLayoutEffect(() => {
     if (secretPath && surface) keepSecretPath(surface, secretPath);
   }, [secretPath, surface]);
-  const { scope, style } = useAIUIEntrance();
+  const comesIn = useAIUIComesIn();
   if (!engine || node.isPlaceholder || node.state !== 'resolved') return null;
   const View = engine.components[node.type];
   const isApp = !View && !!engine.appComponent(node.type);
   if (!View && !isApp) return null;
   // A weighted part shares the room its row leaves, as flex-grow from nothing does.
   const weight = typeof props.weight === 'number' && axis === 'row' ? props.weight : undefined;
+  const Part = comesIn ? EnteringPart : ShownPart;
   return (
-    <Animated.View
+    <Part
       {...accessibilityOf(props.accessibility)}
-      style={[style, weight !== undefined ? { flexBasis: 0, flexGrow: weight } : null]}
+      style={weight !== undefined ? { flexBasis: 0, flexGrow: weight } : undefined}
       testID={`a2ui-${node.componentId}`}
     >
-      {scope(
-        View ? <View node={node} props={props} /> : <PlacedComponent node={node} props={props} />,
-      )}
-    </Animated.View>
+      {View ? <View node={node} props={props} /> : <PlacedComponent node={node} props={props} />}
+    </Part>
   );
 });
 A2UINode.displayName = 'A2UINode';
+
+type PartProps = ViewProps & { children: ReactNode };
+
+// A part that comes in as it shows, such as while the agent writes it.
+const EnteringPart = ({ children, style, ...props }: PartProps) => {
+  const { scope, style: entrance } = useAIUIEntrance();
+  return (
+    <Animated.View {...props} style={[entrance, style]}>
+      {scope(children)}
+    </Animated.View>
+  );
+};
+
+// A part that shows at once, such as one of a reply from history: a plain view, since nothing of
+// it moves and a list that scrolls fast mounts it all the time.
+const ShownPart = ({ children, ...props }: PartProps) => <RNView {...props}>{children}</RNView>;
 
 /** A child of a part, as its view gets it: a node, or nothing while it is on its way. */
 export const A2UIChild = ({ node }: { node: unknown }) =>
@@ -207,34 +223,19 @@ export const A2UIChildren = ({ nodes }: { nodes: unknown }) => (
   </>
 );
 
+const resolvers = new WeakMap<SurfaceModel<ComponentApi>, NodeResolver<ComponentApi>>();
+
+const resolverOf = (surface: SurfaceModel<ComponentApi>) => {
+  let resolver = resolvers.get(surface);
+  if (!resolver) {
+    resolver = new NodeResolver<ComponentApi>(surface, surface.defaultCatalog);
+    resolvers.set(surface, resolver);
+  }
+  return resolver;
+};
+
 /** A surface of a reply: its tree of parts, from its root, as the agent writes them. */
 export const A2UISurfaceView = ({ surface }: { surface: SurfaceModel<ComponentApi> }) => {
-  const box = useMemo<{ resolver?: NodeResolver<ComponentApi> }>(
-    () => ({}),
-    // A new box for each surface, which its resolver is made for.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [surface],
-  );
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      const resolver = new NodeResolver<ComponentApi>(surface, surface.defaultCatalog);
-      box.resolver = resolver;
-      const stop = effect(() => {
-        getValue(resolver.rootNode);
-        onChange();
-      });
-      return () => {
-        stop();
-        resolver.dispose();
-        if (box.resolver === resolver) box.resolver = undefined;
-      };
-    },
-    [box, surface],
-  );
-  const getSnapshot = useCallback(
-    () => (box.resolver ? peekValue(box.resolver.rootNode) : undefined),
-    [box],
-  );
-  const root = useSyncExternalStore(subscribe, getSnapshot);
+  const root = useSignalValue(resolverOf(surface).rootNode);
   return root ? <A2UINode node={root} /> : null;
 };

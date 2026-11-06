@@ -1,7 +1,7 @@
 // A2UI's Video and AudioPlayer, played in place with the player the app registered for the chat
 // SDK's own video and voice messages (expo-video, react-native-video, expo-audio, …). An app with
 // none of them, or an AI-only app, gets a link that opens where the device plays it.
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Svg, { Path } from 'react-native-svg';
@@ -16,7 +16,8 @@ import {
   type SoundReturnType,
   type VideoType,
 } from '../../native';
-import { A2UIEngineContext } from '../A2UIContexts';
+import { A2UIEngineContext, A2UIReplyContext } from '../A2UIContexts';
+import { useReplyState } from '../useReplyState';
 
 export type MediaPalette = {
   accent: string;
@@ -77,8 +78,8 @@ export const VideoView = ({
   posterUrl?: string;
 }) => {
   const { t } = useAITranslation();
-  const [paused, setPaused] = useState(true);
-  const [started, setStarted] = useState(false);
+  const [paused, setPaused] = useReplyState(true);
+  const [started, setStarted] = useReplyState(false);
   const videoRef = useRef<VideoType>(null);
   const NativeVideo = NativeHandlers.Video;
   if (!NativeVideo) return <MediaLink label={url} palette={palette} url={url} />;
@@ -127,20 +128,24 @@ export const AudioView = ({
   description?: string;
 }) => {
   const { t } = useAITranslation();
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const messageId = useContext(A2UIReplyContext)?.messageId;
+  const [playing, setPlaying] = useReplyState(false);
+  const [progress, setProgress] = useReplyState(0);
   const sound = useRef<SoundReturnType | null>(null);
   const loading = useRef(false);
+  const generation = useRef(0);
   const initializeSound = NativeHandlers.Sound?.initializeSound;
 
   // What it plays is let go of once it leaves the reply.
   useEffect(
     () => () => {
+      generation.current += 1;
+      loading.current = false;
       void sound.current?.stopAsync?.();
       void sound.current?.unloadAsync?.();
       sound.current = null;
     },
-    [],
+    [messageId],
   );
 
   if (!initializeSound) {
@@ -169,16 +174,25 @@ export const AudioView = ({
     }
     if (loading.current) return;
     loading.current = true;
+    const at = generation.current;
     try {
-      sound.current = await initializeSound(
+      const loaded = await initializeSound(
         { uri: url },
         { progressUpdateIntervalMillis: 250, shouldPlay: true },
-        onStatus,
+        (status) => {
+          if (generation.current === at) onStatus(status);
+        },
       );
+      if (generation.current !== at) {
+        void loaded?.stopAsync?.();
+        void loaded?.unloadAsync?.();
+        return;
+      }
+      sound.current = loaded;
       await sound.current?.playAsync?.();
       setPlaying(true);
     } finally {
-      loading.current = false;
+      if (generation.current === at) loading.current = false;
     }
   };
 

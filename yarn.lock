@@ -11512,7 +11512,7 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-gesture-handler: "npm:~3.4.0"
-    react-native-keyboard-controller: "npm:1.22.7"
+    react-native-keyboard-controller: "npm:1.22.9"
     react-native-reanimated: "npm:4.7.1"
     react-native-safe-area-context: "npm:~5.10.1"
     react-native-screens: "npm:~4.29.0"
@@ -18401,9 +18401,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-drawer-layout@npm:^4.2.11":
-  version: 4.2.11
-  resolution: "react-native-drawer-layout@npm:4.2.11"
+"react-native-drawer-layout@npm:^4.2.11, react-native-drawer-layout@npm:^4.2.2":
+  version: 4.2.12
+  resolution: "react-native-drawer-layout@npm:4.2.12"
   dependencies:
     color: "npm:^4.2.3"
     use-latest-callback: "npm:^0.2.4"
@@ -18412,22 +18412,7 @@ __metadata:
     react-native: "*"
     react-native-gesture-handler: ">= 2.0.0"
     react-native-reanimated: ">= 2.0.0"
-  checksum: 10c0/c34a91288400ab4af3a0354b29ac21b2d05b4a4a5095b5bce24cd7f076fc4f760b863754caad3bb8fd173856b0bb1f927e2cb1e8913463d3b836551965cd2b17
-  languageName: node
-  linkType: hard
-
-"react-native-drawer-layout@npm:^4.2.2":
-  version: 4.2.4
-  resolution: "react-native-drawer-layout@npm:4.2.4"
-  dependencies:
-    color: "npm:^4.2.3"
-    use-latest-callback: "npm:^0.2.4"
-  peerDependencies:
-    react: ">= 18.2.0"
-    react-native: "*"
-    react-native-gesture-handler: ">= 2.0.0"
-    react-native-reanimated: ">= 2.0.0"
-  checksum: 10c0/b37e4c4df2cb862299cd5f330144542f57b6dfebb057275517eddb76a1ad5e3edc795bfb2d3144182cd8b40d4af75aa6376d7c0f1a62057595b6908f1c1ab45e
+  checksum: 10c0/bb6a6e93082fa29fb08777956a1a8d4cfc5a75c91ff961efc8238310d573015983ba82634ea23204bb5ae2ad47f18b264a126d63cbc0678a2f4096c0668b4019
   languageName: node
   linkType: hard
 
@@ -18490,7 +18475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keyboard-controller@npm:^1.22.7":
+"react-native-keyboard-controller@npm:1.22.9, react-native-keyboard-controller@npm:^1.22.7":
   version: 1.22.9
   resolution: "react-native-keyboard-controller@npm:1.22.9"
   dependencies:
