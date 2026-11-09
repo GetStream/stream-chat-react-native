@@ -55,7 +55,11 @@ export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
   }
 
   return (
-    <Animated.View layout={LinearTransition.duration(200)} style={styles.wrapper}>
+    <Animated.View
+      layout={LinearTransition.duration(200)}
+      style={styles.wrapper}
+      testID='composer-link-preview'
+    >
       <View style={styles.container}>
         <View style={styles.imageWrapper}>
           <ImageComponent source={{ uri: image_url ?? thumb_url }} style={styles.thumbnail} />
@@ -87,7 +91,7 @@ export const LinkPreviewCard = ({ linkPreview }: LinkPreviewProps) => {
         </View>
       </View>
       <View style={styles.dismissWrapper}>
-        <AttachmentRemoveControl onPress={dismissPreview} />
+        <AttachmentRemoveControl onPress={dismissPreview} testID='composer-link-preview-dismiss' />
       </View>
     </Animated.View>
   );

@@ -24,16 +24,23 @@ await step('THEN user receives it', () => userRobot.assertMessage('Hi').assertMe
 
 ## The app
 
-`examples/E2ETestApp` exists only for this suite, like the native SDKs' `StreamChatUITestsApp`. It has the SDK and its
-required peer dependencies, and nothing else: no Firebase, maps, video or navigation library. That keeps native builds
-short (a clean Release build is ~2 min on an M-series Mac, versus ~15 min for the SampleApp on Android). It has three
-screens: a user selector, the channel list, and a channel stacked on top of the list (`App.tsx`), laid out like the
-SampleApp's, so the same SDK paths run.
+`examples/E2ETestApp` exists only for this suite, like the native SDKs' `StreamChatUITestsApp`. It has the SDK, its
+required peer dependencies, and the optional peers the tested features need (the pickers that show the composer's attach
+button, clipboard, video), and nothing else: no Firebase, maps or navigation library. That keeps native builds short (a
+clean Release build is ~2 min on an M-series Mac, versus ~15 min for the SampleApp on Android). Its screens
+(`App.tsx`), laid out like the SampleApp's so the same SDK paths run: a user selector; the root screen with a Channels /
+Threads tab bar (`ChannelList`, `ThreadList`); a channel stacked over it; a thread stacked over the channel (the covered
+channel stays mounted but hidden, like a native stack); and the SDK's channel details, opened from "View Info" in the
+channel actions sheet. The `JWT_TEST` launch argument opens a JWT test screen instead (`src/JwtScreen.tsx`, used by
+`AuthTests`).
 
-`setUpStreamTestCase()` starts a mock server per test and relaunches the app with the launch argument
+`setUpStreamTestCase()` starts a mock server per test (`/start/<test>?api_version=v2&timestamps=ns`: stream-chat-js v10
+calls the v2 API and reads every timestamp as unix nanoseconds, so the mock must send them that way) and relaunches the
+app with the launch argument
 `MOCK_SERVER_URL` (`localhost` on iOS, `10.0.2.2` on the Android emulator), read in `src/config.ts` via
-`react-native-launch-arguments`. The app only lists the mock user (`luke_skywalker`), never persists a login and runs
-without offline storage, so every test starts clean.
+`react-native-launch-arguments`. The app only lists the mock user (`luke_skywalker`) and never persists a login. Offline
+support is on (`@op-engineering/op-sqlite`, `<Chat enableOfflineSupport>`), as in the native test apps, so offline sends
+and reactions are queued; the login empties the database first, so every test starts clean.
 
 ## Running
 
@@ -46,7 +53,8 @@ bundle exec fastlane e2e_pod_install                     # once, and after nativ
 bundle exec fastlane test_e2e platform:ios
 bundle exec fastlane test_e2e platform:android          # AVD from DETOX_AVD_NAME (default Pixel_API_37)
 # Options: configuration:debug, skip_build:true, local_server:<path to a mock server checkout>,
-#          mock_server_branch:<branch>, test:e2e/tests/MessageListTests.e2e.ts
+#          mock_server_branch:<branch>, test:e2e/tests/MessageListTests.e2e.ts,
+#          selection:<select_e2e_tests output>, coverage:true (see Impact analysis)
 
 # Or by hand (yarn commands in examples/E2ETestApp)
 bundle exec fastlane start_mock_server                   # driver on MOCK_DRIVER_PORT (default 4569)
@@ -61,13 +69,85 @@ narrow it further.
 Release configurations bundle the JS, so no Metro is needed. Debug configurations need `yarn start`. Android builds need
 JDK 17 or 21 (`JAVA_HOME`).
 
+## Allure TestOps
+
+Every test links to a case in Allure TestOps project 3 (`stream-chat-react-native`, https://streamio.testops.cloud) with
+`allureId(<case id>)` from `support/step.ts`; `step()` reports each GIVEN / WHEN / THEN as an Allure step.
+`jest-allure2-reporter` writes `allure-results/`, and the lanes in `examples/SampleApp/fastlane/Allurefile` (imported by
+the Fastfile, as on iOS) talk to TestOps: `allure_launch` / `allure_upload` / `allure_launch_removal` create the launch
+and upload the results on CI, and `allure_testcase` creates a case and prints its id. They need `ALLURE_TOKEN` (a
+repository secret on CI). A new test gets a new case: create it in project 3 (`allure_testcase`, or
+`POST /api/rs/testcase` with `name`, `fullName: "<Suite>.<test>"`, `automated: true`) rather than reusing a native SDK's
+ID; the native projects are separate.
+
+## Ported tests
+
+The suites port the Android compose and iOS UIKit suites (the union of both, one test per scenario), keeping the native
+test names and expectations. Where the SDK disagrees with the native expectation, the test is skipped with
+`it.skip` and a comment linking the Linear ticket. Not ported, because the RN SDK has no counterpart: the Android-only
+grouped channel lists, channel/message/member search, reminders, push notifications (app-level in RN), Android's
+`BackendTests` (real backend), hard delete from the message menu, iOS read counts and the iOS scroll performance tests.
+Tests that cut the network run only on Android (`itOnAndroid`): the iOS simulator shares the Mac's connection.
+Tests that take the Android CI emulator down run only on iOS (`itOnIOS`), with a comment linking the ticket.
+
+## Impact analysis
+
+Like the native SDKs, a pull request runs only the tests its diff can reach, read from a per-test coverage map that a
+nightly run rebuilds. Other events (dispatch, the nightly) run everything.
+
+- **Coverage.** `E2E_COVERAGE=1` at bundle time (`babel.config.js`; the Android build passes `--reset-cache` so Gradle
+  never reuses the other kind of bundle) adds `e2e/coverage/babelPlugin.js`. It marks a file in
+  `globalThis.__e2eCoverage` when any of its functions runs. Metro loads nearly every module at startup, so a module
+  body counts only when it has no functions or does something at the top level (a call, an `if`); `X.displayName = …`
+  doesn't count. It is not istanbul: react-native-worklets would capture istanbul's module-scoped counters into every
+  worklet, which then throws on the UI runtime; `globalThis` is a worklet global. The instrumented code
+  (`e2e/coverage/sources.js`) is `package/src`, `package/native-package/src` and the app, without tests and mock
+  builders.
+- **Collection.** With `E2E_COVERAGE_DIR` set (`test_e2e coverage:true`), `StreamTestCase` starts a collector on
+  `E2E_COVERAGE_PORT` (4570) and passes the app `E2E_COVERAGE_URL`. After each test it sends the app home, the app posts
+  its marks on going to the background (`src/e2eCoverage.ts`), and `e2e/support/Coverage.ts` writes
+  `e2e-coverage/<test file>/<test>/lcov.info`. Every tracked source file is listed, also those never loaded: type-only
+  modules leave the bundle, so a change to one selects no tests instead of all of them.
+- **Map.** `fastlane build_e2e_coverage_map` turns those into `e2e_coverage_map.json` (`build_test_coverage_map` from
+  `fastlane-plugin-stream_actions`). Test ids are `<test file>/<test>`, e.g. `MessageListTests.e2e/test_x`. A test
+  whose last Allure result failed keeps its coverage from the previous map, or leaves the map until it passes.
+- **Selection.** `fastlane select_e2e_tests` (`select_impacted_tests`) writes `e2e_selection.json`. A changed source
+  selects the tests that ran it; one that ≥90% of the tests run selects one test per file. A changed test file selects
+  its own tests. The harness (`e2e/` outside `tests/`), the app's native and build setup, the SDK's native code,
+  dependencies, the lanes and the e2e workflows run everything, as does a missing or week-old map. Tests that aren't in
+  the map yet always run. `E2E_SELECTION=<file>` makes `e2e/jest.config.js` run only the selected tests.
+
+Locally (the map comes from a coverage run, or from the `e2e-coverage-map` artifact of the nightly):
+
+```bash
+bundle exec fastlane test_e2e platform:android coverage:true    # builds instrumented, collects per test
+bundle exec fastlane build_e2e_coverage_map
+bundle exec fastlane select_e2e_tests coverage_map:examples/E2ETestApp/e2e_coverage_map.json changed_files:<a>,<b>
+bundle exec fastlane test_e2e platform:android skip_build:true selection:examples/E2ETestApp/e2e_selection.json
+```
+
+For a debug build, start Metro with `E2E_COVERAGE=1 yarn start --reset-cache`; switching back needs `--reset-cache`
+too. A coverage build left in `android/app/build` or `ios/build` stays instrumented until rebuilt.
+
 ## CI
 
 `.github/workflows/e2e-test.yml` runs on pull requests and on demand (`workflow_dispatch`, with iOS/Android toggles and
 a mock server branch). Like the iOS SDK, a cheap `Check E2E Required` job first runs `fastlane e2e_check_required`
-(`is_check_required` over the `e2e` sources in the Fastfile's `impact_analysis`). The simulator/emulator jobs run
-only when the PR touches those sources, or when the last change to them hasn't passed yet. `Test E2E Result` is the
-job to require in branch protection: it passes when the e2e jobs pass or are skipped as not required.
+(`is_check_required` over the `e2e` sources in the Fastfile's `impact_analysis`, then `select_e2e_tests`; it checks
+out 2 commits to diff the merge commit against its base). The simulator/emulator jobs run only when the PR touches
+those sources and the selection isn't empty, or when the last change to them hasn't passed yet; they run the
+`e2e-selection` artifact's tests. `Test E2E Result` is the job to require in branch protection: it passes when the e2e
+jobs pass or are skipped as not required.
+
+Android splits the tests like the native Android SDK: `Build Android` builds (or restores) the APKs once and uploads
+them, `Launch Allure TestOps (Android)` creates one launch for all batches, and `Test Android` runs a matrix of up to 8
+batches (`e2e_batches` from `e2e_check_required`: one per selected test when fewer than 8 are selected). Each batch
+runs `test_e2e batch:<n> batch_count:<total>`, every `total`-th test of the selection, round-robin.
+
+`.github/workflows/e2e-test-cron.yml` runs nightly on `develop` (and on demand, with iOS/Android toggles), reporting to
+Allure as cron launches. iOS runs every test on the PR job's simulator setup, the only regular iOS run, since pull
+requests run iOS on dispatch only. Android runs every test with an instrumented build, then `build_e2e_coverage_map`,
+and uploads the `e2e-coverage-map` artifact (14 days) that pull requests download. Until its first run on `develop`, every pull request runs everything ("no coverage map").
 
 iOS runs on `macos-15` (Xcode 26.2, iPhone 17 Pro, `ios.sim.release`). Android runs on `ubuntu-latest` with KVM and an
 API 36 x86_64 emulator (`android.att.release`). Both call `fastlane test_e2e skip_build:true`, which on CI adds
@@ -117,3 +197,13 @@ the base branch, so each PR fills its own: its first run builds cold, and later 
 - Detox iOS never reports avatars as visible (their remote image renders transparent until loaded), so avatar asserts
   check existence.
 - A ported test keeps the native expectation. If the SDK disagrees, fix the SDK or skip the test against a ticket.
+- Debug builds (Metro) are the fast local loop: the SDK is served from `package/src`, so testID changes need no rebuild.
+  `index.js` turns LogBox off, because its warning toast covers the composer. Detox re-shells the jest command, so a
+  `-t` filter with `|` needs inner quotes: `-t '"test_a|test_b"'`.
+- The message menu renders through a portal and its items match twice: tap them with `{ index: 0 }`.
+- On Android, a swipe on the inverted `message-flat-list` lands as a horizontal gesture; robots swipe
+  `message-flat-list-wrapper` (`MessageList.scrollTarget`).
+- `replaceText` doesn't fire the composer's suggestion triggers, so a lone `/` or `@` is typed as a key press.
+- Don't call a robot chain method inside `perform()`: it waits on the queue it is running in. Use the plain helpers
+  (`typeIntoComposer`, `editMessageNow`).
+- Index 0 of a selector isn't the newest message; `indexFromBottom()` sorts matches by position.

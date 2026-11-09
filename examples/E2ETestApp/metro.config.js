@@ -78,4 +78,9 @@ config.resolver.nodeModulesPaths = [PATH.resolve(__dirname, 'node_modules')];
 // add the package dir for metro to access the package folder
 config.watchFolders = [packageDirPath];
 
+// The babel config depends on E2E_COVERAGE, which Metro's transform cache key doesn't include.
+if (process.env.E2E_COVERAGE === '1') {
+  config.cacheVersion = 'e2e-coverage';
+}
+
 module.exports = config;

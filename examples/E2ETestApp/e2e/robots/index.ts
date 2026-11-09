@@ -1,6 +1,7 @@
 // The assert files extend UserRobot's prototype, so they must be loaded with it.
 import './UserRobotMessageListAsserts';
 import './UserRobotChannelListAsserts';
+import './UserRobotJwtAsserts';
 
 export { BackendRobot } from './BackendRobot';
 export { ParticipantRobot } from './ParticipantRobot';
