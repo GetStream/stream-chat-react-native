@@ -118,10 +118,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   const messageId = message?.id;
   const isOwnMessage = !!message?.user?.id && message.user.id === client?.userID;
   const alreadyPlayed = !!message?.own_marks?.some((mark) => mark.type === 'played');
-  // A recipient's first unpaused play writes the played mark (CHA-6554): once per
-  // message per mount, only where the channel grants send-message-mark, never
-  // for a preview, a thread reply or the author's own message. A repeat is a
-  // server-side no-op, so a second mount costs one idempotent request at most.
+  // A recipient's first unpaused play sends the played mark, once per mount; the
+  // write is idempotent server-side, so a remount costs at most one no-op request.
   const shouldSendPlayedMark =
     !isPreview &&
     !!messageId &&
