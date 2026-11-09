@@ -72,8 +72,10 @@ Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`
 - `agent/crewTools.ts` declares the tools the phone runs for the agent. Each reads or writes the
   backend. `request_shift_swap`, `create_support_ticket` and `book_check_in` ask first, with the
   AI components' approval card.
-- `search_handbook` answers `{"status": "answered", "citations": [...]}`, which the router adds to
-  the reply's `support_message.sources`. `screens/ChatContent.tsx` shows them under the reply.
+- The handbook is the agent's knowledge base on the router, filled from `crew_assistant/knowledge/`:
+  Markdown files and documents such as PDFs. `search_handbook` answers with the passages that
+  match as `{"status": "answered", "citations": [...]}`, which the router adds to the reply's
+  `support_message.sources`. `screens/ChatContent.tsx` shows them under the reply.
 - `app/leader.tsx` is the team lead view, and `app/equipment.tsx` the scanned-code link.
 
 **Your calendar.** Booking a check-in ("Book a check-in with Priya on Thursday afternoon when I'm
