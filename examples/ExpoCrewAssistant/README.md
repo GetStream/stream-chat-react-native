@@ -76,5 +76,10 @@ Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`
   the reply's `support_message.sources`. `screens/ChatContent.tsx` shows them under the reply.
 - `app/leader.tsx` is the team lead view, and `app/equipment.tsx` the scanned-code link.
 
-Not here yet: voice memos (dictation and voice mode work), approvals answered by someone other
-than the person chatting, and a real calendar connector for check-ins.
+**Your calendar.** Booking a check-in ("Book a check-in with Priya on Thursday afternoon when I'm
+free") first reads your own Cal.com. The first time, the reply asks you to **Connect Cal.com**, the
+same sign-in the AI components show for any connector: Connect opens Cal.com's sign-in, and the
+booking carries on once you're connected. Not now books the time you asked for without it.
+
+Not here yet: voice memos (dictation and voice mode work), and approvals answered by someone
+other than the person chatting.
