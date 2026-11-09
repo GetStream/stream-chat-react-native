@@ -13,6 +13,13 @@ try {
   // do nothing
 }
 
+// Playback and recording use expo-audio, or the deprecated expo-av when only that is installed.
+if (!ExpoAudioComponent && !AudioComponent) {
+  console.log(
+    'The audio library is currently not installed. To allow in-app audio playback and voice recording, install the "expo-audio" package.',
+  );
+}
+
 export const Sound = {
   // Always try to prioritize expo-audio if it's there.
   initializeSound: ExpoAudioComponent
