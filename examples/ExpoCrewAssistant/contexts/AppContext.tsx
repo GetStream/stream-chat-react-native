@@ -105,6 +105,8 @@ export type AppContextValue = {
   openConversation: (sessionId: string, conversationId?: string) => void;
   /** Starts a new conversation. The router creates it with its first question. */
   startConversation: () => void;
+  /** Asks again what the agent couldn't answer: the last question, or the event it was told of. */
+  retry: () => void;
   /** Starts a new conversation and asks it `text`, as a flow or a scanned code does. */
   startConversationWith: (text: string) => void;
   /**
@@ -122,6 +124,7 @@ export const AppContext = React.createContext<AppContextValue>({
   failure: undefined,
   isReady: false,
   openConversation: () => {},
+  retry: () => {},
   sessionId: undefined,
   startConversation: () => {},
   startConversationAbout: () => {},
@@ -223,6 +226,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     const next = newChat();
     show(next);
     next.state.partialNext({ awaitingAgent: true });
+    next.lastRequest = { event: kind };
     void (async () => {
       try {
         const opened = await next.session();
@@ -233,6 +237,20 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         if (current.current?.chat === next) setFailure(messageOf(error));
       }
     })();
+  });
+
+  const retry = useStableCallback(() => {
+    const opened = current.current;
+    const last = opened?.chat.lastRequest;
+    if (!opened || !last) return;
+    if ('event' in last) {
+      void opened.chat
+        .session()
+        .then((session) => tellBackend(last.event as CrewEvent, session.id))
+        .catch((error: unknown) => setFailure(messageOf(error)));
+      return;
+    }
+    void opened.conversation.send({ custom: last.custom, text: last.text });
   });
 
   const openConversation = useStableCallback((sessionId: string, conversationId?: string) => {
@@ -298,6 +316,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       failure,
       isReady,
       openConversation,
+      retry,
       sessionId,
       startConversation,
       startConversationAbout,
@@ -311,6 +330,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       failure,
       isReady,
       openConversation,
+      retry,
       sessionId,
       startConversation,
       startConversationAbout,

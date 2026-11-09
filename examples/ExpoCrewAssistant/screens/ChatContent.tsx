@@ -33,7 +33,7 @@ import {
   type AIConversationAssistantMessageProps,
 } from 'stream-chat-expo/ai-components/conversation';
 
-import { PendingApprovals } from './PendingApprovals';
+import { AgentNotices } from './AgentNotices';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import type { AgentRequestCustom } from '../agent/agentTransport';
@@ -75,7 +75,7 @@ const ComposerArea = ({
       conversation={conversation}
       header={
         <>
-          <PendingApprovals chat={chat} />
+          <AgentNotices chat={chat} />
           {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
           {error ? (
             <Pressable accessibilityRole='button' onPress={() => conversation.retry()}>

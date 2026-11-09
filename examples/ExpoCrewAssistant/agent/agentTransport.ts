@@ -76,6 +76,7 @@ export const createAgentTransport = (
   send: async ({ attachments, custom, text }) => {
     // From now on the conversation is used, even before Stream's copy of the question arrives.
     chat.wasAsked = true;
+    chat.lastRequest = { custom: custom as Record<string, unknown> | undefined, text };
     const photos = attachments
       .filter((asset) => !asset.type || asset.type.startsWith('image'))
       .map((asset) => asset.uri);

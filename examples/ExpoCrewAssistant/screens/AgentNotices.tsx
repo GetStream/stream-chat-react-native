@@ -1,11 +1,12 @@
 import { useSyncExternalStore } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Session, ToolApprovalRequest } from '@stream-io/calypso';
 import { useStateStore } from 'stream-chat-expo';
 import { AIToolApprovalCard } from 'stream-chat-expo/ai-components';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
+import { useAppContext } from '../contexts/AppContext';
 
 const NONE: readonly ToolApprovalRequest[] = [];
 
@@ -22,6 +23,21 @@ const detailsOf = ({ arguments: written }: ToolApprovalRequest) => {
   } catch {
     return undefined;
   }
+};
+
+const Failure = ({ session }: { session: Session }) => {
+  const { retry } = useAppContext();
+  const failure = useSyncExternalStore(
+    session.conversation.subscribe,
+    () => session.conversation.get().failure,
+  );
+  if (!failure) return null;
+  return (
+    <Pressable accessibilityRole='button' onPress={retry} style={styles.failure}>
+      <Text style={styles.failureText}>Crew couldn&apos;t answer that. The model may be busy.</Text>
+      <Text style={styles.retryText}>Try again</Text>
+    </Pressable>
+  );
 };
 
 const Requests = ({ session }: { session: Session }) => {
@@ -50,15 +66,24 @@ const Requests = ({ session }: { session: Session }) => {
 };
 
 /**
- * The calls of the phone's tools that ask first, waiting for the person, above the composer. The
- * phone asks through `responses.create`, so these wait on its session rather than on the reply's
+ * What the open conversation's session needs the person for, above the composer: why the agent
+ * couldn't answer, with a way to ask again, and the calls of the phone's tools that ask first. The
+ * phone asks through `responses.create`, so those wait on its session rather than on the reply's
  * step, and the person answers them here.
  */
-export const PendingApprovals = ({ chat }: { chat: AgentChat }) => {
+export const AgentNotices = ({ chat }: { chat: AgentChat }) => {
   const { session } = useStateStore(chat.state, sessionSelector);
-  return session ? <Requests session={session} /> : null;
+  return session ? (
+    <>
+      <Failure session={session} />
+      <Requests session={session} />
+    </>
+  ) : null;
 };
 
 const styles = StyleSheet.create({
   container: { gap: 8, paddingBottom: 8, paddingHorizontal: 16 },
+  failure: { alignItems: 'center', paddingBottom: 8 },
+  failureText: { color: '#B00020', fontSize: 14 },
+  retryText: { color: '#C8102E', fontSize: 15, fontWeight: '700', paddingTop: 2 },
 });

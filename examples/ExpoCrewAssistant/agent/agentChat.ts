@@ -1,6 +1,9 @@
 import { LiveReasoning, type Session } from '@stream-io/calypso';
 import { type Channel, type Event, type LocalMessage, StateStore } from 'stream-chat';
 
+/** What was last asked of the agent here, so it can be asked again when it couldn't answer. */
+export type AgentRequest = { text: string; custom?: Record<string, unknown> } | { event: string };
+
 /** How many messages are read at a time. */
 const PAGE_SIZE = 30;
 
@@ -42,6 +45,9 @@ export class AgentChat {
 
   /** Whether the person asked something here, which may not have arrived in `messages` yet. */
   wasAsked = false;
+
+  /** What was last asked of the agent here. */
+  lastRequest: AgentRequest | undefined;
 
   readonly state: StateStore<AgentChatState>;
 
