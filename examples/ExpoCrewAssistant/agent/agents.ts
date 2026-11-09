@@ -16,7 +16,7 @@ export const agentSessions = () => agents.agent(AgentConfig.agentName).sessions;
 
 /** Asks the token backend for this user's Stream token, which both the chat and the router take. */
 export const streamToken = async (): Promise<string> => {
-  const response = await fetch(`${AgentConfig.tokenUrl}/stream-token`, {
+  const response = await fetch(`${AgentConfig.backendUrl}/stream-token`, {
     body: JSON.stringify({ user_id: AgentConfig.user.id }),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',

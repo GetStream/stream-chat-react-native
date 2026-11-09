@@ -28,7 +28,7 @@ const deviceTools = createDeviceTools({ clientId, userId: AgentConfig.user.id })
 
 // Where a sign-in comes back to: the app's own scheme, which the web auth session hands back.
 // The router takes only https or a native app's own scheme in reverse domain form (RFC 8252).
-const SIGN_IN_SCHEME = 'io.getstream.expochatgptsample';
+const SIGN_IN_SCHEME = 'io.getstream.expocrewassistant';
 const SIGN_IN_RETURN_URL = `${SIGN_IN_SCHEME}://sign-in`;
 
 // The person's answer to a call that asks first. calypso's `decide` answers only a call this
@@ -130,7 +130,6 @@ const openSession: OpenSession = (sessionId) =>
   sessionId
     ? agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() })
     : agentSessions().create({
-        modelOverwrites: { llm: AgentConfig.chatModel },
         return_url: SIGN_IN_RETURN_URL,
         tools: deviceTools.sessionTools(),
       });

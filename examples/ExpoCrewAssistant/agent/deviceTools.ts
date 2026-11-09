@@ -1,40 +1,14 @@
 import { Tools } from '@stream-io/calypso';
 
 import {
-  type AIClientTool,
   type AIClientToolResult,
   AIClientToolRunner,
   type AIToolCallPart,
-  completedToolResult,
 } from 'stream-chat-expo/ai-components';
 
-/**
- * What only this phone knows: its date, clock, time zone and language. The same tool, by the same
- * name, as the iOS, Android and web assistants, whose instructions call it before a plan with
- * dates.
- */
-const localContext: AIClientTool = {
-  definition: {
-    annotations: { readOnlyHint: true },
-    description:
-      "The person's current date, local time, timezone and language. Call it before answering anything that depends on today or the time.",
-    inputSchema: { properties: {}, type: 'object' },
-    name: 'get_local_context',
-  },
-  run: () => {
-    const now = new Date();
-    const { locale, timeZone } = Intl.DateTimeFormat().resolvedOptions();
-    return completedToolResult(
-      { language: locale, local: now.toString(), timeZone, utc: now.toISOString() },
-      'Shared the local time',
-    );
-  },
-};
+import { APPROVALS, CREW_TOOLS, DISPLAY_TITLES } from './crewTools';
 
-const DEVICE_TOOLS = [localContext];
-
-// What a call says it is doing on the reply's step, by tool.
-const DISPLAY_TITLES: Record<string, string> = { get_local_context: "Checking your phone's time" };
+const DEVICE_TOOLS = CREW_TOOLS;
 
 /**
  * The results the runner reported, by call, for the session's socket to answer with. A call can
@@ -102,6 +76,7 @@ export const createDeviceTools = ({ clientId, userId }: { clientId: string; user
       const tools = new Tools();
       for (const { description, name, parameters } of runner.registrations) {
         tools.register({
+          approval: APPROVALS[name],
           description,
           displayTitle: DISPLAY_TITLES[name],
           executor: 'client',
