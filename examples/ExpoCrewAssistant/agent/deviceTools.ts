@@ -10,6 +10,9 @@ import { APPROVALS, CREW_TOOLS, DISPLAY_TITLES } from './crewTools';
 
 const DEVICE_TOOLS = CREW_TOOLS;
 
+// A call that asks first waits for the person, which takes longer than a call should.
+const APPROVAL_TIMEOUT_MS = 5 * 60 * 1000;
+
 /**
  * The results the runner reported, by call, for the session's socket to answer with. A call can
  * reach the socket before its step shows it waiting for this phone, or after.
@@ -77,6 +80,7 @@ export const createDeviceTools = ({ clientId, userId }: { clientId: string; user
       for (const { description, name, parameters } of runner.registrations) {
         tools.register({
           approval: APPROVALS[name],
+          ...(APPROVALS[name] ? { timeoutMs: APPROVAL_TIMEOUT_MS } : {}),
           description,
           displayTitle: DISPLAY_TITLES[name],
           executor: 'client',

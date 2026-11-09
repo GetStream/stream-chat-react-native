@@ -33,6 +33,8 @@ import {
   type AIConversationAssistantMessageProps,
 } from 'stream-chat-expo/ai-components/conversation';
 
+import { PendingApprovals } from './PendingApprovals';
+
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import type { AgentRequestCustom } from '../agent/agentTransport';
 import { VoiceMode } from '../components/VoiceMode';
@@ -41,11 +43,16 @@ import { type Flow, FLOWS } from '../flows';
 
 const errorSelector = ({ error }: AIConversationControllerState) => ({ error });
 
-/** Why something failed, with a way to try again, above the composer, and voice mode beside it. */
+/**
+ * The composer, with what rides the keyboard above it: the questions of calls that ask first, and
+ * why something failed, with a way to try again. And voice mode beside it.
+ */
 const ComposerArea = ({
+  chat,
   conversation,
   failure,
 }: {
+  chat: AgentChat;
   conversation: AIConversationController;
   failure: string | undefined;
 }) => {
@@ -68,6 +75,7 @@ const ComposerArea = ({
       conversation={conversation}
       header={
         <>
+          <PendingApprovals chat={chat} />
           {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
           {error ? (
             <Pressable accessibilityRole='button' onPress={() => conversation.retry()}>
@@ -270,7 +278,7 @@ export const ChatContent = () => {
       exiting={FadeOut.duration(200)}
     >
       <Conversation chat={chat} conversation={conversation} />
-      <ComposerArea conversation={conversation} failure={failure} />
+      <ComposerArea chat={chat} conversation={conversation} failure={failure} />
     </Animated.View>
   );
 };
