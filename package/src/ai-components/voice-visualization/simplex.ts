@@ -1,6 +1,6 @@
 /**
  * 3-D simplex noise, a port of the glow shader's `snoise` (Ashima Arts / Stefan Gustavson), so the
- * wave drawn on the CPU moves with the same speech rhythm as the shader, as on iOS and the web.
+ * wave drawn on the CPU moves with the same speech rhythm as the shader.
  *
  * It runs in float32 like a GPU, with `mod` as a multiply by a float32 reciprocal, because the
  * hash is sensitive to rounding: in exact arithmetic some inputs hash to a neighbouring gradient.

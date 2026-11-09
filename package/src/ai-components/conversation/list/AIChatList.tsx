@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     height: 40,
     justifyContent: 'center',
-    // StreamChatAI's second elevation.
     shadowColor: '#000000',
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.14,

@@ -51,7 +51,7 @@ const surface = (components: Record<string, unknown>[]) => [
 ];
 
 describe('a2uiInstructions', () => {
-  it('writes what StreamChatA2UI writes from the same prompt.json, in its order', async () => {
+  it('writes the instructions from prompt.json, in its order', async () => {
     const text = await a2uiInstructions({
       components,
       examples: [example(ohridLines)],

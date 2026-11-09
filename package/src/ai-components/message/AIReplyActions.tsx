@@ -53,8 +53,7 @@ const Action = ({ Icon, label, onPress, selected }: ActionProps) => {
 
 /**
  * The actions under a finished reply: copy (when the app has a clipboard module), share through
- * the system's share sheet, regenerate, and a thumbs up or down rating. The counterpart of
- * `AIReplyActionsView`.
+ * the system's share sheet, regenerate, and a thumbs up or down rating.
  */
 export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyActionsProps) => {
   const { t } = useAITranslation();
@@ -129,7 +128,7 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
 };
 
 const defaultStyles = StyleSheet.create({
-  // StreamChatAI's 40 buttons, 8 apart; the Android AI SDK's 18 icons.
+  // 40 buttons, 8 apart, with 18 icons.
   button: {
     alignItems: 'center',
     height: 40,

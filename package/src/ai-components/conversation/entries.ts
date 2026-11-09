@@ -74,7 +74,7 @@ export const turnsOf = (entries: AIConversationEntry[]) =>
 /**
  * Follows a message the person sent until its copy arrives in the messages, so the copy takes
  * over its row (and its key) without a flicker, and tells whether the agent is surely about to
- * answer. The counterpart of `AIPendingMessageTracker`.
+ * answer.
  */
 export class AIPendingMessageTracker {
   // The person's messages each pending message's copy cannot be: those there were when it was

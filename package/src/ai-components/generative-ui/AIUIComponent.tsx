@@ -29,8 +29,7 @@ export type AIUIComponentProps<Arguments> = {
 
 /**
  * One of the app's views that the agent can place in a reply's UI, in whichever format it
- * writes, such as a map or a card over the app's own data. The counterpart of `AIUIComponent`
- * in StreamChatAI.
+ * writes, such as a map or a card over the app's own data.
  */
 export type AIUIComponent = {
   Component: ComponentType<AIUIComponentProps<never>>;

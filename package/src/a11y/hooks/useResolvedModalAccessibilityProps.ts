@@ -9,9 +9,8 @@ export type ResolvedModalAccessibilityProps = {
 };
 
 /**
- * Returns the platform-appropriate set of a11y props for a modal/sheet root.
- * Equivalent of stream-chat-react's `useResolvedModalAriaProps` — but aware of
- * RN's iOS-vs-Android split:
+ * Returns the platform-appropriate set of a11y props for a modal/sheet root,
+ * aware of RN's iOS-vs-Android split:
  *   - iOS uses `accessibilityViewIsModal` to trap focus.
  *   - Android uses `importantForAccessibility="yes"` on the modal root and
  *     `"no-hide-descendants"` on background siblings (caller's responsibility).

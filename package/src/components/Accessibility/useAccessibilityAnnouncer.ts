@@ -20,8 +20,6 @@ export const AccessibilityAnnouncerContext = createContext<
  * Returns the imperative announcer. When called outside the AccessibilityProvider's
  * announcer context (which happens any time the SDK's a11y is disabled), this
  * returns a no-op.
- *
- * Mirrors the React SDK's `useAriaLiveAnnouncer` so cross-SDK code reads the same.
  */
 export const useAccessibilityAnnouncer = (): AccessibilityAnnounce => {
   const contextValue = useContext(AccessibilityAnnouncerContext);

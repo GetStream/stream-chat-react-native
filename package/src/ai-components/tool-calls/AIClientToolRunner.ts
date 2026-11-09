@@ -4,8 +4,7 @@ import type { AIMessagePartData, AIToolCallPart } from '../message-parts/types';
 /**
  * The name, description and argument schema of a client tool. It reads the same JSON as a Model
  * Context Protocol tool (`name`, `description`, `inputSchema` and the `readOnlyHint` of its
- * `annotations`), so a tool defined with the MCP SDK can be used as it is. The counterpart of
- * `AIClientToolDefinition` in StreamChatAI.
+ * `annotations`), so a tool defined with the MCP SDK can be used as it is.
  */
 export type AIClientToolDefinition = {
   /** The unique name of the tool. */
@@ -21,7 +20,7 @@ export type AIClientToolDefinition = {
   inputSchema?: Record<string, unknown>;
 };
 
-/** What a device reports for a call. The counterpart of `AIClientToolResult`. */
+/** What a device reports for a call. */
 export type AIClientToolResult = {
   /** Why the device could not run the call, such as "Location not shared". Shown on the step and told to the model. */
   failure?: string;
@@ -60,8 +59,7 @@ const jsonResultOf = (result: AIClientToolResult): AIClientToolResult => {
  * A tool this device runs when an AI agent asks for it. Describe it to the agent with
  * `AIClientToolRunner`'s `registrations`. The agent writes each call on its reply as an
  * `ai_tool_call` step with `executor: client` and `status: awaiting_client`, addressed to one
- * person and one install, and an `AIClientToolRunner` on that install runs it. The counterpart
- * of `AIClientTool`.
+ * person and one install, and an `AIClientToolRunner` on that install runs it.
  */
 export type AIClientTool = {
   /** The tool's name, description and argument schema, as the agent sees them. */
@@ -116,7 +114,7 @@ type CallState = {
  * as they update. It runs a call when the call awaits this person and this install, the runner
  * has a tool of that name and the call has not run here before, then hands the result to `send`.
  * A result that could not be sent is sent again on a later update, without running the tool
- * again. The counterpart of `AIClientToolRunner` in StreamChatAI.
+ * again.
  *
  * ```ts
  * const runner = new AIClientToolRunner({ clientId: AIClientIdentity.installId(), tools: [localTime], userId });

@@ -449,8 +449,7 @@ export const renderText = (params: RenderTextParams) => {
 
   // Lookup keyed by the rendered mention text (sans `@`), lowercased so we
   // resolve case-insensitively. First-write-wins: if a user shares a name with
-  // a role/group, the user entity is preferred — same precedence the React SDK
-  // applies via insertion order in its plugin.
+  // a role/group, the user entity is preferred.
   const mentionLookup = new Map<string, MentionEntity>();
   for (const entity of mentionEntities) {
     const key = (entity.name ?? entity.id).toLowerCase();

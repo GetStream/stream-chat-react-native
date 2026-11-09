@@ -17,7 +17,7 @@ import type {
   SyntaxHighlighterStylesheet,
 } from '../types';
 
-// Code reads at the footnote size, as in StreamChatAI.
+// Code reads at the footnote size.
 export const DEFAULT_FONT_SIZE = primitives.typographyFontSizeXs;
 
 export const generateNewStylesheet = ({

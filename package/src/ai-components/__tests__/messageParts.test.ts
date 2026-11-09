@@ -48,7 +48,7 @@ const authorizationCall = {
   authorization: {
     expires_at: '2026-11-02T10:10:00.123Z',
     handoff_token: 'tok',
-    message: 'Juno needs your Linear account to file the issue.',
+    message: 'The agent needs your Linear account to file the issue.',
     provider: 'linear',
     provider_name: 'Linear',
     title: 'Connect Linear',
@@ -184,7 +184,7 @@ describe('parseMessageParts', () => {
     expect(call?.authorization).toEqual({
       expiresAt: Date.parse('2026-11-02T10:10:00.123Z'),
       handoffToken: 'tok',
-      message: 'Juno needs your Linear account to file the issue.',
+      message: 'The agent needs your Linear account to file the issue.',
       provider: 'linear',
       providerName: 'Linear',
       status: undefined,

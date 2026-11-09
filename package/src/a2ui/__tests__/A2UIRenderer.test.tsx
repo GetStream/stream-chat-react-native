@@ -273,7 +273,7 @@ describe('the A2UI versions and catalog it reads', () => {
     ).toEqual({ catalogId: 'other', surfaceId: 's' });
   });
 
-  it('describes the app’s components to the agent as StreamChatA2UI does', () => {
+  it('describes the app’s components to the agent', () => {
     expect(a2uiTypeName('place_card')).toBe('PlaceCard');
     const document = a2uiAppCatalogDocument(A2UI_DEFAULT_CATALOG_ID, [placeCard]);
     expect(document.components.PlaceCard).toMatchObject({

@@ -16,7 +16,7 @@ export type AIToolCallProps = {
 
 /**
  * One tool call of a reply: what it is doing (its `displayTitle`, else its name), how it is
- * going, and how long it took once it is done. The counterpart of `AIToolCallView`.
+ * going, and how long it took once it is done.
  */
 export const AIToolCall = ({ part }: AIToolCallProps) => {
   const { t, userLanguage } = useAITranslation();

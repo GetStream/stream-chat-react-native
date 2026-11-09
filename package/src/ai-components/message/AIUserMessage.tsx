@@ -23,8 +23,7 @@ export type AIUserMessageProps = {
 };
 
 /**
- * The person's message: its attachments, then its text in a bubble on the trailing side. The
- * counterpart of `AIUserMessageView`.
+ * The person's message: its attachments, then its text in a bubble on the trailing side.
  */
 export const AIUserMessage = ({
   Attachment = AIMessageAttachment,
@@ -89,12 +88,12 @@ export const AIUserMessage = ({
   );
 };
 
-// StreamChatAI's and the Android AI SDK's bubble: the design tokens' default surface and text.
+// The design tokens' default surface and text.
 const USER_MESSAGE_BACKGROUND = '#EBEEF1';
 const USER_MESSAGE_TEXT = '#1A1B25';
 
 const defaultStyles = StyleSheet.create({
-  // One under the other, as in StreamChatAI and the Android AI SDK.
+  // One under the other.
   attachments: { alignItems: 'flex-end', gap: 8 },
   bubble: {
     borderRadius: 20,

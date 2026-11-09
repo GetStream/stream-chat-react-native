@@ -8,8 +8,7 @@ import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClien
 
 /**
  * What an agent is told to write replies' UI in A2UI with: the basic catalog, or the part of it
- * `keep` names, with the app's components, and what the app adds. The same as the
- * `prompt.json` StreamChatA2UI's instructions are written from.
+ * `keep` names, with the app's components, and what the app adds.
  */
 export type A2UIInstructionsConfig = {
   /** The id of the catalog with the app's components, as the renderer names it. */

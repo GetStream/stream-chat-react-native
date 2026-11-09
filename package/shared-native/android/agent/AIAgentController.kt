@@ -67,8 +67,7 @@ class AIAgentController(private val reactContext: ReactApplicationContext) :
 
   /**
    * This install's identifier, created on first use and kept until the app's data is cleared.
-   * The same file and form as the Android AI SDK's `AIClientIdentity`. It is not backed up, so a
-   * device restored from a backup gets its own.
+   * It is not backed up, so a device restored from a backup gets its own.
    */
   @Synchronized
   fun installId(): String {

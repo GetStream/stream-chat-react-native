@@ -14,7 +14,6 @@ import type { AIClientTool, AIClientToolDefinition } from '../tool-calls/AIClien
 
 /**
  * Why one of the app's tools didn't run for a reply's UI, or failed, in words that name the tool.
- * The counterpart of `AIUIToolError` in StreamChatAI.
  */
 export class AIUIToolError extends Error {
   constructor(message: string) {
@@ -79,7 +78,6 @@ const openWebOrEmailLink = (url: string) => {
  * The generated UI of one conversation: the renderers of the formats the agent writes, the
  * app's components and tools, what each reply's UI was left in, and where what the person does
  * goes. Give it to `AIConversation` as `ui`; keep one per conversation, for as long as it shows.
- * The counterpart of `AIUIHost` in StreamChatAI.
  */
 export class AIUIHost {
   readonly components: AIUIComponent[];

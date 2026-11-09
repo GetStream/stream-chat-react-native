@@ -12,7 +12,7 @@ const step = (fields: Record<string, unknown>) =>
   parseMessagePart({
     executor: 'client',
     id: 'toolu_01A',
-    name: 'athena_device_location',
+    name: 'device_location',
     status: 'awaiting_client',
     target_client_id: 'ios-1',
     target_user_id: 'u_1',
@@ -23,13 +23,13 @@ const step = (fields: Record<string, unknown>) =>
 const awaiting = ({
   client = 'ios-1',
   id = 'toolu_01A',
-  name = 'athena_device_location',
+  name = 'device_location',
   user = 'u_1',
 } = {}) => [step({ id, name, target_client_id: client, target_user_id: user })];
 
 const countingTool = () => {
   const tool = {
-    definition: { name: 'athena_device_location' },
+    definition: { name: 'device_location' },
     run: jest.fn(() => completedToolResult({ city: 'Skopje' }, 'Shared approximate location')),
   } satisfies AIClientTool;
   return tool;
@@ -103,7 +103,7 @@ describe('AIClientToolRunner', () => {
   it('does not run a call again while it is still running', async () => {
     let finish: () => void = () => undefined;
     const tool: AIClientTool = {
-      definition: { name: 'athena_device_location' },
+      definition: { name: 'device_location' },
       run: jest.fn(
         () =>
           new Promise((resolve) => {
@@ -136,7 +136,7 @@ describe('AIClientToolRunner', () => {
 
   it('reports a tool that throws as failed', async () => {
     const tool: AIClientTool = {
-      definition: { name: 'athena_device_location' },
+      definition: { name: 'device_location' },
       run: () => Promise.reject(new Error('no GPS')),
     };
     const send = jest.fn(() => Promise.resolve());
@@ -154,17 +154,19 @@ describe('AIClientToolRunner', () => {
     looped.self = looped;
     const send = jest.fn(() => Promise.resolve());
     const at = new Date('2026-11-05T09:00:00Z');
-    runnerWith([
-      { definition: { name: 'athena_device_location' }, run: () => ({ output: looped }) },
-    ]).run(awaiting(), send);
+    runnerWith([{ definition: { name: 'device_location' }, run: () => ({ output: looped }) }]).run(
+      awaiting(),
+      send,
+    );
     await settle();
     expect(send).toHaveBeenLastCalledWith(expect.anything(), {
       failure: "The tool's output isn't JSON",
     });
 
-    runnerWith([
-      { definition: { name: 'athena_device_location' }, run: () => ({ output: { at } }) },
-    ]).run(awaiting(), send);
+    runnerWith([{ definition: { name: 'device_location' }, run: () => ({ output: { at } }) }]).run(
+      awaiting(),
+      send,
+    );
     await settle();
     expect(send).toHaveBeenLastCalledWith(expect.anything(), {
       output: { at: '2026-11-05T09:00:00.000Z' },
@@ -177,14 +179,14 @@ describe('AIClientToolRunner', () => {
         definition: { name },
         run: jest.fn(() => failedToolResult('Not now')),
       }) satisfies AIClientTool;
-    const first = named('athena_device_location');
-    const duplicate = named('athena_device_location');
+    const first = named('device_location');
+    const duplicate = named('device_location');
     const runner = runnerWith([named('open_camera'), first, duplicate]);
 
     runner.run(awaiting(), () => Promise.resolve());
     await settle();
 
-    expect(runner.toolNames).toEqual(['athena_device_location', 'open_camera']);
+    expect(runner.toolNames).toEqual(['device_location', 'open_camera']);
     expect(first.run).toHaveBeenCalledTimes(1);
     expect(duplicate.run).not.toHaveBeenCalled();
   });
@@ -208,7 +210,7 @@ describe('AIClientToolRunner', () => {
 
     expect(runner.registrations).toEqual([
       // A tool without a description or instructions.
-      { description: '', name: 'athena_device_location', showExternalSourcesIndicator: false },
+      { description: '', name: 'device_location', showExternalSourcesIndicator: false },
       {
         description: 'Gets the weather for a city.',
         instructions: 'Use it when the person asks about the weather.',

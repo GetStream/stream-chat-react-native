@@ -461,8 +461,7 @@ export class A2UIEngine implements AIUIEngine {
 /**
  * The renderer of [A2UI](https://a2ui.org) 1.0 for `AIUIHost`, on the A2UI core
  * (`@a2ui/web_core`), with the basic catalog's components drawn natively. The app's components
- * join its catalog, so the agent places them like the basic catalog's own. The counterpart of
- * `A2UIRenderer` in StreamChatA2UI.
+ * join its catalog, so the agent places them like the basic catalog's own.
  */
 export const createA2UIRenderer = (options: A2UIRendererOptions = {}): AIUIRenderer => {
   const catalogId = options.catalogId ?? A2UI_DEFAULT_CATALOG_ID;
