@@ -2,7 +2,7 @@ import '../agent/polyfills';
 
 import React from 'react';
 
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { LogBox, Pressable, StyleSheet, Text } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -21,6 +21,8 @@ import { AgentConfig } from '../agent/config';
 import { AppProvider } from '../contexts/AppContext';
 
 import { MenuDrawer } from '../screens/MenuDrawer';
+
+LogBox.ignoreAllLogs();
 
 const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
 
